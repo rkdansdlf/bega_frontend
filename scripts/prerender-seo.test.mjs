@@ -57,9 +57,6 @@ test('core indexable routes opt into the paintable performance shell', () => {
     const configuredRoute = seoPolicy.indexableRoutes.find((item) => item.path === routePath);
     assert.equal(configuredRoute?.performanceShell, true, `${routePath} performanceShell`);
   }
-
-  const rootRoute = seoPolicy.indexableRoutes.find((item) => item.path === '/');
-  assert.equal(rootRoute?.performanceBootstrap, 'async');
 });
 
 test('performance shell styles load without blocking the first paint', () => {
@@ -82,18 +79,6 @@ test('performance shell app module starts after the first paint through a self-h
     /<script defer data-performance-app-module="true" data-module-src="\/assets\/index-test\.js" src="\/performance-app-bootstrap\.js"><\/script>/,
   );
   assert.doesNotMatch(html, /<script[^>]*data-performance-app-module="true">/);
-});
-
-test('root landing can start the self-hosted bootstrap asynchronously', () => {
-  const html = deferPerformanceShellModule(
-    '<body><script type="module" crossorigin src="/assets/index-test.js"></script></body>',
-    'async',
-  );
-
-  assert.match(
-    html,
-    /<script async data-performance-app-module="true" data-module-src="\/assets\/index-test\.js" src="\/performance-app-bootstrap\.js"><\/script>/,
-  );
 });
 
 test('prerender SEO head includes escaped search verification meta tags', () => {

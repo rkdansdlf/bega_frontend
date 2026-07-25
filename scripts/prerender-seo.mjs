@@ -206,19 +206,15 @@ export const deferPerformanceShellStyles = (html) => html.replace(
   ].join(''),
 );
 
-export const deferPerformanceShellModule = (html, bootstrapLoading = 'defer') => {
-  const loadingAttribute = bootstrapLoading === 'async' ? 'async' : 'defer';
-  return html.replace(
-    /<script\s+type="module"[^>]*\ssrc="([^"]+)"[^>]*><\/script>/,
-    (_moduleScript, moduleSrc) => [
-      `<script ${loadingAttribute} data-performance-app-module="true" data-module-src="${moduleSrc}" src="/performance-app-bootstrap.js"></script>`,
-    ].join(''),
-  );
-};
+export const deferPerformanceShellModule = (html) => html.replace(
+  /<script\s+type="module"[^>]*\ssrc="([^"]+)"[^>]*><\/script>/,
+  (_moduleScript, moduleSrc) => [
+    `<script defer data-performance-app-module="true" data-module-src="${moduleSrc}" src="/performance-app-bootstrap.js"></script>`,
+  ].join(''),
+);
 
-const preparePerformanceShellHtml = (html, bootstrapLoading) => deferPerformanceShellModule(
+const preparePerformanceShellHtml = (html) => deferPerformanceShellModule(
   deferPerformanceShellStyles(html),
-  bootstrapLoading,
 );
 
 const injectSeoRoot = (html, route) => {
@@ -276,7 +272,7 @@ export const prerenderSeo = () => {
     const outputFile = routeToOutputFile(route.path);
     ensureDir(path.dirname(outputFile));
     const outputHtml = route.performanceShell
-      ? preparePerformanceShellHtml(rootResult.html, route.performanceBootstrap)
+      ? preparePerformanceShellHtml(rootResult.html)
       : rootResult.html;
     fs.writeFileSync(outputFile, outputHtml, 'utf-8');
     report.push({

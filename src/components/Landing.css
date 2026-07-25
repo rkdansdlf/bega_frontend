@@ -2158,6 +2158,10 @@
 }
 
 @media (max-width: 480px) {
+  .landing-hero-watermark {
+    display: none;
+  }
+
   .landing-hero {
     padding-inline: 14px;
   }
