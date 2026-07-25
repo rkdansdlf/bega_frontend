@@ -232,7 +232,7 @@ test('keeps GA4 network loading off the initial render critical path', () => {
 test('reveals the performance prerender shell before delayed React hydration', () => {
   assert.match(
     indexHtmlSource,
-    /<script src="\/performance-shell-init\.js"><\/script>/,
+    /<script async src="\/performance-shell-init\.js"><\/script>/,
   );
   assert.doesNotMatch(indexHtmlSource, /<script>\s*\(\(\) => \{/);
   assert.ok(mainEntrySource.includes("rootEl.querySelector('[data-performance-prerender=\"true\"]')"));
@@ -420,8 +420,8 @@ test('reserves /cheer feed and sidebar space to prevent CLS', () => {
   assert.ok(cheerFeedRuntimeContentSource.includes('className="min-h-[88svh]"'));
   assert.equal(cheerFeedRuntimeContentSource.includes('lg:min-h-0'), false);
   assert.ok(cheerFeedRuntimeContentSource.includes('className="relative flex min-h-[220px] items-center justify-center"'));
-  assert.ok(cheerSidebarPanelsSource.includes('className="min-h-[140px] rounded-2xl border border-border/70 bg-white p-4 dark:border-border dark:bg-card"'));
-  assert.ok(cheerSidebarPanelsSource.includes('className="min-h-[188px] rounded-2xl border border-border/70 bg-white p-4 dark:border-border dark:bg-card"'));
+  assert.ok(cheerSidebarPanelsSource.includes('className="min-h-[140px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4"'));
+  assert.ok(cheerSidebarPanelsSource.includes('className="min-h-[188px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4"'));
 });
 
 test('defers the below-fold cheer ad slot outside the feed static closure', () => {

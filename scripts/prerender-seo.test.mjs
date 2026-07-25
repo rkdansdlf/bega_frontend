@@ -76,7 +76,7 @@ test('performance shell app module starts after the first paint through a self-h
   assert.doesNotMatch(html, /<script type="module"/);
   assert.match(
     html,
-    /<script data-performance-app-module="true" data-module-src="\/assets\/index-test\.js" src="\/performance-app-bootstrap\.js"><\/script>/,
+    /<script defer data-performance-app-module="true" data-module-src="\/assets\/index-test\.js" src="\/performance-app-bootstrap\.js"><\/script>/,
   );
   assert.doesNotMatch(html, /<script[^>]*data-performance-app-module="true">/);
 });

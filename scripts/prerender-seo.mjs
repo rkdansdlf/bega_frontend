@@ -209,7 +209,7 @@ export const deferPerformanceShellStyles = (html) => html.replace(
 export const deferPerformanceShellModule = (html) => html.replace(
   /<script\s+type="module"[^>]*\ssrc="([^"]+)"[^>]*><\/script>/,
   (_moduleScript, moduleSrc) => [
-    `<script data-performance-app-module="true" data-module-src="${moduleSrc}" src="/performance-app-bootstrap.js"></script>`,
+    `<script defer data-performance-app-module="true" data-module-src="${moduleSrc}" src="/performance-app-bootstrap.js"></script>`,
   ].join(''),
 );
 
