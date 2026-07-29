@@ -154,7 +154,7 @@ export default function MateApply() {
           className="fixed bottom-0 left-0 w-full h-24 object-cover object-top z-0 pointer-events-none opacity-30"
           aria-hidden="true"
           decoding="async"
-          fetchPriority="low"
+          fetchpriority="low"
           loading="lazy"
         />
         <div className="text-center z-10">
@@ -299,7 +299,7 @@ export default function MateApply() {
         className="fixed bottom-0 left-0 w-full h-24 object-cover object-top z-0 pointer-events-none opacity-30"
         aria-hidden="true"
         decoding="async"
-        fetchPriority="low"
+        fetchpriority="low"
         loading="lazy"
       />
 

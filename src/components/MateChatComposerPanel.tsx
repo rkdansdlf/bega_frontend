@@ -17,7 +17,7 @@ import {
 
 interface MateChatComposerPanelProps {
   chatImageInputId: string;
-  fileInputRef: RefObject<HTMLInputElement | null>;
+  fileInputRef: RefObject<HTMLInputElement>;
   messageText: string;
   imagePreviewUrl: string | null;
   isUploadingImage: boolean;

@@ -39,7 +39,7 @@ export default function AuthLayout({ children, showHomeButton = false }: AuthLay
         height={2000}
         loading="lazy"
         decoding="async"
-        fetchPriority="low"
+        fetchpriority="low"
       />
 
       <AuthStage data-testid="auth-stage">
@@ -54,7 +54,7 @@ export default function AuthLayout({ children, showHomeButton = false }: AuthLay
                 height={5000}
                 loading="eager"
                 decoding="sync"
-                fetchPriority="high"
+                fetchpriority="high"
                 sizes="(max-width: 640px) 224px, (max-width: 1024px) 256px, 288px"
               />
               <div className="space-y-3">

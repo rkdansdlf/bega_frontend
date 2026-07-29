@@ -256,9 +256,9 @@ interface ChatBotConversationPanelProps {
   typingLiveText: string;
   expandedToolCalls: Set<number>;
   copiedIndex: number | null;
-  messagesEndRef: RefObject<HTMLDivElement | null>;
-  messagesContainerRef: RefObject<HTMLDivElement | null>;
-  inputRef: RefObject<HTMLInputElement | null>;
+  messagesEndRef: RefObject<HTMLDivElement>;
+  messagesContainerRef: RefObject<HTMLDivElement>;
+  inputRef: RefObject<HTMLInputElement>;
   inputMessage: string;
   isProcessing: boolean;
   isSendDisabled: boolean;

@@ -44,7 +44,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     const loading = priority ? 'eager' : (loadingFromProps ?? 'lazy');
     const decoding = priority ? 'sync' : (decodingFromProps ?? 'async');
     const fetchPriority = priority ? 'high' : (fetchPriorityFromProps ?? lowercaseFetchPriorityFromProps);
-    const fetchPriorityProps = fetchPriority ? { fetchPriority } : {};
+    // React 18 only forwards the lowercase HTML attribute; camelCase is dropped with a warning.
+    const fetchPriorityProps = fetchPriority ? { fetchpriority: fetchPriority } : {};
     const numericWidth = typeof width === 'number' ? width : Number(width);
     const numericHeight = typeof height === 'number' ? height : Number(height);
     const reservedAspectRatio = Number.isFinite(numericWidth) && numericWidth > 0
