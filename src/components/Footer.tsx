@@ -13,7 +13,7 @@ export default function Footer() {
             alt="baseball"
             className="w-8 h-8"
           />
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-2">
             <h3 className="tracking-wider text-lg" style={{ fontWeight: 900 }}>
               BEGA
             </h3>
@@ -84,7 +84,7 @@ export default function Footer() {
                 이메일:{' '}
                 <a
                   href="mailto:baseballguide251021@gmail.com"
-                  className="inline-flex min-h-11 items-center py-2 hover:text-primary dark:hover:text-white underline-offset-2 hover:underline"
+                  className="inline-flex min-h-11 min-w-0 items-center py-2 [overflow-wrap:anywhere] hover:text-primary dark:hover:text-white underline-offset-2 hover:underline"
                 >
                   baseballguide251021@gmail.com
                 </a>
