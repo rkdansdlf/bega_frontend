@@ -298,6 +298,7 @@
     "stadium:daegu:precision-audit": "node scripts/qa-presets.mjs stadium daegu precision-audit",
     "stadium:daegu:render-safety-audit": "node scripts/qa-presets.mjs stadium daegu render-safety-audit",
     "qa:reflow:320": "node scripts/reflow-320-audit.mjs",
-    "qa:reflow:320:test": "node --test scripts/reflow-320-audit.test.mjs"
+    "qa:reflow:320:test": "node --test scripts/reflow-320-audit.test.mjs",
+    "qa:playwright:install": "npm install --no-save playwright && npx playwright install --with-deps chromium"
   }
 }

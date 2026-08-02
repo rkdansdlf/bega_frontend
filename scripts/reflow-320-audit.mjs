@@ -162,7 +162,7 @@ const loadPlaywright = async () => {
       failures.push(`${candidate}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  throw new Error(`Unable to load Playwright. Set PLAYWRIGHT_MODULE_URL or install playwright. Tried: ${failures.join(' | ')}`);
+  throw new Error(`Playwright is not installed. Run: npm run qa:playwright:install (mirrors CI). Or set PLAYWRIGHT_MODULE_URL to an existing install. Attempts: ${failures.join(' | ')}`);
 };
 
 /** Give rAF-gated runtimes real frames to mount in before measuring. */

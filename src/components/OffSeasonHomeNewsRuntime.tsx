@@ -103,7 +103,9 @@ export default function OffSeasonHomeNewsRuntime({
       <section className="flex justify-center pb-10">
         <Button
           onClick={onNavigateList}
-          className="rounded-full border border-primary/20 bg-white px-6 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-primary/5 hover:shadow-xl sm:px-8 sm:py-6 dark:bg-card"
+          // Button's base class is whitespace-nowrap + shrink-0, so this long
+          // label cannot wrap and pushes the page sideways at 200% text zoom.
+          className="h-auto max-w-full whitespace-normal rounded-full border border-primary/20 bg-white px-6 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-primary/5 hover:shadow-xl sm:px-8 sm:py-6 dark:bg-card"
         >
           전체 이적 현황 보러가기 ({movementsCount}건)
           <ChevronDownIcon className="ml-2 h-5 w-5 -rotate-90" />
