@@ -12,6 +12,13 @@ const SHARED_PATTERNS = [
 ];
 
 export const UI_SUITE_PATTERNS = {
+  // The 320px reflow gate walks every session-free route, so any component or
+  // stylesheet change can regress it — hence the broad source glob.
+  reflow: [
+    'bega_frontend/src/**',
+    'bega_frontend/scripts/reflow-320-audit.mjs',
+    ...SHARED_PATTERNS,
+  ],
   pages: [
     'bega_frontend/src/**',
     'bega_frontend/cypress/e2e/**',

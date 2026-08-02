@@ -180,10 +180,34 @@ const settle = async (page) => {
   await page.waitForTimeout(Number(process.env.REFLOW_SETTLE_MS ?? 1200));
 };
 
+/**
+ * Stub every API call so a run is reproducible and self-contained.
+ *
+ * Two reasons this is the default. A production build bakes in the live API
+ * origin, so an un-stubbed CI run would fire real requests at production. And
+ * letting responses race the measurement is what made results flip between the
+ * loading and loaded state depending on backend latency.
+ *
+ * Every route therefore renders its empty/error state — which is where the
+ * reflow bugs this gate was written for actually live (footer, bottom nav,
+ * tabs, markdown, skeletons, empty-count CTA labels). Populated-state coverage
+ * needs fixtures and is not attempted here.
+ *
+ * Set REFLOW_ALLOW_API=1 to run against a real backend instead.
+ */
+const stubApi = async (context) => {
+  await context.route('**/api/**', (route) => route.fulfill({
+    status: 503,
+    contentType: 'application/json',
+    body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
+  }));
+};
+
 export const runReflowAudit = async ({
   baseUrl = process.env.REFLOW_BASE_URL ?? 'http://127.0.0.1:5180',
   routes = DEFAULT_ROUTES,
   reportPath = resolve(PROJECT_ROOT, 'reports/reflow-320-report.json'),
+  allowApi = process.env.REFLOW_ALLOW_API === '1',
 } = {}) => {
   const { chromium } = await loadPlaywright();
   let browser;
@@ -196,6 +220,7 @@ export const runReflowAudit = async ({
   const results = [];
   try {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
+    if (!allowApi) await stubApi(context);
     const page = await context.newPage();
 
     for (const route of routes) {
@@ -211,7 +236,7 @@ export const runReflowAudit = async ({
 
   const summary = summarize(results);
   await mkdir(dirname(reportPath), { recursive: true });
-  await writeFile(reportPath, `${JSON.stringify({ baseUrl, viewport: VIEWPORT, summary, results }, null, 2)}\n`, 'utf8');
+  await writeFile(reportPath, `${JSON.stringify({ baseUrl, viewport: VIEWPORT, apiStubbed: !allowApi, summary, results }, null, 2)}\n`, 'utf8');
 
   for (const r of results) {
     const line = r.status === 'pass'

@@ -299,6 +299,7 @@
     "stadium:daegu:render-safety-audit": "node scripts/qa-presets.mjs stadium daegu render-safety-audit",
     "qa:reflow:320": "node scripts/reflow-320-audit.mjs",
     "qa:reflow:320:test": "node --test scripts/reflow-320-audit.test.mjs",
-    "qa:playwright:install": "npm install --no-save playwright && npx playwright install --with-deps chromium"
+    "qa:playwright:install": "npm install --no-save playwright && npx playwright install --with-deps chromium",
+    "gate:reflow:320": "npm run build:base && start-server-and-test preview:static http://127.0.0.1:5180/home \"npm run qa:reflow:320\""
   }
 }
