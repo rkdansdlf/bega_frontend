@@ -86,15 +86,17 @@ function HomeMatchPanelFallbackCard() {
     return (
         <div className="min-h-[168px] animate-pulse rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-card">
             <div className="flex items-center justify-between gap-4">
-                <div className="h-5 w-20 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-5 w-20 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-6 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
             </div>
-            <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                <div className="h-5 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-10 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="ml-auto h-5 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
+            {/* minmax(0,…) because a bare `1fr` is `minmax(auto,1fr)`, which floors the
+                track at the item's own width and overflows once text is scaled up. */}
+            <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
+                <div className="h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-6 w-10 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="ml-auto h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
             </div>
-            <div className="mt-6 h-4 w-32 rounded-full bg-gray-200 dark:bg-white/10" />
+            <div className="mt-6 h-4 w-32 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
         </div>
     );
 }

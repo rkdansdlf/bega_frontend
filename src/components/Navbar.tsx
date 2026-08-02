@@ -722,7 +722,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                 onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 className={cn(
-                  'relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-18 transition-colors duration-150',
+                  'relative flex min-w-0 min-h-11 flex-col items-center justify-center gap-0.5 rounded-18 transition-colors duration-150',
                   isActive
                     ? 'bg-primary text-white dark:bg-primary/80'
                     : 'text-muted-foreground hover:text-foreground dark:text-white',

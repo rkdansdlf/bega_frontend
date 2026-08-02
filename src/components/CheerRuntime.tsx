@@ -115,7 +115,7 @@ const CheerFeedRuntimeFallback = () => (
             <div key={index} className="px-4 py-4 animate-pulse">
                 <div className="flex gap-3">
                     <div className="h-10 w-10 rounded-full bg-slate-200 dark:bg-secondary flex-shrink-0" />
-                    <div className="flex-1 space-y-3">
+                    <div className="min-w-0 flex-1 space-y-3">
                         <div className="flex items-center gap-2">
                             <div className="h-4 w-24 bg-slate-200 dark:bg-secondary rounded" />
                             <div className="h-3 w-16 bg-slate-200 dark:bg-secondary rounded" />

@@ -46,15 +46,15 @@ function OffseasonListLeafFallback() {
     return (
         <div className="space-y-3 px-4 pb-4 pt-2 md:px-5 md:pb-5">
             <div className="animate-pulse rounded-28 border border-zinc-200 bg-zinc-50/80 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-950/70">
-                <div className="h-4 w-40 rounded-full bg-zinc-200 dark:bg-zinc-800" />
-                <div className="mt-3 h-3 w-28 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-4 w-40 max-w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="mt-3 h-3 w-28 max-w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
             </div>
             {Array.from({ length: 3 }, (_, index) => (
                 <div
                     key={index}
                     className="animate-pulse rounded-26 border border-zinc-200 bg-white px-5 py-6 dark:border-zinc-800 dark:bg-zinc-950/90"
                 >
-                    <div className="h-5 w-48 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                    <div className="h-5 w-48 max-w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
                     <div className="mt-3 h-3 w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
                     <div className="mt-2 h-3 w-3/4 rounded-full bg-zinc-200 dark:bg-zinc-800" />
                 </div>

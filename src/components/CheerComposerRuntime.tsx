@@ -627,7 +627,7 @@ export default function CheerComposerRuntime({
                             />
                         )}
                     </div>
-                    <div className="flex-1">
+                    <div className="min-w-0 flex-1">
                         <AutosizeTextarea
                             placeholder="지금 우리 팀에게 응원을 남겨주세요!"
                             className="w-full resize-none border-none bg-transparent text-body text-[#0f1419] placeholder:text-[#536471] focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500"
@@ -636,7 +636,7 @@ export default function CheerComposerRuntime({
                             value={composerContent}
                             onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setComposerContent(event.target.value)}
                         />
-                        <div className="mt-2 flex items-center justify-between gap-3 border-t border-[var(--cheer-line-10)] pt-2">
+                        <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--cheer-line-10)] pt-2">
                             <div className="flex min-w-0 items-center gap-2 text-[#536471] dark:text-white">
                                 <button
                                     type="button"
@@ -673,7 +673,7 @@ export default function CheerComposerRuntime({
                                 type="button"
                                 data-testid="write-post-btn"
                                 onClick={handleComposerSubmit}
-                                className="min-h-11 shrink-0 rounded-full px-5 py-2 text-body font-bold transition-transform active:scale-[0.98] disabled:opacity-60"
+                                className="min-h-11 max-w-full rounded-full px-5 py-2 text-body font-bold transition-transform active:scale-[0.98] disabled:opacity-60"
                                 style={{ backgroundColor: teamColor, color: teamContrastText }}
                                 disabled={composerSubmitting || !composerContent.trim()}
                             >

@@ -136,8 +136,13 @@ const renderTable = (lines: string[], startIndex: number): [string, number] => {
     .map((row) => `<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join('')}</tr>`)
     .join('');
 
+  // Tables are 2D content: WCAG reflow allows them to scroll, but only inside
+  // their own region — never by scrolling the page. Styles are inline because
+  // this markup is injected via dangerouslySetInnerHTML and never sees Tailwind.
   return [
-    `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`,
+    '<div style="overflow-x:auto;max-width:100%">'
+    + `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`
+    + '</div>',
     index,
   ];
 };
