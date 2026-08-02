@@ -72,9 +72,11 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
         setSelectedTab(activeTab);
     }, [activeTab]);
 
+    // Tabs scroll inside their own region rather than truncating labels or
+    // pushing the page sideways — see the RWD board's component guidance.
     return (
-        <nav className="flex items-center border-b border-border/70 bg-white/80 px-4 py-1 dark:border-border dark:bg-card">
-            <div className="flex items-center gap-0.5 rounded-full bg-[var(--cheer-panel-bg)] p-0.5">
+        <nav className="flex items-center overflow-x-auto border-b border-border/70 bg-white/80 px-4 py-1 dark:border-border dark:bg-card">
+            <div className="flex shrink-0 items-center gap-0.5 rounded-full bg-[var(--cheer-panel-bg)] p-0.5">
                 {tabs.map((tab) => {
                     const isActive = selectedTab === tab.key;
                     return (
