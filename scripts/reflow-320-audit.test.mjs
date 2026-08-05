@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { DEFAULT_ROUTES, evaluateRoute, summarize } from './reflow-320-audit.mjs';
+import { AUTHED_ROUTES, DEFAULT_ROUTES, PUBLIC_ROUTES, evaluateRoute, summarize } from './reflow-320-audit.mjs';
 
 test('route that fits at both text sizes passes', () => {
   const result = evaluateRoute({
@@ -65,9 +65,15 @@ test('a failure measured on skeletons is labelled, so it is not mistaken for the
   assert.doesNotMatch(loaded.reason, /still loading/);
 });
 
-test('default route list covers the session-free routes and excludes protected ones', () => {
+test('the default route list covers both the public and the protected surface', () => {
   assert.ok(DEFAULT_ROUTES.includes('/home'));
   assert.ok(DEFAULT_ROUTES.includes('/cheer'));
-  assert.ok(!DEFAULT_ROUTES.includes('/mypage'), 'protected routes need auth wiring first');
-  assert.ok(!DEFAULT_ROUTES.includes('/admin'));
+  assert.ok(DEFAULT_ROUTES.includes('/mypage'));
+  assert.ok(DEFAULT_ROUTES.includes('/admin'));
+  assert.equal(new Set(DEFAULT_ROUTES).size, DEFAULT_ROUTES.length, 'no duplicate routes');
+});
+
+test('public and protected route lists stay disjoint', () => {
+  const overlap = PUBLIC_ROUTES.filter((r) => AUTHED_ROUTES.includes(r));
+  assert.deepEqual(overlap, [], 'a route listed as both would be auth-checked on a page that needs no session');
 });

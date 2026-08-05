@@ -32,12 +32,42 @@ export const VIEWPORT = { width: 320, height: 800 };
 export const ZOOM_ROOT_FONT_PX = 32; // 200% of the 16px default
 const MIN_TRUSTWORTHY_VIEWPORT = 100;
 
-/** Routes reachable without a session. Protected routes need auth wiring first. */
-export const DEFAULT_ROUTES = [
+/** Routes reachable without a session. */
+export const PUBLIC_ROUTES = [
   '/', '/home', '/login', '/signup', '/password/reset',
   '/prediction', '/mate', '/cheer', '/stadium', '/leaderboard',
   '/offseason', '/offseason/list', '/notice', '/terms', '/privacy',
 ];
+
+/**
+ * Routes behind ProtectedRoute, plus the public ones that need a URL param.
+ * Ids are arbitrary: the API is stubbed, so these render their empty/error
+ * state — still the layout we need to measure.
+ */
+export const AUTHED_ROUTES = [
+  '/mypage', '/messages', '/messages/@testuser',
+  '/mate/create', '/mate/1', '/mate/1/apply', '/mate/1/chat', '/mate/1/manage', '/mate/1/checkin',
+  '/cheer/bookmarks', '/cheer/1', '/cheer/write', '/cheer/edit/1',
+  '/profile/@testuser', '/prediction/matches/20260726KTLT0',
+  '/predictions/ranking/share/abc/2026', '/admin',
+];
+
+export const DEFAULT_ROUTES = [...PUBLIC_ROUTES, ...AUTHED_ROUTES];
+
+/**
+ * The synthetic profile the stubbed `/auth/mypage` returns. Mirrors the fixture
+ * cypress/support/commands.ts uses, so both harnesses drive the same shape.
+ */
+const AUDIT_USER = {
+  id: 123,
+  email: 'test@example.com',
+  name: 'TestUser',
+  handle: 'testuser',
+  favoriteTeam: 'HH',
+  role: 'ROLE_ADMIN',
+  hasPassword: true,
+  profileImageUrl: null,
+};
 
 /**
  * Turn one route's raw measurement into a verdict. Pure so it can be unit
@@ -196,10 +226,21 @@ const settle = async (page) => {
  * Set REFLOW_ALLOW_API=1 to run against a real backend instead.
  */
 const stubApi = async (context) => {
+  // Order matters: Playwright gives precedence to the most recently registered
+  // matching handler, so the catch-all has to be registered *before* the
+  // specific one or it swallows it.
   await context.route('**/api/**', (route) => route.fulfill({
     status: 503,
     contentType: 'application/json',
     body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
+  }));
+  // authStore bootstraps the session from this call; a 503 here bounces every
+  // protected route to /login. This is a synthetic client-side session — no
+  // account and no credentials — the same thing cy.login() does for Cypress.
+  await context.route('**/api/auth/mypage*', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ success: true, data: AUDIT_USER }),
   }));
 };
 
@@ -221,11 +262,39 @@ export const runReflowAudit = async ({
   try {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
     if (!allowApi) await stubApi(context);
+    // ProtectedRoute only attempts the profile bootstrap when this hint is set;
+    // without it the guard redirects to /login before rendering anything.
+    await context.addInitScript(() => {
+      try {
+        window.localStorage.setItem('auth-bootstrap-hint', '1');
+      } catch { /* storage unavailable — public routes still measure fine */ }
+    });
     const page = await context.newPage();
 
     for (const route of routes) {
       await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
       await settle(page);
+
+      // A protected route that bounced to /login, or that never left the auth
+      // spinner, is not the page we think we measured — scoring it would be a
+      // false pass. Surface it instead.
+      if (!allowApi && AUTHED_ROUTES.includes(route)) {
+        const authState = await page.evaluate(() => ({
+          path: window.location.pathname,
+          spinner: /인증 상태를 확인하고 있습니다/.test(document.body.innerText || ''),
+        }));
+        if (authState.path.startsWith('/login') || authState.spinner) {
+          results.push({
+            route,
+            status: 'untrusted',
+            reason: authState.spinner
+              ? 'stuck on the auth spinner; the stubbed session did not take'
+              : `redirected to ${authState.path}; the stubbed session did not take`,
+          });
+          continue;
+        }
+      }
+
       const measurement = await page.evaluate(PAGE_PROBE, ZOOM_ROOT_FONT_PX);
       results.push(evaluateRoute({ route, ...measurement }));
     }

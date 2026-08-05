@@ -60,12 +60,14 @@ export default function NoticePageRuntime() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-200 dark:bg-background">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <MegaphoneIcon className="h-7 w-7 text-primary" />
-            <h1 className="text-primary">공지사항</h1>
+        {/* Wraps because the admin-only 글쓰기 button makes this row too wide to
+            fit at 320px once text is scaled to 200%. */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-y-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <MegaphoneIcon className="h-7 w-7 shrink-0 text-primary" />
+            <h1 className="min-w-0 text-primary">공지사항</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               onClick={() => refetch()}
               variant="outline"
