@@ -553,20 +553,20 @@ export function DiaryReadMode({
 
       {/* 경기 정보 */}
       <div className="diary-read-details space-y-4">
-        <div className="diary-read-row grid grid-cols-[80px_1fr] gap-2">
+        <div className="diary-read-row grid grid-cols-[80px_minmax(0,1fr)] gap-2">
           <div className="text-body text-muted-foreground">경기</div>
           <div className="font-bold text-primary">
             {selectedDiary?.team || '경기 정보 없음'}
           </div>
         </div>
-        <div className="diary-read-row grid grid-cols-[80px_1fr] gap-2">
+        <div className="diary-read-row grid grid-cols-[80px_minmax(0,1fr)] gap-2">
           <div className="text-body text-muted-foreground">구장</div>
           <div className="font-bold text-primary">
             {selectedDiary?.stadium ? formatStadiumDisplayName(selectedDiary.stadium) : '구장 정보 없음'}
           </div>
         </div>
         {diaryForm.winningName && (
-          <div className="diary-read-row grid grid-cols-[80px_1fr] gap-2">
+          <div className="diary-read-row grid grid-cols-[80px_minmax(0,1fr)] gap-2">
             <div className="text-body text-muted-foreground">승패</div>
             <div className="font-bold text-primary">
               {getWinningLabel(diaryForm.winningName)}
@@ -574,7 +574,7 @@ export function DiaryReadMode({
           </div>
         )}
         {diaryForm.memo && (
-          <div className="diary-read-row grid grid-cols-[80px_1fr] gap-2">
+          <div className="diary-read-row grid grid-cols-[80px_minmax(0,1fr)] gap-2">
             <div className="text-body text-muted-foreground">메모</div>
             <div
               data-testid="diary-memo"

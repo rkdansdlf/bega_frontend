@@ -152,7 +152,7 @@ export default function CheerLivePanel({
           </span>
         )}
       </div>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-7">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 py-7">
         <div className="flex min-w-0 flex-col items-center gap-2 text-center">
           <TeamLogo team={featuredGame.awayTeam} size={48} />
           <span className="truncate text-body font-black text-slate-900 dark:text-white">{featuredGame.awayTeamFull || featuredGame.awayTeam}</span>

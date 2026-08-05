@@ -2,6 +2,12 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
+// `whitespace-nowrap` here means a long label cannot wrap, which at 320px with
+// text scaled to 200% pushes the page into horizontal scroll. To let a specific
+// button wrap you must pass `!whitespace-normal` (plus `h-auto`): a plain
+// `whitespace-normal` has the same specificity as this one, so which wins is
+// decided by Tailwind's output order rather than by the className you pass, and
+// it silently loses. See OffSeasonHomeNewsRuntime's "전체 이적 현황" CTA.
 const BUTTON_BASE_CLASS = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-15 font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
 
 const BUTTON_VARIANT_CLASSES = {

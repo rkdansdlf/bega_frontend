@@ -17,12 +17,12 @@ export default function PredictionDetailLoadingSkeleton() {
         ))}
       </div>
       <div className="mt-4 space-y-2 rounded-lg border border-slate-200/60 bg-white/60 px-3 py-3 dark:border-border dark:bg-card/35">
-        <div className="grid grid-cols-[1.2fr_repeat(4,1fr)] gap-2">
+        <div className="grid grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] gap-2">
           {[0, 1, 2, 3, 4].map((item) => (
             <div key={item} className={`${skeletonBlockClassName} h-3.5`} />
           ))}
         </div>
-        <div className="grid grid-cols-[1.2fr_repeat(4,1fr)] gap-2">
+        <div className="grid grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))] gap-2">
           {[0, 1, 2, 3, 4].map((item) => (
             <div key={item} className={`${skeletonBlockClassName} h-3.5`} />
           ))}

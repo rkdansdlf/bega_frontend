@@ -228,7 +228,7 @@ export function MateDetailHeroBlock({ party, compact = false, favorited = false,
             <MateMapPinIcon className="h-3 w-3" /> {view.stadiumLabel}
           </span>
         </div>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 sm:gap-3.5">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2.5 sm:gap-3.5">
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="rounded-full bg-white p-[9px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] dark:bg-white">
               <TeamLogo teamId={party.homeTeam} size={logoSize} />
