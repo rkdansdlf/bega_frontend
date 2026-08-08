@@ -25,6 +25,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { findFixture } from './reflow-320-fixtures.mjs';
+
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(SCRIPT_DIR, '..');
 
@@ -341,6 +343,19 @@ const stubApi = async (context) => {
     contentType: 'application/json',
     body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
   }));
+  // Populated responses for the surfaces most likely to overflow. Registered
+  // after the catch-all so it wins, and before the profile stub so that one
+  // still wins over this. Anything without a fixture keeps its 503, so empty
+  // states stay covered too.
+  await context.route('**/api/**', (route) => {
+    const fixture = findFixture(route.request().url());
+    if (!fixture) return route.fallback();
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(fixture.body()),
+    });
+  });
   // authStore bootstraps the session from this call; a 503 here bounces every
   // protected route to /login. This is a synthetic client-side session — no
   // account and no credentials — the same thing cy.login() does for Cypress.
