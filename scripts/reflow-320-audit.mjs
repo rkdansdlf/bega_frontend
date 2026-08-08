@@ -32,9 +32,17 @@ export const VIEWPORT = { width: 320, height: 800 };
 export const ZOOM_ROOT_FONT_PX = 32; // 200% of the 16px default
 const MIN_TRUSTWORTHY_VIEWPORT = 100;
 
+/**
+ * Routes behind PublicOnlyAuthRoute: a logged-in visitor is redirected away, so
+ * they must be visited in a context with no session. Measuring them with one
+ * silently measures /home instead — which is exactly what happened before this
+ * split existed.
+ */
+export const LOGGED_OUT_ROUTES = ['/login', '/signup', '/password/reset'];
+
 /** Routes reachable without a session. */
 export const PUBLIC_ROUTES = [
-  '/', '/home', '/login', '/signup', '/password/reset',
+  '/', '/home', ...LOGGED_OUT_ROUTES,
   '/prediction', '/mate', '/cheer', '/stadium', '/leaderboard',
   '/offseason', '/offseason/list', '/notice', '/terms', '/privacy',
 ];
@@ -79,6 +87,47 @@ export const OVERLAY_CASES = [
   { route: '/home', name: 'mobile nav drawer', open: '[aria-label="메뉴 열기"]' },
   { route: '/mypage', name: 'authenticated nav drawer', open: '[aria-label="메뉴 열기"]' },
 ];
+
+/**
+ * Routes with a form whose submit must survive the on-screen keyboard.
+ *
+ * Playwright cannot raise a real keyboard, so this approximates it: focus the
+ * input, scroll the submit into view, and check the submit ends up above where
+ * the keyboard would sit. An in-flow submit scrolls up and passes; one pinned to
+ * the bottom with position:fixed stays under the keyboard and fails.
+ *
+ * The approximation's limit, stated plainly: a real keyboard shrinks the visual
+ * viewport while the layout viewport may not change, and iOS Safari differs from
+ * Android Chrome. This catches the structural failure — a fixed submit — not
+ * platform-specific viewport behaviour, which still needs a device.
+ */
+export const KEYBOARD_CASES = [
+  { route: '/login', name: 'login submit vs keyboard' },
+  { route: '/signup', name: 'signup submit vs keyboard' },
+  { route: '/password/reset', name: 'password reset submit vs keyboard' },
+];
+
+/** Fraction of the viewport an on-screen keyboard typically covers. */
+export const KEYBOARD_COVERAGE = 0.55;
+
+/** Verdict for one keyboard case. Pure, so it is unit testable. */
+export const evaluateKeyboard = ({ route, name, found, submitBottom, keyboardTop, submitFixed }) => {
+  const label = `${route} (${name})`;
+  if (!found) {
+    return { route: label, status: 'untrusted', reason: 'no form input/submit pair found' };
+  }
+  const problems = [];
+  if (submitFixed) problems.push('submit is position:fixed, so the keyboard would cover it');
+  if (submitBottom > keyboardTop) {
+    problems.push(`submit sits at ${Math.round(submitBottom)}px, below the ~${Math.round(keyboardTop)}px keyboard line even after scrolling`);
+  }
+  return {
+    route: label,
+    status: problems.length ? 'fail' : 'pass',
+    reason: problems.length ? problems.join('; ') : undefined,
+    offenders: [],
+  };
+};
 
 /** Verdict for one opened overlay. Pure, so it is unit testable. */
 export const evaluateOverlay = ({ route, name, opened, overflow, scrollLocked, closedByEscape }) => {
@@ -327,33 +376,48 @@ export const runReflowAudit = async ({
         window.localStorage.setItem('auth-bootstrap-hint', '1');
       } catch { /* storage unavailable — public routes still measure fine */ }
     });
-    const page = await context.newPage();
+    const mainPage = await context.newPage();
+    const page = mainPage;
+
+    // Visited without the stubbed session, or PublicOnlyAuthRoute bounces them.
+    const loggedOutContext = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
+    if (!allowApi) {
+      await loggedOutContext.route('**/api/**', (route) => route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
+      }));
+    }
+    const loggedOutPage = await loggedOutContext.newPage();
 
     for (const route of routes) {
-      await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
-      await settle(page);
+      const needsLoggedOut = !allowApi && LOGGED_OUT_ROUTES.includes(route);
+      const target = needsLoggedOut ? loggedOutPage : page;
 
-      // A protected route that bounced to /login, or that never left the auth
-      // spinner, is not the page we think we measured — scoring it would be a
-      // false pass. Surface it instead.
-      if (!allowApi && AUTHED_ROUTES.includes(route)) {
-        const authState = await page.evaluate(() => ({
-          path: window.location.pathname,
-          spinner: /인증 상태를 확인하고 있습니다/.test(document.body.innerText || ''),
-        }));
-        if (authState.path.startsWith('/login') || authState.spinner) {
-          results.push({
-            route,
-            status: 'untrusted',
-            reason: authState.spinner
-              ? 'stuck on the auth spinner; the stubbed session did not take'
-              : `redirected to ${authState.path}; the stubbed session did not take`,
-          });
-          continue;
-        }
+      await target.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await settle(target);
+
+      // Whatever the reason — a guard redirect, or an auth spinner that never
+      // resolves — if we are not on the route we asked for, we are not
+      // measuring it. Score that as untrusted rather than as a pass.
+      const landed = await target.evaluate(() => ({
+        path: window.location.pathname,
+        spinner: /인증 상태를 확인하고 있습니다/.test(document.body.innerText || ''),
+      }));
+      const routePattern = route.replace(/:[^/]+/g, '');
+      const redirected = !route.includes(':') && landed.path !== route && !landed.path.startsWith(routePattern);
+      if (redirected || landed.spinner) {
+        results.push({
+          route,
+          status: 'untrusted',
+          reason: landed.spinner
+            ? 'stuck on the auth spinner; the session did not resolve'
+            : `redirected to ${landed.path}, so this measured a different page`,
+        });
+        continue;
       }
 
-      const measurement = await page.evaluate(PAGE_PROBE, ZOOM_ROOT_FONT_PX);
+      const measurement = await target.evaluate(PAGE_PROBE, ZOOM_ROOT_FONT_PX);
       results.push(evaluateRoute({ route, ...measurement }));
     }
 
@@ -399,6 +463,55 @@ export const runReflowAudit = async ({
 
       results.push(evaluateOverlay({ route, name, ...state, closedByEscape }));
     }
+
+    for (const { route, name } of KEYBOARD_CASES) {
+      if (!routes.includes(route)) continue;
+      // All the form routes are logged-out-only, so they need that context too.
+      const page = LOGGED_OUT_ROUTES.includes(route) && !allowApi ? loggedOutPage : mainPage;
+      await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await settle(page);
+      // These routes are lazy: the shell's <header> exists before the form
+      // mounts, so settle() alone returns too early and the form looks absent.
+      try {
+        await page.locator('form button[type=submit]').first().waitFor({ state: 'visible', timeout: 5000 });
+      } catch { /* evaluate below reports it as not found */ }
+
+      const inputLocator = page.locator('form input:not([type=hidden]), form textarea').first();
+      const submitLocator = page.locator('form button[type=submit], form [type=submit]').first();
+      let measured = { found: false };
+
+      if (await submitLocator.count() > 0 && await inputLocator.count() > 0) {
+        // Shrink the viewport to what a keyboard would leave visible, then ask
+        // the real question: can the user still bring the submit into view?
+        // Measuring at full height only tells us where it happens to sit.
+        const visibleHeight = Math.round(VIEWPORT.height * (1 - KEYBOARD_COVERAGE));
+        await page.setViewportSize({ width: VIEWPORT.width, height: visibleHeight });
+        await page.waitForTimeout(300);
+
+        await inputLocator.focus();
+        // Playwright's scroll waits for the scroll to finish; the DOM
+        // scrollIntoView does not, and these pages use scroll-behavior: smooth.
+        await submitLocator.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(300);
+
+        const box = await submitLocator.boundingBox();
+        measured = await page.evaluate(({ bottom, limit }) => {
+          const submit = document.querySelector('form button[type=submit], form [type=submit]');
+          return {
+            found: true,
+            submitBottom: bottom,
+            keyboardTop: limit,
+            submitFixed: getComputedStyle(submit).position === 'fixed',
+          };
+        }, { bottom: box ? box.y + box.height : Number.POSITIVE_INFINITY, limit: visibleHeight });
+
+        await page.setViewportSize(VIEWPORT);
+        await page.waitForTimeout(200);
+      }
+
+      results.push(evaluateKeyboard({ route, name, ...measured }));
+    }
+    await loggedOutContext.close();
     await context.close();
   } finally {
     await browser.close();
