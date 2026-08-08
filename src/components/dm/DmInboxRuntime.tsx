@@ -46,11 +46,11 @@ const RoomRow = ({ room, onClick }: { room: DmInboxRoom; onClick: () => void }) 
       </div>
 
       <div className="min-w-0 flex-1 text-left">
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1">
           <span className={`truncate text-sm ${hasUnread ? 'font-bold text-gray-900 dark:text-white' : 'font-medium text-gray-800 dark:text-gray-200'}`}>
             {targetUser?.name ?? '알 수 없는 사용자'}
           </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="truncate text-xs text-gray-400 dark:text-gray-500">
             {targetUser?.handle ? `@${targetUser.handle.replace(/^@/, '')}` : ''}
           </span>
         </div>

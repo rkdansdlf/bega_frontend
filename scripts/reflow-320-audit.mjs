@@ -353,7 +353,7 @@ const stubApi = async (context) => {
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(fixture.body()),
+      body: JSON.stringify(fixture.body(route.request().url())),
     });
   });
   // authStore bootstraps the session from this call; a 503 here bounces every

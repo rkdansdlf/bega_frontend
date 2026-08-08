@@ -61,21 +61,72 @@ const page = (items) => ({
  * and anything unmatched keeps the existing 503 so its empty state is still
  * exercised.
  */
+const envelope = (data) => ({ success: true, data });
+
 export const FIXTURES = [
   {
     // Returns the page object bare, not wrapped in {success,data} — confirmed
     // against the live endpoint, which answers {"content":[...]}.
-    name: 'cheer feed',
-    match: (url) => /\/api\/cheer\/posts(\?|$)/.test(url) || /\/api\/cheer\/posts\/hot/.test(url),
-    body: () => page([1, 2, 3, 4, 5].map(post)),
+    //
+    // /notice reads this same endpoint with postType=NOTICE rather than a
+    // /api/notice of its own, so both routes are served from here.
+    name: 'cheer feed and notices',
+    match: (url) => /\/api\/cheer\/posts(\/hot)?(\?|$)/.test(url),
+    body: (url) => {
+      const notice = /postType=NOTICE/.test(url);
+      return page([1, 2, 3, 4, 5].map((id) => (notice
+        ? { ...post(id), postType: 'NOTICE', content: `[공지] ${LONG_KOREAN} 자세한 내용은 ${UNBREAKABLE_URL} 을 확인해주세요.` }
+        : post(id))));
+    },
   },
   {
-    name: 'notice list',
-    match: (url) => /\/api\/notice/.test(url),
-    body: () => page([1, 2, 3].map((id) => ({
-      ...post(id),
-      postType: 'NOTICE',
-      content: `[공지] ${LONG_KOREAN} 자세한 내용은 ${UNBREAKABLE_URL} 을 확인해주세요.`,
+    // Page-shaped and bare, like the cheer feed — not {success,data}.
+    name: 'leaderboard table',
+    match: (url) => /\/api\/leaderboard(\?|$)/.test(url),
+    body: () => page(Array.from({ length: 12 }, (_, i) => ({
+      rank: i + 1,
+      handle: LONG_HANDLE,
+      userName: '아주긴닉네임을가진예측왕님',
+      profileImageUrl: null,
+      level: 42,
+      rankTitle: '전설의예측가등급최상위',
+      score: 1234567,
+      streak: 15,
+      maxStreak: 28,
+      accuracy: 87.6,
+      rankChange: -3,
+    }))),
+  },
+  {
+    name: 'offseason movements',
+    match: (url) => /\/api\/kbo\/offseason\/movements/.test(url),
+    body: () => envelope(Array.from({ length: 8 }, (_, i) => ({
+      id: i + 1,
+      date: '2026-01-15',
+      section: 'FA 계약',
+      team: '한화 이글스',
+      player: '아주긴이름을가진선수님',
+      summary: LONG_KOREAN,
+      remarks: `${LONG_KOREAN} 출처: ${UNBREAKABLE_URL}`,
+      contractTerm: '4년',
+      contractValue: '총액 170억원(보장 130억 옵션 40억)',
+      optionDetails: '출장 옵션 및 성적 옵션 포함',
+      counterpartyTeam: 'LG 트윈스',
+      counterpartyDetails: '보상선수 및 보상금 포함',
+      sourceLabel: '구단 공식 발표',
+      sourceUrl: UNBREAKABLE_URL,
+      announcedAt: '2026-01-15T10:00:00',
+      isBigEvent: true,
+    }))),
+  },
+  {
+    name: 'DM inbox',
+    match: (url) => /\/api\/dm\/rooms\/my/.test(url),
+    body: () => envelope(Array.from({ length: 6 }, (_, i) => ({
+      roomId: i + 1,
+      targetUser: { id: 900 + i, name: '아주긴닉네임을가진상대방님', handle: LONG_HANDLE, profileImageUrl: null },
+      lastMessage: { content: `${LONG_KOREAN} ${UNBREAKABLE_URL}`, createdAt: '2026-08-06T09:00:00', senderId: 900 + i },
+      hasUnread: true,
     }))),
   },
 ];
