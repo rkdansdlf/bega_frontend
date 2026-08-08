@@ -70,6 +70,35 @@ const AUDIT_USER = {
 };
 
 /**
+ * Overlays are the one criterion a page-load sweep cannot reach: a drawer that
+ * escapes the viewport only does so once opened. Each case opens one, then
+ * checks the board's own navigation rules — contained at 320px, background
+ * scroll locked while open, dismissible by keyboard.
+ */
+export const OVERLAY_CASES = [
+  { route: '/home', name: 'mobile nav drawer', open: '[aria-label="메뉴 열기"]' },
+  { route: '/mypage', name: 'authenticated nav drawer', open: '[aria-label="메뉴 열기"]' },
+];
+
+/** Verdict for one opened overlay. Pure, so it is unit testable. */
+export const evaluateOverlay = ({ route, name, opened, overflow, scrollLocked, closedByEscape }) => {
+  const label = `${route} (${name})`;
+  if (!opened) {
+    return { route: label, status: 'untrusted', reason: 'trigger not found or overlay never opened' };
+  }
+  const problems = [];
+  if (overflow > 0) problems.push(`${overflow}px horizontal scroll while open`);
+  if (!scrollLocked) problems.push('background scroll not locked');
+  if (!closedByEscape) problems.push('Escape does not dismiss it');
+  return {
+    route: label,
+    status: problems.length ? 'fail' : 'pass',
+    reason: problems.length ? problems.join('; ') : undefined,
+    offenders: [],
+  };
+};
+
+/**
  * Turn one route's raw measurement into a verdict. Pure so it can be unit
  * tested without a browser.
  */
@@ -195,7 +224,17 @@ const loadPlaywright = async () => {
   throw new Error(`Playwright is not installed. Run: npm run qa:playwright:install (mirrors CI). Or set PLAYWRIGHT_MODULE_URL to an existing install. Attempts: ${failures.join(' | ')}`);
 };
 
-/** Give rAF-gated runtimes real frames to mount in before measuring. */
+/**
+ * Give rAF-gated runtimes real frames to mount in, then wait for the page to
+ * stop changing before measuring.
+ *
+ * A fixed timeout is not enough: which state you catch depends on how fast the
+ * stubs resolve, and the same route would pass or fail run to run. Skeletons use
+ * fixed placeholder widths the real content does not, so measuring a half-loaded
+ * page is both flaky and misleading. Polls until the skeletons clear, capped —
+ * a page that legitimately never leaves its skeleton is still measured, and
+ * reported as such.
+ */
 const settle = async (page) => {
   await page.waitForLoadState('domcontentloaded');
   await page.evaluate(() => new Promise((done) => {
@@ -207,7 +246,26 @@ const settle = async (page) => {
     };
     requestAnimationFrame(tick);
   }));
-  await page.waitForTimeout(Number(process.env.REFLOW_SETTLE_MS ?? 1200));
+  await page.waitForTimeout(Number(process.env.REFLOW_SETTLE_MS ?? 600));
+
+  const capMs = Number(process.env.REFLOW_SETTLE_CAP_MS ?? 6000);
+
+  // Wait for the app to render at all first. Skipping this makes the skeleton
+  // poll below exit immediately on an empty document — zero skeletons because
+  // nothing has mounted yet — and we would measure a blank page.
+  const mountedBy = Date.now() + capMs;
+  while (Date.now() < mountedBy) {
+    const mounted = await page.evaluate(() => document.querySelector('header, main, nav') !== null);
+    if (mounted) break;
+    await page.waitForTimeout(250);
+  }
+
+  const settledBy = Date.now() + capMs;
+  while (Date.now() < settledBy) {
+    const skeletons = await page.evaluate(() => document.querySelectorAll('.animate-pulse').length);
+    if (skeletons === 0) break;
+    await page.waitForTimeout(250);
+  }
 };
 
 /**
@@ -297,6 +355,49 @@ export const runReflowAudit = async ({
 
       const measurement = await page.evaluate(PAGE_PROBE, ZOOM_ROOT_FONT_PX);
       results.push(evaluateRoute({ route, ...measurement }));
+    }
+
+    for (const { route, name, open } of OVERLAY_CASES) {
+      if (!routes.includes(route)) continue;
+      await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await settle(page);
+
+      // Wait for the trigger rather than sampling once: the mobile menu button
+      // is gated on a media query that resolves a beat after <header> mounts,
+      // so an immediate check races it and reports a phantom "not present".
+      const trigger = page.locator(open).first();
+      try {
+        await trigger.waitFor({ state: 'visible', timeout: 5000 });
+      } catch {
+        results.push({
+          route: `${route} (${name})`,
+          status: 'untrusted',
+          reason: `trigger ${open} never became visible`,
+        });
+        continue;
+      }
+      const bodyOverflowBefore = await page.evaluate(() => getComputedStyle(document.body).overflow);
+      await trigger.click();
+      await page.waitForTimeout(500);
+
+      const state = await page.evaluate((before) => {
+        const de = document.documentElement;
+        const body = getComputedStyle(document.body);
+        return {
+          opened: document.querySelector('[role="dialog"], [aria-modal="true"]') !== null
+            || document.querySelector('[aria-label="메뉴 닫기"]') !== null,
+          overflow: de.scrollWidth - de.clientWidth,
+          // Locked either by hidden overflow or by the position:fixed technique.
+          scrollLocked: body.overflow === 'hidden' || body.position === 'fixed' || before === 'hidden',
+        };
+      }, bodyOverflowBefore);
+
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(400);
+      const closedByEscape = await page.evaluate(() => document.querySelector('[aria-label="메뉴 닫기"]') === null
+        && document.querySelector('[role="dialog"], [aria-modal="true"]') === null);
+
+      results.push(evaluateOverlay({ route, name, ...state, closedByEscape }));
     }
     await context.close();
   } finally {
