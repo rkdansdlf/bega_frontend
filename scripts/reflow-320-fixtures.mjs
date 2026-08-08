@@ -5,11 +5,17 @@
  * and a table with no rows cannot overflow, so the most overflow-prone surfaces
  * were the ones going unchecked.
  *
- * These deliberately carry worst-case content rather than realistic content.
- * For a reflow gate the question is not "does today's data fit" but "does the
- * layout survive content", so the strings here are long Korean text, long
- * handles, and unbreakable tokens (URLs, emails) — the exact shapes that
- * produced every defect found by hand earlier: a box that cannot shrink or wrap.
+ * These carry worst-case content rather than typical content. For a reflow gate
+ * the question is not "does today's data fit" but "does the layout survive
+ * content", so the strings here are long free text, long handles, and
+ * unbreakable tokens (URLs, emails) — the exact shapes behind every defect found
+ * by hand earlier: a box that cannot shrink or wrap.
+ *
+ * Worst case still has to be *plausible*. Fields users control freely (post
+ * bodies, nicknames, handles) get the long treatment; fields with real-world
+ * limits do not. A player name stays short, because `break-keep` deliberately
+ * refuses to split a Korean name mid-word and an 11-character unbroken name
+ * would fail the gate on content that cannot exist.
  *
  * Shapes follow the wire types the app normalizes, not the normalized types.
  */
@@ -98,14 +104,15 @@ export const FIXTURES = [
     }))),
   },
   {
+    // publicGet<OffseasonMovement[]> — a bare array, not {success,data}.
     name: 'offseason movements',
     match: (url) => /\/api\/kbo\/offseason\/movements/.test(url),
-    body: () => envelope(Array.from({ length: 8 }, (_, i) => ({
+    body: () => (Array.from({ length: 8 }, (_, i) => ({
       id: i + 1,
       date: '2026-01-15',
       section: 'FA 계약',
       team: '한화 이글스',
-      player: '아주긴이름을가진선수님',
+      player: '김현수정',
       summary: LONG_KOREAN,
       remarks: `${LONG_KOREAN} 출처: ${UNBREAKABLE_URL}`,
       contractTerm: '4년',

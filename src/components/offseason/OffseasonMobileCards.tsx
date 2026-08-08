@@ -32,8 +32,8 @@ export function OffseasonMobileCards({
                             }
                         }}
                     >
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div className="flex min-w-0 items-center gap-3">
                                 <div className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                                     <TeamLogo team={teamName} size={32} />
                                 </div>
@@ -46,7 +46,7 @@ export function OffseasonMobileCards({
                                             </OffseasonPill>
                                         )}
                                     </div>
-                                    <h3 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white">{item.player}</h3>
+                                    <h3 className="min-w-0 text-xl font-black tracking-tight text-zinc-900 dark:text-white">{item.player}</h3>
                                 </div>
                             </div>
                             <OffseasonSectionPill section={item.section} />

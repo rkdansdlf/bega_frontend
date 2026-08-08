@@ -30,8 +30,8 @@ function OffseasonInsightsFallback() {
     return (
         <Card className="rounded-3xl border border-zinc-200 bg-white/80 p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80">
             <div className="space-y-3 animate-pulse">
-                <div className="h-4 w-32 rounded-full bg-zinc-200 dark:bg-zinc-800" />
-                <div className="h-8 w-64 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-4 w-32 max-w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-8 w-64 max-w-full rounded-full bg-zinc-200 dark:bg-zinc-800" />
                 <div className="grid gap-3 xl:grid-cols-3">
                     {Array.from({ length: 3 }, (_, index) => (
                         <div key={index} className="h-44 rounded-3xl bg-zinc-100 dark:bg-zinc-950/70" />
