@@ -162,6 +162,34 @@ export const FIXTURES = [
     },
   },
   {
+    // The last piece of /home: without this the widgets region stayed on its
+    // error state, so the rank snapshot and hot-post rail went unmeasured.
+    name: 'home widgets',
+    match: (url) => /\/api\/home\/widgets/.test(url),
+    body: () => ({
+      hotCheerPosts: [1, 2, 3].map(post),
+      featuredMates: [],
+      rankingSnapshot: {
+        rankingSeasonYear: 2026,
+        rankingSourceMessage: '2026 정규시즌 기준 순위입니다',
+        isOffSeason: false,
+        rankings: ['HH', 'LG', 'OB', 'LT', 'SS', 'KT', 'NC', 'SK', 'HT', 'WO'].map((teamId, i) => ({
+          rank: i + 1,
+          teamId,
+          teamName: `${['한화 이글스', 'LG 트윈스', '두산 베어스', '롯데 자이언츠', '삼성 라이온즈', 'KT 위즈', 'NC 다이노스', 'SSG 랜더스', 'KIA 타이거즈', '키움 히어로즈'][i]}`,
+          shortName: teamId,
+          wins: 80 - i * 4,
+          losses: 50 + i * 4,
+          draws: 3,
+          winRate: (0.615 - i * 0.03).toFixed(3),
+          games: 133,
+          gamesBehind: i * 4,
+          recentForm: ['W', 'L', 'W', 'W', 'D'],
+        })),
+      },
+    }),
+  },
+  {
     // privateGet<DiaryEntry[]> and privateGet<DiaryStatistics> — both bare.
     name: 'diary entries',
     match: (url) => /\/api\/diary\/entries/.test(url),
