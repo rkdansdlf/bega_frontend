@@ -127,6 +127,73 @@ export const FIXTURES = [
     }))),
   },
   {
+    // Envelope confirmed by curling the live endpoint earlier: the bootstrap
+    // answers this object bare, with a loadState the client checks for fallback.
+    name: 'home bootstrap',
+    match: (url) => /\/api\/home\/bootstrap/.test(url),
+    body: () => {
+      const game = (i) => ({
+        gameId: `2026080${i}HHLT0`,
+        time: '18:30',
+        stadium: '대전 한화생명볼파크',
+        gameStatus: 'SCHEDULED',
+        gameStatusKr: '경기 예정',
+        gameInfo: '선발 문동주 vs 박세웅',
+        leagueType: 'REGULAR',
+        homeTeam: 'HH',
+        homeTeamFull: '한화 이글스',
+        awayTeam: 'LT',
+        awayTeamFull: '롯데 자이언츠',
+        gameDate: '2026-08-06',
+        sourceDate: '2026-08-06',
+        leagueBadge: '정규시즌',
+        liveLastEventSeq: null,
+        liveLastUpdatedAt: null,
+      });
+      const games = [1, 2, 3, 4, 5].map(game);
+      return {
+        selectedDate: '2026-08-06',
+        leagueStartDates: { regularSeasonStart: '2026-03-28', postseasonStart: '2026-10-06', koreanSeriesStart: '2026-10-26' },
+        navigation: { prevGameDate: '2026-08-05', nextGameDate: '2026-08-07', hasPrev: true, hasNext: true },
+        games,
+        scheduledGamesWindow: games,
+        loadState: { isFallback: false, timedOut: false, timedOutSections: [], failedSections: [], failureReason: null, manualDataRequest: null },
+      };
+    },
+  },
+  {
+    // privateGet<DiaryEntry[]> and privateGet<DiaryStatistics> — both bare.
+    name: 'diary entries',
+    match: (url) => /\/api\/diary\/entries/.test(url),
+    body: () => (Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1,
+      date: '2026-08-06',
+      type: 'DIRECT',
+      emoji: '🔥',
+      emojiName: '불타는응원',
+      winningName: 'WIN',
+      gameId: 1000 + i,
+      memo: `${LONG_KOREAN} ${UNBREAKABLE_URL}`,
+      photos: [],
+      team: '한화 이글스',
+      stadium: '대전 한화생명볼파크',
+      section: '3루 내야지정석',
+      block: '312',
+      seatRow: '14',
+      seatNumber: '7',
+      ticketVerified: true,
+    }))),
+  },
+  {
+    name: 'diary statistics',
+    match: (url) => /\/api\/diary\/statistics/.test(url),
+    body: () => ({
+      totalCount: 128, totalWins: 77, totalLosses: 44, totalDraws: 7, winRate: 63.6,
+      monthlyCount: 9, yearlyCount: 52, yearlyWins: 31, yearlyWinRate: 59.6,
+      mostVisitedStadium: '대전 한화생명볼파크', mostVisitedCount: 41,
+    }),
+  },
+  {
     name: 'DM inbox',
     match: (url) => /\/api\/dm\/rooms\/my/.test(url),
     body: () => envelope(Array.from({ length: 6 }, (_, i) => ({
