@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, evaluateKeyboard, evaluateRoute, summarize } from './reflow-320-audit.mjs';
@@ -101,6 +102,43 @@ test('routes that must be visited logged out are all inside the public list', ()
     assert.ok(PUBLIC_ROUTES.includes(route), `${route} must be audited, not just excluded`);
     assert.ok(!AUTHED_ROUTES.includes(route), `${route} would be redirected away by a session`);
   }
+});
+
+test('every route in AppRoutes.tsx is either audited or explicitly excluded', () => {
+  const source = readFileSync(new URL('../src/components/AppRoutes.tsx', import.meta.url), 'utf8');
+  const declared = [...source.matchAll(/path="([^"]+)"/g)].map((m) => m[1]);
+
+  // Not auditable, with the reason each is out of scope.
+  const EXCLUDED = new Set([
+    '*',                                  // covered as the 404 catch-all by hand
+    '/oauth/callback',                    // redirect-only, renders no UI
+    '/password/reset/confirm',            // needs a live token
+    '/account/deletion/recovery',         // needs a live recovery link
+    '/mypage/:handle',                    // redirects to /profile/:handle
+    '/test/error',                        // dev-only error harness
+    '/internal/sajik-seatmap-editor',     // dev-only internal tool
+    '/internal/gwangju-seatmap-editor',   // dev-only internal tool
+    '/internal/module-federation-design-system',
+  ]);
+
+  // Compare on the pattern, since the audit fills in concrete ids.
+  // Order matters: the specific ids have to be collapsed before the generic
+  // digit rule, or it eats their leading digits and mangles the pattern.
+  const auditedPatterns = new Set(DEFAULT_ROUTES.map((r) => r
+    .replace(/\/20\d{6}[A-Z]+\d/g, '/:gameId')
+    .replace(/\/abc\/2026/, '/:shareId/:seasonYear')
+    .replace(/\/@[^/]+/g, '/:handle')
+    .replace(/\/\d+/g, '/:id')));
+
+  const missing = declared.filter((p) => {
+    if (EXCLUDED.has(p)) return false;
+    const normalized = p.replace(/:[a-zA-Z]+/g, (m) => m);
+    return !auditedPatterns.has(normalized)
+      && !auditedPatterns.has(normalized.replace(/:postId|:id/g, ':id'))
+      && !auditedPatterns.has(normalized.replace(/:handle/g, ':handle'));
+  });
+
+  assert.deepEqual(missing, [], `new route(s) added without gate coverage: ${missing.join(', ')}`);
 });
 
 test('public and protected route lists stay disjoint', () => {
