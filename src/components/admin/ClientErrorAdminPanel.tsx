@@ -221,6 +221,23 @@ const validateVisualQaState = (
   state: ClientErrorAdminPanelVisualQaState,
   renderers: ClientErrorAdminPanelVisualQaRenderers | undefined,
 ) => {
+  if (state.chartPhase !== 'fallback' && state.chartPhase !== 'resolved') {
+    throw new Error('ClientErrorAdminPanel Visual QA chart phase is invalid.');
+  }
+  if (
+    state.insightsPhase !== 'deferred-fallback'
+    && state.insightsPhase !== 'suspense-fallback'
+    && state.insightsPhase !== 'resolved'
+  ) {
+    throw new Error('ClientErrorAdminPanel Visual QA insights phase is invalid.');
+  }
+  if (
+    state.detailPhase !== 'closed'
+    && state.detailPhase !== 'suspense-fallback'
+    && state.detailPhase !== 'resolved'
+  ) {
+    throw new Error('ClientErrorAdminPanel Visual QA detail phase is invalid.');
+  }
   if (state.chartPhase === 'resolved' && !renderers?.chart) {
     throw new Error('ClientErrorAdminPanel Visual QA resolved chart renderer is required.');
   }

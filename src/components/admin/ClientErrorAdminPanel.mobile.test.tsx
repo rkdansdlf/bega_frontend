@@ -157,6 +157,18 @@ test('renders the detail suspense fallback only while the detail is open', () =>
 
 test('fails closed for invalid visual QA lazy phases and missing renderers', () => {
   assert.throws(
+    () => renderPanel({ ...visualQaState, chartPhase: 'unexpected' as never }),
+    /ClientErrorAdminPanel Visual QA chart phase is invalid\./,
+  );
+  assert.throws(
+    () => renderPanel({ ...visualQaState, insightsPhase: 'unexpected' as never }),
+    /ClientErrorAdminPanel Visual QA insights phase is invalid\./,
+  );
+  assert.throws(
+    () => renderPanel({ ...visualQaState, detailPhase: 'unexpected' as never }),
+    /ClientErrorAdminPanel Visual QA detail phase is invalid\./,
+  );
+  assert.throws(
     () => renderPanel(visualQaState, { ...renderers, chart: undefined }),
     /ClientErrorAdminPanel Visual QA resolved chart renderer is required\./,
   );
