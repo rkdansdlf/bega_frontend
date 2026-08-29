@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -6,6 +6,10 @@ import { useNotificationStore } from '../store/notificationStore';
 import { useAuthSession } from '../store/authStore';
 import { notificationApi, isIgnorableNotificationError } from '../utils/notificationApi';
 import { NotificationData as Notification, NotificationType } from '../types/notification';
+import {
+  loadNotificationPanelNotifications,
+  type NotificationPanelLoadState,
+} from './notificationPanelLoader';
 import {
   NotificationAlertTriangleIcon,
   NotificationBellIcon,
@@ -41,23 +45,36 @@ export default function NotificationPanel() {
       })),
     );
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
+  const [notificationLoadState, setNotificationLoadState] = useState<NotificationPanelLoadState>(
+    { status: 'idle' },
+  );
   const unreadCount = useMemo(
     () => notifications.reduce((count, notif) => (!notif.isRead ? count + 1 : count), 0),
     [notifications],
   );
 
   // 패널이 열릴 때 1회 fetch (WebSocket push가 이후 업데이트를 담당)
-  useEffect(() => {
-    if (!isLoggedIn) return;
+  const loadNotifications = useCallback(async () => {
+    if (!isLoggedIn) {
+      setNotificationLoadState({ status: 'idle' });
+      return;
+    }
 
-    notificationApi.getNotifications()
-      .then(setNotifications)
-      .catch((error) => {
-        if (!isIgnorableNotificationError(error)) {
-          console.error('알림 불러오기 오류:', error);
-        }
-      });
+    const result = await loadNotificationPanelNotifications({
+      onStateChange: setNotificationLoadState,
+    });
+    if (result.status === 'success') {
+      setNotifications(result.notifications);
+      return;
+    }
+    if (result.status === 'error' && !isIgnorableNotificationError(result.error)) {
+      console.error('알림 불러오기 오류:', result.error);
+    }
   }, [isLoggedIn, setNotifications]);
+
+  useEffect(() => {
+    void loadNotifications();
+  }, [loadNotifications]);
 
   const handleNotificationClick = async (notification: Notification) => {
     try {
@@ -228,7 +245,33 @@ export default function NotificationPanel() {
       </div>
 
       <div className="p-0 min-h-[300px]">
-        {filteredNotifications.length === 0 ? (
+        {notificationLoadState.status === 'loading' ? (
+          <div
+            data-testid="notification-loading"
+            role="status"
+            className="flex min-h-[300px] items-center justify-center px-4 py-16 text-center text-body text-gray-500 dark:text-gray-300"
+          >
+            알림을 불러오는 중입니다.
+          </div>
+        ) : notificationLoadState.status === 'error' ? (
+          <div
+            data-testid="notification-error"
+            role="alert"
+            className="flex min-h-[300px] flex-col items-center justify-center gap-3 px-4 py-16 text-center"
+          >
+            <p className="text-body text-gray-600 dark:text-gray-200">
+              알림을 불러오지 못했습니다.
+            </p>
+            <button
+              type="button"
+              data-testid="notification-retry"
+              onClick={() => void loadNotifications()}
+              className="min-h-11 rounded-lg border border-gray-300 px-4 text-body font-bold text-gray-700 dark:border-gray-600 dark:text-gray-100"
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : filteredNotifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="bg-gray-100 dark:bg-secondary p-6 rounded-full mb-4">
               <NotificationBellIcon className="w-8 h-8 text-gray-400 dark:text-white" />
