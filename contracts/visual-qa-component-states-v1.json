@@ -3094,23 +3094,199 @@
     },
     {
       "id": "src/components/admin/AdminCommunityRuntime.tsx#AdminRoleChangeDialogContent",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=resolved|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminCommunityRuntime.tsx#MatesAdminPanel",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=admin|interactions=default|variant.active-tab=parties|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminCommunityRuntime.tsx#PostsAdminPanel",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=admin|interactions=default|variant.active-tab=posts|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminCommunityRuntime.tsx#UsersAdminPanel",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminDeletePlaceDialogContent.tsx#AdminDeletePlaceDialogContent",
@@ -3241,8 +3417,24 @@
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusBadge",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel",
@@ -4020,38 +4212,150 @@
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#CleanupArtifactPaths",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#CleanupClosureStatus",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#MismatchDateSuggestionCard",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#MismatchReasons",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#NonCanonicalGameRow",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#RepairedGameRow",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminGameStatusRepairPanel.tsx#SummaryCard",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
+        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+      },
+      "variants": {
+        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminModerationRuntime.tsx#AdminGameStatusRepairPanel",
@@ -6726,13 +7030,102 @@
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminDeletePlaceDialogContent",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=delete-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminPlaceDialogContent",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=create-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark",
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=edit-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsDialogFallback",
@@ -6787,8 +7180,52 @@
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanel",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=closed|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanelFallback",

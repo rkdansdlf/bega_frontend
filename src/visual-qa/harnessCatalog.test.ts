@@ -4910,6 +4910,78 @@ test('admin internal fallbacks use reviewed hosted evidence without independent 
   }
 });
 
+test('admin hosted leaf reconciliation uses only proven parent scenarios', async () => {
+  const communityScenarioIds = {
+    roleDialog: 'state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=resolved|variant.theme=dark',
+    mates: 'state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=admin|interactions=default|variant.active-tab=parties|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark',
+    posts: 'state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=admin|interactions=default|variant.active-tab=posts|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark',
+    users: 'state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=closed|variant.theme=dark',
+  };
+  const gameStatusScenarioId = 'state:src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusRepairPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.active=active|variant.theme=dark';
+  const stadiumScenarioIds = {
+    panel: 'state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=closed|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark',
+    create: 'state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=create-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark',
+    edit: 'state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=edit-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark',
+    delete: 'state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=delete-resolved|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark',
+  };
+  const expectedHostScenarioIds = new Map<string, string[]>([
+    ['src/components/admin/AdminCommunityRuntime.tsx#AdminRoleChangeDialogContent', [communityScenarioIds.roleDialog]],
+    ['src/components/admin/AdminCommunityRuntime.tsx#MatesAdminPanel', [communityScenarioIds.mates]],
+    ['src/components/admin/AdminCommunityRuntime.tsx#PostsAdminPanel', [communityScenarioIds.posts]],
+    ['src/components/admin/AdminCommunityRuntime.tsx#UsersAdminPanel', [communityScenarioIds.users]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#AdminGameStatusBadge', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#CleanupArtifactPaths', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#CleanupClosureStatus', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#MismatchDateSuggestionCard', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#MismatchReasons', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#NonCanonicalGameRow', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#RepairedGameRow', [gameStatusScenarioId]],
+    ['src/components/admin/AdminGameStatusRepairPanel.tsx#SummaryCard', [gameStatusScenarioId]],
+    ['src/components/admin/AdminStadiumsRuntime.tsx#AdminDeletePlaceDialogContent', [stadiumScenarioIds.delete]],
+    ['src/components/admin/AdminStadiumsRuntime.tsx#AdminPlaceDialogContent', [stadiumScenarioIds.create, stadiumScenarioIds.edit]],
+    ['src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanel', [stadiumScenarioIds.panel]],
+  ]);
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      axes?: Record<string, Record<string, { owner?: string; reason?: string; testEvidence?: string }>>;
+      constraints?: unknown[];
+      id: string;
+      render?: { hostScenarioIds?: string[]; mode?: string };
+      renderAccess?: string;
+      status: string;
+      variants?: Record<string, { owner?: string; reason?: string; testEvidence?: string }>;
+    }>;
+  };
+  const generatedScenarioIds = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ id }) => id));
+
+  assert.equal(expectedHostScenarioIds.size, 15);
+  for (const [componentId, expectedIds] of expectedHostScenarioIds) {
+    const entry = manifest.components.find(({ id }) => id === componentId);
+    assert.equal(entry?.status, 'registered', componentId);
+    assert.equal(entry?.renderAccess, 'hosted', componentId);
+    assert.equal(entry?.render?.mode, 'hosted', componentId);
+    assert.deepEqual(entry?.render?.hostScenarioIds, expectedIds, componentId);
+    assert.ok(expectedIds.every((id) => generatedScenarioIds.has(id)), componentId);
+    assert.deepEqual(Object.keys(entry?.axes ?? {}).sort(), [
+      'data', 'interactions', 'permissions', 'system',
+    ], componentId);
+    for (const axis of Object.values(entry?.axes ?? {})) {
+      assert.deepEqual(Object.keys(axis), ['notApplicable'], componentId);
+      assert.ok(axis.notApplicable.owner, componentId);
+      assert.ok(axis.notApplicable.reason, componentId);
+      assert.ok(axis.notApplicable.testEvidence, componentId);
+    }
+    assert.deepEqual(Object.keys(entry?.variants ?? {}), ['notApplicable'], componentId);
+    assert.ok(entry?.variants?.notApplicable.owner, componentId);
+    assert.ok(entry?.variants?.notApplicable.reason, componentId);
+    assert.ok(entry?.variants?.notApplicable.testEvidence, componentId);
+    assert.deepEqual(entry?.constraints, [], componentId);
+  }
+});
+
 test('component file paths resolve to Vite glob module keys', () => {
   assert.equal(
     componentModuleKey('src/components/prediction/PredictionShellIcons.tsx'),
