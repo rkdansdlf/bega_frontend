@@ -64,6 +64,7 @@ import type {
   AdminNonCanonicalCleanupTrackerStatus,
   AdminNonCanonicalGame,
   AdminOffseasonMovement,
+  AdminOffseasonMovementPayload,
   AdminPost,
   AdminReport,
   AdminReportFilters,
@@ -4055,7 +4056,254 @@ const buildVisualQaAdminOffseasonContentProps = (
   };
 };
 
+type VisualQaAdminOffseasonResultsPreset =
+  | 'idle'
+  | 'loading'
+  | 'filtered-empty'
+  | 'csv-success'
+  | 'csv-single-error'
+  | 'csv-many-errors'
+  | 'csv-boundary-maximum'
+  | 'csv-pressure'
+  | 'csv-success-loading';
+
+type VisualQaAdminOffseasonDialogsPreset =
+  | 'create-dialog'
+  | 'edit-dialog'
+  | 'delete-dialog'
+  | 'create-submitting'
+  | 'edit-submitting'
+  | 'delete-submitting';
+
+const buildVisualQaAdminOffseasonResultsProps = (
+  data: VisualQaAdminOffseasonData,
+  preset: VisualQaAdminOffseasonResultsPreset,
+) => {
+  const movements = resolveVisualQaAdminOffseasonMovements(data);
+  const selectedMovement = movements[0] ?? makeVisualQaAdminOffseasonMovement(1);
+  const callbackCounts = new Map<string, number>();
+  const trackedMovementCallback = (name: string) => (movement: AdminOffseasonMovement | null) => {
+    const nextCount = (callbackCounts.get(name) ?? 0) + 1;
+    callbackCounts.set(name, nextCount);
+    if (nextCount !== 1) {
+      throw new Error(`Admin offseason results Visual QA callback repeated: ${name}`);
+    }
+    if (movement !== selectedMovement) {
+      throw new Error(`Admin offseason results Visual QA callback identity mismatch: ${name}`);
+    }
+  };
+  const manyErrors = Array.from(
+    { length: 12 },
+    (_, index) => `${index + 2}행: MOCK 비생산 CSV 오류 ${visualQaAdminOffseasonUnbroken}`,
+  );
+  const csvReport = (() => {
+    if (preset === 'csv-success' || preset === 'csv-success-loading') {
+      return {
+        fileName: 'MOCK-offseason-success.csv',
+        totalRows: 3,
+        createdCount: 2,
+        updatedCount: 1,
+        failedCount: 0,
+        errors: [],
+      };
+    }
+    if (preset === 'csv-single-error') {
+      return {
+        fileName: 'MOCK-offseason-single-error.csv',
+        totalRows: 1,
+        createdCount: 0,
+        updatedCount: 0,
+        failedCount: 1,
+        errors: ['2행: MOCK 비생산 필수값 누락'],
+      };
+    }
+    if (preset === 'csv-many-errors') {
+      return {
+        fileName: 'MOCK-offseason-many-errors.csv',
+        totalRows: 50,
+        createdCount: 1,
+        updatedCount: 0,
+        failedCount: manyErrors.length,
+        errors: manyErrors,
+      };
+    }
+    if (preset === 'csv-boundary-maximum') {
+      return {
+        fileName: 'MOCK-offseason-boundary-maximum.csv',
+        totalRows: 999_999,
+        createdCount: 499_999,
+        updatedCount: 499_999,
+        failedCount: 1,
+        errors: ['999999행: MOCK 비생산 최대 행 경계 오류'],
+      };
+    }
+    if (preset === 'csv-pressure') {
+      return {
+        fileName: `MOCK-${visualQaAdminOffseasonUnbroken}.csv`,
+        totalRows: 50,
+        createdCount: 0,
+        updatedCount: 0,
+        failedCount: manyErrors.length,
+        errors: manyErrors,
+      };
+    }
+    return null;
+  })();
+
+  return {
+    csvReport,
+    movements,
+    filteredMovements: preset === 'filtered-empty' ? [] : movements,
+    loading: preset === 'loading' || preset === 'csv-success-loading',
+    activeQualityOption: preset === 'filtered-empty'
+      ? visualQaAdminOffseasonQualityOptions[1]
+      : visualQaAdminOffseasonQualityOptions[0],
+    onOpenEditDialog: trackedMovementCallback('onOpenEditDialog'),
+    onDeleteTargetChange: trackedMovementCallback('onDeleteTargetChange'),
+  };
+};
+
+const buildVisualQaAdminOffseasonDialogsProps = (
+  data: VisualQaAdminOffseasonData,
+  preset: VisualQaAdminOffseasonDialogsPreset,
+  interaction: string,
+  targetId: string | undefined,
+) => {
+  const baseSystem = preset.startsWith('edit')
+    ? 'edit-dialog'
+    : preset.startsWith('delete')
+      ? 'delete-dialog'
+      : 'create-dialog';
+  const state = buildVisualQaAdminOffseasonState(data, baseSystem);
+  const emptyFormData: AdminOffseasonMovementPayload = {
+    movementDate: '',
+    section: 'FA',
+    teamCode: 'DB',
+    playerName: '',
+    summary: '',
+    details: '',
+    contractTerm: '',
+    contractValue: '',
+    optionDetails: '',
+    counterpartyTeam: '',
+    counterpartyDetails: '',
+    sourceLabel: '',
+    sourceUrl: '',
+    announcedAt: '',
+  };
+  const movement = state.editingMovement ?? state.deleteTarget
+    ?? state.movements[0]
+    ?? makeVisualQaAdminOffseasonMovement(1);
+  const deleteInteraction = targetId?.startsWith('delete-') === true;
+  const callbackCounts = new Map<string, number>();
+  const trackedCallback = <Args extends unknown[]>(
+    name: string,
+    validate?: (...args: Args) => void,
+  ) => (...args: Args) => {
+    const nextCount = (callbackCounts.get(name) ?? 0) + 1;
+    callbackCounts.set(name, nextCount);
+    if (nextCount !== 1) {
+      throw new Error(`Admin offseason dialogs Visual QA callback repeated: ${name}`);
+    }
+    validate?.(...args);
+  };
+  const expectedUpdates: Partial<Record<string, [string, string]>> = {
+    'player-name': ['playerName', 'MOCK 직접 모바일 선수 입력'],
+    summary: ['summary', 'MOCK 직접 모바일 요약 입력'],
+    'source-url': ['sourceUrl', 'https://example.invalid/direct-dialog-source'],
+    section: ['section', '기타'],
+    team: ['teamCode', 'LG'],
+  };
+
+  return {
+    dialogOpen: deleteInteraction ? false : state.dialogOpen,
+    editingMovement: deleteInteraction ? null : state.editingMovement,
+    deleteTarget: deleteInteraction ? movement : state.deleteTarget,
+    submitting: preset.endsWith('-submitting'),
+    formData: data === 'empty' ? emptyFormData : state.formData,
+    onDialogClose: trackedCallback('onDialogClose'),
+    onDeleteTargetChange: trackedCallback<[AdminOffseasonMovement | null]>(
+      'onDeleteTargetChange',
+    ),
+    onUpdateField: trackedCallback<[string, string]>('onUpdateField', (field, value) => {
+      const expected = targetId ? expectedUpdates[targetId] : undefined;
+      if ((interaction === 'input' || interaction === 'change')
+        && (!expected || field !== expected[0] || value !== expected[1])) {
+        throw new Error(
+          `Admin offseason dialogs Visual QA callback expected ${expected?.join(':') ?? '<missing>'} but received ${field}:${value}`,
+        );
+      }
+    }),
+    onSubmit: trackedCallback('onSubmit'),
+    onDelete: trackedCallback('onDelete'),
+    visualQaControlledState: true as const,
+  };
+};
+
 const adapters: Record<string, ComponentStateAdapter> = {
+  'admin.offseason-movement-dialogs': (context) => {
+    const supportedData = new Set<VisualQaAdminOffseasonData>([
+      'empty', 'populated', 'null-optional', 'boundary-minimum',
+      'boundary-maximum', 'long-korean', 'unbroken-token', 'maximum-supported',
+    ]);
+    const supportedPresets = new Set<VisualQaAdminOffseasonDialogsPreset>([
+      'create-dialog', 'edit-dialog', 'delete-dialog',
+      'create-submitting', 'edit-submitting', 'delete-submitting',
+    ]);
+    const interactionTargets = {
+      hover: new Set(['create-close', 'create-cancel', 'create-submit', 'delete-close', 'delete-cancel', 'delete-confirm']),
+      'focus-visible': new Set([
+        'movement-date', 'section', 'team', 'player-name', 'summary', 'details',
+        'contract-term', 'source-url', 'create-submit', 'delete-confirm',
+      ]),
+      pressed: new Set(['create-close', 'create-cancel', 'create-submit', 'delete-close', 'delete-cancel', 'delete-confirm']),
+      input: new Set(['player-name', 'summary', 'source-url']),
+      change: new Set(['section', 'team']),
+      'keyboard-navigation': new Set(['create-focus-loop']),
+    } as const;
+    const data = context.states.data as VisualQaAdminOffseasonData | undefined;
+    const preset = context.variants.preset as VisualQaAdminOffseasonDialogsPreset | undefined;
+    const interaction = context.states.interactions;
+    const targetId = context.interactionTargetId;
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 Admin offseason dialogs state: ${data ?? 'none'}:${context.states.system ?? 'none'}:${preset ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    };
+    if (
+      Object.keys(context.states).length !== 4
+      || Object.keys(context.variants).length !== 2
+      || context.states.permissions !== 'admin'
+      || context.states.system !== 'idle'
+      || context.variants.theme !== 'dark'
+      || !data
+      || !supportedData.has(data)
+      || !preset
+      || !supportedPresets.has(preset)
+      || !interaction
+    ) return failClosed();
+    if (interaction === 'default') {
+      if (targetId !== undefined
+        || (preset === 'create-dialog' ? true : data === 'populated') === false) {
+        return failClosed();
+      }
+    } else {
+      const targets = interactionTargets[interaction as keyof typeof interactionTargets];
+      if (data !== 'maximum-supported'
+        || preset !== 'create-dialog'
+        || !targets
+        || !targetId
+        || !targets.has(targetId)) {
+        return failClosed();
+      }
+    }
+    return {
+      props: buildVisualQaAdminOffseasonDialogsProps(data, preset, interaction, targetId),
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-0 text-slate-100 shadow-none',
+      theme: 'dark',
+    };
+  },
   'admin.offseason-movement-content': (context) => {
     const supportedData = new Set<VisualQaAdminOffseasonData>([
       'empty', 'populated', 'null-optional', 'boundary-minimum',
@@ -4150,6 +4398,62 @@ const adapters: Record<string, ComponentStateAdapter> = {
       captureSelector: portalPresets.has(preset) || portalTargets.has(targetId ?? '')
         ? 'body'
         : '[data-testid="admin-offseason-content"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
+    };
+  },
+  'admin.offseason-movement-results': (context) => {
+    const supportedData = new Set<VisualQaAdminOffseasonData>([
+      'empty', 'populated', 'null-optional', 'boundary-minimum',
+      'boundary-maximum', 'long-korean', 'unbroken-token', 'maximum-supported',
+    ]);
+    const supportedPresets = new Set<VisualQaAdminOffseasonResultsPreset>([
+      'idle', 'loading', 'filtered-empty', 'csv-success', 'csv-single-error',
+      'csv-many-errors', 'csv-boundary-maximum', 'csv-pressure', 'csv-success-loading',
+    ]);
+    const interactionTargets = {
+      hover: new Set(['source-link', 'edit', 'delete']),
+      'focus-visible': new Set(['source-link', 'edit', 'delete']),
+      pressed: new Set(['source-link', 'edit', 'delete']),
+    } as const;
+    const data = context.states.data as VisualQaAdminOffseasonData | undefined;
+    const preset = context.variants.preset as VisualQaAdminOffseasonResultsPreset | undefined;
+    const interaction = context.states.interactions;
+    const targetId = context.interactionTargetId;
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 Admin offseason results state: ${data ?? 'none'}:${context.states.system ?? 'none'}:${preset ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    };
+    if (
+      Object.keys(context.states).length !== 4
+      || Object.keys(context.variants).length !== 2
+      || context.states.permissions !== 'admin'
+      || context.states.system !== 'idle'
+      || context.variants.theme !== 'dark'
+      || !data
+      || !supportedData.has(data)
+      || !preset
+      || !supportedPresets.has(preset)
+      || !interaction
+    ) return failClosed();
+    if (interaction === 'default') {
+      if (targetId !== undefined || (preset === 'idle' ? true : data === 'populated') === false) {
+        return failClosed();
+      }
+    } else {
+      const targets = interactionTargets[interaction as keyof typeof interactionTargets];
+      if (data !== 'maximum-supported'
+        || preset !== 'idle'
+        || !targets
+        || !targetId
+        || !targets.has(targetId)) {
+        return failClosed();
+      }
+    }
+    return {
+      props: buildVisualQaAdminOffseasonResultsProps(data, preset),
+      captureSelector: '[data-testid="admin-offseason-results-runtime"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
       theme: 'dark',
     };

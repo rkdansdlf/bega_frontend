@@ -31,7 +31,9 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.game-status-repair-panel',
     'admin.mates-panel',
     'admin.offseason-movement-content',
+    'admin.offseason-movement-dialogs',
     'admin.offseason-movement-panel',
+    'admin.offseason-movement-results',
     'admin.page-route',
     'admin.page-shell',
     'admin.place-dialog',
@@ -662,6 +664,103 @@ test('admin offseason content adapter is fail-closed, controlled, and owns exact
     variants: { preset: 'idle', theme: 'dark' },
     interactionTargetId: 'team-filter',
   }), /지원하지 않는 Admin offseason content state/);
+});
+
+test('admin offseason results direct adapter is fail-closed and owns static result phases', () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime';
+  const maximum = resolveComponentStateAdapter('admin.offseason-movement-results', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'hover',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'source-link',
+  });
+  assert.equal(maximum.captureSelector, '[data-testid="admin-offseason-results-runtime"]');
+  assert.equal((maximum.props.movements as unknown[]).length, 50);
+  assert.ok((maximum.props.movements as Array<{ playerName: string; sourceUrl: string }>).every(
+    ({ playerName, sourceUrl }) => playerName.includes('MOCK') && sourceUrl.startsWith('https://example.invalid/'),
+  ));
+
+  const loading = resolveComponentStateAdapter('admin.offseason-movement-results', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', permissions: 'admin', system: 'idle' },
+    variants: { preset: 'loading', theme: 'dark' },
+  });
+  assert.equal(loading.captureSelector, '[data-testid="admin-offseason-results-runtime"]');
+  assert.equal(loading.props.loading, true);
+
+  assert.throws(() => resolveComponentStateAdapter('admin.offseason-movement-results', {
+    componentId,
+    states: { data: 'empty', interactions: 'hover', permissions: 'admin', system: 'idle' },
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'source-link',
+  }), /지원하지 않는 Admin offseason results state/);
+});
+
+test('admin offseason dialogs direct adapter is fail-closed and owns controlled static portals', () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs';
+  const empty = resolveComponentStateAdapter('admin.offseason-movement-dialogs', {
+    componentId,
+    states: { data: 'empty', interactions: 'default', permissions: 'admin', system: 'idle' },
+    variants: { preset: 'create-dialog', theme: 'dark' },
+  });
+  const populated = resolveComponentStateAdapter('admin.offseason-movement-dialogs', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', permissions: 'admin', system: 'idle' },
+    variants: { preset: 'create-dialog', theme: 'dark' },
+  });
+  const emptyForm = empty.props.formData as { playerName: string; summary: string; sourceUrl: string };
+  const populatedForm = populated.props.formData as { playerName: string; summary: string; sourceUrl: string };
+  assert.deepEqual(emptyForm, {
+    ...(emptyForm as object),
+    playerName: '',
+    summary: '',
+    sourceUrl: '',
+  });
+  assert.notDeepEqual(emptyForm, populatedForm);
+
+  const section = resolveComponentStateAdapter('admin.offseason-movement-dialogs', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'change',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'create-dialog', theme: 'dark' },
+    interactionTargetId: 'section',
+  });
+  assert.equal(section.captureSelector, 'body');
+  assert.equal(section.props.visualQaControlledState, true);
+  assert.equal((section.props.formData as { sourceUrl: string }).sourceUrl.startsWith('https://example.invalid/'), true);
+  const updateField = section.props.onUpdateField as (field: string, value: string) => void;
+  updateField('section', '기타');
+  assert.throws(() => updateField('section', '기타'), /callback repeated: onUpdateField/);
+
+  const deletion = resolveComponentStateAdapter('admin.offseason-movement-dialogs', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', permissions: 'admin', system: 'idle' },
+    variants: { preset: 'delete-submitting', theme: 'dark' },
+  });
+  assert.ok(deletion.props.deleteTarget);
+  assert.equal(deletion.props.submitting, true);
+
+  assert.throws(() => resolveComponentStateAdapter('admin.offseason-movement-dialogs', {
+    componentId,
+    states: {
+      data: 'populated',
+      interactions: 'change',
+      permissions: 'admin',
+      system: 'idle',
+      extra: 'illegal',
+    } as never,
+    variants: { preset: 'create-dialog', theme: 'dark' },
+    interactionTargetId: 'section',
+  }), /지원하지 않는 Admin offseason dialogs state/);
 });
 
 test('achievement and not-found adapters cover mobile copy pressure and themes', () => {

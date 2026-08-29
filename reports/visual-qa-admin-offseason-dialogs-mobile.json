@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T19:25:29.663Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 120000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-admin-offseason-dialogs-mobile"
+  },
+  "summary": {
+    "total": 41,
+    "passed": 41,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=boundary-maximum|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-boundary-maximu-e9ef4f52cefa.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=boundary-minimum|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-boundary-minimu-3852595adef2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=empty|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-empty-permissio-c4495675b04b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=long-korean|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-long-korean-per-d1ac1be97053.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=section",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-386d228ec762.png",
+      "interaction": {
+        "action": "select-option",
+        "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
+        "targetId": "section",
+        "value": "기타",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"section\"][data-vqa-update-field-value=\"기타\"]):has([data-testid=\"admin-offseason-dialog-section-trigger\"] option[value=\"기타\"]:checked)",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=team",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-cea4e5eae7e6.png",
+      "interaction": {
+        "action": "select-option",
+        "selector": "[data-testid=\"admin-offseason-dialog-team-trigger\"]",
+        "targetId": "team",
+        "value": "LG",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"teamCode\"][data-vqa-update-field-value=\"LG\"]):has([data-testid=\"admin-offseason-dialog-team-trigger\"] option[value=\"LG\"]:checked)",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-09d9c017c4e5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=contract-term",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-8c6d98f1d3f5.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-contract-term\"]",
+        "targetId": "contract-term",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-submit",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-38632d952605.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+        "targetId": "create-submit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-confirm",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-6396d177a0bd.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+        "targetId": "delete-confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=details",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-bdd7ba56a948.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-details\"]",
+        "targetId": "details",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=movement-date",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-83b18d54cea2.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-movement-date\"]",
+        "targetId": "movement-date",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=player-name",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-af4e6d2f23a7.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-player-name\"]",
+        "targetId": "player-name",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=section",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-4adeeaf93bee.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
+        "targetId": "section",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=source-url",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-339bb6f211fd.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-source-url\"]",
+        "targetId": "source-url",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=summary",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-16cf34809592.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-summary\"]",
+        "targetId": "summary",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=team",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-22530d2477cc.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-dialog-team-trigger\"]",
+        "targetId": "team",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-cancel",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-908882860371.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-dialog-cancel\"]",
+        "targetId": "create-cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-close",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-43914e59ffef.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "create-close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-submit",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-8edb3bfb6a31.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+        "targetId": "create-submit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-cancel",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-b812584861a4.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-delete-cancel\"]",
+        "targetId": "delete-cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-close",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-7487376b0c78.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-delete-dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "delete-close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-confirm",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-39771c9cd7a7.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+        "targetId": "delete-confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=player-name",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-33729ffe0308.png",
+      "interaction": {
+        "action": "fill",
+        "selector": "[data-testid=\"admin-offseason-player-name\"]",
+        "targetId": "player-name",
+        "value": "MOCK 직접 모바일 선수 입력",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"playerName\"][data-vqa-update-field-value=\"MOCK 직접 모바일 선수 입력\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=source-url",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-0dc549f53d49.png",
+      "interaction": {
+        "action": "fill",
+        "selector": "[data-testid=\"admin-offseason-source-url\"]",
+        "targetId": "source-url",
+        "value": "https://example.invalid/direct-dialog-source",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"sourceUrl\"][data-vqa-update-field-value=\"https://example.invalid/direct-dialog-source\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=summary",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-5c04f01d6f08.png",
+      "interaction": {
+        "action": "fill",
+        "selector": "[data-testid=\"admin-offseason-summary\"]",
+        "targetId": "summary",
+        "value": "MOCK 직접 모바일 요약 입력",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"summary\"][data-vqa-update-field-value=\"MOCK 직접 모바일 요약 입력\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=keyboard-navigation|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-focus-loop",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-741086dd5da0.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+        "targetId": "create-focus-loop",
+        "key": "Tab",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-cancel",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-1aa3921f20a5.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-dialog-cancel\"]",
+        "targetId": "create-cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-close",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-b8a4758d6443.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "create-close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=create-submit",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-6dd660de871c.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+        "targetId": "create-submit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-cancel",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-b4d05ee6f120.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-delete-cancel\"]",
+        "targetId": "delete-cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-close",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-1efd27418c5c.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-delete-dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "delete-close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=create-dialog|variant.theme=dark|interactionTarget=delete-confirm",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-maximum-support-4a46195a1c47.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+        "targetId": "delete-confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=null-optional|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-null-optional-p-a9f492ce790b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-285df40846af.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-submitting|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-a4c3cf87c819.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-504c8756cc29.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-submitting|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-dcc625932dbd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-efd810d6a4ab.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-submitting|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-populated-permi-969966cf5907.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs:data=unbroken-token|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-dialogs-mobile/offseasonmovementadmindialogs-offseasonmovementadmindialogs-data-unbroken-token-7254a6b7c0a7.png",
+      "attempts": 1
+    }
+  ]
+}

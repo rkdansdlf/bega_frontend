@@ -29,6 +29,26 @@ type QualityOption = {
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
 
+const adminOffseasonResultsInteractionStyle = `
+[data-testid^="admin-offseason-source-"],
+[data-testid^="admin-offseason-edit-"],
+[data-testid^="admin-offseason-delete-"] {
+  transition: color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+[data-testid^="admin-offseason-source-"]:active {
+  color: rgb(224 242 254);
+  transform: scale(0.98);
+}
+[data-testid^="admin-offseason-edit-"]:active {
+  background-color: rgb(16 185 129 / 0.2);
+  transform: scale(0.98);
+}
+[data-testid^="admin-offseason-delete-"]:active {
+  background-color: rgb(239 68 68 / 0.2);
+  transform: scale(0.98);
+}
+`;
+
 const getSectionBadgeClass = (section: string) => {
   if (section.includes('FA')) {
     return 'bg-sky-500/20 text-sky-300 border-0';
@@ -98,7 +118,11 @@ export default function OffseasonMovementAdminResultsRuntime({
   onDeleteTargetChange,
 }: OffseasonMovementAdminResultsRuntimeProps) {
   return (
-    <>
+    <div
+      data-testid="admin-offseason-results-runtime"
+      className="min-w-0 max-w-full space-y-4"
+    >
+      <style>{adminOffseasonResultsInteractionStyle}</style>
       {csvReport && (
         <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
           <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
@@ -225,6 +249,8 @@ export default function OffseasonMovementAdminResultsRuntime({
                             href={movement.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
+                            data-testid={`admin-offseason-source-${movement.id}`}
+                            data-vqa-min-touch="44"
                             aria-label={`${movement.playerName} 이동 원문 열기`}
                             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-caption text-sky-300 hover:text-sky-200"
                           >
@@ -243,6 +269,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-edit-${movement.id}`}
+                          data-vqa-min-touch="44"
                           aria-label={`${movement.playerName} 이동 수정`}
                           onClick={() => onOpenEditDialog(movement)}
                           className="min-h-11 min-w-11 text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
@@ -253,6 +280,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-delete-${movement.id}`}
+                          data-vqa-min-touch="44"
                           aria-label={`${movement.playerName} 이동 삭제`}
                           onClick={() => onDeleteTargetChange(movement)}
                           className="min-h-11 min-w-11 text-slate-400 hover:bg-red-500/10 hover:text-red-300"
@@ -267,6 +295,6 @@ export default function OffseasonMovementAdminResultsRuntime({
           </Table>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -16708,8 +16708,779 @@
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.offseason-movement-dialogs"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Create mode covers eight static form fixtures including nullable, boundary, pressure, and maximum-supported values.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "admin"
+          ],
+          "reason": "The resolved dialog leaf is rendered only inside the administrator surface.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "input",
+            "change",
+            "keyboard-navigation"
+          ],
+          "reason": "Create and delete portals expose every owned action, field, select, and focus-loop interaction.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle"
+          ],
+          "reason": "The prop-only dialog leaf owns no transport and uses deterministic supplied props.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "preset",
+            "values": [
+              "create-dialog",
+              "edit-dialog",
+              "delete-dialog",
+              "create-submitting",
+              "edit-submitting",
+              "delete-submitting"
+            ],
+            "reason": "Create, edit, delete, and each submitting presentation are distinct.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The administrator dialogs use the fixed dark theme.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "create-close",
+              "selector": "[data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "create-cancel",
+              "selector": "[data-testid=\"admin-offseason-dialog-cancel\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "create-submit",
+              "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-close",
+              "selector": "[data-testid=\"admin-offseason-delete-dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-cancel",
+              "selector": "[data-testid=\"admin-offseason-delete-cancel\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-confirm",
+              "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            }
+          ],
+          "reason": "Create and delete actions expose their real hover state.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "movement-date",
+              "selector": "[data-testid=\"admin-offseason-movement-date\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "section",
+              "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "team",
+              "selector": "[data-testid=\"admin-offseason-dialog-team-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "player-name",
+              "selector": "[data-testid=\"admin-offseason-player-name\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "summary",
+              "selector": "[data-testid=\"admin-offseason-summary\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "details",
+              "selector": "[data-testid=\"admin-offseason-details\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "contract-term",
+              "selector": "[data-testid=\"admin-offseason-contract-term\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "source-url",
+              "selector": "[data-testid=\"admin-offseason-source-url\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "create-submit",
+              "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-confirm",
+              "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            }
+          ],
+          "reason": "Upper and lower fields plus create/delete actions are keyboard reachable.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "create-close",
+              "selector": "[data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "create-cancel",
+              "selector": "[data-testid=\"admin-offseason-dialog-cancel\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "create-submit",
+              "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-close",
+              "selector": "[data-testid=\"admin-offseason-delete-dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-cancel",
+              "selector": "[data-testid=\"admin-offseason-delete-cancel\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            },
+            {
+              "id": "delete-confirm",
+              "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              }
+            }
+          ],
+          "reason": "Create and delete actions retain pointer-down presentation through capture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "player-name",
+              "selector": "[data-testid=\"admin-offseason-player-name\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "value": "MOCK 직접 모바일 선수 입력",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"playerName\"][data-vqa-update-field-value=\"MOCK 직접 모바일 선수 입력\"])"
+            },
+            {
+              "id": "summary",
+              "selector": "[data-testid=\"admin-offseason-summary\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "value": "MOCK 직접 모바일 요약 입력",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"summary\"][data-vqa-update-field-value=\"MOCK 직접 모바일 요약 입력\"])"
+            },
+            {
+              "id": "source-url",
+              "selector": "[data-testid=\"admin-offseason-source-url\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "value": "https://example.invalid/direct-dialog-source",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"sourceUrl\"][data-vqa-update-field-value=\"https://example.invalid/direct-dialog-source\"])"
+            }
+          ],
+          "reason": "Three controlled fields accept exact one-shot values and callback evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "change": {
+          "action": "select-option",
+          "targets": [
+            {
+              "id": "section",
+              "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "value": "기타",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"section\"][data-vqa-update-field-value=\"기타\"]):has([data-testid=\"admin-offseason-dialog-section-trigger\"] option[value=\"기타\"]:checked)"
+            },
+            {
+              "id": "team",
+              "selector": "[data-testid=\"admin-offseason-dialog-team-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "value": "LG",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialogs-vqa-evidence\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"teamCode\"][data-vqa-update-field-value=\"LG\"]):has([data-testid=\"admin-offseason-dialog-team-trigger\"] option[value=\"LG\"]:checked)"
+            }
+          ],
+          "reason": "Section and team selects preserve exact selected and callback evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "create-focus-loop",
+              "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "create-dialog"
+              },
+              "key": "Tab"
+            }
+          ],
+          "reason": "The create portal retains keyboard focus inside its production focus loop.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Canonical edit, delete, and submitting phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel",
@@ -20879,8 +21650,764 @@
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.offseason-movement-results"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Eight static result inventories cover empty, nullable, numeric, copy-pressure, and maximum-supported rows.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "admin"
+          ],
+          "reason": "The resolved leaf is rendered only inside the administrator surface.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed"
+          ],
+          "reason": "Source, edit, and delete actions expose pointer, keyboard, and pressed presentations.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle"
+          ],
+          "reason": "The prop-only result leaf owns no transport and uses deterministic supplied props.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "preset",
+            "values": [
+              "idle",
+              "loading",
+              "filtered-empty",
+              "csv-success",
+              "csv-single-error",
+              "csv-many-errors",
+              "csv-boundary-maximum",
+              "csv-pressure",
+              "csv-success-loading"
+            ],
+            "reason": "Idle data plus eight canonical loading, filtering, and CSV report phases are distinct.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The administrator result surface uses the fixed dark theme.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "source-link",
+              "selector": "[data-testid=\"admin-offseason-source-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "edit",
+              "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "All three row actions expose their real hover state.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "source-link",
+              "selector": "[data-testid=\"admin-offseason-source-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "edit",
+              "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "All three row actions are keyboard reachable with visible focus.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "source-link",
+              "selector": "[data-testid=\"admin-offseason-source-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "edit",
+              "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "admin",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "All three row actions retain pointer-down presentation through capture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "filtered-empty"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-single-error"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-boundary-maximum"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-pressure"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "interactions": "default",
+            "variant.preset": "csv-success-loading"
+          },
+          "reason": "Canonical result phases use the populated static fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminDirectLeaves.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",

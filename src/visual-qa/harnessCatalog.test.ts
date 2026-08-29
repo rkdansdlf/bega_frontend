@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70510);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70576);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    272,
+    274,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -5169,6 +5169,89 @@ test('admin offseason content direct export covers exactly 36 declared legal sce
   assert.match(callbackEvidence.get('team-filter') ?? '', /data-vqa-team-filter-change-count="1"/);
   assert.match(callbackEvidence.get('dialog-summary') ?? '', /data-vqa-update-field="summary"/);
   assert.match(callbackEvidence.get('dialog-section') ?? '', /data-vqa-update-field="section"/);
+});
+
+test('admin offseason results direct export covers exactly 25 declared legal scenarios', async () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{ id: string; render?: { adapterId?: string; mode?: string }; status: string }> };
+  const defaults = scenarios.filter(({ states }) => states.interactions === 'default');
+  const interactions = scenarios.filter(({ states }) => states.interactions !== 'default');
+
+  assert.equal(scenarios.length, 25);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 25);
+  assert.equal(defaults.filter(({ variants }) => variants.preset === 'idle').length, 8);
+  assert.equal(defaults.filter(({ variants }) => variants.preset !== 'idle').length, 8);
+  assert.deepEqual(Object.fromEntries(
+    ['hover', 'focus-visible', 'pressed'].map((interaction) => [
+      interaction,
+      interactions.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), { hover: 3, 'focus-visible': 3, pressed: 3 });
+  assert.ok(interactions.every(({ states, variants }) => (
+    states.data === 'maximum-supported'
+      && states.permissions === 'admin'
+      && states.system === 'idle'
+      && variants.preset === 'idle'
+      && variants.theme === 'dark'
+  )));
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'admin.offseason-movement-results');
+});
+
+test('admin offseason dialogs direct export covers exactly 41 declared legal scenarios', async () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{ id: string; render?: { adapterId?: string; mode?: string }; status: string }> };
+  const defaults = scenarios.filter(({ states }) => states.interactions === 'default');
+  const interactions = scenarios.filter(({ states }) => states.interactions !== 'default');
+
+  assert.equal(scenarios.length, 41);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 41);
+  assert.equal(defaults.filter(({ variants }) => variants.preset === 'create-dialog').length, 8);
+  assert.equal(defaults.filter(({ variants }) => variants.preset !== 'create-dialog').length, 5);
+  assert.deepEqual(Object.fromEntries(
+    ['hover', 'focus-visible', 'pressed', 'input', 'change', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      interactions.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    hover: 6,
+    'focus-visible': 10,
+    pressed: 6,
+    input: 3,
+    change: 2,
+    'keyboard-navigation': 1,
+  });
+  assert.ok(interactions.every(({ states, variants }) => (
+    states.data === 'maximum-supported'
+      && states.permissions === 'admin'
+      && states.system === 'idle'
+      && variants.preset === 'create-dialog'
+      && variants.theme === 'dark'
+  )));
+  assert.ok(scenarios.every(({ interactionPlan, states }) => (
+    states.interactions !== 'change'
+      || interactionPlan?.targetId !== 'section'
+      || interactionPlan.waitForSelector?.includes('data-vqa-update-field-count="1"') === true
+  )));
+  assert.ok(scenarios.every(({ interactionPlan, states }) => (
+    states.interactions !== 'change'
+      || interactionPlan?.targetId !== 'team'
+      || interactionPlan.waitForSelector?.includes('data-vqa-update-field-count="1"') === true
+  )));
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'admin.offseason-movement-dialogs');
 });
 
 test('admin internal fallbacks use reviewed hosted evidence without independent state combinations', async () => {
