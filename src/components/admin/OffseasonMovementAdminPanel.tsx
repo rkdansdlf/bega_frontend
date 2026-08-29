@@ -384,10 +384,20 @@ export function OffseasonMovementAdminPanel({
     visualQaStateOverride?.formData ?? createEmptyPayload,
   );
   const csvInputRef = useRef<HTMLInputElement | null>(null);
+  const mountedRef = useRef(false);
   const listCoordinatorRef = useRef<ReturnType<
     typeof createOffseasonMovementListCoordinator<AdminOffseasonMovement[]>
   > | null>(null);
   const mutationCoordinatorRef = useRef(createOffseasonMovementMutationCoordinator());
+  const latestFiltersRef = useRef<OffseasonMovementListFilters>({});
+
+  latestFiltersRef.current = {
+    search,
+    section: sectionFilter,
+    teamCode: teamFilter,
+    fromDate,
+    toDate,
+  };
 
   if (listCoordinatorRef.current === null) {
     listCoordinatorRef.current = createOffseasonMovementListCoordinator({
@@ -398,30 +408,40 @@ export function OffseasonMovementAdminPanel({
   }
 
   const currentFilters = (): OffseasonMovementListFilters => ({
-    search,
-    section: sectionFilter,
-    teamCode: teamFilter,
-    fromDate,
-    toDate,
+    ...latestFiltersRef.current,
   });
 
   const loadMovements = (
     filters: OffseasonMovementListFilters = currentFilters(),
+    options: { forceFresh?: boolean } = {},
   ): Promise<void> => {
     if (visualQaStateOverride) {
       return Promise.resolve();
     }
-    setError(null);
-    return listCoordinatorRef.current!.request(filters, fetchAdminOffseasonMovements);
+    if (mountedRef.current) setError(null);
+    return listCoordinatorRef.current!.request(filters, fetchAdminOffseasonMovements, options);
   };
 
+  const refreshLatestMovements = () => loadMovements(
+    { ...latestFiltersRef.current },
+    { forceFresh: true },
+  );
+
   useEffect(() => {
+    mountedRef.current = true;
     if (active) {
+      listCoordinatorRef.current?.activate();
+      mutationCoordinatorRef.current.activate();
       void loadMovements();
     } else {
       listCoordinatorRef.current?.deactivate();
+      mutationCoordinatorRef.current.deactivate();
     }
-    return () => listCoordinatorRef.current?.deactivate();
+    return () => {
+      mountedRef.current = false;
+      listCoordinatorRef.current?.deactivate();
+      mutationCoordinatorRef.current.deactivate();
+    };
   }, [active]);
 
   useEffect(() => {
@@ -475,27 +495,33 @@ export function OffseasonMovementAdminPanel({
       return;
     }
 
+    let isCurrentMutation = () => false;
     try {
-      await mutationCoordinatorRef.current.run('save', async () => {
+      await mutationCoordinatorRef.current.run('save', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
         setSubmitting(true);
         setError(null);
         if (visualQaStateOverride) return undefined;
         if (editingMovement) {
           await updateAdminOffseasonMovement(editingMovement.id, payload);
+          if (!mutationContext.isActive()) return undefined;
           setSuccessMessage('스토브리그 이동을 수정했습니다.');
         } else {
           await createAdminOffseasonMovement(payload);
+          if (!mutationContext.isActive()) return undefined;
           setSuccessMessage('스토브리그 이동을 등록했습니다.');
         }
         setDialogOpen(false);
         setEditingMovement(null);
         setFormData(createEmptyPayload());
         return undefined;
-      }, loadMovements);
+      }, refreshLatestMovements);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 저장에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : '스토브리그 이동 저장에 실패했습니다.');
+      }
     } finally {
-      setSubmitting(false);
+      if (mountedRef.current && isCurrentMutation()) setSubmitting(false);
     }
   };
 
@@ -504,20 +530,25 @@ export function OffseasonMovementAdminPanel({
       return;
     }
 
+    let isCurrentMutation = () => false;
     try {
-      await mutationCoordinatorRef.current.run('delete', async () => {
+      await mutationCoordinatorRef.current.run('delete', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
         setSubmitting(true);
         setError(null);
         if (visualQaStateOverride) return undefined;
         await deleteAdminOffseasonMovement(deleteTarget.id);
+        if (!mutationContext.isActive()) return undefined;
         setSuccessMessage('스토브리그 이동을 삭제했습니다.');
         setDeleteTarget(null);
         return undefined;
-      }, loadMovements);
+      }, refreshLatestMovements);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 삭제에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : '스토브리그 이동 삭제에 실패했습니다.');
+      }
     } finally {
-      setSubmitting(false);
+      if (mountedRef.current && isCurrentMutation()) setSubmitting(false);
     }
   };
 
@@ -540,13 +571,16 @@ export function OffseasonMovementAdminPanel({
       return;
     }
 
+    let isCurrentMutation = () => false;
     try {
-      await mutationCoordinatorRef.current.run('csv-import', async () => {
+      await mutationCoordinatorRef.current.run('csv-import', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
         setImportingCsv(true);
         setError(null);
         setCsvReport(null);
         if (visualQaStateOverride) return { createdCount: 0, updatedCount: 0 };
         const csvText = await readFileAsText(file);
+        if (!mutationContext.isActive()) return { createdCount: 0, updatedCount: 0 };
         const rows = parseCsvRows(csvText);
 
         if (rows.length < 2) {
@@ -606,15 +640,20 @@ export function OffseasonMovementAdminPanel({
 
           if (rowId) {
             await updateAdminOffseasonMovement(rowId, payload);
+            if (!mutationContext.isActive()) return { createdCount, updatedCount };
             updatedCount += 1;
           } else {
             await createAdminOffseasonMovement(payload);
+            if (!mutationContext.isActive()) return { createdCount, updatedCount };
             createdCount += 1;
           }
         } catch (err) {
+          if (!mutationContext.isActive()) return { createdCount, updatedCount };
           errors.push(`${rowNumber}행: ${err instanceof Error ? err.message : '업로드에 실패했습니다.'}`);
         }
         }
+
+        if (!mutationContext.isActive()) return { createdCount, updatedCount };
 
         setCsvReport({
           fileName: file.name,
@@ -629,12 +668,16 @@ export function OffseasonMovementAdminPanel({
           setSuccessMessage(`CSV 업로드를 반영했습니다. 등록 ${createdCount}건, 수정 ${updatedCount}건`);
         }
         return { createdCount, updatedCount };
-      }, loadMovements, ({ createdCount, updatedCount }) => createdCount > 0 || updatedCount > 0);
+      }, refreshLatestMovements, ({ createdCount, updatedCount }) => createdCount > 0 || updatedCount > 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'CSV 업로드에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : 'CSV 업로드에 실패했습니다.');
+      }
     } finally {
-      setImportingCsv(false);
-      event.target.value = '';
+      if (mountedRef.current && isCurrentMutation()) {
+        setImportingCsv(false);
+        event.target.value = '';
+      }
     }
   };
 

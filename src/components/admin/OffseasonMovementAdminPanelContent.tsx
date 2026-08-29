@@ -27,7 +27,10 @@ const TEAM_OPTIONS = FRANCHISE_TEAM_IDS.map((code) => ({
 }));
 
 const adminNativeSelectClassName =
-  'h-10 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 text-caption text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
+  'min-h-11 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 text-base text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
+
+const adminMobileControlClassName = 'min-h-11 text-base';
+const adminMobileIconControlClassName = 'min-h-11 min-w-11 text-base';
 
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
@@ -266,7 +269,7 @@ export default function OffseasonMovementAdminPanelContent({
               onClick={onRefresh}
               data-testid="admin-offseason-refresh"
               disabled={loading}
-              className="bg-emerald-500 text-slate-950 hover:bg-emerald-400"
+              className={cn(adminMobileControlClassName, 'bg-emerald-500 text-slate-950 hover:bg-emerald-400')}
             >
               <AdminRefreshIcon className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               새로고침
@@ -321,7 +324,7 @@ export default function OffseasonMovementAdminPanelContent({
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder="선수명, 요약, 계약 조건, 출처 검색"
-              className="pl-10 bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-xl"
+              className={cn(adminMobileControlClassName, 'pl-10 bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-xl')}
             />
           </div>
           <select
@@ -358,7 +361,7 @@ export default function OffseasonMovementAdminPanelContent({
             data-testid="admin-offseason-from-date"
             value={fromDate}
             onChange={(event) => onFromDateChange(event.target.value)}
-            className="bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl"
+            className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
           <Input
             aria-label="조회 종료 날짜"
@@ -366,13 +369,13 @@ export default function OffseasonMovementAdminPanelContent({
             data-testid="admin-offseason-to-date"
             value={toDate}
             onChange={(event) => onToDateChange(event.target.value)}
-            className="bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl"
+            className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
           <div className="flex gap-2">
-            <Button type="button" data-testid="admin-offseason-apply-filters" onClick={onApplyFilters} className="bg-sky-500 text-slate-950 hover:bg-sky-400">
+            <Button type="button" data-testid="admin-offseason-apply-filters" onClick={onApplyFilters} className={cn(adminMobileControlClassName, 'bg-sky-500 text-slate-950 hover:bg-sky-400')}>
               조회
             </Button>
-            <Button type="button" data-testid="admin-offseason-reset-filters" variant="outline" onClick={onResetFilters} className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800">
+            <Button type="button" data-testid="admin-offseason-reset-filters" variant="outline" onClick={onResetFilters} className={cn(adminMobileControlClassName, 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800')}>
               초기화
             </Button>
           </div>
@@ -393,7 +396,7 @@ export default function OffseasonMovementAdminPanelContent({
               variant="outline"
               data-testid="admin-offseason-download-template"
               onClick={onDownloadCsvTemplate}
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className={cn(adminMobileControlClassName, 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800')}
             >
               <AdminDownloadIcon className="mr-2 h-4 w-4" />
               템플릿 CSV
@@ -404,7 +407,7 @@ export default function OffseasonMovementAdminPanelContent({
               data-testid="admin-offseason-import-csv"
               onClick={onOpenCsvImport}
               disabled={importingCsv}
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className={cn(adminMobileControlClassName, 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800')}
             >
               <AdminUploadIcon className="mr-2 h-4 w-4" />
               {importingCsv ? '업로드 중' : 'CSV 업로드'}
@@ -413,7 +416,7 @@ export default function OffseasonMovementAdminPanelContent({
               type="button"
               data-testid="admin-offseason-open-create"
               onClick={onOpenCreateDialog}
-              className="bg-emerald-500 text-slate-950 shadow-sm hover:bg-emerald-400"
+              className={cn(adminMobileControlClassName, 'bg-emerald-500 text-slate-950 shadow-sm hover:bg-emerald-400')}
             >
               <AdminPlusIcon className="mr-2 h-4 w-4" />
               이동 추가
@@ -432,6 +435,7 @@ export default function OffseasonMovementAdminPanelContent({
                 data-testid={`admin-offseason-quality-${option.value}`}
                 onClick={() => onQualityFilterChange(option.value)}
                 className={cn(
+                  adminMobileIconControlClassName,
                   'rounded-full border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800',
                   qualityFilter === option.value && 'border-emerald-400/60 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/15',
                 )}

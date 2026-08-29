@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T14:31:51.072Z",
+  "generatedAt": "2026-08-29T15:51:30.293Z",
   "baseUrl": "http://127.0.0.1:5182",
   "scope": "component-states",
   "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
@@ -69,7 +69,10 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -82,8 +85,12 @@
         "action": "press-key",
         "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
         "targetId": "team-filter",
-        "key": "End",
-        "verified": true
+        "key": "l",
+        "waitForSelector": "[data-testid=\"admin-offseason-team-trigger\"]:has(option[value=\"LG\"]:checked)",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -103,7 +110,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-open-create\"]",
         "targetId": "create",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -123,7 +133,10 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -136,7 +149,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-from-date\"]",
         "targetId": "from-date",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -149,7 +165,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-search\"]",
         "targetId": "search",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -162,7 +181,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-section-trigger\"]",
         "targetId": "section",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -175,7 +197,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
         "targetId": "team",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -188,7 +213,10 @@
         "action": "focus-visible",
         "selector": "[data-testid=\"admin-offseason-to-date\"]",
         "targetId": "to-date",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -201,7 +229,10 @@
         "action": "hover",
         "selector": "[data-testid=\"admin-offseason-quality-MISSING_SUMMARY\"]",
         "targetId": "quality-filter",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -214,7 +245,10 @@
         "action": "hover",
         "selector": "[data-testid=\"admin-offseason-refresh\"]",
         "targetId": "refresh",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -227,7 +261,10 @@
         "action": "hover",
         "selector": "[data-testid=\"admin-offseason-delete-1\"]",
         "targetId": "row-delete",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -240,7 +277,10 @@
         "action": "hover",
         "selector": "[data-testid=\"admin-offseason-edit-1\"]",
         "targetId": "row-edit",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -261,7 +301,10 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -275,7 +318,10 @@
         "selector": "[data-testid=\"admin-offseason-search\"]",
         "targetId": "search",
         "value": "MOCK 모바일 검색 입력",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -296,7 +342,10 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -309,7 +358,10 @@
         "action": "pressed",
         "selector": "[data-testid=\"admin-offseason-apply-filters\"]",
         "targetId": "apply",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -322,7 +374,10 @@
         "action": "pressed",
         "selector": "[data-testid=\"admin-offseason-open-create\"]",
         "targetId": "create",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -342,7 +397,10 @@
             "waitForSelector": "[data-testid=\"admin-offseason-delete-dialog\"]"
           }
         ],
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },
@@ -355,7 +413,10 @@
         "action": "pressed",
         "selector": "[data-testid=\"admin-offseason-reset-filters\"]",
         "targetId": "reset",
-        "verified": true
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
       },
       "attempts": 1
     },

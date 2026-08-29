@@ -6,6 +6,7 @@ const panelSource = readFileSync(new URL('./OffseasonMovementAdminPanel.tsx', im
 const contentSource = readFileSync(new URL('./OffseasonMovementAdminPanelContent.tsx', import.meta.url), 'utf8');
 const resultsSource = readFileSync(new URL('./OffseasonMovementAdminResultsRuntime.tsx', import.meta.url), 'utf8');
 const dialogsSource = readFileSync(new URL('./OffseasonMovementAdminDialogs.tsx', import.meta.url), 'utf8');
+const stateContract = JSON.parse(readFileSync(new URL('../../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'));
 
 test('routes mount, apply, reset, refresh, and post-mutation refreshes through one coordinator', () => {
   assert.match(panelSource, /createOffseasonMovementListCoordinator/);
@@ -15,6 +16,12 @@ test('routes mount, apply, reset, refresh, and post-mutation refreshes through o
   assert.match(panelSource, /onResetFilters:\s*\(\) => void resetFilters\(\)/);
   assert.match(panelSource, /onRefresh:\s*\(\) => void loadMovements\(\)/);
   assert.match(panelSource, /mutationCoordinatorRef\.current\.run/);
+  assert.match(panelSource, /listCoordinatorRef\.current\?\.activate\(\)/);
+  assert.match(panelSource, /mutationCoordinatorRef\.current\.activate\(\)/);
+  assert.match(panelSource, /forceFresh: true/);
+  assert.match(panelSource, /latestFiltersRef\.current/);
+  assert.match(panelSource, /mountedRef\.current/);
+  assert.match(panelSource, /isCurrentMutation\(\)/);
 });
 
 test('keeps the Visual QA state seam non-production-only and API-free in fixture mode', () => {
@@ -56,6 +63,10 @@ test('keeps the results table internally scrollable with named rows and actions'
   assert.match(resultsSource, /title=\{movement\.sourceLabel \|\| '-'\} className="[^"]*truncate/);
   assert.match(resultsSource, /title=\{csvReport\.fileName\} className="[^"]*truncate/);
   assert.match(resultsSource, /key=\{message\} title=\{message\} className="[^"]*line-clamp-2/);
+  assert.match(resultsSource, /data-vqa-max-height="160"/);
+  assert.match(resultsSource, /title=\{movement\.section\} className="[^"]*max-w-\[140px\]/);
+  assert.match(resultsSource, /max-w-full truncate/);
+  assert.match(resultsSource, /title=\{TEAM_DATA\[movement\.teamCode\]\?\.fullName \|\| movement\.teamCode\}[^>]*truncate/);
 });
 
 test('names every dialog field and disables delete confirmation while submitting', () => {
@@ -77,4 +88,25 @@ test('exposes deterministic content, results, and dialog lazy phases', () => {
   assert.match(contentSource, /dialogsPhase/);
   assert.match(contentSource, /admin-offseason-results-fallback/);
   assert.match(contentSource, /admin-offseason-dialogs-fallback/);
+});
+
+test('owns its 44px mobile controls without relying on dirty shared primitives', () => {
+  assert.match(contentSource, /adminMobileControlClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
+  assert.match(contentSource, /adminMobileIconControlClassName\s*=\s*['"][^'"]*min-h-11[^'"]*min-w-11/);
+  assert.match(contentSource, /adminNativeSelectClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
+  assert.match(dialogsSource, /adminDialogControlClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
+  assert.match(dialogsSource, /adminDialogSelectClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
+  assert.match(resultsSource, /size="sm"[\s\S]*className="[^"]*min-h-11 min-w-11/);
+});
+
+test('requires the team change capture to prove a value different from the initial fixture', () => {
+  const root = stateContract.components.find((component: { id: string }) => (
+    component.id === 'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel'
+  ));
+  const target = root.interactionPlans.change.targets.find((candidate: { id: string }) => candidate.id === 'team-filter');
+  assert.equal(target.key, 'l');
+  assert.equal(
+    target.waitForSelector,
+    '[data-testid="admin-offseason-team-trigger"]:has(option[value="LG"]:checked)',
+  );
 });

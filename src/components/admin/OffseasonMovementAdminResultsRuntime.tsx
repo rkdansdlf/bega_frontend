@@ -163,24 +163,29 @@ export default function OffseasonMovementAdminResultsRuntime({
                   <TableRow
                     key={movement.id}
                     data-testid={`admin-offseason-row-${movement.id}`}
+                    data-vqa-max-height="160"
                     className="border-slate-800 transition-colors duration-150 hover:bg-slate-800/30"
                   >
-                    <TableCell className="text-slate-300 text-caption font-semibold">{formatDate(movement.movementDate)}</TableCell>
-                    <TableCell>
-                      <AdminBadge className={getSectionBadgeClass(movement.section)}>
+                    <TableCell className="whitespace-nowrap text-slate-300 text-caption font-semibold">{formatDate(movement.movementDate)}</TableCell>
+                    <TableCell title={movement.section} className="w-[140px] max-w-[140px]">
+                      <AdminBadge className={`${getSectionBadgeClass(movement.section)} max-w-full truncate`}>
                         {movement.section}
                       </AdminBadge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="w-[140px] max-w-[140px]">
+                      <div className="flex min-w-0 items-center gap-2">
                         <TeamLogo team={TEAM_DATA[movement.teamCode]?.name || movement.teamCode} size={24} />
-                        <div>
-                          <p className="text-caption font-semibold text-slate-100">{TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode}</p>
-                          <p className="text-caption text-slate-500">{movement.teamCode}</p>
+                        <div className="min-w-0">
+                          <p title={TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode} className="truncate text-caption font-semibold text-slate-100">{TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode}</p>
+                          <p title={movement.teamCode} className="truncate text-caption text-slate-500">{movement.teamCode}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell title={movement.playerName} className="w-[140px] max-w-[140px] truncate text-caption font-semibold text-slate-200">{movement.playerName}</TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
+                      <p title={movement.playerName} className="truncate text-caption font-semibold text-slate-200">
+                        {movement.playerName}
+                      </p>
+                    </TableCell>
                     <TableCell className="max-w-[280px]">
                       <div className="space-y-1">
                         <p title={movement.summary?.trim() || movement.details?.trim() || '요약 없음'} className="line-clamp-2 text-caption text-slate-300 [overflow-wrap:anywhere]">
@@ -229,7 +234,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-caption text-slate-400">{formatDateTimeLabel(movement.announcedAt)}</TableCell>
+                    <TableCell className="whitespace-nowrap text-caption text-slate-400">{formatDateTimeLabel(movement.announcedAt)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button
@@ -238,7 +243,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           data-testid={`admin-offseason-edit-${movement.id}`}
                           aria-label={`${movement.playerName} 이동 수정`}
                           onClick={() => onOpenEditDialog(movement)}
-                          className="text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
+                          className="min-h-11 min-w-11 text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
                         >
                           <AdminEditIcon className="h-4 w-4" />
                         </Button>
@@ -248,7 +253,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           data-testid={`admin-offseason-delete-${movement.id}`}
                           aria-label={`${movement.playerName} 이동 삭제`}
                           onClick={() => onDeleteTargetChange(movement)}
-                          className="text-slate-400 hover:bg-red-500/10 hover:text-red-300"
+                          className="min-h-11 min-w-11 text-slate-400 hover:bg-red-500/10 hover:text-red-300"
                         >
                           <AdminTrashIcon className="h-4 w-4" />
                         </Button>

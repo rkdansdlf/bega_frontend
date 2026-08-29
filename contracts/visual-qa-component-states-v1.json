@@ -17027,7 +17027,8 @@
                 "system": "idle",
                 "variant.preset": "idle"
               },
-              "key": "End"
+              "key": "l",
+              "waitForSelector": "[data-testid=\"admin-offseason-team-trigger\"]:has(option[value=\"LG\"]:checked)"
             },
             {
               "id": "dialog-section",

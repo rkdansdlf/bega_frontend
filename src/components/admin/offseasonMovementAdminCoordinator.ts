@@ -20,6 +20,14 @@ type ListCoordinatorCallbacks<T> = {
   onLoading: (loading: boolean) => void;
 };
 
+type ListRequestOptions = {
+  forceFresh?: boolean;
+};
+
+export type OffseasonMovementMutationContext = {
+  isActive: () => boolean;
+};
+
 export const normalizeOffseasonMovementFilters = (
   filters: Readonly<OffseasonMovementListFilters>,
 ): NormalizedOffseasonMovementListFilters => {
@@ -52,7 +60,7 @@ export const createOffseasonMovementListCoordinator = <T>({
   onLoading,
 }: ListCoordinatorCallbacks<T>) => {
   const inFlight = new Map<string, Promise<T>>();
-  let active = true;
+  let active = false;
   let latestRevision = 0;
   let loading = false;
 
@@ -63,6 +71,9 @@ export const createOffseasonMovementListCoordinator = <T>({
   };
 
   return {
+    activate() {
+      active = true;
+    },
     deactivate() {
       active = false;
       latestRevision += 1;
@@ -71,16 +82,21 @@ export const createOffseasonMovementListCoordinator = <T>({
     request(
       filters: Readonly<OffseasonMovementListFilters>,
       fetcher: (filters: NormalizedOffseasonMovementListFilters) => Promise<T>,
+      options: ListRequestOptions = {},
     ): Promise<void> {
-      active = true;
+      if (!active) return Promise.resolve();
       const normalized = normalizeOffseasonMovementFilters(filters);
       const key = createFilterKey(normalized);
       const revision = ++latestRevision;
+      setLoading(true);
 
-      let request = inFlight.get(key);
+      let request = options.forceFresh ? undefined : inFlight.get(key);
       if (!request) {
-        setLoading(true, true);
-        request = fetcher(normalized);
+        try {
+          request = Promise.resolve(fetcher(normalized));
+        } catch (reason) {
+          request = Promise.reject(reason);
+        }
         inFlight.set(key, request);
         void request.finally(() => {
           if (inFlight.get(key) === request) inFlight.delete(key);
@@ -105,20 +121,39 @@ export const createOffseasonMovementListCoordinator = <T>({
 
 export const createOffseasonMovementMutationCoordinator = () => {
   const inFlight = new Map<string, Promise<unknown>>();
+  let active = false;
+  let lifecycleRevision = 0;
 
   return {
+    activate() {
+      active = true;
+    },
+    deactivate() {
+      active = false;
+      lifecycleRevision += 1;
+    },
+    isActive() {
+      return active;
+    },
     run<T>(
       key: string,
-      mutate: () => Promise<T>,
+      mutate: (context: OffseasonMovementMutationContext) => Promise<T>,
       refresh: () => Promise<unknown>,
       shouldRefresh: (result: T) => boolean = () => true,
     ): Promise<T> {
+      if (!active) {
+        return Promise.reject(new Error('Offseason movement mutation coordinator is inactive.'));
+      }
       const existing = inFlight.get(key);
       if (existing) return existing as Promise<T>;
+      const revision = lifecycleRevision;
+      const context = {
+        isActive: () => active && revision === lifecycleRevision,
+      };
 
       const operation = (async () => {
-        const result = await mutate();
-        if (shouldRefresh(result)) await refresh();
+        const result = await mutate(context);
+        if (context.isActive() && shouldRefresh(result)) await refresh();
         return result;
       })();
       inFlight.set(key, operation);

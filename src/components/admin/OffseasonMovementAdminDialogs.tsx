@@ -17,7 +17,9 @@ const TEAM_OPTIONS = FRANCHISE_TEAM_IDS.map((code) => ({
 }));
 
 const adminDialogSelectClassName =
-  'h-10 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 text-caption text-slate-100 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
+  'min-h-11 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-slate-100 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
+
+const adminDialogControlClassName = 'min-h-11 text-base';
 
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
@@ -84,11 +86,11 @@ export default function OffseasonMovementAdminDialogs({
               variant="outline"
               data-testid="admin-offseason-dialog-cancel"
               onClick={onDialogClose}
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className={`${adminDialogControlClassName} border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
             >
               취소
             </Button>
-            <Button type="button" data-testid="admin-offseason-dialog-submit" onClick={onSubmit} disabled={submitting} className="bg-emerald-500 text-slate-950 hover:bg-emerald-400">
+            <Button type="button" data-testid="admin-offseason-dialog-submit" onClick={onSubmit} disabled={submitting} className={`${adminDialogControlClassName} bg-emerald-500 text-slate-950 hover:bg-emerald-400`}>
               {submitting ? (
                 <>
                   <AdminRefreshIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -114,7 +116,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-movement-date"
                 value={formData.movementDate}
                 onChange={(event) => onUpdateField('movementDate', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
               />
             </div>
             <div className="space-y-2">
@@ -156,7 +158,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-player-name"
                 value={formData.playerName}
                 onChange={(event) => onUpdateField('playerName', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="예: 박민재"
               />
             </div>
@@ -170,7 +172,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-summary"
                 value={formData.summary}
                 onChange={(event) => onUpdateField('summary', event.target.value)}
-                className="min-h-[96px] bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} min-h-[96px] bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="예: 4년 총액 80억에 원소속팀 잔류"
               />
             </div>
@@ -181,7 +183,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-details"
                 value={formData.details}
                 onChange={(event) => onUpdateField('details', event.target.value)}
-                className="min-h-[96px] bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} min-h-[96px] bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="계약 조건이나 공시 문구를 조금 더 길게 입력"
               />
             </div>
@@ -193,7 +195,7 @@ export default function OffseasonMovementAdminDialogs({
                   data-testid="admin-offseason-contract-term"
                   value={formData.contractTerm}
                   onChange={(event) => onUpdateField('contractTerm', event.target.value)}
-                  className="bg-slate-950 border-slate-700 text-slate-100"
+                  className={`${adminDialogControlClassName} bg-slate-950 border-slate-700 text-slate-100`}
                   placeholder="4년"
                 />
               </div>
@@ -204,7 +206,7 @@ export default function OffseasonMovementAdminDialogs({
                   data-testid="admin-offseason-contract-value"
                   value={formData.contractValue}
                   onChange={(event) => onUpdateField('contractValue', event.target.value)}
-                  className="bg-slate-950 border-slate-700 text-slate-100"
+                  className={`${adminDialogControlClassName} bg-slate-950 border-slate-700 text-slate-100`}
                   placeholder="4년 80억"
                 />
               </div>
@@ -215,7 +217,7 @@ export default function OffseasonMovementAdminDialogs({
                   data-testid="admin-offseason-option-details"
                   value={formData.optionDetails}
                   onChange={(event) => onUpdateField('optionDetails', event.target.value)}
-                  className="bg-slate-950 border-slate-700 text-slate-100"
+                  className={`${adminDialogControlClassName} bg-slate-950 border-slate-700 text-slate-100`}
                   placeholder="옵션 5억 포함"
                 />
               </div>
@@ -247,7 +249,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-counterparty-details"
                 value={formData.counterpartyDetails}
                 onChange={(event) => onUpdateField('counterpartyDetails', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="예: 보상선수 없음 / 2대1 트레이드"
               />
             </div>
@@ -258,7 +260,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-source-label"
                 value={formData.sourceLabel}
                 onChange={(event) => onUpdateField('sourceLabel', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="구단 발표"
               />
             </div>
@@ -270,7 +272,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-announced-at"
                 value={formData.announcedAt}
                 onChange={(event) => onUpdateField('announcedAt', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
               />
             </div>
           </div>
@@ -283,7 +285,7 @@ export default function OffseasonMovementAdminDialogs({
                 data-testid="admin-offseason-source-url"
                 value={formData.sourceUrl}
                 onChange={(event) => onUpdateField('sourceUrl', event.target.value)}
-                className="bg-slate-900 border-slate-700 text-slate-100"
+                className={`${adminDialogControlClassName} bg-slate-900 border-slate-700 text-slate-100`}
                 placeholder="https://..."
               />
             </div>
@@ -322,7 +324,7 @@ export default function OffseasonMovementAdminDialogs({
               variant="outline"
               data-testid="admin-offseason-delete-cancel"
               onClick={() => onDeleteTargetChange(null)}
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className={`${adminDialogControlClassName} border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
             >
               취소
             </Button>
@@ -331,7 +333,7 @@ export default function OffseasonMovementAdminDialogs({
               data-testid="admin-offseason-delete-confirm"
               onClick={onDelete}
               disabled={submitting}
-              className="bg-red-500 text-white hover:bg-red-400"
+              className={`${adminDialogControlClassName} bg-red-500 text-white hover:bg-red-400`}
             >
               삭제
             </Button>
