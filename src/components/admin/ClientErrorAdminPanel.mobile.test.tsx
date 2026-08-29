@@ -1,13 +1,66 @@
 import assert from 'node:assert/strict';
+import * as moduleApi from 'node:module';
 import test from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import {
-  ClientErrorAdminPanel,
-  type ClientErrorAdminPanelVisualQaRenderers,
-  type ClientErrorAdminPanelVisualQaState,
+import type {
+  ClientErrorAdminPanelVisualQaRenderers,
+  ClientErrorAdminPanelVisualQaState,
 } from './ClientErrorAdminPanel';
+
+type ModuleNextLoad = (url: string, context: unknown) => unknown;
+type ModuleLoadHook = (url: string, context: unknown, nextLoad: ModuleNextLoad) => unknown;
+
+const { registerHooks } = moduleApi as unknown as {
+  registerHooks: (hooks: { load: ModuleLoadHook }) => void;
+};
+
+registerHooks({
+  load(url, context, nextLoad) {
+    if (url.endsWith('/components/ui/plain-dialog.tsx')) {
+      return {
+        format: 'module',
+        shortCircuit: true,
+        source: `
+          import { createElement } from 'react';
+          export default function PlainDialog({
+            open,
+            onClose,
+            title,
+            children,
+            className,
+            bodyClassName,
+            bodyStyle,
+            contentTestId,
+          }) {
+            if (!open) return null;
+            globalThis.__clientErrorAdminFallbackClose = onClose;
+            return createElement('section', {
+              'aria-label': typeof title === 'string' ? title : undefined,
+              'aria-modal': 'true',
+              'data-testid': contentTestId,
+              className,
+              role: 'dialog',
+            }, [
+              createElement('h2', { key: 'title' }, title),
+              createElement('button', {
+                'aria-label': '닫기',
+                key: 'close',
+                onClick: onClose,
+                type: 'button',
+              }, '닫기'),
+              createElement('div', { className: bodyClassName, key: 'body', style: bodyStyle }, children),
+            ]);
+          }
+        `,
+      };
+    }
+    return nextLoad(url, context);
+  },
+});
+
+const { ClientErrorAdminPanel } = await import('./ClientErrorAdminPanel');
 
 const dashboard = {
   from: '2026-08-29T00:00:00.000Z',
@@ -188,4 +241,163 @@ test('fails closed for invalid visual QA lazy phases and missing renderers', () 
     () => renderPanel(visualQaState, { ...renderers, insights: undefined }),
     /ClientErrorAdminPanel Visual QA resolved insights renderer is required\./,
   );
+});
+
+const longKorean = '모바일 환경에서 긴 오류 설명과 경로 메타데이터가 카드와 표 밖으로 넘치지 않아야 합니다. '.repeat(8);
+const unbrokenToken = `CLIENT_ERROR_${'UNBROKEN_TOKEN_'.repeat(30)}`;
+
+const createPressureEvent = (eventId: string, copy: string) => ({
+  ...selectedEvent.event,
+  eventId,
+  message: copy,
+  route: `/${copy}`,
+  fingerprint: copy,
+});
+
+const createPressureDashboard = (copy: string, count = 1) => ({
+  ...dashboard,
+  topFingerprints: Array.from({ length: count }, (_, index) => ({
+    bucket: 'api' as const,
+    count: index + 1,
+    fingerprint: `${copy}-${index + 1}`,
+    latestAlertChannel: null,
+    latestAlertSentAt: null,
+    latestOccurredAt: '2026-08-29T00:00:00.000Z',
+    message: copy,
+    route: `/${copy}`,
+    source: 'api' as const,
+  })),
+});
+
+const createPressureState = ({
+  copy,
+  eventCount = 1,
+  fingerprintCount = 1,
+  panelError = null,
+}: {
+  copy: string;
+  eventCount?: number;
+  fingerprintCount?: number;
+  panelError?: string | null;
+}): ClientErrorAdminPanelVisualQaState => ({
+  ...visualQaState,
+  dashboard: createPressureDashboard(copy, fingerprintCount),
+  eventsPage: {
+    ...visualQaState.eventsPage,
+    content: Array.from(
+      { length: eventCount },
+      (_, index) => createPressureEvent(`event-${index + 1}-${copy}`, copy),
+    ),
+    totalElements: eventCount,
+  },
+  panelError,
+});
+
+const initialEventPage = {
+  content: [],
+  totalElements: 0,
+  totalPages: 0,
+  size: 20,
+  number: 0,
+  last: true,
+};
+
+const emptyState: ClientErrorAdminPanelVisualQaState = {
+  ...visualQaState,
+  dashboard: null,
+  eventsPage: initialEventPage,
+  detailOpen: false,
+  detailPhase: 'closed',
+};
+
+const assertMobileContract = (html: string) => {
+  assert.match(html, /data-testid="admin-client-error-panel"/);
+  assert.match(html, /class="[^"]*min-w-0[^"]*"/);
+  assert.match(html, /data-testid="admin-client-error-fingerprints"/);
+  assert.match(html, /data-vqa-max-height="480"/);
+  assert.match(html, /data-testid="admin-client-error-events-scroll"/);
+  assert.match(html, /overflow-x-auto/);
+  assert.match(html, /overflow-wrap:anywhere/);
+  assert.match(html, /aria-label="기간 선택"/);
+  assert.match(html, /aria-label="Bucket 필터"/);
+  assert.match(html, /aria-label="Source 필터"/);
+  assert.match(html, /aria-label="Status 필터"/);
+  assert.match(html, /aria-label="Route 필터"/);
+  assert.match(html, /aria-label="Fingerprint 필터"/);
+  assert.match(html, /aria-label="이벤트 검색"/);
+};
+
+test('keeps empty, long Korean, unbroken-token, and maximum fixtures within the parent mobile contract', () => {
+  const emptyHtml = renderPanel(emptyState);
+  const longKoreanHtml = renderPanel(createPressureState({
+    copy: longKorean,
+    panelError: longKorean,
+  }));
+  const unbrokenTokenHtml = renderPanel(createPressureState({ copy: unbrokenToken }));
+  const maximumHtml = renderPanel(createPressureState({
+    copy: unbrokenToken,
+    eventCount: 20,
+    fingerprintCount: 50,
+  }));
+
+  for (const html of [emptyHtml, longKoreanHtml, unbrokenTokenHtml, maximumHtml]) {
+    assertMobileContract(html);
+  }
+
+  assert.match(emptyHtml, /role="status"[^>]+aria-live="polite"/);
+  assert.match(longKoreanHtml, /role="alert"/);
+  assert.match(longKoreanHtml, new RegExp(longKorean));
+  assert.match(unbrokenTokenHtml, new RegExp(unbrokenToken));
+  assert.equal((maximumHtml.match(/data-testid="admin-client-error-fingerprint-CLIENT_ERROR/g) ?? []).length, 50);
+  assert.equal((maximumHtml.match(/data-testid="admin-client-error-detail-/g) ?? []).length, 20);
+});
+
+test('uses the project dialog primitive for an announced detail loading fallback', () => {
+  const html = renderPanel({
+    ...visualQaState,
+    detailLoading: true,
+    detailPhase: 'suspense-fallback',
+  });
+  const closeHandler = (globalThis as typeof globalThis & {
+    __clientErrorAdminFallbackClose?: () => void;
+  }).__clientErrorAdminFallbackClose;
+  const dialog = html.match(/<section[^>]+role="dialog"[^>]*>/)?.[0];
+
+  assert.match(html, /data-testid="admin-client-error-detail-fallback"/);
+  assert.ok(dialog);
+  assert.match(dialog, /aria-modal="true"/);
+  assert.match(dialog, /aria-label="Client Error Detail"/);
+  assert.match(html, /<button[^>]+aria-label="닫기"/);
+  assert.match(html, /role="status"[^>]+aria-live="polite"[^>]+aria-busy="true"/);
+  assert.equal(typeof closeHandler, 'function');
+  assert.doesNotThrow(() => closeHandler?.());
+});
+
+test('labels every Task 5 interaction target and keeps detail actions touch-sized', () => {
+  const html = renderPanel(createPressureState({ copy: unbrokenToken, eventCount: 2 }));
+  const detailButtons = html.match(/<button[^>]*data-testid="admin-client-error-detail-[^"]+"[^>]*>/g) ?? [];
+
+  for (const testId of [
+    'admin-client-error-refresh',
+    'admin-client-error-fingerprint-',
+    'admin-client-error-detail-',
+    'admin-client-error-previous',
+    'admin-client-error-next',
+    'admin-client-error-window',
+    'admin-client-error-bucket',
+    'admin-client-error-source',
+    'admin-client-error-status',
+    'admin-client-error-route',
+    'admin-client-error-fingerprint-input',
+    'admin-client-error-search',
+    'admin-client-error-filter-tab-path',
+  ]) {
+    assert.match(html, new RegExp(`data-testid="${testId}`));
+  }
+
+  assert.equal(detailButtons.length, 2);
+  for (const button of detailButtons) {
+    assert.match(button, /aria-label="이벤트 .* 상세 보기"/);
+    assert.match(button, /min-h-11/);
+  }
 });
