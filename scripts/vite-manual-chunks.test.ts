@@ -209,6 +209,8 @@ test('audits the redesigned landing first load with current assets and lazy clos
   assert.ok(landingFirstLoadAuditSource.includes("page.locator('[data-testid=\"landing-closing\"]')"));
   assert.ok(landingFirstLoadAuditSource.includes("waitForVisibleTestId(page, 'landing-closing-mascot'"));
   assert.ok(landingFirstLoadAuditSource.includes('afterClosingDeferredRequests'));
+  assert.ok(landingFirstLoadAuditSource.includes("key === 'src/components/Landing.tsx'"));
+  assert.ok(landingFirstLoadAuditSource.includes("entry?.name === 'Landing'"));
   for (const obsoleteContract of [
     'LandingFeaturesRuntime',
     'PublicShellIcons',

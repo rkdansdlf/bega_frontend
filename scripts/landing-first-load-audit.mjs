@@ -325,8 +325,9 @@ const readManifest = async () => {
   const entries = Object.entries(manifest);
   const entryEntry = entries.find(([key, entry]) => key === 'index.html' || entry?.isEntry);
   const landingEntry = entries.find(([key, entry]) => (
-    entry?.file?.endsWith('.js')
-    && (key.includes('Landing') || entry.file.includes('Landing-'))
+    key === 'src/components/Landing.tsx'
+    || entry?.src === 'src/components/Landing.tsx'
+    || entry?.name === 'Landing'
   ));
 
   const resolveImportFile = (manifestKey) => manifest[manifestKey]?.file || null;
