@@ -4,6 +4,7 @@ export type HarnessInteractionAction =
   | 'focus-visible'
   | 'pressed'
   | 'fill'
+  | 'select-option'
   | 'press-key';
 
 export type HarnessInteractionStep = {
@@ -39,6 +40,7 @@ export type HarnessInteractionPage = {
       hover: () => Promise<void>;
       click: () => Promise<void>;
       fill: (value: string) => Promise<void>;
+      selectOption: (value: string) => Promise<string[]>;
       inputValue: () => Promise<string>;
       scrollIntoViewIfNeeded: () => Promise<void>;
       boundingBox: () => Promise<InteractionBox | null>;
@@ -180,6 +182,14 @@ export const executeHarnessInteractionPlan = async (
       if (await target.inputValue() !== plan.value) {
         throw new Error(`interaction fill did not preserve value on ${plan.selector}`);
       }
+    } else if (plan.action === 'select-option') {
+      if (typeof plan.value !== 'string' || !plan.waitForSelector) {
+        throw new Error(`interaction select-option requires value and waitForSelector: ${plan.selector}`);
+      }
+      await target.selectOption(plan.value);
+      if (await target.inputValue() !== plan.value) {
+        throw new Error(`interaction select-option did not preserve value on ${plan.selector}`);
+      }
     } else if (plan.action === 'press-key') {
       if (!plan.key) throw new Error(`interaction press-key requires key: ${plan.selector}`);
       await focusVisibleTarget(page, plan);
@@ -261,6 +271,14 @@ export const revalidateHarnessInteractionPlan = async (
     } else if (plan.action === 'fill') {
       if (typeof plan.value !== 'string' || await target.inputValue() !== plan.value) {
         throw new Error(`interaction fill did not preserve value after viewport expansion on ${plan.selector}`);
+      }
+    } else if (plan.action === 'select-option') {
+      if (
+        typeof plan.value !== 'string'
+        || !plan.waitForSelector
+        || await target.inputValue() !== plan.value
+      ) {
+        throw new Error(`interaction select-option did not preserve value after viewport expansion on ${plan.selector}`);
       }
     }
 

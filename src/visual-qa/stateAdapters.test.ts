@@ -30,6 +30,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.delete-place-dialog',
     'admin.game-status-repair-panel',
     'admin.mates-panel',
+    'admin.offseason-movement-content',
     'admin.offseason-movement-panel',
     'admin.page-route',
     'admin.page-shell',
@@ -567,6 +568,63 @@ test('admin offseason movement root adapter is fail-closed and owns static non-p
     variants: { preset: 'idle', theme: 'dark' },
     interactionTargetId: 'refresh',
   }), /지원하지 않는 Admin offseason movement state/);
+});
+
+test('admin offseason content adapter is fail-closed, controlled, and owns exact static fixtures', () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminPanelContent';
+  const maximum = resolveComponentStateAdapter('admin.offseason-movement-content', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'change',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'team-filter',
+  });
+  assert.equal(maximum.captureSelector, '[data-testid="admin-offseason-content"]');
+  assert.equal(maximum.props.visualQaControlledState, true);
+  assert.equal((maximum.props.movements as unknown[]).length, 50);
+  assert.ok((maximum.props.movements as Array<{ playerName: string; sourceUrl: string }>).every(
+    ({ playerName, sourceUrl }) => playerName.includes('MOCK') && sourceUrl.startsWith('https://example.invalid/'),
+  ));
+
+  const dialog = resolveComponentStateAdapter('admin.offseason-movement-content', {
+    componentId,
+    states: {
+      data: 'populated',
+      interactions: 'default',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'create-dialog', theme: 'dark' },
+  });
+  assert.equal(dialog.captureSelector, 'body');
+  assert.equal(dialog.props.dialogOpen, true);
+
+  assert.throws(() => resolveComponentStateAdapter('admin.offseason-movement-content', {
+    componentId,
+    states: {
+      data: 'populated',
+      interactions: 'default',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'content-fallback', theme: 'dark' },
+  }), /지원하지 않는 Admin offseason content state/);
+  assert.throws(() => resolveComponentStateAdapter('admin.offseason-movement-content', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'change',
+      permissions: 'admin',
+      system: 'idle',
+      extra: 'illegal',
+    } as never,
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'team-filter',
+  }), /지원하지 않는 Admin offseason content state/);
 });
 
 test('achievement and not-found adapters cover mobile copy pressure and themes', () => {

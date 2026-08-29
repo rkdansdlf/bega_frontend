@@ -336,6 +336,62 @@ test('change interactions require a press-key action plan', () => {
   assert.equal(validation.validCombinations, 2);
 });
 
+test('change interactions accept fail-closed select-option evidence without weakening press-key', () => {
+  const component = {
+    id: 'src/components/A.tsx#A',
+    status: 'registered',
+    renderAccess: 'module-export',
+    render: { mode: 'direct', adapterId: 'a.default' },
+    axes: {
+      data: axis(['empty']),
+      permissions: notApplicable(),
+      interactions: axis(['default', 'change']),
+      system: notApplicable(),
+    },
+    variants: noVariants(),
+    interactionPlans: {
+      change: {
+        action: 'select-option',
+        selector: 'select',
+        value: 'LG',
+        waitForSelector: 'select:has(option[value="LG"]:checked)',
+        ...evidence,
+      },
+    },
+    constraints: [],
+  };
+  const validate = (entry) => validateComponentStateManifest({
+    manifest: { schemaVersion: 1, components: [entry] },
+    classificationManifest: {
+      components: [{ id: component.id, classification: 'visual', renderAccess: 'module-export' }],
+    },
+    coverageContract: {
+      ...coverageContract,
+      stateCatalog: {
+        ...coverageContract.stateCatalog,
+        interactions: [...coverageContract.stateCatalog.interactions, 'change'],
+      },
+    },
+    requireComplete: true,
+  });
+
+  const valid = validate(component);
+  assert.equal(valid.ok, true, valid.errors.join('\n'));
+  assert.equal(valid.validCombinations, 2);
+
+  const missingValue = structuredClone(component);
+  delete missingValue.interactionPlans.change.value;
+  assert.ok(validate(missingValue).errors.some((message) => (
+    message.includes('select-option action requires value')
+  )));
+
+  const missingVerifier = structuredClone(component);
+  delete missingVerifier.interactionPlans.change.waitForSelector;
+  assert.ok(validate(missingVerifier).errors.some((message) => (
+    message.includes('select-option action requires waitForSelector')
+  )));
+});
+
 test('multi-target interaction plans expand every declared target into an independent combination', () => {
   const component = {
     id: 'src/components/A.tsx#A',

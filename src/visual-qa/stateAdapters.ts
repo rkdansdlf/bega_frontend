@@ -3929,7 +3929,192 @@ const buildVisualQaAdminOffseasonState = (
   };
 };
 
+const visualQaAdminOffseasonQualityOptions = [
+  { value: 'ALL', label: '전체', hint: 'MOCK 비생산 전체 이동' },
+  { value: 'MISSING_SUMMARY', label: '요약 없음', hint: 'MOCK 비생산 요약 누락' },
+  { value: 'MISSING_DETAILS', label: '상세 메모 없음', hint: 'MOCK 비생산 상세 누락' },
+  { value: 'MISSING_SOURCE', label: '출처 없음', hint: 'MOCK 비생산 출처 누락' },
+  { value: 'MISSING_STRUCTURED', label: '구조화 없음', hint: 'MOCK 비생산 구조화 누락' },
+] as const;
+
+const buildVisualQaAdminOffseasonContentProps = (
+  data: VisualQaAdminOffseasonData,
+  preset: Exclude<VisualQaAdminOffseasonSystem, 'content-fallback'>,
+) => {
+  const state = buildVisualQaAdminOffseasonState(data, preset);
+  const movements = state.movements;
+  const filteredMovements = preset === 'quality-filter-empty' ? [] : movements;
+  const qualityCounts = {
+    ALL: movements.length,
+    MISSING_SUMMARY: movements.filter((movement) => !movement.summary?.trim()).length,
+    MISSING_DETAILS: movements.filter((movement) => !movement.details?.trim()).length,
+    MISSING_SOURCE: movements.filter((movement) => (
+      !movement.sourceLabel?.trim() && !movement.sourceUrl?.trim()
+    )).length,
+    MISSING_STRUCTURED: movements.filter((movement) => !(
+      movement.contractTerm?.trim()
+      || movement.contractValue?.trim()
+      || movement.optionDetails?.trim()
+      || movement.counterpartyTeam?.trim()
+      || movement.counterpartyDetails?.trim()
+    )).length,
+  };
+  const activeQualityOption = visualQaAdminOffseasonQualityOptions.find(
+    ({ value }) => value === state.qualityFilter,
+  ) ?? visualQaAdminOffseasonQualityOptions[0];
+  const noop = () => undefined;
+
+  return {
+    successMessage: state.successMessage,
+    error: state.error,
+    movements,
+    filteredMovements,
+    loading: state.loading,
+    importingCsv: state.importingCsv,
+    submitting: state.submitting,
+    csvReport: state.csvReport,
+    search: state.search,
+    sectionFilter: state.sectionFilter,
+    teamFilter: state.teamFilter,
+    fromDate: state.fromDate,
+    toDate: state.toDate,
+    qualityFilter: state.qualityFilter,
+    qualityOptions: [...visualQaAdminOffseasonQualityOptions],
+    activeQualityOption,
+    qualityCounts,
+    summaryCount: movements.filter((movement) => movement.summary?.trim()).length,
+    detailsCount: movements.filter((movement) => movement.details?.trim()).length,
+    structuredCount: movements.length - qualityCounts.MISSING_STRUCTURED,
+    sourcedCount: movements.length - qualityCounts.MISSING_SOURCE,
+    dialogOpen: state.dialogOpen,
+    editingMovement: state.editingMovement,
+    deleteTarget: state.deleteTarget,
+    formData: state.formData,
+    onSearchChange: noop,
+    onSectionFilterChange: noop,
+    onTeamFilterChange: noop,
+    onFromDateChange: noop,
+    onToDateChange: noop,
+    onApplyFilters: noop,
+    onResetFilters: noop,
+    onQualityFilterChange: noop,
+    onRefresh: noop,
+    onDownloadCsvTemplate: noop,
+    onOpenCsvImport: noop,
+    onOpenCreateDialog: noop,
+    onOpenEditDialog: noop,
+    onDeleteTargetChange: noop,
+    onDialogClose: noop,
+    onUpdateField: noop,
+    onSubmit: noop,
+    onDelete: noop,
+    visualQaControlledState: true as const,
+    visualQaStateOverride: {
+      resultsPhase: state.resultsPhase,
+      dialogsPhase: state.dialogsPhase,
+    },
+  };
+};
+
 const adapters: Record<string, ComponentStateAdapter> = {
+  'admin.offseason-movement-content': (context) => {
+    const supportedData = new Set<VisualQaAdminOffseasonData>([
+      'empty', 'populated', 'null-optional', 'boundary-minimum',
+      'boundary-maximum', 'long-korean', 'unbroken-token', 'maximum-supported',
+    ]);
+    const supportedPresets = new Set<Exclude<VisualQaAdminOffseasonSystem, 'content-fallback'>>([
+      'idle', 'list-loading', 'load-error', 'success-message', 'csv-importing',
+      'csv-success', 'csv-many-errors', 'quality-filter-empty', 'create-dialog',
+      'edit-dialog', 'delete-dialog', 'create-submitting', 'edit-submitting',
+      'delete-submitting', 'results-fallback', 'dialogs-fallback',
+    ]);
+    const interactionTargets = {
+      hover: new Set(['row-edit', 'row-delete']),
+      'focus-visible': new Set(['search', 'create', 'dialog-summary']),
+      pressed: new Set(['apply', 'reset', 'delete-confirm']),
+      input: new Set(['search', 'dialog-summary']),
+      change: new Set(['team-filter', 'dialog-section']),
+      'keyboard-navigation': new Set(['dialog-focus-loop']),
+    } as const;
+    const data = context.states.data as VisualQaAdminOffseasonData | undefined;
+    const preset = context.variants.preset as Exclude<
+      VisualQaAdminOffseasonSystem,
+      'content-fallback'
+    > | undefined;
+    const interaction = context.states.interactions;
+    const targetId = context.interactionTargetId;
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 Admin offseason content state: ${data ?? 'none'}:${context.states.system ?? 'none'}:${preset ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    };
+
+    if (
+      Object.keys(context.states).length !== 4
+      || Object.keys(context.variants).length !== 2
+      || !Object.prototype.hasOwnProperty.call(context.states, 'data')
+      || !Object.prototype.hasOwnProperty.call(context.states, 'permissions')
+      || !Object.prototype.hasOwnProperty.call(context.states, 'interactions')
+      || !Object.prototype.hasOwnProperty.call(context.states, 'system')
+      || !Object.prototype.hasOwnProperty.call(context.variants, 'preset')
+      || !Object.prototype.hasOwnProperty.call(context.variants, 'theme')
+      || context.states.permissions !== 'admin'
+      || context.states.system !== 'idle'
+      || context.variants.theme !== 'dark'
+      || !data
+      || !supportedData.has(data)
+      || !preset
+      || !supportedPresets.has(preset)
+      || !interaction
+    ) return failClosed();
+
+    if (interaction === 'default') {
+      if (targetId !== undefined || (preset !== 'idle' && data !== 'populated')) {
+        return failClosed();
+      }
+    } else {
+      const targets = interactionTargets[interaction as keyof typeof interactionTargets];
+      if (
+        data !== 'maximum-supported'
+        || preset !== 'idle'
+        || !targets
+        || !targetId
+        || !targets.has(targetId)
+      ) return failClosed();
+    }
+
+    const renderResults = (
+      props: ComponentProps<typeof OffseasonMovementAdminResultsRuntimeComponent>,
+    ) => renderVisualQaOffseasonAdminLazyChild(
+      createElement(VisualQaOffseasonMovementAdminResultsRuntime, props),
+      '스토브리그 결과를 불러오는 중...',
+    );
+    const renderDialogs = (
+      props: ComponentProps<typeof OffseasonMovementAdminDialogsComponent>,
+    ) => renderVisualQaOffseasonAdminLazyChild(
+      createElement(VisualQaOffseasonMovementAdminDialogs, props),
+      '스토브리그 입력 창을 불러오는 중...',
+    );
+    const portalPresets = new Set([
+      'create-dialog', 'edit-dialog', 'delete-dialog',
+      'create-submitting', 'edit-submitting', 'delete-submitting', 'dialogs-fallback',
+    ]);
+    const portalTargets = new Set([
+      'dialog-summary', 'delete-confirm', 'dialog-section', 'dialog-focus-loop',
+    ]);
+
+    return {
+      props: {
+        ...buildVisualQaAdminOffseasonContentProps(data, preset),
+        visualQaRenderers: { dialogs: renderDialogs, results: renderResults },
+      },
+      captureSelector: portalPresets.has(preset) || portalTargets.has(targetId ?? '')
+        ? 'body'
+        : '[data-testid="admin-offseason-content"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
+    };
+  },
   'admin.offseason-movement-panel': (context) => {
     const supportedData = new Set<VisualQaAdminOffseasonData>([
       'empty', 'populated', 'null-optional', 'boundary-minimum',

@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T16:16:59.288Z",
+  "generatedAt": "2026-08-29T16:49:16.650Z",
   "baseUrl": "http://127.0.0.1:5182",
   "scope": "component-states",
   "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
   "pageMode": "fresh",
   "captureHeightMode": "expand-tall-flow",
-  "groupSize": 50,
+  "groupSize": 11,
   "viewport": {
     "width": 320,
     "height": 844
   },
-  "timeoutMs": 30000,
+  "timeoutMs": 60000,
   "screenshots": {
     "mode": "captured",
     "directory": "reports/visual-qa-admin-offseason-movement-root-mobile"
@@ -58,10 +58,10 @@
       "status": "pass",
       "screenshot": "reports/visual-qa-admin-offseason-movement-root-mobile/offseasonmovementadminpanel-offseasonmovementadminpanel-data-maximum-supported-p-f3c3bca519ff.png",
       "interaction": {
-        "action": "press-key",
+        "action": "select-option",
         "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
         "targetId": "dialog-section",
-        "key": "End",
+        "value": "기타",
         "setup": [
           {
             "action": "click",
@@ -69,6 +69,7 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
+        "waitForSelector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]:has(option[value=\"기타\"]:checked)",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,
@@ -82,10 +83,10 @@
       "status": "pass",
       "screenshot": "reports/visual-qa-admin-offseason-movement-root-mobile/offseasonmovementadminpanel-offseasonmovementadminpanel-data-maximum-supported-p-f14939c04575.png",
       "interaction": {
-        "action": "press-key",
+        "action": "select-option",
         "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
         "targetId": "team-filter",
-        "key": "l",
+        "value": "LG",
         "waitForSelector": "[data-testid=\"admin-offseason-team-trigger\"]:has(option[value=\"LG\"]:checked)",
         "verified": true,
         "captureVerified": true,

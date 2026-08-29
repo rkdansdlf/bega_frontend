@@ -42,6 +42,7 @@ const EXECUTABLE_INTERACTION_ACTIONS = new Set([
   'focus-visible',
   'pressed',
   'fill',
+  'select-option',
   'press-key',
 ]);
 const EXECUTABLE_SETUP_ACTIONS = new Set(['click', 'fill', 'press-key']);
@@ -52,7 +53,7 @@ const EXPECTED_INTERACTION_ACTIONS = {
   open: 'click',
   selected: 'click',
   input: 'fill',
-  change: 'press-key',
+  change: ['press-key', 'select-option'],
   submitting: 'click',
   'keyboard-navigation': 'press-key',
 };
@@ -240,15 +241,22 @@ const validateRegisteredEntry = (entry, coverageContract) => {
       errors.push(`${label} ${field} must be a non-empty selector`);
     }
   };
-  const validateActionPayload = (action, value, key, label) => {
+  const validateActionPayload = (action, value, key, waitForSelector, label) => {
     if (action === 'fill' && typeof value !== 'string') {
       errors.push(`${label} fill action requires value`);
+    }
+    if (action === 'select-option' && typeof value !== 'string') {
+      errors.push(`${label} select-option action requires value`);
+    }
+    if (action === 'select-option'
+      && (typeof waitForSelector !== 'string' || waitForSelector.trim().length === 0)) {
+      errors.push(`${label} select-option action requires waitForSelector`);
     }
     if (action === 'press-key' && (typeof key !== 'string' || key.trim().length === 0)) {
       errors.push(`${label} press-key action requires key`);
     }
-    if (action !== 'fill' && value !== undefined) {
-      errors.push(`${label} value is only valid for fill actions`);
+    if (action !== 'fill' && action !== 'select-option' && value !== undefined) {
+      errors.push(`${label} value is only valid for fill or select-option actions`);
     }
     if (action !== 'press-key' && key !== undefined) {
       errors.push(`${label} key is only valid for press-key actions`);
@@ -268,7 +276,13 @@ const validateRegisteredEntry = (entry, coverageContract) => {
       if (typeof step?.selector !== 'string' || step.selector.trim().length === 0) {
         errors.push(`${stepLabel} requires selector`);
       }
-      validateActionPayload(step?.action, step?.value, step?.key, stepLabel);
+      validateActionPayload(
+        step?.action,
+        step?.value,
+        step?.key,
+        step?.waitForSelector,
+        stepLabel,
+      );
       validateWaitSelector(step?.waitForSelector, 'waitForSelector', stepLabel);
       validateWaitSelector(step?.waitForHiddenSelector, 'waitForHiddenSelector', stepLabel);
     });
@@ -312,8 +326,10 @@ const validateRegisteredEntry = (entry, coverageContract) => {
       const expectedAction = EXPECTED_INTERACTION_ACTIONS[interaction];
       if (expectedAction === undefined) {
         errors.push(`${label} has no executable action mapping for ${interaction}`);
-      } else if (plan.action !== expectedAction) {
-        errors.push(`${label} action must equal ${expectedAction}`);
+      } else if (!(Array.isArray(expectedAction)
+        ? expectedAction.includes(plan.action)
+        : plan.action === expectedAction)) {
+        errors.push(`${label} action must equal ${conditionValues(expectedAction).join(' or ')}`);
       }
       if (!EXECUTABLE_INTERACTION_ACTIONS.has(plan.action)) {
         errors.push(`${label} action ${plan.action ?? '<missing>'} is not executable`);
@@ -345,6 +361,7 @@ const validateRegisteredEntry = (entry, coverageContract) => {
             plan.action,
             target.value ?? plan.value,
             target.key ?? plan.key,
+            target.waitForSelector ?? plan.waitForSelector,
             targetLabel,
           );
           validateWaitSelector(target.waitForSelector, 'waitForSelector', targetLabel);
@@ -352,7 +369,7 @@ const validateRegisteredEntry = (entry, coverageContract) => {
         });
       }
       if (!declaresTargets) {
-        validateActionPayload(plan.action, plan.value, plan.key, label);
+        validateActionPayload(plan.action, plan.value, plan.key, plan.waitForSelector, label);
       }
       validateSetup(plan.setup, label);
       validateWaitSelector(plan.waitForSelector, 'waitForSelector', label);

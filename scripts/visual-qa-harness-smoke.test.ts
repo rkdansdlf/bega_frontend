@@ -180,6 +180,35 @@ test('interaction capture expands first and then revalidates without replaying t
   assert.deepEqual(events, ['expand', 'revalidate', 'restored-cleanup']);
 });
 
+test('select interaction capture records expansion and revalidation without replaying selection', async () => {
+  const subject = await import('./visual-qa-harness-smoke');
+  const events: string[] = [];
+  const prepared = await subject.prepareInteractionCapture(
+    {} as never,
+    '[data-testid="content"]',
+    true,
+    {
+      action: 'select-option',
+      selector: '[data-testid="section"]',
+      value: '기타',
+      waitForSelector: '[data-testid="section"]:has(option[value="기타"]:checked)',
+    },
+    async () => { events.push('initial-cleanup'); },
+    async () => {
+      events.push('expand');
+      return true;
+    },
+    async (_page, plan, cleanup) => {
+      events.push(`revalidate:${plan.action}`);
+      return cleanup;
+    },
+  );
+
+  assert.deepEqual(events, ['expand', 'revalidate:select-option']);
+  assert.equal(prepared.viewportExpanded, true);
+  assert.equal(prepared.revalidatedAfterViewportExpansion, true);
+});
+
 test('surface capture uses the full element instead of a viewport-clipped page screenshot', async () => {
   const events: string[] = [];
   let captureStyleText = '';

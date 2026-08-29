@@ -132,6 +132,17 @@ export default function OffseasonMovementAdminResultsRuntime({
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent motion-reduce:animate-none" />
           <span>스토브리그 이동 목록을 불러오는 중...</span>
         </div>
+      ) : filteredMovements.length === 0 ? (
+        <div
+          data-testid="admin-offseason-empty-results"
+          role="status"
+          className="max-w-full rounded-2xl border border-slate-800 px-4 py-16 text-center text-slate-500 [overflow-wrap:anywhere]"
+        >
+          <AdminCalendarIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
+          {movements.length === 0
+            ? '조건에 맞는 스토브리그 이동이 없습니다.'
+            : `${activeQualityOption.label} 조건에 맞는 누락 건이 없습니다.`}
+        </div>
       ) : (
         <div data-testid="admin-offseason-results-scroll" className="max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-800">
           <Table aria-label="스토브리그 이동 관리 결과" className="min-w-[1120px]">
@@ -149,17 +160,7 @@ export default function OffseasonMovementAdminResultsRuntime({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMovements.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9} className="py-16 text-center text-slate-500">
-                    <AdminCalendarIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
-                    {movements.length === 0
-                      ? '조건에 맞는 스토브리그 이동이 없습니다.'
-                      : `${activeQualityOption.label} 조건에 맞는 누락 건이 없습니다.`}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredMovements.map((movement) => (
+              {filteredMovements.map((movement) => (
                   <TableRow
                     key={movement.id}
                     data-testid={`admin-offseason-row-${movement.id}`}
@@ -224,7 +225,8 @@ export default function OffseasonMovementAdminResultsRuntime({
                             href={movement.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-caption text-sky-300 hover:text-sky-200"
+                            aria-label={`${movement.playerName} 이동 원문 열기`}
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-caption text-sky-300 hover:text-sky-200"
                           >
                             <AdminLinkIcon className="h-3 w-3" />
                             원문
@@ -260,8 +262,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              ))}
             </TableBody>
           </Table>
         </div>

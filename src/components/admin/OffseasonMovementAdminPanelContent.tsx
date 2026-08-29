@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 
 import { FRANCHISE_TEAM_IDS, TEAM_DATA } from '../../constants/teams';
 import { cn } from '../../lib/utils';
@@ -109,6 +109,7 @@ export interface OffseasonMovementAdminPanelContentProps {
   onDelete: () => void;
   visualQaStateOverride?: OffseasonMovementAdminPanelContentVisualQaState;
   visualQaRenderers?: OffseasonMovementAdminPanelContentVisualQaRenderers;
+  visualQaControlledState?: true;
 }
 
 export default function OffseasonMovementAdminPanelContent({
@@ -120,11 +121,11 @@ export default function OffseasonMovementAdminPanelContent({
   importingCsv,
   submitting,
   csvReport,
-  search,
-  sectionFilter,
-  teamFilter,
-  fromDate,
-  toDate,
+  search: requestedSearch,
+  sectionFilter: requestedSectionFilter,
+  teamFilter: requestedTeamFilter,
+  fromDate: requestedFromDate,
+  toDate: requestedToDate,
   qualityFilter,
   qualityOptions,
   activeQualityOption,
@@ -133,10 +134,10 @@ export default function OffseasonMovementAdminPanelContent({
   detailsCount,
   structuredCount,
   sourcedCount,
-  dialogOpen,
-  editingMovement,
-  deleteTarget,
-  formData,
+  dialogOpen: requestedDialogOpen,
+  editingMovement: requestedEditingMovement,
+  deleteTarget: requestedDeleteTarget,
+  formData: requestedFormData,
   onSearchChange,
   onSectionFilterChange,
   onTeamFilterChange,
@@ -157,7 +158,78 @@ export default function OffseasonMovementAdminPanelContent({
   onDelete,
   visualQaStateOverride,
   visualQaRenderers,
+  visualQaControlledState,
 }: OffseasonMovementAdminPanelContentProps) {
+  const useVisualQaControlledState = visualQaControlledState === true
+    && import.meta.env?.PROD !== true;
+  const [visualQaSearch, setVisualQaSearch] = useState(requestedSearch);
+  const [visualQaSectionFilter, setVisualQaSectionFilter] = useState(requestedSectionFilter);
+  const [visualQaTeamFilter, setVisualQaTeamFilter] = useState(requestedTeamFilter);
+  const [visualQaFromDate, setVisualQaFromDate] = useState(requestedFromDate);
+  const [visualQaToDate, setVisualQaToDate] = useState(requestedToDate);
+  const [visualQaDialogOpen, setVisualQaDialogOpen] = useState(requestedDialogOpen);
+  const [visualQaEditingMovement, setVisualQaEditingMovement] = useState(requestedEditingMovement);
+  const [visualQaDeleteTarget, setVisualQaDeleteTarget] = useState(requestedDeleteTarget);
+  const [visualQaFormData, setVisualQaFormData] = useState(requestedFormData);
+  const search = useVisualQaControlledState ? visualQaSearch : requestedSearch;
+  const sectionFilter = useVisualQaControlledState ? visualQaSectionFilter : requestedSectionFilter;
+  const teamFilter = useVisualQaControlledState ? visualQaTeamFilter : requestedTeamFilter;
+  const fromDate = useVisualQaControlledState ? visualQaFromDate : requestedFromDate;
+  const toDate = useVisualQaControlledState ? visualQaToDate : requestedToDate;
+  const dialogOpen = useVisualQaControlledState ? visualQaDialogOpen : requestedDialogOpen;
+  const editingMovement = useVisualQaControlledState
+    ? visualQaEditingMovement
+    : requestedEditingMovement;
+  const deleteTarget = useVisualQaControlledState ? visualQaDeleteTarget : requestedDeleteTarget;
+  const formData = useVisualQaControlledState ? visualQaFormData : requestedFormData;
+  const handleSearchChange = useVisualQaControlledState ? setVisualQaSearch : onSearchChange;
+  const handleSectionFilterChange = useVisualQaControlledState
+    ? setVisualQaSectionFilter
+    : onSectionFilterChange;
+  const handleTeamFilterChange = useVisualQaControlledState
+    ? setVisualQaTeamFilter
+    : onTeamFilterChange;
+  const handleFromDateChange = useVisualQaControlledState ? setVisualQaFromDate : onFromDateChange;
+  const handleToDateChange = useVisualQaControlledState ? setVisualQaToDate : onToDateChange;
+  const handleOpenCreateDialog = useVisualQaControlledState
+    ? () => {
+      setVisualQaEditingMovement(null);
+      setVisualQaDialogOpen(true);
+    }
+    : onOpenCreateDialog;
+  const handleOpenEditDialog = useVisualQaControlledState
+    ? (movement: AdminOffseasonMovement) => {
+      setVisualQaEditingMovement(movement);
+      setVisualQaFormData({
+        movementDate: movement.movementDate,
+        section: movement.section,
+        teamCode: movement.teamCode,
+        playerName: movement.playerName,
+        summary: movement.summary ?? '',
+        details: movement.details ?? '',
+        contractTerm: movement.contractTerm ?? '',
+        contractValue: movement.contractValue ?? '',
+        optionDetails: movement.optionDetails ?? '',
+        counterpartyTeam: movement.counterpartyTeam ?? '',
+        counterpartyDetails: movement.counterpartyDetails ?? '',
+        sourceLabel: movement.sourceLabel ?? '',
+        sourceUrl: movement.sourceUrl ?? '',
+        announcedAt: movement.announcedAt ?? '',
+      });
+      setVisualQaDialogOpen(true);
+    }
+    : onOpenEditDialog;
+  const handleDeleteTargetChange = useVisualQaControlledState
+    ? setVisualQaDeleteTarget
+    : onDeleteTargetChange;
+  const handleDialogClose = useVisualQaControlledState
+    ? () => setVisualQaDialogOpen(false)
+    : onDialogClose;
+  const handleUpdateField = useVisualQaControlledState
+    ? (field: keyof AdminOffseasonMovementPayload, value: string) => {
+      setVisualQaFormData((current) => ({ ...current, [field]: value }));
+    }
+    : onUpdateField;
   const shouldRenderDialogs = dialogOpen || Boolean(deleteTarget);
   const resultsProps = {
     csvReport,
@@ -165,8 +237,8 @@ export default function OffseasonMovementAdminPanelContent({
     filteredMovements,
     loading,
     activeQualityOption,
-    onOpenEditDialog,
-    onDeleteTargetChange,
+    onOpenEditDialog: handleOpenEditDialog,
+    onDeleteTargetChange: handleDeleteTargetChange,
   };
   const dialogProps = {
     dialogOpen,
@@ -174,9 +246,9 @@ export default function OffseasonMovementAdminPanelContent({
     deleteTarget,
     submitting,
     formData,
-    onDialogClose,
-    onDeleteTargetChange,
-    onUpdateField,
+    onDialogClose: handleDialogClose,
+    onDeleteTargetChange: handleDeleteTargetChange,
+    onUpdateField: handleUpdateField,
     onSubmit,
     onDelete,
   };
@@ -197,8 +269,15 @@ export default function OffseasonMovementAdminPanelContent({
     : (
       <Suspense
         fallback={(
-          <div className="flex items-center justify-center py-16">
-            <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
+          <div
+            aria-busy="true"
+            aria-live="polite"
+            data-testid="admin-offseason-results-fallback"
+            role="status"
+            className="flex items-center justify-center gap-3 py-16 text-slate-400"
+          >
+            <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin motion-reduce:animate-none" />
+            <span>스토브리그 결과를 불러오는 중...</span>
           </div>
         )}
       >
@@ -222,7 +301,17 @@ export default function OffseasonMovementAdminPanelContent({
         )
         : visualQaRenderers?.dialogs(dialogProps)
       : (
-        <Suspense fallback={null}>
+        <Suspense fallback={(
+          <div
+            aria-busy="true"
+            aria-live="polite"
+            data-testid="admin-offseason-dialogs-fallback"
+            role="status"
+            className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-16 text-center text-slate-400"
+          >
+            스토브리그 입력 창을 불러오는 중...
+          </div>
+        )}>
           <OffseasonMovementAdminDialogs {...dialogProps} />
         </Suspense>
       );
@@ -239,7 +328,7 @@ export default function OffseasonMovementAdminPanelContent({
   }
 
   return (
-    <div className="min-w-0 max-w-full space-y-6">
+    <div data-testid="admin-offseason-content" className="min-w-0 max-w-full space-y-6">
       {successMessage && (
         <div role="status" aria-live="polite" title={successMessage} className="line-clamp-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-caption text-emerald-300 [overflow-wrap:anywhere]">
           {successMessage}
@@ -322,7 +411,7 @@ export default function OffseasonMovementAdminPanelContent({
               aria-label="스토브리그 이동 검색"
               data-testid="admin-offseason-search"
               value={search}
-              onChange={(event) => onSearchChange(event.target.value)}
+              onChange={(event) => handleSearchChange(event.target.value)}
               placeholder="선수명, 요약, 계약 조건, 출처 검색"
               className={cn(adminMobileControlClassName, 'pl-10 bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-xl')}
             />
@@ -331,7 +420,7 @@ export default function OffseasonMovementAdminPanelContent({
             aria-label="스토브리그 이동 구분 필터"
             data-testid="admin-offseason-section-trigger"
             value={sectionFilter}
-            onChange={(event) => onSectionFilterChange(event.target.value)}
+            onChange={(event) => handleSectionFilterChange(event.target.value)}
             className={adminNativeSelectClassName}
           >
             <option value={ALL_VALUE}>구분 전체</option>
@@ -345,7 +434,7 @@ export default function OffseasonMovementAdminPanelContent({
             aria-label="스토브리그 이동 팀 필터"
             data-testid="admin-offseason-team-trigger"
             value={teamFilter}
-            onChange={(event) => onTeamFilterChange(event.target.value)}
+            onChange={(event) => handleTeamFilterChange(event.target.value)}
             className={adminNativeSelectClassName}
           >
             <option value={ALL_VALUE}>팀 전체</option>
@@ -360,7 +449,7 @@ export default function OffseasonMovementAdminPanelContent({
             type="date"
             data-testid="admin-offseason-from-date"
             value={fromDate}
-            onChange={(event) => onFromDateChange(event.target.value)}
+            onChange={(event) => handleFromDateChange(event.target.value)}
             className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
           <Input
@@ -368,7 +457,7 @@ export default function OffseasonMovementAdminPanelContent({
             type="date"
             data-testid="admin-offseason-to-date"
             value={toDate}
-            onChange={(event) => onToDateChange(event.target.value)}
+            onChange={(event) => handleToDateChange(event.target.value)}
             className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
           <div className="flex gap-2">
@@ -415,7 +504,7 @@ export default function OffseasonMovementAdminPanelContent({
             <Button
               type="button"
               data-testid="admin-offseason-open-create"
-              onClick={onOpenCreateDialog}
+              onClick={handleOpenCreateDialog}
               className={cn(adminMobileControlClassName, 'bg-emerald-500 text-slate-950 shadow-sm hover:bg-emerald-400')}
             >
               <AdminPlusIcon className="mr-2 h-4 w-4" />

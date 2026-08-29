@@ -99,15 +99,25 @@ test('owns its 44px mobile controls without relying on dirty shared primitives',
   assert.match(resultsSource, /size="sm"[\s\S]*className="[^"]*min-h-11 min-w-11/);
 });
 
-test('requires the team change capture to prove a value different from the initial fixture', () => {
+test('requires both root select changes to prove values different from the initial fixture', () => {
   const root = stateContract.components.find((component: { id: string }) => (
     component.id === 'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel'
   ));
   const target = root.interactionPlans.change.targets.find((candidate: { id: string }) => candidate.id === 'team-filter');
-  assert.equal(target.key, 'l');
+  assert.equal(target.action ?? root.interactionPlans.change.action, 'select-option');
+  assert.equal(target.value, 'LG');
   assert.equal(
     target.waitForSelector,
     '[data-testid="admin-offseason-team-trigger"]:has(option[value="LG"]:checked)',
+  );
+  const sectionTarget = root.interactionPlans.change.targets.find(
+    (candidate: { id: string }) => candidate.id === 'dialog-section',
+  );
+  assert.equal(sectionTarget.action ?? root.interactionPlans.change.action, 'select-option');
+  assert.equal(sectionTarget.value, '기타');
+  assert.equal(
+    sectionTarget.waitForSelector,
+    '[data-testid="admin-offseason-dialog-section-trigger"]:has(option[value="기타"]:checked)',
   );
 });
 

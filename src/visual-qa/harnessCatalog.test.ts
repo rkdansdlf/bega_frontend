@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70474);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70510);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    271,
+    272,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -5072,6 +5072,26 @@ test('admin offseason movement root covers exactly 44 scenarios and three produc
   assert.equal(parentEntry?.render?.mode, 'direct');
   assert.equal(parentEntry?.render?.adapterId, 'admin.offseason-movement-panel');
 
+  const teamChange = scenarios.find(({ states, interactionPlan }) => (
+    states.interactions === 'change' && interactionPlan?.targetId === 'team-filter'
+  ));
+  assert.deepEqual(teamChange?.interactionPlan, {
+    action: 'select-option',
+    selector: '[data-testid="admin-offseason-team-trigger"]',
+    targetId: 'team-filter',
+    value: 'LG',
+    waitForSelector: '[data-testid="admin-offseason-team-trigger"]:has(option[value="LG"]:checked)',
+  });
+  const dialogSectionChange = scenarios.find(({ states, interactionPlan }) => (
+    states.interactions === 'change' && interactionPlan?.targetId === 'dialog-section'
+  ));
+  assert.equal(dialogSectionChange?.interactionPlan?.action, 'select-option');
+  assert.equal(dialogSectionChange?.interactionPlan?.value, '기타');
+  assert.equal(
+    dialogSectionChange?.interactionPlan?.waitForSelector,
+    '[data-testid="admin-offseason-dialog-section-trigger"]:has(option[value="기타"]:checked)',
+  );
+
   const parentScenarioIds = new Set(scenarios.map(({ id }) => id));
   const hostedIds = [
     'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanelContent',
@@ -5085,6 +5105,62 @@ test('admin offseason movement root covers exactly 44 scenarios and three produc
     assert.ok((entry?.render?.hostScenarioIds?.length ?? 0) > 0, hostedId);
     assert.ok(entry?.render?.hostScenarioIds?.every((id) => parentScenarioIds.has(id)), hostedId);
   }
+});
+
+test('admin offseason content direct export covers exactly 36 declared legal scenarios', async () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminPanelContent';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      id: string;
+      render?: { adapterId?: string; mode?: string };
+      status: string;
+    }>;
+  };
+  const defaults = scenarios.filter(({ states }) => states.interactions === 'default');
+  const interactions = scenarios.filter(({ states }) => states.interactions !== 'default');
+
+  assert.equal(scenarios.length, 36);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 36);
+  assert.equal(defaults.filter(({ variants }) => variants.preset === 'idle').length, 8);
+  assert.equal(defaults.filter(({ variants }) => variants.preset !== 'idle').length, 15);
+  assert.deepEqual(Object.fromEntries(
+    ['hover', 'focus-visible', 'pressed', 'input', 'change', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      interactions.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    hover: 2,
+    'focus-visible': 3,
+    pressed: 3,
+    input: 2,
+    change: 2,
+    'keyboard-navigation': 1,
+  });
+  assert.ok(scenarios.every(({ states, variants }) => (
+    states.permissions === 'admin'
+      && states.system === 'idle'
+      && variants.theme === 'dark'
+      && variants.preset !== 'content-fallback'
+  )));
+  assert.ok(interactions.every(({ states, variants }) => (
+    states.data === 'maximum-supported' && variants.preset === 'idle'
+  )));
+
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'admin.offseason-movement-content');
+  const selectedChanges = interactions.filter(({ states }) => states.interactions === 'change');
+  assert.ok(selectedChanges.every(({ interactionPlan }) => (
+    interactionPlan != null
+      && String(interactionPlan.action) === 'select-option'
+      && typeof interactionPlan.value === 'string'
+      && interactionPlan.waitForSelector?.includes(':checked')
+  )));
 });
 
 test('admin internal fallbacks use reviewed hosted evidence without independent state combinations', async () => {

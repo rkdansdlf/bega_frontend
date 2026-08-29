@@ -26,6 +26,11 @@ const createPage = (focusAt = 2) => {
       events.push(`fill:${value}`);
       inputValue = value;
     },
+    selectOption: async (value: string) => {
+      events.push(`select-option:${value}`);
+      inputValue = value;
+      return [value];
+    },
     inputValue: async () => inputValue,
     scrollIntoViewIfNeeded: async () => { events.push('scroll-into-view'); },
     boundingBox: async () => ({ x: 10, y: 20, width: 40, height: 44 }),
@@ -311,4 +316,55 @@ test('post-expansion fill and press-key results are revalidated without repeatin
   }, async () => {});
   assert.deepEqual(change.events, ['visible', 'visible', 'frames']);
   assert.equal(change.events.includes('key:End'), false);
+});
+
+test('select-option changes a real select once and only revalidates its exact result after expansion', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+  const selected = createPage();
+
+  const cleanup = await subject.executeHarnessInteractionPlan(selected.page, {
+    action: 'select-option',
+    selector: '[data-testid="team"]',
+    value: 'LG',
+    waitForSelector: '[data-testid="team"]:has(option[value="LG"]:checked)',
+  });
+  assert.deepEqual(selected.events, [
+    'visible',
+    'select-option:LG',
+    'visible',
+    'frames',
+  ]);
+
+  selected.events.length = 0;
+  await subject.revalidateHarnessInteractionPlan(selected.page, {
+    action: 'select-option',
+    selector: '[data-testid="team"]',
+    value: 'LG',
+    waitForSelector: '[data-testid="team"]:has(option[value="LG"]:checked)',
+  }, cleanup);
+  assert.deepEqual(selected.events, ['visible', 'visible', 'frames']);
+  assert.equal(selected.events.includes('select-option:LG'), false);
+});
+
+test('select-option fails closed without both an exact value and selected-result verifier', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+
+  await assert.rejects(
+    subject.executeHarnessInteractionPlan(createPage().page, {
+      action: 'select-option',
+      selector: 'select',
+      value: 'LG',
+    }),
+    /requires value and waitForSelector/,
+  );
+  await assert.rejects(
+    subject.executeHarnessInteractionPlan(createPage().page, {
+      action: 'select-option',
+      selector: 'select',
+      waitForSelector: 'option[value="LG"]:checked',
+    }),
+    /requires value and waitForSelector/,
+  );
 });
