@@ -39,7 +39,7 @@ export const createClientErrorEventFilterKey = (
 export const createClientErrorEventRequestCoordinator = (
   options: ClientErrorEventRequestCoordinatorOptions = {},
 ): ClientErrorEventRequestCoordinator => {
-  const delayMs = options.delayMs ?? 250;
+  const delayMs = options.delayMs ?? 300;
   const setTimer = options.setTimer ?? ((callback: () => void, delay: number) => setTimeout(callback, delay));
   const clearTimer = options.clearTimer ?? ((handle: unknown) => clearTimeout(handle as ReturnType<typeof setTimeout>));
   let previousSnapshot: ClientErrorEventRequestSnapshot | undefined;

@@ -9,17 +9,20 @@ import {
 const createTimers = () => {
   let nextId = 1;
   const callbacks = new Map<number, () => void>();
+  const delays: number[] = [];
   return {
     callbacks,
+    delays,
     clearTimer: (id: unknown) => callbacks.delete(id as number),
     flush: () => {
       const queued = [...callbacks.values()];
       callbacks.clear();
       queued.forEach((callback) => callback());
     },
-    setTimer: (callback: () => void) => {
+    setTimer: (callback: () => void, delayMs: number) => {
       const id = nextId++;
       callbacks.set(id, callback);
+      delays.push(delayMs);
       return id;
     },
   };
@@ -59,6 +62,7 @@ test('debounces rapid filter changes to the newest request', () => {
   coordinator.sync({ active: true, windowKey: '7d', filterKey: 'route=a' }, run);
   coordinator.sync({ active: true, windowKey: '7d', filterKey: 'route=ab' }, run);
   assert.equal(timers.callbacks.size, 1);
+  assert.deepEqual(timers.delays, [300, 300]);
   timers.flush();
   assert.equal(runs, 3);
 });
