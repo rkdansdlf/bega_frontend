@@ -4834,6 +4834,82 @@ test('admin client-error panel covers exactly 82 parent scenarios and every host
   }
 });
 
+test('admin internal fallbacks use reviewed hosted evidence without independent state combinations', async () => {
+  const expectedHostCounts = new Map([
+    ['src/components/admin/AdminAiOperationsPanel.tsx#AutoBriefFallback', 4],
+    ['src/components/admin/AdminAiOperationsPanel.tsx#ReleaseDecisionFallback', 4],
+    ['src/components/admin/AdminAiOperationsRuntime.tsx#AdminAiOperationsRuntimeFallback', 1],
+    ['src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityPanelFallback', 3],
+    ['src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRoleDialogFallback', 4],
+    ['src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsDialogFallback', 3],
+    ['src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanelFallback', 1],
+    ['src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorChartFallback', 1],
+    ['src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorChartResolvedState', 3],
+    ['src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorDetailFallback', 1],
+  ]);
+  const classifications = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-classifications-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      basis?: string;
+      classification: string;
+      id: string;
+      renderAccess?: string;
+    }>;
+  };
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      axes?: Record<string, Record<string, { owner?: string; reason?: string; testEvidence?: string }>>;
+      constraints?: unknown[];
+      id: string;
+      render?: { hostScenarioIds?: string[]; mode?: string };
+      renderAccess?: string;
+      status: string;
+      variants?: Record<string, { owner?: string; reason?: string; testEvidence?: string }>;
+    }>;
+  };
+  const generatedScenarioIds = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ id }) => id));
+
+  assert.equal(expectedHostCounts.size, 10);
+  for (const [componentId, expectedCount] of expectedHostCounts) {
+    const classification = classifications.components.find(({ id }) => id === componentId);
+    assert.deepEqual(classification, {
+      id: componentId,
+      classification: 'visual',
+      basis: 'reviewed-jsx-callable',
+      reason: 'The callable contains JSX and is included as a visual React render unit.',
+      testEvidence: 'visual-qa-component-inventory containsJsx=true',
+      owner: 'frontend-platform',
+      renderAccess: 'hosted',
+    }, componentId);
+
+    const entry = manifest.components.find(({ id }) => id === componentId);
+    assert.equal(entry?.status, 'registered', componentId);
+    assert.equal(entry?.renderAccess, 'hosted', componentId);
+    assert.equal(entry?.render?.mode, 'hosted', componentId);
+    assert.equal(entry?.render?.hostScenarioIds?.length, expectedCount, componentId);
+    assert.ok(entry?.render?.hostScenarioIds?.every((id) => generatedScenarioIds.has(id)), componentId);
+    assert.deepEqual(Object.keys(entry?.axes ?? {}).sort(), [
+      'data', 'interactions', 'permissions', 'system',
+    ], componentId);
+    for (const axis of Object.values(entry?.axes ?? {})) {
+      assert.deepEqual(Object.keys(axis), ['notApplicable'], componentId);
+      assert.ok(axis.notApplicable.owner, componentId);
+      assert.ok(axis.notApplicable.reason, componentId);
+      assert.ok(axis.notApplicable.testEvidence, componentId);
+    }
+    assert.deepEqual(Object.keys(entry?.variants ?? {}), ['notApplicable'], componentId);
+    assert.ok(entry?.variants?.notApplicable.owner, componentId);
+    assert.ok(entry?.variants?.notApplicable.reason, componentId);
+    assert.ok(entry?.variants?.notApplicable.testEvidence, componentId);
+    assert.deepEqual(entry?.constraints, [], componentId);
+  }
+});
+
 test('component file paths resolve to Vite glob module keys', () => {
   assert.equal(
     componentModuleKey('src/components/prediction/PredictionShellIcons.tsx'),

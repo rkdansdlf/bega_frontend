@@ -524,6 +524,110 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/admin/AdminAiOperationsPanel.tsx#AutoBriefFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=long-korean|interactions=default|variant.auto-brief-phase=fallback|variant.release-phase=resolved|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=single|interactions=default|variant.auto-brief-phase=fallback|variant.release-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=single|interactions=default|variant.auto-brief-phase=fallback|variant.release-phase=resolved|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=unbroken-token|interactions=default|variant.auto-brief-phase=fallback|variant.release-phase=resolved|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/admin/AdminAiOperationsPanel.tsx#ReleaseDecisionFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=long-korean|interactions=default|variant.auto-brief-phase=resolved|variant.release-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=single|interactions=default|variant.auto-brief-phase=fallback|variant.release-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=single|interactions=default|variant.auto-brief-phase=resolved|variant.release-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminAiOperationsPanel.tsx#AdminAiOperationsPanel:data=unbroken-token|interactions=default|variant.auto-brief-phase=resolved|variant.release-phase=fallback|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/admin/AdminAiOperationsPanelRuntime.tsx#AdminAiOperationsPanelRuntime",
       "status": "registered",
       "renderAccess": "module-export",
@@ -1089,6 +1193,55 @@
           "testEvidence": "src/components/admin/AdminAiOperationsRuntime.mobile.test.tsx"
         }
       ]
+    },
+    {
+      "id": "src/components/admin/AdminAiOperationsRuntime.tsx#AdminAiOperationsRuntimeFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminAiOperationsRuntime.tsx#AdminAiOperationsRuntime:data=empty|interactions=default|system=idle|variant.window=today|variant.copy=idle|variant.theme=dark|variant.panel-phase=fallback"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminAiReleaseDecisionRuntime.tsx#AdminAiReleaseDecisionRuntime",
@@ -2545,6 +2698,109 @@
           "testEvidence": "src/components/admin/AdminAiOperationsRuntime.tsx"
         }
       ]
+    },
+    {
+      "id": "src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityPanelFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=empty|permissions=admin|interactions=default|variant.active-tab=parties|variant.panel-phase=fallback|variant.role-dialog-phase=closed|variant.theme=dark",
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=empty|permissions=admin|interactions=default|variant.active-tab=posts|variant.panel-phase=fallback|variant.role-dialog-phase=closed|variant.theme=dark",
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=empty|permissions=admin|interactions=default|variant.active-tab=users|variant.panel-phase=fallback|variant.role-dialog-phase=closed|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRoleDialogFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=long-korean|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=maximum-supported|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=single|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=fallback|variant.theme=dark",
+          "state:src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime:data=unbroken-token|permissions=super-admin|interactions=default|variant.active-tab=users|variant.panel-phase=resolved|variant.role-dialog-phase=fallback|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminCommunityRuntime.tsx#AdminCommunityRuntime",
@@ -6479,9 +6735,109 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsDialogFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=create-fallback|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark",
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=delete-fallback|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark",
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.dialog-phase=edit-fallback|variant.panel-phase=resolved|variant.selection=selected|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanel",
       "status": "pending",
       "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsPanelFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime:data=empty|permissions=admin|interactions=default|system=idle|variant.dialog-phase=closed|variant.panel-phase=fallback|variant.selection=none|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/AdminStadiumsRuntime.tsx#AdminStadiumsRuntime",
@@ -15042,6 +15398,155 @@
           "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-panel-adapter"
         }
       ]
+    },
+    {
+      "id": "src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorChartFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=chart-fallback|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorChartResolvedState",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorAdminPanel:data=empty|permissions=admin|interactions=default|system=idle|variant.preset=none-empty|variant.theme=dark",
+          "state:src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=dashboard-only-maximum-supported|variant.theme=dark",
+          "state:src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorAdminPanel:data=populated|permissions=admin|interactions=default|system=dashboard-loading|variant.preset=dashboard-loading|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted wrapper reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted wrapper declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorDetailFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=detail-suspense-fallback|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted fallback reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lifecycle evidence belongs to the exact parent scenarios.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted fallback declares no independent visual variants outside its exact parent scenario evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-internal-fallbacks"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/ClientErrorAdminPanel.tsx#ClientErrorInsightsSkeleton",
