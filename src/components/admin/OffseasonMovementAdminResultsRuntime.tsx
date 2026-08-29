@@ -78,7 +78,7 @@ const formatDateTimeLabel = (value?: string | null) => {
   return `${formatDate(datePart)} ${timePart.slice(0, 5)}`;
 };
 
-interface OffseasonMovementAdminResultsRuntimeProps {
+export interface OffseasonMovementAdminResultsRuntimeProps {
   csvReport: CsvImportReport | null;
   movements: AdminOffseasonMovement[];
   filteredMovements: AdminOffseasonMovement[];
@@ -101,9 +101,9 @@ export default function OffseasonMovementAdminResultsRuntime({
     <>
       {csvReport && (
         <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-caption font-semibold text-sky-200">{csvReport.fileName} 업로드 결과</p>
+              <p title={csvReport.fileName} className="max-w-full truncate text-caption font-semibold text-sky-200">{csvReport.fileName} 업로드 결과</p>
               <p className="mt-1 text-caption text-slate-300">
                 총 {csvReport.totalRows}행 중 등록 {csvReport.createdCount}건, 수정 {csvReport.updatedCount}건,
                 실패 {csvReport.failedCount}건
@@ -116,7 +116,7 @@ export default function OffseasonMovementAdminResultsRuntime({
               <p className={adminFieldLabelClassName}>실패 행</p>
               <div className="mt-2 space-y-1 text-caption text-slate-300">
                 {csvReport.errors.slice(0, 5).map((message) => (
-                  <p key={message}>{message}</p>
+                  <p key={message} title={message} className="line-clamp-2 [overflow-wrap:anywhere]">{message}</p>
                 ))}
                 {csvReport.errors.length > 5 && (
                 <p className="text-caption text-slate-500">추가 실패 {csvReport.errors.length - 5}건은 같은 파일을 수정한 뒤 다시 업로드하면 됩니다.</p>
@@ -128,12 +128,13 @@ export default function OffseasonMovementAdminResultsRuntime({
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center py-16">
+        <div role="status" aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-3 py-16 text-slate-400">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent motion-reduce:animate-none" />
+          <span>스토브리그 이동 목록을 불러오는 중...</span>
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-800 overflow-hidden">
-          <Table>
+        <div data-testid="admin-offseason-results-scroll" className="max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-800">
+          <Table aria-label="스토브리그 이동 관리 결과" className="min-w-[1120px]">
             <TableHeader>
               <TableRow className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/50">
                 <TableHead className="text-slate-400 font-semibold">날짜</TableHead>
@@ -161,6 +162,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                 filteredMovements.map((movement) => (
                   <TableRow
                     key={movement.id}
+                    data-testid={`admin-offseason-row-${movement.id}`}
                     className="border-slate-800 transition-colors duration-150 hover:bg-slate-800/30"
                   >
                     <TableCell className="text-slate-300 text-caption font-semibold">{formatDate(movement.movementDate)}</TableCell>
@@ -178,10 +180,10 @@ export default function OffseasonMovementAdminResultsRuntime({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-caption text-slate-200 font-semibold">{movement.playerName}</TableCell>
+                    <TableCell title={movement.playerName} className="w-[140px] max-w-[140px] truncate text-caption font-semibold text-slate-200">{movement.playerName}</TableCell>
                     <TableCell className="max-w-[280px]">
                       <div className="space-y-1">
-                        <p className="line-clamp-2 text-caption text-slate-300">
+                        <p title={movement.summary?.trim() || movement.details?.trim() || '요약 없음'} className="line-clamp-2 text-caption text-slate-300 [overflow-wrap:anywhere]">
                           {movement.summary?.trim() || movement.details?.trim() || '요약 없음'}
                         </p>
                         <div className="flex flex-wrap gap-1">
@@ -199,19 +201,19 @@ export default function OffseasonMovementAdminResultsRuntime({
                           )}
                         </div>
                         {movement.details?.trim() && movement.summary?.trim() && movement.details !== movement.summary && (
-                        <p className="line-clamp-1 text-caption text-slate-500">{movement.details}</p>
+                        <p title={movement.details} className="line-clamp-1 text-caption text-slate-500 [overflow-wrap:anywhere]">{movement.details}</p>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
                       <div className="space-y-1 text-caption">
-                        <p className="font-semibold text-emerald-300">{movement.contractValue || '-'}</p>
-                        <p className="text-slate-500">{movement.contractTerm || movement.optionDetails || '-'}</p>
+                        <p title={movement.contractValue || '-'} className="truncate font-semibold text-emerald-300">{movement.contractValue || '-'}</p>
+                        <p title={movement.contractTerm || movement.optionDetails || '-'} className="truncate text-slate-500">{movement.contractTerm || movement.optionDetails || '-'}</p>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
                       <div className="space-y-1 text-caption">
-                        <p className="text-slate-200">{movement.sourceLabel || '-'}</p>
+                        <p title={movement.sourceLabel || '-'} className="truncate text-slate-200">{movement.sourceLabel || '-'}</p>
                         {movement.sourceUrl ? (
                           <a
                             href={movement.sourceUrl}
@@ -234,6 +236,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-edit-${movement.id}`}
+                          aria-label={`${movement.playerName} 이동 수정`}
                           onClick={() => onOpenEditDialog(movement)}
                           className="text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
                         >
@@ -243,6 +246,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-delete-${movement.id}`}
+                          aria-label={`${movement.playerName} 이동 삭제`}
                           onClick={() => onDeleteTargetChange(movement)}
                           className="text-slate-400 hover:bg-red-500/10 hover:text-red-300"
                         >

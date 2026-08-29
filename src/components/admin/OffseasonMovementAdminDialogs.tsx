@@ -42,7 +42,7 @@ const getSectionBadgeClass = (section: string) => {
   return 'bg-slate-700 text-slate-200 border-0';
 };
 
-interface OffseasonMovementAdminDialogsProps {
+export interface OffseasonMovementAdminDialogsProps {
   dialogOpen: boolean;
   editingMovement: AdminOffseasonMovement | null;
   deleteTarget: AdminOffseasonMovement | null;
@@ -109,6 +109,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>이동 날짜</p>
               <Input
+                aria-label="이동 날짜"
                 type="date"
                 data-testid="admin-offseason-movement-date"
                 value={formData.movementDate}
@@ -119,6 +120,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>구분</p>
               <select
+                aria-label="구분"
                 data-testid="admin-offseason-dialog-section-trigger"
                 value={formData.section}
                 onChange={(event) => onUpdateField('section', event.target.value)}
@@ -134,6 +136,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>팀 코드</p>
               <select
+                aria-label="팀 코드"
                 data-testid="admin-offseason-dialog-team-trigger"
                 value={formData.teamCode}
                 onChange={(event) => onUpdateField('teamCode', event.target.value)}
@@ -149,6 +152,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>선수명</p>
               <Input
+                aria-label="선수명"
                 data-testid="admin-offseason-player-name"
                 value={formData.playerName}
                 onChange={(event) => onUpdateField('playerName', event.target.value)}
@@ -162,6 +166,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>요약</p>
               <Textarea
+                aria-label="요약"
                 data-testid="admin-offseason-summary"
                 value={formData.summary}
                 onChange={(event) => onUpdateField('summary', event.target.value)}
@@ -172,6 +177,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>상세 메모</p>
               <Textarea
+                aria-label="상세 메모"
                 data-testid="admin-offseason-details"
                 value={formData.details}
                 onChange={(event) => onUpdateField('details', event.target.value)}
@@ -183,6 +189,7 @@ export default function OffseasonMovementAdminDialogs({
               <div className="space-y-2">
                 <p className={adminFieldLabelClassName}>계약 기간</p>
                 <Input
+                  aria-label="계약 기간"
                   data-testid="admin-offseason-contract-term"
                   value={formData.contractTerm}
                   onChange={(event) => onUpdateField('contractTerm', event.target.value)}
@@ -193,6 +200,7 @@ export default function OffseasonMovementAdminDialogs({
               <div className="space-y-2">
                 <p className={adminFieldLabelClassName}>계약 규모</p>
                 <Input
+                  aria-label="계약 규모"
                   data-testid="admin-offseason-contract-value"
                   value={formData.contractValue}
                   onChange={(event) => onUpdateField('contractValue', event.target.value)}
@@ -203,6 +211,7 @@ export default function OffseasonMovementAdminDialogs({
               <div className="space-y-2">
                 <p className={adminFieldLabelClassName}>옵션</p>
                 <Input
+                  aria-label="옵션"
                   data-testid="admin-offseason-option-details"
                   value={formData.optionDetails}
                   onChange={(event) => onUpdateField('optionDetails', event.target.value)}
@@ -217,6 +226,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>상대 구단</p>
               <select
+                aria-label="상대 구단"
                 data-testid="admin-offseason-counterparty-trigger"
                 value={formData.counterpartyTeam || NONE_VALUE}
                 onChange={(event) => onUpdateField('counterpartyTeam', event.target.value === NONE_VALUE ? '' : event.target.value)}
@@ -233,6 +243,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>반대급부</p>
               <Input
+                aria-label="반대급부"
                 data-testid="admin-offseason-counterparty-details"
                 value={formData.counterpartyDetails}
                 onChange={(event) => onUpdateField('counterpartyDetails', event.target.value)}
@@ -243,6 +254,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>출처명</p>
               <Input
+                aria-label="출처명"
                 data-testid="admin-offseason-source-label"
                 value={formData.sourceLabel}
                 onChange={(event) => onUpdateField('sourceLabel', event.target.value)}
@@ -253,6 +265,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>발표 시각</p>
               <Input
+                aria-label="발표 시각"
                 type="datetime-local"
                 data-testid="admin-offseason-announced-at"
                 value={formData.announcedAt}
@@ -266,6 +279,7 @@ export default function OffseasonMovementAdminDialogs({
             <div className="space-y-2">
               <p className={adminFieldLabelClassName}>출처 URL</p>
               <Input
+                aria-label="출처 URL"
                 data-testid="admin-offseason-source-url"
                 value={formData.sourceUrl}
                 onChange={(event) => onUpdateField('sourceUrl', event.target.value)}
@@ -280,8 +294,8 @@ export default function OffseasonMovementAdminDialogs({
                   <AdminBadge className={getSectionBadgeClass(formData.section)}>{formData.section || '구분 없음'}</AdminBadge>
                   <span className="text-caption text-slate-400">{TEAM_DATA[formData.teamCode]?.fullName || formData.teamCode}</span>
                 </div>
-                <p className="text-lg font-semibold text-white">{formData.playerName || '선수명'}</p>
-                <p className="text-caption leading-relaxed text-slate-300">
+                <p title={formData.playerName || '선수명'} className="text-lg font-semibold text-white [overflow-wrap:anywhere]">{formData.playerName || '선수명'}</p>
+                <p title={formData.summary?.trim() || formData.details?.trim() || '요약을 입력하면 카드와 표에 이렇게 노출됩니다.'} className="text-caption leading-relaxed text-slate-300 [overflow-wrap:anywhere]">
                   {formData.summary?.trim() || formData.details?.trim() || '요약을 입력하면 카드와 표에 이렇게 노출됩니다.'}
                 </p>
               </div>
@@ -306,6 +320,7 @@ export default function OffseasonMovementAdminDialogs({
             <Button
               type="button"
               variant="outline"
+              data-testid="admin-offseason-delete-cancel"
               onClick={() => onDeleteTargetChange(null)}
               className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
             >
@@ -315,6 +330,7 @@ export default function OffseasonMovementAdminDialogs({
               type="button"
               data-testid="admin-offseason-delete-confirm"
               onClick={onDelete}
+              disabled={submitting}
               className="bg-red-500 text-white hover:bg-red-400"
             >
               삭제

@@ -30,6 +30,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.delete-place-dialog',
     'admin.game-status-repair-panel',
     'admin.mates-panel',
+    'admin.offseason-movement-panel',
     'admin.page-route',
     'admin.page-shell',
     'admin.place-dialog',
@@ -503,6 +504,69 @@ test('offseason leaf adapters cover copy pressure, layout, sort, and dialog stat
     variants: { section: 'trade', theme: 'dark' },
   });
   assert.equal(sectionPill.props.section, '트레이드');
+});
+
+test('admin offseason movement root adapter is fail-closed and owns static non-production fixtures', () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel';
+  const maximum = resolveComponentStateAdapter('admin.offseason-movement-panel', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'default',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'idle', theme: 'dark' },
+  });
+  const maximumOverride = maximum.props.visualQaStateOverride as {
+    active: boolean;
+    movements: Array<{ playerName: string }>;
+  };
+  assert.equal(maximum.captureSelector, '[data-testid="admin-offseason-movement-panel"]');
+  assert.equal(maximumOverride.active, true);
+  assert.equal(maximumOverride.movements.length, 50);
+  assert.ok(maximumOverride.movements.every(({ playerName }) => playerName.includes('MOCK')));
+
+  const dialog = resolveComponentStateAdapter('admin.offseason-movement-panel', {
+    componentId,
+    states: {
+      data: 'populated',
+      interactions: 'default',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'delete-submitting', theme: 'dark' },
+  });
+  assert.equal((dialog.props.visualQaStateOverride as {
+    deleteTarget: unknown;
+    submitting: boolean;
+  }).submitting, true);
+  assert.ok((dialog.props.visualQaStateOverride as { deleteTarget: unknown }).deleteTarget);
+
+  const hover = resolveComponentStateAdapter('admin.offseason-movement-panel', {
+    componentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'hover',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'refresh',
+  });
+  assert.equal((hover.props.visualQaStateOverride as { active: boolean }).active, true);
+
+  assert.throws(() => resolveComponentStateAdapter('admin.offseason-movement-panel', {
+    componentId,
+    states: {
+      data: 'empty',
+      interactions: 'hover',
+      permissions: 'admin',
+      system: 'idle',
+    },
+    variants: { preset: 'idle', theme: 'dark' },
+    interactionTargetId: 'refresh',
+  }), /지원하지 않는 Admin offseason movement state/);
 });
 
 test('achievement and not-found adapters cover mobile copy pressure and themes', () => {

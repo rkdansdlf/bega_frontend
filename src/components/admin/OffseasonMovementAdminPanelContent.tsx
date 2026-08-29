@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 
 import { FRANCHISE_TEAM_IDS, TEAM_DATA } from '../../constants/teams';
 import { cn } from '../../lib/utils';
@@ -32,7 +32,7 @@ const adminNativeSelectClassName =
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
 
-type CsvImportReport = {
+export type CsvImportReport = {
   fileName: string;
   totalRows: number;
   createdCount: number;
@@ -41,7 +41,7 @@ type CsvImportReport = {
   errors: string[];
 };
 
-type QualityOption = {
+export type QualityOption = {
   value: string;
   label: string;
   hint: string;
@@ -50,7 +50,17 @@ type QualityOption = {
 const OffseasonMovementAdminDialogs = lazy(() => import('./OffseasonMovementAdminDialogs'));
 const OffseasonMovementAdminResultsRuntime = lazy(() => import('./OffseasonMovementAdminResultsRuntime'));
 
-interface OffseasonMovementAdminPanelContentProps {
+export interface OffseasonMovementAdminPanelContentVisualQaState {
+  resultsPhase: 'fallback' | 'resolved';
+  dialogsPhase: 'fallback' | 'resolved';
+}
+
+export interface OffseasonMovementAdminPanelContentVisualQaRenderers {
+  results: (props: import('./OffseasonMovementAdminResultsRuntime').OffseasonMovementAdminResultsRuntimeProps) => ReactNode;
+  dialogs: (props: import('./OffseasonMovementAdminDialogs').OffseasonMovementAdminDialogsProps) => ReactNode;
+}
+
+export interface OffseasonMovementAdminPanelContentProps {
   successMessage: string | null;
   error: string | null;
   movements: AdminOffseasonMovement[];
@@ -94,6 +104,8 @@ interface OffseasonMovementAdminPanelContentProps {
   onUpdateField: (field: keyof AdminOffseasonMovementPayload, value: string) => void;
   onSubmit: () => void;
   onDelete: () => void;
+  visualQaStateOverride?: OffseasonMovementAdminPanelContentVisualQaState;
+  visualQaRenderers?: OffseasonMovementAdminPanelContentVisualQaRenderers;
 }
 
 export default function OffseasonMovementAdminPanelContent({
@@ -140,27 +152,107 @@ export default function OffseasonMovementAdminPanelContent({
   onUpdateField,
   onSubmit,
   onDelete,
+  visualQaStateOverride,
+  visualQaRenderers,
 }: OffseasonMovementAdminPanelContentProps) {
   const shouldRenderDialogs = dialogOpen || Boolean(deleteTarget);
+  const resultsProps = {
+    csvReport,
+    movements,
+    filteredMovements,
+    loading,
+    activeQualityOption,
+    onOpenEditDialog,
+    onDeleteTargetChange,
+  };
+  const dialogProps = {
+    dialogOpen,
+    editingMovement,
+    deleteTarget,
+    submitting,
+    formData,
+    onDialogClose,
+    onDeleteTargetChange,
+    onUpdateField,
+    onSubmit,
+    onDelete,
+  };
+  const resultsContent = visualQaStateOverride
+    ? visualQaStateOverride.resultsPhase === 'fallback'
+      ? (
+        <div
+          aria-busy="true"
+          aria-live="polite"
+          data-testid="admin-offseason-results-fallback"
+          role="status"
+          className="flex items-center justify-center py-16 text-slate-400"
+        >
+          스토브리그 결과를 불러오는 중...
+        </div>
+      )
+      : visualQaRenderers?.results(resultsProps)
+    : (
+      <Suspense
+        fallback={(
+          <div className="flex items-center justify-center py-16">
+            <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
+          </div>
+        )}
+      >
+        <OffseasonMovementAdminResultsRuntime {...resultsProps} />
+      </Suspense>
+    );
+  const dialogsContent = !shouldRenderDialogs
+    ? null
+    : visualQaStateOverride
+      ? visualQaStateOverride.dialogsPhase === 'fallback'
+        ? (
+          <div
+            aria-busy="true"
+            aria-live="polite"
+            data-testid="admin-offseason-dialogs-fallback"
+            role="status"
+            className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-16 text-center text-slate-400"
+          >
+            스토브리그 입력 창을 불러오는 중...
+          </div>
+        )
+        : visualQaRenderers?.dialogs(dialogProps)
+      : (
+        <Suspense fallback={null}>
+          <OffseasonMovementAdminDialogs {...dialogProps} />
+        </Suspense>
+      );
+
+  if (visualQaStateOverride?.resultsPhase === 'resolved' && !visualQaRenderers?.results) {
+    throw new Error('OffseasonMovementAdminPanelContent Visual QA resolved results renderer is required.');
+  }
+  if (
+    visualQaStateOverride?.dialogsPhase === 'resolved'
+    && shouldRenderDialogs
+    && !visualQaRenderers?.dialogs
+  ) {
+    throw new Error('OffseasonMovementAdminPanelContent Visual QA resolved dialogs renderer is required.');
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 max-w-full space-y-6">
       {successMessage && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-caption text-emerald-300">
+        <div role="status" aria-live="polite" title={successMessage} className="line-clamp-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-caption text-emerald-300 [overflow-wrap:anywhere]">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-caption text-red-300">
+        <div role="alert" title={error} className="line-clamp-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-caption text-red-300 [overflow-wrap:anywhere]">
           {error}
         </div>
       )}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
         <div className="rounded-2xl border border-emerald-500/20 bg-slate-900/90 p-5 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
               <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
                 <AdminNewspaperIcon className="h-5 w-5 text-emerald-300" />
                 스토브리그 이동 관리
@@ -224,6 +316,7 @@ export default function OffseasonMovementAdminPanelContent({
           <div className="relative">
             <AdminSearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <Input
+              aria-label="스토브리그 이동 검색"
               data-testid="admin-offseason-search"
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
@@ -232,6 +325,7 @@ export default function OffseasonMovementAdminPanelContent({
             />
           </div>
           <select
+            aria-label="스토브리그 이동 구분 필터"
             data-testid="admin-offseason-section-trigger"
             value={sectionFilter}
             onChange={(event) => onSectionFilterChange(event.target.value)}
@@ -245,6 +339,7 @@ export default function OffseasonMovementAdminPanelContent({
             ))}
           </select>
           <select
+            aria-label="스토브리그 이동 팀 필터"
             data-testid="admin-offseason-team-trigger"
             value={teamFilter}
             onChange={(event) => onTeamFilterChange(event.target.value)}
@@ -258,6 +353,7 @@ export default function OffseasonMovementAdminPanelContent({
             ))}
           </select>
           <Input
+            aria-label="조회 시작 날짜"
             type="date"
             data-testid="admin-offseason-from-date"
             value={fromDate}
@@ -265,6 +361,7 @@ export default function OffseasonMovementAdminPanelContent({
             className="bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl"
           />
           <Input
+            aria-label="조회 종료 날짜"
             type="date"
             data-testid="admin-offseason-to-date"
             value={toDate}
@@ -332,6 +429,7 @@ export default function OffseasonMovementAdminPanelContent({
                 type="button"
                 size="sm"
                 variant="outline"
+                data-testid={`admin-offseason-quality-${option.value}`}
                 onClick={() => onQualityFilterChange(option.value)}
                 className={cn(
                   'rounded-full border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800',
@@ -352,40 +450,8 @@ export default function OffseasonMovementAdminPanelContent({
         </div>
       </div>
 
-      <Suspense
-        fallback={(
-          <div className="flex items-center justify-center py-16">
-            <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
-          </div>
-        )}
-      >
-        <OffseasonMovementAdminResultsRuntime
-          csvReport={csvReport}
-          movements={movements}
-          filteredMovements={filteredMovements}
-          loading={loading}
-          activeQualityOption={activeQualityOption}
-          onOpenEditDialog={onOpenEditDialog}
-          onDeleteTargetChange={onDeleteTargetChange}
-        />
-      </Suspense>
-
-      {shouldRenderDialogs ? (
-        <Suspense fallback={null}>
-          <OffseasonMovementAdminDialogs
-            dialogOpen={dialogOpen}
-            editingMovement={editingMovement}
-            deleteTarget={deleteTarget}
-            submitting={submitting}
-            formData={formData}
-            onDialogClose={onDialogClose}
-            onDeleteTargetChange={onDeleteTargetChange}
-            onUpdateField={onUpdateField}
-            onSubmit={onSubmit}
-            onDelete={onDelete}
-          />
-        </Suspense>
-      ) : null}
+      {resultsContent}
+      {dialogsContent}
     </div>
   );
 }

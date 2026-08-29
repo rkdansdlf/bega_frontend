@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70430);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70474);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    270,
+    271,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -5015,6 +5015,74 @@ test('admin client-error panel covers exactly 82 parent scenarios and every host
     assert.equal(entry?.status, 'registered', hostedId);
     assert.equal(entry?.render?.mode, 'hosted', hostedId);
     assert.equal(entry?.render?.hostScenarioIds?.length, expectedCount, hostedId);
+    assert.ok(entry?.render?.hostScenarioIds?.every((id) => parentScenarioIds.has(id)), hostedId);
+  }
+});
+
+test('admin offseason movement root covers exactly 44 scenarios and three production lazy bindings', async () => {
+  const componentId = 'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      id: string;
+      render?: { adapterId?: string; hostScenarioIds?: string[]; mode?: string };
+      status: string;
+    }>;
+  };
+  const defaultScenarios = scenarios.filter(({ states }) => states.interactions === 'default');
+  const interactionScenarios = scenarios.filter(({ states }) => states.interactions !== 'default');
+  const lifecycleStates = new Set([
+    'list-loading', 'load-error', 'success-message', 'csv-importing',
+    'csv-success', 'csv-many-errors', 'quality-filter-empty', 'create-dialog',
+    'edit-dialog', 'delete-dialog', 'create-submitting', 'edit-submitting',
+    'delete-submitting', 'content-fallback', 'results-fallback', 'dialogs-fallback',
+  ]);
+
+  assert.equal(scenarios.length, 44);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 44);
+  assert.equal(defaultScenarios.filter(({ variants }) => variants.preset === 'idle').length, 8);
+  assert.equal(defaultScenarios.filter(({ variants }) => lifecycleStates.has(variants.preset ?? '')).length, 16);
+  assert.deepEqual(Object.fromEntries(
+    ['hover', 'focus-visible', 'pressed', 'input', 'change', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      interactionScenarios.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    hover: 4,
+    'focus-visible': 7,
+    pressed: 4,
+    input: 2,
+    change: 2,
+    'keyboard-navigation': 1,
+  });
+  assert.ok(scenarios.every(({ states, variants }) => (
+    states.permissions === 'admin'
+      && variants.theme === 'dark'
+      && (states.interactions === 'default'
+        || (states.data === 'maximum-supported'
+          && states.system === 'idle'
+          && variants.preset === 'idle'))
+  )));
+
+  const parentEntry = manifest.components.find(({ id }) => id === componentId);
+  assert.equal(parentEntry?.status, 'registered');
+  assert.equal(parentEntry?.render?.mode, 'direct');
+  assert.equal(parentEntry?.render?.adapterId, 'admin.offseason-movement-panel');
+
+  const parentScenarioIds = new Set(scenarios.map(({ id }) => id));
+  const hostedIds = [
+    'src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanelContent',
+    'src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminResultsRuntime',
+    'src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminDialogs',
+  ];
+  for (const hostedId of hostedIds) {
+    const entry = manifest.components.find(({ id }) => id === hostedId);
+    assert.equal(entry?.status, 'registered', hostedId);
+    assert.equal(entry?.render?.mode, 'hosted', hostedId);
+    assert.ok((entry?.render?.hostScenarioIds?.length ?? 0) > 0, hostedId);
     assert.ok(entry?.render?.hostScenarioIds?.every((id) => parentScenarioIds.has(id)), hostedId);
   }
 });

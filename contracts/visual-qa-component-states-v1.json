@@ -3426,13 +3426,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4221,13 +4249,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4242,13 +4298,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4263,13 +4347,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4284,13 +4396,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4305,13 +4445,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4326,13 +4494,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -4347,13 +4543,41 @@
         ]
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "permissions": { "notApplicable": { "reason": "Authorization is inherited from the exact administrator parent scenario.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "interactions": { "notApplicable": { "reason": "The registered parent owns the interaction matrix for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } },
-        "system": { "notApplicable": { "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" } }
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf reuses exact parent scenario data and owns no independent payload matrix.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authorization is inherited from the exact administrator parent scenario.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the interaction matrix for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns lifecycle and transport states for this hosted leaf.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+          }
+        }
       },
       "variants": {
-        "notApplicable": { "reason": "The registered parent owns every visual variant for this hosted leaf.", "owner": "frontend-admin", "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation" }
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
       },
       "constraints": []
     },
@@ -16489,18 +16713,1530 @@
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.offseason-movement-panel"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Eight non-production fixtures cover empty, optional, boundary, pressure, and maximum inventory states.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-offseason-movement-root"
+        },
+        "permissions": {
+          "values": [
+            "admin"
+          ],
+          "reason": "The production panel is reachable only through the existing administrator shell.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminRoute.test.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "input",
+            "change",
+            "keyboard-navigation"
+          ],
+          "reason": "The root owns its list, filter, row, CSV, and portal dialog interactions.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle"
+          ],
+          "reason": "The production request coordinator is exercised at its stable idle transport state while lifecycle fixtures are selected explicitly.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "preset",
+            "values": [
+              "idle",
+              "list-loading",
+              "load-error",
+              "success-message",
+              "csv-importing",
+              "csv-success",
+              "csv-many-errors",
+              "quality-filter-empty",
+              "create-dialog",
+              "edit-dialog",
+              "delete-dialog",
+              "create-submitting",
+              "edit-submitting",
+              "delete-submitting",
+              "content-fallback",
+              "results-fallback",
+              "dialogs-fallback"
+            ],
+            "reason": "Canonical non-production presets expose list, mutation, CSV, dialog, and all three lazy-boundary lifecycle states without inventing transport states.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The administrator shell renders this operational panel on its dark surface.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+          }
+        ],
+        "reason": "The preset dimension selects deterministic lifecycle fixtures and the administrator shell supplies the dark theme.",
+        "owner": "frontend-admin",
+        "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "refresh",
+              "selector": "[data-testid=\"admin-offseason-refresh\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "quality-filter",
+              "selector": "[data-testid=\"admin-offseason-quality-MISSING_SUMMARY\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "row-edit",
+              "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "row-delete",
+              "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Representative header, filter, and row actions retain their real hover surfaces.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#hover-interaction"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "search",
+              "selector": "[data-testid=\"admin-offseason-search\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "section",
+              "selector": "[data-testid=\"admin-offseason-section-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "team",
+              "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "from-date",
+              "selector": "[data-testid=\"admin-offseason-from-date\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "to-date",
+              "selector": "[data-testid=\"admin-offseason-to-date\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "create",
+              "selector": "[data-testid=\"admin-offseason-open-create\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "dialog-field",
+              "selector": "[data-testid=\"admin-offseason-summary\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-offseason-open-create\"]",
+                  "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Every representative native and portal field exposes a visible keyboard focus state.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#focus-visible-interaction"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "apply",
+              "selector": "[data-testid=\"admin-offseason-apply-filters\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "reset",
+              "selector": "[data-testid=\"admin-offseason-reset-filters\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "create",
+              "selector": "[data-testid=\"admin-offseason-open-create\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "delete-confirm",
+              "selector": "[data-testid=\"admin-offseason-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-offseason-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Filter, create, and destructive actions retain their pointer-down presentation.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        },
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "search",
+              "selector": "[data-testid=\"admin-offseason-search\"]",
+              "value": "MOCK 모바일 검색 입력",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "dialog-summary",
+              "selector": "[data-testid=\"admin-offseason-summary\"]",
+              "value": "MOCK 비생산 모바일 요약 입력",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-offseason-open-create\"]",
+                  "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Search and dialog copy fields preserve controlled mobile input.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#fill-interaction"
+        },
+        "change": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "team-filter",
+              "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              },
+              "key": "End"
+            },
+            {
+              "id": "dialog-section",
+              "selector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-offseason-open-create\"]",
+                  "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              },
+              "key": "End"
+            }
+          ],
+          "reason": "Native list and dialog selects reach their final declared option through keyboard input.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#keyboard-navigation-interaction"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "dialog-focus-loop",
+              "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
+              "key": "Tab",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-offseason-open-create\"]",
+                  "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "idle",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "The production portal dialog keeps keyboard focus inside its real focus loop.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#keyboard-navigation-interaction"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "list-loading"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "load-error"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "success-message"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "csv-importing"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "csv-success"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "csv-many-errors"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "quality-filter-empty"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "create-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "edit-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "delete-dialog"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "create-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "edit-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "delete-submitting"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "content-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "results-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "dialogs-fallback"
+          },
+          "reason": "Lifecycle and lazy-boundary evidence uses the canonical populated non-production fixture.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/OffseasonMovementAdminPanel.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanelContent",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=boundary-maximum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=boundary-minimum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=empty|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=long-korean|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-section",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=team-filter",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=create",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-field",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=from-date",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=search",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=section",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=team",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=to-date",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=quality-filter",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=refresh",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=row-delete",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=row-edit",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-summary",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=search",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=keyboard-navigation|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-focus-loop",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=apply",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=create",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete-confirm",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=reset",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=null-optional|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-importing|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-many-errors|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-success|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=dialogs-fallback|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=list-loading|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=load-error|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=quality-filter-empty|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=results-fallback|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=success-message|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=unbroken-token|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered root owns every visual variant for this production lazy child.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminDialogs",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-section",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-field",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-summary",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=keyboard-navigation|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-focus-loop",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete-confirm",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-submitting|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered root owns every visual variant for this production lazy child.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminPanelContent",
@@ -16509,8 +18245,93 @@
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminPanelContent.tsx#OffseasonMovementAdminResultsRuntime",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=boundary-maximum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=boundary-minimum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=empty|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=long-korean|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-section",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=change|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=team-filter",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=create",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-field",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=from-date",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=search",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=section",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=team",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=to-date",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=quality-filter",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=refresh",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=row-delete",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=row-edit",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-summary",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=input|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=search",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=keyboard-navigation|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=dialog-focus-loop",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=apply",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=create",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete-confirm",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=reset",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=null-optional|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=create-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-importing|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-many-errors|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-success|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=delete-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=dialogs-fallback|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-dialog|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=edit-submitting|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=list-loading|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=load-error|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=quality-filter-empty|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=success-message|variant.theme=dark",
+          "state:src/components/admin/OffseasonMovementAdminPanel.tsx#OffseasonMovementAdminPanel:data=unbroken-token|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered root owns this production lazy child state axis.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered root owns every visual variant for this production lazy child.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-offseason-movement-root"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
