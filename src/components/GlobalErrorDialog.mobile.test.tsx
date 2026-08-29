@@ -8,6 +8,7 @@ const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
 const testPagePath = '/__global-error-dialog-test.html';
 const testEntryPath = '/__global-error-dialog-test.tsx';
 const testModuleId = '\0virtual:global-error-dialog-test';
+const staleRetryCompletionMutation = process.env.GLOBAL_ERROR_DIALOG_MUTATE_STALE_CLOSE === '1';
 
 const createGlobalErrorDialogTestPlugin = (): Plugin => ({
   name: 'global-error-dialog-actual-mount-test',
@@ -45,6 +46,7 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
       const params = new URLSearchParams(window.location.search);
       const kind = params.get('kind') || 'root';
       const calls = {
+        actionLog: [],
         close: 0,
         feedback: 0,
         feedbackPayloads: [],
@@ -52,6 +54,7 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
         listenerRemoves: 0,
         network: 0,
         retry: 0,
+        retryByErrorId: {},
         unrelated: 0,
       };
       const globalErrorListeners = new Set();
@@ -104,6 +107,7 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
         return Promise.resolve(true);
       };
       const root = createRoot(document.getElementById('root'));
+      let pendingRetry = null;
       const baseState = {
         isOpen: true,
         message: params.get('message') || 'MOCK 비생산 전역 오류',
@@ -161,6 +165,41 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
       window.__GLOBAL_ERROR_DIALOG_TEST__ = {
         calls,
         dispatch: (detail) => window.dispatchEvent(new CustomEvent('global-api-error', { detail })),
+        dispatchDeferredRetry: (detail) => {
+          let resolveRetry;
+          let rejectRetry;
+          const promise = new Promise((resolve, reject) => {
+            resolveRetry = resolve;
+            rejectRetry = reject;
+          });
+          pendingRetry = { errorId: detail.errorId, rejectRetry, resolveRetry };
+          calls.actionLog.push('dispatch-deferred:' + detail.errorId);
+          window.dispatchEvent(new CustomEvent('global-api-error', {
+            detail: {
+              ...detail,
+              onRetry: () => {
+                calls.retry += 1;
+                calls.retryByErrorId[detail.errorId] = (calls.retryByErrorId[detail.errorId] || 0) + 1;
+                calls.actionLog.push('retry:' + detail.errorId);
+                return promise;
+              },
+            },
+          }));
+        },
+        dispatchTrackedRetry: (detail) => {
+          calls.actionLog.push('dispatch-tracked:' + detail.errorId);
+          window.dispatchEvent(new CustomEvent('global-api-error', {
+            detail: {
+              ...detail,
+              onRetry: () => {
+                calls.retry += 1;
+                calls.retryByErrorId[detail.errorId] = (calls.retryByErrorId[detail.errorId] || 0) + 1;
+                calls.actionLog.push('retry:' + detail.errorId);
+                return Promise.resolve();
+              },
+            },
+          }));
+        },
         effectiveListenerCount: () => globalErrorListeners.size,
         renderRoot: (key = 'stable') => {
           if (kind === 'root') {
@@ -174,14 +213,34 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
           if (originalSendBeacon) navigator.sendBeacon = originalSendBeacon;
           XMLHttpRequest.prototype.open = originalXhrOpen;
         },
+        settleDeferredRetry: (outcome) => {
+          if (!pendingRetry) throw new Error('No pending retry');
+          calls.actionLog.push('settle-' + outcome + ':' + pendingRetry.errorId);
+          const current = pendingRetry;
+          pendingRetry = null;
+          if (outcome === 'reject') {
+            current.rejectRetry(new Error('MOCK deferred retry rejected'));
+            return;
+          }
+          current.resolveRetry();
+        },
         unmount: () => root.unmount(),
       };
     `;
+  },
+  transform(code, id) {
+    if (!staleRetryCompletionMutation || !id.endsWith('/src/components/GlobalErrorDialog.tsx')) {
+      return undefined;
+    }
+    const retryAwait = 'await state.onRetry?.();';
+    assert.ok(code.includes(retryAwait), 'stale-close mutation target must exist');
+    return code.replace(retryAwait, `${retryAwait}\n            setState(initialState);`);
   },
 });
 
 type TestRuntime = {
   calls: {
+    actionLog: string[];
     close: number;
     feedback: number;
     feedbackPayloads: Array<{ actionTaken: string; comment: string; eventId: string }>;
@@ -189,11 +248,23 @@ type TestRuntime = {
     listenerRemoves: number;
     network: number;
     retry: number;
+    retryByErrorId: Record<string, number>;
     unrelated: number;
   };
   dispatch: (detail: Record<string, unknown>) => void;
+  dispatchDeferredRetry: (detail: {
+    errorId: string;
+    message: string;
+    statusCode: number;
+  }) => void;
+  dispatchTrackedRetry: (detail: {
+    errorId: string;
+    message: string;
+    statusCode: number;
+  }) => void;
   effectiveListenerCount: () => number;
   renderRoot: (key?: string) => void;
+  settleDeferredRetry: (outcome: 'resolve' | 'reject') => void;
   unmount: () => void;
 };
 
@@ -592,5 +663,139 @@ test('actual 320px portal contains pressure text, exposes 44px targets, traps fo
       window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime }
     ).__GLOBAL_ERROR_DIALOG_TEST__.unmount());
     assert.equal(await page.evaluate(() => document.body.style.overflow), '');
+  });
+});
+
+test('actual Root isolates stale retry completion from newer errors, ordinary close, and unmount', {
+  timeout: 120_000,
+}, async () => {
+  await withActualBrowser(async ({ page, port }) => {
+    for (const outcome of ['resolve', 'reject'] as const) {
+      const errorA = {
+        errorId: `STALE-A-${outcome.toUpperCase()}`,
+        message: `MOCK stale A ${outcome}`,
+        statusCode: 500,
+      };
+      const errorB = {
+        errorId: `LATEST-B-${outcome.toUpperCase()}`,
+        message: `MOCK latest B survives A ${outcome}`,
+        statusCode: 409,
+      };
+      await openPage(page, port, '?kind=root');
+      assert.deepEqual((await readCalls(page)).actionLog, [], `${outcome}: reset log`);
+      await page.evaluate((detail) => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.dispatchDeferredRetry(detail);
+      }, errorA);
+      await page.getByText(errorA.message, { exact: true }).waitFor();
+      await page.getByText(errorA.errorId, { exact: true }).waitFor();
+      await page.getByRole('button', { name: '다시 시도' }).click();
+      await page.getByTestId('global-error-dialog-content').waitFor({ state: 'detached' });
+      await page.evaluate((detail) => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.dispatchTrackedRetry(detail);
+      }, errorB);
+      await page.getByText(errorB.message, { exact: true }).waitFor();
+      await page.getByText(errorB.errorId, { exact: true }).waitFor();
+      await page.evaluate((retryOutcome) => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.settleDeferredRetry(retryOutcome);
+      }, outcome);
+      await page.waitForTimeout(40);
+      assert.equal(await page.getByText(errorB.message, { exact: true }).count(), 1, outcome);
+      assert.equal(await page.getByText(errorB.errorId, { exact: true }).count(), 1, outcome);
+      assert.equal(await page.getByText(errorA.message, { exact: true }).count(), 0, outcome);
+      const calls = await readCalls(page);
+      assert.equal(calls.retry, 1, outcome);
+      assert.equal(calls.retryByErrorId[errorA.errorId], 1, outcome);
+      assert.equal(calls.retryByErrorId[errorB.errorId] ?? 0, 0, outcome);
+      assert.equal(calls.network, 0, outcome);
+      assert.deepEqual(calls.actionLog, [
+        `dispatch-deferred:${errorA.errorId}`,
+        `retry:${errorA.errorId}`,
+        `dispatch-tracked:${errorB.errorId}`,
+        `settle-${outcome}:${errorA.errorId}`,
+      ], outcome);
+    }
+
+    const closedA = {
+      errorId: 'CLOSED-A-CONFIRM',
+      message: 'MOCK ordinary close A',
+      statusCode: 500,
+    };
+    const nextB = {
+      errorId: 'AFTER-CLOSE-B',
+      message: 'MOCK B opens after ordinary close',
+      statusCode: 404,
+    };
+    await openPage(page, port, '?kind=root');
+    assert.deepEqual((await readCalls(page)).actionLog, [], 'ordinary close: reset log');
+    await page.evaluate((detail) => {
+      (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+        .__GLOBAL_ERROR_DIALOG_TEST__.dispatchTrackedRetry(detail);
+    }, closedA);
+    await page.getByText(closedA.message, { exact: true }).waitFor();
+    await page.getByTestId('global-error-dialog-confirm').click();
+    await page.getByTestId('global-error-dialog-content').waitFor({ state: 'detached' });
+    assert.equal((await readCalls(page)).retry, 0);
+    await page.evaluate((detail) => {
+      (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+        .__GLOBAL_ERROR_DIALOG_TEST__.dispatchTrackedRetry(detail);
+    }, nextB);
+    await page.getByText(nextB.message, { exact: true }).waitFor();
+    await page.getByText(nextB.errorId, { exact: true }).waitFor();
+    let calls = await readCalls(page);
+    assert.equal(calls.retry, 0);
+    assert.equal(calls.retryByErrorId[closedA.errorId] ?? 0, 0);
+    assert.equal(calls.retryByErrorId[nextB.errorId] ?? 0, 0);
+    assert.equal(calls.network, 0);
+    assert.deepEqual(calls.actionLog, [
+      `dispatch-tracked:${closedA.errorId}`,
+      `dispatch-tracked:${nextB.errorId}`,
+    ]);
+
+    for (const outcome of ['resolve', 'reject'] as const) {
+      const unmountedA = {
+        errorId: `UNMOUNTED-A-${outcome.toUpperCase()}`,
+        message: `MOCK pending A unmounted ${outcome}`,
+        statusCode: 500,
+      };
+      const pageErrors: string[] = [];
+      const recordPageError = (error: Error) => pageErrors.push(error.message);
+      page.on('pageerror', recordPageError);
+      await openPage(page, port, '?kind=root');
+      assert.deepEqual((await readCalls(page)).actionLog, [], `${outcome} unmount: reset log`);
+      await page.evaluate((detail) => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.dispatchDeferredRetry(detail);
+      }, unmountedA);
+      await page.getByText(unmountedA.message, { exact: true }).waitFor();
+      await page.getByRole('button', { name: '다시 시도' }).click();
+      await page.getByTestId('global-error-dialog-content').waitFor({ state: 'detached' });
+      await page.evaluate(() => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.unmount();
+      });
+      assert.equal(await page.evaluate(() => (
+        window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime }
+      ).__GLOBAL_ERROR_DIALOG_TEST__.effectiveListenerCount()), 0);
+      await page.evaluate((retryOutcome) => {
+        (window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime })
+          .__GLOBAL_ERROR_DIALOG_TEST__.settleDeferredRetry(retryOutcome);
+      }, outcome);
+      await page.waitForTimeout(40);
+      calls = await readCalls(page);
+      assert.equal(calls.retry, 1, outcome);
+      assert.equal(calls.retryByErrorId[unmountedA.errorId], 1, outcome);
+      assert.equal(calls.network, 0, outcome);
+      assert.deepEqual(calls.actionLog, [
+        `dispatch-deferred:${unmountedA.errorId}`,
+        `retry:${unmountedA.errorId}`,
+        `settle-${outcome}:${unmountedA.errorId}`,
+      ], outcome);
+      assert.equal(await page.locator('[role="dialog"]').count(), 0, outcome);
+      assert.deepEqual(pageErrors, [], `${outcome}: no post-unmount page error`);
+      page.off('pageerror', recordPageError);
+    }
   });
 });

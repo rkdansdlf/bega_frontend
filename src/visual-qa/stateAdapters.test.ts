@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-import type { AdminAiReleaseDecisionVisualQaState } from '../components/admin/AdminAiReleaseDecisionRuntime';
 import { FRANCHISE_TEAM_IDS } from '../constants/teams';
 import type { AdminCoachAutoBriefOpsHealth } from '../types/admin';
 import { MANUAL_BASEBALL_DATA_REQUIRED_CODE } from '../utils/manualBaseballDataContract';
@@ -11,6 +10,25 @@ import {
   KNOWN_COMPONENT_STATE_ADAPTER_IDS,
   resolveComponentStateAdapter,
 } from './stateAdapters';
+
+type VisualQaReleaseDecisionState = {
+  releaseArtifactAction: { artifactId: string; mode: string } | null;
+  releaseArtifacts: unknown[];
+  releaseCopyState: string;
+  releaseDraftResult: {
+    result: {
+      draft: {
+        blockers: unknown[];
+        decision: string;
+        evidence: unknown[];
+      };
+    };
+  } | null;
+  releaseEvaluationResult: { evaluation: { status: string } } | null;
+  releaseSaveError: string | null;
+  releaseSelectedScenario: string;
+  releaseTaskPrompt: string;
+};
 
 test('loading state adapters are explicit and unknown adapters fail closed', () => {
   assert.deepEqual(KNOWN_COMPONENT_STATE_ADAPTER_IDS, [
@@ -1354,7 +1372,7 @@ test('admin AI release decision adapter maps exhaustive content branches, lifecy
       theme: 'dark',
     },
   });
-  const maximumState = maximum.props.visualQaStateOverride as AdminAiReleaseDecisionVisualQaState;
+  const maximumState = maximum.props.visualQaStateOverride as VisualQaReleaseDecisionState;
   assert.equal(maximum.captureSelector, '[data-testid="admin-ai-release-decision-runtime"]');
   assert.equal(maximum.theme, 'dark');
   assert.equal(maximumState.releaseArtifacts.length, 50);
@@ -1379,7 +1397,7 @@ test('admin AI release decision adapter maps exhaustive content branches, lifecy
     },
     interactionTargetId: 'copy-markdown',
   });
-  const focusState = focusCopy.props.visualQaStateOverride as AdminAiReleaseDecisionVisualQaState;
+  const focusState = focusCopy.props.visualQaStateOverride as VisualQaReleaseDecisionState;
   assert.equal(focusState.releaseDraftResult?.result.draft.decision, 'GO');
 
   const keyboardScenario = resolveComponentStateAdapter('admin.ai-release-decision-runtime', {
@@ -1394,7 +1412,7 @@ test('admin AI release decision adapter maps exhaustive content branches, lifecy
     },
     interactionTargetId: 'scenario',
   });
-  const keyboardState = keyboardScenario.props.visualQaStateOverride as AdminAiReleaseDecisionVisualQaState;
+  const keyboardState = keyboardScenario.props.visualQaStateOverride as VisualQaReleaseDecisionState;
   assert.equal(keyboardState.releaseSelectedScenario, 'visual-qa-release');
 
   const empty = resolveComponentStateAdapter('admin.ai-release-decision-runtime', {
@@ -1408,7 +1426,7 @@ test('admin AI release decision adapter maps exhaustive content branches, lifecy
       theme: 'dark',
     },
   });
-  const emptyState = empty.props.visualQaStateOverride as AdminAiReleaseDecisionVisualQaState;
+  const emptyState = empty.props.visualQaStateOverride as VisualQaReleaseDecisionState;
   assert.equal(emptyState.releaseDraftResult, null);
   assert.match(emptyState.releaseSaveError ?? '', /저장할 초안/);
 
@@ -1423,7 +1441,7 @@ test('admin AI release decision adapter maps exhaustive content branches, lifecy
       theme: 'dark',
     },
   });
-  const longKoreanState = longKorean.props.visualQaStateOverride as AdminAiReleaseDecisionVisualQaState;
+  const longKoreanState = longKorean.props.visualQaStateOverride as VisualQaReleaseDecisionState;
   assert.ok(longKoreanState.releaseTaskPrompt.length >= 80);
   assert.ok(longKoreanState.releaseTaskPrompt.length <= 120);
 

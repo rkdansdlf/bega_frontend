@@ -11,9 +11,7 @@ import { toast, type ToastOptions } from 'sonner';
 
 import type { AdminStadium, Place, PlaceFormData } from '../api/admin';
 import { AdminCoachAutoBriefOpsPanel } from '../components/admin/AdminCoachAutoBriefOpsPanel';
-import type { AdminAiReleaseDecisionVisualQaState } from '../components/admin/AdminAiReleaseDecisionRuntime';
 import type AdminDeletePlaceDialogContentComponent from '../components/admin/AdminDeletePlaceDialogContent';
-import type { AdminGameStatusRepairVisualQaState } from '../components/admin/AdminGameStatusRepairPanel';
 import type AdminPlaceDialogContentComponent from '../components/admin/AdminPlaceDialogContent';
 import type AdminRoleChangeDialogContentComponent from '../components/admin/AdminRoleChangeDialogContent';
 import type { AdminStadiumsPanel as AdminStadiumsPanelComponent } from '../components/admin/AdminStadiumsPanel';
@@ -3573,7 +3571,7 @@ const makeVisualQaCleanupTracker = ({
 const buildVisualQaAdminGameStatusState = (
   data: VisualQaAdminGameStatusData,
   system: VisualQaAdminGameStatusSystem,
-): AdminGameStatusRepairVisualQaState => {
+) => {
   const rangeStart = '2026-08-29';
   const rangeEnd = data === 'empty' ? rangeStart : '2026-08-30';
   const copy = visualQaAdminGameStatusCopy(data, '비생산 Visual QA 정제 이력');
@@ -7726,7 +7724,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
     const errorCopy = data === 'long-korean' || data === 'unbroken-token'
       ? text
       : '비생산 Visual QA 요청을 처리하지 못했습니다.';
-    const visualQaStateOverride: AdminAiReleaseDecisionVisualQaState = {
+    const visualQaStateOverride = {
       releasePresets: [
         makeVisualQaReleasePreset(visualQaReleaseScenario, text, maximumCount),
         makeVisualQaReleasePreset(
