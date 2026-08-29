@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 1,
+  "id": "bega-visual-qa-supported-ui-v1",
+  "status": "normative",
+  "approvedOn": "2026-08-16",
+  "owner": "frontend-platform",
+  "implementation": {
+    "completedStages": [
+      "coverage-contract",
+      "source-symbol-inventory",
+      "component-render-harness"
+    ],
+    "pendingStages": [
+      "component-state-manifests",
+      "domain-scenario-coverage",
+      "browser-environment-matrix",
+      "ci-release-enforcement",
+      "final-coverage-audit"
+    ],
+    "currentEnforcement": [
+      "contract-schema-validation",
+      "source-symbol-inventory-exact-match",
+      "module-export-harness-scenario-exact-match",
+      "component-state-manifest-exact-match-draft",
+      "component-interaction-plan-execution-draft",
+      "component-production-stylesheet-loading-draft"
+    ],
+    "fullGuaranteeActive": false
+  },
+  "guarantee": {
+    "scope": "all-declared-valid-combinations",
+    "statement": "Every in-scope source component symbol, every declared valid component-local state combination, and every applicable supported environment must be executed without unapproved findings.",
+    "unknownPolicy": "fail",
+    "sourceSymbolCompletenessRequired": true,
+    "routeAuditAloneIsSufficient": false
+  },
+  "coverageMetrics": {
+    "component_classification_coverage": {
+      "numerator": "classified_component_symbols",
+      "denominator": "discovered_component_symbols",
+      "requiredValue": 1
+    },
+    "visual_registration_coverage": {
+      "numerator": "registered_visual_components",
+      "denominator": "classified_visual_components",
+      "requiredValue": 1
+    },
+    "state_execution_coverage": {
+      "numerator": "executed_valid_states",
+      "denominator": "generated_valid_states",
+      "requiredValue": 1
+    },
+    "environment_execution_coverage": {
+      "numerator": "executed_required_environments",
+      "denominator": "required_environments",
+      "requiredValue": 1
+    }
+  },
+  "sourceScope": {
+    "roots": [
+      "src/components",
+      "src/pages"
+    ],
+    "extensions": [
+      ".tsx"
+    ],
+    "candidateRule": "Every PascalCase runtime function, variable, class, wrapper, alias, and anonymous default function in an in-scope TSX file is inventoried. Non-component candidates must be explicitly classified as nonvisual.",
+    "ignoredFilePatterns": [
+      "**/*.test.tsx",
+      "**/*.spec.tsx",
+      "**/__tests__/**"
+    ],
+    "symbolKinds": [
+      "function-declaration",
+      "function-expression",
+      "arrow-function",
+      "class-component",
+      "pascal-runtime-class",
+      "pascal-runtime-value",
+      "memo-wrapper",
+      "forward-ref-wrapper",
+      "lazy-wrapper"
+    ],
+    "classifications": [
+      "visual",
+      "behavior-only",
+      "grouped-gallery",
+      "nonvisual",
+      "excluded"
+    ],
+    "unclassifiedPolicy": "fail",
+    "groupedGalleryPolicy": "every-exported-symbol-must-render"
+  },
+  "environmentCatalog": {
+    "combinationMode": "all-applicable-component-local-combinations",
+    "browsers": [
+      {
+        "id": "chromium",
+        "required": true
+      },
+      {
+        "id": "webkit",
+        "required": true
+      }
+    ],
+    "viewports": [
+      { "id": "mobile-320-portrait", "width": 320, "height": 844, "orientation": "portrait" },
+      { "id": "mobile-360-portrait", "width": 360, "height": 844, "orientation": "portrait" },
+      { "id": "mobile-390-portrait", "width": 390, "height": 844, "orientation": "portrait" },
+      { "id": "mobile-430-portrait", "width": 430, "height": 844, "orientation": "portrait" },
+      { "id": "mobile-480-portrait", "width": 480, "height": 1024, "orientation": "portrait" },
+      { "id": "mobile-600-portrait", "width": 600, "height": 1024, "orientation": "portrait" },
+      { "id": "mobile-767-portrait", "width": 767, "height": 1024, "orientation": "portrait" },
+      { "id": "tablet-768-portrait", "width": 768, "height": 1024, "orientation": "portrait" },
+      { "id": "tablet-834-portrait", "width": 834, "height": 1024, "orientation": "portrait" },
+      { "id": "desktop-1024", "width": 1024, "height": 900, "orientation": "landscape" },
+      { "id": "desktop-1040", "width": 1040, "height": 900, "orientation": "landscape" },
+      { "id": "desktop-1160", "width": 1160, "height": 900, "orientation": "landscape" },
+      { "id": "desktop-1280", "width": 1280, "height": 900, "orientation": "landscape" },
+      { "id": "desktop-1440", "width": 1440, "height": 900, "orientation": "landscape" },
+      { "id": "mobile-568-landscape", "width": 568, "height": 320, "orientation": "landscape" },
+      { "id": "mobile-667-landscape", "width": 667, "height": 375, "orientation": "landscape" },
+      { "id": "mobile-844-landscape", "width": 844, "height": 390, "orientation": "landscape" },
+      { "id": "mobile-932-landscape", "width": 932, "height": 430, "orientation": "landscape" }
+    ],
+    "textScales": [
+      1,
+      2
+    ],
+    "browserZooms": [
+      1,
+      2
+    ],
+    "colorSchemes": [
+      "light",
+      "dark"
+    ],
+    "motionPreferences": [
+      "no-preference",
+      "reduce"
+    ],
+    "safeAreas": [
+      "none",
+      "notched"
+    ],
+    "inputModes": [
+      "pointer",
+      "keyboard",
+      "soft-keyboard"
+    ]
+  },
+  "stateCatalog": {
+    "data": [
+      "loading",
+      "empty",
+      "single",
+      "populated",
+      "maximum-supported",
+      "long-korean",
+      "long-latin",
+      "unbroken-token",
+      "null-optional",
+      "missing-image",
+      "broken-image",
+      "manual-required",
+      "boundary-minimum",
+      "boundary-maximum",
+      "negative",
+      "zero",
+      "partial",
+      "clean",
+      "mismatch-only",
+      "non-canonical-only",
+      "mixed",
+      "repair-dry-run",
+      "repair-applied",
+      "tracker-draft",
+      "tracker-requested",
+      "tracker-done",
+      "closure-pass",
+      "closed",
+      "decimal",
+      "deposit-only",
+      "deposit-ticket",
+      "done",
+      "draft",
+      "explicit-long-korean",
+      "explicit-unbroken",
+      "fail",
+      "full",
+      "go",
+      "in-progress",
+      "in-review",
+      "invalid-date",
+      "missing",
+      "missing-host-handle",
+      "no-comment",
+      "no-go",
+      "non-finite",
+      "pass",
+      "pending",
+      "rating-above-maximum",
+      "rating-below-minimum",
+      "requested",
+      "resolved",
+      "reviewed",
+      "roster-provided",
+      "selling",
+      "status-checked-in",
+      "status-completed",
+      "status-failed",
+      "status-matched",
+      "status-selling",
+      "status-sold",
+      "ticket-only",
+      "unknown",
+      "unknown-team",
+      "unverified",
+      "warn",
+      "idle",
+      "checking",
+      "available",
+      "handle-checking",
+      "handle-taken",
+      "handle-error",
+      "email-taken",
+    "no-team",
+    "complete",
+    "expired",
+    "overflow",
+      "zero-maximum",
+      "error-400",
+      "error-401",
+      "error-403",
+      "error-404",
+      "error-409",
+      "error-422",
+      "error-429",
+      "error-500",
+      "error-503"
+    ],
+    "permissions": [
+      "anonymous",
+      "user",
+      "user-unverified",
+      "user-social-no-password",
+      "owner",
+      "non-owner",
+      "following",
+      "blocked",
+      "mate-host",
+      "mate-applicant-pending",
+      "mate-member-approved",
+      "mate-applicant-rejected",
+      "mate-checked-in",
+      "approved-member",
+      "check-in-access",
+      "host",
+      "admin",
+      "super-admin",
+      "locked",
+      "disabled"
+    ],
+    "interactions": [
+      "default",
+      "hover",
+      "focus-visible",
+      "pressed",
+      "input",
+      "submitting",
+      "disabled",
+      "selected",
+      "expanded",
+      "collapsed",
+      "open",
+      "scroll-start",
+      "scroll-middle",
+      "scroll-end",
+      "drag",
+      "keyboard-navigation",
+      "change"
+    ],
+    "system": [
+      "online",
+      "offline",
+      "timeout",
+      "retrying",
+      "idle",
+      "loading",
+      "missing",
+      "error-503",
+      "presets-loading",
+      "presets-error",
+      "eval-cases-loading",
+      "eval-cases-error",
+      "artifacts-loading",
+      "artifacts-error",
+      "draft-loading",
+      "draft-error",
+      "evaluation-loading",
+      "evaluation-error",
+      "save-loading",
+      "save-error",
+      "save-success",
+      "artifact-load-loading",
+      "artifact-markdown-loading",
+      "artifact-json-loading",
+      "stale-session",
+      "realtime-insert",
+      "realtime-update",
+      "realtime-delete",
+      "initial-loading",
+      "diagnosis-loading",
+      "repair-loading",
+      "suggestions-loading",
+      "suggestions-error",
+      "tracker-loading",
+      "tracker-saving",
+      "panel-error",
+      "tracker-message",
+      "action-success",
+      "copy-done",
+      "copy-error",
+      "manual-required",
+      "inactive",
+      "dashboard-loading",
+      "events-loading",
+      "refresh-loading",
+      "detail-error"
+    ]
+  },
+  "combinationPolicy": {
+    "mode": "all-valid-component-local-combinations",
+    "applicabilityRule": "Every component manifest must declare each applicable axis and every value used from that axis.",
+    "componentVariantRule": "Every registered component must declare all supported component-local prop and visual variant dimensions, or provide durable evidence that none exist.",
+    "cartesianRule": "All combinations across global state axes and component-local variant dimensions execute unless a machine-readable constraint proves the combination impossible or irrelevant.",
+    "constraintRequirements": [
+      "reason",
+      "owner",
+      "testEvidence"
+    ],
+    "scenarioCapsAllowed": false
+  },
+  "verificationCatalog": {
+    "layout": [
+      "horizontal-overflow",
+      "viewport-overflow",
+      "content-clipping",
+      "interactive-overlap",
+      "touch-target",
+      "fixed-content-obstruction"
+    ],
+    "behavior": [
+      "declared-interaction-execution",
+      "interaction-result",
+      "keyboard-navigation",
+      "focus-visible"
+    ],
+    "accessibility": [
+      "semantic-role",
+      "accessible-name",
+      "keyboard-operability",
+      "focus-order",
+      "text-scale-200",
+      "reduced-motion"
+    ]
+  },
+  "classificationEvidencePolicy": {
+    "appliesTo": [
+      "visual",
+      "behavior-only",
+      "grouped-gallery",
+      "nonvisual"
+    ],
+    "requiredFields": [
+      "reason",
+      "owner",
+      "testEvidence"
+    ]
+  },
+  "exclusionPolicy": {
+    "requiredFields": [
+      "reason",
+      "owner",
+      "expiresOn",
+      "issue"
+    ],
+    "expiredPolicy": "fail",
+    "unownedPolicy": "fail",
+    "silentExclusionsAllowed": false
+  },
+  "releaseGates": [
+    "source-symbol-classification-100",
+    "visual-scenario-registration-100",
+    "valid-state-combination-execution-100",
+    "supported-environment-execution-100",
+    "scan-errors-zero",
+    "unapproved-issues-zero",
+    "invalid-exclusions-zero"
+  ],
+  "requiredEvidence": [
+    "component-symbol-inventory",
+    "classification-coverage-report",
+    "component-state-scenario-report",
+    "browser-environment-execution-report",
+    "visual-diff-artifacts",
+    "accessibility-and-layout-findings",
+    "exclusion-ledger"
+  ],
+  "dataSafety": {
+    "baseballFixtureSources": [
+      "internal-static",
+      "trusted-internal-sync",
+      "operator-manual"
+    ],
+    "missingBaseballDataContract": "MANUAL_BASEBALL_DATA_REQUIRED",
+    "externalBaseballCollection": "forbidden"
+  }
+}
