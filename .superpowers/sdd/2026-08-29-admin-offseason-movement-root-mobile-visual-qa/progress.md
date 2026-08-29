@@ -21,3 +21,11 @@
 - Final focused suite is 318/318, admin aggregate 85/85, TypeScript and production build pass, and all state/inventory/isolation/probe gates retain the exact catalog totals.
 - Discarded all prior report images after the visual/source change and again after a valid browser RED proved that `End` did not commit a native select value. The final typeahead interaction proves `ALL` / `팀 전체` → `LG` / `LG 트윈스` with an exact checked-option selector.
 - The independent-review final set is fresh 44/44, failed/recovered 0, every attempt 1, 44 unique IDs, paths, and SHA-256 values, 44 nonzero PNG files, and no missing/stale artifact. Team change/focus, hover edit/delete, and pressed apply/reset PNG pairs are all distinct and retain capture-time DOM/pseudo verification.
+
+## Final close-control remediation
+
+- RED: the owned-source close-control regression was 8/9 pass because the immutable Offseason dialog source had no scoped header-close size or touch-audit guarantee and therefore depended on dirty shared `PlainDialog`/`plain-button` behavior.
+- GREEN: `OffseasonMovementAdminDialogs` now owns an exact create/edit/delete dialog selector that sets header close minimum width and height to 44px and marks the rendered close control with `data-vqa-min-touch="44"`; shared primitives were not changed.
+- At 320x844, create, edit, and delete header close buttons each measure exactly 44x44px, retain `aria-label="닫기"`, remain enabled/focusable, and carry the 44px audit marker.
+- An outside-evidence dialog warm-up passed 1/1. All previous report images were then discarded; the final fresh evidence is again 44/44, failed/recovered 0, every attempt 1, and 44 unique/nonzero IDs, paths, PNGs, and SHA-256 values.
+- Final scoped suite is 319/319; TypeScript, production build, 153 budgets, production isolation/import graph, DOM fixture probe, policy, and diff checks pass with state totals and hosted bindings unchanged.

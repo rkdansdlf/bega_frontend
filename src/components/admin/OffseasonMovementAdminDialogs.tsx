@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { AdminBadge } from './AdminPanelPrimitives';
 import { FRANCHISE_TEAM_IDS, TEAM_DATA } from '../../constants/teams';
 import type { AdminOffseasonMovement, AdminOffseasonMovementPayload } from '../../types/admin';
@@ -20,6 +22,14 @@ const adminDialogSelectClassName =
   'min-h-11 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-slate-100 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
 
 const adminDialogControlClassName = 'min-h-11 text-base';
+
+const adminOffseasonCloseTouchStyle = `
+[data-testid="admin-offseason-dialog"] button[aria-label="닫기"],
+[data-testid="admin-offseason-delete-dialog"] button[aria-label="닫기"] {
+  min-width: 44px;
+  min-height: 44px;
+}
+`;
 
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
@@ -69,8 +79,18 @@ export default function OffseasonMovementAdminDialogs({
   onSubmit,
   onDelete,
 }: OffseasonMovementAdminDialogsProps) {
+  useEffect(() => {
+    if (!dialogOpen && !deleteTarget) return;
+    const closeButtons = document.querySelectorAll<HTMLElement>(
+      '[data-testid="admin-offseason-dialog"] button[aria-label="닫기"], '
+      + '[data-testid="admin-offseason-delete-dialog"] button[aria-label="닫기"]',
+    );
+    closeButtons.forEach((button) => button.setAttribute('data-vqa-min-touch', '44'));
+  }, [deleteTarget, dialogOpen]);
+
   return (
     <>
+      <style>{adminOffseasonCloseTouchStyle}</style>
       <PlainDialog
         open={dialogOpen}
         onClose={onDialogClose}

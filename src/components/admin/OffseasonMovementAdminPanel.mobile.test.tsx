@@ -110,3 +110,9 @@ test('requires the team change capture to prove a value different from the initi
     '[data-testid="admin-offseason-team-trigger"]:has(option[value="LG"]:checked)',
   );
 });
+
+test('owns the dialog header close 44px contract instead of inheriting shared primitive state', () => {
+  assert.match(dialogsSource, /adminOffseasonCloseTouchStyle/);
+  assert.match(dialogsSource, /button\[aria-label="닫기"\][\s\S]*min-width:\s*44px[\s\S]*min-height:\s*44px/);
+  assert.match(dialogsSource, /data-vqa-min-touch[\s\S]*44/);
+});
