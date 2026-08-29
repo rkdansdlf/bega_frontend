@@ -260,13 +260,18 @@ const createPressureDashboard = (copy: string, count = 1) => ({
   topFingerprints: Array.from({ length: count }, (_, index) => ({
     bucket: 'api' as const,
     count: index + 1,
+    endpoint: `/api/${index + 1}`,
     fingerprint: `${copy}-${index + 1}`,
     latestAlertChannel: null,
     latestAlertSentAt: null,
+    latestEventId: `pressure-event-${index + 1}`,
     latestOccurredAt: '2026-08-29T00:00:00.000Z',
+    method: 'GET',
     message: copy,
     route: `/${copy}`,
     source: 'api' as const,
+    statusGroup: '5xx',
+    uniqueSessions: index + 1,
   })),
 });
 
