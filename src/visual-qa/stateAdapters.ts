@@ -395,6 +395,79 @@ type VisualQaClientErrorDataState =
   | 'unbroken-token'
   | 'maximum-supported';
 
+type VisualQaClientErrorTrendDataState =
+  | 'empty'
+  | 'single'
+  | 'boundary-minimum'
+  | 'boundary-maximum'
+  | 'long-korean'
+  | 'unbroken-token'
+  | 'maximum-supported'
+  | 'zero';
+
+type VisualQaClientErrorTrendPoint = {
+  label: string;
+  api: number;
+  runtime: number;
+  feedback: number;
+};
+
+const resolveVisualQaClientErrorTrendData = (
+  data: VisualQaClientErrorTrendDataState,
+): VisualQaClientErrorTrendPoint[] => {
+  if (data === 'empty') return [];
+  if (data === 'single') {
+    return [{ label: '00:00', api: 3, runtime: 2, feedback: 1 }];
+  }
+  if (data === 'boundary-minimum') {
+    return [
+      { label: 'M', api: 0, runtime: 1, feedback: 0 },
+      { label: 'M', api: 1, runtime: 0, feedback: 1 },
+    ];
+  }
+  if (data === 'boundary-maximum') {
+    return [{
+      label: 'MAX',
+      api: Number.MAX_SAFE_INTEGER,
+      runtime: Number.MAX_SAFE_INTEGER,
+      feedback: Number.MAX_SAFE_INTEGER,
+    }];
+  }
+  if (data === 'long-korean') {
+    const label = '가장 좁은 관리자 모바일 화면에서도 시간 구간 전체 문구가 보존되어야 합니다.';
+    return Array.from({ length: 3 }, (_, index) => ({
+      label: `${label} ${index + 1}`,
+      api: index + 1,
+      runtime: index + 2,
+      feedback: index,
+    }));
+  }
+  if (data === 'unbroken-token') {
+    const label = `MOCK_CLIENT_ERROR_TREND_UNBROKEN_${'TOKEN'.repeat(48)}`;
+    return Array.from({ length: 3 }, (_, index) => ({
+      label: `${label}_${index + 1}`,
+      api: index + 1,
+      runtime: index,
+      feedback: index + 2,
+    }));
+  }
+  if (data === 'maximum-supported') {
+    return Array.from({ length: 20 }, (_, index) => ({
+      label: `MOCK ${String(index).padStart(2, '0')}:00`,
+      api: (index * 3) % 11,
+      runtime: (index * 5) % 13,
+      feedback: (index * 7) % 9,
+    }));
+  }
+
+  return Array.from({ length: 3 }, (_, index) => ({
+    label: `ZERO ${index + 1}`,
+    api: 0,
+    runtime: 0,
+    feedback: 0,
+  }));
+};
+
 const makeVisualQaClientErrorEvent = (
   index: number,
   bucket: AdminClientErrorEventSummary['bucket'],
@@ -3730,6 +3803,54 @@ const adapters: Record<string, ComponentStateAdapter> = {
       captureSelector: '[data-testid="admin-client-error-detail"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-0 text-slate-100 shadow-none',
       theme,
+    };
+  },
+  'admin.client-error-trend-chart': (context) => {
+    const data = context.states.data;
+    const system = context.states.system;
+    const stateNames = Object.keys(context.states);
+    const variantNames = Object.keys(context.variants);
+    const supportedData = new Set<VisualQaClientErrorTrendDataState>([
+      'empty',
+      'single',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+      'zero',
+    ]);
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 Admin client-error trend chart state: ${data ?? 'none'}:${system ?? 'none'}`,
+      );
+    };
+
+    if (
+      stateNames.length !== 2
+      || !stateNames.includes('data')
+      || !stateNames.includes('system')
+      || variantNames.length !== 1
+      || context.variants.theme !== 'dark'
+      || typeof data !== 'string'
+      || !supportedData.has(data as VisualQaClientErrorTrendDataState)
+      || (system !== 'idle' && system !== 'loading')
+      || (system === 'loading' && data !== 'empty')
+      || context.interactionTargetId !== undefined
+    ) {
+      return failClosed();
+    }
+
+    return {
+      props: {
+        chartData: resolveVisualQaClientErrorTrendData(
+          data as VisualQaClientErrorTrendDataState,
+        ),
+        loading: system === 'loading',
+      },
+      captureSelector: '[data-testid="admin-client-error-trend-chart"]',
+      surfaceClassName: 'block min-h-[844px] w-full min-w-0 max-w-full overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
     };
   },
   'admin.client-error-insights': (context) => {

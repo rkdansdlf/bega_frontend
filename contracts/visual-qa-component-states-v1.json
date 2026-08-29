@@ -16144,8 +16144,130 @@
     },
     {
       "id": "src/components/admin/ClientErrorTrendChart.tsx#ClientErrorTrendChart",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.client-error-trend-chart"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported",
+            "zero"
+          ],
+          "reason": "The chart owns empty and single-point data, low and maximum numeric boundaries, Korean and unbroken label pressure, the supported 20-point inventory, and an all-zero series.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/ClientErrorTrendChart.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The chart renders resolved series props and does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/admin/ClientErrorTrendChart.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The chart is presentational; its bounded horizontal scroll surface does not change component state.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/ClientErrorTrendChart.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading"
+          ],
+          "reason": "The chart owns its resolved and loading presentation branches; loading has one canonical empty-data state.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The chart inherits the fixed dark administrator monitoring surface.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/ClientErrorTrendChart.tsx"
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "single",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved single-point data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved minimum-boundary data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved maximum-boundary data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved Korean label pressure.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved unbroken label pressure.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume the resolved 20-point inventory.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "zero",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume resolved all-zero data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-client-error-trend-chart-adapter"
+        }
+      ]
     },
     {
       "id": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",

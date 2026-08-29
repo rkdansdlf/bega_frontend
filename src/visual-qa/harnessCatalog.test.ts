@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70354);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70363);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    266,
+    267,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -4641,6 +4641,67 @@ test('admin client-error detail covers every badge pair, pressure state, lifecyc
     new Set(['close', 'recent']),
   );
   assert.equal(new Set(scenarios.map(({ id }) => id)).size, 104);
+});
+
+test('admin client-error trend chart covers exactly nine direct mobile states', async () => {
+  const componentId = 'src/components/admin/ClientErrorTrendChart.tsx#ClientErrorTrendChart';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+    scenario.componentId === componentId
+  ));
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      id: string;
+      render?: { adapterId?: string; mode?: string };
+      status: string;
+    }>;
+  };
+  const entry = manifest.components.find((candidate) => candidate.id === componentId);
+  const expectedIds = new Set([
+    ...[
+      'empty',
+      'single',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+      'zero',
+    ].map((data) => (
+      `state:${componentId}:data=${data}|system=idle|variant.theme=dark`
+    )),
+    `state:${componentId}:data=empty|system=loading|variant.theme=dark`,
+  ]);
+
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'admin.client-error-trend-chart');
+  assert.equal(scenarios.length, 9);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  assert.deepEqual(
+    new Set(scenarios.map(({ states }) => states.data)),
+    new Set([
+      'empty',
+      'single',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+      'zero',
+    ]),
+  );
+  assert.equal(scenarios.filter(({ states }) => states.system === 'idle').length, 8);
+  assert.equal(scenarios.filter(({ states }) => states.system === 'loading').length, 1);
+  assert.ok(scenarios.every(({ states, variants, interactionPlan }) => (
+    states.permissions === undefined
+      && states.interactions === undefined
+      && variants.theme === 'dark'
+      && interactionPlan === undefined
+  )));
+  assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 9);
 });
 
 test('admin client-error insights covers exactly 98 inventory, pressure, and alert badge states', async () => {

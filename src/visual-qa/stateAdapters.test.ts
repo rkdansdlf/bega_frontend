@@ -23,6 +23,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.client-error-detail',
     'admin.client-error-insights',
     'admin.client-error-panel',
+    'admin.client-error-trend-chart',
     'admin.coach-auto-brief-ops-panel',
     'admin.community-runtime',
     'admin.data-runtime',
@@ -2499,6 +2500,92 @@ test('admin client-error detail adapter covers data pressure, badge variants, li
     ...baseContext,
     variants: { ...baseContext.variants, extra: 'unsupported' },
   }), /지원하지 않는 Admin client-error detail state/);
+});
+
+test('admin client-error trend chart adapter covers exactly nine direct states and fails closed', () => {
+  const componentId = 'src/components/admin/ClientErrorTrendChart.tsx#ClientErrorTrendChart';
+  const dataStates = [
+    'empty',
+    'single',
+    'boundary-minimum',
+    'boundary-maximum',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+    'zero',
+  ] as const;
+  const resolveIdle = (data: typeof dataStates[number]) => resolveComponentStateAdapter(
+    'admin.client-error-trend-chart',
+    {
+      componentId,
+      states: { data, system: 'idle' },
+      variants: { theme: 'dark' },
+    },
+  );
+
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('admin.client-error-trend-chart'));
+  for (const data of dataStates) {
+    const result = resolveIdle(data);
+    assert.equal(result.captureSelector, '[data-testid="admin-client-error-trend-chart"]');
+    assert.equal(result.theme, 'dark');
+    assert.match(String(result.surfaceClassName), /w-full/);
+    assert.match(String(result.surfaceClassName), /min-w-0/);
+    assert.doesNotMatch(String(result.surfaceClassName), /w-\[320px\]/);
+    assert.equal(result.props.loading, false);
+    assert.ok(Array.isArray(result.props.chartData));
+  }
+
+  const empty = resolveIdle('empty').props.chartData as unknown[];
+  const single = resolveIdle('single').props.chartData as unknown[];
+  const boundaryMaximum = resolveIdle('boundary-maximum').props.chartData as Array<{
+    api: number;
+  }>;
+  const longKorean = resolveIdle('long-korean').props.chartData as Array<{ label: string }>;
+  const unbroken = resolveIdle('unbroken-token').props.chartData as Array<{ label: string }>;
+  const maximum = resolveIdle('maximum-supported').props.chartData as unknown[];
+  const zero = resolveIdle('zero').props.chartData as Array<{
+    api: number;
+    feedback: number;
+    runtime: number;
+  }>;
+  assert.equal(empty.length, 0);
+  assert.equal(single.length, 1);
+  assert.equal(boundaryMaximum[0]?.api, Number.MAX_SAFE_INTEGER);
+  assert.match(longKorean[0]?.label ?? '', /가장 좁은 관리자 모바일 화면/);
+  assert.match(unbroken[0]?.label ?? '', /^MOCK_CLIENT_ERROR_TREND_UNBROKEN_/);
+  assert.equal(maximum.length, 20);
+  assert.ok(zero.length > 0);
+  assert.ok(zero.every((point) => (
+    point.api === 0 && point.runtime === 0 && point.feedback === 0
+  )));
+
+  const loading = resolveComponentStateAdapter('admin.client-error-trend-chart', {
+    componentId,
+    states: { data: 'empty', system: 'loading' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(loading.props.loading, true);
+  assert.deepEqual(loading.props.chartData, []);
+
+  const baseContext = {
+    componentId,
+    states: { data: 'single', system: 'idle' },
+    variants: { theme: 'dark' },
+  };
+  for (const context of [
+    { ...baseContext, states: { ...baseContext.states, data: 'unsupported' } },
+    { ...baseContext, states: { ...baseContext.states, system: 'loading' } },
+    { ...baseContext, states: { ...baseContext.states, permissions: 'admin' } },
+    { ...baseContext, states: { ...baseContext.states, interactions: 'default' } },
+    { ...baseContext, variants: { ...baseContext.variants, extra: 'unsupported' } },
+    { ...baseContext, variants: {} },
+    { ...baseContext, interactionTargetId: 'chart' },
+  ]) {
+    assert.throws(
+      () => resolveComponentStateAdapter('admin.client-error-trend-chart', context),
+      /지원하지 않는 Admin client-error trend chart state/,
+    );
+  }
 });
 
 test('admin client-error insights adapter covers exactly 98 owned inventory and badge states', () => {
