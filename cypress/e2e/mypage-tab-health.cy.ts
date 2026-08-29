@@ -721,6 +721,7 @@ describe('MyPage tab backend health', () => {
         openScreen: () => void,
         assertScreenVisible?: () => void,
         postToggleWait?: () => void,
+        heightTolerancePx = 2,
     ) => {
         openScreen();
         (assertScreenVisible ?? (() => visibleScreen(viewLabel)))();
@@ -731,6 +732,7 @@ describe('MyPage tab backend health', () => {
 
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             beforeHeight = height;
+            cy.log(`[${viewLabel}] Before toggle - shell height: ${height}`);
         });
 
         collectThemeSnapshot(screenSelector).then((snapshot) => {
@@ -742,11 +744,20 @@ describe('MyPage tab backend health', () => {
         toggleThemeTo('light');
         getThemeClassState('light');
         
+        // Check for fallback presence after theme toggle (only for diary editor)
+        const isDiaryEditor = screenSelector === '.diary-green-surface';
+        if (isDiaryEditor) {
+            cy.get('.diary-green-surface').then(($el) => {
+                const hasFallback = $el.text().includes('불러오는 중');
+                cy.log(`[${viewLabel}] After light toggle - fallback present: ${hasFallback}`);
+            });
+        }
+        
         (postToggleWait ?? waitForThemeMeasurementSettle)();
         
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
-            // Increased tolerance for CI Docker environment
-            expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(5);
+            cy.log(`[${viewLabel}] After light toggle wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
+            expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(heightTolerancePx);
         });
         assertReadableContrast(MY_PAGE_SHELL_SELECTOR, `${viewLabel} light shell`);
         assertReadableContrast(screenSelector, `${viewLabel} light screen`);
@@ -758,9 +769,18 @@ describe('MyPage tab backend health', () => {
 
         toggleThemeTo('dark');
         getThemeClassState('dark');
+        
+        if (isDiaryEditor) {
+            cy.get('.diary-green-surface').then(($el) => {
+                const hasFallback = $el.text().includes('불러오는 중');
+                cy.log(`[${viewLabel}] After dark toggle - fallback present: ${hasFallback}`);
+            });
+        }
+        
         (postToggleWait ?? waitForThemeMeasurementSettle)();
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
-            expect(Math.abs(height - beforeHeight), `${viewLabel} height should return after theme restore`).to.be.lte(5);
+            cy.log(`[${viewLabel}] After dark restore wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
+            expect(Math.abs(height - beforeHeight), `${viewLabel} height should return after theme restore`).to.be.lte(heightTolerancePx);
         });
     };
 
@@ -1079,7 +1099,31 @@ describe('MyPage tab backend health', () => {
             },
             () => cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible'),
             waitForDiaryEditorStable,
+            5,
         );
+    });
+
+    it('verifies mobile viewport dimensions in CI Docker', () => {
+        cy.viewport(390, 844);
+        cy.visit('/mypage?view=diaryEditor&date=2026-06-12', {
+            onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark'),
+        });
+        
+        cy.window().then((win) => {
+            cy.log(`Viewport: ${win.innerWidth}x${win.innerHeight}`);
+            cy.log(`DocumentElement clientWidth: ${win.document.documentElement.clientWidth}`);
+            cy.log(`DocumentElement clientHeight: ${win.document.documentElement.clientHeight}`);
+            cy.log(`MatchMedia (max-width: 767px): ${win.matchMedia('(max-width: 767px)').matches}`);
+        });
+        
+        cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
+        cy.get('[data-testid="diary-editor-form-card"], .diary-editor-form-card', { timeout: 20000 }).should('be.visible');
+        
+        cy.get('.diary-green-surface').then(($el) => {
+            const height = $el[0].getBoundingClientRect().height;
+            cy.log(`Initial diary-green-surface height: ${height}`);
+            expect(height).to.be.greaterThan(0);
+        });
     });
 
     it('keeps diary seat-view dialog readable in light theme after mobile resize', () => {
