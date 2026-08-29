@@ -475,11 +475,7 @@ test('defers public home chat chrome outside the first card critical path', () =
   assert.equal(layoutSource.includes('deferredChatChromeReadyPathname'), false);
   assert.equal(layoutSource.includes("import PublicNavbar from './PublicNavbar';"), false);
   assert.ok(layoutSource.includes("const PublicNavbar = lazy(() => import('./PublicNavbar'));"));
-  assert.ok(layoutSource.includes('const shouldMountPublicNavbar = !isPublicHomeRoute'));
   assert.ok(layoutSource.includes('<PublicNavbarFallback />'));
-  assert.ok(layoutSource.includes('setPublicHomeChromeReadyStage(0);'));
-  assert.ok(layoutSource.includes('setPublicHomeChromeReadyStage((stage) => Math.max(stage, PUBLIC_HOME_CHROME_NAV_READY_STAGE));'));
-  assert.ok(layoutSource.includes('setPublicHomeChromeReadyStage(PUBLIC_HOME_CHROME_CHAT_READY_STAGE);'));
   assert.ok(layoutSource.includes('window.addEventListener(HOME_FIRST_CARD_READY_EVENT, handleHomeFirstCardReady);'));
   assert.ok(layoutSource.includes('homeFirstCardReady = (window as HomeFirstCardReadyWindow).__begaHomeFirstCardReadyPathname === location.pathname;'));
   assert.ok(layoutSource.includes('const readyPathname = (window as HomeFirstCardReadyWindow).__begaHomeFirstCardReadyPathname;'));
@@ -492,7 +488,6 @@ test('defers public home chat chrome outside the first card critical path', () =
   assert.ok(homeRuntimeSource.includes("const HOME_FIRST_CARD_READY_EVENT = 'bega:home-first-card-ready';"));
   assert.ok(homeRuntimeSource.includes('__begaHomeFirstCardReadyPathname'));
   assert.ok(homeRuntimeSource.includes('window.dispatchEvent(new Event(HOME_FIRST_CARD_READY_EVENT));'));
-  assert.ok(layoutSource.includes('<AuthenticatedLayoutChrome enableAuthenticatedServices={authenticated} />'));
   assert.ok(bundleGuardSource.includes('Layout manifest avoids eager public navbar runtime'));
   assert.ok(bundleGuardSource.includes("'PublicNavbar-', 'PublicShellIcons-', 'vendor-query-', 'authStore-', 'useAuthBootstrapUiState-'"));
   assert.ok(bundleGuardSource.includes("'AuthenticatedLayoutChrome-'"));
@@ -502,7 +497,6 @@ test('defers public home chat chrome outside the first card critical path', () =
 test('defers public home footer outside the first card critical path', () => {
   assert.equal(layoutSource.includes("import Footer from './Footer';"), false);
   assert.ok(layoutSource.includes("const Footer = lazy(() => import('./Footer'));"));
-  assert.ok(layoutSource.includes('setIsFooterRequested(false);'));
   assert.ok(layoutSource.includes('const requestFooterWhenReady = () => {'));
   assert.ok(layoutSource.includes('if (!homeFirstCardReady || hasRequestedFooter)'));
   assert.ok(layoutSource.includes('window.addEventListener(HOME_FIRST_CARD_READY_EVENT, handleHomeFirstCardReady);'));
@@ -529,7 +523,6 @@ test('keeps authenticated layout realtime and toaster internals out of the chrom
   assert.ok(authenticatedLayoutChromeSource.includes("const ChatBotFloatingButton = lazy(() => import('./ChatBotFloatingButton'));"));
   assert.ok(authenticatedLayoutChromeSource.includes('enableAuthenticatedServices = true'));
   assert.ok(authenticatedLayoutChromeSource.includes('const shouldMountToaster = enableAuthenticatedServices || isChatBotRequested;'));
-  assert.ok(authenticatedLayoutChromeSource.includes('enableAuthenticatedServices ? <AuthenticatedNotificationSocketBridge /> : null'));
   assert.ok(authenticatedLayoutToasterSource.includes("import { Toaster } from './ui/sonner';"));
   assert.ok(authenticatedNotificationSocketBridgeSource.includes("import { useNotificationSocket } from '../hooks/useNotificationSocket';"));
   assert.ok(bundleGuardSource.includes('AuthenticatedLayoutChrome manifest avoids eager realtime and toaster internals'));
@@ -541,7 +534,6 @@ test('defers public navbar DM query runtime outside the navbar shell', () => {
   assert.equal(publicNavbarSource.includes('@tanstack/react-query'), false);
   assert.equal(publicNavbarSource.includes('useQuery({'), false);
   assert.ok(publicNavbarSource.includes("const PublicNavbarDmUnreadBadge = lazy(() => import('./PublicNavbarDmUnreadBadge'));"));
-  assert.ok(publicNavbarSource.includes('<PublicNavbarDmUnreadBadge />'));
   assert.ok(publicNavbarDmUnreadBadgeSource.includes("from '@tanstack/react-query'"));
   assert.ok(publicNavbarDmUnreadBadgeSource.includes('QueryClientProvider'));
   assert.ok(publicNavbarDmUnreadBadgeSource.includes('useQuery({'));

@@ -4,6 +4,8 @@ import test from 'node:test';
 import {
   forceProductionBuildNodeEnv,
   isProductionBuildCommand,
+  resolveBuildOutDirFromArgs,
+  shouldEnableCloudflarePlugin,
   validateProductionPublicEnv,
 } from '../vite.config.ts';
 
@@ -23,6 +25,25 @@ test('production build env wins over polluted NODE_ENV values', () => {
 
   assert.equal(env.NODE_ENV, 'production');
   assert.equal(env.VITE_USER_NODE_ENV, 'production');
+});
+
+test('CLI production outDir is shared with the Cloudflare client build', () => {
+  assert.equal(
+    resolveBuildOutDirFromArgs(['node', 'vite', 'build', '--outDir', '/tmp/frontend-build']),
+    '/tmp/frontend-build',
+  );
+  assert.equal(
+    resolveBuildOutDirFromArgs(['node', 'vite', 'build', '--outDir=/tmp/frontend-build-equals']),
+    '/tmp/frontend-build-equals',
+  );
+  assert.equal(resolveBuildOutDirFromArgs(['node', 'vite', 'build']), undefined);
+});
+
+test('temporary client builds can explicitly disable Cloudflare without changing the production default', () => {
+  assert.equal(shouldEnableCloudflarePlugin('build', undefined), true);
+  assert.equal(shouldEnableCloudflarePlugin('build', 'false'), false);
+  assert.equal(shouldEnableCloudflarePlugin('serve', undefined), false);
+  assert.equal(shouldEnableCloudflarePlugin('serve', 'true'), true);
 });
 
 test('public production builds require an absolute API origin', () => {

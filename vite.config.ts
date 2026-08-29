@@ -36,6 +36,23 @@ export const forceProductionBuildNodeEnv = (targetEnv: MutableBuildEnv) => {
   targetEnv.VITE_USER_NODE_ENV = 'production';
 };
 
+export const resolveBuildOutDirFromArgs = (args: string[]): string | undefined => {
+  const equalsArgument = args.find((argument) => argument.startsWith('--outDir='));
+  if (equalsArgument) {
+    return equalsArgument.slice('--outDir='.length) || undefined;
+  }
+
+  const argumentIndex = args.indexOf('--outDir');
+  const value = argumentIndex >= 0 ? args[argumentIndex + 1] : undefined;
+  return value && !value.startsWith('-') ? value : undefined;
+};
+
+export const shouldEnableCloudflarePlugin = (
+  command: string,
+  configuredValue?: string,
+): boolean => configuredValue !== 'false'
+  && (command !== 'serve' || configuredValue === 'true');
+
 export const validateProductionPublicEnv = (targetEnv: MutableBuildEnv) => {
   const siteUrlValue = targetEnv.VITE_SITE_URL?.trim() ?? '';
   const apiBaseUrlValue = targetEnv.VITE_API_BASE_URL?.trim() ?? '';
@@ -134,14 +151,17 @@ export default defineConfig(({ mode, command }) => {
   const nodeEnv = isProductionBuild ? 'production' : process.env.NODE_ENV ?? mode;
   const proxyTarget = env.VITE_PROXY_TARGET ?? 'http://localhost:8080';
   const suppressCypressProxyErrors = env.VITE_SUPPRESS_CYPRESS_PROXY_ERRORS === 'true';
-  const enableCloudflarePlugin =
-    command !== 'serve' || env.VITE_ENABLE_CLOUDFLARE_PLUGIN === 'true';
+  const enableCloudflarePlugin = shouldEnableCloudflarePlugin(
+    command,
+    env.VITE_ENABLE_CLOUDFLARE_PLUGIN,
+  );
   const hasDesignSystemRemoteEntry = Boolean(env.VITE_MF_DESIGN_SYSTEM_ENTRY?.trim());
   const enableModuleFederationPlugin =
     env.VITE_ENABLE_MODULE_FEDERATION === 'true'
     || hasDesignSystemRemoteEntry;
   const helmetPackagePath = path.resolve(__dirname, 'node_modules/react-helmet-async/package.json');
   const useHelmetShim = !fs.existsSync(helmetPackagePath);
+  const buildOutDir = resolveBuildOutDirFromArgs(process.argv) ?? 'dist';
   const alias = createViteAliasConfig({
     hasDesignSystemRemoteEntry,
     rootDir: __dirname,
@@ -193,7 +213,7 @@ export default defineConfig(({ mode, command }) => {
     },
     build: {
       target: 'esnext',
-      outDir: 'dist',
+      outDir: buildOutDir,
       manifest: '.vite/client-manifest.json',
       chunkSizeWarningLimit: 1200,
       rollupOptions: {
@@ -270,7 +290,7 @@ export default defineConfig(({ mode, command }) => {
         build: {
           // Keep the client HTML at dist/index.html so SEO post-processing
           // and the final Cloudflare deploy artifact use the same root.
-          outDir: 'dist',
+          outDir: buildOutDir,
           manifest: '.vite/client-manifest.json',
           // Preserve the worker bundle written just before the client build.
           emptyOutDir: false,
