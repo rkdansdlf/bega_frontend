@@ -1097,7 +1097,7 @@ describe('MyPage tab backend health', () => {
                 });
                 cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
             },
-            () => cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible'),
+            waitForDiaryEditorStable,
             waitForDiaryEditorStable,
             5,
         );
