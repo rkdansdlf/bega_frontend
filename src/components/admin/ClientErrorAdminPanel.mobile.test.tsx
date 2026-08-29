@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import * as moduleApi from 'node:module';
 import test from 'node:test';
 import { createElement } from 'react';
@@ -400,4 +401,42 @@ test('labels every Task 5 interaction target and keeps detail actions touch-size
     assert.match(button, /aria-label="이벤트 .* 상세 보기"/);
     assert.match(button, /min-h-11/);
   }
+});
+
+test('uses the events scroll hook as the table’s sole horizontal scroll owner', () => {
+  const html = renderPanel(createPressureState({ copy: unbrokenToken }));
+  const scrollStart = html.indexOf('data-testid="admin-client-error-events-scroll"');
+  const paginationStart = html.indexOf('<div class="mt-4 flex', scrollStart);
+  const scrollRegion = html.slice(scrollStart, paginationStart);
+
+  assert.ok(scrollStart >= 0);
+  assert.ok(paginationStart > scrollStart);
+  assert.match(scrollRegion, /overflow-x-auto/);
+  assert.equal((scrollRegion.match(/overflow-x-auto/g) ?? []).length, 1);
+  assert.doesNotMatch(scrollRegion, /data-slot="table-container"/);
+  assert.match(scrollRegion, /<table[^>]+min-w-\[760px\]/);
+});
+
+test('announces resolved chart loading and empty states in QA and live parent paths', () => {
+  const loadingHtml = renderPanel({
+    ...visualQaState,
+    loadingDashboard: true,
+  });
+  const emptyHtml = renderPanel({
+    ...emptyState,
+    chartPhase: 'resolved',
+  });
+  const source = readFileSync(new URL('./ClientErrorAdminPanel.tsx', import.meta.url), 'utf8');
+
+  assert.match(
+    loadingHtml,
+    /data-testid="admin-client-error-chart-state"[^>]+role="status"[^>]+aria-live="polite"[^>]+aria-busy="true"/,
+  );
+  assert.match(loadingHtml, /data-testid="client-error-chart-probe"/);
+  assert.match(
+    emptyHtml,
+    /data-testid="admin-client-error-chart-state"[^>]+role="status"[^>]+aria-live="polite"[^>]+aria-busy="false"/,
+  );
+  assert.match(emptyHtml, /data-testid="client-error-chart-probe"/);
+  assert.match(source, /<ClientErrorChartResolvedState[^>]*>[\s\S]*<ClientErrorTrendChart/);
 });

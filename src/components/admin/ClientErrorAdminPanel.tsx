@@ -20,7 +20,6 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import PlainDialog from '../ui/plain-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import ViewportDeferred from '../ViewportDeferred';
 import {
   fetchAdminClientErrorDashboard,
@@ -209,6 +208,32 @@ function ClientErrorChartFallback() {
       className="flex h-full min-w-0 items-center justify-center text-slate-400 [overflow-wrap:anywhere]"
     >
       차트 로딩 중...
+    </div>
+  );
+}
+
+function ClientErrorChartResolvedState({
+  children,
+  chartDataLength,
+  loading,
+}: {
+  children: ReactNode;
+  chartDataLength: number;
+  loading: boolean;
+}) {
+  if (!loading && chartDataLength > 0) {
+    return children;
+  }
+
+  return (
+    <div
+      data-testid="admin-client-error-chart-state"
+      role="status"
+      aria-live="polite"
+      aria-busy={loading}
+      className="h-full min-w-0"
+    >
+      {children}
     </div>
   );
 }
@@ -452,13 +477,26 @@ export function ClientErrorAdminPanel({
     onClose: handleCloseDetail,
     onOpenDetail: (eventId) => void handleOpenDetail(eventId),
   };
+  const renderResolvedChart = (content: ReactNode) => (
+    <ClientErrorChartResolvedState
+      chartDataLength={chartData.length}
+      loading={loadingDashboard}
+    >
+      {content}
+    </ClientErrorChartResolvedState>
+  );
   const chartContent = visualQaStateOverride
     ? visualQaStateOverride.chartPhase === 'fallback'
       ? <ClientErrorChartFallback />
-      : visualQaRenderers?.chart?.(chartProps)
+      : renderResolvedChart(visualQaRenderers?.chart?.(chartProps))
     : (
       <Suspense fallback={<ClientErrorChartFallback />}>
-        <ClientErrorTrendChart {...chartProps} />
+        <ClientErrorChartResolvedState
+          chartDataLength={chartData.length}
+          loading={loadingDashboard}
+        >
+          <ClientErrorTrendChart {...chartProps} />
+        </ClientErrorChartResolvedState>
       </Suspense>
     );
   const insightsContent = visualQaStateOverride
@@ -710,54 +748,54 @@ export function ClientErrorAdminPanel({
           data-testid="admin-client-error-events-scroll"
           className="mt-5 min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-slate-800"
         >
-          <Table className="min-w-[760px]">
-            <TableHeader>
-              <TableRow className="border-slate-800 bg-slate-800/40 hover:bg-slate-800/40">
-                <TableHead className="text-slate-400">Bucket</TableHead>
-                <TableHead className="text-slate-400">Message</TableHead>
-                <TableHead className="text-slate-400">Route</TableHead>
-                <TableHead className="text-slate-400">Status</TableHead>
-                <TableHead className="text-slate-400">Occurred</TableHead>
-                <TableHead className="text-right text-slate-400">Detail</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="min-w-[760px] w-full caption-bottom text-15">
+            <thead className="[&_tr]:border-b">
+              <tr className="border-b border-slate-800 bg-slate-800/40 transition-colors hover:bg-slate-800/40">
+                <th className="h-10 px-2 text-left align-middle font-semibold text-slate-400">Bucket</th>
+                <th className="h-10 px-2 text-left align-middle font-semibold text-slate-400">Message</th>
+                <th className="h-10 px-2 text-left align-middle font-semibold text-slate-400">Route</th>
+                <th className="h-10 px-2 text-left align-middle font-semibold text-slate-400">Status</th>
+                <th className="h-10 px-2 text-left align-middle font-semibold text-slate-400">Occurred</th>
+                <th className="h-10 px-2 text-right align-middle font-semibold text-slate-400">Detail</th>
+              </tr>
+            </thead>
+            <tbody className="[&_tr:last-child]:border-0">
               {loadingEvents ? (
-                <TableRow className="border-slate-800">
-                  <TableCell colSpan={6} role="status" aria-live="polite" aria-busy="true" className="py-12 text-center text-slate-500">
+                <tr className="border-b border-slate-800">
+                  <td colSpan={6} role="status" aria-live="polite" aria-busy="true" className="p-2 py-12 text-center align-middle text-slate-500">
                     이벤트를 불러오는 중입니다.
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : eventsPage.content.length === 0 ? (
-                <TableRow className="border-slate-800">
-                  <TableCell colSpan={6} role="status" aria-live="polite" className="py-12 text-center text-slate-500">
+                <tr className="border-b border-slate-800">
+                  <td colSpan={6} role="status" aria-live="polite" className="p-2 py-12 text-center align-middle text-slate-500">
                     조건에 맞는 이벤트가 없습니다.
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 eventsPage.content.map((event) => (
-                  <TableRow key={event.eventId} className="border-slate-800 hover:bg-slate-800/30">
-                    <TableCell>
+                  <tr key={event.eventId} className="border-b border-slate-800 transition-colors hover:bg-slate-800/30">
+                    <td className="p-2 align-middle">
                       <div className="flex min-w-0 flex-col gap-2">
                         <AdminBadge className={bucketBadgeClass[event.bucket]}>{event.bucket}</AdminBadge>
                         <AdminBadge className={sourceBadgeClass[event.source]}>{event.source}</AdminBadge>
                       </div>
-                    </TableCell>
-                    <TableCell className="max-w-[320px] whitespace-normal">
+                    </td>
+                    <td className="max-w-[320px] p-2 align-middle whitespace-normal">
                       <p className="line-clamp-2 min-w-0 text-caption text-slate-200 [overflow-wrap:anywhere]">{event.message}</p>
                       <p className="mt-2 min-w-0 text-caption font-mono text-slate-500 [overflow-wrap:anywhere]">{event.eventId}</p>
-                    </TableCell>
-                    <TableCell className="max-w-[220px] whitespace-normal text-caption text-slate-300 [overflow-wrap:anywhere]">
+                    </td>
+                    <td className="max-w-[220px] p-2 align-middle whitespace-normal text-caption text-slate-300 [overflow-wrap:anywhere]">
                       {event.route}
-                    </TableCell>
-                    <TableCell className="text-caption text-slate-300">
+                    </td>
+                    <td className="p-2 align-middle text-caption text-slate-300">
                       {event.statusCode ? `${event.statusCode} (${event.statusGroup})` : event.statusGroup}
-                    </TableCell>
-                    <TableCell className="text-caption text-slate-400">
+                    </td>
+                    <td className="p-2 align-middle text-caption text-slate-400">
                       <p>{getTimeAgo(event.occurredAt)}</p>
                       <p className="mt-1 text-caption text-slate-500">{formatDetailedDateTime(event.occurredAt)}</p>
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </td>
+                    <td className="p-2 text-right align-middle">
                       <Button
                         type="button"
                         variant="ghost"
@@ -768,12 +806,12 @@ export function ClientErrorAdminPanel({
                       >
                         열기
                       </Button>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
 
         <div className="mt-4 flex min-w-0 flex-wrap items-start justify-between gap-3 text-caption text-slate-400">
