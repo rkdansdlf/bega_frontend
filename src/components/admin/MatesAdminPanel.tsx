@@ -19,6 +19,7 @@ interface AdminMate {
 interface MatesAdminPanelProps {
   mates: AdminMate[];
   handleDeleteMate: (mateId: number) => void;
+  tableClassName?: string;
 }
 
 const statusBadge: Record<string, { className: string; label: string }> = {
@@ -29,13 +30,27 @@ const statusBadge: Record<string, { className: string; label: string }> = {
   completed: { className: 'bg-slate-700 text-slate-300 border-0', label: '완료' },
 };
 
-export function MatesAdminPanel({ mates, handleDeleteMate }: MatesAdminPanelProps) {
+export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: MatesAdminPanelProps) {
   const [pendingDeleteMate, setPendingDeleteMate] = useState<AdminMate | null>(null);
 
   return (
     <>
-      <div className="rounded-xl border border-slate-800 overflow-hidden">
-        <Table>
+      <div
+        data-testid="admin-mates-panel"
+        className="min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-800"
+      >
+        {mates.length === 0 ? (
+          <div
+            data-testid="admin-mates-empty"
+            role="status"
+            aria-live="polite"
+            className="flex min-h-40 flex-col items-center justify-center py-10 text-slate-500"
+          >
+            <AdminCalendarIcon className="mb-3 h-12 w-12 opacity-30" />
+            메이트 모임이 없습니다.
+          </div>
+        ) : (
+          <Table aria-label="메이트 모임 목록" className={tableClassName ?? 'min-w-[860px]'}>
           <TableHeader>
             <TableRow className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/50">
               <TableHead className="text-slate-400 font-semibold">ID</TableHead>
@@ -48,25 +63,22 @@ export function MatesAdminPanel({ mates, handleDeleteMate }: MatesAdminPanelProp
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mates.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-16 text-slate-500">
-                  <AdminCalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  메이트 모임이 없습니다.
-                </TableCell>
-              </TableRow>
-            ) : (
-              mates.map((mate) => (
+            {mates.map((mate) => (
                 <TableRow
                   key={mate.id}
+                  data-testid={`admin-mate-row-${mate.id}`}
                   className="border-slate-800 transition-colors duration-150 hover:bg-slate-800/30"
                 >
                   <TableCell className="text-slate-300 font-mono text-caption">{mate.id}</TableCell>
-                  <TableCell className="text-slate-200 font-semibold max-w-[200px] truncate">{mate.title}</TableCell>
-                  <TableCell className="text-slate-300">{mate.hostName}</TableCell>
+                  <TableCell className="text-slate-200 font-semibold">
+                    <span title={mate.title} className="block max-w-[200px] truncate whitespace-nowrap">{mate.title}</span>
+                  </TableCell>
+                  <TableCell className="text-slate-300">
+                    <span title={mate.hostName} className="block max-w-[140px] truncate whitespace-nowrap">{mate.hostName}</span>
+                  </TableCell>
                   <TableCell className="text-slate-400 text-caption">{formatGameDate(mate.gameDate)}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 whitespace-nowrap">
                       <span className="text-sky-400 font-semibold">{mate.currentMembers}</span>
                       <span className="text-slate-600">/</span>
                       <span className="text-slate-400">{mate.maxMembers}</span>
@@ -81,17 +93,19 @@ export function MatesAdminPanel({ mates, handleDeleteMate }: MatesAdminPanelProp
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
+                      data-testid={`admin-mate-delete-${mate.id}`}
+                      aria-label={`메이트 모임 ${mate.id} 삭제`}
+                      className="min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 sm:min-w-8"
                       onClick={() => setPendingDeleteMate(mate)}
                     >
                       <AdminTrashIcon className="w-4 h-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
-        </Table>
+          </Table>
+        )}
       </div>
 
       <PlainDialog
@@ -99,19 +113,26 @@ export function MatesAdminPanel({ mates, handleDeleteMate }: MatesAdminPanelProp
         onClose={() => setPendingDeleteMate(null)}
         title="메이트 모임을 삭제하시겠습니까?"
         description="이 작업은 되돌릴 수 없습니다. 모임과 관련된 모든 데이터가 영구적으로 삭제됩니다."
+        contentTestId="admin-mate-delete-dialog"
         className="sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
         footer={(
           <>
-            <Button variant="outline" onClick={() => setPendingDeleteMate(null)} className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
+            <Button
+              variant="outline"
+              data-testid="admin-mate-delete-cancel"
+              onClick={() => setPendingDeleteMate(null)}
+              className="min-h-11 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 sm:min-h-9"
+            >
               취소
             </Button>
             <Button
+              data-testid="admin-mate-delete-confirm"
               onClick={() => {
                 if (!pendingDeleteMate) return;
                 handleDeleteMate(pendingDeleteMate.id);
                 setPendingDeleteMate(null);
               }}
-              className="bg-red-500 text-white border-0 shadow-sm hover:bg-red-600"
+              className="min-h-11 bg-red-500 text-white border-0 shadow-sm hover:bg-red-600 sm:min-h-9"
             >
               삭제
             </Button>

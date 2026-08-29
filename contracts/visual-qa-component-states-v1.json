@@ -16271,8 +16271,216 @@
     },
     {
       "id": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.mates-panel"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "populated",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "The panel owns empty and single lists, every known status plus its unknown fallback, numeric boundaries, copy pressure, and the supported 50-row inventory.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/MatesAdminPanel.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The leaf renders resolved mate props and does not inspect the administrator identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/admin/MatesAdminPanel.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "open"
+          ],
+          "reason": "The row delete action and its real portal dialog expose pointer, keyboard, pressed, and open states.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/MatesAdminPanel.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The leaf owns no transport lifecycle and renders only the supplied synchronous list.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/MatesAdminPanel.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The community administrator leaf is authored for the fixed dark admin surface.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/MatesAdminPanel.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-mate-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions expose pointer hover feedback.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#hover-interaction"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-mate-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions remain keyboard reachable with visible focus.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#focus-visible-interaction"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-mate-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-mate-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions retain their pointer-down presentation through capture.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        },
+        "open": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-mate-delete-1\"]",
+              "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "A real row delete click opens and holds the production portal dialog in evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/MatesAdminPanel.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/OffseasonMovementAdminDialogs.tsx#OffseasonMovementAdminDialogs",
@@ -16311,8 +16519,216 @@
     },
     {
       "id": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.posts-panel"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "The panel owns empty, ordinary, nullable, numeric-boundary, copy-pressure, and supported 50-row post inventories.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/PostsAdminPanel.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The leaf renders resolved post props and does not inspect the administrator identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/admin/PostsAdminPanel.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "open"
+          ],
+          "reason": "The row delete action and its real portal dialog expose pointer, keyboard, pressed, and open states.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/PostsAdminPanel.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The leaf owns no transport lifecycle and renders only the supplied synchronous list.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/PostsAdminPanel.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The community administrator leaf is authored for the fixed dark admin surface.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/PostsAdminPanel.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-post-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions expose pointer hover feedback.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#hover-interaction"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-post-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions remain keyboard reachable with visible focus.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#focus-visible-interaction"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-post-delete-1\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-post-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions retain their pointer-down presentation through capture.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        },
+        "open": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-post-delete-1\"]",
+              "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]",
+              "when": {
+                "data": "maximum-supported"
+              }
+            }
+          ],
+          "reason": "A real row delete click opens and holds the production portal dialog in evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/PostsAdminPanel.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/admin/StatCard.tsx#StatCard",
@@ -16419,8 +16835,369 @@
     },
     {
       "id": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "admin.users-panel"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "The panel owns empty, ordinary, nullable-team, numeric-boundary, copy-pressure, and supported 50-row user inventories.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/UsersAdminPanel.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "admin",
+            "super-admin"
+          ],
+          "reason": "Both legal administrator identities render distinct role-management columns while retaining the existing delete and role restrictions.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/admin/UsersAdminPanel.mobile.test.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "input",
+            "change",
+            "open"
+          ],
+          "reason": "Search, role selection, row deletion, and the real delete portal expose every reachable input and action presentation.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/UsersAdminPanel.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading"
+          ],
+          "reason": "The leaf owns a resolved list and one canonical announced loading state.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/UsersAdminPanel.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "dark"
+            ],
+            "reason": "The community administrator leaf is authored for the fixed dark admin surface.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/UsersAdminPanel.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-user-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions expose pointer hover feedback.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#hover-interaction"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "search",
+              "selector": "[data-testid=\"admin-users-search\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "role-select",
+              "selector": "[data-testid=\"admin-user-role-trigger-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-user-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "Search, the enabled role selector, deletion, and both dialog actions remain keyboard reachable with visible focus.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#focus-visible-interaction"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-user-delete-1\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-cancel",
+              "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"admin-user-delete-1\"]",
+                  "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "The enabled row action and both dialog actions retain their pointer-down presentation through capture.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        },
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "search",
+              "selector": "[data-testid=\"admin-users-search\"]",
+              "value": "가장 좁은 관리자 모바일 화면에서도 사용자 검색 입력값이 경계를 벗어나지 않고 자연스럽게 표시되는지 확인합니다.",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "The controlled search accepts a deterministic Korean pressure value without transport work.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#fill-interaction"
+        },
+        "change": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "role-select",
+              "selector": "[data-testid=\"admin-user-role-trigger-1\"]",
+              "key": "End",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "The enabled role selector reaches its alternate legal option through the real keyboard control path.",
+          "owner": "frontend-admin",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#keyboard-interaction"
+        },
+        "open": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "delete",
+              "selector": "[data-testid=\"admin-user-delete-1\"]",
+              "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]",
+              "when": {
+                "data": "maximum-supported",
+                "permissions": "super-admin",
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "A real enabled row delete click opens and holds the production portal dialog in evidence.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/UsersAdminPanel.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "permissions": "super-admin",
+            "system": "loading"
+          },
+          "reason": "The system loading presentation is permission-invariant and uses the canonical admin identity.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume a resolved single user.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume nullable resolved user data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume minimum-boundary user data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume maximum-boundary user data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume Korean copy-pressure user data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume unbroken copy-pressure user data.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "system": "loading"
+          },
+          "reason": "Loading does not consume the resolved 50-row inventory.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#admin-community-leaf-panel-adapters"
+        }
+      ]
     },
     {
       "id": "src/components/AdminPage.tsx#AdminPage",

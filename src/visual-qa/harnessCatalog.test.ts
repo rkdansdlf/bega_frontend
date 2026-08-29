@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70363);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70430);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    267,
+    270,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -4702,6 +4702,120 @@ test('admin client-error trend chart covers exactly nine direct mobile states', 
       && interactionPlan === undefined
   )));
   assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 9);
+});
+
+test('admin community leaf panels cover exactly 18 mates, 18 posts, and 31 users states', async () => {
+  const componentIds = {
+    mates: 'src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel',
+    posts: 'src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel',
+    users: 'src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel',
+  } as const;
+  const scenariosByPanel = Object.fromEntries(Object.entries(componentIds).map(([key, id]) => [
+    key,
+    AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => componentId === id),
+  ])) as Record<keyof typeof componentIds, typeof AUTOMATIC_COMPONENT_STATE_SCENARIOS>;
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as {
+    components: Array<{
+      id: string;
+      render?: { adapterId?: string; mode?: string };
+      status: string;
+    }>;
+  };
+  const entryById = new Map(manifest.components.map((entry) => [entry.id, entry]));
+  const matesData = [
+    'empty',
+    'single',
+    'populated',
+    'boundary-minimum',
+    'boundary-maximum',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ];
+  const nullableData = [
+    'empty',
+    'single',
+    'null-optional',
+    'boundary-minimum',
+    'boundary-maximum',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ];
+  const panelExpectedIds = (componentId: string, dataStates: string[]) => new Set([
+    ...dataStates.map((data) => (
+      `state:${componentId}:data=${data}|interactions=default|variant.theme=dark`
+    )),
+    ...['hover', 'focus-visible', 'pressed'].flatMap((interaction) => (
+      ['delete', 'dialog-cancel', 'dialog-confirm'].map((target) => (
+        `state:${componentId}:data=maximum-supported|interactions=${interaction}|variant.theme=dark|interactionTarget=${target}`
+      ))
+    )),
+    `state:${componentId}:data=maximum-supported|interactions=open|variant.theme=dark|interactionTarget=delete`,
+  ]);
+  const usersExpectedIds = new Set([
+    ...nullableData.flatMap((data) => ['admin', 'super-admin'].map((permissions) => (
+      `state:${componentIds.users}:data=${data}|permissions=${permissions}|interactions=default|system=idle|variant.theme=dark`
+    ))),
+    `state:${componentIds.users}:data=empty|permissions=admin|interactions=default|system=loading|variant.theme=dark`,
+    ...['hover', 'pressed'].flatMap((interaction) => (
+      ['delete', 'dialog-cancel', 'dialog-confirm'].map((target) => (
+        `state:${componentIds.users}:data=maximum-supported|permissions=super-admin|interactions=${interaction}|system=idle|variant.theme=dark|interactionTarget=${target}`
+      ))
+    )),
+    ...['search', 'role-select', 'delete', 'dialog-cancel', 'dialog-confirm'].map((target) => (
+      `state:${componentIds.users}:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=${target}`
+    )),
+    `state:${componentIds.users}:data=maximum-supported|permissions=super-admin|interactions=input|system=idle|variant.theme=dark|interactionTarget=search`,
+    `state:${componentIds.users}:data=maximum-supported|permissions=super-admin|interactions=change|system=idle|variant.theme=dark|interactionTarget=role-select`,
+    `state:${componentIds.users}:data=maximum-supported|permissions=super-admin|interactions=open|system=idle|variant.theme=dark|interactionTarget=delete`,
+  ]);
+
+  assert.equal(entryById.get(componentIds.mates)?.status, 'registered');
+  assert.equal(entryById.get(componentIds.mates)?.render?.mode, 'direct');
+  assert.equal(entryById.get(componentIds.mates)?.render?.adapterId, 'admin.mates-panel');
+  assert.equal(entryById.get(componentIds.posts)?.status, 'registered');
+  assert.equal(entryById.get(componentIds.posts)?.render?.mode, 'direct');
+  assert.equal(entryById.get(componentIds.posts)?.render?.adapterId, 'admin.posts-panel');
+  assert.equal(entryById.get(componentIds.users)?.status, 'registered');
+  assert.equal(entryById.get(componentIds.users)?.render?.mode, 'direct');
+  assert.equal(entryById.get(componentIds.users)?.render?.adapterId, 'admin.users-panel');
+
+  assert.equal(scenariosByPanel.mates.length, 18);
+  assert.equal(scenariosByPanel.posts.length, 18);
+  assert.equal(scenariosByPanel.users.length, 31);
+  assert.deepEqual(new Set(scenariosByPanel.mates.map(({ id }) => id)), panelExpectedIds(componentIds.mates, matesData));
+  assert.deepEqual(new Set(scenariosByPanel.posts.map(({ id }) => id)), panelExpectedIds(componentIds.posts, nullableData));
+  assert.deepEqual(new Set(scenariosByPanel.users.map(({ id }) => id)), usersExpectedIds);
+
+  const combined = [
+    ...scenariosByPanel.mates,
+    ...scenariosByPanel.posts,
+    ...scenariosByPanel.users,
+  ];
+  assert.equal(combined.length, 67);
+  assert.equal(new Set(combined.map(({ id }) => id)).size, 67);
+  assert.ok(combined.every(({ variants }) => variants.theme === 'dark'));
+  assert.deepEqual(
+    Object.fromEntries(['default', 'hover', 'focus-visible', 'pressed', 'open'].map((interaction) => [
+      interaction,
+      scenariosByPanel.mates.filter(({ states }) => states.interactions === interaction).length,
+    ])),
+    { default: 8, hover: 3, 'focus-visible': 3, pressed: 3, open: 1 },
+  );
+  assert.deepEqual(
+    Object.fromEntries(['default', 'hover', 'focus-visible', 'pressed', 'input', 'change', 'open'].map((interaction) => [
+      interaction,
+      scenariosByPanel.users.filter(({ states }) => states.interactions === interaction).length,
+    ])),
+    { default: 17, hover: 3, 'focus-visible': 5, pressed: 3, input: 1, change: 1, open: 1 },
+  );
+  assert.ok(combined
+    .filter(({ interactionPlan }) => interactionPlan?.targetId?.startsWith('dialog-'))
+    .every(({ interactionPlan }) => interactionPlan?.setup?.[0]?.selector.includes('-delete-1')));
 });
 
 test('admin client-error insights covers exactly 98 inventory, pressure, and alert badge states', async () => {

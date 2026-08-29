@@ -3266,6 +3266,135 @@ const visualQaAdminCommunityInventory = (
   };
 };
 
+type VisualQaAdminCommunityLeafData =
+  | 'empty'
+  | 'single'
+  | 'populated'
+  | 'null-optional'
+  | 'boundary-minimum'
+  | 'boundary-maximum'
+  | 'long-korean'
+  | 'unbroken-token'
+  | 'maximum-supported';
+
+const visualQaAdminCommunityLeafCopy = (
+  data: VisualQaAdminCommunityLeafData,
+  fallback: string,
+) => data === 'boundary-minimum'
+  ? 'M'
+  : data === 'boundary-maximum'
+    ? `MOCK-${Number.MAX_SAFE_INTEGER}`
+    : data === 'long-korean'
+      ? '가장 좁은 관리자 모바일 화면에서도 커뮤니티 운영 데이터의 매우 긴 한국어 문구가 표와 다이얼로그 경계를 침범하지 않고 자연스럽게 여러 줄로 표시되어 전체 원문을 확인할 수 있어야 합니다. '.repeat(4).trim()
+      : data === 'unbroken-token'
+        ? `ADMIN-COMMUNITY-LEAF-${'UNBROKEN'.repeat(40)}`
+        : fallback;
+
+const visualQaAdminMateStatuses = [
+  'pending',
+  'matched',
+  'selling',
+  'sold',
+  'completed',
+  'unknown-status',
+] as const;
+
+const makeVisualQaAdminLeafMate = (
+  index: number,
+  data: VisualQaAdminCommunityLeafData,
+) => ({
+  id: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum'
+      ? Number.MAX_SAFE_INTEGER
+      : index,
+  title: visualQaAdminCommunityLeafCopy(data, `Visual QA 메이트 모임 ${index}`),
+  hostName: visualQaAdminCommunityLeafCopy(data, `Visual QA 호스트 ${index}`),
+  gameDate: '2000-01-01T18:30:00+09:00',
+  maxMembers: data === 'boundary-minimum'
+    ? 1
+    : data === 'boundary-maximum' || data === 'maximum-supported'
+      ? Number.MAX_SAFE_INTEGER
+      : 8,
+  currentMembers: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum' || data === 'maximum-supported'
+      ? Number.MAX_SAFE_INTEGER - 1
+      : 4,
+  status: visualQaAdminMateStatuses[(index - 1) % visualQaAdminMateStatuses.length],
+});
+
+const makeVisualQaAdminLeafPost = (
+  index: number,
+  data: VisualQaAdminCommunityLeafData,
+) => ({
+  id: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum'
+      ? Number.MAX_SAFE_INTEGER
+      : index,
+  team: 'LG',
+  content: data === 'null-optional'
+    ? undefined
+    : visualQaAdminCommunityLeafCopy(data, `Visual QA 게시글 ${index}`),
+  author: visualQaAdminCommunityLeafCopy(data, `Visual QA 작성자 ${index}`),
+  createdAt: '2000-01-01T00:00:00.000Z',
+  likeCount: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum' || data === 'maximum-supported'
+      ? Number.MAX_SAFE_INTEGER
+      : index * 7,
+  commentCount: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum' || data === 'maximum-supported'
+      ? Number.MAX_SAFE_INTEGER
+      : index * 2,
+  isHot: data === 'null-optional' ? undefined : index % 2 === 1,
+});
+
+const visualQaAdminLeafUserRoles = [
+  'ROLE_USER',
+  'ROLE_ADMIN',
+  'ROLE_SUPER_ADMIN',
+  'ROLE_USER',
+] as const;
+
+const makeVisualQaAdminLeafUser = (
+  index: number,
+  data: VisualQaAdminCommunityLeafData,
+) => ({
+  id: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum'
+      ? Number.MAX_SAFE_INTEGER
+      : index,
+  email: data === 'unbroken-token'
+    ? `visualqa-${'X'.repeat(180)}@example.invalid`
+    : data === 'long-korean'
+      ? `visualqa-${'long'.repeat(40)}@example.invalid`
+      : `visualqa-user-${index}@example.invalid`,
+  name: visualQaAdminCommunityLeafCopy(data, `Visual QA 사용자 ${index}`),
+  favoriteTeam: data === 'null-optional' || index % 2 === 0 ? undefined : 'LG',
+  createdAt: '2000-01-01T00:00:00.000Z',
+  postCount: data === 'boundary-minimum'
+    ? 0
+    : data === 'boundary-maximum' || data === 'maximum-supported'
+      ? Number.MAX_SAFE_INTEGER
+      : index * 3,
+  role: visualQaAdminLeafUserRoles[(index - 1) % visualQaAdminLeafUserRoles.length],
+});
+
+const visualQaAdminLeafCount = (
+  data: VisualQaAdminCommunityLeafData,
+  populatedCount = 1,
+) => data === 'empty'
+  ? 0
+  : data === 'maximum-supported'
+    ? 50
+    : data === 'populated'
+      ? populatedCount
+      : 1;
+
 type VisualQaAdminGameStatusData =
   | 'empty'
   | 'clean'
@@ -4112,6 +4241,193 @@ const adapters: Record<string, ComponentStateAdapter> = {
       captureSelector: '[data-testid="admin-ai-operations-runtime"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
       theme: panelAdapter.theme,
+    };
+  },
+  'admin.mates-panel': (context) => {
+    const data = context.states.data;
+    const interaction = context.states.interactions;
+    const targetId = context.interactionTargetId;
+    const supportedData = new Set<VisualQaAdminCommunityLeafData>([
+      'empty',
+      'single',
+      'populated',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+    ]);
+    const dialogTargets = new Set(['delete', 'dialog-cancel', 'dialog-confirm']);
+    const interactionValid = interaction === 'default'
+      ? targetId === undefined
+      : data === 'maximum-supported'
+        && (interaction === 'hover' || interaction === 'focus-visible' || interaction === 'pressed'
+          ? dialogTargets.has(targetId ?? '')
+          : interaction === 'open' && targetId === 'delete');
+    if (
+      Object.keys(context.states).length !== 2
+      || !context.states.data
+      || !context.states.interactions
+      || Object.keys(context.variants).length !== 1
+      || context.variants.theme !== 'dark'
+      || !supportedData.has(data as VisualQaAdminCommunityLeafData)
+      || !interactionValid
+    ) {
+      throw new Error(
+        `지원하지 않는 Admin mates panel state: ${data ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    }
+    const typedData = data as VisualQaAdminCommunityLeafData;
+    const count = visualQaAdminLeafCount(typedData, 6);
+    return {
+      props: {
+        mates: Array.from({ length: count }, (_, index) => (
+          makeVisualQaAdminLeafMate(index + 1, typedData)
+        )),
+        handleDeleteMate: () => undefined,
+      },
+      captureSelector: interaction === 'default'
+        ? '[data-testid="admin-mates-panel"]'
+        : 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
+    };
+  },
+  'admin.posts-panel': (context) => {
+    const data = context.states.data;
+    const interaction = context.states.interactions;
+    const targetId = context.interactionTargetId;
+    const supportedData = new Set<VisualQaAdminCommunityLeafData>([
+      'empty',
+      'single',
+      'null-optional',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+    ]);
+    const dialogTargets = new Set(['delete', 'dialog-cancel', 'dialog-confirm']);
+    const interactionValid = interaction === 'default'
+      ? targetId === undefined
+      : data === 'maximum-supported'
+        && (interaction === 'hover' || interaction === 'focus-visible' || interaction === 'pressed'
+          ? dialogTargets.has(targetId ?? '')
+          : interaction === 'open' && targetId === 'delete');
+    if (
+      Object.keys(context.states).length !== 2
+      || !context.states.data
+      || !context.states.interactions
+      || Object.keys(context.variants).length !== 1
+      || context.variants.theme !== 'dark'
+      || !supportedData.has(data as VisualQaAdminCommunityLeafData)
+      || !interactionValid
+    ) {
+      throw new Error(
+        `지원하지 않는 Admin posts panel state: ${data ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    }
+    const typedData = data as VisualQaAdminCommunityLeafData;
+    const count = visualQaAdminLeafCount(typedData);
+    return {
+      props: {
+        posts: Array.from({ length: count }, (_, index) => (
+          makeVisualQaAdminLeafPost(index + 1, typedData)
+        )),
+        handleDeletePost: () => undefined,
+      },
+      captureSelector: interaction === 'default'
+        ? '[data-testid="admin-posts-panel"]'
+        : 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
+    };
+  },
+  'admin.users-panel': (context) => {
+    const data = context.states.data;
+    const permission = context.states.permissions;
+    const interaction = context.states.interactions;
+    const system = context.states.system;
+    const targetId = context.interactionTargetId;
+    const supportedData = new Set<VisualQaAdminCommunityLeafData>([
+      'empty',
+      'single',
+      'null-optional',
+      'boundary-minimum',
+      'boundary-maximum',
+      'long-korean',
+      'unbroken-token',
+      'maximum-supported',
+    ]);
+    const dialogTargets = new Set(['delete', 'dialog-cancel', 'dialog-confirm']);
+    const focusTargets = new Set([
+      'search',
+      'role-select',
+      'delete',
+      'dialog-cancel',
+      'dialog-confirm',
+    ]);
+    const canonicalDefault = system === 'idle'
+      && interaction === 'default'
+      && targetId === undefined;
+    const canonicalLoading = data === 'empty'
+      && permission === 'admin'
+      && interaction === 'default'
+      && system === 'loading'
+      && targetId === undefined;
+    const canonicalInteraction = data === 'maximum-supported'
+      && permission === 'super-admin'
+      && system === 'idle'
+      && (interaction === 'hover' || interaction === 'pressed'
+        ? dialogTargets.has(targetId ?? '')
+        : interaction === 'focus-visible'
+          ? focusTargets.has(targetId ?? '')
+          : interaction === 'input'
+            ? targetId === 'search'
+            : interaction === 'change'
+              ? targetId === 'role-select'
+              : interaction === 'open' && targetId === 'delete');
+    if (
+      Object.keys(context.states).length !== 4
+      || !context.states.data
+      || !context.states.permissions
+      || !context.states.interactions
+      || !context.states.system
+      || Object.keys(context.variants).length !== 1
+      || context.variants.theme !== 'dark'
+      || !supportedData.has(data as VisualQaAdminCommunityLeafData)
+      || (permission !== 'admin' && permission !== 'super-admin')
+      || (!canonicalDefault && !canonicalLoading && !canonicalInteraction)
+    ) {
+      throw new Error(
+        `지원하지 않는 Admin users panel state: ${data ?? 'none'}:${permission ?? 'none'}:${system ?? 'none'}:${interaction ?? 'none'}:${targetId ?? 'none'}`,
+      );
+    }
+    const typedData = data as VisualQaAdminCommunityLeafData;
+    const loading = system === 'loading';
+    const count = loading ? 0 : visualQaAdminLeafCount(typedData);
+    return {
+      props: {
+        searchTerm: typedData === 'long-korean' || typedData === 'unbroken-token'
+          ? visualQaAdminCommunityLeafCopy(typedData, '')
+          : '',
+        setSearchTerm: () => undefined,
+        users: Array.from({ length: count }, (_, index) => (
+          makeVisualQaAdminLeafUser(index + 1, typedData)
+        )),
+        loading,
+        isSuperAdmin: permission === 'super-admin',
+        currentUserId: 4,
+        handleDeleteUser: () => undefined,
+        setPendingRoleChange: () => undefined,
+        setRoleChangeReason: () => undefined,
+        visualQaInteractive: true,
+      },
+      captureSelector: interaction === 'default'
+        ? '[data-testid="admin-users-panel"]'
+        : 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-slate-950 p-4 text-slate-100 shadow-none',
+      theme: 'dark',
     };
   },
   'admin.community-runtime': (context) => {

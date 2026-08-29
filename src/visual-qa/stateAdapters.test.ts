@@ -29,9 +29,11 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.data-runtime',
     'admin.delete-place-dialog',
     'admin.game-status-repair-panel',
+    'admin.mates-panel',
     'admin.page-route',
     'admin.page-shell',
     'admin.place-dialog',
+    'admin.posts-panel',
     'admin.report-detail-drawer',
     'admin.reports-panel',
     'admin.role-change-dialog',
@@ -43,6 +45,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.stadiums-runtime',
     'admin.stat-card',
     'admin.status-badge',
+    'admin.users-panel',
     'ads.slot',
     'app.browser-shell',
     'app.layout',
@@ -1416,6 +1419,177 @@ test('admin community runtime adapter isolates tab and dialog lazy phases while 
       theme: 'dark',
     },
   }), /지원하지 않는 Admin community runtime loading/);
+});
+
+test('admin community leaf panel adapters cover exact static inventories and fail closed', () => {
+  const matesDataStates = [
+    'empty',
+    'single',
+    'populated',
+    'boundary-minimum',
+    'boundary-maximum',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ] as const;
+  const nullableDataStates = [
+    'empty',
+    'single',
+    'null-optional',
+    'boundary-minimum',
+    'boundary-maximum',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ] as const;
+  const matesComponentId = 'src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel';
+  const postsComponentId = 'src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel';
+  const usersComponentId = 'src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel';
+
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('admin.mates-panel'));
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('admin.posts-panel'));
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('admin.users-panel'));
+
+  for (const data of matesDataStates) {
+    const mates = resolveComponentStateAdapter('admin.mates-panel', {
+      componentId: matesComponentId,
+      states: { data, interactions: 'default' },
+      variants: { theme: 'dark' },
+    });
+    assert.equal(mates.theme, 'dark');
+    assert.match(String(mates.surfaceClassName), /w-\[320px\]/);
+    assert.equal(String(mates.captureSelector).startsWith('[data-testid='), true);
+  }
+
+  for (const data of nullableDataStates) {
+    const posts = resolveComponentStateAdapter('admin.posts-panel', {
+      componentId: postsComponentId,
+      states: { data, interactions: 'default' },
+      variants: { theme: 'dark' },
+    });
+    assert.equal(posts.theme, 'dark');
+    assert.match(String(posts.surfaceClassName), /w-\[320px\]/);
+    assert.equal(String(posts.captureSelector).startsWith('[data-testid='), true);
+  }
+
+  const populatedMates = resolveComponentStateAdapter('admin.mates-panel', {
+    componentId: matesComponentId,
+    states: { data: 'populated', interactions: 'default' },
+    variants: { theme: 'dark' },
+  }).props.mates as Array<{ status: string }>;
+  assert.equal(populatedMates.length, 6);
+  assert.deepEqual(
+    new Set(populatedMates.map(({ status }) => status)),
+    new Set(['pending', 'matched', 'selling', 'sold', 'completed', 'unknown-status']),
+  );
+
+  const maximumMates = resolveComponentStateAdapter('admin.mates-panel', {
+    componentId: matesComponentId,
+    states: { data: 'maximum-supported', interactions: 'hover' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'delete',
+  });
+  const maximumPosts = resolveComponentStateAdapter('admin.posts-panel', {
+    componentId: postsComponentId,
+    states: { data: 'maximum-supported', interactions: 'open' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'delete',
+  });
+  assert.equal((maximumMates.props.mates as unknown[]).length, 50);
+  assert.equal((maximumPosts.props.posts as unknown[]).length, 50);
+  assert.equal(maximumMates.captureSelector, 'body');
+  assert.equal(maximumPosts.captureSelector, 'body');
+  assert.equal(typeof maximumMates.props.handleDeleteMate, 'function');
+  assert.equal(typeof maximumPosts.props.handleDeletePost, 'function');
+
+  const nullPost = (resolveComponentStateAdapter('admin.posts-panel', {
+    componentId: postsComponentId,
+    states: { data: 'null-optional', interactions: 'default' },
+    variants: { theme: 'dark' },
+  }).props.posts as Array<{ content?: string; isHot?: boolean }>)[0];
+  assert.equal(nullPost?.content, undefined);
+  assert.equal(nullPost?.isHot, undefined);
+
+  for (const permissions of ['admin', 'super-admin'] as const) {
+    for (const data of nullableDataStates) {
+      const users = resolveComponentStateAdapter('admin.users-panel', {
+        componentId: usersComponentId,
+        states: { data, interactions: 'default', permissions, system: 'idle' },
+        variants: { theme: 'dark' },
+      });
+      assert.equal(users.props.isSuperAdmin, permissions === 'super-admin');
+      assert.equal(users.props.loading, false);
+      assert.equal(users.theme, 'dark');
+    }
+  }
+
+  const loadingUsers = resolveComponentStateAdapter('admin.users-panel', {
+    componentId: usersComponentId,
+    states: { data: 'empty', interactions: 'default', permissions: 'admin', system: 'loading' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(loadingUsers.props.loading, true);
+  assert.deepEqual(loadingUsers.props.users, []);
+
+  const maximumUsers = resolveComponentStateAdapter('admin.users-panel', {
+    componentId: usersComponentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'change',
+      permissions: 'super-admin',
+      system: 'idle',
+    },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'role-select',
+  });
+  const users = maximumUsers.props.users as Array<{
+    favoriteTeam?: string | null;
+    id: number;
+    role: string;
+  }>;
+  assert.equal(users.length, 50);
+  assert.ok(users.some(({ favoriteTeam }) => favoriteTeam == null));
+  assert.ok(users.some(({ role }) => role === 'ROLE_USER'));
+  assert.ok(users.some(({ role }) => role === 'ROLE_ADMIN'));
+  assert.ok(users.some(({ role }) => role === 'ROLE_SUPER_ADMIN'));
+  assert.equal(maximumUsers.props.currentUserId, 4);
+  assert.equal(maximumUsers.captureSelector, 'body');
+  assert.equal(typeof maximumUsers.props.setPendingRoleChange, 'function');
+  assert.equal(typeof maximumUsers.props.setRoleChangeReason, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('admin.mates-panel', {
+    componentId: matesComponentId,
+    states: { data: 'single', interactions: 'hover' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'delete',
+  }), /지원하지 않는 Admin mates panel state/);
+  assert.throws(() => resolveComponentStateAdapter('admin.posts-panel', {
+    componentId: postsComponentId,
+    states: { data: 'maximum-supported', interactions: 'hover', permissions: 'admin' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'delete',
+  }), /지원하지 않는 Admin posts panel state/);
+  assert.throws(() => resolveComponentStateAdapter('admin.users-panel', {
+    componentId: usersComponentId,
+    states: {
+      data: 'empty',
+      interactions: 'default',
+      permissions: 'super-admin',
+      system: 'loading',
+    },
+    variants: { theme: 'dark' },
+  }), /지원하지 않는 Admin users panel state/);
+  assert.throws(() => resolveComponentStateAdapter('admin.users-panel', {
+    componentId: usersComponentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'hover',
+      permissions: 'super-admin',
+      system: 'idle',
+    },
+    variants: { extra: 'unsupported', theme: 'dark' },
+    interactionTargetId: 'delete',
+  }), /지원하지 않는 Admin users panel state/);
 });
 
 test('admin delete-place dialog adapter covers the rendered admin surface and every action target', () => {
