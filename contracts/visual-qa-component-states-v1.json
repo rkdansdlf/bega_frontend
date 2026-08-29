@@ -18453,6 +18453,7 @@
               "id": "search",
               "selector": "[data-testid=\"admin-offseason-search\"]",
               "value": "MOCK 모바일 검색 입력",
+              "waitForSelector": "[data-testid=\"admin-offseason-content\"][data-vqa-search-change-count=\"1\"][data-vqa-search-change-value=\"MOCK 모바일 검색 입력\"]",
               "when": {
                 "data": "maximum-supported",
                 "system": "idle",
@@ -18470,6 +18471,7 @@
                   "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
                 }
               ],
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-content\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"summary\"][data-vqa-update-field-value=\"MOCK 비생산 모바일 요약 입력\"])",
               "when": {
                 "data": "maximum-supported",
                 "system": "idle",
@@ -18488,7 +18490,7 @@
               "id": "team-filter",
               "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
               "value": "LG",
-              "waitForSelector": "[data-testid=\"admin-offseason-team-trigger\"]:has(option[value=\"LG\"]:checked)",
+              "waitForSelector": "[data-testid=\"admin-offseason-content\"][data-vqa-team-filter-change-count=\"1\"][data-vqa-team-filter-change-value=\"LG\"]:has([data-testid=\"admin-offseason-team-trigger\"] option[value=\"LG\"]:checked)",
               "when": {
                 "data": "maximum-supported",
                 "system": "idle",
@@ -18506,7 +18508,7 @@
                   "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
                 }
               ],
-              "waitForSelector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]:has(option[value=\"기타\"]:checked)",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-content\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"section\"][data-vqa-update-field-value=\"기타\"]):has([data-testid=\"admin-offseason-dialog-section-trigger\"] option[value=\"기타\"]:checked)",
               "when": {
                 "data": "maximum-supported",
                 "system": "idle",

@@ -3940,6 +3940,8 @@ const visualQaAdminOffseasonQualityOptions = [
 const buildVisualQaAdminOffseasonContentProps = (
   data: VisualQaAdminOffseasonData,
   preset: Exclude<VisualQaAdminOffseasonSystem, 'content-fallback'>,
+  interaction: string,
+  targetId: string | undefined,
 ) => {
   const state = buildVisualQaAdminOffseasonState(data, preset);
   const movements = state.movements;
@@ -3962,7 +3964,25 @@ const buildVisualQaAdminOffseasonContentProps = (
   const activeQualityOption = visualQaAdminOffseasonQualityOptions.find(
     ({ value }) => value === state.qualityFilter,
   ) ?? visualQaAdminOffseasonQualityOptions[0];
-  const noop = () => undefined;
+  const callbackCounts = new Map<string, number>();
+  const trackedCallback = <Args extends unknown[]>(
+    name: string,
+    validate?: (...args: Args) => void,
+  ) => (...args: Args) => {
+    const nextCount = (callbackCounts.get(name) ?? 0) + 1;
+    callbackCounts.set(name, nextCount);
+    if (nextCount !== 1) {
+      throw new Error(`Admin offseason content Visual QA callback repeated: ${name}`);
+    }
+    validate?.(...args);
+  };
+  const expectValue = (name: string, actual: string, expected: string) => {
+    if (actual !== expected) {
+      throw new Error(
+        `Admin offseason content Visual QA callback ${name} expected ${expected} but received ${actual}`,
+      );
+    }
+  };
 
   return {
     successMessage: state.successMessage,
@@ -3990,24 +4010,43 @@ const buildVisualQaAdminOffseasonContentProps = (
     editingMovement: state.editingMovement,
     deleteTarget: state.deleteTarget,
     formData: state.formData,
-    onSearchChange: noop,
-    onSectionFilterChange: noop,
-    onTeamFilterChange: noop,
-    onFromDateChange: noop,
-    onToDateChange: noop,
-    onApplyFilters: noop,
-    onResetFilters: noop,
-    onQualityFilterChange: noop,
-    onRefresh: noop,
-    onDownloadCsvTemplate: noop,
-    onOpenCsvImport: noop,
-    onOpenCreateDialog: noop,
-    onOpenEditDialog: noop,
-    onDeleteTargetChange: noop,
-    onDialogClose: noop,
-    onUpdateField: noop,
-    onSubmit: noop,
-    onDelete: noop,
+    onSearchChange: trackedCallback<[string]>('onSearchChange', (value) => {
+      if (interaction === 'input' && targetId === 'search') {
+        expectValue('onSearchChange', value, 'MOCK 모바일 검색 입력');
+      }
+    }),
+    onSectionFilterChange: trackedCallback<[string]>('onSectionFilterChange'),
+    onTeamFilterChange: trackedCallback<[string]>('onTeamFilterChange', (value) => {
+      if (interaction === 'change' && targetId === 'team-filter') {
+        expectValue('onTeamFilterChange', value, 'LG');
+      }
+    }),
+    onFromDateChange: trackedCallback<[string]>('onFromDateChange'),
+    onToDateChange: trackedCallback<[string]>('onToDateChange'),
+    onApplyFilters: trackedCallback('onApplyFilters'),
+    onResetFilters: trackedCallback('onResetFilters'),
+    onQualityFilterChange: trackedCallback<[string]>('onQualityFilterChange'),
+    onRefresh: trackedCallback('onRefresh'),
+    onDownloadCsvTemplate: trackedCallback('onDownloadCsvTemplate'),
+    onOpenCsvImport: trackedCallback('onOpenCsvImport'),
+    onOpenCreateDialog: trackedCallback('onOpenCreateDialog'),
+    onOpenEditDialog: trackedCallback<[AdminOffseasonMovement]>('onOpenEditDialog'),
+    onDeleteTargetChange: trackedCallback<[AdminOffseasonMovement | null]>(
+      'onDeleteTargetChange',
+    ),
+    onDialogClose: trackedCallback('onDialogClose'),
+    onUpdateField: trackedCallback<[string, string]>('onUpdateField', (field, value) => {
+      if (interaction === 'input' && targetId === 'dialog-summary') {
+        expectValue('onUpdateField field', field, 'summary');
+        expectValue('onUpdateField value', value, 'MOCK 비생산 모바일 요약 입력');
+      }
+      if (interaction === 'change' && targetId === 'dialog-section') {
+        expectValue('onUpdateField field', field, 'section');
+        expectValue('onUpdateField value', value, '기타');
+      }
+    }),
+    onSubmit: trackedCallback('onSubmit'),
+    onDelete: trackedCallback('onDelete'),
     visualQaControlledState: true as const,
     visualQaStateOverride: {
       resultsPhase: state.resultsPhase,
@@ -4105,7 +4144,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
 
     return {
       props: {
-        ...buildVisualQaAdminOffseasonContentProps(data, preset),
+        ...buildVisualQaAdminOffseasonContentProps(data, preset, interaction, targetId),
         visualQaRenderers: { dialogs: renderDialogs, results: renderResults },
       },
       captureSelector: portalPresets.has(preset) || portalTargets.has(targetId ?? '')

@@ -589,6 +589,43 @@ test('admin offseason content adapter is fail-closed, controlled, and owns exact
   assert.ok((maximum.props.movements as Array<{ playerName: string; sourceUrl: string }>).every(
     ({ playerName, sourceUrl }) => playerName.includes('MOCK') && sourceUrl.startsWith('https://example.invalid/'),
   ));
+  const teamCallback = maximum.props.onTeamFilterChange as (value: string) => void;
+  teamCallback('LG');
+  assert.throws(() => teamCallback('LG'), /callback repeated: onTeamFilterChange/);
+
+  const resolveInteraction = (interaction: 'change' | 'input', targetId: string) => (
+    resolveComponentStateAdapter('admin.offseason-movement-content', {
+      componentId,
+      states: {
+        data: 'maximum-supported',
+        interactions: interaction,
+        permissions: 'admin',
+        system: 'idle',
+      },
+      variants: { preset: 'idle', theme: 'dark' },
+      interactionTargetId: targetId,
+    }).props
+  );
+  const searchProps = resolveInteraction('input', 'search');
+  const searchCallback = searchProps.onSearchChange as (value: string) => void;
+  searchCallback('MOCK 모바일 검색 입력');
+  assert.throws(() => searchCallback('MOCK 모바일 검색 입력'), /callback repeated: onSearchChange/);
+
+  const summaryProps = resolveInteraction('input', 'dialog-summary');
+  const summaryCallback = summaryProps.onUpdateField as (field: string, value: string) => void;
+  summaryCallback('summary', 'MOCK 비생산 모바일 요약 입력');
+  assert.throws(
+    () => summaryCallback('summary', 'MOCK 비생산 모바일 요약 입력'),
+    /callback repeated: onUpdateField/,
+  );
+
+  const sectionProps = resolveInteraction('change', 'dialog-section');
+  const sectionCallback = sectionProps.onUpdateField as (field: string, value: string) => void;
+  sectionCallback('section', '기타');
+  assert.throws(
+    () => sectionCallback('section', '기타'),
+    /callback repeated: onUpdateField/,
+  );
 
   const dialog = resolveComponentStateAdapter('admin.offseason-movement-content', {
     componentId,

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, type ReactNode } from 'react';
+import { createElement, lazy, Suspense, useState, type ReactNode } from 'react';
 
 import { FRANCHISE_TEAM_IDS, TEAM_DATA } from '../../constants/teams';
 import { cn } from '../../lib/utils';
@@ -34,6 +34,45 @@ const adminMobileIconControlClassName = 'min-h-11 min-w-11 text-base';
 
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
+
+export const createOffseasonMovementVisualQaControlledCallback = <Args extends unknown[]>(
+  updateLocalState: (...args: Args) => void,
+  forwardPublicCallback: (...args: Args) => void,
+  recordEvidence: (...args: Args) => void,
+) => (...args: Args) => {
+  updateLocalState(...args);
+  forwardPublicCallback(...args);
+  recordEvidence(...args);
+};
+
+const offseasonMovementAdminFallback = ({ kind }: { kind: 'dialogs' | 'results' }) => (
+  kind === 'results' ? (
+    <div
+      aria-busy="true"
+      aria-live="polite"
+      data-testid="admin-offseason-results-fallback"
+      role="status"
+      className="flex items-center justify-center gap-3 py-16 text-slate-400"
+    >
+      <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin motion-reduce:animate-none" />
+      <span>스토브리그 결과를 불러오는 중...</span>
+    </div>
+  ) : (
+    <div
+      aria-busy="true"
+      aria-live="polite"
+      data-testid="admin-offseason-dialogs-fallback"
+      role="status"
+      className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-16 text-center text-slate-400"
+    >
+      스토브리그 입력 창을 불러오는 중...
+    </div>
+  )
+);
+
+const renderOffseasonMovementAdminFallback = (kind: 'dialogs' | 'results') => (
+  createElement(offseasonMovementAdminFallback, { kind })
+);
 
 export type CsvImportReport = {
   fileName: string;
@@ -171,6 +210,15 @@ export default function OffseasonMovementAdminPanelContent({
   const [visualQaEditingMovement, setVisualQaEditingMovement] = useState(requestedEditingMovement);
   const [visualQaDeleteTarget, setVisualQaDeleteTarget] = useState(requestedDeleteTarget);
   const [visualQaFormData, setVisualQaFormData] = useState(requestedFormData);
+  const [visualQaCallbackEvidence, setVisualQaCallbackEvidence] = useState({
+    searchChangeCount: 0,
+    searchChangeValue: '',
+    teamFilterChangeCount: 0,
+    teamFilterChangeValue: '',
+    updateFieldCount: 0,
+    updateField: '',
+    updateFieldValue: '',
+  });
   const search = useVisualQaControlledState ? visualQaSearch : requestedSearch;
   const sectionFilter = useVisualQaControlledState ? visualQaSectionFilter : requestedSectionFilter;
   const teamFilter = useVisualQaControlledState ? visualQaTeamFilter : requestedTeamFilter;
@@ -182,53 +230,115 @@ export default function OffseasonMovementAdminPanelContent({
     : requestedEditingMovement;
   const deleteTarget = useVisualQaControlledState ? visualQaDeleteTarget : requestedDeleteTarget;
   const formData = useVisualQaControlledState ? visualQaFormData : requestedFormData;
-  const handleSearchChange = useVisualQaControlledState ? setVisualQaSearch : onSearchChange;
+  const noVisualQaEvidence = () => undefined;
+  const handleSearchChange = useVisualQaControlledState
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaSearch,
+      onSearchChange,
+      (value: string) => setVisualQaCallbackEvidence((current) => ({
+        ...current,
+        searchChangeCount: current.searchChangeCount + 1,
+        searchChangeValue: value,
+      })),
+    )
+    : onSearchChange;
   const handleSectionFilterChange = useVisualQaControlledState
-    ? setVisualQaSectionFilter
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaSectionFilter,
+      onSectionFilterChange,
+      noVisualQaEvidence,
+    )
     : onSectionFilterChange;
   const handleTeamFilterChange = useVisualQaControlledState
-    ? setVisualQaTeamFilter
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaTeamFilter,
+      onTeamFilterChange,
+      (value: string) => setVisualQaCallbackEvidence((current) => ({
+        ...current,
+        teamFilterChangeCount: current.teamFilterChangeCount + 1,
+        teamFilterChangeValue: value,
+      })),
+    )
     : onTeamFilterChange;
-  const handleFromDateChange = useVisualQaControlledState ? setVisualQaFromDate : onFromDateChange;
-  const handleToDateChange = useVisualQaControlledState ? setVisualQaToDate : onToDateChange;
+  const handleFromDateChange = useVisualQaControlledState
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaFromDate,
+      onFromDateChange,
+      noVisualQaEvidence,
+    )
+    : onFromDateChange;
+  const handleToDateChange = useVisualQaControlledState
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaToDate,
+      onToDateChange,
+      noVisualQaEvidence,
+    )
+    : onToDateChange;
   const handleOpenCreateDialog = useVisualQaControlledState
-    ? () => {
-      setVisualQaEditingMovement(null);
-      setVisualQaDialogOpen(true);
-    }
+    ? createOffseasonMovementVisualQaControlledCallback(
+      () => {
+        setVisualQaEditingMovement(null);
+        setVisualQaDialogOpen(true);
+      },
+      onOpenCreateDialog,
+      noVisualQaEvidence,
+    )
     : onOpenCreateDialog;
   const handleOpenEditDialog = useVisualQaControlledState
-    ? (movement: AdminOffseasonMovement) => {
-      setVisualQaEditingMovement(movement);
-      setVisualQaFormData({
-        movementDate: movement.movementDate,
-        section: movement.section,
-        teamCode: movement.teamCode,
-        playerName: movement.playerName,
-        summary: movement.summary ?? '',
-        details: movement.details ?? '',
-        contractTerm: movement.contractTerm ?? '',
-        contractValue: movement.contractValue ?? '',
-        optionDetails: movement.optionDetails ?? '',
-        counterpartyTeam: movement.counterpartyTeam ?? '',
-        counterpartyDetails: movement.counterpartyDetails ?? '',
-        sourceLabel: movement.sourceLabel ?? '',
-        sourceUrl: movement.sourceUrl ?? '',
-        announcedAt: movement.announcedAt ?? '',
-      });
-      setVisualQaDialogOpen(true);
-    }
+    ? createOffseasonMovementVisualQaControlledCallback(
+      (movement: AdminOffseasonMovement) => {
+        setVisualQaEditingMovement(movement);
+        setVisualQaFormData({
+          movementDate: movement.movementDate,
+          section: movement.section,
+          teamCode: movement.teamCode,
+          playerName: movement.playerName,
+          summary: movement.summary ?? '',
+          details: movement.details ?? '',
+          contractTerm: movement.contractTerm ?? '',
+          contractValue: movement.contractValue ?? '',
+          optionDetails: movement.optionDetails ?? '',
+          counterpartyTeam: movement.counterpartyTeam ?? '',
+          counterpartyDetails: movement.counterpartyDetails ?? '',
+          sourceLabel: movement.sourceLabel ?? '',
+          sourceUrl: movement.sourceUrl ?? '',
+          announcedAt: movement.announcedAt ?? '',
+        });
+        setVisualQaDialogOpen(true);
+      },
+      onOpenEditDialog,
+      noVisualQaEvidence,
+    )
     : onOpenEditDialog;
   const handleDeleteTargetChange = useVisualQaControlledState
-    ? setVisualQaDeleteTarget
+    ? createOffseasonMovementVisualQaControlledCallback(
+      setVisualQaDeleteTarget,
+      onDeleteTargetChange,
+      noVisualQaEvidence,
+    )
     : onDeleteTargetChange;
   const handleDialogClose = useVisualQaControlledState
-    ? () => setVisualQaDialogOpen(false)
+    ? createOffseasonMovementVisualQaControlledCallback(
+      () => setVisualQaDialogOpen(false),
+      onDialogClose,
+      noVisualQaEvidence,
+    )
     : onDialogClose;
   const handleUpdateField = useVisualQaControlledState
-    ? (field: keyof AdminOffseasonMovementPayload, value: string) => {
-      setVisualQaFormData((current) => ({ ...current, [field]: value }));
-    }
+    ? createOffseasonMovementVisualQaControlledCallback(
+      (field: keyof AdminOffseasonMovementPayload, value: string) => {
+        setVisualQaFormData((current) => ({ ...current, [field]: value }));
+      },
+      onUpdateField,
+      (field: keyof AdminOffseasonMovementPayload, value: string) => {
+        setVisualQaCallbackEvidence((current) => ({
+          ...current,
+          updateFieldCount: current.updateFieldCount + 1,
+          updateField: field,
+          updateFieldValue: value,
+        }));
+      },
+    )
     : onUpdateField;
   const shouldRenderDialogs = dialogOpen || Boolean(deleteTarget);
   const resultsProps = {
@@ -255,31 +365,12 @@ export default function OffseasonMovementAdminPanelContent({
   const resultsContent = visualQaStateOverride
     ? visualQaStateOverride.resultsPhase === 'fallback'
       ? (
-        <div
-          aria-busy="true"
-          aria-live="polite"
-          data-testid="admin-offseason-results-fallback"
-          role="status"
-          className="flex items-center justify-center py-16 text-slate-400"
-        >
-          스토브리그 결과를 불러오는 중...
-        </div>
+        renderOffseasonMovementAdminFallback('results')
       )
       : visualQaRenderers?.results(resultsProps)
     : (
       <Suspense
-        fallback={(
-          <div
-            aria-busy="true"
-            aria-live="polite"
-            data-testid="admin-offseason-results-fallback"
-            role="status"
-            className="flex items-center justify-center gap-3 py-16 text-slate-400"
-          >
-            <div className="h-8 w-8 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin motion-reduce:animate-none" />
-            <span>스토브리그 결과를 불러오는 중...</span>
-          </div>
-        )}
+        fallback={renderOffseasonMovementAdminFallback('results')}
       >
         <OffseasonMovementAdminResultsRuntime {...resultsProps} />
       </Suspense>
@@ -289,29 +380,11 @@ export default function OffseasonMovementAdminPanelContent({
     : visualQaStateOverride
       ? visualQaStateOverride.dialogsPhase === 'fallback'
         ? (
-          <div
-            aria-busy="true"
-            aria-live="polite"
-            data-testid="admin-offseason-dialogs-fallback"
-            role="status"
-            className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-16 text-center text-slate-400"
-          >
-            스토브리그 입력 창을 불러오는 중...
-          </div>
+          renderOffseasonMovementAdminFallback('dialogs')
         )
         : visualQaRenderers?.dialogs(dialogProps)
       : (
-        <Suspense fallback={(
-          <div
-            aria-busy="true"
-            aria-live="polite"
-            data-testid="admin-offseason-dialogs-fallback"
-            role="status"
-            className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-16 text-center text-slate-400"
-          >
-            스토브리그 입력 창을 불러오는 중...
-          </div>
-        )}>
+        <Suspense fallback={renderOffseasonMovementAdminFallback('dialogs')}>
           <OffseasonMovementAdminDialogs {...dialogProps} />
         </Suspense>
       );
@@ -328,7 +401,31 @@ export default function OffseasonMovementAdminPanelContent({
   }
 
   return (
-    <div data-testid="admin-offseason-content" className="min-w-0 max-w-full space-y-6">
+    <div
+      data-testid="admin-offseason-content"
+      data-vqa-search-change-count={useVisualQaControlledState
+        ? visualQaCallbackEvidence.searchChangeCount
+        : undefined}
+      data-vqa-search-change-value={useVisualQaControlledState
+        ? visualQaCallbackEvidence.searchChangeValue
+        : undefined}
+      data-vqa-team-filter-change-count={useVisualQaControlledState
+        ? visualQaCallbackEvidence.teamFilterChangeCount
+        : undefined}
+      data-vqa-team-filter-change-value={useVisualQaControlledState
+        ? visualQaCallbackEvidence.teamFilterChangeValue
+        : undefined}
+      data-vqa-update-field-count={useVisualQaControlledState
+        ? visualQaCallbackEvidence.updateFieldCount
+        : undefined}
+      data-vqa-update-field={useVisualQaControlledState
+        ? visualQaCallbackEvidence.updateField
+        : undefined}
+      data-vqa-update-field-value={useVisualQaControlledState
+        ? visualQaCallbackEvidence.updateFieldValue
+        : undefined}
+      className="min-w-0 max-w-full space-y-6"
+    >
       {successMessage && (
         <div role="status" aria-live="polite" title={successMessage} className="line-clamp-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-caption text-emerald-300 [overflow-wrap:anywhere]">
           {successMessage}

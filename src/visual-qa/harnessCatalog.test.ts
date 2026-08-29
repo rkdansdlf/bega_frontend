@@ -5161,6 +5161,14 @@ test('admin offseason content direct export covers exactly 36 declared legal sce
       && typeof interactionPlan.value === 'string'
       && interactionPlan.waitForSelector?.includes(':checked')
   )));
+  const callbackEvidence = new Map(interactions.map(({ interactionPlan }) => [
+    interactionPlan?.targetId,
+    interactionPlan?.waitForSelector,
+  ]));
+  assert.match(callbackEvidence.get('search') ?? '', /data-vqa-search-change-count="1"/);
+  assert.match(callbackEvidence.get('team-filter') ?? '', /data-vqa-team-filter-change-count="1"/);
+  assert.match(callbackEvidence.get('dialog-summary') ?? '', /data-vqa-update-field="summary"/);
+  assert.match(callbackEvidence.get('dialog-section') ?? '', /data-vqa-update-field="section"/);
 });
 
 test('admin internal fallbacks use reviewed hosted evidence without independent state combinations', async () => {

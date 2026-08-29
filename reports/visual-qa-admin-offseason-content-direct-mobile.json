@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T16:47:50.018Z",
+  "generatedAt": "2026-08-29T17:33:28.994Z",
   "baseUrl": "http://127.0.0.1:5182",
   "scope": "component-states",
   "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
@@ -69,7 +69,7 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
-        "waitForSelector": "[data-testid=\"admin-offseason-dialog-section-trigger\"]:has(option[value=\"기타\"]:checked)",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-content\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"section\"][data-vqa-update-field-value=\"기타\"]):has([data-testid=\"admin-offseason-dialog-section-trigger\"] option[value=\"기타\"]:checked)",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,
@@ -87,7 +87,7 @@
         "selector": "[data-testid=\"admin-offseason-team-trigger\"]",
         "targetId": "team-filter",
         "value": "LG",
-        "waitForSelector": "[data-testid=\"admin-offseason-team-trigger\"]:has(option[value=\"LG\"]:checked)",
+        "waitForSelector": "[data-testid=\"admin-offseason-content\"][data-vqa-team-filter-change-count=\"1\"][data-vqa-team-filter-change-value=\"LG\"]:has([data-testid=\"admin-offseason-team-trigger\"] option[value=\"LG\"]:checked)",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,
@@ -206,6 +206,7 @@
             "waitForSelector": "[data-testid=\"admin-offseason-dialog\"]"
           }
         ],
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-content\"][data-vqa-update-field-count=\"1\"][data-vqa-update-field=\"summary\"][data-vqa-update-field-value=\"MOCK 비생산 모바일 요약 입력\"])",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,
@@ -223,6 +224,7 @@
         "selector": "[data-testid=\"admin-offseason-search\"]",
         "targetId": "search",
         "value": "MOCK 모바일 검색 입력",
+        "waitForSelector": "[data-testid=\"admin-offseason-content\"][data-vqa-search-change-count=\"1\"][data-vqa-search-change-value=\"MOCK 모바일 검색 입력\"]",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,
