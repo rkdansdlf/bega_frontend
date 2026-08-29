@@ -1141,6 +1141,33 @@ const checkFrontendCypressRunnerWorkflow = (repoRoot, failures) => {
   }
 };
 
+const checkCloudflareReportJobTimeouts = (repoRoot, failures) => {
+  const workflow = workflowPath('cloudflare-deploy.yml');
+  const absolutePath = resolve(repoRoot, workflow);
+  if (!existsSync(absolutePath)) {
+    return;
+  }
+
+  const contents = stripYamlComments(readFileSync(absolutePath, 'utf8'));
+  const lines = contents.split('\n');
+  for (const jobName of ['dry-run', 'manual-ref-check', 'not-configured']) {
+    const jobStart = lines.findIndex((line) => line.trimEnd() === `  ${jobName}:`);
+    const nextJobOffset = jobStart < 0
+      ? -1
+      : lines.slice(jobStart + 1).findIndex((line) => /^  [A-Za-z0-9_-]+:\s*$/.test(line));
+    const jobEnd = nextJobOffset < 0 ? lines.length : jobStart + 1 + nextJobOffset;
+    const jobSource = jobStart < 0 ? '' : lines.slice(jobStart + 1, jobEnd).join('\n');
+    if (!/^    timeout-minutes: 10\s*$/m.test(jobSource)) {
+      addFailure(
+        failures,
+        'missing-cloudflare-report-job-timeout',
+        workflow,
+        `${jobName} must set timeout-minutes: 10`,
+      );
+    }
+  }
+};
+
 export const checkCiWorkflowPolicy = (repoRoot = DEFAULT_REPO_ROOT) => {
   const failures = [];
 
@@ -1154,6 +1181,7 @@ export const checkCiWorkflowPolicy = (repoRoot = DEFAULT_REPO_ROOT) => {
   checkFrontendMobileQaWorkflow(repoRoot, failures);
   checkPolicyWorkflowWiring(repoRoot, failures);
   checkFrontendCypressRunnerWorkflow(repoRoot, failures);
+  checkCloudflareReportJobTimeouts(repoRoot, failures);
 
   return {
     ok: failures.length === 0,

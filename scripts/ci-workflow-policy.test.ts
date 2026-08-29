@@ -366,6 +366,27 @@ test('current repository satisfies CI workflow policy', () => {
   assert.equal(report.ok, true);
 });
 
+test('policy requires explicit Cloudflare report job timeouts', () => {
+  const repoRoot = writePassingPolicyFixture();
+  writeWorkflowFixture(repoRoot, 'cloudflare-deploy.yml', [
+    'jobs:',
+    '  dry-run:',
+    '    runs-on: ubuntu-latest',
+    '  manual-ref-check:',
+    '    runs-on: ubuntu-latest',
+    '  not-configured:',
+    '    runs-on: ubuntu-latest',
+  ].join('\n'));
+
+  const report = checkCiWorkflowPolicy(repoRoot);
+  const timeoutFailures = report.failures.filter((failure) => (
+    failure.id === 'missing-cloudflare-report-job-timeout'
+  ));
+
+  assert.equal(report.ok, false);
+  assert.equal(timeoutFailures.length, 3);
+});
+
 test('policy blocks pull_request_target full mate regression labelers', () => {
   const repoRoot = writePassingPolicyFixture();
   writeWorkflowFixture(repoRoot, 'frontend-mate-regression-label.yml', [
