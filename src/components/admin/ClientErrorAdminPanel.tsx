@@ -1,4 +1,12 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from 'react';
 import { AdminBadge } from './AdminPanelPrimitives';
 import {
   AdminClockIcon,
@@ -32,23 +40,58 @@ import {
   formatDetailedDateTime,
   sourceBadgeClass,
 } from './clientErrorAdminShared';
+import {
+  createClientErrorEventFilterKey,
+  createClientErrorEventRequestCoordinator,
+  type ClientErrorEventRequestCoordinator,
+} from './clientErrorAdminRequestCoordinator';
 
 const ClientErrorTrendChart = lazy(() => import('./ClientErrorTrendChart'));
 const ClientErrorAdminInsightsRuntime = lazy(() => import('./ClientErrorAdminInsightsRuntime'));
 const ClientErrorAdminDetailRuntime = lazy(() => import('./ClientErrorAdminDetailRuntime'));
 
-type WindowKey = '1h' | '24h' | '7d';
+export type ClientErrorAdminWindowKey = '1h' | '24h' | '7d';
 
-type EventFilters = {
+export interface ClientErrorAdminEventFilters {
   bucket: 'all' | 'api' | 'runtime';
   source: 'all' | 'api' | 'runtime' | 'unhandled_rejection';
   statusGroup: 'all' | '5xx' | '4xx' | 'none';
   route: string;
   fingerprint: string;
   search: string;
-};
+}
 
-const WINDOW_LABEL: Record<WindowKey, string> = {
+export interface ClientErrorAdminPanelVisualQaState {
+  active: boolean;
+  windowKey: ClientErrorAdminWindowKey;
+  filters: ClientErrorAdminEventFilters;
+  dashboard: AdminClientErrorDashboard | null;
+  eventsPage: AdminClientErrorEventPage;
+  currentPage: number;
+  loadingDashboard: boolean;
+  loadingEvents: boolean;
+  panelError: string | null;
+  detailOpen: boolean;
+  detailLoading: boolean;
+  selectedEvent: AdminClientErrorEventDetail | null;
+  chartPhase: 'fallback' | 'resolved';
+  insightsPhase: 'deferred-fallback' | 'suspense-fallback' | 'resolved';
+  detailPhase: 'closed' | 'suspense-fallback' | 'resolved';
+}
+
+export interface ClientErrorAdminPanelVisualQaRenderers {
+  chart?: (props: ComponentProps<typeof ClientErrorTrendChart>) => ReactNode;
+  detail?: (props: ComponentProps<typeof ClientErrorAdminDetailRuntime>) => ReactNode;
+  insights?: (props: ComponentProps<typeof ClientErrorAdminInsightsRuntime>) => ReactNode;
+}
+
+export interface ClientErrorAdminPanelProps {
+  active: boolean;
+  visualQaStateOverride?: ClientErrorAdminPanelVisualQaState;
+  visualQaRenderers?: ClientErrorAdminPanelVisualQaRenderers;
+}
+
+const WINDOW_LABEL: Record<ClientErrorAdminWindowKey, string> = {
   '1h': '최근 1시간',
   '24h': '최근 24시간',
   '7d': '최근 7일',
@@ -63,7 +106,7 @@ const initialEventPage: AdminClientErrorEventPage = {
   last: true,
 };
 
-const initialFilters: EventFilters = {
+const initialFilters: ClientErrorAdminEventFilters = {
   bucket: 'all',
   source: 'all',
   statusGroup: 'all',
@@ -72,7 +115,7 @@ const initialFilters: EventFilters = {
   search: '',
 };
 
-const buildWindowRange = (windowKey: WindowKey) => {
+const buildWindowRange = (windowKey: ClientErrorAdminWindowKey) => {
   const to = new Date();
   const from = new Date(to);
 
@@ -123,7 +166,12 @@ function MonitoringCard({
 
 function ClientErrorInsightsSkeleton({ compact = false }: { compact?: boolean }) {
   return (
-    <div className="grid gap-6 xl:grid-cols-2">
+    <div
+      data-testid={compact
+        ? 'admin-client-error-insights-skeleton-compact'
+        : 'admin-client-error-insights-skeleton-full'}
+      className="grid gap-6 xl:grid-cols-2"
+    >
       {[1, 2].map((item) => (
         <section key={item} className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
           <div className="animate-pulse space-y-3">
@@ -147,23 +195,98 @@ function ClientErrorInsightsSkeleton({ compact = false }: { compact?: boolean })
   );
 }
 
-export function ClientErrorAdminPanel({ active }: { active: boolean }) {
-  const [windowKey, setWindowKey] = useState<WindowKey>('24h');
-  const [dashboard, setDashboard] = useState<AdminClientErrorDashboard | null>(null);
-  const [eventsPage, setEventsPage] = useState<AdminClientErrorEventPage>(initialEventPage);
-  const [filters, setFilters] = useState<EventFilters>(initialFilters);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [loadingDashboard, setLoadingDashboard] = useState(false);
-  const [loadingEvents, setLoadingEvents] = useState(false);
-  const [panelError, setPanelError] = useState<string | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<AdminClientErrorEventDetail | null>(null);
+function ClientErrorChartFallback() {
+  return (
+    <div
+      data-testid="admin-client-error-chart-fallback"
+      className="flex h-full items-center justify-center text-slate-400"
+    >
+      차트 로딩 중...
+    </div>
+  );
+}
+
+function ClientErrorDetailFallback() {
+  return (
+    <div
+      data-testid="admin-client-error-detail-fallback"
+      className="flex min-h-48 items-center justify-center rounded-2xl border border-slate-700 bg-slate-950 text-slate-400"
+    >
+      상세 화면을 준비하고 있습니다.
+    </div>
+  );
+}
+
+const validateVisualQaState = (
+  state: ClientErrorAdminPanelVisualQaState,
+  renderers: ClientErrorAdminPanelVisualQaRenderers | undefined,
+) => {
+  if (state.chartPhase === 'resolved' && !renderers?.chart) {
+    throw new Error('ClientErrorAdminPanel Visual QA resolved chart renderer is required.');
+  }
+  if (state.insightsPhase === 'resolved' && !renderers?.insights) {
+    throw new Error('ClientErrorAdminPanel Visual QA resolved insights renderer is required.');
+  }
+  if (state.detailPhase === 'closed') {
+    if (state.detailOpen) {
+      throw new Error('ClientErrorAdminPanel Visual QA closed detail phase must not be open.');
+    }
+    return;
+  }
+  if (!state.detailOpen) {
+    throw new Error('ClientErrorAdminPanel Visual QA detail phase requires an open detail.');
+  }
+  if (state.detailPhase === 'resolved' && !renderers?.detail) {
+    throw new Error('ClientErrorAdminPanel Visual QA resolved detail renderer is required.');
+  }
+};
+
+export function ClientErrorAdminPanel({
+  active: requestedActive,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+  visualQaRenderers: requestedVisualQaRenderers,
+}: ClientErrorAdminPanelProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaRenderers = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaRenderers;
+  const active = visualQaStateOverride?.active ?? requestedActive;
+  const [windowKey, setWindowKey] = useState<ClientErrorAdminWindowKey>(
+    () => visualQaStateOverride?.windowKey ?? '24h',
+  );
+  const [dashboard, setDashboard] = useState<AdminClientErrorDashboard | null>(
+    () => visualQaStateOverride?.dashboard ?? null,
+  );
+  const [eventsPage, setEventsPage] = useState<AdminClientErrorEventPage>(
+    () => visualQaStateOverride?.eventsPage ?? initialEventPage,
+  );
+  const [filters, setFilters] = useState<ClientErrorAdminEventFilters>(
+    () => visualQaStateOverride?.filters ?? initialFilters,
+  );
+  const [currentPage, setCurrentPage] = useState(() => visualQaStateOverride?.currentPage ?? 0);
+  const [loadingDashboard, setLoadingDashboard] = useState(() => visualQaStateOverride?.loadingDashboard ?? false);
+  const [loadingEvents, setLoadingEvents] = useState(() => visualQaStateOverride?.loadingEvents ?? false);
+  const [panelError, setPanelError] = useState<string | null>(() => visualQaStateOverride?.panelError ?? null);
+  const [detailOpen, setDetailOpen] = useState(() => visualQaStateOverride?.detailOpen ?? false);
+  const [detailLoading, setDetailLoading] = useState(() => visualQaStateOverride?.detailLoading ?? false);
+  const [selectedEvent, setSelectedEvent] = useState<AdminClientErrorEventDetail | null>(
+    () => visualQaStateOverride?.selectedEvent ?? null,
+  );
+  const eventRequestCoordinatorRef = useRef<ClientErrorEventRequestCoordinator | null>(null);
+  if (!eventRequestCoordinatorRef.current) {
+    eventRequestCoordinatorRef.current = createClientErrorEventRequestCoordinator();
+  }
+
+  if (visualQaStateOverride) {
+    validateVisualQaState(visualQaStateOverride, visualQaRenderers);
+  }
 
   const timeRange = buildWindowRange(windowKey);
 
   const loadDashboard = async () => {
-    if (!active) {
+    if (visualQaStateOverride || !active) {
       return;
     }
 
@@ -181,7 +304,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
   };
 
   const loadEvents = async (page = currentPage) => {
-    if (!active) {
+    if (visualQaStateOverride || !active) {
       return;
     }
 
@@ -211,33 +334,51 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
   };
 
   useEffect(() => {
-    if (!active) {
+    if (visualQaStateOverride || !active) {
       return;
     }
 
-    setCurrentPage(0);
     void loadDashboard();
-    void loadEvents(0);
-  }, [active, windowKey]);
+  }, [active, visualQaStateOverride, windowKey]);
 
   useEffect(() => {
-    if (!active) {
+    if (visualQaStateOverride) {
       return;
     }
 
-    const timer = setTimeout(() => {
+    eventRequestCoordinatorRef.current?.sync({
+      active,
+      windowKey,
+      filterKey: createClientErrorEventFilterKey(filters),
+    }, () => {
       setCurrentPage(0);
       void loadEvents(0);
-    }, 300);
+    });
+  }, [
+    active,
+    filters.bucket,
+    filters.source,
+    filters.statusGroup,
+    filters.route,
+    filters.fingerprint,
+    filters.search,
+    visualQaStateOverride,
+    windowKey,
+  ]);
 
-    return () => clearTimeout(timer);
-  }, [active, filters.bucket, filters.source, filters.statusGroup, filters.route, filters.fingerprint, filters.search]);
+  useEffect(() => () => eventRequestCoordinatorRef.current?.dispose(), []);
 
   const handleRefresh = async () => {
+    if (visualQaStateOverride) {
+      return;
+    }
     await Promise.all([loadDashboard(), loadEvents(currentPage)]);
   };
 
   const handleOpenDetail = async (eventId: string) => {
+    if (visualQaStateOverride) {
+      return;
+    }
     setDetailOpen(true);
     setDetailLoading(true);
     try {
@@ -262,6 +403,55 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
     setSelectedEvent(null);
   };
 
+  const chartProps: ComponentProps<typeof ClientErrorTrendChart> = {
+    chartData,
+    loading: loadingDashboard,
+  };
+  const insightsProps: ComponentProps<typeof ClientErrorAdminInsightsRuntime> = { dashboard };
+  const detailProps: ComponentProps<typeof ClientErrorAdminDetailRuntime> = {
+    open: detailOpen,
+    detailLoading,
+    selectedEvent,
+    onClose: handleCloseDetail,
+    onOpenDetail: (eventId) => void handleOpenDetail(eventId),
+  };
+  const chartContent = visualQaStateOverride
+    ? visualQaStateOverride.chartPhase === 'fallback'
+      ? <ClientErrorChartFallback />
+      : visualQaRenderers?.chart?.(chartProps)
+    : (
+      <Suspense fallback={<ClientErrorChartFallback />}>
+        <ClientErrorTrendChart {...chartProps} />
+      </Suspense>
+    );
+  const insightsContent = visualQaStateOverride
+    ? visualQaStateOverride.insightsPhase === 'deferred-fallback'
+      ? <ClientErrorInsightsSkeleton />
+      : visualQaStateOverride.insightsPhase === 'suspense-fallback'
+        ? <ClientErrorInsightsSkeleton compact />
+        : visualQaRenderers?.insights?.(insightsProps)
+    : (
+      <ViewportDeferred
+        fallback={<ClientErrorInsightsSkeleton />}
+        rootMargin="240px 0px 280px 0px"
+      >
+        <Suspense fallback={<ClientErrorInsightsSkeleton compact />}>
+          <ClientErrorAdminInsightsRuntime {...insightsProps} />
+        </Suspense>
+      </ViewportDeferred>
+    );
+  const detailContent = visualQaStateOverride
+    ? visualQaStateOverride.detailPhase === 'closed'
+      ? null
+      : visualQaStateOverride.detailPhase === 'suspense-fallback'
+        ? <ClientErrorDetailFallback />
+        : visualQaRenderers?.detail?.(detailProps)
+    : detailOpen ? (
+      <Suspense fallback={<ClientErrorDetailFallback />}>
+        <ClientErrorAdminDetailRuntime {...detailProps} />
+      </Suspense>
+    ) : null;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -282,7 +472,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={windowKey}
-            onChange={(event) => setWindowKey(event.target.value as WindowKey)}
+            onChange={(event) => setWindowKey(event.target.value as ClientErrorAdminWindowKey)}
             className={`w-[150px] ${adminNativeSelectClassName}`}
           >
             <option value="1h">최근 1시간</option>
@@ -330,9 +520,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
           </div>
 
           <div className="h-[320px]">
-            <Suspense fallback={<div className="flex h-full items-center justify-center text-slate-400">차트 로딩 중...</div>}>
-              <ClientErrorTrendChart chartData={chartData} loading={loadingDashboard} />
-            </Suspense>
+            {chartContent}
           </div>
         </section>
 
@@ -397,7 +585,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
           <select
             value={filters.bucket}
-            onChange={(event) => setFilters((prev) => ({ ...prev, bucket: event.target.value as EventFilters['bucket'] }))}
+            onChange={(event) => setFilters((prev) => ({ ...prev, bucket: event.target.value as ClientErrorAdminEventFilters['bucket'] }))}
             className={adminNativeSelectClassName}
           >
             <option value="all">Bucket 전체</option>
@@ -407,7 +595,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
 
           <select
             value={filters.source}
-            onChange={(event) => setFilters((prev) => ({ ...prev, source: event.target.value as EventFilters['source'] }))}
+            onChange={(event) => setFilters((prev) => ({ ...prev, source: event.target.value as ClientErrorAdminEventFilters['source'] }))}
             className={adminNativeSelectClassName}
           >
             <option value="all">Source 전체</option>
@@ -418,7 +606,7 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
 
           <select
             value={filters.statusGroup}
-            onChange={(event) => setFilters((prev) => ({ ...prev, statusGroup: event.target.value as EventFilters['statusGroup'] }))}
+            onChange={(event) => setFilters((prev) => ({ ...prev, statusGroup: event.target.value as ClientErrorAdminEventFilters['statusGroup'] }))}
             className={adminNativeSelectClassName}
           >
             <option value="all">Status 전체</option>
@@ -544,28 +732,9 @@ export function ClientErrorAdminPanel({ active }: { active: boolean }) {
         </div>
       </section>
 
-      <ViewportDeferred
-        fallback={<ClientErrorInsightsSkeleton />}
-        rootMargin="240px 0px 280px 0px"
-      >
-        <Suspense
-          fallback={<ClientErrorInsightsSkeleton compact />}
-        >
-          <ClientErrorAdminInsightsRuntime dashboard={dashboard} />
-        </Suspense>
-      </ViewportDeferred>
+      {insightsContent}
 
-      {detailOpen ? (
-        <Suspense fallback={null}>
-          <ClientErrorAdminDetailRuntime
-            open={detailOpen}
-            detailLoading={detailLoading}
-            selectedEvent={selectedEvent}
-            onClose={handleCloseDetail}
-            onOpenDetail={(eventId) => void handleOpenDetail(eventId)}
-          />
-        </Suspense>
-      ) : null}
+      {detailContent}
     </div>
   );
 }
