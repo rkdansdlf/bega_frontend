@@ -27,6 +27,7 @@ import type OffseasonMovementAdminResultsRuntimeComponent from '../components/ad
 import type { MatesAdminPanel as MatesAdminPanelComponent } from '../components/admin/MatesAdminPanel';
 import type { PostsAdminPanel as PostsAdminPanelComponent } from '../components/admin/PostsAdminPanel';
 import type { UsersAdminPanel as UsersAdminPanelComponent } from '../components/admin/UsersAdminPanel';
+import type GlobalErrorDialogContentComponent from '../components/GlobalErrorDialogContent';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
 import {
@@ -124,6 +125,23 @@ const VisualQaOffseasonMovementAdminResultsRuntime = lazy(() => (
 const VisualQaOffseasonMovementAdminDialogs = lazy(() => (
   import('../components/admin/OffseasonMovementAdminDialogs')
 ));
+const VisualQaGlobalErrorDialogContent = lazy(() => import('../components/GlobalErrorDialogContent'));
+
+const renderVisualQaGlobalErrorLazyChild = (child: ReactNode) => createElement(
+  Suspense,
+  {
+    fallback: createElement(
+      'div',
+      {
+        'aria-busy': true,
+        'aria-live': 'polite',
+        role: 'status',
+      },
+      '오류 안내를 불러오는 중...',
+    ),
+  },
+  child,
+);
 
 const renderVisualQaCommunityLazyChild = (child: ReactNode) => createElement(
   Suspense,
@@ -4240,7 +4258,288 @@ const buildVisualQaAdminOffseasonDialogsProps = (
   };
 };
 
+type VisualQaGlobalErrorData =
+  | 'empty'
+  | 'populated'
+  | 'null-optional'
+  | 'boundary-minimum'
+  | 'boundary-maximum'
+  | 'long-korean'
+  | 'unbroken-token'
+  | 'maximum-supported';
+
+type VisualQaGlobalErrorPreset =
+  | 'idle'
+  | 'idle-no-event'
+  | 'content-loading-fallback'
+  | 'closed'
+  | 'status-null'
+  | 'status-404'
+  | 'status-409'
+  | 'status-500'
+  | 'source-runtime'
+  | 'source-unhandled-rejection'
+  | 'retry-missing'
+  | 'ignored-invalid-author'
+  | 'ignored-cancelled-request'
+  | 'ignored-home-endpoint'
+  | 'cypress-suppressed'
+  | 'latest-event-wins';
+
+const visualQaGlobalErrorData = new Set<VisualQaGlobalErrorData>([
+  'empty',
+  'populated',
+  'null-optional',
+  'boundary-minimum',
+  'boundary-maximum',
+  'long-korean',
+  'unbroken-token',
+  'maximum-supported',
+]);
+
+const visualQaGlobalErrorRootPresets = new Set<VisualQaGlobalErrorPreset>([
+  'idle',
+  'idle-no-event',
+  'content-loading-fallback',
+  'status-null',
+  'status-404',
+  'status-409',
+  'status-500',
+  'source-runtime',
+  'source-unhandled-rejection',
+  'retry-missing',
+  'ignored-invalid-author',
+  'ignored-cancelled-request',
+  'ignored-home-endpoint',
+  'cypress-suppressed',
+  'latest-event-wins',
+]);
+
+const visualQaGlobalErrorContentPresets = new Set<VisualQaGlobalErrorPreset>([
+  'idle',
+  'closed',
+  'status-null',
+  'status-404',
+  'status-409',
+  'status-500',
+  'source-runtime',
+  'source-unhandled-rejection',
+  'retry-missing',
+]);
+
+const visualQaGlobalErrorLongKorean =
+  'MOCK 비생산 전역 오류 안내가 가장 좁은 모바일 화면에서도 제목과 본문, 오류 식별자, 피드백 조작 영역을 침범하지 않고 자연스럽게 여러 줄로 표시되는지 확인하는 긴 한국어 문구입니다. '.repeat(5);
+const visualQaGlobalErrorUnbroken = `MOCK_GLOBAL_ERROR_${'UNBROKEN'.repeat(70)}`;
+
+const resolveVisualQaGlobalErrorCopy = (data: VisualQaGlobalErrorData) => {
+  switch (data) {
+    case 'empty':
+      return { errorId: '', message: '' };
+    case 'populated':
+      return { errorId: 'MOCK-ERROR-POPULATED', message: 'MOCK 비생산 요청을 처리하지 못했습니다.' };
+    case 'null-optional':
+      return { errorId: null, message: 'MOCK 비생산 선택 오류 식별자 없음' };
+    case 'boundary-minimum':
+      return { errorId: 'M', message: 'M' };
+    case 'boundary-maximum':
+      return {
+        errorId: `MOCK-MAX-${'E'.repeat(180)}`,
+        message: `MOCK 경계 최대 ${'오류 설명'.repeat(90)}`,
+      };
+    case 'long-korean':
+      return { errorId: 'MOCK-LONG-KOREAN', message: visualQaGlobalErrorLongKorean };
+    case 'unbroken-token':
+      return { errorId: visualQaGlobalErrorUnbroken, message: visualQaGlobalErrorUnbroken };
+    case 'maximum-supported':
+      return {
+        errorId: `MOCK-MAXIMUM-${'ID'.repeat(90)}`,
+        message: `${visualQaGlobalErrorLongKorean}${visualQaGlobalErrorUnbroken}`,
+      };
+  }
+};
+
+const buildVisualQaGlobalErrorProps = (
+  data: VisualQaGlobalErrorData,
+  preset: VisualQaGlobalErrorPreset,
+  system: string,
+) => {
+  const copy = resolveVisualQaGlobalErrorCopy(data);
+  const closed = preset === 'closed'
+    || preset === 'idle-no-event'
+    || preset === 'ignored-invalid-author'
+    || preset === 'ignored-cancelled-request'
+    || preset === 'ignored-home-endpoint'
+    || preset === 'cypress-suppressed';
+  const statusCode = preset === 'status-null'
+    ? null
+    : preset === 'status-404'
+      ? 404
+      : preset === 'status-409'
+        ? 409
+        : preset === 'status-500'
+          ? 500
+          : 400;
+  const source = preset === 'source-runtime'
+    ? 'runtime' as const
+    : preset === 'source-unhandled-rejection'
+      ? 'unhandled_rejection' as const
+      : 'api' as const;
+  let retryCount = 0;
+  const onRetry = preset === 'retry-missing'
+    ? null
+    : async () => {
+      retryCount += 1;
+      if (retryCount !== 1) throw new Error('Global error Visual QA retry callback repeated');
+      if (system === 'timeout') await new Promise<void>(() => {});
+    };
+  let feedbackCount = 0;
+  const visualQaSubmitFeedback = async () => {
+    feedbackCount += 1;
+    if (feedbackCount !== 1) throw new Error('Global error Visual QA feedback submission repeated');
+    if (system === 'timeout') return new Promise<boolean>(() => {});
+    return system !== 'offline';
+  };
+  const prefixText = statusCode === 404 || statusCode === 409
+    ? '⚠️ 오류 발생'
+    : statusCode !== null && statusCode >= 500
+      ? '🚨 시스템 오류'
+      : '⛔ 요청 실패';
+
+  return {
+    closeErrorModal: () => {},
+    errorId: copy.errorId,
+    isOpen: !closed,
+    message: preset === 'latest-event-wins' ? 'MOCK event B latest' : copy.message,
+    onRetry,
+    prefixText,
+    source,
+    statusCode,
+    visualQaSubmitFeedback,
+  };
+};
+
 const adapters: Record<string, ComponentStateAdapter> = {
+  'global-error.root': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 GlobalErrorDialog state: ${JSON.stringify({ states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    const stateNames = Object.keys(context.states).sort();
+    const variantNames = Object.keys(context.variants).sort();
+    const data = context.states.data as VisualQaGlobalErrorData | undefined;
+    const preset = context.variants.preset as VisualQaGlobalErrorPreset | undefined;
+    if (
+      stateNames.length !== 1
+      || stateNames[0] !== 'data'
+      || variantNames.length !== 1
+      || variantNames[0] !== 'preset'
+      || !data
+      || !visualQaGlobalErrorData.has(data)
+      || !preset
+      || !visualQaGlobalErrorRootPresets.has(preset)
+      || context.interactionTargetId !== undefined
+      || (preset !== 'idle' && data !== 'populated')
+    ) failClosed();
+
+    const contentProps = buildVisualQaGlobalErrorProps(
+      data as VisualQaGlobalErrorData,
+      preset as VisualQaGlobalErrorPreset,
+      'online',
+    );
+    let closeCount = 0;
+    return {
+      props: {
+        visualQaRenderers: {
+          content: (props: ComponentProps<typeof GlobalErrorDialogContentComponent>) => (
+            renderVisualQaGlobalErrorLazyChild(createElement(VisualQaGlobalErrorDialogContent, {
+              ...props,
+              visualQaSubmitFeedback: contentProps.visualQaSubmitFeedback,
+            }))
+          ),
+        },
+        visualQaStateOverride: {
+          active: true,
+          onClose: () => {
+            closeCount += 1;
+            if (closeCount !== 1) throw new Error('Global error Visual QA close callback repeated');
+          },
+          phase: preset === 'content-loading-fallback' ? 'fallback' : 'resolved',
+          state: {
+            errorId: contentProps.errorId,
+            isOpen: contentProps.isOpen,
+            message: contentProps.message,
+            onRetry: contentProps.onRetry,
+            source: contentProps.source,
+            statusCode: contentProps.statusCode,
+          },
+        },
+      },
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+    };
+  },
+  'global-error.content': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 GlobalErrorDialogContent state: ${JSON.stringify({ states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    const stateNames = Object.keys(context.states).sort();
+    const variantNames = Object.keys(context.variants).sort();
+    const data = context.states.data as VisualQaGlobalErrorData | undefined;
+    const interaction = context.states.interactions;
+    const system = context.states.system;
+    const preset = context.variants.preset as VisualQaGlobalErrorPreset | undefined;
+    const target = context.interactionTargetId;
+    const onlineTargets = {
+      hover: new Set(['close', 'confirm', 'retry', 'feedback-submit']),
+      'focus-visible': new Set(['close', 'textarea', 'retry', 'feedback-submit', 'confirm']),
+      pressed: new Set(['close', 'confirm', 'retry', 'feedback-submit']),
+      input: new Set(['textarea']),
+      'keyboard-navigation': new Set(['confirm-to-close']),
+    } as const;
+    const defaultValid = interaction === 'default'
+      && system === 'online'
+      && target === undefined
+      && (preset === 'idle' || data === 'populated');
+    const onlineInteractionTargets = onlineTargets[interaction as keyof typeof onlineTargets];
+    const onlineInteractionValid = data === 'maximum-supported'
+      && preset === 'idle'
+      && system === 'online'
+      && onlineInteractionTargets?.has(target ?? '') === true;
+    const selectedValid = data === 'maximum-supported'
+      && preset === 'idle'
+      && interaction === 'selected'
+      && ((system === 'online' && target === 'feedback-success')
+        || (system === 'offline' && target === 'feedback-failure'));
+    const submittingValid = data === 'maximum-supported'
+      && preset === 'idle'
+      && interaction === 'submitting'
+      && system === 'timeout'
+      && (target === 'retry-timeout' || target === 'feedback-timeout');
+    if (
+      stateNames.join(',') !== 'data,interactions,system'
+      || variantNames.length !== 1
+      || variantNames[0] !== 'preset'
+      || !data
+      || !visualQaGlobalErrorData.has(data)
+      || !preset
+      || !visualQaGlobalErrorContentPresets.has(preset)
+      || (!defaultValid && !onlineInteractionValid && !selectedValid && !submittingValid)
+    ) failClosed();
+
+    const props = buildVisualQaGlobalErrorProps(
+      data as VisualQaGlobalErrorData,
+      preset as VisualQaGlobalErrorPreset,
+      system ?? 'online',
+    );
+    return {
+      props,
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+    };
+  },
   'admin.offseason-movement-dialogs': (context) => {
     const supportedData = new Set<VisualQaAdminOffseasonData>([
       'empty', 'populated', 'null-optional', 'boundary-minimum',

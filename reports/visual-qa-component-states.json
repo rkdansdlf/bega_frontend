@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T20:24:16.055Z",
+  "generatedAt": "2026-08-29T22:21:27.715Z",
   "ok": true,
   "total": 1010,
-  "registered": 437,
+  "registered": 440,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -128,9 +128,6 @@
     "src/components/GameCard.tsx#HomeSideLabel",
     "src/components/GameCard.tsx#MobileTeamRow",
     "src/components/GameCard.tsx#TeamResultBadge",
-    "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
-    "src/components/GlobalErrorDialog.tsx#LazyGlobalErrorDialogContent",
-    "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
     "src/components/Home.tsx#Home",
     "src/components/HomeRuntime.tsx#HomeMatchPanelFallbackCard",
     "src/components/HomeRuntime.tsx#HomeMatchPanelSuspenseFallback",
@@ -583,5 +580,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 71579
+  "validCombinations": 71636
 }

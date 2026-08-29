@@ -37,7 +37,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70576);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70633);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +50,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    274,
+    276,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -5602,4 +5602,94 @@ test('conditional targets preserve ordered setup and result waits for matching c
     waitForSelector: '[role="dialog"]',
     waitForHiddenSelector: '[data-testid="closed-state"]',
   });
+});
+
+test('global error Root, Content, and lazy host cover exactly 22, 35, and 16 legal scenarios', async () => {
+  const rootComponentId = 'src/components/GlobalErrorDialog.tsx#GlobalErrorDialog';
+  const contentComponentId = 'src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent';
+  const lazyComponentId = 'src/components/GlobalErrorDialog.tsx#LazyGlobalErrorDialogContent';
+  const rootScenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(
+    ({ componentId }) => componentId === rootComponentId,
+  );
+  const contentScenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(
+    ({ componentId }) => componentId === contentComponentId,
+  );
+  assert.equal(rootScenarios.length, 22);
+  assert.equal(new Set(rootScenarios.map(({ id }) => id)).size, 22);
+  assert.equal(rootScenarios.filter(({ variants }) => variants.preset === 'idle').length, 8);
+  assert.equal(rootScenarios.filter(({ variants }) => variants.preset !== 'idle').length, 14);
+  assert.ok(rootScenarios.every(({ states }) => states.interactions === undefined));
+
+  assert.equal(contentScenarios.length, 35);
+  assert.equal(new Set(contentScenarios.map(({ id }) => id)).size, 35);
+  assert.equal(contentScenarios.filter(({ states }) => states.interactions === 'default').length, 16);
+  assert.deepEqual(Object.fromEntries(
+    ['hover', 'focus-visible', 'pressed', 'input', 'selected', 'submitting', 'keyboard-navigation']
+      .map((interaction) => [interaction, contentScenarios.filter(
+        ({ states }) => states.interactions === interaction,
+      ).length]),
+  ), {
+    hover: 4,
+    'focus-visible': 5,
+    pressed: 4,
+    input: 1,
+    selected: 2,
+    submitting: 2,
+    'keyboard-navigation': 1,
+  });
+  assert.ok(contentScenarios
+    .filter(({ states }) => states.interactions !== 'default')
+    .every(({ states, variants }) => (
+      states.data === 'maximum-supported' && variants.preset === 'idle'
+    )));
+  assert.ok(contentScenarios
+    .filter(({ states }) => states.interactions !== 'default')
+    .every(({ interactionPlan }) => Boolean(interactionPlan)));
+  const feedbackSubmitFocus = contentScenarios.find(({ interactionPlan, states }) => (
+    states.interactions === 'focus-visible'
+      && interactionPlan?.targetId === 'feedback-submit'
+  ));
+  assert.deepEqual(feedbackSubmitFocus?.interactionPlan?.setup, [{
+    action: 'fill',
+    selector: '[data-testid="error-feedback"] textarea',
+    value: 'MOCK 비생산 포커스 오류 제보',
+  }]);
+  const feedbackSubmitHover = contentScenarios.find(({ interactionPlan, states }) => (
+    states.interactions === 'hover'
+      && interactionPlan?.targetId === 'feedback-submit'
+  ));
+  assert.deepEqual(feedbackSubmitHover?.interactionPlan?.setup, [{
+    action: 'fill',
+    selector: '[data-testid="error-feedback"] textarea',
+    value: 'MOCK 비생산 hover 오류 제보',
+  }]);
+  const feedbackSuccess = contentScenarios.find(({ interactionPlan, states }) => (
+    states.interactions === 'selected'
+      && interactionPlan?.targetId === 'feedback-success'
+  ));
+  assert.deepEqual(feedbackSuccess?.interactionPlan?.setup, [{
+    action: 'press-key',
+    selector: '[data-testid="error-feedback"] textarea',
+    key: 'A',
+  }]);
+
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{
+    id: string;
+    render?: { hostScenarioIds?: string[]; mode?: string };
+    status: string;
+  }> };
+  const hosted = manifest.components.find(({ id }) => id === lazyComponentId);
+  const expectedHostScenarioIds = [
+    ...['empty', 'populated', 'null-optional', 'boundary-minimum', 'boundary-maximum', 'long-korean', 'unbroken-token', 'maximum-supported']
+      .map((data) => `state:${rootComponentId}:data=${data}|variant.preset=idle`),
+    ...['status-null', 'status-404', 'status-409', 'status-500', 'source-runtime', 'source-unhandled-rejection', 'retry-missing', 'latest-event-wins']
+      .map((preset) => `state:${rootComponentId}:data=populated|variant.preset=${preset}`),
+  ];
+  assert.equal(hosted?.status, 'registered');
+  assert.equal(hosted?.render?.mode, 'hosted');
+  assert.deepEqual(hosted?.render?.hostScenarioIds, expectedHostScenarioIds);
+  assert.ok(expectedHostScenarioIds.every((id) => rootScenarios.some((scenario) => scenario.id === id)));
 });

@@ -88,6 +88,8 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'common.profile-image',
     'common.qr-code',
     'figma.image-with-fallback',
+    'global-error.content',
+    'global-error.root',
     'landing.app-preview',
     'landing.capability-showcase',
     'landing.cheer-vignette',
@@ -9571,4 +9573,50 @@ test('registered-loading-state-scenarios', async () => {
       'src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios',
     );
   }
+});
+
+test('global error root and content adapters fail closed outside the exact static matrix', async () => {
+  const rootComponentId = 'src/components/GlobalErrorDialog.tsx#GlobalErrorDialog';
+  const contentComponentId = 'src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent';
+  const root = resolveComponentStateAdapter('global-error.root', {
+    componentId: rootComponentId,
+    states: { data: 'long-korean' },
+    variants: { preset: 'idle' },
+  });
+  assert.equal(root.captureSelector, 'body');
+  assert.equal((root.props.visualQaStateOverride as { active?: boolean }).active, true);
+  assert.equal(typeof (root.props.visualQaRenderers as { content?: unknown }).content, 'function');
+
+  const content = resolveComponentStateAdapter('global-error.content', {
+    componentId: contentComponentId,
+    states: {
+      data: 'maximum-supported',
+      interactions: 'selected',
+      system: 'offline',
+    },
+    variants: { preset: 'idle' },
+    interactionTargetId: 'feedback-failure',
+  });
+  assert.equal(content.captureSelector, 'body');
+  assert.equal(content.props.isOpen, true);
+  assert.equal(typeof content.props.visualQaSubmitFeedback, 'function');
+  assert.equal(await (content.props.visualQaSubmitFeedback as () => Promise<boolean>)(), false);
+
+  assert.throws(
+    () => resolveComponentStateAdapter('global-error.root', {
+      componentId: rootComponentId,
+      states: { data: 'empty', interactions: 'default' },
+      variants: { preset: 'idle' },
+    }),
+    /지원하지 않는 GlobalErrorDialog state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('global-error.content', {
+      componentId: contentComponentId,
+      states: { data: 'empty', interactions: 'selected', system: 'offline' },
+      variants: { preset: 'idle' },
+      interactionTargetId: 'feedback-failure',
+    }),
+    /지원하지 않는 GlobalErrorDialogContent state/,
+  );
 });

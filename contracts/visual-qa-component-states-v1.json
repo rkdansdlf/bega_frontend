@@ -30521,18 +30521,1899 @@
     },
     {
       "id": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "global-error.root"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Eight static fixtures cover empty, optional, boundary, Korean, unbroken-token, and maximum pressure.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The global error surface does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Visible controls are owned by the separately registered Content export; Root coordination is covered by actual-mount tests.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Event, ignored, lazy, and suppression lifecycles are selected by the deterministic preset rather than multiplied by transport.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "preset",
+            "values": [
+              "idle",
+              "idle-no-event",
+              "content-loading-fallback",
+              "status-null",
+              "status-404",
+              "status-409",
+              "status-500",
+              "source-runtime",
+              "source-unhandled-rejection",
+              "retry-missing",
+              "ignored-invalid-author",
+              "ignored-cancelled-request",
+              "ignored-home-endpoint",
+              "cypress-suppressed",
+              "latest-event-wins"
+            ],
+            "reason": "One resolved baseline plus fourteen canonical listener, status, source, lazy, ignored, suppression, and latest-event states.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "idle-no-event"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "content-loading-fallback"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "ignored-invalid-author"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "ignored-cancelled-request"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "ignored-home-endpoint"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "cypress-suppressed"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "latest-event-wins"
+          },
+          "reason": "Canonical Root lifecycle evidence uses the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        }
+      ]
     },
     {
       "id": "src/components/GlobalErrorDialog.tsx#LazyGlobalErrorDialogContent",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=empty|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=null-optional|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=boundary-minimum|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=boundary-maximum|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=long-korean|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=unbroken-token|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=maximum-supported|variant.preset=idle",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-null",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-404",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-409",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-500",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=source-runtime",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=source-unhandled-rejection",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=retry-missing",
+          "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=latest-event-wins"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The lazy child inherits the Root fixture.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy child inherits Root permission independence.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Visible interactions belong to the direct Content export.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lazy resolution is selected by the Root host scenario.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The lazy binding owns no variant independently of its Root host.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "global-error.content"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Eight static fixtures cover empty, optional, boundary, Korean, unbroken-token, and maximum pressure.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The presentation receives error props and does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialogContent.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "input",
+            "selected",
+            "submitting",
+            "keyboard-navigation"
+          ],
+          "reason": "The direct portal owns all visible control, input, result, busy, and focus-loop states.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "online",
+            "offline",
+            "timeout"
+          ],
+          "reason": "Feedback success, feedback failure, and observable busy transports are retained only where submission occurs.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "preset",
+            "values": [
+              "idle",
+              "closed",
+              "status-null",
+              "status-404",
+              "status-409",
+              "status-500",
+              "source-runtime",
+              "source-unhandled-rejection",
+              "retry-missing"
+            ],
+            "reason": "The baseline plus eight canonical closed, status, source, and optional-retry branches are explicit.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"error-feedback\"] button:first-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "feedback-submit",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "setup": [
+                {
+                  "action": "fill",
+                  "selector": "[data-testid=\"error-feedback\"] textarea",
+                  "value": "MOCK 비생산 hover 오류 제보"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Every independent pointer target retains its production hover surface.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "textarea",
+              "selector": "[data-testid=\"error-feedback\"] textarea",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"error-feedback\"] button:first-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "feedback-submit",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "setup": [
+                {
+                  "action": "fill",
+                  "selector": "[data-testid=\"error-feedback\"] textarea",
+                  "value": "MOCK 비생산 포커스 오류 제보"
+                }
+              ],
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Every independent dialog control remains keyboard reachable with visible focus.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"error-feedback\"] button:first-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            },
+            {
+              "id": "feedback-submit",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              }
+            }
+          ],
+          "reason": "Every independent button retains its pointer-down presentation.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "textarea",
+              "selector": "[data-testid=\"error-feedback\"] textarea",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              },
+              "value": "MOCK 비생산 모바일 오류 상황 입력"
+            }
+          ],
+          "reason": "The feedback textarea retains deterministic mobile input without submitting.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "feedback-success",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              },
+              "setup": [
+                {
+                  "action": "press-key",
+                  "selector": "[data-testid=\"error-feedback\"] textarea",
+                  "key": "A"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"error-feedback\"] [aria-live=\"polite\"].text-emerald-700"
+            },
+            {
+              "id": "feedback-failure",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "offline",
+                "variant.preset": "idle"
+              },
+              "setup": [
+                {
+                  "action": "fill",
+                  "selector": "[data-testid=\"error-feedback\"] textarea",
+                  "value": "MOCK 비생산 오프라인 오류 제보"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"error-feedback\"] [aria-live=\"polite\"].text-red-600"
+            }
+          ],
+          "reason": "Static injected submission resolves to exact online success and offline failure results.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "submitting": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry-timeout",
+              "selector": "[data-testid=\"error-feedback\"] button:first-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "timeout",
+                "variant.preset": "idle"
+              },
+              "waitForSelector": "[data-testid=\"error-feedback\"] button:first-child:disabled"
+            },
+            {
+              "id": "feedback-timeout",
+              "selector": "[data-testid=\"error-feedback\"] button:last-child",
+              "when": {
+                "data": "maximum-supported",
+                "system": "timeout",
+                "variant.preset": "idle"
+              },
+              "setup": [
+                {
+                  "action": "fill",
+                  "selector": "[data-testid=\"error-feedback\"] textarea",
+                  "value": "MOCK 비생산 지연 오류 제보"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"error-feedback\"] button:last-child[aria-busy=\"true\"]"
+            }
+          ],
+          "reason": "Retry and feedback timeouts remain observable as disabled busy controls without hanging capture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "confirm-to-close",
+              "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+              "key": "Tab",
+              "when": {
+                "data": "maximum-supported",
+                "system": "online",
+                "variant.preset": "idle"
+              },
+              "waitForSelector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]:focus-visible"
+            }
+          ],
+          "reason": "Tab from the footer confirm wraps to the real close control inside the portal focus trap.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialog.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "interactions": "default",
+            "system": "offline"
+          },
+          "reason": "Transport is not observable before a feedback or retry action.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialogContent.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "default",
+            "system": "timeout"
+          },
+          "reason": "Transport is not observable before a feedback or retry action.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/GlobalErrorDialogContent.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "null-optional",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "closed"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-null"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-404"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-409"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "status-500"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "source-runtime"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "source-unhandled-rejection"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.preset": "retry-missing"
+          },
+          "reason": "Canonical Content branches use the populated static fixture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#global-error-root-and-content-adapters"
+        }
+      ]
     },
     {
       "id": "src/components/gocheok/GocheokFacilityGuide.tsx#FacilityImageCard",
