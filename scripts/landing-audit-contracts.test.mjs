@@ -101,7 +101,7 @@ test('first-load partitions successful mascot requests by request start when com
   );
 });
 
-test('landing interactive contract accepts only the labelled ticker toggle and reports every unexpected control', () => {
+test('landing interactive contract accepts the labelled ticker toggle and home CTA', () => {
   assert.equal(typeof helpers.getLandingInteractiveSetFailures, 'function');
 
   const tickerToggle = {
@@ -110,11 +110,18 @@ test('landing interactive contract accepts only the labelled ticker toggle and r
     label: '티커 일시정지',
     descriptor: 'button[data-testid="landing-ticker-toggle"] "티커 일시정지"',
   };
+  const homeCta = {
+    tagName: 'button',
+    testId: 'landing-home-cta',
+    label: '홈으로 이동',
+    descriptor: 'button[data-testid="landing-home-cta"] "홈으로 이동"',
+  };
 
-  assert.deepEqual(helpers.getLandingInteractiveSetFailures([tickerToggle]), []);
+  assert.deepEqual(helpers.getLandingInteractiveSetFailures([tickerToggle, homeCta]), []);
 
   const failures = helpers.getLandingInteractiveSetFailures([
     tickerToggle,
+    homeCta,
     {
       tagName: 'a',
       testId: null,
@@ -129,7 +136,7 @@ test('landing interactive contract accepts only the labelled ticker toggle and r
     },
   ]);
 
-  assert.ok(failures.some((failure) => failure.includes('expected exactly 1 interactive element, received 3')));
+  assert.ok(failures.some((failure) => failure.includes('expected exactly 2 interactive elements, received 4')));
   assert.ok(failures.some((failure) => failure.includes('a[href="/login"] "로그인"')));
   assert.ok(failures.some((failure) => failure.includes('rogue-focus-target')));
 });

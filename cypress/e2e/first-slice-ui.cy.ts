@@ -144,10 +144,10 @@ describe('first-slice mobile UI contracts', () => {
   it('keeps Korean landing titles from using negative letter spacing', () => {
     visitAsGuest('/');
 
-    cy.get('.ds-hero-title').should(($title) => {
+    cy.get('.landing-hero h1').should(($title) => {
       expect(readLetterSpacing($title[0]), 'hero title letter spacing').to.be.at.least(0);
     });
-    cy.get('.landing-wordmark').first().should(($wordmark) => {
+    cy.get('.landing-hero-brand').first().should(($wordmark) => {
       expect(readLetterSpacing($wordmark[0]), 'wordmark letter spacing').to.be.at.least(0);
     });
   });
