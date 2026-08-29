@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createJSONStorage } from 'zustand/middleware';
 
-import { authStoreApi, useAuthStore } from './authStore';
 import { queryClient } from '../lib/queryClient';
 import {
   getPersistedAuthBootstrapMeta,
@@ -30,13 +29,26 @@ const createStorage = () => {
   };
 };
 
+const installGlobalLocalStorage = (storage: ReturnType<typeof createStorage>) => {
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    writable: true,
+    value: storage,
+  });
+};
+
+const initialStorage = createStorage();
+installGlobalLocalStorage(initialStorage);
+
+const { authStoreApi, useAuthStore } = await import('./authStore');
+
 const installPersistStorage = (storage: ReturnType<typeof createStorage>) => {
   useAuthStore.persist.setOptions({
     storage: createJSONStorage(() => storage),
   });
 };
 
-installPersistStorage(createStorage());
+installPersistStorage(initialStorage);
 
 test.afterEach(() => {
   queryClient.clear();
