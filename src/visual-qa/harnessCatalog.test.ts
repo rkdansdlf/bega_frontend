@@ -4813,6 +4813,16 @@ test('admin community leaf panels cover exactly 18 mates, 18 posts, and 31 users
     ])),
     { default: 17, hover: 3, 'focus-visible': 5, pressed: 3, input: 1, change: 1, open: 1 },
   );
+  const roleChangeScenario = scenariosByPanel.users.find(({ states }) => (
+    states.interactions === 'change'
+  ));
+  assert.deepEqual({
+    key: roleChangeScenario?.interactionPlan?.key,
+    waitForSelector: roleChangeScenario?.interactionPlan?.waitForSelector,
+  }, {
+    key: 'ArrowDown',
+    waitForSelector: '[data-testid="admin-user-role-trigger-1"]:has(option[value="ROLE_ADMIN"]:checked)',
+  });
   assert.ok(combined
     .filter(({ interactionPlan }) => interactionPlan?.targetId?.startsWith('dialog-'))
     .every(({ interactionPlan }) => interactionPlan?.setup?.[0]?.selector.includes('-delete-1')));

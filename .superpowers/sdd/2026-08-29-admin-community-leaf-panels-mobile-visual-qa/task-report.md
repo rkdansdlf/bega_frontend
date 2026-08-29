@@ -16,6 +16,7 @@
 - Preserved full pressure values through `title` while constraining visible identity/copy fields and maximum numeric groups to compact one-line presentation.
 - Preserved the existing Users delete eligibility (`ROLE_ADMIN` remains disabled), current-user and `ROLE_SUPER_ADMIN` role-change restrictions, callbacks, and data behavior.
 - Added a non-production-only deterministic controlled-input seam for the static Visual QA harness. Production continues to use the supplied controlled props and callbacks.
+- Added a non-production-only role-select keyboard seam so the deterministic `change` scenario reaches `ROLE_ADMIN`; production keyboard behavior is untouched and production `onChange` still emits the original pending-role payload and reason callback.
 
 ## TDD evidence
 
@@ -32,7 +33,14 @@
    - Result before fix: `3 tests / 0 pass / 3 fail`; after fix all passed.
 5. Browser-found pressure copy and numeric wrapping:
    - Compact-cell assertions failed `3 / 3` before each minimal presentation fix.
-   - Final component suite: `17 / 17` pass.
+6. Independent-review role-select observability regression:
+   - Behavior RED: `1 test / 0 pass / 1 fail`; the real role-select behavior seam was missing.
+   - Catalog RED: `1 test / 0 pass / 1 fail`; actual `{ key: End, waitForSelector: undefined }` did not prove `ROLE_ADMIN`.
+   - GREEN: the actual handler commits visible `ROLE_ADMIN`, emits the exact unchanged `{ userId, userName, userEmail, currentRole, targetRole }` payload, resets the reason, and keeps production visual state controlled by props.
+7. Browser-found native select regression:
+   - First remediation recapture was rejected at `66 / 67`; the role-change scenario exhausted its retry because Chromium did not change the native select with `ArrowDown` alone.
+   - Keyboard-handler RED: `1 test / 0 pass / 1 fail`; after the non-production-only handler, focused GREEN returned `1 / 1`.
+   - Final component suite: `18 / 18` pass.
 
 ## Browser evidence
 
@@ -42,7 +50,9 @@
 - Integrity: `67` unique scenario IDs, `67` unique screenshot paths, `67` nonzero PNG files, `67` nonempty SHA-256 values, `0` missing, `0` stale. Pixel-equivalent legal states account for repeated hashes; no artifact is missing.
 - Component totals: Mates `18`, Posts `18`, Users `31`.
 - Representative final PNG inspection: all three empty states, Users loading, long Korean and unbroken pressure, 50-row maximum inventory, admin and super-admin permissions, role-select change, and the real delete dialog.
+- The final role-change PNG visibly shows `관리자`, is `128,967` bytes, and has SHA-256 `8f239aa34160372f4e5e6077a2bd330807f915eac4d3b6b993bf9562eff9e26d`. The role-select focus-visible PNG shows `일반 사용자`, is `129,593` bytes, and has distinct SHA-256 `79a0c2ba4b10369d3f0546933a5324572dc38173ff1b966f73ff4571b00d88de`.
 - Rejected evidence was never reused. Earlier runs were moved outside the repository after finding, respectively, a controlled-input failure, off-screen empty outcomes, pressure-copy row growth, and maximum-number row growth. Each defect received a focused RED regression before a fresh recapture.
+- Review-remediation evidence followed the same rule: the original misleading 67-PNG set and the subsequent `66 / 67` native-ArrowDown run were both moved outside the repository before the final all-first-attempt recapture.
 
 ## Duplicate API-call proof
 
@@ -53,13 +63,13 @@
 
 ## Regression and release-gate results
 
-- Focused components: `17 / 17` pass.
+- Focused components: `18 / 18` pass.
 - Focused adapter/catalog: `2 / 2` pass.
 - Full adapter/catalog: `251 / 251` pass.
 - State generator tests: `18 / 18` pass.
 - Inventory tests: `17 / 17` pass.
 - Coverage contract tests: `13 / 13` pass.
-- Harness interaction/capture tests: `41 / 41` pass.
+- Harness interaction/capture tests: `42 / 42` pass.
 - Production isolation/import graph: `4 / 4` pass.
 - Inventory check: `2,101` symbols in `508` files; unclassified `0`, stale `0`, provisional visual `0`, parse errors `0`.
 - Coverage contract check: valid; `2` browsers, `18` viewports, `4` state axes.

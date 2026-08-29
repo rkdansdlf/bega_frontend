@@ -17093,7 +17093,8 @@
             {
               "id": "role-select",
               "selector": "[data-testid=\"admin-user-role-trigger-1\"]",
-              "key": "End",
+              "key": "ArrowDown",
+              "waitForSelector": "[data-testid=\"admin-user-role-trigger-1\"]:has(option[value=\"ROLE_ADMIN\"]:checked)",
               "when": {
                 "data": "maximum-supported",
                 "permissions": "super-admin",

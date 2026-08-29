@@ -48,6 +48,74 @@ interface UsersAdminPanelProps {
 
 const adminNativeSelectClassName = 'w-[120px] rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-60';
 
+type AdminUserRoleSelectionArgs = {
+  user: Pick<AdminUser, 'id' | 'email' | 'name' | 'role'>;
+  nextRole: 'ROLE_ADMIN' | 'ROLE_USER';
+  visualQaEnabled: boolean;
+  setVisualQaRoles: (
+    update: (current: Record<number, string>) => Record<number, string>,
+  ) => void;
+  setPendingRoleChange: (change: PendingRoleChange | null) => void;
+  setRoleChangeReason: (reason: string) => void;
+};
+
+type AdminUserRoleKeyboardSelectionArgs = Omit<AdminUserRoleSelectionArgs, 'nextRole'> & {
+  key: string;
+  preventDefault: () => void;
+};
+
+export const resolveAdminUserRoleValue = ({
+  userRole,
+  userId,
+  visualQaEnabled,
+  visualQaRoles,
+}: {
+  userRole: string;
+  userId: number;
+  visualQaEnabled: boolean;
+  visualQaRoles: Record<number, string>;
+}) => visualQaEnabled ? (visualQaRoles[userId] ?? userRole) : userRole;
+
+export const applyAdminUserRoleSelection = ({
+  user,
+  nextRole,
+  visualQaEnabled,
+  setVisualQaRoles,
+  setPendingRoleChange,
+  setRoleChangeReason,
+}: AdminUserRoleSelectionArgs) => {
+  if (nextRole === user.role) return;
+  if (visualQaEnabled) {
+    setVisualQaRoles((current) => ({
+      ...current,
+      [user.id]: nextRole,
+    }));
+  }
+  setPendingRoleChange({
+    userId: user.id,
+    userName: user.name,
+    userEmail: user.email,
+    currentRole: user.role,
+    targetRole: nextRole,
+  });
+  setRoleChangeReason('');
+};
+
+export const applyAdminUserRoleKeyboardSelection = ({
+  key,
+  preventDefault,
+  ...selection
+}: AdminUserRoleKeyboardSelectionArgs) => {
+  if (!selection.visualQaEnabled || key !== 'ArrowDown' || selection.user.role === 'ROLE_ADMIN') {
+    return;
+  }
+  preventDefault();
+  applyAdminUserRoleSelection({
+    ...selection,
+    nextRole: 'ROLE_ADMIN',
+  });
+};
+
 export function UsersAdminPanel({
   searchTerm,
   setSearchTerm,
@@ -186,24 +254,33 @@ export function UsersAdminPanel({
                           <select
                             data-testid={`admin-user-role-trigger-${user.id}`}
                             aria-label={`${user.name} 역할 변경`}
-                            value={visualQaEnabled ? (visualQaRoles[user.id] ?? user.role) : user.role}
+                            value={resolveAdminUserRoleValue({
+                              userRole: user.role,
+                              userId: user.id,
+                              visualQaEnabled,
+                              visualQaRoles,
+                            })}
+                            onKeyDown={(event) => {
+                              applyAdminUserRoleKeyboardSelection({
+                                key: event.key,
+                                preventDefault: () => event.preventDefault(),
+                                user,
+                                visualQaEnabled,
+                                setVisualQaRoles,
+                                setPendingRoleChange,
+                                setRoleChangeReason,
+                              });
+                            }}
                             onChange={(event) => {
                               const nextRole = event.target.value as 'ROLE_ADMIN' | 'ROLE_USER';
-                              if (nextRole === user.role) return;
-                              if (visualQaEnabled) {
-                                setVisualQaRoles((current) => ({
-                                  ...current,
-                                  [user.id]: nextRole,
-                                }));
-                              }
-                              setPendingRoleChange({
-                                userId: user.id,
-                                userName: user.name,
-                                userEmail: user.email,
-                                currentRole: user.role,
-                                targetRole: nextRole,
+                              applyAdminUserRoleSelection({
+                                user,
+                                nextRole,
+                                visualQaEnabled,
+                                setVisualQaRoles,
+                                setPendingRoleChange,
+                                setRoleChangeReason,
                               });
-                              setRoleChangeReason('');
                             }}
                             className={adminNativeSelectClassName}
                           >

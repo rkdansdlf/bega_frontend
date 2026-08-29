@@ -51,16 +51,133 @@ test('users admin panel remains a pure prop and callback surface without API cal
   assert.match(source, /setPendingRoleChange\(\{/);
 });
 
-test('users admin panel permits deterministic controlled inputs only outside production', async () => {
+test('users admin panel permits deterministic controlled search input only outside production', async () => {
   const source = await readSource();
 
   assert.match(source, /visualQaInteractive\?: boolean/);
   assert.match(source, /import\.meta\.env\?\.PROD !== true/);
   assert.match(source, /visualQaInteractive === true/);
   assert.match(source, /const effectiveSearchTerm = visualQaEnabled \? visualQaSearchTerm : searchTerm/);
-  assert.match(source, /value=\{visualQaEnabled \? \(visualQaRoles\[user\.id\] \?\? user\.role\) : user\.role\}/);
   assert.match(source, /setSearchTerm\(nextSearchTerm\)/);
-  assert.match(source, /setPendingRoleChange\(\{/);
+});
+
+test('users admin panel role-select keyboard change commits the visible harness value and unchanged callback payload', async () => {
+  const { createServer } = await import('vite');
+  const vite = await createServer({
+    appType: 'custom',
+    configFile: false,
+    logLevel: 'silent',
+    optimizeDeps: { noDiscovery: true },
+    root: process.cwd(),
+    server: { hmr: false, middlewareMode: true },
+  });
+  const subject = await vite.ssrLoadModule('/src/components/admin/UsersAdminPanel.tsx') as Record<string, unknown>;
+  await vite.close();
+  const applyRoleSelection = subject.applyAdminUserRoleSelection as undefined | ((args: {
+      user: {
+        id: number;
+        email: string;
+        name: string;
+        role: string;
+      };
+      nextRole: 'ROLE_ADMIN' | 'ROLE_USER';
+      visualQaEnabled: boolean;
+      setVisualQaRoles: (update: (current: Record<number, string>) => Record<number, string>) => void;
+      setPendingRoleChange: (payload: unknown) => void;
+      setRoleChangeReason: (reason: string) => void;
+    }) => void);
+  const applyKeyboardRoleSelection = subject.applyAdminUserRoleKeyboardSelection as undefined | ((args: {
+      key: string;
+      preventDefault: () => void;
+      user: {
+        id: number;
+        email: string;
+        name: string;
+        role: string;
+      };
+      visualQaEnabled: boolean;
+      setVisualQaRoles: (update: (current: Record<number, string>) => Record<number, string>) => void;
+      setPendingRoleChange: (payload: unknown) => void;
+      setRoleChangeReason: (reason: string) => void;
+    }) => void);
+  const resolveRoleValue = subject.resolveAdminUserRoleValue as undefined | ((args: {
+      userRole: string;
+      userId: number;
+      visualQaEnabled: boolean;
+      visualQaRoles: Record<number, string>;
+    }) => string);
+  assert.ok(applyRoleSelection, 'the real role-select change handler must be directly behavior-testable');
+  assert.ok(applyKeyboardRoleSelection, 'the real role-select keyboard handler must be directly behavior-testable');
+  assert.ok(resolveRoleValue, 'the real controlled value resolver must be directly behavior-testable');
+
+  const user = {
+    id: 1,
+    email: 'visualqa-user-1@example.invalid',
+    name: 'Visual QA 사용자 1',
+    role: 'ROLE_USER',
+  };
+  let visualQaRoles: Record<number, string> = {};
+  const pendingPayloads: unknown[] = [];
+  const reasons: string[] = [];
+  let prevented = 0;
+  applyKeyboardRoleSelection({
+    key: 'ArrowDown',
+    preventDefault: () => { prevented += 1; },
+    user,
+    visualQaEnabled: true,
+    setVisualQaRoles: (update) => { visualQaRoles = update(visualQaRoles); },
+    setPendingRoleChange: (payload) => { pendingPayloads.push(payload); },
+    setRoleChangeReason: (reason) => { reasons.push(reason); },
+  });
+
+  assert.equal(resolveRoleValue({
+    userRole: user.role,
+    userId: user.id,
+    visualQaEnabled: true,
+    visualQaRoles,
+  }), 'ROLE_ADMIN');
+  assert.deepEqual(pendingPayloads, [{
+    userId: 1,
+    userName: 'Visual QA 사용자 1',
+    userEmail: 'visualqa-user-1@example.invalid',
+    currentRole: 'ROLE_USER',
+    targetRole: 'ROLE_ADMIN',
+  }]);
+  assert.deepEqual(reasons, ['']);
+  assert.equal(prevented, 1);
+
+  let productionVisualStateWrites = 0;
+  applyKeyboardRoleSelection({
+    key: 'ArrowDown',
+    preventDefault: () => { prevented += 1; },
+    user,
+    visualQaEnabled: false,
+    setVisualQaRoles: () => { productionVisualStateWrites += 1; },
+    setPendingRoleChange: () => {},
+    setRoleChangeReason: () => {},
+  });
+  assert.equal(productionVisualStateWrites, 0);
+  assert.equal(prevented, 1);
+
+  const productionPayloads: unknown[] = [];
+  const productionReasons: string[] = [];
+  applyRoleSelection({
+    user,
+    nextRole: 'ROLE_ADMIN',
+    visualQaEnabled: false,
+    setVisualQaRoles: () => { productionVisualStateWrites += 1; },
+    setPendingRoleChange: (payload) => { productionPayloads.push(payload); },
+    setRoleChangeReason: (reason) => { productionReasons.push(reason); },
+  });
+  assert.equal(productionVisualStateWrites, 0);
+  assert.deepEqual(productionPayloads, pendingPayloads);
+  assert.deepEqual(productionReasons, ['']);
+  assert.equal(resolveRoleValue({
+    userRole: user.role,
+    userId: user.id,
+    visualQaEnabled: false,
+    visualQaRoles: { [user.id]: 'ROLE_ADMIN' },
+  }), 'ROLE_USER');
 });
 
 test('users admin panel keeps its empty outcome visible outside the wide table canvas', async () => {
