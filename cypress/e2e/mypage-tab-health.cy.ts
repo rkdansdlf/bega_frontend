@@ -449,6 +449,15 @@ describe('MyPage tab backend health', () => {
         cy.wait(150, { log: false });
     };
 
+    const waitForDiaryEditorStable = () => {
+        cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
+        cy.get('.diary-green-surface').should(($el) => {
+            expect($el[0].getBoundingClientRect().height).to.be.greaterThan(0);
+        });
+        cy.get('[data-testid="diary-editor-form-card"], .diary-editor-form-card', { timeout: 20000 }).should('be.visible');
+        cy.wait(300, { log: false });
+    };
+
     const setSystemPrefersDark = (prefersDark: boolean) => {
         cy.window().then((win) => {
             const setPrefersColorSchemeDark = (win as TestWindowWithThemeControls).__setPrefersColorSchemeDark;
@@ -710,6 +719,7 @@ describe('MyPage tab backend health', () => {
         screenSelector: string,
         openScreen: () => void,
         assertScreenVisible?: () => void,
+        postToggleWait?: () => void,
     ) => {
         openScreen();
         (assertScreenVisible ?? (() => visibleScreen(viewLabel)))();
@@ -730,6 +740,9 @@ describe('MyPage tab backend health', () => {
 
         toggleThemeTo('light');
         getThemeClassState('light');
+        
+        (postToggleWait ?? waitForThemeMeasurementSettle)();
+        
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(2);
         });
@@ -743,6 +756,7 @@ describe('MyPage tab backend health', () => {
 
         toggleThemeTo('dark');
         getThemeClassState('dark');
+        (postToggleWait ?? waitForThemeMeasurementSettle)();
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             expect(Math.abs(height - beforeHeight), `${viewLabel} height should return after theme restore`).to.be.lte(2);
         });
@@ -1062,6 +1076,7 @@ describe('MyPage tab backend health', () => {
                 cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
             },
             () => cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible'),
+            waitForDiaryEditorStable,
         );
     });
 
