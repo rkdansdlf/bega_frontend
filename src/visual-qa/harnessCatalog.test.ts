@@ -5243,6 +5243,17 @@ test('admin offseason dialogs direct export covers exactly 41 declared legal sce
       || interactionPlan?.targetId !== 'section'
       || interactionPlan.waitForSelector?.includes('data-vqa-update-field-count="1"') === true
   )));
+  const focusLoop = scenarios.find(({ states, interactionPlan }) => (
+    states.interactions === 'keyboard-navigation'
+      && interactionPlan?.targetId === 'create-focus-loop'
+  ));
+  assert.deepEqual(focusLoop?.interactionPlan, {
+    action: 'press-key',
+    selector: '[data-testid="admin-offseason-dialog-submit"]',
+    targetId: 'create-focus-loop',
+    key: 'Tab',
+    waitForSelector: 'body:has([data-testid="admin-offseason-dialog"] button[aria-label="닫기"]:focus-visible)',
+  });
   assert.ok(scenarios.every(({ interactionPlan, states }) => (
     states.interactions !== 'change'
       || interactionPlan?.targetId !== 'team'

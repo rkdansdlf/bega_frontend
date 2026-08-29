@@ -52,6 +52,9 @@ const adminOffseasonCloseTouchStyle = `
 [data-testid="admin-offseason-delete-confirm"]:active {
   background-color: rgb(252 165 165);
 }
+.admin-offseason-preview-section {
+  max-width: 45%;
+}
 `;
 
 const adminFieldLabelClassName =
@@ -377,7 +380,7 @@ export default function OffseasonMovementAdminDialogs({
               <p className={adminFieldLabelClassName}>미리보기</p>
                 <div className="mt-3 space-y-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="inline-flex min-w-0 max-w-[45%]" title={formData.section || '구분 없음'}>
+                  <span className="admin-offseason-preview-section inline-flex min-w-0" title={formData.section || '구분 없음'}>
                     <AdminBadge className={`${getSectionBadgeClass(formData.section)} max-w-full truncate`}>{formData.section || '구분 없음'}</AdminBadge>
                   </span>
                   <span title={TEAM_DATA[formData.teamCode]?.fullName || formData.teamCode} className="min-w-0 truncate text-caption text-slate-400">{TEAM_DATA[formData.teamCode]?.fullName || formData.teamCode}</span>

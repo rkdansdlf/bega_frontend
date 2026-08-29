@@ -26,7 +26,7 @@ const createDirectLeavesPlugin = (): Plugin => ({
       try {
         const html = await server.transformIndexHtml(
           pagePath,
-          `<!doctype html><html><body><div id="root"></div><script type="module" src="${entryPath}"></script></body></html>`,
+          `<!doctype html><html><body><div id="root"></div><button id="outside-focus-sentinel" type="button">outside</button><script type="module" src="${entryPath}"></script></body></html>`,
         );
         response.statusCode = 200;
         response.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -53,6 +53,15 @@ const createDirectLeavesPlugin = (): Plugin => ({
         resultEdit: [], resultDelete: [], dialogClose: [], deleteTarget: [],
         updateField: [], submit: [], deleteConfirm: [],
       };
+      const history = {
+        resultEdit: [], resultDelete: [], dialogClose: [], deleteTarget: [],
+        updateField: [], submit: [], deleteConfirm: [],
+      };
+      const record = (key, value) => {
+        calls[key].push(value);
+        history[key].push(value);
+      };
+      const resetCalls = () => Object.values(calls).forEach((entries) => { entries.length = 0; });
       const resultsResolved = resolveComponentStateAdapter('admin.offseason-movement-results', {
         componentId: '${resultsComponentId}',
         states: { data: 'maximum-supported', interactions: 'default', permissions: 'admin', system: 'idle' },
@@ -76,14 +85,14 @@ const createDirectLeavesPlugin = (): Plugin => ({
           editingMovement: mode === 'edit' ? movement : null,
           deleteTarget: mode === 'delete' ? movement : null,
           formData,
-          onDialogClose: () => calls.dialogClose.push([mode]),
-          onDeleteTargetChange: (value) => calls.deleteTarget.push([mode, value?.id ?? null]),
+          onDialogClose: () => record('dialogClose', [mode]),
+          onDeleteTargetChange: (value) => record('deleteTarget', [mode, value?.id ?? null]),
           onUpdateField: (field, value) => {
-            calls.updateField.push([field, value]);
+            record('updateField', [field, value]);
             setFormData((current) => ({ ...current, [field]: value }));
           },
-          onSubmit: () => calls.submit.push([mode]),
-          onDelete: () => calls.deleteConfirm.push([mode]),
+          onSubmit: () => record('submit', [mode]),
+          onDelete: () => record('deleteConfirm', [mode]),
         });
       };
 
@@ -91,8 +100,8 @@ const createDirectLeavesPlugin = (): Plugin => ({
         if (mode === 'results') {
           root.render(createElement(Results, {
             ...resultsResolved.props,
-            onOpenEditDialog: (movement) => calls.resultEdit.push(movement),
-            onDeleteTargetChange: (movement) => calls.resultDelete.push(movement),
+            onOpenEditDialog: (movement) => record('resultEdit', movement),
+            onDeleteTargetChange: (movement) => record('resultDelete', movement),
           }));
           return;
         }
@@ -102,7 +111,8 @@ const createDirectLeavesPlugin = (): Plugin => ({
         calls,
         expectedMovement,
         mount,
-        snapshot: () => JSON.parse(JSON.stringify(calls)),
+        resetCalls,
+        snapshot: () => JSON.parse(JSON.stringify(history)),
       };
       mount('results');
     `;
@@ -138,6 +148,8 @@ test('Dialogs owns mobile reflow, reachable lower fields, touch controls, and no
   assert.match(dialogsSource, /\[data-testid="admin-offseason-delete-cancel"\]:active[\s\S]*scale\(0\.98\)/);
   assert.match(dialogsSource, /\[data-testid="admin-offseason-delete-confirm"\]:active[\s\S]*scale\(0\.98\)/);
   assert.match(dialogsSource, /button\[aria-label="닫기"\]:active[\s\S]*scale\(0\.98\)/);
+  assert.doesNotMatch(dialogsSource, /max-w-\[45%\]/);
+  assert.match(dialogsSource, /admin-offseason-preview-section[\s\S]*max-width:\s*45%/);
   assert.doesNotMatch(dialogsSource, /from ['"](?:\.\.\/)*api\//);
   assert.doesNotMatch(dialogsSource, /\b(?:axios|fetch|useQuery|useMutation)\b/);
 });
@@ -172,32 +184,91 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
       throw new Error(`${String(error)}\nBrowser diagnostics:\n${diagnostics.join('\n')}`);
     });
     await source.evaluate((node) => node.addEventListener('click', (event) => event.preventDefault(), { once: true }));
-    await source.click();
-    await page.locator('[data-testid="admin-offseason-edit-1"]').click();
-    await page.locator('[data-testid="admin-offseason-delete-1"]').click();
-    const resultCalls = await page.evaluate(() => {
+    const readIsolatedCalls = () => page.evaluate(() => {
       const testState = (window as unknown as { __OFFSEASON_DIRECT_LEAVES_TEST__: {
-        calls: Record<string, unknown[]>; expectedMovement: unknown;
+        calls: Record<string, unknown[]>;
+      } }).__OFFSEASON_DIRECT_LEAVES_TEST__;
+      return JSON.parse(JSON.stringify(testState.calls)) as Record<string, unknown[]>;
+    });
+    const resetCalls = () => page.evaluate(() => (window as unknown as {
+      __OFFSEASON_DIRECT_LEAVES_TEST__: { resetCalls: () => void };
+    }).__OFFSEASON_DIRECT_LEAVES_TEST__.resetCalls());
+    const assertOnlyDialogAction = async (
+      mode: 'create' | 'edit' | 'delete',
+      selector: string,
+      expected: { dialogClose?: unknown[][]; deleteTarget?: unknown[][]; submit?: unknown[][]; deleteConfirm?: unknown[][] },
+    ) => {
+      await page.evaluate((nextMode) => (window as unknown as {
+        __OFFSEASON_DIRECT_LEAVES_TEST__: { mount: (mode: string) => void };
+      }).__OFFSEASON_DIRECT_LEAVES_TEST__.mount(nextMode), mode);
+      const dialogTestId = mode === 'delete' ? 'admin-offseason-delete-dialog' : 'admin-offseason-dialog';
+      await page.locator(`[data-testid="${dialogTestId}"]`).waitFor();
+      await resetCalls();
+      await page.locator(selector).click();
+      assert.deepEqual(await readIsolatedCalls(), {
+        resultEdit: [],
+        resultDelete: [],
+        dialogClose: expected.dialogClose ?? [],
+        deleteTarget: expected.deleteTarget ?? [],
+        updateField: [],
+        submit: expected.submit ?? [],
+        deleteConfirm: expected.deleteConfirm ?? [],
+      });
+    };
+
+    await resetCalls();
+    await source.click();
+    assert.deepEqual(await readIsolatedCalls(), {
+      resultEdit: [], resultDelete: [], dialogClose: [], deleteTarget: [], updateField: [], submit: [], deleteConfirm: [],
+    });
+
+    await resetCalls();
+    await page.locator('[data-testid="admin-offseason-edit-1"]').click();
+    assert.deepEqual(await page.evaluate(() => {
+      const testState = (window as unknown as { __OFFSEASON_DIRECT_LEAVES_TEST__: {
+        calls: { resultEdit: unknown[]; resultDelete: unknown[] };
+        expectedMovement: unknown;
       } }).__OFFSEASON_DIRECT_LEAVES_TEST__;
       return {
-        expected: testState.expectedMovement,
-        edit: testState.calls.resultEdit,
-        delete: testState.calls.resultDelete,
+        editCount: testState.calls.resultEdit.length,
+        editIsExpectedIdentity: testState.calls.resultEdit[0] === testState.expectedMovement,
+        deleteCount: testState.calls.resultDelete.length,
       };
-    });
-    assert.deepEqual(resultCalls.edit, [resultCalls.expected]);
-    assert.deepEqual(resultCalls.delete, [resultCalls.expected]);
+    }), { editCount: 1, editIsExpectedIdentity: true, deleteCount: 0 });
+
+    await resetCalls();
+    await page.locator('[data-testid="admin-offseason-delete-1"]').click();
+    assert.deepEqual(await page.evaluate(() => {
+      const testState = (window as unknown as { __OFFSEASON_DIRECT_LEAVES_TEST__: {
+        calls: { resultEdit: unknown[]; resultDelete: unknown[] };
+        expectedMovement: unknown;
+      } }).__OFFSEASON_DIRECT_LEAVES_TEST__;
+      return {
+        deleteCount: testState.calls.resultDelete.length,
+        deleteIsExpectedIdentity: testState.calls.resultDelete[0] === testState.expectedMovement,
+        editCount: testState.calls.resultEdit.length,
+      };
+    }), { deleteCount: 1, deleteIsExpectedIdentity: true, editCount: 0 });
 
     await page.evaluate(() => (window as unknown as {
       __OFFSEASON_DIRECT_LEAVES_TEST__: { mount: (mode: string) => void };
     }).__OFFSEASON_DIRECT_LEAVES_TEST__.mount('create'));
     const createDialog = page.locator('[data-testid="admin-offseason-dialog"]');
     await createDialog.waitFor();
-    await page.locator('[data-testid="admin-offseason-player-name"]').fill('MOCK 직접 입력 선수');
-    await page.locator('[data-testid="admin-offseason-summary"]').fill('MOCK 직접 입력 요약');
-    await page.locator('[data-testid="admin-offseason-source-url"]').fill('https://example.invalid/direct-source');
-    await page.locator('[data-testid="admin-offseason-dialog-section-trigger"]').selectOption('기타');
-    await page.locator('[data-testid="admin-offseason-dialog-team-trigger"]').selectOption('LG');
+    const assertOnlyUpdateField = async (selector: string, value: string, field: string, select = false) => {
+      await resetCalls();
+      if (select) await page.locator(selector).selectOption(value);
+      else await page.locator(selector).fill(value);
+      assert.deepEqual(await readIsolatedCalls(), {
+        resultEdit: [], resultDelete: [], dialogClose: [], deleteTarget: [],
+        updateField: [[field, value]], submit: [], deleteConfirm: [],
+      });
+    };
+    await assertOnlyUpdateField('[data-testid="admin-offseason-player-name"]', 'MOCK 직접 입력 선수', 'playerName');
+    await assertOnlyUpdateField('[data-testid="admin-offseason-summary"]', 'MOCK 직접 입력 요약', 'summary');
+    await assertOnlyUpdateField('[data-testid="admin-offseason-source-url"]', 'https://example.invalid/direct-source', 'sourceUrl');
+    await assertOnlyUpdateField('[data-testid="admin-offseason-dialog-section-trigger"]', '기타', 'section', true);
+    await assertOnlyUpdateField('[data-testid="admin-offseason-dialog-team-trigger"]', 'LG', 'teamCode', true);
 
     const sourceUrl = page.locator('[data-testid="admin-offseason-source-url"]');
     await sourceUrl.scrollIntoViewIfNeeded();
@@ -216,15 +287,43 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
         box && box.width >= 44 && box.height >= 44,
         `${selector} must be at least 44px, received ${box ? `${box.width}x${box.height}` : 'no box'}`,
       );
-      await page.locator(selector).click();
     }
 
-    await page.evaluate(() => (window as unknown as {
-      __OFFSEASON_DIRECT_LEAVES_TEST__: { mount: (mode: string) => void };
-    }).__OFFSEASON_DIRECT_LEAVES_TEST__.mount('edit'));
-    await page.locator('[data-testid="admin-offseason-dialog"] button[aria-label="닫기"]').click();
-    await page.locator('[data-testid="admin-offseason-dialog-cancel"]').click();
-    await page.locator('[data-testid="admin-offseason-dialog-submit"]').click();
+    await page.locator('#outside-focus-sentinel').evaluate((sentinel) => document.body.append(sentinel));
+    await page.locator('[data-testid="admin-offseason-dialog-submit"]').focus();
+    await page.keyboard.press('Tab');
+    assert.deepEqual(await page.evaluate(() => {
+      const dialog = document.querySelector('[data-testid="admin-offseason-dialog"]');
+      const close = dialog?.querySelector('button[aria-label="닫기"]');
+      return {
+        activeIsCloseIdentity: document.activeElement === close,
+        activeInsideDialog: Boolean(dialog?.contains(document.activeElement)),
+        activeIsOutsideSentinel: document.activeElement?.id === 'outside-focus-sentinel',
+      };
+    }), {
+      activeIsCloseIdentity: true,
+      activeInsideDialog: true,
+      activeIsOutsideSentinel: false,
+    });
+
+    await assertOnlyDialogAction('create', '[data-testid="admin-offseason-dialog"] button[aria-label="닫기"]', {
+      dialogClose: [['create']],
+    });
+    await assertOnlyDialogAction('create', '[data-testid="admin-offseason-dialog-cancel"]', {
+      dialogClose: [['create']],
+    });
+    await assertOnlyDialogAction('create', '[data-testid="admin-offseason-dialog-submit"]', {
+      submit: [['create']],
+    });
+    await assertOnlyDialogAction('edit', '[data-testid="admin-offseason-dialog"] button[aria-label="닫기"]', {
+      dialogClose: [['edit']],
+    });
+    await assertOnlyDialogAction('edit', '[data-testid="admin-offseason-dialog-cancel"]', {
+      dialogClose: [['edit']],
+    });
+    await assertOnlyDialogAction('edit', '[data-testid="admin-offseason-dialog-submit"]', {
+      submit: [['edit']],
+    });
 
     await page.evaluate(() => (window as unknown as {
       __OFFSEASON_DIRECT_LEAVES_TEST__: { mount: (mode: string) => void };
@@ -241,8 +340,17 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
         box && box.width >= 44 && box.height >= 44,
         `${selector} must be at least 44px, received ${box ? `${box.width}x${box.height}` : 'no box'}`,
       );
-      await page.locator(selector).click();
     }
+
+    await assertOnlyDialogAction('delete', '[data-testid="admin-offseason-delete-dialog"] button[aria-label="닫기"]', {
+      deleteTarget: [['delete', null]],
+    });
+    await assertOnlyDialogAction('delete', '[data-testid="admin-offseason-delete-cancel"]', {
+      deleteTarget: [['delete', null]],
+    });
+    await assertOnlyDialogAction('delete', '[data-testid="admin-offseason-delete-confirm"]', {
+      deleteConfirm: [['delete']],
+    });
 
     const snapshotBeforeResize = await page.evaluate(() => (window as unknown as {
       __OFFSEASON_DIRECT_LEAVES_TEST__: { snapshot: () => unknown };

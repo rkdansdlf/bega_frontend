@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T19:25:29.663Z",
+  "generatedAt": "2026-08-29T20:18:10.062Z",
   "baseUrl": "http://127.0.0.1:5182",
   "scope": "component-states",
   "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
@@ -415,6 +415,7 @@
         "selector": "[data-testid=\"admin-offseason-dialog-submit\"]",
         "targetId": "create-focus-loop",
         "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]:focus-visible)",
         "verified": true,
         "captureVerified": true,
         "revalidatedAfterViewportExpansion": true,

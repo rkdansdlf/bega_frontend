@@ -13,17 +13,18 @@
 
 - Initial adapter/catalog RED: 254 pass / 5 fail; GREEN: 259/259 with exact 25/41 IDs.
 - Meaningful-state RED proved empty/populated Dialog forms were identical and leaf pressed states were absent; GREEN separates the fixture and scopes active feedback to owned leaf controls.
-- Actual ReactDOM+Playwright GREEN: 3/3. Source interaction invokes neither Results mutation callback; edit and delete each receive the exact selected movement once.
+- Actual ReactDOM+Playwright GREEN: 3/3. Each Results action resets its page-side log first: source leaves edit/delete at zero, edit/delete each call only their intended callback once, and movement reference identity is asserted inside the browser.
 - Dialog input/change callbacks are exactly `playerName`, `summary`, `sourceUrl`, `section=기타`, and `teamCode=LG`, each once with unrelated callbacks at zero.
-- Create/edit close, cancel, submit and delete close, cancel, confirm use the correct callback exactly once. A real 320x844 to 390x1000 resize leaves the complete callback snapshot unchanged.
-- Deliberate handler removal/miswire is caught by exact identity/count assertions rather than helper, regex, or manifest-only checks.
+- Create/edit close, cancel, submit and delete close, cancel, confirm each use an isolated render/reset and assert the intended callback once with every unrelated callback at zero. A real 320x844 to 390x1000 resize leaves the complete callback history unchanged.
+- Deliberate Results edit/delete reciprocal wiring REDs at edit zero/delete one/identity false; Dialog cancel/submit reciprocal wiring REDs at close zero/submit one. A portal-following outside sentinel proves submit-to-Tab wraps to the exact create close button and stays inside; disabling the focus trap exits to the sentinel and REDs.
+- The keyboard manifest pins the exact close-button `:focus-visible` verifier. The generic runner waits for that result initially and after viewport expansion without replaying Tab.
 
 ## Browser evidence
 
 - Results: `reports/visual-qa-admin-offseason-results-runtime-mobile.json`, SHA-256 `80ac66fafeb4c4e7f4f1186ad5c2976d2697ce81cc677d073b0c021a4cf9cfc6`.
 - Results PNG aggregate: `366a8d5f1036fe26020a049213ed2f78f01afa209899d5503861cc76c7178a7f`.
-- Dialogs: `reports/visual-qa-admin-offseason-dialogs-mobile.json`, SHA-256 `6db2de04d5fa6dda005752cc383ba9affe8ae78d84b5f322fd5052f816af54ed`.
-- Dialogs PNG aggregate: `18147b7779832a45526208a888437f5a53ba94fb86acc62e1fcc7d93c999249a`.
+- Dialogs: `reports/visual-qa-admin-offseason-dialogs-mobile.json`, SHA-256 `42f97b40c36665ef806c35bb887946585995f8de3aeedab9307e2648f4ce6596`.
+- Dialogs PNG aggregate: `2d149561f1801af13cd74698219b4c52574b20b537ddc7afa91c758e8180d9ba`.
 - Aggregate formula: `(find <dir> -type f -name '*.png' -print0 | sort -z | xargs -0 shasum -a 256) | shasum -a 256`.
 - Both use Chromium at 320x844, `pageMode=fresh`, `captureHeightMode=expand-tall-flow`, failed/recovered 0, and every attempt 1.
 - Results has 25/25 unique IDs, paths, nonzero PNGs, and actual hashes; Dialogs has 41/41. Interactions are 9/9 and 28/28 verified, capture-verified, viewport-expanded, and revalidated.
@@ -42,8 +43,8 @@
 - State generation is exactly 437/1,010 registered, 573 pending, 70,576 direct, and 71,579 valid.
 - `npx tsc --noEmit` passed after the leaf badge wrapper and explicit payload type import were corrected.
 - `npm run build` passed with worker 17 and client 5,736 modules transformed.
-- Bundle guard passed all 153 budgets: global CSS 255,495/255,500B, root 13,157/18,000B, Content 14,688/25,000B, and production isolation violations 0.
-- The initial budget RED was global CSS 255,932B. Owned active feedback moved from generated Tailwind utilities to leaf-scoped style blocks, restoring the budget without changing shared primitives; current screenshots were then regenerated in full.
+- Bundle guard passed all 153 budgets: global CSS 255,465/255,500B, root 13,157/18,000B, Content 14,688/25,000B, and production isolation violations 0.
+- The initial budget RED was global CSS 255,932B. Owned active feedback moved from generated Tailwind utilities to leaf-scoped style blocks. Review then moved the equivalent preview 45% width from the sole arbitrary Tailwind utility to the owned style block, improving nominal headroom from 5B at 255,495 to 35B at 255,465 without changing shared primitives; current Dialog screenshots were regenerated in full.
 - `python3 ../scripts/validate_baseball_data_policy.py` returned `External baseball data policy OK`.
 - `git diff --check`, `git diff --cached --check`, and Content/root report+PNG `git diff --exit-code HEAD` passed.
 - A final `npm run visual-qa:test` retry passes contract 13/13 and inventory unit 17/17, then fails closed at the same concurrent Landing-only inventory blocker: 2,115 symbols in 511 files, 15 unclassified, one stale, zero provisional visual, zero parse errors.
@@ -59,4 +60,4 @@
 
 ## Remaining limitation
 
-Repository-wide completeness remains closed on exactly 573 pending visual symbols. The concurrent Landing inventory findings remain out of scope. Global CSS has only 5 bytes of nominal budget headroom (though the guard's bounded grace remains available), so the next CSS-producing slice should re-run the 153-budget gate early. No external baseball API, crawling, scraping, search repair, guessed data, or production baseball data mutation was added.
+Repository-wide completeness remains closed on exactly 573 pending visual symbols. The concurrent Landing inventory findings remain out of scope. Global CSS has 35 bytes of nominal budget headroom (with the guard's bounded grace still available), so the next CSS-producing slice should continue to run the 153-budget gate early. No external baseball API, crawling, scraping, search repair, guessed data, or production baseball data mutation was added.

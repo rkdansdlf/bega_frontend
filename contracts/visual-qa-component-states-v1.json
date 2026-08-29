@@ -17121,7 +17121,8 @@
                 "system": "idle",
                 "variant.preset": "create-dialog"
               },
-              "key": "Tab"
+              "key": "Tab",
+              "waitForSelector": "body:has([data-testid=\"admin-offseason-dialog\"] button[aria-label=\"닫기\"]:focus-visible)"
             }
           ],
           "reason": "The create portal retains keyboard focus inside its production focus loop.",
