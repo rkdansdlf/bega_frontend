@@ -16,6 +16,7 @@
 - Adapter/catalog/root RED: 259 pass / 5 fail of 264; GREEN: 264/264.
 - State generator RED: 1 pass / 1 fail of the two change-action tests; GREEN: 2/2 and full state 19/19.
 - Independent-review RED: 5/7 actual Content render tests passed; the controlled callback helper and shared fallback component were absent. GREEN: 7/7 with exact callback forwarding and real fallback markup/visibility checks.
+- Final re-review replaced the helper-only callback assertion with an actual ReactDOM/Chromium mount. An intentional production team-handler miswire produced 6/7 RED because the team spy was called zero times; restored wiring produced 7/7 GREEN. The browser drives search `MOCK 모바일 검색 입력`, team `LG`, portal summary input, and portal section `기타`; it proves exact callback arguments/counts, zero unrelated callbacks, and unchanged callback snapshots after a real 320x844 to 390x1000 resize with read-only value/evidence revalidation.
 - Final focused Content/root/coordinator/adapter/catalog/harness suite: 331/331.
 - Duplicate create/update/delete/whole-file import still invoke one mutation, success refreshes once with the latest filters, failure refreshes zero, settled failures retry, and CSV row mutations remain sequential.
 

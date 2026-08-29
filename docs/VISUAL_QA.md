@@ -315,6 +315,8 @@ npm run visual-qa:states:check
 
 전수 실행기는 기본적으로 bounded worker마다 브라우저 페이지를 재사용하며 한 module group은 최대 50개 시나리오로 제한합니다. 각 시나리오 전환 때 viewport를 `320x844`로 복원하고 page scroll을 원점으로 이동한 뒤 cookie, local/session storage, React Query cache, 캡처용 style, 컴포넌트 tree를 초기화합니다. 기본 상태는 대상과 하위 스크롤을 초기 위치로 복원하고, 화면 안에 완전히 들어오는 표면은 locator의 자동 스크롤을 거치지 않는 exact page clip으로 기록합니다. dialog·toast 같은 fixed layer는 실제 모바일 viewport를 절대 확장하지 않으며, 일반 문서 흐름의 상호작용 증거만 root box와 문서 `scrollHeight`를 비교해 필요한 높이까지 확장할 수 있습니다. 내부 스크롤을 소유한 비상호작용 tall flow를 전체 증거로 남길 때만 `VISUAL_QA_HARNESS_CAPTURE_HEIGHT_MODE=expand-tall-flow`를 명시하며, 기본 `mobile` 모드는 기존 모바일 높이를 보존합니다. screenshot write는 프로세스 안에서 직렬화하고, 상호작용 캡처 직전에는 문서 scroll을 원점으로 돌린 뒤 두 프레임을 기다리며 warm-up과 최종 PNG를 기록합니다. 실패 재시도는 새 page에서 실행하므로 이전 시나리오 상태를 상속하지 않습니다. 격리 문제를 조사할 때는 `VISUAL_QA_HARNESS_PAGE_MODE=fresh`, group 크기를 조정할 때는 `VISUAL_QA_HARNESS_GROUP_SIZE=<positive integer>`, 특정 상호작용 상태만 증거를 다시 만들 때는 `VISUAL_QA_HARNESS_INTERACTIONS=<comma-separated state>`를 사용합니다.
 
+최종 Content callback 회귀는 helper 직접 호출 대신 actual `OffseasonMovementAdminPanelContent`를 ReactDOM으로 mount하고 Chromium에서 search/team과 portal dialog summary/section을 실제 조작합니다. 의도적으로 team handler를 잘못 연결했을 때 `onTeamFilterChange` 0회로 RED가 되며, 정상 구현에서는 search `MOCK 모바일 검색 입력`, team `LG`, summary와 section `기타`의 exact callback 및 unrelated callback 0회를 확인합니다. 이어 320×844에서 390×1000으로 실제 resize한 뒤 mutation 재실행 없이 네 DOM 값·evidence count와 callback snapshot 불변을 재검증합니다.
+
 ## 실행
 
 ```bash
