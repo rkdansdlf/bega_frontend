@@ -431,7 +431,14 @@ describe('MyPage tab backend health', () => {
         cy.get(selector).then(($target) => getEffectiveBackgroundColor($target[0]));
 
     const getRoundedHeight = (selector: string) =>
-        cy.get(selector).then(($target) => Math.round($target[0].getBoundingClientRect().height));
+        cy.get(selector)
+            .should(($target) => {
+                expect(
+                    $target[0].getBoundingClientRect().height,
+                    `${selector} should have layout height`,
+                ).to.be.greaterThan(0);
+            })
+            .then(($target) => Math.round($target[0].getBoundingClientRect().height));
 
     const visibleScreen = (label: string) => {
         cy.get(`section[data-screen-label="${label}"]`, { timeout: 20000 }).should('be.visible');

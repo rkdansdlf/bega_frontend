@@ -86,7 +86,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                                 onTabChange(tab.key);
                             }}
                             className={cn(
-                                'relative flex min-h-11 items-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
+                                'relative flex min-h-11 min-w-11 items-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
                                 isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                                     : 'text-[#64748B] hover:bg-white/70 hover:text-[#0F172A] dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
