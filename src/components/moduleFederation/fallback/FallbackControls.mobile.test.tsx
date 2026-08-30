@@ -368,14 +368,16 @@ test('actual fallback Button contains every mobile presentation and isolates nat
     const mapped = page.getByTestId('mf-fallback-button');
     await mapped.waitFor();
     assert.match(await mapped.getAttribute('class') ?? '', /btn-brand/);
-    assert.match(await mapped.getAttribute('class') ?? '', /min-h-11 px-6/);
+    assert.match(await mapped.getAttribute('class') ?? '', /min-h-11/);
+    assert.match(await mapped.getAttribute('class') ?? '', /px-6/);
     assert.equal(await mapped.evaluate((node) => getComputedStyle(node).justifyContent), 'flex-start');
 
     await mount({ data: 'single', size: 'unknown', variant: 'unknown' });
     const defaulted = page.getByTestId('mf-fallback-button');
     await defaulted.waitFor();
     assert.match(await defaulted.getAttribute('class') ?? '', /bg-primary/);
-    assert.match(await defaulted.getAttribute('class') ?? '', /min-h-11 px-4/);
+    assert.match(await defaulted.getAttribute('class') ?? '', /min-h-11/);
+    assert.match(await defaulted.getAttribute('class') ?? '', /px-4/);
 
     for (const activation of ['pointer', 'Enter', 'Space'] as const) {
       await mount({ data: 'single', size: 'default', variant: 'default' });
