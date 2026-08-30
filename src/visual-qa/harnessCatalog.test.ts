@@ -38,7 +38,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70767);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70836);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -51,7 +51,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    280,
+    282,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1680,6 +1680,98 @@ test('QA-only direct module overrides fail closed for unknown modules and mismat
       'src/components/MateMobileDateFilter.tsx',
       moduleFile,
       'mateMobileDateFilterVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+});
+
+test('module federation fallback controls resolve exact 48 and 21 direct matrices', () => {
+  const moduleFile = 'src/components/visual-qa/ModuleFederationFallbackControlsHarnesses.tsx';
+  const moduleKey = componentModuleKey(moduleFile);
+  const expected = new Map([
+    ['src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton', {
+      count: 48,
+      exportName: 'mfFallbackButtonVisualQaHarness',
+      interactions: {
+        default: 34,
+        hover: 8,
+        'focus-visible': 2,
+        pressed: 1,
+        selected: 1,
+        'keyboard-navigation': 2,
+      },
+    }],
+    ['src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal', {
+      count: 21,
+      exportName: 'mfFallbackModalVisualQaHarness',
+      interactions: {
+        default: 10,
+        hover: 1,
+        'focus-visible': 1,
+        pressed: 1,
+        selected: 5,
+        'keyboard-navigation': 3,
+      },
+    }],
+  ]);
+
+  for (const [componentId, contract] of expected) {
+    const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+      scenario.componentId === componentId
+    ));
+    assert.equal(scenarios.length, contract.count, componentId);
+    assert.equal(new Set(scenarios.map(({ id }) => id)).size, contract.count);
+    assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, contract.count);
+    assert.ok(scenarios.every((scenario) => scenario.exportName === contract.exportName));
+    assert.ok(scenarios.every((scenario) => scenario.moduleKey === moduleKey));
+    assert.ok(scenarios.every((scenario) => scenario.file === componentId.slice(0, componentId.indexOf('#'))));
+    assert.deepEqual(Object.fromEntries(Object.keys(contract.interactions).map((interaction) => [
+      interaction,
+      scenarios.filter(({ states }) => states.interactions === interaction).length,
+    ])), contract.interactions);
+  }
+
+  const modalScenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
+    componentId === 'src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal'
+  ));
+  assert.equal(
+    modalScenarios.filter(({ interactionPlan }) => interactionPlan?.targetId === 'close-both').length,
+    1,
+  );
+  assert.equal(
+    modalScenarios.filter(({ interactionPlan }) => interactionPlan?.targetId === 'backdrop-both').length,
+    1,
+  );
+
+  assert.equal(
+    resolveDirectModuleFile(
+      'src/components/moduleFederation/fallback/Button.tsx',
+      moduleFile,
+      'mfFallbackButtonVisualQaHarness',
+    ),
+    moduleFile,
+  );
+  assert.equal(
+    resolveDirectModuleFile(
+      'src/components/moduleFederation/fallback/Modal.tsx',
+      moduleFile,
+      'mfFallbackModalVisualQaHarness',
+    ),
+    moduleFile,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/moduleFederation/fallback/Button.tsx',
+      moduleFile,
+      'mfFallbackModalVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/moduleFederation/fallback/Modal.tsx',
+      'src/components/visual-qa/UnknownHarness.tsx',
+      'mfFallbackModalVisualQaHarness',
     ),
     /unknown or mismatched direct module export/,
   );
@@ -5712,6 +5804,7 @@ test('conditional targets preserve ordered setup and result waits for matching c
         targets: [{
           id: 'available-card',
           selector: '[data-testid="available-card"]',
+          clickPosition: { x: 1, y: 1 },
           when: { data: 'populated', 'variant.enabled': ['true'] },
           setup: [{
             action: 'click',
@@ -5743,6 +5836,7 @@ test('conditional targets preserve ordered setup and result waits for matching c
     action: 'click',
     selector: '[data-testid="available-card"]',
     targetId: 'available-card',
+    clickPosition: { x: 1, y: 1 },
     setup: [
       { action: 'click', selector: '[data-testid="global-toggle"]' },
       {
@@ -5754,6 +5848,36 @@ test('conditional targets preserve ordered setup and result waits for matching c
     waitForSelector: '[role="dialog"]',
     waitForHiddenSelector: '[data-testid="closed-state"]',
   });
+});
+
+test('interaction catalog rejects click positions outside finite nonnegative click targets', () => {
+  const resolveInteractionPlan = (harnessCatalogModule as unknown as {
+    resolveInteractionPlan?: (
+      entry: { interactionPlans?: Record<string, unknown> },
+      states: Record<string, string>,
+      interactionTarget?: Record<string, unknown>,
+    ) => Record<string, unknown> | undefined;
+  }).resolveInteractionPlan;
+  assert.equal(typeof resolveInteractionPlan, 'function');
+  if (!resolveInteractionPlan) return;
+
+  for (const [action, clickPosition] of [
+    ['hover', { x: 1, y: 1 }],
+    ['click', { x: -1, y: 1 }],
+    ['click', { x: Number.NaN, y: 1 }],
+    ['click', { x: 1, y: Number.POSITIVE_INFINITY }],
+  ] as const) {
+    assert.throws(
+      () => resolveInteractionPlan({
+        interactionPlans: { selected: { action } },
+      }, { interactions: 'selected' }, {
+        id: 'target',
+        selector: '[data-testid="target"]',
+        clickPosition,
+      }),
+      /clickPosition requires finite nonnegative coordinates on click action/,
+    );
+  }
 });
 
 test('global error Root, Content, and lazy host cover exactly 22, 35, and 16 legal scenarios', async () => {

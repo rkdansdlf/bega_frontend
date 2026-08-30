@@ -46,15 +46,18 @@ const toLocalSize = (size?: string): ButtonSize | undefined => {
 };
 
 export default function FallbackDesignSystemButton({
+  className,
   variant,
   size,
   ...props
 }: FallbackDesignSystemButtonProps) {
   return (
     <Button
+      {...props}
+      data-testid="mf-fallback-button"
       variant={toLocalVariant(variant)}
       size={toLocalSize(size)}
-      {...props}
+      className={`max-w-full [overflow-wrap:anywhere] active:scale-[0.98] motion-reduce:transform-none ${className ?? ''}`}
     />
   );
 }

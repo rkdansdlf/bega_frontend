@@ -48,6 +48,10 @@ export type AutomaticComponentStateScenario = {
     action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'fill' | 'press-key';
     selector: string;
     targetId?: string;
+    clickPosition?: {
+      x: number;
+      y: number;
+    };
     value?: string;
     key?: string;
     setup?: InteractionStep[];
@@ -105,6 +109,10 @@ type InteractionStep = {
 type InteractionTarget = {
   id: string;
   selector: string;
+  clickPosition?: {
+    x: number;
+    y: number;
+  };
   value?: string;
   key?: string;
   when?: Record<string, string | string[]>;
@@ -135,6 +143,10 @@ export const componentModuleKey = (file: string) => `../${file.replace(/^src\//,
 export const componentStyleModuleKeys = (styles: string[]) => styles.map(componentModuleKey);
 
 const qaOnlyDirectModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['src/components/visual-qa/ModuleFederationFallbackControlsHarnesses.tsx', new Set([
+    'src/components/moduleFederation/fallback/Button.tsx#mfFallbackButtonVisualQaHarness',
+    'src/components/moduleFederation/fallback/Modal.tsx#mfFallbackModalVisualQaHarness',
+  ])],
   ['src/components/visual-qa/MateMobileDateFilterHarness.tsx', new Set([
     'src/components/MateMobileDateFilter.tsx#mateMobileDateFilterVisualQaHarness',
   ])],
@@ -226,10 +238,25 @@ export const resolveInteractionPlan = (
     waitForHiddenSelector: interactionTarget?.waitForHiddenSelector ?? plan.waitForHiddenSelector,
   };
   if (interactionTarget) {
+    if (
+      interactionTarget.clickPosition !== undefined
+      && (
+        resolvedPlan.action !== 'click'
+        || !Number.isFinite(interactionTarget.clickPosition.x)
+        || !Number.isFinite(interactionTarget.clickPosition.y)
+        || interactionTarget.clickPosition.x < 0
+        || interactionTarget.clickPosition.y < 0
+      )
+    ) {
+      throw new Error('clickPosition requires finite nonnegative coordinates on click action');
+    }
     return {
       action: resolvedPlan.action,
       selector: interactionTarget.selector,
       targetId: interactionTarget.id,
+      ...(interactionTarget.clickPosition
+        ? { clickPosition: interactionTarget.clickPosition }
+        : {}),
       ...((interactionTarget.value ?? plan.value) !== undefined
         ? { value: interactionTarget.value ?? plan.value }
         : {}),

@@ -58218,13 +58218,782 @@
     },
     {
       "id": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "mf-fallback.button",
+        "exportName": "mfFallbackButtonVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/ModuleFederationFallbackControlsHarnesses.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Short, Korean pressure, and unbroken labels cover the fallback button's visible content classes.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The native prop wrapper does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/moduleFederation/fallback/Button.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Every hover tone, owned focus ring, pressed state, and exact-one native activation path is executable.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The prop-only fallback performs no transport work.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/Button.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "presentation",
+            "values": [
+              "default-default",
+              "destructive-default",
+              "outline-default",
+              "secondary-default",
+              "ghost-default",
+              "link-default",
+              "brand-default",
+              "brandOutline-default",
+              "brand-sm",
+              "brand-lg",
+              "brand-icon",
+              "brand-iconTouch",
+              "brand-touch",
+              "brand-touchLg",
+              "disabled-default"
+            ],
+            "reason": "All public fallback mappings, mobile sizes, brand tones, and native disabled presentation are visible.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Fallback controls delegate theme-aware styles to the local design system.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/Button.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "default",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "default-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "destructive",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "destructive-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "outline",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "outline-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "secondary",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "secondary-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "ghost",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "ghost-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "link",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "link-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "brand",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "brand-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "brandOutline",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "brandOutline-default",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every public tone with a hover branch is captured.",
+          "owner": "frontend-platform",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "default",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "default-default",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "destructive",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "destructive-default",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The common ring and destructive ring are visually distinct.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "brand-touch",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "brand-touch",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The touch presentation owns contained active scale feedback.",
+          "owner": "frontend-platform",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "pointer",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "when": {
+                "data": "single",
+                "variant.presentation": "default-default",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"pointer\"]"
+            }
+          ],
+          "reason": "A native pointer click invokes the forwarded callback once.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "enter",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "key": "Enter",
+              "when": {
+                "data": "single",
+                "variant.presentation": "default-default",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"keyboard\"]"
+            },
+            {
+              "id": "space",
+              "selector": "[data-testid=\"mf-fallback-button\"]",
+              "key": "Space",
+              "when": {
+                "data": "single",
+                "variant.presentation": "default-default",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"keyboard\"]"
+            }
+          ],
+          "reason": "Enter and Space each preserve native exact-one activation.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "destructive-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "outline-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "secondary-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "ghost-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "link-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brandOutline-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-sm"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-lg"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-icon"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-iconTouch"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-touch"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "brand-touchLg"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.presentation": "disabled-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "destructive-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "outline-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "secondary-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "ghost-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "link-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brandOutline-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-sm"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-lg"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-icon"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-iconTouch"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-touch"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "brand-touchLg"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.presentation": "disabled-default"
+          },
+          "reason": "Pressure labels use the canonical default tone.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "mf-fallback.modal",
+        "exportName": "mfFallbackModalVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/ModuleFederationFallbackControlsHarnesses.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Empty, standard, Korean pressure, and unbroken portal content cover every distinct fallback layout.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The controlled compatibility wrapper does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/moduleFederation/fallback/Modal.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Close pointer states, every callback mode, backdrop, Escape, and both focus-loop directions are executable.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The prop-controlled fallback performs no transport work.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/Modal.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "phase",
+            "values": [
+              "open",
+              "closed"
+            ],
+            "reason": "Controlled visibility is captured both present and absent.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The complete portal is theme-aware.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/moduleFederation/fallback/Modal.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The portal close target exposes hover feedback.",
+          "owner": "frontend-platform",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The portal close target exposes its keyboard ring.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The close target preserves native pressed feedback.",
+          "owner": "frontend-platform",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "close-both",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "backdrop-both",
+              "selector": ".fixed.inset-0.z-\\[80\\] > .absolute.inset-0.flex.items-center.justify-center.p-4",
+              "clickPosition": {
+                "x": 1,
+                "y": 1
+              },
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "close-open-change",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "close-on-close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"1\"][data-vqa-last-branch=\"close\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "close-none",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"0\"][data-vqa-effective-open=\"true\"]"
+            }
+          ],
+          "reason": "Close and real backdrop requests prove exact callback precedence, fallback, and no-callback stability.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "escape-close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "key": "Escape",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "tab-loop",
+              "selector": "[data-testid=\"mf-fallback-modal-internal-action\"]",
+              "key": "Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"0\"]) [role=\"dialog\"] button[aria-label=\"닫기\"]:focus-visible"
+            },
+            {
+              "id": "shift-tab-loop",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "key": "Shift+Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "open",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mf-fallback-modal-internal-action\"]:focus-visible"
+            }
+          ],
+          "reason": "Escape closes once while forward and reverse Tab remain inside the portal.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.phase": "closed"
+          },
+          "reason": "Closed data variants have identical absent pixels; single is canonical.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.phase": "closed"
+          },
+          "reason": "Closed data variants have identical absent pixels; single is canonical.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.phase": "closed"
+          },
+          "reason": "Closed data variants have identical absent pixels; single is canonical.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/moduleFederation/fallback/FallbackControls.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/moduleFederation/fallback/ThemeProvider.tsx#ThemeProvider",

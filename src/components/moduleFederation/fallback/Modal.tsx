@@ -21,12 +21,21 @@ export default function FallbackDesignSystemModal({
 }: FallbackDesignSystemModalProps) {
   const isVisible = Boolean(open ?? isOpen);
   const handleClose = () => {
-    onOpenChange?.(false);
+    if (onOpenChange) {
+      onOpenChange(false);
+      return;
+    }
     onClose?.();
   };
 
   return (
-    <PlainDialog open={isVisible} onClose={handleClose} title={title}>
+    <PlainDialog
+      open={isVisible}
+      onClose={handleClose}
+      title={title}
+      contentTestId="mf-fallback-modal"
+      bodyClassName="[overflow-wrap:anywhere]"
+    >
       {children}
     </PlainDialog>
   );

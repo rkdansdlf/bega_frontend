@@ -182,6 +182,8 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'mate.status-tabs',
     'mate.ticket-verification',
     'mate.today-count-badge',
+    'mf-fallback.button',
+    'mf-fallback.modal',
     'mypage.season-empty',
     'navbar.notification-controls',
     'navbar.shell',
@@ -7109,6 +7111,86 @@ test('mate mobile date filter adapter maps exact controlled fixtures and fails c
     assert.throws(
       () => resolveComponentStateAdapter('mate.mobile-date-filter', context),
       /지원하지 않는 MateMobileDateFilter state/,
+    );
+  }
+});
+
+test('module federation fallback control adapters map exact stateful inputs and fail closed', () => {
+  const buttonId = 'src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton';
+  const button = resolveComponentStateAdapter('mf-fallback.button', {
+    componentId: buttonId,
+    interactionTargetId: 'pointer',
+    states: { data: 'single', interactions: 'selected' },
+    variants: { presentation: 'default-default', theme: 'light' },
+  });
+  assert.deepEqual(button.props, {
+    data: 'single',
+    disabled: false,
+    presentation: 'default-default',
+    scenarioKey: 'single:selected:pointer:default-default:light',
+    size: 'default',
+    variant: 'default',
+  });
+  assert.equal(button.captureSelector, '[data-testid="mf-fallback-button"]');
+  assert.equal(button.theme, 'light');
+
+  const disabled = resolveComponentStateAdapter('mf-fallback.button', {
+    componentId: buttonId,
+    states: { data: 'single', interactions: 'default' },
+    variants: { presentation: 'disabled-default', theme: 'dark' },
+  });
+  assert.equal(disabled.props.disabled, true);
+  assert.equal(disabled.props.variant, 'default');
+  assert.equal(disabled.props.size, 'default');
+
+  const modalId = 'src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal';
+  const modal = resolveComponentStateAdapter('mf-fallback.modal', {
+    componentId: modalId,
+    interactionTargetId: 'backdrop-both',
+    states: { data: 'single', interactions: 'selected' },
+    variants: { phase: 'open', theme: 'light' },
+  });
+  assert.deepEqual(modal.props, {
+    callbackMode: 'both',
+    data: 'single',
+    initialOpen: true,
+    scenarioKey: 'single:selected:backdrop-both:open:light',
+  });
+  assert.equal(modal.captureSelector, 'body');
+  assert.equal(modal.theme, 'light');
+
+  for (const [adapterId, context, message] of [
+    ['mf-fallback.button', {
+      componentId: buttonId,
+      states: { data: 'unknown', interactions: 'default' },
+      variants: { presentation: 'default-default', theme: 'light' },
+    }, /지원하지 않는 fallback Button state/],
+    ['mf-fallback.button', {
+      componentId: modalId,
+      states: { data: 'single', interactions: 'default' },
+      variants: { presentation: 'default-default', theme: 'light' },
+    }, /지원하지 않는 fallback Button state/],
+    ['mf-fallback.button', {
+      componentId: buttonId,
+      interactionTargetId: 'unknown',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { presentation: 'default-default', theme: 'light' },
+    }, /지원하지 않는 fallback Button state/],
+    ['mf-fallback.modal', {
+      componentId: modalId,
+      interactionTargetId: 'unknown',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { phase: 'open', theme: 'light' },
+    }, /지원하지 않는 fallback Modal state/],
+    ['mf-fallback.modal', {
+      componentId: modalId,
+      states: { data: 'single', interactions: 'default', system: 'online' },
+      variants: { phase: 'open', theme: 'light' },
+    }, /지원하지 않는 fallback Modal state/],
+  ] as const) {
+    assert.throws(
+      () => resolveComponentStateAdapter(adapterId, context),
+      message,
     );
   }
 });

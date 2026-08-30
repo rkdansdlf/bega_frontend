@@ -13617,6 +13617,167 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mf-fallback.button': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 fallback Button state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'presentation,theme'
+    ) {
+      return failClosed();
+    }
+    const data = {
+      single: 'single',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+    }[context.states.data ?? ''];
+    const interaction = {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    }[context.states.interactions ?? ''];
+    const presentations = {
+      'default-default': { disabled: false, size: 'default', variant: 'default' },
+      'destructive-default': { disabled: false, size: 'default', variant: 'destructive' },
+      'outline-default': { disabled: false, size: 'default', variant: 'outline' },
+      'secondary-default': { disabled: false, size: 'default', variant: 'secondary' },
+      'ghost-default': { disabled: false, size: 'default', variant: 'ghost' },
+      'link-default': { disabled: false, size: 'default', variant: 'link' },
+      'brand-default': { disabled: false, size: 'default', variant: 'brand' },
+      'brandOutline-default': { disabled: false, size: 'default', variant: 'brandOutline' },
+      'brand-sm': { disabled: false, size: 'sm', variant: 'brand' },
+      'brand-lg': { disabled: false, size: 'lg', variant: 'brand' },
+      'brand-icon': { disabled: false, size: 'icon', variant: 'brand' },
+      'brand-iconTouch': { disabled: false, size: 'iconTouch', variant: 'brand' },
+      'brand-touch': { disabled: false, size: 'touch', variant: 'brand' },
+      'brand-touchLg': { disabled: false, size: 'touchLg', variant: 'brand' },
+      'disabled-default': { disabled: true, size: 'default', variant: 'default' },
+    } as const;
+    const presentation = context.variants.presentation ?? '';
+    const presentationProps = presentations[presentation as keyof typeof presentations];
+    const theme = context.variants.theme === 'light' || context.variants.theme === 'dark'
+      ? context.variants.theme
+      : undefined;
+    if (!data || !interaction || !presentationProps || !theme) return failClosed();
+    const target = context.interactionTargetId;
+    const hoverPresentations: Record<string, string> = {
+      default: 'default-default',
+      destructive: 'destructive-default',
+      outline: 'outline-default',
+      secondary: 'secondary-default',
+      ghost: 'ghost-default',
+      link: 'link-default',
+      brand: 'brand-default',
+      brandOutline: 'brandOutline-default',
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+        && (data === 'single' || presentation === 'default-default')
+      : data === 'single'
+        && theme === 'light'
+        && (
+          (interaction === 'hover' && hoverPresentations[target ?? ''] === presentation)
+          || (interaction === 'focus-visible'
+            && hoverPresentations[target ?? ''] === presentation
+            && (target === 'default' || target === 'destructive'))
+          || (interaction === 'pressed' && target === 'brand-touch' && presentation === 'brand-touch')
+          || (interaction === 'selected' && target === 'pointer' && presentation === 'default-default')
+          || (interaction === 'keyboard-navigation'
+            && presentation === 'default-default'
+            && (target === 'enter' || target === 'space'))
+        );
+    if (!validInteraction) return failClosed();
+    return {
+      props: {
+        data,
+        disabled: presentationProps.disabled,
+        presentation,
+        scenarioKey: `${data}:${interaction}:${target ?? 'none'}:${presentation}:${theme}`,
+        size: presentationProps.size,
+        variant: presentationProps.variant,
+      },
+      captureSelector: '[data-testid="mf-fallback-button"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'mf-fallback.modal': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 fallback Modal state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'phase,theme'
+    ) {
+      return failClosed();
+    }
+    const data = {
+      empty: 'empty',
+      single: 'single',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+    }[context.states.data ?? ''];
+    const interaction = {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    }[context.states.interactions ?? ''];
+    const phase = context.variants.phase === 'open' || context.variants.phase === 'closed'
+      ? context.variants.phase
+      : undefined;
+    const theme = context.variants.theme === 'light' || context.variants.theme === 'dark'
+      ? context.variants.theme
+      : undefined;
+    if (!data || !interaction || !phase || !theme) return failClosed();
+    const target = context.interactionTargetId;
+    const selectedModes: Record<string, 'both' | 'open-change' | 'close' | 'none'> = {
+      'close-both': 'both',
+      'backdrop-both': 'both',
+      'close-open-change': 'open-change',
+      'close-on-close': 'close',
+      'close-none': 'none',
+    };
+    const callbackMode = interaction === 'selected'
+      ? selectedModes[target ?? '']
+      : 'both';
+    const validInteraction = interaction === 'default'
+      ? target === undefined && (phase === 'open' || data === 'single')
+      : data === 'single'
+        && phase === 'open'
+        && theme === 'light'
+        && (
+          ((interaction === 'hover' || interaction === 'focus-visible' || interaction === 'pressed')
+            && target === 'close')
+          || (interaction === 'selected' && callbackMode !== undefined)
+          || (interaction === 'keyboard-navigation'
+            && (target === 'escape-close' || target === 'tab-loop' || target === 'shift-tab-loop'))
+        );
+    if (!validInteraction || !callbackMode) return failClosed();
+    return {
+      props: {
+        callbackMode,
+        data,
+        initialOpen: phase === 'open',
+        scenarioKey: `${data}:${interaction}:${target ?? 'none'}:${phase}:${theme}`,
+      },
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'mate.mobile-date-filter': (context) => {
     const failClosed = (): never => {
       throw new Error(

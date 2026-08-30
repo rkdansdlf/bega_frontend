@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T05:48:10.492Z",
+  "generatedAt": "2026-08-30T07:20:04.720Z",
   "ok": false,
   "total": 1010,
-  "registered": 447,
+  "registered": 449,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -376,8 +376,6 @@
     "src/components/moduleFederation/ModuleFederationDesignSystemProbe.tsx#RemoteButton",
     "src/components/moduleFederation/ModuleFederationDesignSystemProbe.tsx#RemoteModal",
     "src/components/moduleFederation/ModuleFederationDesignSystemProbe.tsx#RemoteThemeProvider",
-    "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
-    "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
     "src/components/moduleFederation/fallback/ThemeProvider.tsx#ThemeProvider",
     "src/components/mypage/AccountSettingsAdvancedRuntime.tsx#AccountSettingsAdvancedRuntime",
     "src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection",
@@ -573,5 +571,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 71770
+  "validCombinations": 71839
 }
