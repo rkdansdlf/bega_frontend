@@ -74,7 +74,7 @@ export default function RankingPredictionCompletionPanel({
         <Button
           onClick={handleComplete}
           data-testid="ranking-complete-btn"
-          className="w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
+          className="min-h-11 w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
         >
           예측 완료
         </Button>
@@ -84,7 +84,7 @@ export default function RankingPredictionCompletionPanel({
             onClick={(event) => handlePostCompleteAction(event, onShare)}
             data-testid="ranking-share-btn"
             variant="outline"
-            className="w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
+            className="min-h-11 w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
           >
             공유하기
           </Button>
@@ -94,7 +94,7 @@ export default function RankingPredictionCompletionPanel({
           <Button
             onClick={(event) => handlePostCompleteAction(event, onSave)}
             data-testid="ranking-save-btn"
-            className="w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
+            className="min-h-11 w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
           >
             저장하기
           </Button>
@@ -102,7 +102,7 @@ export default function RankingPredictionCompletionPanel({
             onClick={(event) => handlePostCompleteAction(event, onShare)}
             data-testid="ranking-share-btn"
             variant="outline"
-            className="w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
+            className="min-h-11 w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
           >
             공유하기
           </Button>
