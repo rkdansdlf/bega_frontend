@@ -1,3 +1,5 @@
+import { useRef, type MouseEvent } from 'react';
+
 import { Button } from './ui/button';
 import TeamLogo from './TeamLogo';
 import firstPlaceImage from '../assets/f552d9266ac817e0c86b657dead0069395c6da11.webp';
@@ -19,12 +21,33 @@ export default function RankingPredictionCompletionPanel({
   onSave,
   onShare,
 }: RankingPredictionCompletionPanelProps) {
+  const completeTransitionClick = useRef(false);
+  const handleComplete = (event: MouseEvent<HTMLButtonElement>) => {
+    if (event.detail > 1) return;
+    completeTransitionClick.current = true;
+    onCompletePrediction();
+  };
+  const handlePostCompleteAction = (
+    event: MouseEvent<HTMLButtonElement>,
+    callback: () => void,
+  ) => {
+    if (completeTransitionClick.current && event.detail > 1) {
+      completeTransitionClick.current = false;
+      return;
+    }
+    completeTransitionClick.current = false;
+    callback();
+  };
+
   return (
-    <div className="animate-fade-in-up motion-reduce:animate-none">
+    <div
+      data-testid="ranking-completion-panel"
+      className="min-w-0 overflow-hidden animate-fade-in-up motion-reduce:animate-none"
+    >
       <div className="mb-4 mx-auto w-[60px]">
         <img
           src={firstPlaceImage}
-          alt="First Place"
+          alt="1위 트로피"
           loading="lazy"
           decoding="async"
           className="w-full h-auto object-contain"
@@ -36,8 +59,12 @@ export default function RankingPredictionCompletionPanel({
       </p>
 
       {topTeamShortName ? (
-        <div className="mb-6 flex justify-center">
-          <TeamLogo team={topTeamShortName} size={140} />
+        <div className="mb-6 flex min-w-0 justify-center overflow-hidden">
+          <TeamLogo
+            team={topTeamShortName}
+            size={140}
+            className="max-w-full overflow-hidden break-all text-center"
+          />
         </div>
       ) : null}
 
@@ -45,7 +72,7 @@ export default function RankingPredictionCompletionPanel({
 
       {!isPredictionSaved && !alreadySaved ? (
         <Button
-          onClick={onCompletePrediction}
+          onClick={handleComplete}
           data-testid="ranking-complete-btn"
           className="w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
         >
@@ -54,7 +81,7 @@ export default function RankingPredictionCompletionPanel({
       ) : alreadySaved ? (
         <div className="space-y-2">
           <Button
-            onClick={onShare}
+            onClick={(event) => handlePostCompleteAction(event, onShare)}
             data-testid="ranking-share-btn"
             variant="outline"
             className="w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
@@ -65,14 +92,14 @@ export default function RankingPredictionCompletionPanel({
       ) : (
         <div className="space-y-2">
           <Button
-            onClick={onSave}
+            onClick={(event) => handlePostCompleteAction(event, onSave)}
             data-testid="ranking-save-btn"
             className="w-full bg-[#2d5f4f] text-white hover:bg-[#2f6c5c]"
           >
             저장하기
           </Button>
           <Button
-            onClick={onShare}
+            onClick={(event) => handlePostCompleteAction(event, onShare)}
             data-testid="ranking-share-btn"
             variant="outline"
             className="w-full border border-emerald-200 text-[#2d5f4f] hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-primary/20"
