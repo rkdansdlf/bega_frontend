@@ -143,6 +143,9 @@ export const componentModuleKey = (file: string) => `../${file.replace(/^src\//,
 export const componentStyleModuleKeys = (styles: string[]) => styles.map(componentModuleKey);
 
 const qaOnlyDirectModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['src/components/visual-qa/RankingPredictionSaveDialogHarness.tsx', new Set([
+    'src/components/RankingPredictionSaveDialog.tsx#rankingPredictionSaveDialogVisualQaHarness',
+  ])],
   ['src/components/visual-qa/ModuleFederationFallbackControlsHarnesses.tsx', new Set([
     'src/components/moduleFederation/fallback/Button.tsx#mfFallbackButtonVisualQaHarness',
     'src/components/moduleFederation/fallback/Modal.tsx#mfFallbackModalVisualQaHarness',

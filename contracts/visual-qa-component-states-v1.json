@@ -71869,8 +71869,315 @@
     },
     {
       "id": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "ranking.save-dialog",
+        "exportName": "rankingPredictionSaveDialogVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/RankingPredictionSaveDialogHarness.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The leaf has one fixed Korean confirmation message; visibility and saving phase own every distinct content state.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The prop-controlled leaf does not inspect identity or authorization.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/RankingPredictionSaveDialog.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Close, cancel, confirm, backdrop, Escape, activation keys, and both focus directions are executable with exact callback ledgers.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The leaf receives controlled saving state and performs no transport request.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionSaveDialog.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "phase",
+            "values": [
+              "closed",
+              "idle",
+              "saving"
+            ],
+            "reason": "Closed, actionable, and synchronously saving states are the complete controlled lifecycle.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Dialog, warning copy, outline action, and disabled surfaces are theme-aware.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionSaveDialog.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "All three actionable controls expose hover feedback without callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every actionable control exposes a keyboard-visible focus ring without callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "All actionable controls preserve contained pressed feedback without firing callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"1\"][data-vqa-effective-open=\"true\"][data-vqa-effective-saving=\"true\"]) [data-testid=\"ranking-save-dialog-confirm\"][aria-busy=\"true\"]"
+            },
+            {
+              "id": "close",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "backdrop",
+              "selector": "body:has([role=\"dialog\"]) > .fixed.inset-0 > div:has(> [role=\"dialog\"])",
+              "clickPosition": {
+                "x": 1,
+                "y": 1
+              },
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            }
+          ],
+          "reason": "Real cancel, confirm, close, and portal-relative backdrop clicks prove exact callback branches and synchronous saving transition.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "escape",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "key": "Escape",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            },
+            {
+              "id": "tab-close-to-cancel",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "key": "Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-cancel\"]:focus-visible"
+            },
+            {
+              "id": "tab-cancel-to-confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "key": "Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-confirm\"]:focus-visible"
+            },
+            {
+              "id": "shift-tab-close-to-confirm",
+              "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+              "key": "Shift+Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-confirm\"]:focus-visible"
+            },
+            {
+              "id": "enter-confirm",
+              "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+              "key": "Enter",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"1\"][data-vqa-effective-open=\"true\"][data-vqa-effective-saving=\"true\"]) [data-testid=\"ranking-save-dialog-confirm\"][aria-busy=\"true\"]"
+            },
+            {
+              "id": "space-cancel",
+              "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+              "key": "Space",
+              "when": {
+                "data": "single",
+                "variant.phase": "idle",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[role=\"dialog\"]"
+            }
+          ],
+          "reason": "Escape, both focus directions, and native Enter/Space activation preserve exact callbacks and focus containment.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionSaveDialog.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/RankingPredictionShare.tsx#RankingPredictionShare",

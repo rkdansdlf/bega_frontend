@@ -13778,6 +13778,69 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'ranking.save-dialog': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 RankingPredictionSaveDialog state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'phase,theme'
+      || context.states.data !== 'single'
+    ) {
+      return failClosed();
+    }
+    const interaction = {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    }[context.states.interactions ?? ''];
+    const phase = {
+      closed: 'closed',
+      idle: 'idle',
+      saving: 'saving',
+    }[context.variants.phase ?? ''];
+    const theme = context.variants.theme === 'light' || context.variants.theme === 'dark'
+      ? context.variants.theme
+      : undefined;
+    if (!interaction || !phase || !theme) return failClosed();
+    const target = context.interactionTargetId;
+    const pointerTargets: Record<string, ReadonlySet<string>> = {
+      hover: new Set(['close', 'cancel', 'confirm']),
+      'focus-visible': new Set(['close', 'cancel', 'confirm']),
+      pressed: new Set(['close', 'cancel', 'confirm']),
+      selected: new Set(['close', 'cancel', 'confirm', 'backdrop']),
+      'keyboard-navigation': new Set([
+        'escape',
+        'tab-close-to-cancel',
+        'tab-cancel-to-confirm',
+        'shift-tab-close-to-confirm',
+        'enter-confirm',
+        'space-cancel',
+      ]),
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : phase === 'idle'
+        && theme === 'light'
+        && pointerTargets[interaction]?.has(target ?? '') === true;
+    if (!validInteraction) return failClosed();
+    return {
+      props: {
+        initialOpen: phase !== 'closed',
+        initialSaving: phase === 'saving',
+        scenarioKey: `single:${interaction}:${target ?? 'none'}:${phase}:${theme}`,
+      },
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'mate.mobile-date-filter': (context) => {
     const failClosed = (): never => {
       throw new Error(

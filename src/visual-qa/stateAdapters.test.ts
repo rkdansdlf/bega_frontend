@@ -215,6 +215,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'public-navbar.shell',
     'ranking.item',
     'ranking.result-panel',
+    'ranking.save-dialog',
     'retro.animated-crown',
     'retro.combo-animation',
     'retro.dot-matrix-text',
@@ -7191,6 +7192,77 @@ test('module federation fallback control adapters map exact stateful inputs and 
     assert.throws(
       () => resolveComponentStateAdapter(adapterId, context),
       message,
+    );
+  }
+});
+
+test('ranking prediction save dialog adapter maps the exact controlled matrix and fails closed', () => {
+  const componentId = 'src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog';
+  const confirm = resolveComponentStateAdapter('ranking.save-dialog', {
+    componentId,
+    interactionTargetId: 'confirm',
+    states: { data: 'single', interactions: 'selected' },
+    variants: { phase: 'idle', theme: 'light' },
+  });
+  assert.deepEqual(confirm.props, {
+    initialOpen: true,
+    initialSaving: false,
+    scenarioKey: 'single:selected:confirm:idle:light',
+  });
+  assert.equal(confirm.captureSelector, 'body');
+  assert.equal(confirm.theme, 'light');
+
+  const saving = resolveComponentStateAdapter('ranking.save-dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'default' },
+    variants: { phase: 'saving', theme: 'dark' },
+  });
+  assert.deepEqual(saving.props, {
+    initialOpen: true,
+    initialSaving: true,
+    scenarioKey: 'single:default:none:saving:dark',
+  });
+
+  const closed = resolveComponentStateAdapter('ranking.save-dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'default' },
+    variants: { phase: 'closed', theme: 'light' },
+  });
+  assert.equal(closed.props.initialOpen, false);
+  assert.equal(closed.props.initialSaving, false);
+
+  for (const context of [
+    {
+      componentId: 'src/components/RankingPrediction.tsx#RankingPredictionSaveDialog',
+      states: { data: 'single', interactions: 'default' },
+      variants: { phase: 'idle', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'unknown', interactions: 'default' },
+      variants: { phase: 'idle', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'unknown',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { phase: 'idle', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default', system: 'online' },
+      variants: { phase: 'idle', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'hover' },
+      variants: { phase: 'saving', theme: 'light' },
+      interactionTargetId: 'close',
+    },
+  ]) {
+    assert.throws(
+      () => resolveComponentStateAdapter('ranking.save-dialog', context),
+      /지원하지 않는 RankingPredictionSaveDialog state/,
     );
   }
 });

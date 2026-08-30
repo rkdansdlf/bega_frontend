@@ -38,7 +38,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70836);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70861);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -51,7 +51,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    282,
+    283,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1772,6 +1772,87 @@ test('module federation fallback controls resolve exact 48 and 21 direct matrice
       'src/components/moduleFederation/fallback/Modal.tsx',
       'src/components/visual-qa/UnknownHarness.tsx',
       'mfFallbackModalVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+});
+
+test('ranking prediction save dialog resolves the exact 25-state direct matrix only', async () => {
+  const componentId = 'src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog';
+  const hostedId = 'src/components/RankingPrediction.tsx#RankingPredictionSaveDialog';
+  const moduleFile = 'src/components/visual-qa/RankingPredictionSaveDialogHarness.tsx';
+  const moduleKey = componentModuleKey(moduleFile);
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+    scenario.componentId === componentId
+  ));
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{
+    id: string;
+    render?: {
+      adapterId?: string;
+      exportName?: string;
+      mode?: string;
+      moduleFile?: string;
+    };
+    status: string;
+  }> };
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  const hosted = manifest.components.find(({ id }) => id === hostedId);
+
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'ranking.save-dialog');
+  assert.equal(entry?.render?.exportName, 'rankingPredictionSaveDialogVisualQaHarness');
+  assert.equal(entry?.render?.moduleFile, moduleFile);
+  assert.equal(hosted?.status, 'pending');
+  assert.equal(scenarios.length, 25);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 25);
+  assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 25);
+  assert.ok(scenarios.every((scenario) => scenario.moduleKey === moduleKey));
+  assert.ok(scenarios.every((scenario) => scenario.file === 'src/components/RankingPredictionSaveDialog.tsx'));
+  assert.deepEqual(Object.fromEntries(
+    ['default', 'hover', 'focus-visible', 'pressed', 'selected', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      scenarios.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    default: 6,
+    hover: 3,
+    'focus-visible': 3,
+    pressed: 3,
+    selected: 4,
+    'keyboard-navigation': 6,
+  });
+  assert.deepEqual(
+    new Set(scenarios.filter(({ states }) => states.interactions !== 'default').map(({ variants }) => (
+      `${variants.phase}:${variants.theme}`
+    ))),
+    new Set(['idle:light']),
+  );
+
+  assert.equal(
+    resolveDirectModuleFile(
+      'src/components/RankingPredictionSaveDialog.tsx',
+      moduleFile,
+      'rankingPredictionSaveDialogVisualQaHarness',
+    ),
+    moduleFile,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/RankingPrediction.tsx',
+      moduleFile,
+      'rankingPredictionSaveDialogVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/RankingPredictionSaveDialog.tsx',
+      'src/components/visual-qa/MateMobileDateFilterHarness.tsx',
+      'rankingPredictionSaveDialogVisualQaHarness',
     ),
     /unknown or mismatched direct module export/,
   );
