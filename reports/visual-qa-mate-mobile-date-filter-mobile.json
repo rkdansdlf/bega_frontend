@@ -1,0 +1,593 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T05:35:49.115Z",
+  "baseUrl": "http://127.0.0.1:5194",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots"
+  },
+  "summary": {
+    "total": 55,
+    "passed": 55,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=all|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-39f54581d48a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=all|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-bdd914626f9e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=first|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-4222a986ddda.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=first|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-3149ca581f73.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=last|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-cf470f7e72c3.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=last|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-f06708919226.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=middle|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-866717f154b2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=middle|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-0b1eda36760d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=outside-range|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-501da3c2a240.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=boundary-minimum|interactions=default|variant.selection=outside-range|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-boundary-minimum-interactions-def-e825b60682c6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=empty|interactions=default|variant.selection=all|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-empty-interactions-default-varian-40e43337ab4f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=empty|interactions=default|variant.selection=all|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-empty-interactions-default-varian-dd73e13ebfc1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=empty|interactions=default|variant.selection=outside-range|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-empty-interactions-default-varian-85466cf06e9a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=empty|interactions=default|variant.selection=outside-range|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-empty-interactions-default-varian-41146a7024ac.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=all|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-f85060be0adf.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=all|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-aeef1f3ea093.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=first|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-b6ee6816d9e7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=first|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-ee73b65eab84.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=outside-range|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-7d397a2b345b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=long-korean|interactions=default|variant.selection=outside-range|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-long-korean-interactions-default-8db73500c411.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=all|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-eced9a924a4b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=all|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-c7f2a597e6dd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=first|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-28e1e6c319b8.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=first|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-587eae908261.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=last|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-5d86f6336412.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=last|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-9ce09c65ca7a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=middle|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-197f3fa7a8a2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=middle|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-1d84cf923c6a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=outside-range|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-ffb8e18d0377.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=default|variant.selection=outside-range|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-de-26adbdb51972.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=focus-visible|variant.selection=all|variant.theme=light|interactionTarget=all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-fo-d22e6a5b38a8.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+        "targetId": "all",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=focus-visible|variant.selection=all|variant.theme=light|interactionTarget=first",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-fo-b0748b21ee8c.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+        "targetId": "first",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=focus-visible|variant.selection=all|variant.theme=light|interactionTarget=last",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-fo-cea8965bb329.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+        "targetId": "last",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=focus-visible|variant.selection=all|variant.theme=light|interactionTarget=middle",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-fo-7f16e6e3c46c.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+        "targetId": "middle",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=hover|variant.selection=all|variant.theme=light|interactionTarget=all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ho-0a168d5bcaab.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+        "targetId": "all",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=hover|variant.selection=all|variant.theme=light|interactionTarget=first",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ho-4e701ddcdf4f.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+        "targetId": "first",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=hover|variant.selection=all|variant.theme=light|interactionTarget=last",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ho-0242815ef5c0.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+        "targetId": "last",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=hover|variant.selection=all|variant.theme=light|interactionTarget=middle",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ho-2367c41d46cd.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+        "targetId": "middle",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=keyboard-navigation|variant.selection=all|variant.theme=light|interactionTarget=scroll-arrow-right",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ke-9b41e0fb03db.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-mobile-date-filter-scroller\"]",
+        "targetId": "scroll-arrow-right",
+        "key": "ArrowRight",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"0\"][data-vqa-scroll-positive=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=keyboard-navigation|variant.selection=all|variant.theme=light|interactionTarget=scroller-to-all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-ke-0a4cbfa62137.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-mobile-date-filter-scroller\"]",
+        "targetId": "scroller-to-all",
+        "key": "Tab",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"0\"]:has([data-testid=\"mate-mobile-date-filter-all\"]:focus-visible)",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=pressed|variant.selection=all|variant.theme=light|interactionTarget=all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-pr-94916a2f0707.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+        "targetId": "all",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=pressed|variant.selection=all|variant.theme=light|interactionTarget=first",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-pr-17b28ec456af.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+        "targetId": "first",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=pressed|variant.selection=all|variant.theme=light|interactionTarget=last",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-pr-092701679bf7.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+        "targetId": "last",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=pressed|variant.selection=all|variant.theme=light|interactionTarget=middle",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-pr-ebbdcbabca63.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+        "targetId": "middle",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=selected|variant.selection=all|variant.theme=light|interactionTarget=all-to-first",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-se-343a544bcd89.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+        "targetId": "all-to-first",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-24\"][data-vqa-effective-value=\"2027-12-24\"]:has([data-testid=\"mate-mobile-date-filter-date-2027-12-24\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=selected|variant.selection=all|variant.theme=light|interactionTarget=all-to-last",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-se-e8ab722fbb0e.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+        "targetId": "all-to-last",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2028-01-06\"][data-vqa-effective-value=\"2028-01-06\"]:has([data-testid=\"mate-mobile-date-filter-date-2028-01-06\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=selected|variant.selection=all|variant.theme=light|interactionTarget=all-to-middle",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-se-7d31b5f1605c.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+        "targetId": "all-to-middle",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-31\"][data-vqa-effective-value=\"2027-12-31\"]:has([data-testid=\"mate-mobile-date-filter-date-2027-12-31\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=selected|variant.selection=first|variant.theme=light|interactionTarget=first-to-all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-se-a2f2734a0cba.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+        "targetId": "first-to-all",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-24\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-mobile-date-filter-all\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=maximum-supported|interactions=selected|variant.selection=outside-range|variant.theme=light|interactionTarget=outside-to-all",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-maximum-supported-interactions-se-8ddc34fe20a8.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+        "targetId": "outside-to-all",
+        "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"all\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-mobile-date-filter-all\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=all|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-f320d3d3067f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=all|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-a6785f01f339.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=first|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-114f7941380e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=first|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-6ad0b6b60c0d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=outside-range|variant.theme=dark",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-0c91cf93bc4f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateMobileDateFilter.tsx#MateMobileDateFilter:data=single|interactions=default|variant.selection=outside-range|variant.theme=light",
+      "componentId": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-mobile-date-filter-mobile-screenshots/matemobiledatefilter-matemobiledatefilter-data-single-interactions-default-varia-199649fc3841.png",
+      "attempts": 1
+    }
+  ]
+}

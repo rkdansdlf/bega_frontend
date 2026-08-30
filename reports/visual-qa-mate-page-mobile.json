@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T02:32:24.214Z",
-  "baseUrl": "http://127.0.0.1:5182",
+  "generatedAt": "2026-08-30T05:37:28.802Z",
+  "baseUrl": "http://127.0.0.1:5194",
   "scope": "component-states",
   "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
   "pageMode": "fresh",
   "captureHeightMode": "expand-tall-flow",
-  "groupSize": 8,
+  "groupSize": 50,
   "viewport": {
     "width": 320,
     "height": 844
   },
-  "timeoutMs": 90000,
+  "timeoutMs": 60000,
   "screenshots": {
     "mode": "captured",
     "directory": "reports/visual-qa-mate-page-mobile-screenshots"
