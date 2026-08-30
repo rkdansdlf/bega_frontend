@@ -19,6 +19,10 @@ export type HarnessInteractionStep = {
 export type HarnessInteractionPlan = {
   action: HarnessInteractionAction;
   selector: string;
+  clickPosition?: {
+    x: number;
+    y: number;
+  };
   value?: string;
   key?: string;
   setup?: HarnessInteractionStep[];
@@ -38,7 +42,7 @@ export type HarnessInteractionPage = {
     first: () => {
       waitFor: (options: { state: 'visible' | 'hidden'; timeout: number }) => Promise<void>;
       hover: () => Promise<void>;
-      click: () => Promise<void>;
+      click: (options?: { position?: { x: number; y: number } }) => Promise<void>;
       fill: (value: string) => Promise<void>;
       selectOption: (value: string) => Promise<string[]>;
       inputValue: () => Promise<string>;
@@ -164,6 +168,18 @@ export const executeHarnessInteractionPlan = async (
   page: HarnessInteractionPage,
   plan: HarnessInteractionPlan,
 ): Promise<() => Promise<void>> => {
+  if (
+    plan.clickPosition !== undefined
+    && (
+      plan.action !== 'click'
+      || !Number.isFinite(plan.clickPosition.x)
+      || !Number.isFinite(plan.clickPosition.y)
+      || plan.clickPosition.x < 0
+      || plan.clickPosition.y < 0
+    )
+  ) {
+    throw new Error('clickPosition requires finite nonnegative coordinates on click action');
+  }
   for (const step of plan.setup ?? []) {
     await executeSetupStep(page, step);
   }
@@ -175,7 +191,11 @@ export const executeHarnessInteractionPlan = async (
     if (plan.action === 'hover') {
       await target.hover();
     } else if (plan.action === 'click') {
-      await target.click();
+      if (plan.clickPosition) {
+        await target.click({ position: plan.clickPosition });
+      } else {
+        await target.click();
+      }
     } else if (plan.action === 'fill') {
       if (typeof plan.value !== 'string') throw new Error(`interaction fill requires value: ${plan.selector}`);
       await target.fill(plan.value);

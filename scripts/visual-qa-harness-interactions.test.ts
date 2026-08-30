@@ -21,7 +21,11 @@ const createPage = (focusAt = 2) => {
       events.push('hover');
       pseudoState = ':hover';
     },
-    click: async () => { events.push('click'); },
+    click: async (options?: { position?: { x: number; y: number } }) => {
+      events.push(options?.position
+        ? `click:${options.position.x},${options.position.y}`
+        : 'click');
+    },
     fill: async (value: string) => {
       events.push(`fill:${value}`);
       inputValue = value;
@@ -130,6 +134,45 @@ test('click interaction waits for visible and hidden result selectors before cap
     'move:-1,-1',
     'frames',
   ]);
+});
+
+test('click interaction can target an explicit safe point without changing default clicks', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+  const { page, events } = createPage();
+
+  await subject.executeHarnessInteractionPlan(page, {
+    action: 'click',
+    clickPosition: { x: 1, y: 1 },
+    selector: '[data-testid="dialog-backdrop-surface"]',
+    waitForHiddenSelector: '[role="dialog"]',
+  });
+
+  assert.deepEqual(events, [
+    'visible',
+    'click:1,1',
+    'hidden',
+    'frames',
+    'move:-1,-1',
+    'frames',
+  ]);
+});
+
+test('click position fails closed for invalid coordinates and non-click actions', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+
+  for (const plan of [
+    { action: 'click', clickPosition: { x: -1, y: 1 }, selector: 'button' },
+    { action: 'click', clickPosition: { x: Number.NaN, y: 1 }, selector: 'button' },
+    { action: 'click', clickPosition: { x: 1, y: Number.POSITIVE_INFINITY }, selector: 'button' },
+    { action: 'hover', clickPosition: { x: 1, y: 1 }, selector: 'button' },
+  ] as const) {
+    await assert.rejects(
+      subject.executeHarnessInteractionPlan(createPage().page, plan),
+      /clickPosition requires finite nonnegative coordinates on click action/,
+    );
+  }
 });
 
 test('fill interaction writes and verifies the exact controlled input value', async () => {
