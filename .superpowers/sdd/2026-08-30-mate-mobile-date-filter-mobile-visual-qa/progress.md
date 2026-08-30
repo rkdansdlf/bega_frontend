@@ -17,6 +17,7 @@ The approved design, plan, and constraints were not edited during implementation
 5. QA routing RED/GREEN: the new component initially remained pending and its companion module was unknown. GREEN uses an exact `componentFile#exportName` allow-list, a QA-only lower-camel companion module, and a fail-closed adapter. Unknown modules and mismatched exports fail.
 6. Package integration RED/GREEN: a focused policy test found zero occurrences of the Mobile actual test in `previsual-qa:harness:test`; the package script now contains that exact path once. The earlier `MateListControlLeaves.mobile.test.tsx` omission is intentionally unchanged and remains a separate residual.
 7. TypeScript caught a test-only coordinate bug (`boundingBox().right`); the overlap assertion now uses `x + width`. Mobile actual returned green `2/2` after the correction.
+8. Independent review found that resetting the callback ledger immediately before the first click could hide mount-time callback replay. The actual test now asserts a fully settled initial StrictMode ledger of `date=[]`, `unrelated=[]`, and network counters zero, then verifies a keyed fixture remount leaves that entire ledger unchanged before any reset or action. The reviewer `mount-effect` mutation is RED `1/2`, exposing two StrictMode entries; restored product behavior is green `2/2`.
 
 ## Coverage and evidence
 
@@ -49,6 +50,7 @@ Boundary and maximum fixtures share the same visible leading rail segment while 
 - Production build: worker `17`, client `5,736`, bundle budgets `153/153`; global CSS `255,465/255,500` bytes, increase zero and headroom `35`.
 - Production `dist` contains zero occurrences of `MateMobileDateFilterHarness`, `mateMobileDateFilterVisualQaHarness`, and `mate-mobile-date-filter-stateful-host`.
 - Detached clean code/evidence closure at `3bc9f894`: package inclusion `1/1`, catalog/state adapters `266/266`, Mobile actual `2/2`, TypeScript green, exact totals, build client `1,179`, budgets `153/153`, CSS `252,072`, and all three production identifiers zero. The `46` isolation/import/audit/reflow test files belong to staged99 rather than that HEAD and therefore were verified in the full working tree, not re-run in this clean checkout.
+- Independent-review follow-up: mount-effect mutation RED `1/2`; normal actual `2/2`; package inclusion `1/1`; pre-harness `159/159`; full harness `401/401`; TypeScript and Priority-0 policy green. Detached clean test commit `baea7470` starts clean and passes Mobile actual `2/2` plus TypeScript.
 
 ## Shared-tree preservation
 

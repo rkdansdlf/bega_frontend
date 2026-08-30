@@ -31,7 +31,7 @@ The seven equal-hash groups are legal: boundary/maximum fixtures expose the same
 
 ## Regression and isolation
 
-Actual mounted tests verify `320/390` geometry, every `44px` target, local versus document overflow, heading/badge separation, first/middle/last reachability, Tab and ArrowRight state, callback value/count, StrictMode, and zero unrelated/network/resize/scroll/keyboard callbacks. Reciprocal and missing callback mutations both fail.
+Actual mounted tests verify `320/390` geometry, every `44px` target, local versus document overflow, heading/badge separation, first/middle/last reachability, Tab and ArrowRight state, callback value/count, StrictMode, and zero unrelated/network/resize/scroll/keyboard callbacks. They now also assert the initial settled StrictMode ledger before any reset and the full ledger across a keyed fixture remount before any later action. Reciprocal, missing-callback, and reviewer mount-effect mutations fail; the mount-effect mutation records two StrictMode callbacks and is RED `1/2`.
 
 The exact component-file/export allow-list resolves the QA-only lower-camel companion and fails closed for unknown modules or mismatched exports. Production `dist` contains zero companion identifiers. The package pre-harness script includes the Mobile actual file exactly once; the pre-existing omission of `MateListControlLeaves.mobile.test.tsx` is intentionally left as a separate residual rather than expanding this slice.
 
@@ -48,6 +48,7 @@ The exact component-file/export allow-list resolves the QA-only lower-camel comp
 
 - Implementation commit: `9488650d`.
 - Evidence commit: `3bc9f894`.
+- Independent-review test commit: `baea7470`; its detached clean checkout starts clean and passes Mobile actual `2/2` plus TypeScript.
 - Detached clean code/evidence checkout at `3bc9f894`: package inclusion `1/1`, catalog/state `266/266`, Mobile actual `2/2`, TypeScript, exact generated totals, production build `1,179` modules and `153/153` budgets, clean CSS `252,072`, production companion identifiers zero, and committed report hashes unchanged.
 - The immutable design, plan, and constraints are included byte-for-byte with the final documentation commit because they were not previously reachable from HEAD.
 - User staged99 names and binary fingerprints remain exactly `e63eea5ed9284987100166b8d114c5fbf874f5332123876e227cfb15d429aad0` and `59b53ceb5bb8a4bb4e1e3e0afa2c75b2e31dc92f1463e96c0efaed05d9d914bc`.
