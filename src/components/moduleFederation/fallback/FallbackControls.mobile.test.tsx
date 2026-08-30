@@ -262,6 +262,7 @@ test('fallback controls keep stable QA targets, compatibility mappings, and pack
   assert.match(buttonSource, /case 'large':[\s\S]*return 'lg'/);
   assert.match(buttonSource, /max-w-full/);
   assert.match(buttonSource, /\[overflow-wrap:anywhere\]/);
+  assert.match(buttonSource, /whitespace-normal/);
   assert.match(buttonSource, /active:scale-\[0\.98\]/);
   assert.match(buttonSource, /motion-reduce:transform-none/);
   assert.match(modalSource, /contentTestId="mf-fallback-modal"/);

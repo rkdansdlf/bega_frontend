@@ -57,7 +57,7 @@ export default function FallbackDesignSystemButton({
       data-testid="mf-fallback-button"
       variant={toLocalVariant(variant)}
       size={toLocalSize(size)}
-      className={`min-h-11 min-w-11 max-w-full [overflow-wrap:anywhere] active:scale-[0.98] motion-reduce:transform-none ${className ?? ''}`}
+      className={`min-h-11 min-w-11 max-w-full whitespace-normal [overflow-wrap:anywhere] active:scale-[0.98] motion-reduce:transform-none ${className ?? ''}`}
     />
   );
 }
