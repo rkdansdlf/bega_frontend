@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T14:36:44.738Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 44,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots"
+  },
+  "summary": {
+    "total": 44,
+    "passed": 44,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=complete|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-e34dfac32113.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=complete|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-810fa4da4cdd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=ready-to-save|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-cbd677163c84.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=ready-to-save|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-d46ebece553b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=saved|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-9e38713c5606.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=long-korean|interactions=default|variant.phase=saved|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-long-kore-47a9adfa8902.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=complete|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-a9d38b4cc7cb.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=complete|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-c4eedb00b31d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=ready-to-save|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-211dc92b01e4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=ready-to-save|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-d27039adc29c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=saved|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-91c54baae66a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=null-optional|interactions=default|variant.phase=saved|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-null-opti-0b64b6fb0445.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=complete|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-5278d1455eca.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=complete|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-d7d7a6da626d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=ready-to-save|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-2b9cc03fdfb1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=ready-to-save|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-8b2d86d35c6d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=saved|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-9a06b4cdfde0.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=default|variant.phase=saved|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-934efc7ab451.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=focus-visible|variant.phase=complete|variant.theme=light|interactionTarget=complete-focus",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-5190b14073a5.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-focus",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=focus-visible|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-focus",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-06e537629b96.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-focus",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=focus-visible|variant.phase=saved|variant.theme=light|interactionTarget=share-focus",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-c2ee62836346.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-focus",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=hover|variant.phase=complete|variant.theme=light|interactionTarget=complete-hover",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-ff5ae00d9d10.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-hover",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=hover|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-hover",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-d09de148bd90.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-hover",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=hover|variant.phase=saved|variant.theme=light|interactionTarget=share-hover",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-70f172572c54.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-hover",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=complete|variant.theme=light|interactionTarget=complete-enter",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-d3a76cfae78b.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-enter",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=complete|variant.theme=light|interactionTarget=complete-space",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-963700d46c43.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-space",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-enter",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-4883a7908150.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-enter",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-space",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-628770453a44.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-space",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=ready-to-save|variant.theme=light|interactionTarget=shift-tab-share-save",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-4a3f5db94d60.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "shift-tab-share-save",
+        "key": "Shift+Tab",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=ready-to-save|variant.theme=light|interactionTarget=tab-save-share",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-af3c43d1327f.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "tab-save-share",
+        "key": "Tab",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=saved|variant.theme=light|interactionTarget=share-enter",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-0233326c8e38.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-enter",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=keyboard-navigation|variant.phase=saved|variant.theme=light|interactionTarget=share-space",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-14b61d42581f.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-space",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=pressed|variant.phase=complete|variant.theme=light|interactionTarget=complete-pressed",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-e939666f483e.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-pressed",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=pressed|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-pressed",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-e5044f617f31.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-pressed",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=pressed|variant.phase=saved|variant.theme=light|interactionTarget=share-pressed",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-d158b2b014c3.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-pressed",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=selected|variant.phase=complete|variant.theme=light|interactionTarget=complete-click",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-73b0fc6f01be.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"ranking-complete-btn\"]",
+        "targetId": "complete-click",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=selected|variant.phase=ready-to-save|variant.theme=light|interactionTarget=save-click",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-127355faef03.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"ranking-save-btn\"]",
+        "targetId": "save-click",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=single|interactions=selected|variant.phase=saved|variant.theme=light|interactionTarget=share-click",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-single-in-e0af1480edff.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"ranking-share-btn\"]",
+        "targetId": "share-click",
+        "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=complete|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-ac6575d05e0a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=complete|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-1ca6987fc28e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=ready-to-save|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-7baf79198bee.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=ready-to-save|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-54e235808a5c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=saved|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-64366206b612.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel:data=unbroken-token|interactions=default|variant.phase=saved|variant.theme=light",
+      "componentId": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-completion-panel-mobile-screenshots/rankingpredictioncompletionpanel-rankingpredictioncompletionpanel-data-unbroken-91570f6d0c27.png",
+      "attempts": 1
+    }
+  ]
+}
