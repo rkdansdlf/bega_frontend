@@ -220,6 +220,9 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
     const settle = () => page.evaluate(() => new Promise<void>((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     }));
+    const assertZeroCalls = async (label: string) => {
+      assert.deepEqual(await readCalls(), { close: 0, confirm: 0, unrelated: 0 }, label);
+    };
 
     await page.getByRole('dialog').waitFor({ timeout: 15_000 }).catch((error: unknown) => {
       throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
@@ -292,9 +295,12 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
       assert.ok(cancelBox.width >= footerInnerWidth - 1, `cancel is not full-width in footer: ${cancelBox.width}/${footerInnerWidth}`);
       assert.ok(confirmBox.width >= footerInnerWidth - 1, `confirm is not full-width in footer: ${confirmBox.width}/${footerInnerWidth}`);
       await portal.evaluate((node) => node.getBoundingClientRect().width);
+      await assertZeroCalls(`${viewport.width}px viewport and resize callback ledger`);
     }
 
     await page.setViewportSize({ width: 320, height: 844 });
+    await settle();
+    await assertZeroCalls('viewport restore callback ledger');
     await mount('idle');
     const dialog = page.getByRole('dialog');
     await dialog.waitFor();
@@ -303,17 +309,78 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
     const confirm = page.getByTestId('ranking-save-dialog-confirm');
 
     await close.focus();
+    await settle();
+    await assertZeroCalls('close focus callback ledger');
     await page.keyboard.press('Tab');
+    await settle();
+    await assertZeroCalls('Tab close→cancel callback ledger');
     assert.equal(await cancel.evaluate((node) => node === document.activeElement), true, 'Tab close→cancel');
     await page.keyboard.press('Tab');
+    await settle();
+    await assertZeroCalls('Tab cancel→confirm callback ledger');
     assert.equal(await confirm.evaluate((node) => node === document.activeElement), true, 'Tab cancel→confirm');
     await close.focus();
+    await settle();
+    await assertZeroCalls('close refocus callback ledger');
     await page.keyboard.press('Shift+Tab');
+    await settle();
+    await assertZeroCalls('Shift+Tab close→confirm callback ledger');
     assert.equal(await confirm.evaluate((node) => node === document.activeElement), true, 'Shift+Tab close→confirm');
     await page.keyboard.press('Tab');
+    await settle();
+    await assertZeroCalls('focus loop confirm→close callback ledger');
     assert.equal(await close.evaluate((node) => node === document.activeElement), true, 'focus loop confirm→close');
     await cancel.focus();
+    await settle();
+    await assertZeroCalls('cancel focus-visible callback ledger');
     assert.notEqual(await cancel.evaluate((node) => getComputedStyle(node).boxShadow), 'none', 'cancel focus ring');
+
+    await page.evaluate(() => document.documentElement.classList.add('dark'));
+    await settle();
+    await assertZeroCalls('dark theme callback ledger');
+    await page.evaluate(() => document.documentElement.classList.remove('dark'));
+    await settle();
+    await assertZeroCalls('light theme restore callback ledger');
+
+    const assertNonAction = async (
+      trigger: () => Promise<unknown>,
+      label: string,
+      cleanup?: () => Promise<unknown>,
+    ) => {
+      await mount('idle');
+      await page.getByRole('dialog').waitFor();
+      await reset();
+      await trigger();
+      await settle();
+      await assertZeroCalls(label);
+      if (cleanup) {
+        await cleanup();
+        await settle();
+        await assertZeroCalls(`${label} cleanup`);
+      }
+    };
+    const nonActionTargets = [
+      { id: 'close', locate: () => page.getByRole('button', { name: '닫기' }) },
+      { id: 'cancel', locate: () => page.getByTestId('ranking-save-dialog-cancel') },
+      { id: 'confirm', locate: () => page.getByTestId('ranking-save-dialog-confirm') },
+    ];
+    for (const target of nonActionTargets) {
+      await assertNonAction(
+        () => target.locate().hover(),
+        `${target.id} hover callback ledger`,
+      );
+      await assertNonAction(
+        async () => {
+          await target.locate().hover();
+          await page.mouse.down();
+        },
+        `${target.id} pressed callback ledger`,
+        async () => {
+          await (target.id === 'close' ? cancel : close).hover();
+          await page.mouse.up();
+        },
+      );
+    }
 
     const assertTrigger = async (
       trigger: () => Promise<unknown>,
