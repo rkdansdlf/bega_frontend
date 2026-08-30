@@ -213,6 +213,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'public-navbar.dm-unread-badge',
     'public-navbar.menu-panel',
     'public-navbar.shell',
+    'ranking.completion-panel',
     'ranking.item',
     'ranking.result-panel',
     'ranking.save-dialog',
@@ -7263,6 +7264,86 @@ test('ranking prediction save dialog adapter maps the exact controlled matrix an
     assert.throws(
       () => resolveComponentStateAdapter('ranking.save-dialog', context),
       /지원하지 않는 RankingPredictionSaveDialog state/,
+    );
+  }
+});
+
+test('ranking completion panel adapter maps single to the known-static internal fixture and fails closed', async () => {
+  const componentId = 'src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel';
+  const harnessSource = await readFile(
+    new URL('../components/visual-qa/RankingPredictionCompletionPanelHarness.tsx', import.meta.url),
+    'utf8',
+  );
+  assert.match(harnessSource, /single: 'HH'/);
+  const readySave = resolveComponentStateAdapter('ranking.completion-panel', {
+    componentId,
+    interactionTargetId: 'save-click',
+    states: { data: 'single', interactions: 'selected' },
+    variants: { phase: 'ready-to-save', theme: 'light' },
+  });
+  assert.deepEqual(readySave.props, {
+    data: 'single',
+    initialPhase: 'ready-to-save',
+    scenarioKey: 'single:selected:save-click:ready-to-save:light',
+  });
+  assert.equal(readySave.captureSelector, '[data-testid="ranking-completion-panel"]');
+  assert.equal(readySave.theme, 'light');
+
+  const savedDark = resolveComponentStateAdapter('ranking.completion-panel', {
+    componentId,
+    states: { data: 'unbroken-token', interactions: 'default' },
+    variants: { phase: 'saved', theme: 'dark' },
+  });
+  assert.deepEqual(savedDark.props, {
+    data: 'unbroken-token',
+    initialPhase: 'saved',
+    scenarioKey: 'unbroken-token:default:none:saved:dark',
+  });
+  assert.equal(savedDark.theme, 'dark');
+
+  for (const context of [
+    {
+      componentId: 'src/components/RankingPrediction.tsx#RankingPredictionCompletionPanel',
+      states: { data: 'single', interactions: 'default' },
+      variants: { phase: 'complete', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'unknown', interactions: 'default' },
+      variants: { phase: 'complete', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default', system: 'online' },
+      variants: { phase: 'complete', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default' },
+      variants: { phase: 'illegal', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'unknown',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { phase: 'ready-to-save', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'save-click',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { phase: 'saved', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'complete-hover',
+      states: { data: 'single', interactions: 'hover' },
+      variants: { phase: 'complete', theme: 'dark' },
+    },
+  ]) {
+    assert.throws(
+      () => resolveComponentStateAdapter('ranking.completion-panel', context),
+      /지원하지 않는 RankingPredictionCompletionPanel state/,
     );
   }
 });

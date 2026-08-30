@@ -13841,6 +13841,82 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'ranking.completion-panel': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 RankingPredictionCompletionPanel state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'phase,theme'
+    ) {
+      return failClosed();
+    }
+    const data = {
+      'null-optional': 'null-optional',
+      single: 'single',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+    }[context.states.data ?? ''];
+    const interaction = {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    }[context.states.interactions ?? ''];
+    const phase = {
+      complete: 'complete',
+      'ready-to-save': 'ready-to-save',
+      saved: 'saved',
+    }[context.variants.phase ?? ''];
+    const theme = context.variants.theme === 'light' || context.variants.theme === 'dark'
+      ? context.variants.theme
+      : undefined;
+    if (!data || !interaction || !phase || !theme) return failClosed();
+    const target = context.interactionTargetId;
+    const targetPhases: Record<string, string> = {
+      'complete-hover': 'complete',
+      'save-hover': 'ready-to-save',
+      'share-hover': 'saved',
+      'complete-focus': 'complete',
+      'save-focus': 'ready-to-save',
+      'share-focus': 'saved',
+      'complete-pressed': 'complete',
+      'save-pressed': 'ready-to-save',
+      'share-pressed': 'saved',
+      'complete-click': 'complete',
+      'save-click': 'ready-to-save',
+      'share-click': 'saved',
+      'complete-enter': 'complete',
+      'complete-space': 'complete',
+      'save-enter': 'ready-to-save',
+      'save-space': 'ready-to-save',
+      'share-enter': 'saved',
+      'share-space': 'saved',
+      'tab-save-share': 'ready-to-save',
+      'shift-tab-share-save': 'ready-to-save',
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : data === 'single'
+        && theme === 'light'
+        && targetPhases[target ?? ''] === phase;
+    if (!validInteraction) return failClosed();
+    return {
+      props: {
+        data,
+        initialPhase: phase,
+        scenarioKey: `${data}:${interaction}:${target ?? 'none'}:${phase}:${theme}`,
+      },
+      captureSelector: '[data-testid="ranking-completion-panel"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
   'mate.mobile-date-filter': (context) => {
     const failClosed = (): never => {
       throw new Error(

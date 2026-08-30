@@ -71864,8 +71864,157 @@
     },
     {
       "id": "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "ranking.completion-panel",
+        "exportName": "rankingPredictionCompletionPanelVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/RankingPredictionCompletionPanelHarness.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "null-optional",
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "The schema key single is the conceptual known-static fixture and maps only to internal static HH; optional, Korean pressure, and unbroken pressure values cover the logo boundary without asserting new baseball facts.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The prop-controlled leaf does not read identity or authorization.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/RankingPredictionCompletionPanel.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "All three actions cover visual non-actions and native pointer/Enter/Space activation; the ready stack covers both focus directions.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The leaf receives controlled booleans and performs no transport request.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionCompletionPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "phase",
+            "values": [
+              "complete",
+              "ready-to-save",
+              "saved"
+            ],
+            "reason": "These are the three legal boolean combinations exposed by the production caller.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Title, copy, and action surfaces are theme-aware.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/RankingPredictionCompletionPanel.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            { "id": "complete-hover", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-hover", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-hover", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+          ],
+          "reason": "Each visible action exposes hover feedback without callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            { "id": "complete-focus", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-focus", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-focus", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+          ],
+          "reason": "Each visible action exposes a contained keyboard focus ring without callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            { "id": "complete-pressed", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-pressed", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-pressed", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+          ],
+          "reason": "Each visible action exposes pressed feedback without firing before release.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "complete-click",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
+            },
+            {
+              "id": "save-click",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
+            },
+            {
+              "id": "share-click",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
+            }
+          ],
+          "reason": "One native pointer activation reaches only its matching callback and complete transitions synchronously.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            { "id": "complete-enter", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
+            { "id": "complete-space", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
+            { "id": "save-enter", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
+            { "id": "save-space", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
+            { "id": "share-enter", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
+            { "id": "share-space", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
+            { "id": "tab-save-share", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible" },
+            { "id": "shift-tab-share-save", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Shift+Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible" }
+          ],
+          "reason": "Enter and Space cover each action; Tab and Shift+Tab cover both directions in the ready stack with zero callbacks.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/RankingPredictionCompletionPanel.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",

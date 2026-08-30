@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T09:05:21.145Z",
-  "ok": true,
+  "generatedAt": "2026-08-30T14:44:48.916Z",
+  "ok": false,
   "total": 1010,
-  "registered": 450,
+  "registered": 451,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -216,7 +216,6 @@
     "src/components/RankingPrediction.tsx#RankingPrediction",
     "src/components/RankingPrediction.tsx#RankingPredictionCompletionPanel",
     "src/components/RankingPrediction.tsx#RankingPredictionSaveDialog",
-    "src/components/RankingPredictionCompletionPanel.tsx#RankingPredictionCompletionPanel",
     "src/components/RankingPredictionShare.tsx#RankingPredictionShare",
     "src/components/RankingPredictionSharePage.tsx#RankingPredictionSharePage",
     "src/components/RankingPredictionSharePage.tsx#RankingPredictionShareRuntime",
@@ -570,5 +569,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 71864
+  "validCombinations": 71908
 }
