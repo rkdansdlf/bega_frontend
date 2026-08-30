@@ -21,11 +21,14 @@ export default function LandingFeatureSection({
   visualFirst = false,
   tone,
 }: LandingFeatureSectionProps) {
+  const compact = number === '05' || number === '06';
+
   return (
     <section
-      className={`landing-feature landing-feature-${tone}`}
+      className={`landing-feature landing-feature-${tone}${compact ? ' landing-feature-compact' : ''}`}
       data-testid={`landing-feature-${number}`}
       aria-labelledby={`landing-feature-${number}-title`}
+      id={number === '01' ? 'features' : undefined}
     >
       <div className="landing-feature-watermark" aria-hidden="true">{number}</div>
       <div className="landing-feature-inner" data-visual-first={visualFirst || undefined}>

@@ -6,6 +6,12 @@
   font-family: "Pretendard Variable", Pretendard, sans-serif;
 }
 
+#app,
+#features,
+#start {
+  scroll-margin-top: 64px;
+}
+
 [data-testid="landing-score-ticker"] {
   position: sticky;
   top: 0;
@@ -13,7 +19,7 @@
   overflow: hidden;
   padding-block: 12px;
   border-bottom: 1px solid rgb(255 255 255 / 10%);
-  background: #0f1419;
+  background: #173b34;
 }
 
 .landing-ticker-track,
@@ -89,8 +95,8 @@
   transform: translateY(-50%);
   border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 999px;
-  background: #0f1419;
-  box-shadow: -16px 0 18px #0f1419;
+  background: #173b34;
+  box-shadow: -16px 0 18px #173b34;
   color: #fff;
   cursor: pointer;
   font: inherit;
@@ -302,17 +308,9 @@
 .landing-app-preview {
   position: relative;
   overflow: hidden;
+  padding: clamp(64px, 9vw, 110px) 24px;
   background: #173b34;
   color: #fff;
-}
-
-.landing-app-preview-sticky {
-  position: relative;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  padding: clamp(64px, 9vw, 110px) 24px;
 }
 
 .landing-app-preview-glow {
@@ -354,10 +352,10 @@
 
 .landing-app-preview h2 {
   color: #fff;
-  font-size: clamp(28px, 3.6vw, 38px);
+  font-size: clamp(30px, 4.2vw, 44px);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.28;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   text-wrap: pretty;
 }
 
@@ -371,36 +369,65 @@
   word-break: keep-all;
 }
 
-.landing-app-preview ul {
+.landing-app-preview-steps {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 26px;
-  padding: 0;
-  list-style: none;
+  gap: 8px;
+  margin-top: 28px;
 }
 
-.landing-app-preview li {
+.landing-app-preview-step {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #d6ece4;
-  font-size: 14.5px;
-  font-weight: 600;
-  line-height: 1.5;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s;
 }
 
-.landing-app-preview li > i {
+.landing-app-preview-step[data-active] {
+  border-color: rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 12%);
+}
+
+.landing-app-preview-step-badge {
+  display: flex;
   flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #63b39b;
-  transition: background 0.3s;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 12%);
+  color: #a7d5c6;
+  font-size: 12.5px;
+  font-weight: 800;
+  transition: background 0.3s, color 0.3s;
+}
+
+.landing-app-preview-step[data-active] .landing-app-preview-step-badge {
+  background: #fff;
+  color: #173b34;
+}
+
+.landing-app-preview-step-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #a7d5c6;
+  text-wrap: pretty;
+  transition: color 0.3s;
+}
+
+.landing-app-preview-step[data-active] .landing-app-preview-step-label {
+  color: #fff;
 }
 
 .landing-app-preview-hint {
-  margin: 24px 0 0;
+  margin: 18px 0 0;
   color: #63b39b;
   font-size: 12.5px;
   font-weight: 600;
@@ -413,11 +440,7 @@
 }
 
 .landing-phone-scale {
-  width: min(372px, 100%);
-}
-
-.landing-phone-scale[data-phone-mode="scroll"] {
-  width: min(372px, 100%, max(223px, calc((100vh - 140px) * 372 / 690)));
+  width: min(380px, 100%);
 }
 
 .landing-phone-frame {
@@ -430,7 +453,7 @@
   --landing-phone-mint: #2d5f4f;
   position: relative;
   width: 100%;
-  aspect-ratio: 372 / 690;
+  aspect-ratio: 380 / 800;
   margin: 0;
   overflow: hidden;
   border-radius: clamp(38px, 12%, 48px);
@@ -635,6 +658,11 @@
   transition: color 0.3s;
 }
 
+.landing-phone-nav-tabs span[data-active] {
+  color: var(--landing-phone-mint, #2d5f4f);
+  font-weight: 800;
+}
+
 .landing-phone-screens {
   position: relative;
   flex: 1;
@@ -647,11 +675,14 @@
   inset: 0;
   overflow: hidden;
   opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
   pointer-events: none;
 }
 
-.landing-phone-screen-panel:first-child {
+.landing-phone-screen-panel[data-active] {
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -1458,13 +1489,18 @@
 
 .landing-feature h2 {
   color: #0f1419;
-  font-size: clamp(28px, 3.6vw, 38px);
+  font-size: clamp(30px, 4.2vw, 44px);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.28;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   text-wrap: pretty;
   white-space: pre-line;
   word-break: keep-all;
+}
+
+.landing-feature-compact h2 {
+  font-size: clamp(24px, 2.8vw, 32px);
+  line-height: 1.3;
 }
 
 .landing-feature-description {
@@ -2009,15 +2045,78 @@
   font-weight: 600;
 }
 
-.landing-stadium-vignette {
-  min-width: 0;
+.landing-stadium-section {
+  position: relative;
+  overflow: hidden;
+  background: #0d1a16;
+}
+
+.landing-stadium-hero {
+  position: relative;
+  height: clamp(460px, 56vw, 640px);
+  overflow: hidden;
+}
+
+.landing-stadium-hero-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 118%;
+  object-fit: cover;
+}
+
+.landing-stadium-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(13 26 22 / 62%) 0%, rgb(13 26 22 / 28%) 38%, rgb(13 26 22 / 94%) 100%);
+}
+
+.landing-stadium-hero-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  height: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(44px, 6vw, 72px) 24px;
+}
+
+.landing-stadium-hero-label {
+  margin: 0 0 14px;
+  color: #63b39b;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.landing-stadium-hero-content h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(24px, 2.8vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.landing-stadium-hero-description {
+  max-width: 540px;
+  margin: 14px 0 0;
+  color: #d6ece4;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-wrap: pretty;
 }
 
 .landing-stadium-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 22px 0 0;
+  margin: 26px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -2028,71 +2127,43 @@
 
 .landing-stadium-chips span {
   max-width: 100%;
-  padding: 7px 14px;
-  border: 1px solid #e5e7eb;
+  padding: 8px 15px;
+  border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
-  background: #fff;
-  color: #536471;
+  background: rgb(255 255 255 / 12%);
+  color: #e6f2ec;
   font-size: 13px;
   font-weight: 700;
   overflow-wrap: anywhere;
 }
 
 .landing-stadium-chips span.landing-stadium-chip-active {
-  border-color: #2d5f4f;
-  background: #2d5f4f;
-  color: #fff;
+  border-color: transparent;
+  background: #fff;
+  color: #173b34;
+  font-weight: 800;
 }
 
-.landing-stadium-card {
-  overflow: hidden;
-}
-
-.landing-stadium-art {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-}
-
-.landing-stadium-art img {
-  position: relative;
-  top: -32px;
-  display: block;
-  width: 100%;
-  height: calc(100% + 64px);
-  object-fit: cover;
-}
-
-.landing-stadium-art figcaption {
-  position: absolute;
-  bottom: 14px;
-  left: 16px;
-  max-width: calc(100% - 32px);
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgb(15 20 25 / 72%);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+.landing-stadium-stats-bar {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 .landing-stadium-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   margin: 0;
-  border-top: 1px solid #eff3f4;
+  border-top: 1px solid rgb(255 255 255 / 12%);
 }
 
 .landing-stadium-stats > div {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 16px;
+  padding: 26px 0;
   text-align: center;
 }
 
 .landing-stadium-stats > div:not(:last-child) {
-  border-right: 1px solid #eff3f4;
+  border-right: 1px solid rgb(255 255 255 / 12%);
 }
 
 .landing-stadium-stats dt,
@@ -2101,18 +2172,17 @@
 }
 
 .landing-stadium-stats dt {
-  margin-top: 2px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 700;
-  order: 1;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .landing-stadium-stats dd {
-  color: #2d5f4f;
-  font-size: 20px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+  color: #8fb3a7;
+  font-size: 12.5px;
+  font-weight: 700;
 }
 
 .landing-diary-vignette {
@@ -2241,10 +2311,10 @@
 
 .landing-final-heading h2 {
   color: #0f1419;
-  font-size: clamp(28px, 3.6vw, 38px);
+  font-size: clamp(24px, 2.8vw, 32px);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.28;
+  line-height: 1.3;
   text-wrap: pretty;
   word-break: keep-all;
 }
@@ -2527,6 +2597,106 @@
   letter-spacing: 0.14em;
 }
 
+.landing-footer {
+  background: #173b34;
+  padding: clamp(56px, 7vw, 76px) 24px clamp(32px, 4vw, 40px);
+}
+
+.landing-footer-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.landing-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: clamp(32px, 5vw, 56px);
+}
+
+.landing-footer-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.landing-footer-brand-mark img {
+  display: block;
+  height: 26px;
+}
+
+.landing-footer-brand-mark span {
+  color: #63b39b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.landing-footer-brand p {
+  max-width: 280px;
+  margin: 16px 0 0;
+  color: #8fb3a7;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.landing-footer-group-heading {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.landing-footer-group-links {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.landing-footer-group-links a,
+.landing-footer-bottom-links a {
+  color: #a7d5c6;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.landing-footer-group-links a:hover,
+.landing-footer-bottom-links a:hover {
+  color: #fff;
+}
+
+.landing-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: clamp(40px, 5vw, 56px);
+  padding-top: 24px;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+
+.landing-footer-copyright {
+  margin: 0;
+  color: #7fa79a;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.landing-footer-bottom-links {
+  display: flex;
+  gap: 18px;
+}
+
+.landing-footer-bottom-links a {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
 @keyframes landing-closing-float {
   0%,
   100% { transform: translateY(0); }
@@ -2606,7 +2776,6 @@
 .dark .landing-game-standings-card li:first-child > b,
 .dark .landing-prediction-team-favored strong,
 .dark .landing-cheer-follow,
-.dark .landing-stadium-stats dd,
 .dark .landing-diary-vignette header strong,
 .dark .landing-start-number {
   color: #63b39b;
@@ -2627,8 +2796,6 @@
 .dark .landing-cheer-metrics > span,
 .dark .landing-mate-details,
 .dark .landing-mate-deposit,
-.dark .landing-stadium-chips span,
-.dark .landing-stadium-stats dt,
 .dark .landing-diary-quote {
   color: #9aa7b1;
 }
@@ -2638,7 +2805,6 @@
 }
 
 .dark .landing-vignette-card,
-.dark .landing-stadium-chips span,
 .dark .landing-start-grid article {
   border-color: rgb(255 255 255 / 12%);
   background: #16181c;
@@ -2676,23 +2842,12 @@
   color: #ef4444;
 }
 
-.dark .landing-mate-steps,
-.dark .landing-stadium-stats {
+.dark .landing-mate-steps {
   border-color: rgb(255 255 255 / 9%);
 }
 
 .dark .landing-mate-steps li:not(:last-child)::after {
   background: repeating-linear-gradient(90deg, #536471 0 4px, transparent 4px 8px);
-}
-
-.dark .landing-stadium-stats > div:not(:last-child) {
-  border-color: rgb(255 255 255 / 9%);
-}
-
-.dark .landing-stadium-chips span.landing-stadium-chip-active {
-  border-color: #63b39b;
-  background: #2d5f4f;
-  color: #fff;
 }
 
 .dark .landing-diary-result-win {

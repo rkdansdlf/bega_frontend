@@ -130,8 +130,7 @@ export const LANDING_APP_PREVIEW_STEPS = [
   '게시판 · 응원글과 HOT 게시물',
 ] as const;
 
-export const LANDING_APP_PREVIEW_HINT = '↓ 스크롤하면 앱 화면이 전환됩니다';
-export const LANDING_APP_PREVIEW_HINT_AUTO = '앱 화면이 자동으로 전환됩니다';
+export const LANDING_APP_PREVIEW_HINT = '화면을 눌러 직접 넘겨보세요';
 
 export interface LandingPhoneNavTab {
   label: string;
@@ -301,9 +300,9 @@ export const LANDING_STADIUM_DATA = {
   imageAlt: '잠실야구장',
   venue: '잠실야구장 · 서울종합운동장',
   stats: [
-    { value: '25,000', label: '좌석' },
-    { value: '32', label: '먹거리' },
-    { value: '2호선', label: '교통' },
+    { value: '25,000', label: '잠실 좌석' },
+    { value: '32', label: '구장 먹거리' },
+    { value: '2호선', label: '종합운동장역' },
   ] satisfies LandingStadiumStat[],
 };
 

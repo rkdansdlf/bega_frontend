@@ -2,7 +2,7 @@ import { LANDING_START_GUIDE } from './landingShowcaseData';
 
 export default function LandingStartGuide() {
   return (
-    <section className="landing-start-guide" data-testid="landing-start-guide">
+    <section className="landing-start-guide" data-testid="landing-start-guide" id="start">
       <div className="landing-final-inner">
         <header className="landing-final-heading" data-reveal="0">
           <p className="landing-final-label">HOW TO START</p>
