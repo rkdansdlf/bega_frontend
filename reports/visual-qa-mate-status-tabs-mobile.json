@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T02:30:49.269Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 8,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 90000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mate-status-tabs-mobile-screenshots"
+  },
+  "summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=all|variant.theme=dark",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-all-variant-436887e34691.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=all|variant.theme=light",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-all-variant-4addea512d61.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=matched|variant.theme=dark",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-matched-var-79c6a361e16c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=matched|variant.theme=light",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-matched-var-90fdf2d1c385.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=recruiting|variant.theme=dark",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-recruiting-9009a328b782.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=recruiting|variant.theme=light",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-recruiting-375cc81385d0.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=selling|variant.theme=dark",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-selling-var-f1aecc4da838.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=default|variant.activeTab=selling|variant.theme=light",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-default-variant-activetab-selling-var-e76af056d2b1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=focus-visible|variant.activeTab=all|variant.theme=light|interactionTarget=recruiting",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-focus-visible-variant-activetab-all-v-b0563a96629f.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+        "targetId": "recruiting",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=hover|variant.activeTab=all|variant.theme=light|interactionTarget=matched",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-hover-variant-activetab-all-variant-t-d085bbb8b635.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-status-tab-matched\"]",
+        "targetId": "matched",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=hover|variant.activeTab=all|variant.theme=light|interactionTarget=recruiting",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-hover-variant-activetab-all-variant-t-e999d755d6ee.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+        "targetId": "recruiting",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=hover|variant.activeTab=all|variant.theme=light|interactionTarget=selling",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-hover-variant-activetab-all-variant-t-383fe97e1414.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-status-tab-selling\"]",
+        "targetId": "selling",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=keyboard-navigation|variant.activeTab=all|variant.theme=light|interactionTarget=all-to-recruiting",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-keyboard-navigation-variant-activetab-fa2ef4872d72.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-status-tab-all\"]",
+        "targetId": "all-to-recruiting",
+        "key": "Tab",
+        "waitForSelector": "[data-testid=\"mate-status-tab-recruiting\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=pressed|variant.activeTab=all|variant.theme=light|interactionTarget=all",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-pressed-variant-activetab-all-variant-35751be4d7ee.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-status-tab-all\"]",
+        "targetId": "all",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=pressed|variant.activeTab=all|variant.theme=light|interactionTarget=matched",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-pressed-variant-activetab-all-variant-6cc34f2109da.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-status-tab-matched\"]",
+        "targetId": "matched",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=pressed|variant.activeTab=all|variant.theme=light|interactionTarget=recruiting",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-pressed-variant-activetab-all-variant-8c64a90c646b.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+        "targetId": "recruiting",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=pressed|variant.activeTab=all|variant.theme=light|interactionTarget=selling",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-pressed-variant-activetab-all-variant-f5f5759c6632.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-status-tab-selling\"]",
+        "targetId": "selling",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=selected|variant.activeTab=all|variant.theme=light|interactionTarget=all",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-selected-variant-activetab-all-varian-969ae13616d1.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-status-tab-all\"]",
+        "targetId": "all",
+        "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"all\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-status-tab-all\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=selected|variant.activeTab=all|variant.theme=light|interactionTarget=matched",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-selected-variant-activetab-all-varian-3bc8b9373785.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-status-tab-matched\"]",
+        "targetId": "matched",
+        "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"matched\"][data-vqa-effective-value=\"matched\"]:has([data-testid=\"mate-status-tab-matched\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=selected|variant.activeTab=all|variant.theme=light|interactionTarget=recruiting",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-selected-variant-activetab-all-varian-05a8ca4e4c32.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+        "targetId": "recruiting",
+        "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"recruiting\"][data-vqa-effective-value=\"recruiting\"]:has([data-testid=\"mate-status-tab-recruiting\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateStatusTabs.tsx#MateStatusTabs:interactions=selected|variant.activeTab=all|variant.theme=light|interactionTarget=selling",
+      "componentId": "src/components/MateStatusTabs.tsx#MateStatusTabs",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-status-tabs-mobile-screenshots/matestatustabs-matestatustabs-interactions-selected-variant-activetab-all-varian-5198a4de682a.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-status-tab-selling\"]",
+        "targetId": "selling",
+        "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"selling\"][data-vqa-effective-value=\"selling\"]:has([data-testid=\"mate-status-tab-selling\"][aria-pressed=\"true\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    }
+  ]
+}
