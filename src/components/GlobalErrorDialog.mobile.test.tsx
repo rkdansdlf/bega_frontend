@@ -9,6 +9,7 @@ const testPagePath = '/__global-error-dialog-test.html';
 const testEntryPath = '/__global-error-dialog-test.tsx';
 const testModuleId = '\0virtual:global-error-dialog-test';
 const staleRetryCompletionMutation = process.env.GLOBAL_ERROR_DIALOG_MUTATE_STALE_CLOSE === '1';
+const feedbackEarlyReadMutation = process.env.GLOBAL_ERROR_DIALOG_MUTATE_FEEDBACK_EARLY_READ === '1';
 
 const createGlobalErrorDialogTestPlugin = (): Plugin => ({
   name: 'global-error-dialog-actual-mount-test',
@@ -50,12 +51,15 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
         close: 0,
         feedback: 0,
         feedbackPayloads: [],
+        fetch: 0,
         listenerAdds: 0,
         listenerRemoves: 0,
         network: 0,
         retry: 0,
         retryByErrorId: {},
+        sendBeacon: 0,
         unrelated: 0,
+        xhr: 0,
       };
       const globalErrorListeners = new Set();
       const originalAdd = window.addEventListener.bind(window);
@@ -76,22 +80,26 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
       };
       const originalFetch = window.fetch.bind(window);
       window.fetch = (...args) => {
+        calls.fetch += 1;
         calls.network += 1;
         return Promise.reject(new Error('Visual QA actual-mount test blocked fetch: ' + String(args[0])));
       };
       const originalSendBeacon = navigator.sendBeacon?.bind(navigator);
       navigator.sendBeacon = () => {
+        calls.sendBeacon += 1;
         calls.network += 1;
         return false;
       };
       const originalXhrOpen = XMLHttpRequest.prototype.open;
       XMLHttpRequest.prototype.open = function (...args) {
+        calls.xhr += 1;
         calls.network += 1;
         throw new Error('Visual QA actual-mount test blocked XHR: ' + String(args[1]));
       };
 
       const retryMode = params.get('retry') || 'resolve';
       const feedbackMode = params.get('feedback') || 'success';
+      const delayFeedbackHandoff = ${feedbackEarlyReadMutation ? 'true' : 'false'};
       const never = () => new Promise(() => {});
       const onRetry = () => {
         calls.retry += 1;
@@ -105,6 +113,10 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
         if (feedbackMode === 'failure') return Promise.resolve(false);
         if (feedbackMode === 'timeout') return never();
         return Promise.resolve(true);
+      };
+      const invokeSubmitFeedback = async (payload) => {
+        if (delayFeedbackHandoff && feedbackMode === 'timeout') await never();
+        return submitFeedback(payload);
       };
       const root = createRoot(document.getElementById('root'));
       let pendingRetry = null;
@@ -120,11 +132,11 @@ const createGlobalErrorDialogTestPlugin = (): Plugin => ({
         ...baseState,
         prefixText: params.get('prefix') || '🚨 시스템 오류',
         closeErrorModal: () => { calls.close += 1; },
-        visualQaSubmitFeedback: submitFeedback,
+        visualQaSubmitFeedback: invokeSubmitFeedback,
       };
       const renderContent = (props) => createElement(GlobalErrorDialogContent, {
         ...props,
-        visualQaSubmitFeedback: submitFeedback,
+        visualQaSubmitFeedback: invokeSubmitFeedback,
       });
       const visualQaStateOverride = {
         active: true,
@@ -244,12 +256,15 @@ type TestRuntime = {
     close: number;
     feedback: number;
     feedbackPayloads: Array<{ actionTaken: string; comment: string; eventId: string }>;
+    fetch: number;
     listenerAdds: number;
     listenerRemoves: number;
     network: number;
     retry: number;
     retryByErrorId: Record<string, number>;
+    sendBeacon: number;
     unrelated: number;
+    xhr: number;
   };
   dispatch: (detail: Record<string, unknown>) => void;
   dispatchDeferredRetry: (detail: {
@@ -565,15 +580,40 @@ test('actual Content isolates close/retry/feedback actions, transport results, a
     }
 
     await openPage(page, port, '?kind=content&feedback=timeout');
+    const feedbackTimeoutPageErrors: string[] = [];
+    const recordFeedbackTimeoutPageError = (error: Error) => feedbackTimeoutPageErrors.push(error.message);
+    page.on('pageerror', recordFeedbackTimeoutPageError);
     await page.getByLabel('상황 설명').fill('MOCK timeout duplicate 제보');
     await page.getByRole('button', { name: '문제 제보' }).dblclick({ delay: 1 });
     const feedbackBusy = page.getByRole('button', { name: '제보 전송 중...' });
     await feedbackBusy.waitFor();
     assert.equal(await feedbackBusy.getAttribute('aria-busy'), 'true');
+    if (!feedbackEarlyReadMutation) {
+      await page.waitForFunction(() => (
+        window as unknown as { __GLOBAL_ERROR_DIALOG_TEST__: TestRuntime }
+      ).__GLOBAL_ERROR_DIALOG_TEST__.calls.feedback === 1);
+    }
     calls = await readCalls(page);
     assert.equal(calls.feedback, 1);
     assert.equal(calls.retry, 0);
+    assert.equal(calls.fetch, 0);
+    assert.equal(calls.xhr, 0);
+    assert.equal(calls.sendBeacon, 0);
     assert.equal(calls.network, 0);
+    await page.evaluate(() => new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    }));
+    calls = await readCalls(page);
+    assert.equal(calls.feedback, 1, 'pending feedback must not invoke the submitter twice');
+    assert.equal(calls.retry, 0);
+    assert.equal(calls.fetch, 0);
+    assert.equal(calls.xhr, 0);
+    assert.equal(calls.sendBeacon, 0);
+    assert.equal(calls.network, 0);
+    assert.deepEqual(feedbackTimeoutPageErrors, []);
+    assert.equal(await feedbackBusy.getAttribute('aria-busy'), 'true');
+    assert.equal(await feedbackBusy.isDisabled(), true);
+    page.off('pageerror', recordFeedbackTimeoutPageError);
 
     const expectedActions = {
       api: 'api_error_feedback',
