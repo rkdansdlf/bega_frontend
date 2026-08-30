@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T07:14:16.892Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mf-fallback-modal-mobile-screenshots"
+  },
+  "summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=empty|interactions=default|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-empty-interactions-default-variant-phase-op-4f958727bb37.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=empty|interactions=default|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-empty-interactions-default-variant-phase-op-2883d04f6600.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=long-korean|interactions=default|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-long-korean-interactions-default-variant-ph-1c80cc58d166.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=long-korean|interactions=default|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-long-korean-interactions-default-variant-ph-7d7cd606fe81.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=default|variant.phase=closed|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-default-variant-phase-c-f7424c3bc508.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=default|variant.phase=closed|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-default-variant-phase-c-ad61ab78497c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=default|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-default-variant-phase-o-d1dfc11f3853.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=default|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-default-variant-phase-o-400cc983d0f6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=focus-visible|variant.phase=open|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-focus-visible-variant-p-348066f35fd1.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=hover|variant.phase=open|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-hover-variant-phase-ope-e648c7c81172.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=keyboard-navigation|variant.phase=open|variant.theme=light|interactionTarget=escape-close",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-keyboard-navigation-var-a898f53f61ad.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "escape-close",
+        "key": "Escape",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=keyboard-navigation|variant.phase=open|variant.theme=light|interactionTarget=shift-tab-loop",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-keyboard-navigation-var-9e6d94252ca6.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "shift-tab-loop",
+        "key": "Shift+Tab",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-internal-action\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=keyboard-navigation|variant.phase=open|variant.theme=light|interactionTarget=tab-loop",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-keyboard-navigation-var-e32b2a77e92f.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mf-fallback-modal-internal-action\"]",
+        "targetId": "tab-loop",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"0\"]) [role=\"dialog\"] button[aria-label=\"닫기\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=pressed|variant.phase=open|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-pressed-variant-phase-o-76e5fab1a09d.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=selected|variant.phase=open|variant.theme=light|interactionTarget=backdrop-both",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-selected-variant-phase-66fdaee51036.png",
+      "interaction": {
+        "action": "click",
+        "selector": ".fixed.inset-0.z-\\[80\\] > .absolute.inset-0.flex.items-center.justify-center.p-4",
+        "targetId": "backdrop-both",
+        "clickPosition": {
+          "x": 1,
+          "y": 1
+        },
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=selected|variant.phase=open|variant.theme=light|interactionTarget=close-both",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-selected-variant-phase-23c455f1553b.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close-both",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=selected|variant.phase=open|variant.theme=light|interactionTarget=close-none",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-selected-variant-phase-bca939565630.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close-none",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"0\"][data-vqa-effective-open=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=selected|variant.phase=open|variant.theme=light|interactionTarget=close-on-close",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-selected-variant-phase-0ac9c55a5747.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close-on-close",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"0\"][data-vqa-close-count=\"1\"][data-vqa-last-branch=\"close\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=single|interactions=selected|variant.phase=open|variant.theme=light|interactionTarget=close-open-change",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-single-interactions-selected-variant-phase-9b8ea0ad65bf.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close-open-change",
+        "waitForSelector": "[data-testid=\"mf-fallback-modal-stateful-host\"][data-vqa-open-change-count=\"1\"][data-vqa-close-count=\"0\"][data-vqa-last-branch=\"open-change\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=unbroken-token|interactions=default|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-unbroken-token-interactions-default-variant-55075628d4af.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal:data=unbroken-token|interactions=default|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Modal.tsx#FallbackDesignSystemModal",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-modal-mobile-screenshots/modal-fallbackdesignsystemmodal-data-unbroken-token-interactions-default-variant-5b6430bd37d7.png",
+      "attempts": 1
+    }
+  ]
+}
