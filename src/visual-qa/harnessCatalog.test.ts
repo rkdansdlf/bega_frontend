@@ -38,7 +38,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70905);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70947);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -51,7 +51,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    284,
+    285,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1853,6 +1853,94 @@ test('ranking prediction save dialog resolves the exact 25-state direct matrix o
       'src/components/RankingPredictionSaveDialog.tsx',
       'src/components/visual-qa/MateMobileDateFilterHarness.tsx',
       'rankingPredictionSaveDialogVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+});
+
+test('ImageLightbox resolves exactly 42 legal direct states without a hosted occurrence', async () => {
+  const componentId = 'src/components/ImageLightbox.tsx#ImageLightbox';
+  const moduleFile = 'src/components/visual-qa/ImageLightboxHarness.tsx';
+  const moduleKey = componentModuleKey(moduleFile);
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+    scenario.componentId === componentId
+  ));
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{
+    id: string;
+    render?: { adapterId?: string; exportName?: string; mode?: string; moduleFile?: string };
+    status: string;
+  }> };
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  const hostedEntries = manifest.components.filter(({ id }) => (
+    id !== componentId && id.endsWith('#ImageLightbox')
+  ));
+
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'image.lightbox');
+  assert.equal(entry?.render?.exportName, 'imageLightboxVisualQaHarness');
+  assert.equal(entry?.render?.moduleFile, moduleFile);
+  assert.deepEqual(hostedEntries, []);
+  assert.equal(scenarios.length, 42);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 42);
+  assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 42);
+  assert.ok(scenarios.every((scenario) => scenario.moduleKey === moduleKey));
+  assert.ok(scenarios.every((scenario) => scenario.file === 'src/components/ImageLightbox.tsx'));
+  assert.deepEqual(Object.fromEntries(
+    ['default', 'hover', 'focus-visible', 'pressed', 'selected', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      scenarios.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    default: 12,
+    hover: 3,
+    'focus-visible': 3,
+    pressed: 3,
+    selected: 6,
+    'keyboard-navigation': 15,
+  });
+  assert.deepEqual(
+    new Set(scenarios.filter(({ states }) => states.interactions !== 'default').map(({ variants }) => (
+      variants.theme
+    ))),
+    new Set(['light']),
+  );
+  assert.deepEqual(Object.fromEntries(
+    ['single', 'populated', 'maximum-supported', 'broken-image'].map((data) => [
+      data,
+      scenarios.filter(({ states }) => states.interactions === 'default' && states.data === data).length,
+    ]),
+  ), {
+    single: 2,
+    populated: 6,
+    'maximum-supported': 2,
+    'broken-image': 2,
+  });
+
+  assert.equal(
+    resolveDirectModuleFile(
+      'src/components/ImageLightbox.tsx',
+      moduleFile,
+      'imageLightboxVisualQaHarness',
+    ),
+    moduleFile,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/ImageGrid.tsx',
+      moduleFile,
+      'imageLightboxVisualQaHarness',
+    ),
+    /unknown or mismatched direct module export/,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/ImageLightbox.tsx',
+      'src/components/visual-qa/RankingPredictionSaveDialogHarness.tsx',
+      'imageLightboxVisualQaHarness',
     ),
     /unknown or mismatched direct module export/,
   );

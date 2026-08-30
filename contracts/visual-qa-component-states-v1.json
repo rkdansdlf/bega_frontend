@@ -32802,8 +32802,335 @@
     },
     {
       "id": "src/components/ImageLightbox.tsx#ImageLightbox",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "image.lightbox",
+        "exportName": "imageLightboxVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/ImageLightboxHarness.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single",
+            "populated",
+            "maximum-supported",
+            "broken-image"
+          ],
+          "reason": "One, populated (fixed to exactly three images), upload-limit ten, and broken local-data fixtures cover every legal leaf-owned image cardinality and error presentation.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The prop-controlled image viewer does not inspect identity or authorization.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/ImageLightbox.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Every control presentation, pointer action, wrap boundary, activation key, Escape path, and focus direction is executable with exact callback ledgers.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The leaf uses only provided data-URI fixtures and performs no transport request.",
+            "owner": "frontend-community",
+            "testEvidence": "src/components/visual-qa/ImageLightboxHarness.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "index",
+            "values": [
+              "only",
+              "first",
+              "middle",
+              "last"
+            ],
+            "reason": "Only-image and every three-image boundary position are covered; the upload-limit fixture uses its last legal index.",
+            "owner": "frontend-community",
+            "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Overlay, controls, fallback, and focus feedback are proven in both themes.",
+            "owner": "frontend-community",
+            "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "prev",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "next",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            }
+          ],
+          "reason": "All three controls retain hover feedback without callback dispatch.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "prev",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "next",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            }
+          ],
+          "reason": "All three controls expose keyboard-visible focus without callback dispatch.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "prev",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            },
+            {
+              "id": "next",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
+            }
+          ],
+          "reason": "All controls preserve a contained pressed state and the zero-callback ledger before release.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
+            },
+            {
+              "id": "backdrop",
+              "selector": "[data-testid=\"image-lightbox\"]",
+              "clickPosition": { "x": 1, "y": 1 },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
+            },
+            {
+              "id": "prev-first-to-last",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
+            },
+            {
+              "id": "prev-middle-to-first",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
+            },
+            {
+              "id": "next-middle-to-last",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
+            },
+            {
+              "id": "next-last-to-first",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
+            }
+          ],
+          "reason": "Native pointer activation proves exact callback routing and both circular boundaries.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "escape",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "Escape",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
+            },
+            {
+              "id": "arrow-left-first-to-last",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "ArrowLeft",
+              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
+            },
+            {
+              "id": "arrow-left-middle-to-first",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "ArrowLeft",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
+            },
+            {
+              "id": "arrow-right-middle-to-last",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "ArrowRight",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
+            },
+            {
+              "id": "arrow-right-last-to-first",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "ArrowRight",
+              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
+            },
+            {
+              "id": "tab-close-to-prev",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "Tab",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-prev\"]:focus-visible"
+            },
+            {
+              "id": "tab-prev-to-next",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "key": "Tab",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
+            },
+            {
+              "id": "tab-next-to-close",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "key": "Tab",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-close\"]:focus-visible"
+            },
+            {
+              "id": "shift-tab-close-to-next",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "Shift+Tab",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
+            },
+            {
+              "id": "enter-close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "Enter",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
+            },
+            {
+              "id": "enter-prev",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "key": "Enter",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
+            },
+            {
+              "id": "enter-next",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "key": "Enter",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
+            },
+            {
+              "id": "space-close",
+              "selector": "[data-testid=\"image-lightbox-close\"]",
+              "key": "Space",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+              "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
+            },
+            {
+              "id": "space-prev",
+              "selector": "[data-testid=\"image-lightbox-prev\"]",
+              "key": "Space",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
+            },
+            {
+              "id": "space-next",
+              "selector": "[data-testid=\"image-lightbox-next\"]",
+              "key": "Space",
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
+            }
+          ],
+          "reason": "Escape, circular arrows, both focus directions, and Enter/Space activation preserve exact callbacks and focus containment.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        { "excludeWhen": { "data": "single", "variant.index": "first" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "single", "variant.index": "middle" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "single", "variant.index": "last" }, "reason": "A single image uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "populated", "variant.index": "only" }, "reason": "The populated fixture is fixed to three images and exposes first, middle, and last positions rather than only.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "only" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "first" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "middle" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "first" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "middle" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "last" }, "reason": "The broken fixture uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" }
+      ]
     },
     {
       "id": "src/components/incheon/IncheonSeatMap.tsx#IncheonCompareAction",

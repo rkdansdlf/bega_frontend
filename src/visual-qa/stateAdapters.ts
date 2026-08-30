@@ -13778,6 +13778,107 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'image.lightbox': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 ImageLightbox state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/ImageLightbox.tsx#ImageLightbox'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'index,theme'
+    ) {
+      return failClosed();
+    }
+    const data = {
+      single: 'single',
+      populated: 'multiple-three',
+      'maximum-supported': 'maximum-supported',
+      'broken-image': 'broken-image',
+    }[context.states.data ?? ''];
+    const interaction = {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    }[context.states.interactions ?? ''];
+    const index = {
+      only: 'only',
+      first: 'first',
+      middle: 'middle',
+      last: 'last',
+    }[context.variants.index ?? ''];
+    const theme = context.variants.theme === 'light' || context.variants.theme === 'dark'
+      ? context.variants.theme
+      : undefined;
+    if (!data || !interaction || !index || !theme) return failClosed();
+
+    const legalIndexes: Record<string, ReadonlySet<string>> = {
+      single: new Set(['only']),
+      'multiple-three': new Set(['first', 'middle', 'last']),
+      'maximum-supported': new Set(['last']),
+      'broken-image': new Set(['only']),
+    };
+    const pointerTargets = new Set(['close', 'prev', 'next']);
+    const selectedTargetIndexes: Record<string, string> = {
+      close: 'middle',
+      backdrop: 'middle',
+      'prev-first-to-last': 'first',
+      'prev-middle-to-first': 'middle',
+      'next-middle-to-last': 'middle',
+      'next-last-to-first': 'last',
+    };
+    const keyboardTargetIndexes: Record<string, string> = {
+      escape: 'middle',
+      'arrow-left-first-to-last': 'first',
+      'arrow-left-middle-to-first': 'middle',
+      'arrow-right-middle-to-last': 'middle',
+      'arrow-right-last-to-first': 'last',
+      'tab-close-to-prev': 'middle',
+      'tab-prev-to-next': 'middle',
+      'tab-next-to-close': 'middle',
+      'shift-tab-close-to-next': 'middle',
+      'enter-close': 'middle',
+      'enter-prev': 'middle',
+      'enter-next': 'middle',
+      'space-close': 'middle',
+      'space-prev': 'middle',
+      'space-next': 'middle',
+    };
+    const target = context.interactionTargetId;
+    const validInteraction = interaction === 'default'
+      ? target === undefined && legalIndexes[data].has(index)
+      : data === 'multiple-three'
+        && theme === 'light'
+        && (
+          ((interaction === 'hover' || interaction === 'focus-visible' || interaction === 'pressed')
+            && index === 'middle'
+            && pointerTargets.has(target ?? ''))
+          || (interaction === 'selected' && selectedTargetIndexes[target ?? ''] === index)
+          || (interaction === 'keyboard-navigation' && keyboardTargetIndexes[target ?? ''] === index)
+        );
+    if (!validInteraction) return failClosed();
+
+    const initialIndexes: Record<string, Record<string, number>> = {
+      single: { only: 0 },
+      'multiple-three': { first: 0, middle: 1, last: 2 },
+      'maximum-supported': { last: 9 },
+      'broken-image': { only: 0 },
+    };
+    return {
+      props: {
+        data,
+        initialIndex: initialIndexes[data][index],
+        scenarioKey: `${data}:${interaction}:${target ?? 'none'}:${index}:${theme}`,
+      },
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'ranking.save-dialog': (context) => {
     const failClosed = (): never => {
       throw new Error(

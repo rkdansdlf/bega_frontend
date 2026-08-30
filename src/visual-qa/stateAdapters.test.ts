@@ -108,6 +108,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'figma.image-with-fallback',
     'global-error.content',
     'global-error.root',
+    'image.lightbox',
     'landing.app-preview',
     'landing.capability-showcase',
     'landing.cheer-vignette',
@@ -7264,6 +7265,83 @@ test('ranking prediction save dialog adapter maps the exact controlled matrix an
     assert.throws(
       () => resolveComponentStateAdapter('ranking.save-dialog', context),
       /지원하지 않는 RankingPredictionSaveDialog state/,
+    );
+  }
+});
+
+test('ImageLightbox adapter maps the exact legal state anchors and fails closed', () => {
+  const componentId = 'src/components/ImageLightbox.tsx#ImageLightbox';
+  const previousWrap = resolveComponentStateAdapter('image.lightbox', {
+    componentId,
+    interactionTargetId: 'prev-first-to-last',
+    states: { data: 'populated', interactions: 'selected' },
+    variants: { index: 'first', theme: 'light' },
+  });
+  assert.deepEqual(previousWrap.props, {
+    data: 'multiple-three',
+    initialIndex: 0,
+    scenarioKey: 'multiple-three:selected:prev-first-to-last:first:light',
+  });
+  assert.equal(previousWrap.captureSelector, 'body');
+  assert.equal(previousWrap.theme, 'light');
+
+  const maximumDark = resolveComponentStateAdapter('image.lightbox', {
+    componentId,
+    states: { data: 'maximum-supported', interactions: 'default' },
+    variants: { index: 'last', theme: 'dark' },
+  });
+  assert.deepEqual(maximumDark.props, {
+    data: 'maximum-supported',
+    initialIndex: 9,
+    scenarioKey: 'maximum-supported:default:none:last:dark',
+  });
+  assert.equal(maximumDark.theme, 'dark');
+
+  const reverseWrap = resolveComponentStateAdapter('image.lightbox', {
+    componentId,
+    interactionTargetId: 'shift-tab-close-to-next',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { index: 'middle', theme: 'light' },
+  });
+  assert.equal(reverseWrap.props.initialIndex, 1);
+
+  for (const context of [
+    {
+      componentId: 'src/components/ImageGrid.tsx#ImageLightbox',
+      states: { data: 'single', interactions: 'default' },
+      variants: { index: 'only', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'unknown', interactions: 'default' },
+      variants: { index: 'only', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default', system: 'online' },
+      variants: { index: 'only', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default' },
+      variants: { index: 'last', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'unknown',
+      states: { data: 'populated', interactions: 'selected' },
+      variants: { index: 'middle', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'close',
+      states: { data: 'populated', interactions: 'hover' },
+      variants: { index: 'middle', theme: 'dark' },
+    },
+  ]) {
+    assert.throws(
+      () => resolveComponentStateAdapter('image.lightbox', context),
+      /지원하지 않는 ImageLightbox state/,
     );
   }
 });

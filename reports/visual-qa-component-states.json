@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T14:44:48.916Z",
+  "generatedAt": "2026-08-30T16:15:42.217Z",
   "ok": false,
   "total": 1010,
-  "registered": 451,
+  "registered": 452,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -136,7 +136,6 @@
     "src/components/HomeRuntime.tsx#LazyHomeMatchPanel",
     "src/components/HomeRuntime.tsx#LazyHomeRecoveryBanner",
     "src/components/ImageGrid.tsx#ImageGrid",
-    "src/components/ImageLightbox.tsx#ImageLightbox",
     "src/components/MateDetailContentRuntime.tsx#LazyMateDetailInfoSections",
     "src/components/MateDetailContentRuntime.tsx#LazyUserProfileModal",
     "src/components/MateDetailContentRuntime.tsx#MateDetailContentRuntime",
@@ -569,5 +568,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 71908
+  "validCombinations": 71950
 }

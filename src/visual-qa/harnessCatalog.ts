@@ -143,6 +143,9 @@ export const componentModuleKey = (file: string) => `../${file.replace(/^src\//,
 export const componentStyleModuleKeys = (styles: string[]) => styles.map(componentModuleKey);
 
 const qaOnlyDirectModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['src/components/visual-qa/ImageLightboxHarness.tsx', new Set([
+    'src/components/ImageLightbox.tsx#imageLightboxVisualQaHarness',
+  ])],
   ['src/components/visual-qa/RankingPredictionCompletionPanelHarness.tsx', new Set([
     'src/components/RankingPredictionCompletionPanel.tsx#rankingPredictionCompletionPanelVisualQaHarness',
   ])],
