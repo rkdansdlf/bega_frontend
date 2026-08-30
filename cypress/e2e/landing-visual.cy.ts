@@ -62,6 +62,32 @@ const visitLanding = ({
   getHomeAuthRequestTraces().should('deep.equal', []);
 };
 
+// Mirrors the production progress formula in useLandingMotion.ts's updateScroll:
+// progress = -rect.top / (rect.height - innerHeight), so solve for the scrollBy
+// offset (in px past the scene's current top) that yields a target progress.
+const scrollToAppPreviewProgress = (progress: number) => {
+  const applyScroll = () => {
+    cy.getBySel('landing-app-preview').then(($section) => {
+      const win = $section[0].ownerDocument.defaultView;
+      if (!win) throw new Error('Missing app preview window');
+      win.document.documentElement.style.scrollBehavior = 'auto';
+      const rect = $section[0].getBoundingClientRect();
+      const offsetPx = progress * Math.max(1, rect.height - win.innerHeight);
+      win.scrollTo(0, rect.top + win.scrollY + offsetPx);
+      win.dispatchEvent(new win.Event('scroll'));
+    });
+  };
+
+  // The app-preview scene's height (auto vs 260vh) depends on a viewport-width
+  // check that can still be settling right after cy.viewport() + visit(); scrolling
+  // before that resize-triggered relayout finishes can be undone by scroll anchoring.
+  // Scroll twice with a settle window in between so the second scroll corrects any drift.
+  applyScroll();
+  cy.wait(300);
+  applyScroll();
+  cy.wait(300);
+};
+
 const assertNoHorizontalOverflow = () => {
   cy.window().then((win) => {
     const { document } = win;
@@ -258,11 +284,43 @@ describe('Landing hero and ticker foundation', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.getBySel('landing-app-preview').scrollIntoView().should('be.visible');
+    scrollToAppPreviewProgress(0.05);
+    cy.getBySel('landing-app-preview').should('be.visible');
     cy.getBySel('landing-phone').should('be.visible');
-    cy.getBySel('landing-phone').contains('오늘의 승리 확률').should('be.visible');
+    cy.getBySel('landing-phone').contains('오늘의 KBO 경기').should('be.visible');
     cy.getBySel('landing-phone').contains('같이가요').should('be.visible');
+    cy.getBySel('landing-phone').contains('응원게시판').should('exist');
     cy.getBySel('landing-page').find('img[src*="landing-showcase-"]').should('not.exist');
+  });
+
+  it('cross-fades the app preview phone through its three screens on scroll', () => {
+    cy.viewport(1280, 900);
+    visitLanding();
+
+    // A plain `.should(cb)` that returns a value only evaluates once and won't
+    // retry through the 400ms opacity transition, so assert inside the callback
+    // (via expect) instead — that makes Cypress re-read computed style on retry.
+    const assertScreenOpacity = (index: number, expected: string) => {
+      cy.get(`[data-phone-screen="${index}"]`).should(($panel) => {
+        expect(getComputedStyle($panel[0]).opacity, `screen ${index} opacity`).to.equal(expected);
+      });
+    };
+
+    // midpoints of each third: screen 0 is [0, 1/3), 1 is [1/3, 2/3), 2 is [2/3, 1]
+    scrollToAppPreviewProgress(1 / 6);
+    cy.get('[data-phone-step="0"]').should('have.css', 'color', 'rgb(255, 255, 255)');
+    assertScreenOpacity(0, '1');
+    assertScreenOpacity(1, '0');
+
+    scrollToAppPreviewProgress(1 / 2);
+    cy.get('[data-phone-step="1"]').should('have.css', 'color', 'rgb(255, 255, 255)');
+    assertScreenOpacity(1, '1');
+    assertScreenOpacity(0, '0');
+
+    scrollToAppPreviewProgress(5 / 6);
+    cy.get('[data-phone-tab="2"]').should('have.css', 'color', 'rgb(45, 95, 79)');
+    assertScreenOpacity(2, '1');
+    assertScreenOpacity(1, '0');
   });
 
   it('renders all six numbered feature stories and their approved examples', () => {
@@ -445,17 +503,17 @@ describe('Landing hero and ticker foundation', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.get('.landing-phone-score-row img').should('have.length', 2).each(($logo) => {
+    cy.get('.landing-phone-home-matchup img').should('have.length', 2).each(($logo) => {
       expect($logo).to.have.attr('alt', '');
     });
   });
 
-  it('keeps inactive fixed-light phone tabs at readable contrast', () => {
+  it('keeps inactive fixed-light phone nav tabs at readable contrast', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.get('.landing-phone-tabs').should('have.css', 'background-color', 'rgb(255, 255, 255)');
-    cy.get('.landing-phone-tabs span:not(.landing-phone-tab-active)').each(($tab) => {
+    cy.get('.landing-phone-nav-tabs').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+    cy.get('.landing-phone-nav-tabs span:not([data-phone-tab])').each(($tab) => {
       const color = getComputedStyle($tab[0]).color;
       expect(contrastAgainstWhite(color), `${$tab.text()} contrast`).to.be.at.least(4.5);
     });
@@ -473,12 +531,15 @@ describe('Landing hero and ticker foundation', () => {
       expect(getComputedStyle($mascot[0]).animationName).to.equal('none');
     });
     cy.getBySel('landing-closing').find('[data-reveal]').should('have.css', 'opacity', '1');
-    cy.get('.landing-phone-progress [data-bar]').should(($bar) => {
+    cy.get('.landing-prediction-track [data-bar]').should(($bar) => {
       const style = getComputedStyle($bar[0]);
       expect(style.transitionDuration).to.equal('0s');
       expect(style.transitionDelay).to.equal('0s');
       expect($bar[0].style.width).to.equal('64%');
     });
+    cy.get('[data-phone-screen="0"]').should('have.css', 'opacity', '1');
+    cy.get('[data-phone-screen="1"]').should('have.css', 'opacity', '0');
+    cy.get('.landing-app-preview-hint').should('not.be.visible');
   });
 
   it('finishes landing motion when reduced-motion changes after load', () => {
@@ -689,8 +750,7 @@ describe('Landing hero and ticker foundation', () => {
     visitLanding({ theme: 'light' });
 
     const contrastTargets = [
-      ['phone LIVE', '.landing-phone-live'],
-      ['phone game status', '.landing-phone-card-kicker'],
+      ['phone game status', '.landing-phone-home-game-status'],
       ['feature game status', '[data-testid="landing-feature-01"] .landing-game-live'],
       ['cheer like count', '[data-testid="landing-feature-03"] .landing-cheer-liked'],
       ['prediction 36%', '[data-testid="landing-feature-02"] .landing-prediction-team-away strong'],

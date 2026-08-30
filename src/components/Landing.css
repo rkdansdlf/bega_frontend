@@ -84,8 +84,8 @@
   top: 50%;
   right: 12px;
   z-index: 1;
-  min-height: 32px;
-  padding: 5px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   transform: translateY(-50%);
   border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 999px;
@@ -302,9 +302,17 @@
 .landing-app-preview {
   position: relative;
   overflow: hidden;
-  padding: clamp(64px, 9vw, 110px) 24px;
   background: #173b34;
   color: #fff;
+}
+
+.landing-app-preview-sticky {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: clamp(64px, 9vw, 110px) 24px;
 }
 
 .landing-app-preview-glow {
@@ -388,6 +396,14 @@
   height: 6px;
   border-radius: 999px;
   background: #63b39b;
+  transition: background 0.3s;
+}
+
+.landing-app-preview-hint {
+  margin: 24px 0 0;
+  color: #63b39b;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 .landing-app-preview-phone {
@@ -398,6 +414,10 @@
 
 .landing-phone-scale {
   width: min(372px, 100%);
+}
+
+.landing-phone-scale[data-phone-mode="scroll"] {
+  width: min(372px, 100%, max(223px, calc((100vh - 140px) * 372 / 690)));
 }
 
 .landing-phone-frame {
@@ -527,66 +547,127 @@
   background: rgb(0 0 0 / 26%);
 }
 
-.landing-phone-screen {
+.landing-phone-app {
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 2.2vw, 9px);
-  min-height: 100%;
-  padding: 6px clamp(10px, 3.8vw, 14px) 10px;
+  height: 100%;
+  overflow: hidden;
   background: var(--landing-phone-screen);
 }
 
-.landing-phone-app-header,
-.landing-phone-score-row,
-.landing-phone-team,
-.landing-phone-card-heading,
-.landing-phone-prediction-value,
-.landing-phone-mate-title,
-.landing-phone-author,
-.landing-phone-standings-card li,
-.landing-phone-tabs {
+.landing-phone-app-header {
+  flex: none;
+  padding: 10px 14px 0;
+  border-bottom: 1px solid #eff3f4;
+  background: var(--landing-phone-card);
+}
+
+.landing-phone-app-brand,
+.landing-phone-app-user {
   display: flex;
   align-items: center;
 }
 
-.landing-phone-app-header {
+.landing-phone-app-brand {
   justify-content: space-between;
-  min-height: 20px;
-  padding-inline: 2px;
 }
 
-.landing-phone-app-header img {
-  display: block;
-  width: auto;
-  height: 20px;
-  object-fit: contain;
-}
-
-.landing-phone-live {
-  display: inline-flex;
+.landing-phone-app-brand > div:first-child {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  color: #b91c1c;
-  font-size: 10.5px;
-  font-weight: 800;
+  gap: 7px;
 }
 
-.landing-phone-live i {
-  width: 6px;
-  height: 6px;
+.landing-phone-app-brand img {
+  display: block;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
-  background: #ef4444;
-  animation: landing-phone-live-pulse 1.6s ease-in-out infinite;
+  object-fit: cover;
 }
 
-@keyframes landing-phone-live-pulse {
-  0%,
-  100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+.landing-phone-app-brand > div:first-child > div p {
+  margin: 0;
+}
+
+.landing-phone-app-brand > div:first-child > div p:first-child {
+  color: var(--landing-phone-text);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.landing-phone-app-brand > div:first-child > div p:last-child {
+  color: var(--landing-phone-muted);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+}
+
+.landing-phone-app-user {
+  gap: 8px;
+  color: var(--landing-phone-muted);
+}
+
+.landing-phone-app-user span:last-child {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e8f5f0;
+  color: var(--landing-phone-mint);
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+.landing-phone-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 9px 0 8px;
+  background: var(--landing-phone-card);
+}
+
+.landing-phone-nav-tabs span {
+  color: #536471;
+  font-size: 10.5px;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+
+.landing-phone-screens {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.landing-phone-screen-panel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.landing-phone-screen-panel:first-child {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.landing-phone-home-screen,
+.landing-phone-mate-screen,
+.landing-phone-board-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 12px 14px;
+  overflow: hidden;
+  color: var(--landing-phone-text);
 }
 
 .landing-phone-card {
-  flex: none;
   margin: 0;
   border: 1px solid var(--landing-phone-line);
   border-radius: 16px;
@@ -595,230 +676,707 @@
   color: var(--landing-phone-text);
 }
 
-.landing-phone-score-card {
-  padding: 11px 14px;
+/* -- home screen -- */
+
+.landing-phone-home-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -12px -14px 0;
+  padding: 13px 16px;
+  background: var(--landing-phone-mint);
 }
 
-.landing-phone-card-kicker,
-.landing-phone-mate-card p,
-.landing-phone-cheer-card p,
-.landing-phone-card-title {
+.landing-phone-home-header p {
   margin: 0;
 }
 
-.landing-phone-card-kicker {
-  margin-bottom: 8px;
-  color: #b91c1c;
-  font-size: 10.5px;
-  font-weight: 700;
+.landing-phone-home-header > div:first-child > p:first-child {
+  color: #fff;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
-.landing-phone-score-row,
-.landing-phone-card-heading {
-  justify-content: space-between;
+.landing-phone-home-header > div:first-child > p:last-child {
+  margin-top: 5px;
+  color: #c3ded4;
+  font-size: 9.5px;
+  font-weight: 600;
 }
 
-.landing-phone-team {
-  gap: 7px;
-  font-size: 13px;
-  font-weight: 700;
+.landing-phone-home-season {
+  flex: none;
+  text-align: right;
 }
 
-.landing-phone-team img {
+.landing-phone-home-season span {
   display: block;
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
+  color: #a7d5c6;
+  font-size: 8px;
+  font-weight: 700;
 }
 
-.landing-phone-score-row > strong {
-  font-size: 23px;
+.landing-phone-home-season strong {
+  display: block;
+  margin-top: 2px;
+  color: #fff;
+  font-size: 11px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-.landing-phone-prediction-card {
-  padding: 11px 14px;
+.landing-phone-home-datebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.landing-phone-card-heading {
-  gap: 8px;
-  margin-bottom: 8px;
-  color: var(--landing-phone-muted);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.landing-phone-card-heading > b {
+.landing-phone-home-date-nav {
+  display: flex;
   flex: none;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #e8f5f0;
-  color: var(--landing-phone-mint);
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 10px;
+  background: var(--landing-phone-card);
+  color: var(--landing-phone-muted);
+}
+
+.landing-phone-home-date-label {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 10px;
+  background: var(--landing-phone-card);
+  color: var(--landing-phone-text);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.landing-phone-home-round-chip {
+  flex: none;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: var(--landing-phone-mint);
+  color: #fff;
   font-size: 9.5px;
   font-weight: 800;
 }
 
-.landing-phone-prediction-value {
-  gap: 6px;
-}
-
-.landing-phone-prediction-value strong {
-  color: var(--landing-phone-mint);
-  font-size: 25px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-.landing-phone-prediction-value span {
-  font-size: 12px;
+.landing-phone-home-ticket-chip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 9px;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 10px;
+  background: var(--landing-phone-card);
+  color: var(--landing-phone-text);
+  font-size: 9.5px;
   font-weight: 700;
 }
 
-.landing-phone-progress {
-  height: 7px;
-  margin-top: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #eff3f4;
+.landing-phone-home-season-tabs {
+  display: flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: #f1f5f4;
 }
 
-.landing-phone-progress i {
-  display: block;
-  width: 12%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--landing-phone-mint), #3d7e6d);
-  transition: width 1.2s ease-out 200ms;
-}
-
-.landing-phone-mate-card {
-  padding: 10px 14px;
-}
-
-.landing-phone-mate-title {
-  min-width: 0;
-  gap: 6px;
-  color: var(--landing-phone-text);
-  font-size: 12px;
-}
-
-.landing-phone-mate-title img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.landing-phone-mate-card p {
+.landing-phone-home-season-tabs span {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 8px;
   color: var(--landing-phone-muted);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-align: center;
 }
 
-.landing-phone-cheer-card {
-  padding: 10px 14px;
+.landing-phone-home-season-tab-active {
+  background: var(--landing-phone-card);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  color: var(--landing-phone-text) !important;
+  font-weight: 800 !important;
 }
 
-.landing-phone-author {
+.landing-phone-home-game-card {
+  padding: 12px 14px;
+}
+
+.landing-phone-home-game-meta {
+  display: flex;
+  align-items: center;
   gap: 7px;
 }
 
-.landing-phone-author > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
+.landing-phone-home-game-meta > span:first-child {
+  padding: 3px 8px;
   border-radius: 999px;
-  background: #c30452;
+  background: var(--landing-phone-mint);
   color: #fff;
-  font-size: 10px;
+  font-size: 8.5px;
   font-weight: 800;
 }
 
-.landing-phone-author strong {
-  font-size: 11.5px;
-}
-
-.landing-phone-author time {
-  color: #64748b;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.landing-phone-cheer-card p {
-  margin-top: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.landing-phone-standings-card {
-  padding: 9px 14px;
-}
-
-.landing-phone-card-title {
-  margin-bottom: 6px;
+.landing-phone-home-game-meta > span:nth-child(2) {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   color: var(--landing-phone-muted);
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-phone-home-game-status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e8f5f0;
+  color: var(--landing-phone-mint);
+  font-size: 8.5px;
+  font-weight: 800;
+}
+
+.landing-phone-home-game-round {
+  margin: 12px 0 0;
+  color: var(--landing-phone-text);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.landing-phone-home-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: 10px;
+}
+
+.landing-phone-home-matchup > div {
+  text-align: center;
+}
+
+.landing-phone-home-matchup img {
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.landing-phone-home-matchup span {
+  display: block;
+  margin-top: 5px;
+  color: var(--landing-phone-text);
+  font-size: 10.5px;
   font-weight: 700;
 }
 
-.landing-phone-standings-card ol {
+.landing-phone-home-matchup b {
+  color: var(--landing-phone-mint);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.landing-phone-home-ticket-note {
+  margin: 0;
+  color: #64748b;
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.landing-phone-home-standings-card,
+.landing-phone-home-cheer-card {
+  padding: 11px 14px;
+}
+
+.landing-phone-home-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.landing-phone-home-card-heading span:first-child {
+  color: var(--landing-phone-text);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.landing-phone-home-card-heading span:last-child {
+  color: var(--landing-phone-muted);
+  font-size: 8.5px;
+  font-weight: 700;
+}
+
+.landing-phone-home-standings-card ol {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.landing-phone-standings-card li {
-  gap: 7px;
-  font-size: 11.5px;
+.landing-phone-home-standings-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--landing-phone-text);
+  font-size: 10px;
   font-weight: 700;
 }
 
-.landing-phone-standings-card li > b {
+.landing-phone-home-standings-card li > b {
   width: 12px;
   color: var(--landing-phone-muted);
   font-weight: 800;
 }
 
-.landing-phone-standings-card li:first-child > b {
+.landing-phone-home-standings-card li:first-child > b {
   color: var(--landing-phone-mint);
 }
 
-.landing-phone-standings-card img {
+.landing-phone-home-standings-card img {
   width: 16px;
   height: 16px;
   object-fit: contain;
 }
 
-.landing-phone-standings-card li > strong {
+.landing-phone-home-standings-card strong {
   margin-left: auto;
   color: var(--landing-phone-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.landing-phone-tabs {
-  justify-content: space-around;
-  min-height: 38px;
-  margin-top: auto;
-  border: 1px solid #eff3f4;
-  border-radius: 16px;
-  background: #fff;
+.landing-phone-home-cheer-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.landing-phone-tabs span {
-  color: #475569;
+.landing-phone-home-cheer-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.landing-phone-home-cheer-card img {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.landing-phone-home-cheer-card li > span {
+  flex: 1;
+  overflow: hidden;
+  color: var(--landing-phone-text);
   font-size: 10px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-phone-home-cheer-card em {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 8.5px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.landing-phone-home-cheer-card em svg {
+  margin-right: 2px;
+}
+
+/* -- mate screen -- */
+
+.landing-phone-mate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.landing-phone-mate-header p {
+  margin: 0;
+}
+
+.landing-phone-mate-header > div p:first-child {
+  color: var(--landing-phone-text);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.landing-phone-mate-header > div p:last-child {
+  margin-top: 4px;
+  color: var(--landing-phone-muted);
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.landing-phone-mate-create {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--landing-phone-mint);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+
+.landing-phone-mate-guide {
+  padding: 10px 12px;
+  border: 1px solid rgb(45 95 79 / 30%);
+  border-radius: 12px;
+  background: #f0f9f6;
+}
+
+.landing-phone-mate-guide p {
+  margin: 0;
+  color: var(--landing-phone-text);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.landing-phone-mate-guide ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--landing-phone-muted);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.landing-phone-mate-guide b {
+  color: var(--landing-phone-text);
+}
+
+.landing-phone-mate-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 999px;
+  background: var(--landing-phone-card);
+  color: #64748b;
+}
+
+.landing-phone-mate-search span {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.landing-phone-mate-filters {
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: #f1f5f4;
+}
+
+.landing-phone-mate-filters span {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 999px;
+  color: var(--landing-phone-muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.landing-phone-mate-filter-active {
+  background: var(--landing-phone-card);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  color: var(--landing-phone-text) !important;
+  font-weight: 800 !important;
+}
+
+.landing-phone-mate-match-card {
+  flex: none;
+  padding: 12px 14px;
+}
+
+.landing-phone-mate-host {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.landing-phone-mate-host img {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.landing-phone-mate-host-initial {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e8f5f0;
+  color: var(--landing-phone-mint);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.landing-phone-mate-host > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.landing-phone-mate-host > div > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.landing-phone-mate-host b {
+  color: var(--landing-phone-text);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.landing-phone-mate-host span img {
+  width: 13px;
+  height: 13px;
+}
+
+.landing-phone-mate-host em {
+  display: block;
+  margin-top: 2px;
+  color: var(--landing-phone-muted);
+  font-size: 8.5px;
+  font-style: normal;
   font-weight: 700;
 }
 
-.landing-phone-tabs span.landing-phone-tab-active {
-  color: var(--landing-phone-mint);
+.landing-phone-mate-host > strong {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--landing-phone-mint);
+  color: #fff;
+  font-size: 8.5px;
   font-weight: 800;
+}
+
+.landing-phone-mate-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 11px;
+}
+
+.landing-phone-mate-vs img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.landing-phone-mate-vs span {
+  color: var(--landing-phone-muted);
+  font-size: 9.5px;
+  font-weight: 800;
+}
+
+.landing-phone-mate-match-card dl {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 11px 0 0;
+  color: var(--landing-phone-muted);
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.landing-phone-mate-match-card dl > div {
+  display: flex;
+  gap: 6px;
+}
+
+.landing-phone-mate-match-card dt {
+  flex: none;
+  color: var(--landing-phone-mint);
+  font-weight: 700;
+}
+
+.landing-phone-mate-match-card dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* -- board screen -- */
+
+.landing-phone-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.landing-phone-board-header > p {
+  margin: 0;
+  color: var(--landing-phone-text);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.landing-phone-board-header > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.landing-phone-board-header > div span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 9px;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 10px;
+  background: var(--landing-phone-card);
+  color: var(--landing-phone-text);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.landing-phone-board-write {
+  border-color: transparent !important;
+  background: var(--landing-phone-mint) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.landing-phone-board-filters {
+  display: flex;
+  gap: 6px;
+}
+
+.landing-phone-board-filters span {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f1f5f4;
+  color: var(--landing-phone-muted);
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+.landing-phone-board-filter-active {
+  background: var(--landing-phone-mint) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.landing-phone-board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden auto;
+  list-style: none;
+}
+
+.landing-phone-board-list li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid var(--landing-phone-line);
+  border-radius: 12px;
+  background: var(--landing-phone-card);
+}
+
+.landing-phone-board-list img {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.landing-phone-board-list li > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.landing-phone-board-list li > div > p:first-child {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.landing-phone-board-list li > div > p:first-child b {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 800;
+}
+
+.landing-phone-board-list li > div > p:first-child span {
+  overflow: hidden;
+  color: var(--landing-phone-text);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-phone-board-list li > div > p:last-child {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.landing-phone-board-list em {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 9px;
+  color: #64748b;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.landing-phone-board-list em span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .landing-feature {
@@ -1469,6 +2027,7 @@
 }
 
 .landing-stadium-chips span {
+  max-width: 100%;
   padding: 7px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 999px;
@@ -1476,6 +2035,7 @@
   color: #536471;
   font-size: 13px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .landing-stadium-chips span.landing-stadium-chip-active {
@@ -1781,6 +2341,7 @@
 }
 
 .landing-offseason-chips span {
+  max-width: 100%;
   padding: 6px 12px;
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 999px;
@@ -1788,6 +2349,7 @@
   color: #d6ece4;
   font-size: 12px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .landing-retro-card {
@@ -2171,6 +2733,7 @@
   }
 
   .landing-hero-stats {
+    flex-wrap: wrap;
     gap: 20px;
   }
 
@@ -2296,6 +2859,19 @@
 
   .landing-final-heading h2,
   .landing-final-description,
+  .landing-hero-brand,
+  .landing-hero h1,
+  .landing-hero-copy,
+  .landing-hero-stats dt,
+  .landing-home-cta,
+  .landing-app-preview-kicker,
+  .landing-app-preview h2,
+  .landing-app-preview-description,
+  .landing-app-preview li,
+  .landing-feature-label,
+  .landing-feature h2,
+  .landing-feature-description,
+  .landing-vignette-card,
   .landing-offseason-card h3,
   .landing-offseason-card h3 + p,
   .landing-start-grid h3,

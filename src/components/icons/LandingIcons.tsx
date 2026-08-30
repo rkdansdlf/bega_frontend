@@ -37,6 +37,15 @@ export function LandingArrowRightIcon(props: LandingIconProps) {
   );
 }
 
+export function LandingBellIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </LandingSvgIcon>
+  );
+}
+
 export function LandingBookOpenIcon(props: LandingIconProps) {
   return (
     <LandingSvgIcon {...props}>
@@ -51,6 +60,74 @@ export function LandingChevronDownIcon(props: LandingIconProps) {
   return (
     <LandingSvgIcon {...props}>
       <path d="m6 9 6 6 6-6" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingChevronLeftIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="m15 18-6-6 6-6" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingChevronRightIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="m9 18 6-6-6-6" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingSearchIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingClockIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingRefreshIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="M21 12a9 9 0 1 1-3-6.7L21 8" />
+      <path d="M21 3v5h-5" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingEditIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingPlusIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="M5 12h14M12 5v14" />
+    </LandingSvgIcon>
+  );
+}
+
+export function LandingMessageSquareIcon(props: LandingIconProps) {
+  return (
+    <LandingSvgIcon {...props}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </LandingSvgIcon>
   );
 }

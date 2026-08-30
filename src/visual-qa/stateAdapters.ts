@@ -14392,7 +14392,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
   ),
   'landing.phone-preview': (context) => resolveLandingStatic(
     context,
-    '.landing-phone-screen',
+    '.landing-phone-frame',
     {
       fixedTheme: true,
       surfaceClassName: 'landing-phone-frame block min-h-0 w-full max-w-[320px] overflow-hidden p-0 shadow-none',
