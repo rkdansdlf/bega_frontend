@@ -17,6 +17,7 @@ Date: 2026-08-30
 - Exact matrix RED/GREEN: missing Button/Modal adapters/scenarios then Button 48 and Modal 21; wrong component/data/target/system/module/export fail closed.
 - Full focused integration initially RED on stale global expectations (`70,767/280`, adapter list), then GREEN on `70,836/282` plus the two exact adapter IDs: 269/269.
 - Full-portal capture TDD: Modal adapter expected `body` RED against harness surface, then GREEN.
+- First detached final-HEAD actual exposed a hidden dependency on an uncommitted shared Button mobile size: Button 2/3 RED while Modal/static passed. The approved fallback-owned correction added already-emitted `min-h-11 min-w-11`. A second clean actual then exposed four long-label overflow failures because the committed shared Button deliberately requires `h-auto !whitespace-normal` to override its fixed height and no-wrap selector. Keeping that correction fallback-only returned main and clean actual to 3/3; all 14 presentations at 320/390 are at least 44x44 and the long Korean/unbroken cases have zero overflow. Clean pre/post CSS is byte-identical at 252,108 bytes (`cdee57f5...16de`), so the product correction adds no global CSS. Button evidence alone was invalidated and recaptured; Modal bytes stayed exact.
 - First screenshotless warmup: 62/69, failed 7, recovered 0 because the empty ledger host was not measurable and one portal sibling selector could not match. Product callback values were already exact. QA-only 1x1 pointer-neutral ledger plus portal-safe `body:has(...)` selector produced 69/69, failed/recovered 0, all attempt 1.
 
 ## Counts and evidence
@@ -24,12 +25,12 @@ Date: 2026-08-30
 - Registered `449/1,010`; pending `561`; direct `70,836`; valid `71,839`.
 - Button `48/48`, interactions `14/14`; Modal `21/21`, interactions `11/11`.
 - All 69 rows: pass, attempt 1, unique scenario ID/path, nonzero and SHA-complete PNG. All 25 interactions have verified, captureVerified, viewportExpanded and revalidatedAfterViewportExpansion.
-- Button report: `86b2a48e7bfdf0846ef01eedb82d526c4f04ae7a414def0a17ed340ca448a0be`.
+- Button report: `c72622ca84add31814417fd9ef6c74fd4ab06313e566eb559f150ce9dace6b5a`.
 - Modal report: `8a231866278e2ec5d163e61e7d27033d5a808ca5457339e4297a71df547a7549`.
-- Two-report aggregate: `656f7ad7b95542f0d511000ba02d2a9d37c5de84d1c10776eeffe373fd81076a`.
-- Button PNG aggregate: `fcf3d7f0eb1bf22da9d28341069de36af627e7d5950d46aa5b9ca10528aa28e6`.
+- Two-report aggregate: `e9dec5a298a30fccfe3313501519360a56cb09e2a7a7e5ef9cf3d2f13431fd3a`.
+- Button PNG aggregate: `f0d352523463fcb73c25d8c44b26c2a2280633685737484e4e54370ae13320eb`.
 - Modal PNG aggregate: `da845967c6bed9d5913455a1b5adb8f38eb5146a7e02307ea85bbd6520b1da33`.
-- Sorted path+content 69-PNG aggregate: `dc53b55b0a306b5dfa1a54e6d190afa4bad284c507af0b045f868e313c38a8d1`.
+- Sorted path+content 69-PNG aggregate: `0022bc058e4ea47b95b0180778e95892a2e3fd663c38b63a166f46e03877a884`.
 - Actual PNG hashes: 54/69. Seven legal equal-image groups cover identical final UI only: Button brand/default by theme, pointer/default, keyboard/focus, secondary-default/ghost-hover; Modal closed callback results, autofocus/tab/none-open, hover/pressed. Exact callback/focus ledgers and scenario IDs remain distinct.
 
 ## Verification
