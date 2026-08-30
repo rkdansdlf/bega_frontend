@@ -28,7 +28,11 @@ export default function MateMobileDateFilter({
     : '전체 날짜';
 
   return (
-    <section className="mb-4 rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#000000] lg:hidden" aria-labelledby="mate-mobile-date-filter-heading">
+    <section
+      data-testid="mate-mobile-date-filter"
+      className="mb-4 rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#000000] lg:hidden"
+      aria-labelledby="mate-mobile-date-filter-heading"
+    >
       <div className="mb-2 flex items-center justify-between gap-3">
         <h2
           id="mate-mobile-date-filter-heading"
@@ -36,7 +40,10 @@ export default function MateMobileDateFilter({
         >
           경기 날짜
         </h2>
-        <span className="shrink-0 rounded bg-primary/10 px-2 py-0.5 text-11 font-bold text-primary dark:bg-primary/15 dark:text-primary-light">
+        <span
+          data-testid="mate-mobile-date-filter-selected-label"
+          className="shrink-0 rounded bg-primary/10 px-2 py-0.5 text-11 font-bold text-primary dark:bg-primary/15 dark:text-primary-light"
+        >
           {selectedDateLabel}
         </span>
       </div>
@@ -45,6 +52,7 @@ export default function MateMobileDateFilter({
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-5 bg-gradient-to-r from-white to-transparent dark:from-[#000000]" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-5 bg-gradient-to-l from-white to-transparent dark:from-[#000000]" />
         <div
+          data-testid="mate-mobile-date-filter-scroller"
           tabIndex={0}
           aria-label="경기 날짜 빠른 선택, 좌우로 스크롤"
           className="overflow-x-auto px-4 pb-2 scrollbar-hide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-[#000000] sm:px-0"
@@ -55,11 +63,12 @@ export default function MateMobileDateFilter({
             className="flex min-w-max snap-x snap-mandatory items-center gap-2 scroll-px-4"
           >
             <Button
+              data-testid="mate-mobile-date-filter-all"
               variant={selectedDate === null ? 'default' : 'outline'}
               aria-pressed={selectedDate === null}
               aria-label={`전체 날짜 필터${selectedDate === null ? ', 선택됨' : ''}`}
               onClick={() => onDateSelect(null)}
-              className={`h-[42px] min-w-[82px] snap-start rounded-10 border px-4 text-13 font-extrabold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#000000] ${
+              className={`h-11 min-w-[82px] snap-start rounded-10 border px-4 text-13 font-extrabold active:scale-[0.98] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#000000] ${
                 selectedDate === null
                   ? FILTER_ACTIVE_CLASS
                   : FILTER_IDLE_CLASS
@@ -78,11 +87,12 @@ export default function MateMobileDateFilter({
               return (
                 <button
                   key={dateString}
+                  data-testid={`mate-mobile-date-filter-date-${dateString}`}
                   type="button"
                   onClick={() => onDateSelect(date)}
                   aria-label={`${dateButtonLabel} 필터${isSelected ? ', 선택됨' : ''}`}
                   aria-pressed={Boolean(isSelected)}
-                  className={`flex h-[42px] min-w-[68px] snap-start items-center justify-between rounded-10 border px-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#000000] ${
+                  className={`flex h-11 min-w-[68px] snap-start items-center justify-between rounded-10 border px-2.5 transition-colors active:scale-[0.98] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#000000] ${
                     isSelected
                       ? FILTER_ACTIVE_CLASS
                       : FILTER_IDLE_CLASS

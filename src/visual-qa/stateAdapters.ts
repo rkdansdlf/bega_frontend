@@ -13617,6 +13617,112 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.mobile-date-filter': (context) => {
+    const failClosed = (): never => {
+      throw new Error(
+        `지원하지 않는 MateMobileDateFilter state: ${JSON.stringify({ componentId: context.componentId, states: context.states, variants: context.variants, target: context.interactionTargetId })}`,
+      );
+    };
+    if (
+      context.componentId !== 'src/components/MateMobileDateFilter.tsx#MateMobileDateFilter'
+      || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'selection,theme'
+    ) {
+      return failClosed();
+    }
+    const dataMap = {
+      empty: 'empty',
+      single: 'single',
+      'long-korean': 'long-korean',
+      'boundary-minimum': 'boundary-minimum',
+      'maximum-supported': 'maximum-supported',
+    } as const;
+    const interactionMap = {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      'keyboard-navigation': 'keyboard-navigation',
+      pressed: 'pressed',
+      selected: 'selected',
+    } as const;
+    const selectionMap = {
+      all: 'all',
+      first: 'first',
+      middle: 'middle',
+      last: 'last',
+      'outside-range': 'outside-range',
+    } as const;
+    const themeMap = {
+      dark: 'dark',
+      light: 'light',
+    } as const;
+    const data = dataMap[context.states.data as keyof typeof dataMap];
+    const interaction = interactionMap[
+      context.states.interactions as keyof typeof interactionMap
+    ];
+    const selection = selectionMap[context.variants.selection as keyof typeof selectionMap];
+    const theme = themeMap[context.variants.theme as keyof typeof themeMap];
+    if (!data || !interaction || !selection || !theme) return failClosed();
+    const counts = {
+      empty: 0,
+      single: 1,
+      'long-korean': 1,
+      'boundary-minimum': 4,
+      'maximum-supported': 14,
+    } as const;
+    const count = counts[data];
+    const validSelection = selection === 'all'
+      || selection === 'outside-range'
+      || (selection === 'first' && count >= 1)
+      || ((selection === 'middle' || selection === 'last') && count >= 4);
+    const target = context.interactionTargetId;
+    const anchoredTarget = new Set(['all', 'first', 'middle', 'last']);
+    const selectedTargets: Record<string, string> = {
+      'all-to-first': 'all',
+      'first-to-all': 'first',
+      'all-to-middle': 'all',
+      'all-to-last': 'all',
+      'outside-to-all': 'outside-range',
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : data === 'maximum-supported'
+        && theme === 'light'
+        && (
+          ((interaction === 'hover' || interaction === 'focus-visible' || interaction === 'pressed')
+            && selection === 'all'
+            && anchoredTarget.has(target ?? ''))
+          || (interaction === 'selected' && selectedTargets[target ?? ''] === selection)
+          || (interaction === 'keyboard-navigation'
+            && selection === 'all'
+            && (target === 'scroll-arrow-right' || target === 'scroller-to-all'))
+        );
+    if (!validSelection || !validInteraction) return failClosed();
+
+    const dateItems = data === 'long-korean'
+      ? [new Date(2027, 11, 31)]
+      : Array.from({ length: count }, (_, index) => new Date(2027, 11, 24 + index));
+    const initialSelectedDate = selection === 'all'
+      ? null
+      : selection === 'outside-range'
+        ? new Date(2028, 0, 7)
+        : selection === 'first'
+          ? dateItems[0]!
+          : selection === 'middle'
+            ? dateItems[Math.floor(dateItems.length / 2)]!
+            : dateItems.at(-1)!;
+
+    return {
+      props: {
+        dateItems,
+        initialSelectedDate,
+        scenarioKey: `${data}:${interaction}:${target ?? 'none'}:${selection}:${theme}`,
+      },
+      captureSelector: '[data-testid="mate-mobile-date-filter"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'mate.seat-filter-buttons': (context) => {
     const inputValue = requireStateValueFromMap(context, 'data', {
       empty: '',

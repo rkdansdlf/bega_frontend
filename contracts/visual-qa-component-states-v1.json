@@ -56175,8 +56175,55 @@
     },
     {
       "id": "src/components/MateListControlsRuntime.tsx#MateMobileDateFilter",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=light",
+          "state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=dark",
+          "state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=light",
+          "state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The mobile lazy callsite delegates every date-list and selection fixture to the direct MateMobileDateFilter contract.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The public mobile date-filter callsite does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MateListControlsRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Every mobile date interaction is registered by the direct MateMobileDateFilter contract.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The lazy mobile date callsite performs no transport request.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateListControlsRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "All phase and theme ownership stays with the four existing Mate host scenarios.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/Mate.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/MateListControlsRuntime.tsx#MateMyPartiesPanel",
@@ -56241,7 +56288,13 @@
           }
         }
       },
-      "variants": { "notApplicable": { "reason": "All theme and phase ownership stays with the four Mate host scenarios.", "owner": "frontend-mate", "testEvidence": "src/components/Mate.mobile.test.tsx" } },
+      "variants": {
+        "notApplicable": {
+          "reason": "All theme and phase ownership stays with the four Mate host scenarios.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/Mate.mobile.test.tsx"
+        }
+      },
       "constraints": []
     },
     {
@@ -56287,7 +56340,13 @@
           }
         }
       },
-      "variants": { "notApplicable": { "reason": "All theme and phase ownership stays with the four Mate host scenarios.", "owner": "frontend-mate", "testEvidence": "src/components/Mate.mobile.test.tsx" } },
+      "variants": {
+        "notApplicable": {
+          "reason": "All theme and phase ownership stays with the four Mate host scenarios.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/Mate.mobile.test.tsx"
+        }
+      },
       "constraints": []
     },
     {
@@ -56493,8 +56552,369 @@
     },
     {
       "id": "src/components/MateMobileDateFilter.tsx#MateMobileDateFilter",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "mate.mobile-date-filter",
+        "exportName": "mateMobileDateFilterVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/MateMobileDateFilterHarness.tsx"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "long-korean",
+            "boundary-minimum",
+            "maximum-supported"
+          ],
+          "reason": "Fixed local empty, one-date, long-label, four-date overflow boundary, and production fourteen-date maximum fixtures cover every distinct mobile rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The prop-controlled date filter does not inspect viewer identity or authorization.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MateMobileDateFilter.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Representative edge targets cover pointer, keyboard, pressed, local-scroll, and controlled selection behavior.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The public leaf receives resolved dates and performs no transport request.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateMobileDateFilter.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "selection",
+            "values": [
+              "all",
+              "first",
+              "middle",
+              "last",
+              "outside-range"
+            ],
+            "reason": "The controlled URL selection can be all, each visible position boundary, or a legal date outside the current generated range.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/hooks/useMateListController.ts; src/utils/mateListUrlState.ts"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Weekend, idle, active, badge, and focus surfaces own distinct theme-aware colors.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateMobileDateFilter.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "first",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "middle",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "last",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "All-date plus leading, middle, and trailing date controls expose distinct hover feedback after local scrolling.",
+          "owner": "frontend-mate",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#hover-interaction"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "first",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "middle",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "last",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The all, first, middle, and last controls preserve visible keyboard focus within the local rail.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "first",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "middle",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "last",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The four representative targets expose contained native pressed feedback with reduced-motion fallback.",
+          "owner": "frontend-mate",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "all-to-first",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-24\"][data-vqa-effective-value=\"2027-12-24\"]:has([data-testid=\"mate-mobile-date-filter-date-2027-12-24\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "first-to-all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-24\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "first",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-24\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-mobile-date-filter-all\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "all-to-middle",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2027-12-31\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2027-12-31\"][data-vqa-effective-value=\"2027-12-31\"]:has([data-testid=\"mate-mobile-date-filter-date-2027-12-31\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "all-to-last",
+              "selector": "[data-testid=\"mate-mobile-date-filter-date-2028-01-06\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"2028-01-06\"][data-vqa-effective-value=\"2028-01-06\"]:has([data-testid=\"mate-mobile-date-filter-date-2028-01-06\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "outside-to-all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-all\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "outside-range",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"all\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-mobile-date-filter-all\"][aria-pressed=\"true\"])"
+            }
+          ],
+          "reason": "Real clicks prove exact-one date selection, parent-compatible same-date clearing, edge selection, and outside-range clearing.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "scroll-arrow-right",
+              "selector": "[data-testid=\"mate-mobile-date-filter-scroller\"]",
+              "key": "ArrowRight",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"0\"][data-vqa-scroll-positive=\"true\"]"
+            },
+            {
+              "id": "scroller-to-all",
+              "selector": "[data-testid=\"mate-mobile-date-filter-scroller\"]",
+              "key": "Tab",
+              "when": {
+                "data": "maximum-supported",
+                "variant.selection": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-mobile-date-filter-stateful-host\"][data-vqa-callback-count=\"0\"]:has([data-testid=\"mate-mobile-date-filter-all\"]:focus-visible)"
+            }
+          ],
+          "reason": "ArrowRight changes only the local rail position and Tab advances from the scroller to the all-date control without callbacks.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.selection": "first"
+          },
+          "reason": "An empty list has no first date.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-mobile-date-filter-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.selection": "middle"
+          },
+          "reason": "An empty list has no middle date.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-mobile-date-filter-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.selection": "last"
+          },
+          "reason": "An empty list has no last date.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-mobile-date-filter-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.selection": "middle"
+          },
+          "reason": "A one-date list's first and last positions are the same element.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.selection": "last"
+          },
+          "reason": "A one-date list's first and last positions are the same element.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.selection": "middle"
+          },
+          "reason": "The long-label fixture has one date and reuses its first-date branch.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.selection": "last"
+          },
+          "reason": "The long-label fixture has one date and reuses its first-date branch.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateMobileDateFilter.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/MateMyPartiesPanel.tsx#MateMyPartiesPanel",
@@ -56657,110 +57077,812 @@
       "id": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
       "status": "registered",
       "renderAccess": "module-export",
-      "render": { "mode": "direct", "adapterId": "mate.seat-filter-buttons", "exportName": "mateSeatFilterButtonsVisualQaHarness", "moduleFile": "src/components/visual-qa/MateListControlLeavesHarnesses.tsx" },
-      "axes": {
-        "data": { "values": ["empty", "single", "populated", "boundary-minimum", "boundary-maximum", "long-korean", "unbroken-token", "maximum-supported"], "reason": "Default, stadium-specific, boundary, pressure, and all-selected inputs cover the internal static resolver output.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "permissions": { "notApplicable": { "reason": "The public seat filter does not inspect viewer identity.", "owner": "frontend-auth", "testEvidence": "src/components/MateSeatFilterButtons.tsx" } },
-        "interactions": { "values": ["default", "hover", "focus-visible", "pressed", "selected", "keyboard-navigation"], "reason": "Every maximum toolbar target is covered for pointer, keyboard, pressed, and controlled removal.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "system": { "notApplicable": { "reason": "The prop-only leaf performs no transport request.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" } }
+      "render": {
+        "mode": "direct",
+        "adapterId": "mate.seat-filter-buttons",
+        "exportName": "mateSeatFilterButtonsVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/MateListControlLeavesHarnesses.tsx"
       },
-      "variants": { "dimensions": [
-        { "name": "layout", "values": ["rail", "toolbar"], "reason": "The wrapping rail and locally scrolling toolbar are both visible contracts.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        { "name": "theme", "values": ["light", "dark"], "reason": "Seat buttons are theme-aware.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" }
-      ] },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "populated",
+            "boundary-minimum",
+            "boundary-maximum",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Default, stadium-specific, boundary, pressure, and all-selected inputs cover the internal static resolver output.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The public seat filter does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Every maximum toolbar target is covered for pointer, keyboard, pressed, and controlled removal.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The prop-only leaf performs no transport request.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "layout",
+            "values": [
+              "rail",
+              "toolbar"
+            ],
+            "reason": "The wrapping rail and locally scrolling toolbar are both visible contracts.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Seat buttons are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+          }
+        ]
+      },
       "interactionPlans": {
-        "hover": { "action": "hover", "targets": [
-          { "id": "orange", "selector": "[data-testid=\"mate-seat-filter-orange\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "red", "selector": "[data-testid=\"mate-seat-filter-red\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "premium", "selector": "[data-testid=\"mate-seat-filter-premium\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "table", "selector": "[data-testid=\"mate-seat-filter-table\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } }
-        ], "reason": "Every toolbar seat exposes hover feedback.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "focus-visible": { "action": "focus-visible", "targets": [
-          { "id": "orange", "selector": "[data-testid=\"mate-seat-filter-orange\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "red", "selector": "[data-testid=\"mate-seat-filter-red\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "premium", "selector": "[data-testid=\"mate-seat-filter-premium\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "table", "selector": "[data-testid=\"mate-seat-filter-table\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } }
-        ], "reason": "Every toolbar seat is keyboard reachable.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "pressed": { "action": "pressed", "targets": [
-          { "id": "orange", "selector": "[data-testid=\"mate-seat-filter-orange\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "red", "selector": "[data-testid=\"mate-seat-filter-red\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "premium", "selector": "[data-testid=\"mate-seat-filter-premium\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } },
-          { "id": "table", "selector": "[data-testid=\"mate-seat-filter-table\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" } }
-        ], "reason": "Every toolbar seat preserves contained native pressed feedback.", "owner": "frontend-mate", "testEvidence": "scripts/visual-qa-harness-interactions.test.ts" },
-        "selected": { "action": "click", "targets": [
-          { "id": "orange", "selector": "[data-testid=\"mate-seat-filter-orange\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"오렌지석\"][data-vqa-effective-value=\"lg 레드석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-orange\"][aria-pressed=\"false\"])" },
-          { "id": "red", "selector": "[data-testid=\"mate-seat-filter-red\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"레드석\"][data-vqa-effective-value=\"lg 오렌지석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-red\"][aria-pressed=\"false\"])" },
-          { "id": "premium", "selector": "[data-testid=\"mate-seat-filter-premium\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"프리미엄석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 테이블석\"]:has([data-testid=\"mate-seat-filter-premium\"][aria-pressed=\"false\"])" },
-          { "id": "table", "selector": "[data-testid=\"mate-seat-filter-table\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"테이블석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 프리미엄석\"]:has([data-testid=\"mate-seat-filter-table\"][aria-pressed=\"false\"])" }
-        ], "reason": "The stateful wrapper records exactly one public callback and removes the selected label.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "keyboard-navigation": { "action": "press-key", "key": "Tab", "targets": [
-          { "id": "orange-to-red", "selector": "[data-testid=\"mate-seat-filter-orange\"]", "when": { "data": "maximum-supported", "variant.layout": "toolbar", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-seat-filter-red\"]:focus-visible" }
-        ], "reason": "Tab advances from the first to the second toolbar seat.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" }
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "orange",
+              "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "red",
+              "selector": "[data-testid=\"mate-seat-filter-red\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "premium",
+              "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "table",
+              "selector": "[data-testid=\"mate-seat-filter-table\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every toolbar seat exposes hover feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "orange",
+              "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "red",
+              "selector": "[data-testid=\"mate-seat-filter-red\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "premium",
+              "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "table",
+              "selector": "[data-testid=\"mate-seat-filter-table\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every toolbar seat is keyboard reachable.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "orange",
+              "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "red",
+              "selector": "[data-testid=\"mate-seat-filter-red\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "premium",
+              "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "table",
+              "selector": "[data-testid=\"mate-seat-filter-table\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every toolbar seat preserves contained native pressed feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "orange",
+              "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"오렌지석\"][data-vqa-effective-value=\"lg 레드석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-orange\"][aria-pressed=\"false\"])"
+            },
+            {
+              "id": "red",
+              "selector": "[data-testid=\"mate-seat-filter-red\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"레드석\"][data-vqa-effective-value=\"lg 오렌지석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-red\"][aria-pressed=\"false\"])"
+            },
+            {
+              "id": "premium",
+              "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"프리미엄석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 테이블석\"]:has([data-testid=\"mate-seat-filter-premium\"][aria-pressed=\"false\"])"
+            },
+            {
+              "id": "table",
+              "selector": "[data-testid=\"mate-seat-filter-table\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"테이블석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 프리미엄석\"]:has([data-testid=\"mate-seat-filter-table\"][aria-pressed=\"false\"])"
+            }
+          ],
+          "reason": "The stateful wrapper records exactly one public callback and removes the selected label.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "key": "Tab",
+          "targets": [
+            {
+              "id": "orange-to-red",
+              "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+              "when": {
+                "data": "maximum-supported",
+                "variant.layout": "toolbar",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-seat-filter-red\"]:focus-visible"
+            }
+          ],
+          "reason": "Tab advances from the first to the second toolbar seat.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        }
       },
       "constraints": [
-        { "excludeWhen": { "data": "empty", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "single", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "populated", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "boundary-minimum", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "boundary-maximum", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "long-korean", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "unbroken-token", "variant.layout": "toolbar" }, "reason": "Non-maximum data fixtures use the canonical rail layout.", "owner": "frontend-mate", "testEvidence": "src/visual-qa/stateAdapters.test.ts" },
-        { "excludeWhen": { "data": "empty", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "single", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "populated", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "boundary-minimum", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "boundary-maximum", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "long-korean", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" },
-        { "excludeWhen": { "data": "unbroken-token", "variant.theme": "dark" }, "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.", "owner": "frontend-mate", "testEvidence": "src/components/MateSeatFilterButtons.tsx" }
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.layout": "toolbar"
+          },
+          "reason": "Non-maximum data fixtures use the canonical rail layout.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-minimum",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "boundary-maximum",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "long-korean",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "variant.theme": "dark"
+          },
+          "reason": "Non-maximum data pressure is theme-equivalent and canonicalized to light.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateSeatFilterButtons.tsx"
+        }
       ]
     },
     {
       "id": "src/components/MateSortDropdown.tsx#MateSortDropdown",
       "status": "registered",
       "renderAccess": "module-export",
-      "render": { "mode": "direct", "adapterId": "mate.sort-dropdown", "exportName": "mateSortDropdownVisualQaHarness", "moduleFile": "src/components/visual-qa/MateListControlLeavesHarnesses.tsx" },
-      "axes": {
-        "data": { "notApplicable": { "reason": "The leaf renders a fixed internal option list.", "owner": "frontend-mate", "testEvidence": "src/components/MateSortDropdown.tsx" } },
-        "permissions": { "notApplicable": { "reason": "The public sort control does not inspect identity.", "owner": "frontend-auth", "testEvidence": "src/components/MateSortDropdown.tsx" } },
-        "interactions": { "values": ["default", "hover", "focus-visible", "pressed", "open", "selected", "keyboard-navigation"], "reason": "Trigger and every option are covered across pointer, keyboard, open, and controlled selection states.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "system": { "notApplicable": { "reason": "The prop-only leaf performs no transport request.", "owner": "frontend-mate", "testEvidence": "src/components/MateSortDropdown.tsx" } }
+      "render": {
+        "mode": "direct",
+        "adapterId": "mate.sort-dropdown",
+        "exportName": "mateSortDropdownVisualQaHarness",
+        "moduleFile": "src/components/visual-qa/MateListControlLeavesHarnesses.tsx"
       },
-      "variants": { "dimensions": [
-        { "name": "activeSort", "values": ["latest", "dDay", "popular"], "reason": "Every controlled selection key is visible.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        { "name": "phase", "values": ["closed", "open"], "reason": "The trigger and named menu are both captured.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        { "name": "theme", "values": ["light", "dark"], "reason": "Trigger and menu are theme-aware.", "owner": "frontend-mate", "testEvidence": "src/components/MateSortDropdown.tsx" }
-      ] },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The leaf renders a fixed internal option list.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateSortDropdown.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The public sort control does not inspect identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MateSortDropdown.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "open",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Trigger and every option are covered across pointer, keyboard, open, and controlled selection states.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The prop-only leaf performs no transport request.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateSortDropdown.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "activeSort",
+            "values": [
+              "latest",
+              "dDay",
+              "popular"
+            ],
+            "reason": "Every controlled selection key is visible.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "phase",
+            "values": [
+              "closed",
+              "open"
+            ],
+            "reason": "The trigger and named menu are both captured.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Trigger and menu are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateSortDropdown.tsx"
+          }
+        ]
+      },
       "interactionPlans": {
-        "hover": { "action": "hover", "targets": [
-          { "id": "trigger", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" } },
-          { "id": "latest", "selector": "[data-testid=\"mate-sort-option-latest\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]" }] },
-          { "id": "dDay", "selector": "[data-testid=\"mate-sort-option-dDay\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]" }] },
-          { "id": "popular", "selector": "[data-testid=\"mate-sort-option-popular\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]" }] }
-        ], "reason": "Trigger and options expose hover feedback.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "focus-visible": { "action": "focus-visible", "targets": [
-          { "id": "trigger", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" } },
-          { "id": "latest", "selector": "[data-testid=\"mate-sort-option-latest\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] },
-          { "id": "dDay", "selector": "[data-testid=\"mate-sort-option-dDay\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] },
-          { "id": "popular", "selector": "[data-testid=\"mate-sort-option-popular\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] }
-        ], "reason": "Trigger and options are keyboard reachable.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "pressed": { "action": "pressed", "targets": [
-          { "id": "trigger", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" } },
-          { "id": "latest", "selector": "[data-testid=\"mate-sort-option-latest\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] },
-          { "id": "dDay", "selector": "[data-testid=\"mate-sort-option-dDay\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] },
-          { "id": "popular", "selector": "[data-testid=\"mate-sort-option-popular\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }] }
-        ], "reason": "Trigger and options preserve native pressed feedback.", "owner": "frontend-mate", "testEvidence": "scripts/visual-qa-harness-interactions.test.ts" },
-        "open": { "action": "click", "targets": [
-          { "id": "trigger", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]" }
-        ], "reason": "Trigger click exposes the named menu without selecting.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "selected": { "action": "click", "targets": [
-          { "id": "latest", "selector": "[data-testid=\"mate-sort-option-latest\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }], "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"latest\"][data-vqa-effective-value=\"latest\"]", "waitForHiddenSelector": "[role=\"menu\"]" },
-          { "id": "dDay", "selector": "[data-testid=\"mate-sort-option-dDay\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }], "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"dDay\"][data-vqa-effective-value=\"dDay\"]", "waitForHiddenSelector": "[role=\"menu\"]" },
-          { "id": "popular", "selector": "[data-testid=\"mate-sort-option-popular\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }], "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"popular\"][data-vqa-effective-value=\"popular\"]", "waitForHiddenSelector": "[role=\"menu\"]" }
-        ], "reason": "The stateful wrapper records one exact selection and closes the menu.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "keyboard-navigation": { "action": "press-key", "key": "Tab", "targets": [
-          { "id": "trigger-to-first-option", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }], "waitForSelector": "[data-testid=\"mate-sort-option-latest\"]:focus-visible" },
-          { "id": "escape", "selector": "[data-testid=\"mate-sort-trigger\"]", "when": { "variant.activeSort": "latest", "variant.phase": "closed", "variant.theme": "light" }, "key": "Escape", "setup": [{ "action": "click", "selector": "[data-testid=\"mate-sort-trigger\"]", "waitForSelector": "[role=\"menu\"]" }], "waitForHiddenSelector": "[role=\"menu\"]" }
-        ], "reason": "Tab enters the menu and Escape closes it without selection.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" }
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "trigger",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "latest",
+              "selector": "[data-testid=\"mate-sort-option-latest\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+                }
+              ]
+            },
+            {
+              "id": "dDay",
+              "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+                }
+              ]
+            },
+            {
+              "id": "popular",
+              "selector": "[data-testid=\"mate-sort-option-popular\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+                }
+              ]
+            }
+          ],
+          "reason": "Trigger and options expose hover feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "trigger",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "latest",
+              "selector": "[data-testid=\"mate-sort-option-latest\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            },
+            {
+              "id": "dDay",
+              "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            },
+            {
+              "id": "popular",
+              "selector": "[data-testid=\"mate-sort-option-popular\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            }
+          ],
+          "reason": "Trigger and options are keyboard reachable.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "trigger",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "latest",
+              "selector": "[data-testid=\"mate-sort-option-latest\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            },
+            {
+              "id": "dDay",
+              "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            },
+            {
+              "id": "popular",
+              "selector": "[data-testid=\"mate-sort-option-popular\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ]
+            }
+          ],
+          "reason": "Trigger and options preserve native pressed feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "open": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "trigger",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+            }
+          ],
+          "reason": "Trigger click exposes the named menu without selecting.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "latest",
+              "selector": "[data-testid=\"mate-sort-option-latest\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"latest\"][data-vqa-effective-value=\"latest\"]",
+              "waitForHiddenSelector": "[role=\"menu\"]"
+            },
+            {
+              "id": "dDay",
+              "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"dDay\"][data-vqa-effective-value=\"dDay\"]",
+              "waitForHiddenSelector": "[role=\"menu\"]"
+            },
+            {
+              "id": "popular",
+              "selector": "[data-testid=\"mate-sort-option-popular\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"popular\"][data-vqa-effective-value=\"popular\"]",
+              "waitForHiddenSelector": "[role=\"menu\"]"
+            }
+          ],
+          "reason": "The stateful wrapper records one exact selection and closes the menu.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "key": "Tab",
+          "targets": [
+            {
+              "id": "trigger-to-first-option",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ],
+              "waitForSelector": "[data-testid=\"mate-sort-option-latest\"]:focus-visible"
+            },
+            {
+              "id": "escape",
+              "selector": "[data-testid=\"mate-sort-trigger\"]",
+              "when": {
+                "variant.activeSort": "latest",
+                "variant.phase": "closed",
+                "variant.theme": "light"
+              },
+              "key": "Escape",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"mate-sort-trigger\"]",
+                  "waitForSelector": "[role=\"menu\"]"
+                }
+              ],
+              "waitForHiddenSelector": "[role=\"menu\"]"
+            }
+          ],
+          "reason": "Tab enters the menu and Escape closes it without selection.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        }
       },
       "constraints": []
     },
@@ -56775,46 +57897,218 @@
         "moduleFile": "src/components/visual-qa/MateListControlLeavesHarnesses.tsx"
       },
       "axes": {
-        "data": { "notApplicable": { "reason": "The leaf renders fixed labels without payload data.", "owner": "frontend-mate", "testEvidence": "src/components/MateStatusTabs.tsx" } },
-        "permissions": { "notApplicable": { "reason": "The public filter does not inspect viewer identity.", "owner": "frontend-auth", "testEvidence": "src/components/MateStatusTabs.tsx" } },
+        "data": {
+          "notApplicable": {
+            "reason": "The leaf renders fixed labels without payload data.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateStatusTabs.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The public filter does not inspect viewer identity.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MateStatusTabs.tsx"
+          }
+        },
         "interactions": {
-          "values": ["default", "hover", "focus-visible", "pressed", "selected", "keyboard-navigation"],
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "keyboard-navigation"
+          ],
           "reason": "Every pointer, keyboard, pressed, and controlled selection branch is represented.",
           "owner": "frontend-mate",
           "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
         },
-        "system": { "notApplicable": { "reason": "The prop-only leaf performs no transport request.", "owner": "frontend-mate", "testEvidence": "src/components/MateStatusTabs.tsx" } }
+        "system": {
+          "notApplicable": {
+            "reason": "The prop-only leaf performs no transport request.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateStatusTabs.tsx"
+          }
+        }
       },
       "variants": {
         "dimensions": [
-          { "name": "activeTab", "values": ["all", "recruiting", "matched", "selling"], "reason": "All controlled active keys are visible.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-          { "name": "theme", "values": ["light", "dark"], "reason": "Tabs are theme-aware.", "owner": "frontend-mate", "testEvidence": "src/components/MateStatusTabs.tsx" }
+          {
+            "name": "activeTab",
+            "values": [
+              "all",
+              "recruiting",
+              "matched",
+              "selling"
+            ],
+            "reason": "All controlled active keys are visible.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Tabs are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateStatusTabs.tsx"
+          }
         ]
       },
       "interactionPlans": {
-        "hover": { "action": "hover", "targets": [
-          { "id": "recruiting", "selector": "[data-testid=\"mate-status-tab-recruiting\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } },
-          { "id": "matched", "selector": "[data-testid=\"mate-status-tab-matched\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } },
-          { "id": "selling", "selector": "[data-testid=\"mate-status-tab-selling\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } }
-        ], "reason": "Inactive tabs expose hover feedback.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "focus-visible": { "action": "focus-visible", "targets": [
-          { "id": "recruiting", "selector": "[data-testid=\"mate-status-tab-recruiting\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } }
-        ], "reason": "The next tab exposes focus-visible feedback.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "pressed": { "action": "pressed", "targets": [
-          { "id": "all", "selector": "[data-testid=\"mate-status-tab-all\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } },
-          { "id": "recruiting", "selector": "[data-testid=\"mate-status-tab-recruiting\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } },
-          { "id": "matched", "selector": "[data-testid=\"mate-status-tab-matched\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } },
-          { "id": "selling", "selector": "[data-testid=\"mate-status-tab-selling\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" } }
-        ], "reason": "Every tab preserves contained native pressed feedback.", "owner": "frontend-mate", "testEvidence": "scripts/visual-qa-harness-interactions.test.ts" },
-        "selected": { "action": "click", "targets": [
-          { "id": "all", "selector": "[data-testid=\"mate-status-tab-all\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"all\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-status-tab-all\"][aria-pressed=\"true\"])" },
-          { "id": "recruiting", "selector": "[data-testid=\"mate-status-tab-recruiting\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"recruiting\"][data-vqa-effective-value=\"recruiting\"]:has([data-testid=\"mate-status-tab-recruiting\"][aria-pressed=\"true\"])" },
-          { "id": "matched", "selector": "[data-testid=\"mate-status-tab-matched\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"matched\"][data-vqa-effective-value=\"matched\"]:has([data-testid=\"mate-status-tab-matched\"][aria-pressed=\"true\"])" },
-          { "id": "selling", "selector": "[data-testid=\"mate-status-tab-selling\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"selling\"][data-vqa-effective-value=\"selling\"]:has([data-testid=\"mate-status-tab-selling\"][aria-pressed=\"true\"])" }
-        ], "reason": "The stateful wrapper records one callback and the controlled selected key.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" },
-        "keyboard-navigation": { "action": "press-key", "key": "Tab", "targets": [
-          { "id": "all-to-recruiting", "selector": "[data-testid=\"mate-status-tab-all\"]", "when": { "variant.activeTab": "all", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"mate-status-tab-recruiting\"]:focus-visible" }
-        ], "reason": "Tab advances from all to recruiting.", "owner": "frontend-mate", "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx" }
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "recruiting",
+              "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "matched",
+              "selector": "[data-testid=\"mate-status-tab-matched\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "selling",
+              "selector": "[data-testid=\"mate-status-tab-selling\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Inactive tabs expose hover feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "recruiting",
+              "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "The next tab exposes focus-visible feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "all",
+              "selector": "[data-testid=\"mate-status-tab-all\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "recruiting",
+              "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "matched",
+              "selector": "[data-testid=\"mate-status-tab-matched\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "selling",
+              "selector": "[data-testid=\"mate-status-tab-selling\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              }
+            }
+          ],
+          "reason": "Every tab preserves contained native pressed feedback.",
+          "owner": "frontend-mate",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "all",
+              "selector": "[data-testid=\"mate-status-tab-all\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"all\"][data-vqa-effective-value=\"all\"]:has([data-testid=\"mate-status-tab-all\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "recruiting",
+              "selector": "[data-testid=\"mate-status-tab-recruiting\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"recruiting\"][data-vqa-effective-value=\"recruiting\"]:has([data-testid=\"mate-status-tab-recruiting\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "matched",
+              "selector": "[data-testid=\"mate-status-tab-matched\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"matched\"][data-vqa-effective-value=\"matched\"]:has([data-testid=\"mate-status-tab-matched\"][aria-pressed=\"true\"])"
+            },
+            {
+              "id": "selling",
+              "selector": "[data-testid=\"mate-status-tab-selling\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-status-tabs-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"selling\"][data-vqa-effective-value=\"selling\"]:has([data-testid=\"mate-status-tab-selling\"][aria-pressed=\"true\"])"
+            }
+          ],
+          "reason": "The stateful wrapper records one callback and the controlled selected key.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "key": "Tab",
+          "targets": [
+            {
+              "id": "all-to-recruiting",
+              "selector": "[data-testid=\"mate-status-tab-all\"]",
+              "when": {
+                "variant.activeTab": "all",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"mate-status-tab-recruiting\"]:focus-visible"
+            }
+          ],
+          "reason": "Tab advances from all to recruiting.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateListControlLeaves.mobile.test.tsx"
+        }
       },
       "constraints": []
     },

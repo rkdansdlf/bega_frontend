@@ -135,6 +135,9 @@ export const componentModuleKey = (file: string) => `../${file.replace(/^src\//,
 export const componentStyleModuleKeys = (styles: string[]) => styles.map(componentModuleKey);
 
 const qaOnlyDirectModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['src/components/visual-qa/MateMobileDateFilterHarness.tsx', new Set([
+    'src/components/MateMobileDateFilter.tsx#mateMobileDateFilterVisualQaHarness',
+  ])],
   ['src/components/visual-qa/MateListControlLeavesHarnesses.tsx', new Set([
     'src/components/MateSeatFilterButtons.tsx#mateSeatFilterButtonsVisualQaHarness',
     'src/components/MateSortDropdown.tsx#mateSortDropdownVisualQaHarness',

@@ -38,7 +38,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70712);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70767);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -51,7 +51,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    279,
+    280,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1578,6 +1578,76 @@ test('mate list control leaves resolve lower-camel wrappers with exact direct ma
   ])), { default: 11, hover: 4, 'focus-visible': 4, pressed: 4, selected: 4, 'keyboard-navigation': 1 });
 });
 
+test('mate mobile date filter resolves exact 55 direct states and four hosted root aliases', async () => {
+  const componentId = 'src/components/MateMobileDateFilter.tsx#MateMobileDateFilter';
+  const hostedId = 'src/components/MateListControlsRuntime.tsx#MateMobileDateFilter';
+  const moduleFile = 'src/components/visual-qa/MateMobileDateFilterHarness.tsx';
+  const moduleKey = componentModuleKey(moduleFile);
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+    scenario.componentId === componentId
+  ));
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{
+    id: string;
+    render?: {
+      adapterId?: string;
+      exportName?: string;
+      hostScenarioIds?: string[];
+      mode?: string;
+      moduleFile?: string;
+    };
+    status: string;
+  }> };
+  const entry = manifest.components.find(({ id }) => id === componentId);
+  const hosted = manifest.components.find(({ id }) => id === hostedId);
+  const expectedHostScenarioIds = [
+    'state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=light',
+    'state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=dark',
+    'state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=light',
+    'state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=dark',
+  ];
+
+  assert.equal(entry?.status, 'registered');
+  assert.equal(entry?.render?.mode, 'direct');
+  assert.equal(entry?.render?.adapterId, 'mate.mobile-date-filter');
+  assert.equal(entry?.render?.exportName, 'mateMobileDateFilterVisualQaHarness');
+  assert.equal(entry?.render?.moduleFile, moduleFile);
+  assert.equal(scenarios.length, 55);
+  assert.ok(scenarios.every((scenario) => scenario.moduleKey === moduleKey));
+  assert.ok(scenarios.every((scenario) => scenario.file === 'src/components/MateMobileDateFilter.tsx'));
+  assert.deepEqual(
+    new Set(scenarios.map(({ states }) => states.data)),
+    new Set(['empty', 'single', 'long-korean', 'boundary-minimum', 'maximum-supported']),
+  );
+  assert.deepEqual(
+    new Set(scenarios.map(({ variants }) => variants.selection)),
+    new Set(['all', 'first', 'middle', 'last', 'outside-range']),
+  );
+  assert.deepEqual(Object.fromEntries(
+    ['default', 'hover', 'focus-visible', 'pressed', 'selected', 'keyboard-navigation'].map((interaction) => [
+      interaction,
+      scenarios.filter(({ states }) => states.interactions === interaction).length,
+    ]),
+  ), {
+    default: 36,
+    hover: 4,
+    'focus-visible': 4,
+    pressed: 4,
+    selected: 5,
+    'keyboard-navigation': 2,
+  });
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 55);
+
+  assert.equal(hosted?.status, 'registered');
+  assert.equal(hosted?.render?.mode, 'hosted');
+  assert.deepEqual(hosted?.render?.hostScenarioIds, expectedHostScenarioIds);
+  assert.ok(expectedHostScenarioIds.every((id) => (
+    AUTOMATIC_COMPONENT_STATE_SCENARIOS.some((scenario) => scenario.id === id)
+  )));
+});
+
 test('QA-only direct module overrides fail closed for unknown modules and mismatched exports', () => {
   const componentFilePath = 'src/components/MateStatusTabs.tsx';
   const moduleFile = 'src/components/visual-qa/MateListControlLeavesHarnesses.tsx';
@@ -1595,6 +1665,22 @@ test('QA-only direct module overrides fail closed for unknown modules and mismat
   );
   assert.throws(
     () => resolveDirectModuleFile(componentFilePath, moduleFile, 'mateSortDropdownVisualQaHarness'),
+    /unknown or mismatched direct module export/,
+  );
+  assert.equal(
+    resolveDirectModuleFile(
+      'src/components/MateMobileDateFilter.tsx',
+      'src/components/visual-qa/MateMobileDateFilterHarness.tsx',
+      'mateMobileDateFilterVisualQaHarness',
+    ),
+    'src/components/visual-qa/MateMobileDateFilterHarness.tsx',
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(
+      'src/components/MateMobileDateFilter.tsx',
+      moduleFile,
+      'mateMobileDateFilterVisualQaHarness',
+    ),
     /unknown or mismatched direct module export/,
   );
 });

@@ -175,6 +175,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'mate.detail-reviews-section',
     'mate.detail-seat-view',
     'mate.host-reviews-modal',
+    'mate.mobile-date-filter',
     'mate.page',
     'mate.seat-filter-buttons',
     'mate.sort-dropdown',
@@ -7038,6 +7039,78 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
     }),
     /지원하지 않는 MateSeatFilterButtons state/,
   );
+});
+
+test('mate mobile date filter adapter maps exact controlled fixtures and fails closed', () => {
+  const componentId = 'src/components/MateMobileDateFilter.tsx#MateMobileDateFilter';
+  const selected = resolveComponentStateAdapter('mate.mobile-date-filter', {
+    componentId,
+    interactionTargetId: 'all-to-middle',
+    states: { data: 'maximum-supported', interactions: 'selected' },
+    variants: { selection: 'all', theme: 'light' },
+  });
+  const selectedProps = selected.props as {
+    dateItems: Date[];
+    initialSelectedDate: Date | null;
+    scenarioKey: string;
+  };
+  assert.equal(selected.captureSelector, '[data-testid="mate-mobile-date-filter"]');
+  assert.equal(selected.theme, 'light');
+  assert.equal(selectedProps.dateItems.length, 14);
+  assert.equal(selectedProps.initialSelectedDate, null);
+  assert.equal(
+    selectedProps.scenarioKey,
+    'maximum-supported:selected:all-to-middle:all:light',
+  );
+
+  const boundaryMiddle = resolveComponentStateAdapter('mate.mobile-date-filter', {
+    componentId,
+    states: { data: 'boundary-minimum', interactions: 'default' },
+    variants: { selection: 'middle', theme: 'dark' },
+  });
+  const boundaryProps = boundaryMiddle.props as {
+    dateItems: Date[];
+    initialSelectedDate: Date;
+  };
+  assert.equal(boundaryProps.dateItems.length, 4);
+  assert.equal(boundaryProps.initialSelectedDate.getDate(), 26);
+
+  const outside = resolveComponentStateAdapter('mate.mobile-date-filter', {
+    componentId,
+    states: { data: 'empty', interactions: 'default' },
+    variants: { selection: 'outside-range', theme: 'light' },
+  });
+  assert.deepEqual(outside.props.dateItems, []);
+  assert.equal((outside.props.initialSelectedDate as Date).getDate(), 7);
+
+  for (const context of [
+    {
+      componentId,
+      states: { data: 'unknown', interactions: 'default' },
+      variants: { selection: 'all', theme: 'light' },
+    },
+    {
+      componentId,
+      interactionTargetId: 'unknown',
+      states: { data: 'maximum-supported', interactions: 'selected' },
+      variants: { selection: 'all', theme: 'light' },
+    },
+    {
+      componentId,
+      states: { data: 'single', interactions: 'default', system: 'online' },
+      variants: { selection: 'all', theme: 'light' },
+    },
+    {
+      componentId: 'src/components/MateDateRailFilter.tsx#MateDateRailFilter',
+      states: { data: 'single', interactions: 'default' },
+      variants: { selection: 'all', theme: 'light' },
+    },
+  ]) {
+    assert.throws(
+      () => resolveComponentStateAdapter('mate.mobile-date-filter', context),
+      /지원하지 않는 MateMobileDateFilter state/,
+    );
+  }
 });
 
 test('mate apply adapter maps terminal, pressure, payment, and ticket phases', () => {

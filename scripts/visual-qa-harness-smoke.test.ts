@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import * as harnessSmokeModule from './visual-qa-harness-smoke';
@@ -30,6 +31,16 @@ import {
   summarizeHarnessResults,
   switchHarnessPageScenario,
 } from './visual-qa-harness-smoke';
+
+test('pre-harness gate includes the Mate mobile date filter actual regression exactly once', () => {
+  const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
+    scripts?: Record<string, string>;
+  };
+  const preHarnessCommand = packageJson.scripts?.['previsual-qa:harness:test'] ?? '';
+  const testPath = 'src/components/MateMobileDateFilter.mobile.test.tsx';
+
+  assert.equal(preHarnessCommand.split(testPath).length - 1, 1);
+});
 
 test('harness request policy blocks external traffic and stubs every same-origin API root', () => {
   const harnessOrigin = 'http://127.0.0.1:5182';
