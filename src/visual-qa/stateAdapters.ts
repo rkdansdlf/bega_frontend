@@ -13617,6 +13617,176 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.seat-filter-buttons': (context) => {
+    const inputValue = requireStateValueFromMap(context, 'data', {
+      empty: '',
+      single: '응원석',
+      populated: 'lg 오렌지석 레드석',
+      'boundary-minimum': 'kt',
+      'boundary-maximum': 'hanwha 홈 플레이트 테이블석',
+      'long-korean': '삼성 블루존에서 관람할 좌석을 선택합니다',
+      'unbroken-token': 'ssg으쓱이존UNBROKENTOKENWITHOUTSPACES',
+      'maximum-supported': 'lg 오렌지석 레드석 프리미엄석 테이블석',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      'keyboard-navigation': 'keyboard-navigation',
+      pressed: 'pressed',
+      selected: 'selected',
+    });
+    const layout = resolveDeclaredVariant<'rail' | 'toolbar'>(context, 'layout', {
+      rail: 'rail',
+      toolbar: 'toolbar',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const targets: Record<string, ReadonlySet<string>> = {
+      hover: new Set(['orange', 'red', 'premium', 'table']),
+      'focus-visible': new Set(['orange', 'red', 'premium', 'table']),
+      pressed: new Set(['orange', 'red', 'premium', 'table']),
+      selected: new Set(['orange', 'red', 'premium', 'table']),
+      'keyboard-navigation': new Set(['orange-to-red']),
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : inputValue === 'lg 오렌지석 레드석 프리미엄석 테이블석'
+        && layout === 'toolbar'
+        && theme === 'light'
+        && targets[interaction]?.has(target ?? '') === true;
+    if (
+      Object.keys(context.states).sort().join(',') !== 'data,interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'layout,theme'
+      || !validInteraction
+    ) {
+      throw new Error(
+        `지원하지 않는 MateSeatFilterButtons state: ${context.states.data ?? '<none>'}:${interaction}:${layout}:${theme}:${target ?? '<none>'}`,
+      );
+    }
+    return {
+      props: {
+        initialInputValue: inputValue,
+        layout,
+        scenarioKey: `${context.states.data}:${interaction}:${target ?? 'none'}:${layout}:${theme}`,
+      },
+      captureSelector: '[data-testid="mate-seat-filter-buttons"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mate.sort-dropdown': (context) => {
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      'keyboard-navigation': 'keyboard-navigation',
+      open: 'open',
+      pressed: 'pressed',
+      selected: 'selected',
+    });
+    const activeSort = resolveDeclaredVariant<'dDay' | 'latest' | 'popular'>(context, 'activeSort', {
+      dDay: 'dDay',
+      latest: 'latest',
+      popular: 'popular',
+    });
+    const phase = resolveDeclaredVariant<'closed' | 'open'>(context, 'phase', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const targets: Record<string, ReadonlySet<string>> = {
+      hover: new Set(['trigger', 'latest', 'dDay', 'popular']),
+      'focus-visible': new Set(['trigger', 'latest', 'dDay', 'popular']),
+      pressed: new Set(['trigger', 'latest', 'dDay', 'popular']),
+      open: new Set(['trigger']),
+      selected: new Set(['latest', 'dDay', 'popular']),
+      'keyboard-navigation': new Set(['trigger-to-first-option', 'escape']),
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : activeSort === 'latest'
+        && phase === 'closed'
+        && theme === 'light'
+        && targets[interaction]?.has(target ?? '') === true;
+    if (
+      Object.keys(context.states).sort().join(',') !== 'interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'activeSort,phase,theme'
+      || !validInteraction
+    ) {
+      throw new Error(
+        `지원하지 않는 MateSortDropdown state: ${interaction}:${activeSort}:${phase}:${theme}:${target ?? '<none>'}`,
+      );
+    }
+    return {
+      props: {
+        initialActiveSortKey: activeSort,
+        initialOpen: phase === 'open',
+        scenarioKey: `${interaction}:${target ?? 'none'}:${activeSort}:${phase}:${theme}`,
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mate.status-tabs': (context) => {
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      'keyboard-navigation': 'keyboard-navigation',
+      pressed: 'pressed',
+      selected: 'selected',
+    });
+    const activeTab = resolveDeclaredVariant<'all' | 'matched' | 'recruiting' | 'selling'>(context, 'activeTab', {
+      all: 'all',
+      matched: 'matched',
+      recruiting: 'recruiting',
+      selling: 'selling',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const targets: Record<string, ReadonlySet<string>> = {
+      hover: new Set(['recruiting', 'matched', 'selling']),
+      'focus-visible': new Set(['recruiting']),
+      pressed: new Set(['all', 'recruiting', 'matched', 'selling']),
+      selected: new Set(['all', 'recruiting', 'matched', 'selling']),
+      'keyboard-navigation': new Set(['all-to-recruiting']),
+    };
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : activeTab === 'all'
+        && theme === 'light'
+        && targets[interaction]?.has(target ?? '') === true;
+    if (
+      Object.keys(context.states).sort().join(',') !== 'interactions'
+      || Object.keys(context.variants).sort().join(',') !== 'activeTab,theme'
+      || !validInteraction
+    ) {
+      throw new Error(
+        `지원하지 않는 MateStatusTabs state: ${interaction}:${activeTab}:${theme}:${target ?? '<none>'}`,
+      );
+    }
+    return {
+      props: {
+        initialActiveTab: activeTab,
+        scenarioKey: `${interaction}:${target ?? 'none'}:${activeTab}:${theme}`,
+      },
+      captureSelector: '[data-testid="mate-status-tabs"]',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'mate.page': (context) => {
     requireStateValue(context, 'data', 'single');
     const phase = resolveDeclaredVariant(context, 'phase', {

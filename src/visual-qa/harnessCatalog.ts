@@ -65,6 +65,8 @@ type StateManifestEntry = {
   render?: {
     mode: 'direct' | 'hosted';
     adapterId?: string;
+    exportName?: string;
+    moduleFile?: string;
     styles?: string[];
   };
   axes?: Partial<Record<'data' | 'permissions' | 'interactions' | 'system', {
@@ -117,6 +119,8 @@ type DirectStateManifestEntry = StateManifestEntry & {
   render: {
     mode: 'direct';
     adapterId: string;
+    exportName?: string;
+    moduleFile?: string;
   };
 };
 
@@ -129,6 +133,27 @@ const componentFile = (componentId: string) => componentId.slice(0, componentId.
 export const componentModuleKey = (file: string) => `../${file.replace(/^src\//, '')}`;
 
 export const componentStyleModuleKeys = (styles: string[]) => styles.map(componentModuleKey);
+
+const qaOnlyDirectModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['src/components/visual-qa/MateListControlLeavesHarnesses.tsx', new Set([
+    'src/components/MateSeatFilterButtons.tsx#mateSeatFilterButtonsVisualQaHarness',
+    'src/components/MateSortDropdown.tsx#mateSortDropdownVisualQaHarness',
+    'src/components/MateStatusTabs.tsx#mateStatusTabsVisualQaHarness',
+  ])],
+]);
+
+export const resolveDirectModuleFile = (
+  componentFilePath: string,
+  moduleFile: string | undefined,
+  exportName: string,
+) => {
+  if (moduleFile === undefined) return componentFilePath;
+  const allowedExports = qaOnlyDirectModuleExports.get(moduleFile);
+  if (!allowedExports?.has(`${componentFilePath}#${exportName}`)) {
+    throw new Error(`unknown or mismatched direct module export: ${moduleFile}#${exportName}`);
+  }
+  return moduleFile;
+};
 
 export const AUTOMATIC_ICON_SCENARIOS: AutomaticIconScenario[] = (
   classificationManifest.components as ClassificationEntry[]
@@ -299,7 +324,8 @@ export const AUTOMATIC_COMPONENT_STATE_SCENARIOS: AutomaticComponentStateScenari
     const classification = classificationsById.get(entry.id);
     if (typeof classification?.exportName !== 'string') return [];
     const file = componentFile(entry.id);
-    const exportName = classification.exportName;
+    const exportName = entry.render.exportName ?? classification.exportName;
+    const moduleFile = resolveDirectModuleFile(file, entry.render.moduleFile, exportName);
     const adapterId = entry.render.adapterId;
     return expandStateCombinations(entry).map(({ states, variants, interactionTarget }) => {
       const stateCombinationId = [
@@ -314,7 +340,7 @@ export const AUTOMATIC_COMPONENT_STATE_SCENARIOS: AutomaticComponentStateScenari
         kind: 'component-state' as const,
         componentId: entry.id,
         file,
-        moduleKey: componentModuleKey(file),
+        moduleKey: componentModuleKey(moduleFile),
         exportName,
         renderAccess: 'module-export' as const,
         adapterId,

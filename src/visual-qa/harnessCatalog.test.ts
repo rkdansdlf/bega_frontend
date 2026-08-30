@@ -9,6 +9,7 @@ import {
   AUTOMATIC_ICON_SCENARIOS,
   componentModuleKey,
   componentStyleModuleKeys,
+  resolveDirectModuleFile,
   resolveHarnessScenario,
 } from './harnessCatalog';
 import { KNOWN_COMPONENT_STATE_ADAPTER_IDS } from './stateAdapters';
@@ -37,7 +38,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70633);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70712);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -50,7 +51,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    276,
+    279,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1531,6 +1532,71 @@ test('registered component states expand to executable adapter-backed scenarios'
   );
   const first = AUTOMATIC_COMPONENT_STATE_SCENARIOS[0];
   assert.deepEqual(resolveHarnessScenario(first.id), first);
+});
+
+test('mate list control leaves resolve lower-camel wrappers with exact direct matrices', () => {
+  const harnessModuleKey = componentModuleKey(
+    'src/components/visual-qa/MateListControlLeavesHarnesses.tsx',
+  );
+  const expected = new Map([
+    ['src/components/MateStatusTabs.tsx#MateStatusTabs', { count: 21, exportName: 'mateStatusTabsVisualQaHarness' }],
+    ['src/components/MateSortDropdown.tsx#MateSortDropdown', { count: 30, exportName: 'mateSortDropdownVisualQaHarness' }],
+    ['src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons', { count: 28, exportName: 'mateSeatFilterButtonsVisualQaHarness' }],
+  ]);
+  for (const [componentId, contract] of expected) {
+    const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => (
+      scenario.componentId === componentId
+    ));
+    assert.equal(scenarios.length, contract.count, componentId);
+    assert.ok(scenarios.every((scenario) => scenario.exportName === contract.exportName));
+    assert.ok(scenarios.every((scenario) => scenario.moduleKey === harnessModuleKey));
+    assert.ok(scenarios.every((scenario) => scenario.file === componentId.slice(0, componentId.indexOf('#'))));
+  }
+
+  const status = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
+    componentId === 'src/components/MateStatusTabs.tsx#MateStatusTabs'
+  ));
+  assert.deepEqual(Object.fromEntries(['default', 'hover', 'focus-visible', 'pressed', 'selected', 'keyboard-navigation'].map((interaction) => [
+    interaction,
+    status.filter(({ states }) => states.interactions === interaction).length,
+  ])), { default: 8, hover: 3, 'focus-visible': 1, pressed: 4, selected: 4, 'keyboard-navigation': 1 });
+
+  const sort = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
+    componentId === 'src/components/MateSortDropdown.tsx#MateSortDropdown'
+  ));
+  assert.deepEqual(Object.fromEntries(['default', 'hover', 'focus-visible', 'pressed', 'open', 'selected', 'keyboard-navigation'].map((interaction) => [
+    interaction,
+    sort.filter(({ states }) => states.interactions === interaction).length,
+  ])), { default: 12, hover: 4, 'focus-visible': 4, pressed: 4, open: 1, selected: 3, 'keyboard-navigation': 2 });
+
+  const seat = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
+    componentId === 'src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons'
+  ));
+  assert.deepEqual(Object.fromEntries(['default', 'hover', 'focus-visible', 'pressed', 'selected', 'keyboard-navigation'].map((interaction) => [
+    interaction,
+    seat.filter(({ states }) => states.interactions === interaction).length,
+  ])), { default: 11, hover: 4, 'focus-visible': 4, pressed: 4, selected: 4, 'keyboard-navigation': 1 });
+});
+
+test('QA-only direct module overrides fail closed for unknown modules and mismatched exports', () => {
+  const componentFilePath = 'src/components/MateStatusTabs.tsx';
+  const moduleFile = 'src/components/visual-qa/MateListControlLeavesHarnesses.tsx';
+  assert.equal(
+    resolveDirectModuleFile(componentFilePath, undefined, 'MateStatusTabs'),
+    componentFilePath,
+  );
+  assert.equal(
+    resolveDirectModuleFile(componentFilePath, moduleFile, 'mateStatusTabsVisualQaHarness'),
+    moduleFile,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(componentFilePath, 'src/components/visual-qa/UnknownHarnesses.tsx', 'mateStatusTabsVisualQaHarness'),
+    /unknown or mismatched direct module export/,
+  );
+  assert.throws(
+    () => resolveDirectModuleFile(componentFilePath, moduleFile, 'mateSortDropdownVisualQaHarness'),
+    /unknown or mismatched direct module export/,
+  );
 });
 
 test('admin primitive badges cover pressure, every preset status tone, public sizes, and themes', () => {

@@ -314,8 +314,88 @@ test('post-expansion fill and press-key results are revalidated without repeatin
     key: 'End',
     waitForSelector: 'option[value="LG"]:checked',
   }, async () => {});
-  assert.deepEqual(change.events, ['visible', 'visible', 'frames']);
+  assert.deepEqual(change.events, ['visible', 'frames']);
   assert.equal(change.events.includes('key:End'), false);
+});
+
+test('post-expansion click and Escape verify only final state without replaying hidden mutations', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+  const events: string[] = [];
+  const page = {
+    locator: (selector: string) => ({
+      first: () => ({
+        waitFor: async ({ state }: { state: 'visible' | 'hidden' }) => {
+          events.push(`${selector}:${state}`);
+        },
+        hover: async () => {},
+        click: async () => { events.push(`${selector}:click`); },
+        fill: async () => {},
+        selectOption: async () => [],
+        inputValue: async () => '',
+        scrollIntoViewIfNeeded: async () => {},
+        boundingBox: async () => ({ x: 0, y: 0, width: 44, height: 44 }),
+      }),
+    }),
+    keyboard: { press: async (key: string) => { events.push(`key:${key}`); } },
+    mouse: {
+      move: async () => {},
+      down: async () => {},
+      up: async () => {},
+    },
+    evaluate: async (_fn: unknown, arg?: { mode?: string }) => {
+      if (arg?.mode === 'frames') events.push('frames');
+      return true;
+    },
+  };
+
+  await subject.revalidateHarnessInteractionPlan(page, {
+    action: 'click',
+    selector: '[data-testid="mate-sort-option-popular"]',
+    setup: [{
+      action: 'click',
+      selector: '[data-testid="mate-sort-trigger"]',
+      waitForSelector: '[role="menu"]',
+    }],
+    waitForSelector: '[data-vqa-callback-count="1"]',
+    waitForHiddenSelector: '[role="menu"]',
+  }, async () => {});
+  assert.deepEqual(events, [
+    '[data-vqa-callback-count="1"]:visible',
+    '[role="menu"]:hidden',
+    'frames',
+  ]);
+
+  events.length = 0;
+  await subject.revalidateHarnessInteractionPlan(page, {
+    action: 'press-key',
+    selector: '[data-testid="mate-sort-trigger"]',
+    key: 'Escape',
+    setup: [{
+      action: 'click',
+      selector: '[data-testid="mate-sort-trigger"]',
+      waitForSelector: '[role="menu"]',
+    }],
+    waitForHiddenSelector: '[role="menu"]',
+  }, async () => {});
+  assert.deepEqual(events, ['[role="menu"]:hidden', 'frames']);
+  assert.equal(events.some((event) => event.endsWith(':click') || event.startsWith('key:')), false);
+});
+
+test('post-expansion click and press-key fail closed without a mandatory final verifier', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+
+  for (const action of ['click', 'press-key'] as const) {
+    await assert.rejects(
+      subject.revalidateHarnessInteractionPlan(createPage().page, {
+        action,
+        selector: 'button',
+        ...(action === 'press-key' ? { key: 'Escape' } : {}),
+      }, async () => {}),
+      /requires waitForSelector or waitForHiddenSelector/,
+    );
+  }
 });
 
 test('select-option changes a real select once and only revalidates its exact result after expansion', async () => {

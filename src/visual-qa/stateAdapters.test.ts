@@ -176,6 +176,9 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'mate.detail-seat-view',
     'mate.host-reviews-modal',
     'mate.page',
+    'mate.seat-filter-buttons',
+    'mate.sort-dropdown',
+    'mate.status-tabs',
     'mate.ticket-verification',
     'mate.today-count-badge',
     'mypage.season-empty',
@@ -6968,6 +6971,72 @@ test('mate page adapter isolates both lazy boundaries and the resolved handoff',
       variants: { phase: 'runtime', theme: 'light' },
     }),
     /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('mate list leaf adapters expose exact stateful wrapper inputs and fail closed', () => {
+  const status = resolveComponentStateAdapter('mate.status-tabs', {
+    componentId: 'src/components/MateStatusTabs.tsx#MateStatusTabs',
+    interactionTargetId: 'recruiting',
+    states: { interactions: 'selected' },
+    variants: { activeTab: 'all', theme: 'light' },
+  });
+  assert.deepEqual(status.props, {
+    initialActiveTab: 'all',
+    scenarioKey: 'selected:recruiting:all:light',
+  });
+  assert.equal(status.captureSelector, '[data-testid="mate-status-tabs"]');
+
+  const sort = resolveComponentStateAdapter('mate.sort-dropdown', {
+    componentId: 'src/components/MateSortDropdown.tsx#MateSortDropdown',
+    interactionTargetId: 'popular',
+    states: { interactions: 'selected' },
+    variants: { activeSort: 'latest', phase: 'closed', theme: 'light' },
+  });
+  assert.deepEqual(sort.props, {
+    initialActiveSortKey: 'latest',
+    initialOpen: false,
+    scenarioKey: 'selected:popular:latest:closed:light',
+  });
+  assert.equal(sort.captureSelector, '[data-vqa-harness-surface]');
+
+  const seat = resolveComponentStateAdapter('mate.seat-filter-buttons', {
+    componentId: 'src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons',
+    interactionTargetId: 'orange',
+    states: { data: 'maximum-supported', interactions: 'selected' },
+    variants: { layout: 'toolbar', theme: 'light' },
+  });
+  assert.deepEqual(seat.props, {
+    initialInputValue: 'lg 오렌지석 레드석 프리미엄석 테이블석',
+    layout: 'toolbar',
+    scenarioKey: 'maximum-supported:selected:orange:toolbar:light',
+  });
+
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.status-tabs', {
+      componentId: 'src/components/MateStatusTabs.tsx#MateStatusTabs',
+      interactionTargetId: 'unknown',
+      states: { interactions: 'selected' },
+      variants: { activeTab: 'all', theme: 'light' },
+    }),
+    /지원하지 않는 MateStatusTabs state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.sort-dropdown', {
+      componentId: 'src/components/MateSortDropdown.tsx#MateSortDropdown',
+      states: { interactions: 'open' },
+      variants: { activeSort: 'popular', phase: 'open', theme: 'dark' },
+    }),
+    /지원하지 않는 MateSortDropdown state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.seat-filter-buttons', {
+      componentId: 'src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons',
+      interactionTargetId: 'orange',
+      states: { data: 'single', interactions: 'selected' },
+      variants: { layout: 'rail', theme: 'dark' },
+    }),
+    /지원하지 않는 MateSeatFilterButtons state/,
   );
 });
 

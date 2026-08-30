@@ -239,6 +239,13 @@ export const revalidateHarnessInteractionPlan = async (
   plan: HarnessInteractionPlan,
   previousCleanup: () => Promise<void>,
 ): Promise<() => Promise<void>> => {
+  const resultOnlyAction = plan.action === 'click' || plan.action === 'press-key';
+  if (resultOnlyAction && !plan.waitForSelector && !plan.waitForHiddenSelector) {
+    throw new Error(
+      `post-expansion ${plan.action} requires waitForSelector or waitForHiddenSelector: ${plan.selector}`,
+    );
+  }
+
   let cleanup = previousCleanup;
   if (plan.action === 'pressed') {
     await previousCleanup();
@@ -246,7 +253,9 @@ export const revalidateHarnessInteractionPlan = async (
   }
 
   const target = page.locator(plan.selector).first();
-  await target.waitFor({ state: 'visible', timeout: 5_000 });
+  if (!resultOnlyAction) {
+    await target.waitFor({ state: 'visible', timeout: 5_000 });
+  }
 
   try {
     if (plan.action === 'hover') {
@@ -289,7 +298,6 @@ export const revalidateHarnessInteractionPlan = async (
           throw new Error(`interaction setup fill did not preserve value after viewport expansion on ${step.selector}`);
         }
       }
-      await waitForResult(page, step.waitForSelector, step.waitForHiddenSelector);
     }
     await waitForResult(page, plan.waitForSelector, plan.waitForHiddenSelector);
     await waitForInteractionFrames(page, plan.selector);
