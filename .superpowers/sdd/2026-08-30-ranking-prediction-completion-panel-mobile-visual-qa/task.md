@@ -31,5 +31,5 @@
 ## Explicit exclusions
 
 - Caller `RankingPrediction.tsx`, shared TeamLogo/Button, stores/hooks/API/share/Kakao, dirty prediction runtime/coach, Mate, Landing, package lock, prior evidence, inventory report, and main bundle/dist generated reports remain outside the slice.
-- Inventory regeneration incident: exact tracked path `reports/visual-qa-component-inventory.json`; final status clean, slice commit inclusion zero, and source/product/user semantic data impact zero. It was not staged or restored and will not be regenerated again.
+- Inventory regeneration incident: `reports/visual-qa-component-inventory.json` is untracked at baseline and HEAD and ignored by `.gitignore:36` (`/reports`); pre-slice byte provenance cannot be attested. Its current SHA-256 is `173b767af499eb6a3ff33ce78e1675b7bd4d0a9fedd9c0a5ebf2de99efdf3665`, slice commit inclusion is zero, and source/product/user semantic data impact is zero. It was not staged or restored and will not be regenerated again.
 - Priority 0 remains static/manual/internal only; no external baseball API, crawl, scrape, search repair, or guessed baseball fact was introduced.
