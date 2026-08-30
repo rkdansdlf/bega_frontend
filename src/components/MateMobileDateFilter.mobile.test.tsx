@@ -12,6 +12,7 @@ const entryPath = '/__mate-mobile-date-filter-test.tsx';
 const moduleId = '\0virtual:mate-mobile-date-filter-test';
 const reciprocalMutation = process.env.MATE_MOBILE_DATE_FILTER_MUTATE_RECIPROCAL === '1';
 const missingCallbackMutation = process.env.MATE_MOBILE_DATE_FILTER_MUTATE_MISSING_CALLBACK === '1';
+const mountEffectMutation = process.env.MATE_MOBILE_DATE_FILTER_MUTATE_MOUNT_EFFECT === '1';
 
 const createDateFilterPlugin = (): Plugin => ({
   name: 'mate-mobile-date-filter-actual-mount-test',
@@ -40,7 +41,7 @@ const createDateFilterPlugin = (): Plugin => ({
   load(id) {
     if (id !== moduleId) return undefined;
     return `
-      import React, { StrictMode, createElement, useState } from 'react';
+      import React, { StrictMode, createElement, useEffect, useState } from 'react';
       import { createRoot } from 'react-dom/client';
       import '/src/index.css';
       import Filter from '/src/components/MateMobileDateFilter.tsx';
@@ -64,6 +65,7 @@ const createDateFilterPlugin = (): Plugin => ({
 
       const reciprocal = ${reciprocalMutation ? 'true' : 'false'};
       const missing = ${missingCallbackMutation ? 'true' : 'false'};
+      const mountEffect = ${mountEffectMutation ? 'true' : 'false'};
       const dateString = (date) => {
         if (!date) return 'all';
         const year = date.getFullYear();
@@ -89,6 +91,9 @@ const createDateFilterPlugin = (): Plugin => ({
       function Host({ fixture, initialSelection }) {
         const dateItems = fixtures[fixture];
         const [selectedDate, setSelectedDate] = useState(() => selectedFor(dateItems, initialSelection));
+        useEffect(() => {
+          if (mountEffect) calls.date.push('mount-effect');
+        }, []);
         const onDateSelect = (requestedDate) => {
           if (missing) return;
           let nextDate = requestedDate;
@@ -187,8 +192,32 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
       (window as unknown as { __MATE_MOBILE_DATE_FILTER_TEST__: { calls: Calls } })
         .__MATE_MOBILE_DATE_FILTER_TEST__.calls,
     )) as Calls);
+    const settleMountEffects = () => page.evaluate(() => new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    }));
     const problems: string[] = [];
     const metrics: Record<string, unknown> = {};
+
+    const initialSection = page.getByRole('region', { name: '경기 날짜' });
+    await initialSection.waitFor({ timeout: 15_000 });
+    await settleMountEffects();
+    const initialCalls = await readCalls();
+    assert.deepEqual(initialCalls, {
+      date: [],
+      unrelated: [],
+      fetch: 0,
+      xhr: 0,
+      beacon: 0,
+    }, 'initial StrictMode render must not replay callbacks or start network work');
+
+    await mount('boundary');
+    await initialSection.waitFor({ timeout: 15_000 });
+    await settleMountEffects();
+    assert.deepEqual(
+      await readCalls(),
+      initialCalls,
+      'keyed fixture remount must not replay callbacks or start network work',
+    );
 
     const inspectFixture = async (fixture: 'boundary' | 'maximum', viewportWidth: 320 | 390) => {
       await page.setViewportSize({ width: viewportWidth, height: viewportWidth === 320 ? 844 : 1000 });
