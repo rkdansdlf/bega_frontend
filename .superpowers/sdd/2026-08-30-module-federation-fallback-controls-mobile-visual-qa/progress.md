@@ -1,0 +1,51 @@
+# Module Federation Fallback Controls Mobile Visual QA Progress
+
+Date: 2026-08-30
+
+## Scope result
+
+- Product: fallback Button native forwarding/mobile containment and Modal exact-one close callback precedence.
+- QA-only: lower-camel Button/Modal companions, exact adapters/catalog/manifest, optional `clickPosition` harness prerequisite, focused actual tests, reports and 69 PNGs.
+- Preserved: shared Button, shared PlainDialog, probe, AppRoutes, hosted registrations, Landing/Mate/Mobile/DateRail sources and prior reports.
+
+## TDD ledger
+
+- Actual RED: stable Button target missing, Button target timeout, Modal both-callback close produced `openChange=1` and `close=1`.
+- Actual GREEN: 3/3. Modal close/backdrop/Escape × both/open-change/onClose/none produces `1/0`, `1/0`, `0/1`, `0/0`; StrictMode initial and keyed remount pre-reset are zero.
+- Mutation RED: dual dispatch, selected branch twice, missing onClose fallback, reversed visibility precedence, internal propagation, Escape cleanup, body restore, focus trap, package missing/duplicate: 9/9.
+- `clickPosition` prerequisite RED/GREEN: executor 15/16 then 17/17; catalog propagation rejects invalid/non-click position and preserves absent `locator.click()` semantics.
+- Exact matrix RED/GREEN: missing Button/Modal adapters/scenarios then Button 48 and Modal 21; wrong component/data/target/system/module/export fail closed.
+- Full focused integration initially RED on stale global expectations (`70,767/280`, adapter list), then GREEN on `70,836/282` plus the two exact adapter IDs: 269/269.
+- Full-portal capture TDD: Modal adapter expected `body` RED against harness surface, then GREEN.
+- First screenshotless warmup: 62/69, failed 7, recovered 0 because the empty ledger host was not measurable and one portal sibling selector could not match. Product callback values were already exact. QA-only 1x1 pointer-neutral ledger plus portal-safe `body:has(...)` selector produced 69/69, failed/recovered 0, all attempt 1.
+
+## Counts and evidence
+
+- Registered `449/1,010`; pending `561`; direct `70,836`; valid `71,839`.
+- Button `48/48`, interactions `14/14`; Modal `21/21`, interactions `11/11`.
+- All 69 rows: pass, attempt 1, unique scenario ID/path, nonzero and SHA-complete PNG. All 25 interactions have verified, captureVerified, viewportExpanded and revalidatedAfterViewportExpansion.
+- Button report: `86b2a48e7bfdf0846ef01eedb82d526c4f04ae7a414def0a17ed340ca448a0be`.
+- Modal report: `8a231866278e2ec5d163e61e7d27033d5a808ca5457339e4297a71df547a7549`.
+- Two-report aggregate: `656f7ad7b95542f0d511000ba02d2a9d37c5de84d1c10776eeffe373fd81076a`.
+- Button PNG aggregate: `fcf3d7f0eb1bf22da9d28341069de36af627e7d5950d46aa5b9ca10528aa28e6`.
+- Modal PNG aggregate: `da845967c6bed9d5913455a1b5adb8f38eb5146a7e02307ea85bbd6520b1da33`.
+- Sorted path+content 69-PNG aggregate: `dc53b55b0a306b5dfa1a54e6d190afa4bad284c507af0b045f868e313c38a8d1`.
+- Actual PNG hashes: 54/69. Seven legal equal-image groups cover identical final UI only: Button brand/default by theme, pointer/default, keyboard/focus, secondary-default/ghost-hover; Modal closed callback results, autofocus/tab/none-open, hover/pressed. Exact callback/focus ledgers and scenario IDs remain distinct.
+
+## Verification
+
+- Actual fallback: 3/3.
+- Pre-harness: 162/162; full harness: 406/406.
+- Catalog/adapter: 269/269; interaction executor: 17/17.
+- Prior duplicate coordinator: 12/12 and 6/6; GlobalError actual: 8/8.
+- Contract: 13/13 and check pass; inventory: 17/17. Inventory strict remains closed on the known Landing-only 15 unclassified + 1 stale, with fallback residual 0, parse/provisional 0.
+- State: 19/19; strict completeness remains closed on exactly 561 pending.
+- Isolation/import/audit/reflow: 46/46; DOM probe pass; TypeScript pass; diff check pass; Priority 0 policy pass.
+- Build: worker 17/client 5,736 modules, 153/153 budgets, CSS 255,465/255,500 bytes, production isolation 0, QA companion production identifiers 0.
+- Mate/Mobile/DateRail, GlobalError and Admin Offseason prior report diffs: zero.
+
+## Concurrent state preservation
+
+- Immutable design/plan/constraints hashes remained `414a325c...93f`, `d2b282bc...7ee`, `cd4e3b25...31e`.
+- During execution an external commit/reset advanced HEAD from `fa47a6ae3503602e1769b18987b292d7491cc0ad` to `96a6dc37166a4634bf19654dac0ef902bec83519` and converted the former staged-99 index (`e63eea5e...aad0` names, `59b53ceb...14bc` binary) into unstaged/untracked state. Parent coordination confirmed this transition supersedes the staged-99 constraint; it must not be reversed or reconstructed.
+- Authoritative post-transition baseline: index count 0; non-owned tracked diff SHA-256 `31cd2dcdf53f96823a90ce44f687ab80e4971314783cb6efd195d27835a2666d`; non-owned untracked count 165 and sorted path+content SHA-256 `dd7fa9529cfa3328a3ec440c15386a27a18ae64f98ad193746719a028686d94f`.
