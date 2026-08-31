@@ -10,6 +10,7 @@ const pagePath = '/__seat-map-hover-preview-test.html';
 const entryPath = '/__seat-map-hover-preview-test.tsx';
 const moduleId = '\0virtual:seat-map-hover-preview-test';
 const unbrokenBadge = 'SEATMAP-HOVER-PREVIEW-UNBROKEN-BADGE-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const overflowMutation = process.env.SEAT_MAP_HOVER_PREVIEW_MUTATE_OVERFLOW === '1';
 
 const createPreviewPlugin = (): Plugin => ({
   name: 'seat-map-hover-preview-actual-browser-test',
@@ -31,6 +32,12 @@ const createPreviewPlugin = (): Plugin => ({
   },
   resolveId(id) {
     return id === entryPath ? moduleId : undefined;
+  },
+  transform(code, id) {
+    if (!overflowMutation || !id.split('?')[0].endsWith('/src/components/SeatMapHoverPreview.tsx')) return undefined;
+    const transformed = code.replace('max-w-[42%]', '');
+    assert.notEqual(transformed, code, 'overflow mutation target missing');
+    return transformed;
   },
   load(id) {
     if (id !== moduleId) return undefined;
