@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-31T19:11:54.615Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/seat-map-hover-preview-screenshots"
+  },
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=boundary-minimum|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-boundary-minimum-variant-theme-dark-bcc2cff7442b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=boundary-minimum|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-boundary-minimum-variant-theme-ligh-5663720226a2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=empty|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-empty-variant-theme-dark-bb974629e508.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=empty|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-empty-variant-theme-light-e5160a04dc27.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=long-korean|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-long-korean-variant-theme-dark-9c60f4bfbd01.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=long-korean|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-long-korean-variant-theme-light-ea0262fb4993.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=maximum-supported|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-maximum-supported-variant-theme-dar-8e63713a7a79.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=maximum-supported|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-maximum-supported-variant-theme-lig-f9848590fd5b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=null-optional|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-null-optional-variant-theme-dark-322196ac6c21.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=null-optional|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-null-optional-variant-theme-light-0a554b16e033.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=partial|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-partial-variant-theme-dark-1c7d5b75a5a7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=partial|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-partial-variant-theme-light-033448de4e9f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=populated|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-populated-variant-theme-dark-0579f47d0756.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=populated|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-populated-variant-theme-light-dc938a7c8c49.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=single|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-single-variant-theme-dark-f814449fa650.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=single|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-single-variant-theme-light-89456047dac9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=unbroken-token|variant.theme=dark",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-unbroken-token-variant-theme-dark-c2c1fcb833c1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview:data=unbroken-token|variant.theme=light",
+      "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
+      "status": "pass",
+      "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-unbroken-token-variant-theme-light-57a6a851bd17.png",
+      "attempts": 1
+    }
+  ]
+}
