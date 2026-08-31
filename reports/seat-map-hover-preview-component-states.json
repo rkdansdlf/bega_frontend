@@ -29,6 +29,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-boundary-minimum-variant-theme-dark-bcc2cff7442b.png",
+      "sha256": "c2c650e78a92902c1944c2f78c03196f498dad6f8b91c0b9e5f785792f166a86",
       "attempts": 1
     },
     {
@@ -36,6 +37,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-boundary-minimum-variant-theme-ligh-5663720226a2.png",
+      "sha256": "d59e502e59412ce6fcad550f08905c0c80d98e534f35622d9e0ec044e63ec963",
       "attempts": 1
     },
     {
@@ -43,6 +45,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-empty-variant-theme-dark-bb974629e508.png",
+      "sha256": "fc7304f5f15ec11eef860ad371a958304e60f07db2667de210c3c2ed06d7ede8",
       "attempts": 1
     },
     {
@@ -50,6 +53,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-empty-variant-theme-light-e5160a04dc27.png",
+      "sha256": "1b6ab0027ba97fbd029d51337d202165f2533c64b5cb6927849b7197ff946abb",
       "attempts": 1
     },
     {
@@ -57,6 +61,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-long-korean-variant-theme-dark-9c60f4bfbd01.png",
+      "sha256": "b24eecbce7ec4d729f99684cd5859f83b3fd3d586e65d9b0324290b667976ee4",
       "attempts": 1
     },
     {
@@ -64,6 +69,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-long-korean-variant-theme-light-ea0262fb4993.png",
+      "sha256": "651f0ec5cebefc49907a9de5c715ce9e55adf4a604bc5c7ae04021acfd28abff",
       "attempts": 1
     },
     {
@@ -71,6 +77,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-maximum-supported-variant-theme-dar-8e63713a7a79.png",
+      "sha256": "bc4fb08275582aacf6a6b85f8456bb2993d01bed20d60964af16f6a004cdb0e2",
       "attempts": 1
     },
     {
@@ -78,6 +85,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-maximum-supported-variant-theme-lig-f9848590fd5b.png",
+      "sha256": "f5e9a0ba6eb5f578aac7ab543c41229db21390ac4c6bae1c0365e07061669ea8",
       "attempts": 1
     },
     {
@@ -85,6 +93,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-null-optional-variant-theme-dark-322196ac6c21.png",
+      "sha256": "742cfbe1c6ce40f41f63052d923d25a39f2971b92003c4372f1a60935f835f18",
       "attempts": 1
     },
     {
@@ -92,6 +101,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-null-optional-variant-theme-light-0a554b16e033.png",
+      "sha256": "9c8531eb8395658e36e39cc56f911e7eb3d407099cf2ca6acab4df2fd9cb3d34",
       "attempts": 1
     },
     {
@@ -99,6 +109,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-partial-variant-theme-dark-1c7d5b75a5a7.png",
+      "sha256": "8c907cd4e4b76274de48ad4bc160903dd0418fa9c48a73f1e28eb1775e04e0aa",
       "attempts": 1
     },
     {
@@ -106,6 +117,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-partial-variant-theme-light-033448de4e9f.png",
+      "sha256": "75deec69bbf38c3b97b28d77ebbdd27b5d3878fa2dd056019fa6a1276e50a6fa",
       "attempts": 1
     },
     {
@@ -113,6 +125,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-populated-variant-theme-dark-0579f47d0756.png",
+      "sha256": "be84c958540290ae77a6d4292219b4a7675f393ae3adb52d343a39928f005e77",
       "attempts": 1
     },
     {
@@ -120,6 +133,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-populated-variant-theme-light-dc938a7c8c49.png",
+      "sha256": "1dadf543108eb940f17b72a8fcbbcb646a3cb4f36279d5fe86698defd0d41559",
       "attempts": 1
     },
     {
@@ -127,6 +141,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-single-variant-theme-dark-f814449fa650.png",
+      "sha256": "68f35ac79611655eaaa6f988131e464d41216fe394a581a132ed6e9003d593ef",
       "attempts": 1
     },
     {
@@ -134,6 +149,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-single-variant-theme-light-89456047dac9.png",
+      "sha256": "0f2c2de465646b7738498f57965c1ffb760121163add9a0a7b0aafeceb7a0e0d",
       "attempts": 1
     },
     {
@@ -141,6 +157,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-unbroken-token-variant-theme-dark-c2c1fcb833c1.png",
+      "sha256": "2f0c469c9c3f8cbd37756ca3ce7b27fd8776d29b256cdb178a19f1912c0b3fb0",
       "attempts": 1
     },
     {
@@ -148,6 +165,7 @@
       "componentId": "src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview",
       "status": "pass",
       "screenshot": "reports/seat-map-hover-preview-screenshots/seatmaphoverpreview-seatmaphoverpreview-data-unbroken-token-variant-theme-light-57a6a851bd17.png",
+      "sha256": "7b0d942dd5ab4f6c9701e4499374746b0c963f3aa0b8bff31b856d423ab8edb6",
       "attempts": 1
     }
   ]
