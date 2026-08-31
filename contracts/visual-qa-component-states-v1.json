@@ -77293,7 +77293,7 @@
             "unbroken-token",
             "maximum-supported"
           ],
-          "reason": "Visibility, each independent content slot, complete content, synthetic copy pressure, and the deterministic non-default accent are visually distinct leaf states.",
+          "reason": "Visibility, each independent content slot, complete content, synthetic copy pressure, and the deterministic non-default accent are visually distinct leaf states. visible=true with all optional content props empty is intentionally excluded because it is DOM-equivalent to the visible=false placeholder/hidden-content state.",
           "owner": "frontend-platform",
           "testEvidence": "src/components/SeatMapHoverPreview.mobile.test.tsx"
         },

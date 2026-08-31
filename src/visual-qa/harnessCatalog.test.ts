@@ -27,8 +27,18 @@ test('automatic icon scenarios include every module-export gallery symbol exactl
   ));
 });
 
-test('SeatMapHoverPreview expands exactly its 18 direct leaf scenarios', () => {
+test('SeatMapHoverPreview expands exactly its 18 direct leaf scenarios', async () => {
   const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
+  const manifest = JSON.parse(await readFile(
+    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
+    'utf8',
+  )) as { components: Array<{ id: string; axes?: { data?: { reason?: string } } }> };
+  const registeredEntry = manifest.components.find(({ id }) => id === componentId);
+  assert.ok(registeredEntry);
+  assert.match(
+    registeredEntry.axes?.data?.reason ?? '',
+    /visible=true with all optional content props empty is intentionally excluded because it is DOM-equivalent to the visible=false placeholder\/hidden-content state/,
+  );
   const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
   const dataValues = [
     'empty', 'single', 'partial', 'null-optional', 'boundary-minimum',
