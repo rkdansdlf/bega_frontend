@@ -27,17 +27,32 @@ test('automatic icon scenarios include every module-export gallery symbol exactl
   ));
 });
 
-test('SeatMapHoverPreview expands only its 18 direct leaf scenarios', () => {
+test('SeatMapHoverPreview expands exactly its 18 direct leaf scenarios', () => {
   const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
   const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
-  assert.equal(scenarios.length, 18);
-  assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set([
+  const dataValues = [
     'empty', 'single', 'partial', 'null-optional', 'boundary-minimum',
     'populated', 'long-korean', 'unbroken-token', 'maximum-supported',
-  ]));
+  ];
+  const expectedIds = new Set(dataValues.flatMap((data) => ['light', 'dark'].map((theme) => (
+    `state:${componentId}:data=${data}|variant.theme=${theme}`
+  ))));
+  assert.equal(scenarios.length, 18);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set(dataValues));
   assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.theme)), new Set(['light', 'dark']));
-  assert.ok(scenarios.every(({ renderAccess, interactionPlan }) => renderAccess === 'module-export' && interactionPlan === undefined));
-  assert.ok(scenarios.every(({ id }) => resolveHarnessScenario(id)?.componentId === componentId));
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, renderAccess, adapterId, interactionPlan }) => (
+    file === 'src/components/SeatMapHoverPreview.tsx'
+      && moduleKey === '../components/SeatMapHoverPreview.tsx'
+      && exportName === 'default'
+      && renderAccess === 'module-export'
+      && adapterId === 'seat-map-hover-preview'
+      && interactionPlan === undefined
+  )));
+  assert.ok(scenarios.every(({ id }) => {
+    const resolved = resolveHarnessScenario(id);
+    return resolved?.componentId === componentId && resolved.file === 'src/components/SeatMapHoverPreview.tsx';
+  }));
 });
 
 test('automatic component probes include every module-export visual candidate without treating it as final coverage', () => {

@@ -115,14 +115,28 @@ test('SeatMapHoverPreview cleanup removes cache after a server close failure', a
 
 test('SeatMapHoverPreview package gates include the focused test exactly once', async () => {
   const manifest = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { scripts: Record<string, string> };
-  const expected = ['visual-qa:seat-map-hover-preview:unit', 'visual-qa:seat-map-hover-preview:pre-harness'];
   const scripts = { ...manifest.scripts };
-  if (packageMutation === 'omit') delete scripts[expected[0]];
-  if (packageMutation === 'duplicate') scripts[expected[0]] += ' src/components/SeatMapHoverPreview.mobile.test.tsx';
-  for (const name of expected) {
-    const command = scripts[name] ?? '';
-    assert.equal(command.split('src/components/SeatMapHoverPreview.mobile.test.tsx').length - 1, 1, `${name} exact-once wiring`);
-  }
+  const focusedPath = 'src/components/SeatMapHoverPreview.mobile.test.tsx';
+  if (packageMutation === 'omit') scripts['previsual-qa:harness:test'] = (
+    scripts['previsual-qa:harness:test'] ?? ''
+  ).replace(focusedPath, '');
+  if (packageMutation === 'duplicate') scripts['previsual-qa:harness:test'] = (
+    scripts['previsual-qa:harness:test'] ?? ''
+  ) + ` ${focusedPath}`;
+
+  const unitCommand = scripts['test:unit'] ?? '';
+  assert.match(unitCommand, /["']src\/\*\*\/\*\.test\.tsx["']/,
+    'test:unit must cover TSX tests through its shared glob');
+  assert.equal(
+    unitCommand.split(focusedPath).length - 1,
+    0,
+    'test:unit must not duplicate the focused TSX test outside its shared glob',
+  );
+  assert.equal(
+    (scripts['previsual-qa:harness:test'] ?? '').split(focusedPath).length - 1,
+    1,
+    'previsual-qa:harness:test exact-once wiring',
+  );
 });
 
 test('SeatMapHoverPreview persisted evidence is complete and unique', async () => {

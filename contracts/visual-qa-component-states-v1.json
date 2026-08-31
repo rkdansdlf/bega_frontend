@@ -32883,31 +32883,19 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32921,31 +32909,19 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32959,31 +32935,19 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32997,67 +32961,40 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
             {
               "id": "backdrop",
               "selector": "[data-testid=\"image-lightbox\"]",
-              "clickPosition": {
-                "x": 1,
-                "y": 1
-              },
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "clickPosition": { "x": 1, "y": 1 },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
             {
               "id": "prev-first-to-last",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "first",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "prev-middle-to-first",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "next-middle-to-last",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "next-last-to-first",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": {
-                "data": "populated",
-                "variant.index": "last",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
             }
           ],
@@ -33072,11 +33009,7 @@
               "id": "escape",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Escape",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33084,99 +33017,63 @@
               "id": "arrow-left-first-to-last",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowLeft",
-              "when": {
-                "data": "populated",
-                "variant.index": "first",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "arrow-left-middle-to-first",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowLeft",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "arrow-right-middle-to-last",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowRight",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "arrow-right-last-to-first",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowRight",
-              "when": {
-                "data": "populated",
-                "variant.index": "last",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "tab-close-to-prev",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Tab",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-prev\"]:focus-visible"
             },
             {
               "id": "tab-prev-to-next",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Tab",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
             },
             {
               "id": "tab-next-to-close",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Tab",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-close\"]:focus-visible"
             },
             {
               "id": "shift-tab-close-to-next",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Shift+Tab",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
             },
             {
               "id": "enter-close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Enter",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33184,33 +33081,21 @@
               "id": "enter-prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Enter",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "enter-next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Enter",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "space-close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Space",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33218,22 +33103,14 @@
               "id": "space-prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Space",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "space-next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Space",
-              "when": {
-                "data": "populated",
-                "variant.index": "middle",
-                "variant.theme": "light"
-              },
+              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             }
           ],
@@ -33243,96 +33120,16 @@
         }
       },
       "constraints": [
-        {
-          "excludeWhen": {
-            "data": "single",
-            "variant.index": "first"
-          },
-          "reason": "A single image has only index zero.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "single",
-            "variant.index": "middle"
-          },
-          "reason": "A single image has only index zero.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "single",
-            "variant.index": "last"
-          },
-          "reason": "A single image uses the explicit only position.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "populated",
-            "variant.index": "only"
-          },
-          "reason": "The populated fixture is fixed to three images and exposes first, middle, and last positions rather than only.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "maximum-supported",
-            "variant.index": "only"
-          },
-          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "maximum-supported",
-            "variant.index": "first"
-          },
-          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "maximum-supported",
-            "variant.index": "middle"
-          },
-          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "broken-image",
-            "variant.index": "first"
-          },
-          "reason": "The broken fixture contains one intentionally invalid source.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "broken-image",
-            "variant.index": "middle"
-          },
-          "reason": "The broken fixture contains one intentionally invalid source.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        },
-        {
-          "excludeWhen": {
-            "data": "broken-image",
-            "variant.index": "last"
-          },
-          "reason": "The broken fixture uses the explicit only position.",
-          "owner": "frontend-community",
-          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
-        }
+        { "excludeWhen": { "data": "single", "variant.index": "first" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "single", "variant.index": "middle" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "single", "variant.index": "last" }, "reason": "A single image uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "populated", "variant.index": "only" }, "reason": "The populated fixture is fixed to three images and exposes first, middle, and last positions rather than only.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "only" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "first" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "maximum-supported", "variant.index": "middle" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "first" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "middle" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
+        { "excludeWhen": { "data": "broken-image", "variant.index": "last" }, "reason": "The broken fixture uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" }
       ]
     },
     {
@@ -72471,33 +72268,9 @@
         "hover": {
           "action": "hover",
           "targets": [
-            {
-              "id": "complete-hover",
-              "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "save-hover",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "share-hover",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              }
-            }
+            { "id": "complete-hover", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-hover", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-hover", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
           ],
           "reason": "Each visible action exposes hover feedback without callbacks.",
           "owner": "frontend-prediction",
@@ -72506,33 +72279,9 @@
         "focus-visible": {
           "action": "focus-visible",
           "targets": [
-            {
-              "id": "complete-focus",
-              "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "save-focus",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "share-focus",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              }
-            }
+            { "id": "complete-focus", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-focus", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-focus", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
           ],
           "reason": "Each visible action exposes a contained keyboard focus ring without callbacks.",
           "owner": "frontend-prediction",
@@ -72541,33 +72290,9 @@
         "pressed": {
           "action": "pressed",
           "targets": [
-            {
-              "id": "complete-pressed",
-              "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "save-pressed",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "share-pressed",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              }
-            }
+            { "id": "complete-pressed", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
+            { "id": "save-pressed", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
+            { "id": "share-pressed", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
           ],
           "reason": "Each visible action exposes pressed feedback without firing before release.",
           "owner": "frontend-prediction",
@@ -72579,31 +72304,19 @@
             {
               "id": "complete-click",
               "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              },
+              "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
             },
             {
               "id": "save-click",
               "selector": "[data-testid=\"ranking-save-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              },
+              "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
             },
             {
               "id": "share-click",
               "selector": "[data-testid=\"ranking-share-btn\"]",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              },
+              "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
             }
           ],
@@ -72614,94 +72327,14 @@
         "keyboard-navigation": {
           "action": "press-key",
           "targets": [
-            {
-              "id": "complete-enter",
-              "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "key": "Enter",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
-            },
-            {
-              "id": "complete-space",
-              "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "key": "Space",
-              "when": {
-                "data": "single",
-                "variant.phase": "complete",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
-            },
-            {
-              "id": "save-enter",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "key": "Enter",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
-            },
-            {
-              "id": "save-space",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "key": "Space",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
-            },
-            {
-              "id": "share-enter",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "key": "Enter",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
-            },
-            {
-              "id": "share-space",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "key": "Space",
-              "when": {
-                "data": "single",
-                "variant.phase": "saved",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
-            },
-            {
-              "id": "tab-save-share",
-              "selector": "[data-testid=\"ranking-save-btn\"]",
-              "key": "Tab",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible"
-            },
-            {
-              "id": "shift-tab-share-save",
-              "selector": "[data-testid=\"ranking-share-btn\"]",
-              "key": "Shift+Tab",
-              "when": {
-                "data": "single",
-                "variant.phase": "ready-to-save",
-                "variant.theme": "light"
-              },
-              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible"
-            }
+            { "id": "complete-enter", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
+            { "id": "complete-space", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
+            { "id": "save-enter", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
+            { "id": "save-space", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
+            { "id": "share-enter", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
+            { "id": "share-space", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
+            { "id": "tab-save-share", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible" },
+            { "id": "shift-tab-share-save", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Shift+Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible" }
           ],
           "reason": "Enter and Space cover each action; Tab and Shift+Tab cover both directions in the ready stack with zero callbacks.",
           "owner": "frontend-prediction",

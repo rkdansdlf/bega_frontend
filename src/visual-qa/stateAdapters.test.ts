@@ -325,17 +325,36 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
   );
 });
 
-test('SeatMapHoverPreview adapter resolves only the declared leaf matrix', () => {
+test('SeatMapHoverPreview adapter resolves every declared prop shape in both themes', () => {
   const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
-  const result = resolveComponentStateAdapter('seat-map-hover-preview', {
-    componentId,
-    states: { data: 'maximum-supported' },
-    variants: { theme: 'dark' },
-  });
-  assert.equal(result.captureSelector, '[data-testid="seat-map-hover-preview"]');
-  assert.equal(result.theme, 'dark');
-  assert.equal(result.props.visible, true);
-  assert.equal(result.props.accentColor, '#7c3aed');
+  const expectedProps = {
+    empty: { visible: false, title: '숨김 구역', subtitle: '숨김 보조 정보', description: '숨김 설명', badgeLabel: '숨김 배지' },
+    single: { visible: true, title: '중앙 내야 구역' },
+    partial: { visible: true, subtitle: '모바일 좌석 안내' },
+    'null-optional': { visible: true, description: '관람 위치와 이동 경로를 확인하세요.' },
+    'boundary-minimum': { visible: true, badgeLabel: '잔여 좌석' },
+    populated: { visible: true, title: '중앙 내야 구역', subtitle: '1루 응원석', description: '가까운 출입구를 이용하세요.', badgeLabel: '잔여 12석' },
+    'long-korean': { visible: true, title: '모바일 화면에서 긴 한국어 좌석 구역 제목이 자연스럽게 잘리는지 확인합니다', subtitle: '긴 한국어 보조 안내 문구도 작은 화면의 너비를 넘지 않아야 합니다', description: '긴 한국어 설명 문구가 배지와 함께 표시될 때도 카드의 가로 스크롤을 만들지 않는지 검증합니다.', badgeLabel: '긴 한국어 배지 안내 문구' },
+    'unbroken-token': { visible: true, title: 'SEATMAPUNBROKENTITLE0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', subtitle: 'SEATMAPUNBROKENSUBTITLE0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', description: 'SEATMAPUNBROKENDESCRIPTION0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', badgeLabel: 'SEATMAPUNBROKENBADGE0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' },
+    'maximum-supported': { visible: true, title: '보라색 강조 구역', subtitle: '특별 좌석', description: '지정 강조색을 사용합니다.', badgeLabel: '특별', accentColor: '#7c3aed' },
+  };
+  for (const [data, props] of Object.entries(expectedProps)) {
+    for (const theme of ['light', 'dark'] as const) {
+      const result = resolveComponentStateAdapter('seat-map-hover-preview', {
+        componentId,
+        states: { data },
+        variants: { theme },
+      });
+      assert.deepEqual(result.props, props, `${data}/${theme} props`);
+      assert.equal(result.captureSelector, '[data-testid="seat-map-hover-preview"]');
+      assert.equal(result.surfaceClassName, 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none');
+      assert.equal(result.theme, theme);
+    }
+  }
+});
+
+test('SeatMapHoverPreview adapter fails closed outside its exact matrix', () => {
+  const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
   assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
     componentId: 'src/components/Other.tsx#Other', states: { data: 'populated' }, variants: { theme: 'light' },
   }), /지원하지 않는 SeatMapHoverPreview component/);
@@ -343,7 +362,16 @@ test('SeatMapHoverPreview adapter resolves only the declared leaf matrix', () =>
     componentId, states: { data: 'unknown' }, variants: { theme: 'light' },
   }), /지원하지 않는 Visual QA state/);
   assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId, states: { data: 'populated' }, variants: {},
+  }), /지원하지 않는 Visual QA variant/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId, states: { data: 'populated' }, variants: { theme: 'blue' },
+  }), /지원하지 않는 Visual QA variant/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
     componentId, states: { data: 'populated', interactions: 'hover' }, variants: { theme: 'light' }, interactionTargetId: 'badge',
+  }), /지원하지 않는 SeatMapHoverPreview axis/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId, states: { data: 'populated' }, variants: { theme: 'light' }, interactionTargetId: 'badge',
   }), /지원하지 않는 SeatMapHoverPreview axis/);
 });
 
