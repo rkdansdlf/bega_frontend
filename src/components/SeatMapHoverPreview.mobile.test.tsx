@@ -89,15 +89,15 @@ const closeResources = async (resources: {
     }
   }
   if (errors.length === 1) throw errors[0];
-  if (errors.length > 1) throw new AggregateError(errors, 'SeatMapHoverPreview test cleanup failed');
+  if (errors.length > 1) throw new Error(`SeatMapHoverPreview test cleanup failed: ${errors.length}`);
 };
 
 test('SeatMapHoverPreview cleanup closes every resource after an earlier closer fails', async () => {
   const calls: string[] = [];
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-hover-preview-cleanup-'));
   await assert.rejects(() => closeResources({
-    browser: { close: async () => { calls.push('browser'); throw new Error('browser close'); } } as Browser,
-    server: { close: async () => { calls.push('server'); } } as ViteDevServer,
+    browser: { close: async () => { calls.push('browser'); throw new Error('browser close'); } } as unknown as Browser,
+    server: { close: async () => { calls.push('server'); } } as unknown as ViteDevServer,
     cacheDir,
   }), /browser close/);
   assert.deepEqual(calls, ['browser', 'server']);
@@ -107,7 +107,7 @@ test('SeatMapHoverPreview cleanup closes every resource after an earlier closer 
 test('SeatMapHoverPreview cleanup removes cache after a server close failure', async () => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-hover-preview-cleanup-'));
   await assert.rejects(() => closeResources({
-    server: { close: async () => { throw new Error('server close'); } } as ViteDevServer,
+    server: { close: async () => { throw new Error('server close'); } } as unknown as ViteDevServer,
     cacheDir,
   }), /server close/);
   await assert.rejects(() => access(cacheDir));
@@ -178,8 +178,14 @@ test('SeatMapHoverPreview constrains an unbroken badge at mobile widths in a rea
     resources.browser = await chromium.launch({ headless: true });
     const page = await resources.browser.newPage();
     const address = serverAddress(resources.server);
+    const externalRequests: string[] = [];
+    const harnessOrigin = new URL(address).origin;
+    page.on('request', (request) => {
+      if (new URL(request.url()).origin !== harnessOrigin) externalRequests.push(request.url());
+    });
     await assertConstrainedBadge(page, address, 320, 844);
     await assertConstrainedBadge(page, address, 390, 1000);
+    assert.deepEqual(externalRequests, [], 'real leaf browser run must issue zero external requests');
   } finally {
     await closeResources(resources);
   }
