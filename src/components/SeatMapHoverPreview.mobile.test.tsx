@@ -94,12 +94,14 @@ const closeResources = async (resources: {
 
 test('SeatMapHoverPreview cleanup closes every resource after an earlier closer fails', async () => {
   const calls: string[] = [];
+  const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-hover-preview-cleanup-'));
   await assert.rejects(() => closeResources({
     browser: { close: async () => { calls.push('browser'); throw new Error('browser close'); } } as Browser,
     server: { close: async () => { calls.push('server'); } } as ViteDevServer,
-    cacheDir: undefined,
+    cacheDir,
   }), /browser close/);
   assert.deepEqual(calls, ['browser', 'server']);
+  await assert.rejects(() => access(cacheDir));
 });
 
 test('SeatMapHoverPreview cleanup removes cache after a server close failure', async () => {
@@ -124,13 +126,17 @@ test('SeatMapHoverPreview package gates include the focused test exactly once', 
 });
 
 test('SeatMapHoverPreview persisted evidence is complete and unique', async () => {
-  const report = JSON.parse(await readFile(new URL('../../reports/seat-map-hover-preview-component-states.json', import.meta.url), 'utf8')) as { results: Array<{ status: string; attempts: number; screenshot: string }> };
+  const report = JSON.parse(await readFile(new URL('../../reports/seat-map-hover-preview-component-states.json', import.meta.url), 'utf8')) as { viewport: { width: number; height: number }; captureHeightMode: string; summary: { total: number; passed: number; failed: number; recovered: number; ok: boolean }; results: Array<{ status: string; attempts: number; screenshot: string }> };
+  assert.deepEqual(report.summary, { total: 18, passed: 18, failed: 0, recovered: 0, ok: true });
+  assert.deepEqual(report.viewport, { width: 320, height: 844 });
+  assert.equal(report.captureHeightMode, 'expand-tall-flow');
   assert.equal(report.results.length, 18);
   assert.equal(report.results.filter(({ status }) => status === 'pass').length, 18);
   assert.ok(report.results.every(({ attempts }) => attempts === 1));
   const screenshots = await Promise.all(report.results.map(async ({ screenshot }) => {
     const path = new URL(`../../${screenshot}`, import.meta.url);
     const bytes = await readFile(path);
+    assert.ok(bytes.byteLength > 0, `${screenshot} must be nonzero`);
     return bytes.toString('base64');
   }));
   assert.equal(new Set(screenshots).size, 18);
