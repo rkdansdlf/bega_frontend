@@ -253,6 +253,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'sajik.seat-map',
     'sajik.seat-map-editor',
     'sajik.seat-map-svg',
+    'seat-map-hover-preview',
     'simple-markdown.content',
     'stadium-seatmap.error',
     'stadium-seatmap.loading',
@@ -322,6 +323,28 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     }),
     /등록되지 않은 Visual QA state adapter/,
   );
+});
+
+test('SeatMapHoverPreview adapter resolves only the declared leaf matrix', () => {
+  const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
+  const result = resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId,
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(result.captureSelector, '[data-testid="seat-map-hover-preview"]');
+  assert.equal(result.theme, 'dark');
+  assert.equal(result.props.visible, true);
+  assert.equal(result.props.accentColor, '#7c3aed');
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId: 'src/components/Other.tsx#Other', states: { data: 'populated' }, variants: { theme: 'light' },
+  }), /지원하지 않는 SeatMapHoverPreview component/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId, states: { data: 'unknown' }, variants: { theme: 'light' },
+  }), /지원하지 않는 Visual QA state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-hover-preview', {
+    componentId, states: { data: 'populated', interactions: 'hover' }, variants: { theme: 'light' }, interactionTargetId: 'badge',
+  }), /지원하지 않는 SeatMapHoverPreview axis/);
 });
 
 test('notice adapters expose route fallback and deterministic permission-aware list states', () => {

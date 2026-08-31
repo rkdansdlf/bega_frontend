@@ -27,6 +27,19 @@ test('automatic icon scenarios include every module-export gallery symbol exactl
   ));
 });
 
+test('SeatMapHoverPreview expands only its 18 direct leaf scenarios', () => {
+  const componentId = 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
+  assert.equal(scenarios.length, 18);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set([
+    'empty', 'single', 'partial', 'null-optional', 'boundary-minimum',
+    'populated', 'long-korean', 'unbroken-token', 'maximum-supported',
+  ]));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.theme)), new Set(['light', 'dark']));
+  assert.ok(scenarios.every(({ renderAccess, interactionPlan }) => renderAccess === 'module-export' && interactionPlan === undefined));
+  assert.ok(scenarios.every(({ id }) => resolveHarnessScenario(id)?.componentId === componentId));
+});
+
 test('automatic component probes include every module-export visual candidate without treating it as final coverage', () => {
   assert.ok(AUTOMATIC_COMPONENT_PROBE_SCENARIOS.length > 0);
   assert.ok(AUTOMATIC_COMPONENT_PROBE_SCENARIOS.every(({ kind }) => kind === 'component-probe'));
@@ -38,7 +51,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70947);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70965);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -51,7 +64,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    285,
+    286,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
