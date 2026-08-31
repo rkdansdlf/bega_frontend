@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { access, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { chromium, type Page } from 'playwright';
-import { createServer, type Plugin } from 'vite';
+import { chromium, type Browser, type Page } from 'playwright';
+import { createServer, type Plugin, type ViteDevServer } from 'vite';
 
 const componentSource = readFileSync(new URL('./ImageLightbox.tsx', import.meta.url), 'utf8');
 const packageManifest = JSON.parse(
@@ -34,6 +34,41 @@ const packageMutation = process.env.IMAGE_LIGHTBOX_MUTATE_PACKAGE ?? '';
 const replaceRequired = (source: string, from: string, to: string, label: string) => {
   assert.ok(source.includes(from), `${label} mutation target missing`);
   return source.replace(from, to);
+};
+
+type AsyncCloseable = {
+  close: () => Promise<void>;
+};
+
+const cleanupLightboxTestResources = async (resources: {
+  browser?: AsyncCloseable;
+  server?: AsyncCloseable;
+  cacheDir?: string;
+}): Promise<void> => {
+  const errors: unknown[] = [];
+  const attempt = async (cleanup?: () => Promise<void>) => {
+    if (!cleanup) return;
+    try {
+      await cleanup();
+    } catch (error) {
+      errors.push(error);
+    }
+  };
+
+  await attempt(resources.browser ? () => resources.browser?.close() ?? Promise.resolve() : undefined);
+  await attempt(resources.server ? () => resources.server?.close() ?? Promise.resolve() : undefined);
+  await attempt(resources.cacheDir
+    ? () => rm(resources.cacheDir as string, { recursive: true, force: true })
+    : undefined);
+
+  if (errors.length === 1) throw errors[0];
+  if (errors.length > 1) {
+    const aggregate = new Error(`ImageLightbox test cleanup failed (${errors.length} errors)`) as Error & {
+      errors: unknown[];
+    };
+    aggregate.errors = errors;
+    throw aggregate;
+  }
 };
 
 const createLightboxPlugin = (): Plugin => ({
@@ -279,20 +314,119 @@ test('unit and pre-harness gates include the focused actual test exactly once', 
   );
 });
 
+test('cleanup still closes the server and removes the cache after browser close rejects', async () => {
+  const cacheDir = await mkdtemp(join(tmpdir(), 'image-lightbox-cleanup-browser-'));
+  const attempts: string[] = [];
+  const browserFailure = new Error('browser close failed');
+  try {
+    await assert.rejects(
+      cleanupLightboxTestResources({
+        browser: {
+          close: async () => {
+            attempts.push('browser');
+            throw browserFailure;
+          },
+        },
+        server: {
+          close: async () => {
+            attempts.push('server');
+          },
+        },
+        cacheDir,
+      }),
+      (error) => error === browserFailure,
+    );
+    assert.deepEqual(attempts, ['browser', 'server']);
+    await assert.rejects(access(cacheDir), { code: 'ENOENT' });
+  } finally {
+    await rm(cacheDir, { recursive: true, force: true });
+  }
+});
+
+test('cleanup still removes the cache after server close rejects', async () => {
+  const cacheDir = await mkdtemp(join(tmpdir(), 'image-lightbox-cleanup-server-'));
+  const attempts: string[] = [];
+  const serverFailure = new Error('server close failed');
+  try {
+    await assert.rejects(
+      cleanupLightboxTestResources({
+        browser: {
+          close: async () => {
+            attempts.push('browser');
+          },
+        },
+        server: {
+          close: async () => {
+            attempts.push('server');
+            throw serverFailure;
+          },
+        },
+        cacheDir,
+      }),
+      (error) => error === serverFailure,
+    );
+    assert.deepEqual(attempts, ['browser', 'server']);
+    await assert.rejects(access(cacheDir), { code: 'ENOENT' });
+  } finally {
+    await rm(cacheDir, { recursive: true, force: true });
+  }
+});
+
+test('cleanup reports every closer failure after all cleanup attempts finish', async () => {
+  const cacheDir = await mkdtemp(join(tmpdir(), 'image-lightbox-cleanup-aggregate-'));
+  const attempts: string[] = [];
+  const browserFailure = new Error('browser close failed');
+  const serverFailure = new Error('server close failed');
+  try {
+    await assert.rejects(
+      cleanupLightboxTestResources({
+        browser: {
+          close: async () => {
+            attempts.push('browser');
+            throw browserFailure;
+          },
+        },
+        server: {
+          close: async () => {
+            attempts.push('server');
+            throw serverFailure;
+          },
+        },
+        cacheDir,
+      }),
+      (error) => {
+        assert.ok(error instanceof Error);
+        assert.equal(error.message, 'ImageLightbox test cleanup failed (2 errors)');
+        assert.deepEqual((error as Error & { errors?: unknown[] }).errors, [
+          browserFailure,
+          serverFailure,
+        ]);
+        return true;
+      },
+    );
+    assert.deepEqual(attempts, ['browser', 'server']);
+    await assert.rejects(access(cacheDir), { code: 'ENOENT' });
+  } finally {
+    await rm(cacheDir, { recursive: true, force: true });
+  }
+});
+
 test('actual ImageLightbox is contained, focus-safe, stateful, and callback-exact', {
   timeout: 120_000,
 }, async () => {
-  const cacheDir = await mkdtemp(join(tmpdir(), 'image-lightbox-vite-'));
-  const server = await createServer({
-    cacheDir,
-    configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
-    logLevel: 'silent',
-    plugins: [createLightboxPlugin()],
-    root: frontendRoot,
-    server: { host: '127.0.0.1', port: 0, strictPort: false },
-  });
-  let browser;
+  let cacheDir: string | undefined;
+  let server: ViteDevServer | undefined;
+  let browser: Browser | undefined;
   try {
+    cacheDir = await mkdtemp(join(tmpdir(), 'image-lightbox-vite-'));
+    server = await createServer({
+      cacheDir,
+      configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
+      logLevel: 'silent',
+      plugins: [createLightboxPlugin()],
+      root: frontendRoot,
+      server: { host: '127.0.0.1', port: 0, strictPort: false },
+    });
     await server.listen();
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
@@ -589,8 +723,6 @@ test('actual ImageLightbox is contained, focus-safe, stateful, and callback-exac
     assert.deepEqual(externalImages, [], 'external image requests');
     assert.deepEqual(diagnostics, []);
   } finally {
-    await browser?.close();
-    await server.close();
-    await rm(cacheDir, { recursive: true, force: true });
+    await cleanupLightboxTestResources({ browser, server, cacheDir });
   }
 });
