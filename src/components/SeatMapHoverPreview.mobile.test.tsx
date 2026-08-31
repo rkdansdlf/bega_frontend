@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { access, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -11,6 +11,7 @@ const entryPath = '/__seat-map-hover-preview-test.tsx';
 const moduleId = '\0virtual:seat-map-hover-preview-test';
 const unbrokenBadge = 'SEATMAP-HOVER-PREVIEW-UNBROKEN-BADGE-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const overflowMutation = process.env.SEAT_MAP_HOVER_PREVIEW_MUTATE_OVERFLOW === '1';
+const packageMutation = process.env.SEAT_MAP_HOVER_PREVIEW_MUTATE_PACKAGE ?? '';
 
 const createPreviewPlugin = (): Plugin => ({
   name: 'seat-map-hover-preview-actual-browser-test',
@@ -99,6 +100,40 @@ test('SeatMapHoverPreview cleanup closes every resource after an earlier closer 
     cacheDir: undefined,
   }), /browser close/);
   assert.deepEqual(calls, ['browser', 'server']);
+});
+
+test('SeatMapHoverPreview cleanup removes cache after a server close failure', async () => {
+  const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-hover-preview-cleanup-'));
+  await assert.rejects(() => closeResources({
+    server: { close: async () => { throw new Error('server close'); } } as ViteDevServer,
+    cacheDir,
+  }), /server close/);
+  await assert.rejects(() => access(cacheDir));
+});
+
+test('SeatMapHoverPreview package gates include the focused test exactly once', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8')) as { scripts: Record<string, string> };
+  const expected = ['visual-qa:seat-map-hover-preview:unit', 'visual-qa:seat-map-hover-preview:pre-harness'];
+  const scripts = { ...manifest.scripts };
+  if (packageMutation === 'omit') delete scripts[expected[0]];
+  if (packageMutation === 'duplicate') scripts[expected[0]] += ' src/components/SeatMapHoverPreview.mobile.test.tsx';
+  for (const name of expected) {
+    const command = scripts[name] ?? '';
+    assert.equal(command.split('src/components/SeatMapHoverPreview.mobile.test.tsx').length - 1, 1, `${name} exact-once wiring`);
+  }
+});
+
+test('SeatMapHoverPreview persisted evidence is complete and unique', async () => {
+  const report = JSON.parse(await readFile(new URL('../../reports/seat-map-hover-preview-component-states.json', import.meta.url), 'utf8')) as { results: Array<{ status: string; attempts: number; screenshot: string }> };
+  assert.equal(report.results.length, 18);
+  assert.equal(report.results.filter(({ status }) => status === 'pass').length, 18);
+  assert.ok(report.results.every(({ attempts }) => attempts === 1));
+  const screenshots = await Promise.all(report.results.map(async ({ screenshot }) => {
+    const path = new URL(`../../${screenshot}`, import.meta.url);
+    const bytes = await readFile(path);
+    return bytes.toString('base64');
+  }));
+  assert.equal(new Set(screenshots).size, 18);
 });
 
 const assertConstrainedBadge = async (page: Page, address: string, width: number, height: number) => {
