@@ -84,7 +84,9 @@ export default function MateDetailActionSection({
   const [showSheet, setShowSheet] = useState(visualQaStateOverride?.sheetOpen ?? false);
   const showSheetValue = showSheet;
   const view = buildMateDetailViewModel(party);
-  const applyLabel = view.remainingSeats === 1 ? '마지막 자리 신청하기' : '메이트 신청하기';
+  const applyLabel = party.status === 'SELLING'
+    ? '직거래 신청하기'
+    : view.remainingSeats === 1 ? '마지막 자리 신청하기' : '메이트 신청하기';
   const compactAmountLabel = view.reservationDepositAmount > 0
     ? `예약금 ${formatAmount(view.reservationDepositAmount)}`
     : '승인 후 직거래 조율';

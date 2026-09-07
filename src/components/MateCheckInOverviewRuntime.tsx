@@ -138,7 +138,7 @@ export default function MateCheckInOverviewRuntime({
       value: isCheckedIn ? '체크인 완료' : '아직 미완료',
       detail: isCheckedIn && myCheckIn
         ? `${new Date(myCheckIn.checkedInAt).toLocaleString('ko-KR')} 기록`
-        : '경기장 근처에서만 체크인이 가능합니다.',
+        : 'QR 세션 또는 4자리 수동 코드로 체크인할 수 있습니다.',
     },
     {
       icon: MateQrCodeIcon,

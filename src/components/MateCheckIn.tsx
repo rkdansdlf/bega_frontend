@@ -175,7 +175,7 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
               data-testid="mate-check-in-login"
               size="touch"
               className="w-full sm:w-auto"
-              onClick={() => navigate(`/login?redirect=${encodeURIComponent(id ? `/mate/${id}/check-in` : '/mate')}`)}
+              onClick={() => navigate(`/login?redirect=${encodeURIComponent(id ? `/mate/${id}/checkin` : '/mate')}`)}
             >
               로그인
             </Button>

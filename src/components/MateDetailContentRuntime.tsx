@@ -417,10 +417,10 @@ export default function MateDetailContentRuntime({
       variant: 'outline',
       className: 'w-full h-12 border-primary text-primary hover:bg-primary/10',
     });
-  } else if (party.status === 'PENDING') {
+  } else if (party.status === 'PENDING' || party.status === 'SELLING') {
     actionButtons.push({
       key: 'apply',
-      label: '참여하기',
+      label: party.status === 'SELLING' ? '직거래 신청하기' : '참여하기',
       onClick: onApply,
       className: 'w-full h-14 text-xl font-bold text-white shadow-xl hover:shadow-2xl hover:bg-primary-hover transition-all bg-primary',
     });
