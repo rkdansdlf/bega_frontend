@@ -17,6 +17,18 @@
     <link rel="dns-prefetch" href="https://api.begabaseball.xyz">
     <link rel="preconnect" href="https://api.begabaseball.xyz" crossorigin>
 
+    <!-- Pretendard: non-blocking load so it never sits on the LCP critical path -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    </noscript>
+
     <style>
       /* FOUC 방지: 다크모드일 때 CSS 로드 전 즉시 배경색 적용 */
       html.dark body {
