@@ -56,7 +56,7 @@ export const CATEGORY_CONFIGS: Record<CategoryType, CategoryConfig> = {
 } as const;
 
 export const THEME_COLORS = {
-  primary: '#2d5f4f',
+  primary: '#235346',
   primaryLight: '#e8f5f0',
   primaryBg: '#f0f9f6',
   border: '#e5e7eb',
