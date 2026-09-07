@@ -569,8 +569,8 @@ const assertLandingMetrics = (metrics) => {
       failures.push(`${testCase.label}: expected 6 numbered features, received ${value.featureCount}.`);
     }
 
-    if (value.ctaCount !== 0) {
-      failures.push(`${testCase.label}: expected 0 CTA/link elements, received ${value.ctaCount}.`);
+    if (value.ctaCount !== 1) {
+      failures.push(`${testCase.label}: expected 1 CTA/link element, received ${value.ctaCount}.`);
     }
 
     const phoneWidthFailure = getPhoneWidthFailure({
@@ -1013,8 +1013,8 @@ const main = async () => {
       failures.push(`Structure: expected 10 diary results, received ${structure.diaryResultCount}.`);
     }
 
-    if (structure.ctaCount !== 0) {
-      failures.push(`Structure: expected 0 CTA/link elements, received ${structure.ctaCount}.`);
+    if (structure.ctaCount !== 1) {
+      failures.push(`Structure: expected 1 CTA/link element, received ${structure.ctaCount}.`);
     }
 
     failures.push(...getLandingInteractiveSetFailures(structure.interactiveElements).map(

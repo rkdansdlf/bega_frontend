@@ -80,15 +80,25 @@ export const getLandingInteractiveSetFailures = (interactiveElements) => {
     element?.tagName?.toLowerCase() === 'button'
     && element?.testId === 'landing-ticker-toggle'
   ));
-  const unexpected = elements.filter((element) => !tickerToggles.includes(element));
+  const homeCtas = elements.filter((element) => (
+    element?.tagName?.toLowerCase() === 'button'
+    && element?.testId === 'landing-home-cta'
+  ));
+  const expected = [...tickerToggles, ...homeCtas];
+  const unexpected = elements.filter((element) => !expected.includes(element));
 
-  if (elements.length !== 1) {
-    failures.push(`expected exactly 1 interactive element, received ${elements.length}`);
+  if (elements.length !== 2) {
+    failures.push(`expected exactly 2 interactive elements, received ${elements.length}`);
   }
   if (tickerToggles.length !== 1) {
     failures.push(`expected exactly 1 landing-ticker-toggle button, received ${tickerToggles.length}`);
   } else if (!String(tickerToggles[0].label || '').trim()) {
     failures.push('landing-ticker-toggle button is missing an accessible label');
+  }
+  if (homeCtas.length !== 1) {
+    failures.push(`expected exactly 1 landing-home-cta button, received ${homeCtas.length}`);
+  } else if (!String(homeCtas[0].label || '').trim()) {
+    failures.push('landing-home-cta button is missing an accessible label');
   }
   if (unexpected.length > 0) {
     failures.push(`unexpected interactive elements: ${unexpected.map((element) => element.descriptor).join(', ')}`);
