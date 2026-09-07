@@ -174,7 +174,7 @@
   color: #0f1419;
   font-size: clamp(44px, 7.5vw, 80px);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: normal;
   line-height: 1.06;
   text-wrap: pretty;
   word-break: keep-all;

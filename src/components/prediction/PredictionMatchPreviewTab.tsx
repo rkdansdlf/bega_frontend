@@ -287,7 +287,7 @@ export default function PredictionMatchPreviewTab({
             variant="outline"
             size="sm"
             data-testid="prediction-schedule-mobile-today-btn"
-            className="h-10 rounded-xl border-slate-200 bg-white px-3 text-13 font-extrabold text-slate-600 shadow-sm hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
+            className="h-11 rounded-xl border-slate-200 bg-white px-3 text-13 font-extrabold text-slate-600 shadow-sm hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
             onClick={() => onGoToDate(getPredictionScheduleTodayKey())}
           >
             최근
@@ -308,7 +308,7 @@ export default function PredictionMatchPreviewTab({
             aria-expanded={isDateSheetOpen}
             aria-controls="prediction-mobile-date-sheet"
             data-testid="prediction-schedule-mobile-date-trigger"
-            className={`${PREDICTION_BRAND_BUTTON_CLASS} inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl px-3 text-13 font-extrabold shadow-sm`}
+            className={`${PREDICTION_BRAND_BUTTON_CLASS} inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-3 text-13 font-extrabold shadow-sm`}
             onClick={() => setIsDateSheetOpen(true)}
           >
             {getCompactDateLabel(currentDateKey)}

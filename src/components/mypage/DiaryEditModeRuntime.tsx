@@ -198,7 +198,7 @@ export default function DiaryEditModeRuntime({
   const allPhotos = [...diaryForm.photos, ...diaryForm.photoFiles];
 
   return (
-    <div className="diary-edit-mode space-y-4">
+    <div className="diary-edit-mode space-y-4" data-testid="diary-edit-runtime-ready">
       <div className="diary-field-group diary-ticket-section mb-4">
         <label
           className={`

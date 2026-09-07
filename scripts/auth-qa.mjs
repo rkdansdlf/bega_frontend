@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const projectRoot = process.cwd();
+const CHROME_TARGET_TIMEOUT_MS = 30000;
 const viewportCases = [
   { label: 'mobile', width: 375, height: 812, stageColumns: 1 },
   { label: 'tablet', width: 768, height: 1024, stageColumns: 1 },
@@ -346,10 +347,16 @@ class CDPClient {
   }
 }
 
-const getPageWebSocketUrl = async (port, baseUrl) => {
+const getPageWebSocketUrl = async (port, baseUrl, diagnostics = {}) => {
+  const { getFailure, getSummary } = diagnostics;
   const startedAt = Date.now();
   let lastPageUrls = [];
-  while (Date.now() - startedAt < 10000) {
+  while (Date.now() - startedAt < CHROME_TARGET_TIMEOUT_MS) {
+    const failure = getFailure?.();
+    if (failure) {
+      throw new Error(`${failure}\n${getSummary?.() ?? ''}`.trim());
+    }
+
     try {
       const response = await fetch(`http://127.0.0.1:${port}/json/list`, {
         signal: AbortSignal.timeout(1500),
@@ -371,7 +378,16 @@ const getPageWebSocketUrl = async (port, baseUrl) => {
   }
 
   const knownPages = lastPageUrls.length > 0 ? lastPageUrls.join(', ') : 'none';
-  throw new Error(`Failed to resolve a Chrome DevTools target for ${baseUrl}. Visible pages: ${knownPages}`);
+  const failure = getFailure?.();
+  const summary = getSummary?.();
+  const details = [
+    failure,
+    summary,
+  ].filter(Boolean).join('\n');
+  throw new Error([
+    `Failed to resolve a Chrome DevTools target for ${baseUrl} after ${CHROME_TARGET_TIMEOUT_MS}ms. Visible pages: ${knownPages}`,
+    details,
+  ].filter(Boolean).join('\n'));
 };
 
 const captureScreenshot = async (client, filepath) => {
@@ -648,6 +664,8 @@ const main = async () => {
 
   const debugPort = await getFreePort();
   const userDataDir = mkdtempSync(join(tmpdir(), 'bega-auth-qa-'));
+  const chromeLogs = [];
+  let chromeError = null;
   const chromeProcess = spawn(chromeBinary, [
     '--headless=new',
     '--disable-gpu',
@@ -668,13 +686,31 @@ const main = async () => {
     env: process.env,
   });
 
-  const chromeLogs = [];
   chromeProcess.stdout.on('data', (chunk) => {
     chromeLogs.push(chunk.toString());
   });
   chromeProcess.stderr.on('data', (chunk) => {
     chromeLogs.push(chunk.toString());
   });
+  chromeProcess.on('error', (error) => {
+    chromeError = error;
+  });
+
+  const getChromeFailure = () => {
+    if (chromeError) {
+      return `Chrome failed to start: ${getErrorMessage(chromeError)}`;
+    }
+
+    if (chromeProcess.exitCode !== null) {
+      return `Chrome exited before exposing a page (code=${chromeProcess.exitCode ?? 'none'}, signal=${chromeProcess.signalCode ?? 'none'}).`;
+    }
+
+    return null;
+  };
+  const getChromeSummary = () => {
+    const output = summarizeText(chromeLogs.join(''));
+    return output ? `Chrome output:\n${output}` : 'Chrome output: none.';
+  };
 
   let client = null;
   const cleanupWarnings = [];
@@ -691,7 +727,10 @@ const main = async () => {
   };
 
   try {
-    const wsUrl = await getPageWebSocketUrl(debugPort, args.baseUrl);
+    const wsUrl = await getPageWebSocketUrl(debugPort, args.baseUrl, {
+      getFailure: getChromeFailure,
+      getSummary: getChromeSummary,
+    });
     client = new CDPClient(wsUrl);
     await client.connect();
     await client.send('Page.enable');

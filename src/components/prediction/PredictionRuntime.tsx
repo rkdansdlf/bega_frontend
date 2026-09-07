@@ -216,7 +216,7 @@ export default function PredictionRuntime() {
                 type="button"
                 onClick={() => handleTabChange('match')}
                 data-testid="prediction-tab-match"
-                className={`relative z-10 min-h-10 flex-1 rounded-lg px-4 py-1.5 text-13 font-extrabold transition-colors focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 sm:text-body ${
+                className={`relative z-10 min-h-11 flex-1 rounded-lg px-4 py-1.5 text-13 font-extrabold transition-colors focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 sm:text-body ${
                   activeTab === 'match'
                     ? 'text-primary-dark'
                     : 'text-white/70 hover:text-white'
@@ -228,7 +228,7 @@ export default function PredictionRuntime() {
                 type="button"
                 onClick={() => handleTabChange('ranking')}
                 data-testid="prediction-tab-ranking"
-                className={`relative z-10 min-h-10 flex-1 rounded-lg px-4 py-1.5 text-13 font-extrabold transition-colors focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 sm:text-body ${
+                className={`relative z-10 min-h-11 flex-1 rounded-lg px-4 py-1.5 text-13 font-extrabold transition-colors focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 sm:text-body ${
                   activeTab === 'ranking'
                     ? 'text-primary-dark'
                     : 'text-white/70 hover:text-white'
