@@ -91,16 +91,6 @@ export const TEAMS = [
   { id: 'hanwha', name: '한화 이글스' },
 ];
 
-export const PARTY_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  PENDING: { label: '모집 중', color: '#2d5f4f' },
-  MATCHED: { label: '매칭 성공', color: '#059669' },
-  FAILED: { label: '매칭 실패', color: '#dc2626' },
-  SELLING: { label: '판매 중', color: '#ea580c' },
-  SOLD: { label: '판매 완료', color: '#6b7280' },
-  CHECKED_IN: { label: '체크인', color: '#7c3aed' },
-  COMPLETED: { label: '관람 완료', color: '#4b5563' },
-};
-
 // Mate 관련
 export const MATE_PAGE_SIZE = 9;
 export const MATE_SEARCH_DEBOUNCE_MS = 300;
