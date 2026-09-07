@@ -1,4 +1,12 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import {
   fetchCoachAutoBriefOpsHealth,
@@ -7,6 +15,8 @@ import type {
   AdminCoachAutoBriefOpsHealth,
   AdminCoachAutoBriefOpsWindow,
 } from '../../types/admin';
+import type { AdminAiOperationsPanelProps } from './AdminAiOperationsPanel';
+
 const AdminAiOperationsPanelRuntime = lazy(() => import('./AdminAiOperationsPanelRuntime'));
 
 const toDateInputValue = (value: Date): string => {
@@ -19,7 +29,46 @@ const toDateInputValue = (value: Date): string => {
 const DEFAULT_AUTO_BRIEF_START_DATE = toDateInputValue(new Date());
 const DEFAULT_AUTO_BRIEF_END_DATE = DEFAULT_AUTO_BRIEF_START_DATE;
 
-export default function AdminAiOperationsRuntime() {
+export interface AdminAiOperationsRuntimeVisualQaState {
+  panelPhase: 'fallback' | 'resolved';
+  health: AdminCoachAutoBriefOpsHealth | null;
+  loading: boolean;
+  error: string | null;
+  selectedWindow: AdminCoachAutoBriefOpsWindow;
+  startDate: string;
+  endDate: string;
+  commandCopyState: 'idle' | 'done' | 'error';
+}
+
+export interface AdminAiOperationsRuntimeProps {
+  visualQaStateOverride?: AdminAiOperationsRuntimeVisualQaState;
+  visualQaPanelRenderer?: (
+    props: AdminAiOperationsPanelProps['autoBriefOpsPanel'],
+  ) => ReactNode;
+}
+
+const AdminAiOperationsRuntimeFallback = () => (
+  <div
+    data-testid="admin-ai-operations-runtime-fallback"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+    className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400 [overflow-wrap:anywhere]"
+  >
+    AI 운영 패널 로딩 중...
+  </div>
+);
+
+export default function AdminAiOperationsRuntime({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+  visualQaPanelRenderer: requestedVisualQaPanelRenderer,
+}: AdminAiOperationsRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaPanelRenderer = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaPanelRenderer;
   const [autoBriefOpsHealth, setAutoBriefOpsHealth] = useState<AdminCoachAutoBriefOpsHealth | null>(null);
   const [autoBriefOpsLoading, setAutoBriefOpsLoading] = useState(false);
   const [autoBriefOpsError, setAutoBriefOpsError] = useState<string | null>(null);
@@ -34,6 +83,7 @@ export default function AdminAiOperationsRuntime() {
     startDate?: string;
     endDate?: string;
   }) => {
+    if (visualQaStateOverride) return;
     setAutoBriefOpsLoading(true);
     setAutoBriefOpsError(null);
     try {
@@ -51,15 +101,16 @@ export default function AdminAiOperationsRuntime() {
     } finally {
       setAutoBriefOpsLoading(false);
     }
-  }, []);
+  }, [visualQaStateOverride]);
 
   useEffect(() => {
+    if (visualQaStateOverride) return;
     void runAutoBriefOpsHealthFetch({
       window: 'today',
       startDate: DEFAULT_AUTO_BRIEF_START_DATE,
       endDate: DEFAULT_AUTO_BRIEF_END_DATE,
     });
-  }, [runAutoBriefOpsHealthFetch]);
+  }, [runAutoBriefOpsHealthFetch, visualQaStateOverride]);
 
   const handleAutoBriefOpsWindowChange = (window: AdminCoachAutoBriefOpsWindow) => {
     setAutoBriefOpsWindow(window);
@@ -105,14 +156,36 @@ export default function AdminAiOperationsRuntime() {
     }
   };
 
+  const effectiveAutoBriefOpsHealth = visualQaStateOverride
+    ? visualQaStateOverride.health
+    : autoBriefOpsHealth;
+  const effectiveAutoBriefOpsLoading = visualQaStateOverride
+    ? visualQaStateOverride.loading
+    : autoBriefOpsLoading;
+  const effectiveAutoBriefOpsError = visualQaStateOverride
+    ? visualQaStateOverride.error
+    : autoBriefOpsError;
+  const effectiveAutoBriefOpsWindow = visualQaStateOverride
+    ? visualQaStateOverride.selectedWindow
+    : autoBriefOpsWindow;
+  const effectiveAutoBriefOpsStartDate = visualQaStateOverride
+    ? visualQaStateOverride.startDate
+    : autoBriefOpsStartDate;
+  const effectiveAutoBriefOpsEndDate = visualQaStateOverride
+    ? visualQaStateOverride.endDate
+    : autoBriefOpsEndDate;
+  const effectiveAutoBriefOpsCommandCopyState = visualQaStateOverride
+    ? visualQaStateOverride.commandCopyState
+    : autoBriefOpsCommandCopyState;
+
   const autoBriefOpsPanel = useMemo(() => ({
-    health: autoBriefOpsHealth,
-    loading: autoBriefOpsLoading,
-    error: autoBriefOpsError,
-    selectedWindow: autoBriefOpsWindow,
-    startDate: autoBriefOpsStartDate,
-    endDate: autoBriefOpsEndDate,
-    commandCopyState: autoBriefOpsCommandCopyState,
+    health: effectiveAutoBriefOpsHealth,
+    loading: effectiveAutoBriefOpsLoading,
+    error: effectiveAutoBriefOpsError,
+    selectedWindow: effectiveAutoBriefOpsWindow,
+    startDate: effectiveAutoBriefOpsStartDate,
+    endDate: effectiveAutoBriefOpsEndDate,
+    commandCopyState: effectiveAutoBriefOpsCommandCopyState,
     onWindowChange: handleAutoBriefOpsWindowChange,
     onStartDateChange: setAutoBriefOpsStartDate,
     onEndDateChange: setAutoBriefOpsEndDate,
@@ -120,26 +193,43 @@ export default function AdminAiOperationsRuntime() {
     onApplyCustomWindow: handleAutoBriefOpsApplyCustomWindow,
     onCopyCommand: handleAutoBriefOpsCopyCommand,
   }), [
-    autoBriefOpsCommandCopyState,
-    autoBriefOpsEndDate,
-    autoBriefOpsError,
-    autoBriefOpsHealth,
-    autoBriefOpsLoading,
-    autoBriefOpsStartDate,
-    autoBriefOpsWindow,
+    effectiveAutoBriefOpsCommandCopyState,
+    effectiveAutoBriefOpsEndDate,
+    effectiveAutoBriefOpsError,
+    effectiveAutoBriefOpsHealth,
+    effectiveAutoBriefOpsLoading,
+    effectiveAutoBriefOpsStartDate,
+    effectiveAutoBriefOpsWindow,
   ]);
 
+  if (
+    visualQaStateOverride?.panelPhase === 'resolved'
+    && visualQaPanelRenderer === undefined
+  ) {
+    throw new Error('AdminAiOperationsRuntime Visual QA resolved renderer is required.');
+  }
+
+  const content = visualQaStateOverride?.panelPhase === 'fallback'
+    ? <AdminAiOperationsRuntimeFallback />
+    : visualQaStateOverride?.panelPhase === 'resolved'
+      ? visualQaPanelRenderer?.(autoBriefOpsPanel)
+      : (
+        <Suspense fallback={<AdminAiOperationsRuntimeFallback />}>
+          <AdminAiOperationsPanelRuntime
+            autoBriefOpsPanel={autoBriefOpsPanel}
+          />
+        </Suspense>
+      );
+
   return (
-    <Suspense
-      fallback={(
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">
-          AI 운영 패널 로딩 중...
-        </div>
-      )}
+    <section
+      data-testid="admin-ai-operations-runtime"
+      aria-busy={visualQaStateOverride?.panelPhase === 'fallback'
+        || effectiveAutoBriefOpsLoading
+        || undefined}
+      className="min-w-0 overflow-hidden"
     >
-      <AdminAiOperationsPanelRuntime
-        autoBriefOpsPanel={autoBriefOpsPanel}
-      />
-    </Suspense>
+      {content}
+    </section>
   );
 }

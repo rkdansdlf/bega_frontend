@@ -111,15 +111,16 @@ export function StatusBadge({
   const filledVariant = variant === 'filled';
   const showDot = marker === 'dot' || lineVariant || filledVariant;
   const hasLabel = label !== null && label !== undefined && label !== false && label !== '';
+  const resolvedTitle = title ?? (typeof label === 'string' ? label : undefined);
 
   return (
     <span
-      title={title}
+      title={resolvedTitle}
       data-testid={testId}
       data-live-mode={live ? liveMode : undefined}
       style={style}
       className={cn(
-        'status-badge relative inline-flex shrink-0 items-center whitespace-nowrap rounded-full font-bold leading-none tracking-normal',
+        'status-badge relative inline-flex min-w-0 max-w-full shrink items-center whitespace-nowrap rounded-full font-bold leading-none tracking-normal',
         lineVariant
           ? cn('border border-transparent bg-transparent px-0 py-0 text-slate-600 shadow-none dark:text-white', lineSizeClass[size])
           : filledVariant
@@ -172,7 +173,10 @@ export function StatusBadge({
       {hasLabel
         ? (
           <span
-            className={filledVariant ? 'relative z-0' : cn('relative z-0', markerToneTextClass[tone])}
+            className={cn(
+              'status-badge-label relative z-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap',
+              filledVariant ? null : markerToneTextClass[tone],
+            )}
             style={filledVariant ? { color: filledTextColor || '#ffffff' } : undefined}
           >
             {label}

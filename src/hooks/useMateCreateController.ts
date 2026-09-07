@@ -12,7 +12,13 @@ import { getEstimatedPrice } from '../utils/priceHelper';
 import { KBO_STADIUMS, SeatCategory } from '../utils/stadiumData';
 import { useMateCreateMachine, type MatchInfo } from './useMateCreateMachine';
 
-export function useMateCreateController() {
+type UseMateCreateControllerOptions = {
+  suppressExternalEffects?: boolean;
+};
+
+export function useMateCreateController({
+  suppressExternalEffects = false,
+}: UseMateCreateControllerOptions = {}) {
   const navigate = useNavigate();
   const requireSocialVerification = import.meta.env.VITE_MATE_REQUIRE_SOCIAL_VERIFICATION !== 'false';
   const machine = useMateCreateMachine();
@@ -51,6 +57,9 @@ export function useMateCreateController() {
   }, [logout, navigate]);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     if (isAuthLoading) {
       return;
     }
@@ -84,22 +93,31 @@ export function useMateCreateController() {
     return () => {
       isMounted = false;
     };
-  }, [currentUserId, isAuthLoading, redirectToLogin, requireSocialVerification]);
+  }, [currentUserId, isAuthLoading, redirectToLogin, requireSocialVerification, suppressExternalEffects]);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     if (createStep === 3 && formData.stadium && formData.seatCategory && formData.gameDate) {
       const estimated = getEstimatedPrice(formData.stadium, formData.seatCategory as SeatCategory, formData.gameDate);
       if (estimated && estimated !== formData.ticketPrice) {
         updateFormData({ ticketPrice: estimated });
       }
     }
-  }, [createStep, formData.stadium, formData.seatCategory, formData.gameDate, formData.ticketPrice, updateFormData]);
+  }, [createStep, formData.stadium, formData.seatCategory, formData.gameDate, formData.ticketPrice, suppressExternalEffects, updateFormData]);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     window.scrollTo({ top: 0, left: 0 });
-  }, [createStep]);
+  }, [createStep, suppressExternalEffects]);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     if (!isConfirming) {
       return;
     }
@@ -118,7 +136,7 @@ export function useMateCreateController() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [cancelSubmit, isConfirming]);
+  }, [cancelSubmit, isConfirming, suppressExternalEffects]);
 
   const handleDescriptionChange = useCallback((text: string) => {
     updateFormData({ description: text });
@@ -171,6 +189,9 @@ export function useMateCreateController() {
     && (isMatchLoadError || availableMatches.length === 0);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     if (createStep !== 2 || !formData.gameDate) {
       loadedMatchDateRef.current = '';
       return;
@@ -182,9 +203,12 @@ export function useMateCreateController() {
 
     loadedMatchDateRef.current = formData.gameDate;
     loadMatches();
-  }, [createStep, formData.gameDate, loadMatches]);
+  }, [createStep, formData.gameDate, loadMatches, suppressExternalEffects]);
 
   useEffect(() => {
+    if (suppressExternalEffects) {
+      return;
+    }
     if (createdPartyId) {
       toast.success('파티가 생성되었습니다!');
       navigate(`/mate/${createdPartyId}`);
@@ -229,6 +253,7 @@ export function useMateCreateController() {
     navigate,
     redirectToLogin,
     submitErrorStatus,
+    suppressExternalEffects,
   ]);
 
   const availableCategoryKeys = useMemo<SeatCategory[]>(() => {

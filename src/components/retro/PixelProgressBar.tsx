@@ -17,6 +17,7 @@ interface PixelProgressBarProps {
   showLabel?: boolean;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
+  containerTestId?: string;
 }
 
 const sizeMap = {
@@ -34,12 +35,13 @@ export default function PixelProgressBar({
   showLabel = true,
   label,
   size = 'md',
+  containerTestId,
 }: PixelProgressBarProps) {
   const percent = clampPercent(max > 0 ? (value / max) * 100 : 0);
   const height = sizeMap[size];
 
   return (
-    <div className="relative" style={{ height }}>
+    <div className="relative" data-testid={containerTestId} style={{ height }}>
       <style>{pixelProgressBarStyles}</style>
       <div
         style={{
@@ -47,6 +49,7 @@ export default function PixelProgressBar({
           height,
           background: '#0a0a1e',
           border: '3px solid #4a4a6a',
+          boxSizing: 'border-box',
           position: 'relative',
           overflow: 'hidden',
           clipPath: 'polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))',
@@ -55,6 +58,7 @@ export default function PixelProgressBar({
         }}
       >
         <div
+          className="retro-pixel-progress-label"
           style={{
             height: '100%',
             width: `${percent}%`,
@@ -121,6 +125,11 @@ export default function PixelProgressBar({
             textShadow: '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
             zIndex: 1,
             pointerEvents: 'none',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+            padding: '0 4px',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {label || `${Math.floor(value).toLocaleString()}/${max.toLocaleString()}`}

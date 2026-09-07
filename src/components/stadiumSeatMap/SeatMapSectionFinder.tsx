@@ -83,16 +83,17 @@ export function SeatMapSectionFinder<TSection>({
         className="border-b border-slate-100 px-4 py-4 dark:border-slate-800"
         style={{ borderColor: isDark ? STADIUM_SEATMAP_DARK_COLORS.border : undefined }}
       >
-        <div className="flex items-center justify-between gap-3">
-          <div>
+        <div className="flex min-w-0 items-center justify-between gap-3">
+          <div className="min-w-0">
             <h3 className="text-sm font-black text-slate-800 dark:text-white" style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined }}>블록 검색</h3>
             <p className="mt-0.5 text-11 font-semibold text-slate-400" style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.muted : undefined }}>
               {visibleBlocks.length}/{blocks.length}개 표시
             </p>
           </div>
           <span
-            className="shrink-0 rounded-full px-2.5 py-1 text-11 font-black"
+            className="min-w-0 max-w-[50%] shrink-0 truncate rounded-full px-2.5 py-1 text-11 font-black"
             style={{ background: `${accentColor}1a`, color: accentColor }}
+            title={stadiumShortLabel}
           >
             {stadiumShortLabel}
           </span>
@@ -126,6 +127,11 @@ export function SeatMapSectionFinder<TSection>({
               const cat = categories[catId];
               const accent = cat ? (mode === 'dark' ? cat.dark : cat.light) : accentColor;
               const isActive = adapter.getId(block) === selectedId;
+              const metadata = [
+                cat?.label,
+                adapter.getSideLabel(block),
+                adapter.getFanRoleLabel(block),
+              ].filter(Boolean).join(' · ');
 
               return (
                 <button
@@ -149,19 +155,20 @@ export function SeatMapSectionFinder<TSection>({
                 >
                   <div className="flex items-start gap-3">
                     <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-1.5">
+                      <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1.5">
                         <span
-                          className="rounded-full px-2 py-0.5 text-10 font-black text-white"
+                          className="max-w-[50%] shrink-0 truncate whitespace-nowrap rounded-full px-2 py-0.5 text-10 font-black text-white"
                           style={{ background: accent }}
+                          title={adapter.getBlock(block)}
                         >
                           {adapter.getBlock(block)}
                         </span>
-                        <span className="text-xs font-black text-slate-800 dark:text-white" style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined }}>
+                        <span className="min-w-0 max-w-full break-words text-xs font-black text-slate-800 [overflow-wrap:anywhere] dark:text-white" style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined }}>
                           {adapter.getName(block)}
                         </span>
                       </div>
                       <p className="mt-1 truncate text-11 font-semibold text-slate-500 dark:text-white" style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.muted : undefined }}>
-                        {cat?.label} · {adapter.getSideLabel(block)} · {adapter.getFanRoleLabel(block)}
+                        {metadata}
                       </p>
                     </div>
                   </div>

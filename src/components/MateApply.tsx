@@ -37,12 +37,13 @@ import {
 import { mateMetaLabelClass, mateMobileBarClass } from '../utils/mateFlowUi';
 import { validateMateApplyMessage } from '../utils/mateValidation';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
+import type { Party } from '../types/mate';
 
 const MateApplyTicketVerificationPanel = lazy(() => import('./MateApplyTicketVerificationPanel'));
 
 function MatePill({ className = '', children }: { className?: string; children: ReactNode }) {
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-body font-semibold ${className}`}>
+    <span className={`inline-flex max-w-full items-center whitespace-normal rounded-full border px-2.5 py-1 text-body font-semibold [overflow-wrap:anywhere] ${className}`}>
       {children}
     </span>
   );
@@ -52,31 +53,62 @@ function SectionDivider({ className = '' }: { className?: string }) {
   return <div className={`h-px w-full bg-gray-200 dark:bg-border ${className}`} aria-hidden="true" />;
 }
 
-export default function MateApply() {
-  const { isAuthLoading, userId: currentUserId } = useAuthSession();
+export type MateApplyVisualQaStateOverride = {
+  currentUserId: number | null;
+  isAuthLoading: boolean;
+  isPartyLoading: boolean;
+  isPartyRevalidating: boolean;
+  isSubmitting: boolean;
+  message: string;
+  party: Party | null;
+  partyError: string | null;
+  paymentCapability: 'available' | 'error' | 'pending' | 'required';
+  showVerificationDialog: boolean;
+  ticketInfo: TicketInfo | null;
+  ticketPanelPhase: 'fallback' | 'resolved';
+  ticketVerified: boolean;
+};
+
+interface MateApplyProps {
+  visualQaStateOverride?: MateApplyVisualQaStateOverride;
+}
+
+export default function MateApply({ visualQaStateOverride: visualQaStateOverrideProp }: MateApplyProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : visualQaStateOverrideProp;
+  const { isAuthLoading: liveAuthLoading, userId: liveCurrentUserId } = useAuthSession();
   const { logout } = useAuthAccessActions();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const {
-    party,
-    isLoading: isPartyLoading,
-    isRevalidating: isPartyRevalidating,
-    error: partyError,
+    party: liveParty,
+    isLoading: livePartyLoading,
+    isRevalidating: livePartyRevalidating,
+    error: livePartyError,
   } = useMatePartyFromRoute(id);
+  const currentUserId = visualQaStateOverride?.currentUserId ?? liveCurrentUserId;
+  const isAuthLoading = visualQaStateOverride?.isAuthLoading ?? liveAuthLoading;
+  const party = visualQaStateOverride ? visualQaStateOverride.party : liveParty;
+  const isPartyLoading = visualQaStateOverride?.isPartyLoading ?? livePartyLoading;
+  const isPartyRevalidating = visualQaStateOverride?.isPartyRevalidating ?? livePartyRevalidating;
+  const partyError = visualQaStateOverride ? visualQaStateOverride.partyError : livePartyError;
 
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
-  const [ticketVerified, setTicketVerified] = useState(false);
-  const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(null);
+  const [message, setMessage] = useState(() => visualQaStateOverride?.message ?? '');
+  const [isSubmitting, setIsSubmitting] = useState(() => visualQaStateOverride?.isSubmitting ?? false);
+  const [showVerificationDialog, setShowVerificationDialog] = useState(() => (
+    visualQaStateOverride?.showVerificationDialog ?? false
+  ));
+  const [ticketVerified, setTicketVerified] = useState(() => visualQaStateOverride?.ticketVerified ?? false);
+  const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(() => visualQaStateOverride?.ticketInfo ?? null);
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
   const restoredDraftPartyIdRef = useRef<string | null>(null);
   const previousPartyIdRef = useRef<string | null>(null);
   const paymentCapabilityQuery = useQuery({
     queryKey: ['mate', 'payment-capability'],
     queryFn: fetchMatePaymentCapability,
-    enabled: Boolean(currentUserId && !isAuthLoading && party),
+    enabled: visualQaStateOverride == null && Boolean(currentUserId && !isAuthLoading && party),
     staleTime: 30 * 1000,
     retry: false,
   });
@@ -87,6 +119,9 @@ export default function MateApply() {
   };
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
     if (!id) {
       return;
     }
@@ -96,9 +131,12 @@ export default function MateApply() {
     }
 
     previousPartyIdRef.current = id;
-  }, [id]);
+  }, [id, visualQaStateOverride]);
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
     setIsDraftHydrated(false);
     setMessage('');
     setTicketVerified(false);
@@ -127,10 +165,10 @@ export default function MateApply() {
     }
 
     setIsDraftHydrated(true);
-  }, [id]);
+  }, [id, visualQaStateOverride]);
 
   useEffect(() => {
-    if (!id || !isDraftHydrated) {
+    if (visualQaStateOverride || !id || !isDraftHydrated) {
       return;
     }
 
@@ -139,15 +177,25 @@ export default function MateApply() {
       ticketVerified,
       ticketInfo,
     });
-  }, [id, isDraftHydrated, message, ticketInfo, ticketVerified]);
+  }, [id, isDraftHydrated, message, ticketInfo, ticketVerified, visualQaStateOverride]);
 
   if (isAuthLoading || (isPartyLoading && !party)) {
-    return <LoadingSpinner text="파티 정보를 불러오는 중입니다..." fullScreen />;
+    return (
+      <div
+        data-testid="mate-apply-loading"
+        className="min-h-dvh min-w-0 overflow-x-clip bg-background"
+      >
+        <LoadingSpinner text="파티 정보를 불러오는 중입니다..." fullScreen />
+      </div>
+    );
   }
 
   if (partyError || !party) {
     return (
-      <div className="flex justify-center items-center h-screen bg-background dark:bg-background transition-colors duration-200">
+      <div
+        data-testid="mate-apply-error"
+        className="flex min-h-dvh min-w-0 items-center justify-center overflow-x-clip bg-background px-4 transition-colors duration-200 dark:bg-background"
+      >
         <img
           src={grassDecor}
           alt=""
@@ -157,9 +205,15 @@ export default function MateApply() {
           fetchpriority="low"
           loading="lazy"
         />
-        <div className="text-center z-10">
-          <p className="text-lg text-gray-600 dark:text-white mb-4">{partyError || '파티 정보를 불러오는 중입니다...'}</p>
-          <Button onClick={() => navigate('/mate')} variant="outline" className="dark:bg-card dark:text-white dark:border-border dark:hover:bg-gray-700">
+        <div className="z-10 min-w-0 max-w-lg text-center">
+          <p className="mb-4 min-w-0 text-lg text-gray-600 [overflow-wrap:anywhere] dark:text-white">{partyError || '파티 정보를 불러오는 중입니다...'}</p>
+          <Button
+            data-testid="mate-apply-error-return"
+            onClick={() => navigate('/mate')}
+            variant="outline"
+            size="touch"
+            className="dark:bg-card dark:text-white dark:border-border dark:hover:bg-gray-700"
+          >
             목록으로 돌아가기
           </Button>
         </div>
@@ -168,14 +222,23 @@ export default function MateApply() {
   }
 
   const isSelling = party.status === 'SELLING';
+  const paymentCapabilityPending = visualQaStateOverride
+    ? visualQaStateOverride.paymentCapability === 'pending'
+    : paymentCapabilityQuery.isPending;
+  const paymentCapabilityError = visualQaStateOverride
+    ? visualQaStateOverride.paymentCapability === 'error'
+    : paymentCapabilityQuery.isError;
+  const sellingPaymentRequired = visualQaStateOverride
+    ? visualQaStateOverride.paymentCapability === 'required'
+    : paymentCapabilityQuery.data?.sellingPaymentRequired === true;
   const isSellingPaymentBlocked = isSelling && (
-    paymentCapabilityQuery.isPending
-    || paymentCapabilityQuery.isError
-    || paymentCapabilityQuery.data?.sellingPaymentRequired === true
+    paymentCapabilityPending
+    || paymentCapabilityError
+    || sellingPaymentRequired
   );
-  const paymentCapabilityNotice = paymentCapabilityQuery.isError
+  const paymentCapabilityNotice = paymentCapabilityError
     ? '결제 모드 정보를 확인할 수 없어 판매 신청을 잠시 막았습니다.'
-    : paymentCapabilityQuery.isPending
+    : paymentCapabilityPending
       ? '결제 모드를 확인하는 중입니다.'
       : '현재 서버가 앱 결제를 요구하지만 결제 화면이 아직 연결되지 않았습니다.';
   const reservationDepositAmount = party.reservationDepositAmount || 0;
@@ -221,6 +284,14 @@ export default function MateApply() {
   const summaryAmountLabel = isSelling ? '구매 신청 금액' : (reservationDepositAmount > 0 ? '예약금' : '거래 기준 금액');
   const summaryTrustLabel = party.ticketVerified ? '호스트 티켓 인증' : '티켓 인증 확인 전';
   const stadiumDisplayName = formatStadiumDisplayName(party.stadium);
+  const ticketVerificationFallback = (
+    <div
+      role="status"
+      aria-label="티켓 인증 화면 준비 중"
+      data-testid="mate-apply-ticket-fallback"
+      className="h-40 animate-pulse rounded-xl bg-muted/70 dark:bg-white/10"
+    />
+  );
 
   const handleSubmit = async () => {
     if (isSellingPaymentBlocked) {
@@ -291,7 +362,10 @@ export default function MateApply() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-background transition-colors duration-200">
+    <div
+      data-testid="mate-apply"
+      className="relative min-h-dvh min-w-0 overflow-x-clip bg-gray-50 transition-colors duration-200 dark:bg-background"
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[30rem] bg-primary/5 dark:bg-primary/10" />
       <img
         src={grassDecor}
@@ -303,16 +377,18 @@ export default function MateApply() {
         loading="lazy"
       />
 
-      <div className="relative z-10 mx-auto max-w-3xl px-4 py-6 pb-44 sm:px-6 sm:py-8 lg:px-8 lg:pb-8">
+      <div className="relative z-10 mx-auto max-w-3xl px-4 py-6 pb-8 sm:px-6 sm:py-8 lg:px-8">
         <Button
+          data-testid="mate-apply-back"
           variant="ghost"
+          size="touch"
           onClick={() => {
             if (id) {
               clearMateApplyDraft(id);
             }
             navigate(`/mate/${id}`);
           }}
-          className="mb-3 -ml-2 sm:mb-4"
+          className="mb-3 -ml-2 text-gray-800 dark:text-gray-100 sm:mb-4"
         >
           <MateChevronLeftIcon className="w-4 h-4 mr-2" />
           뒤로
@@ -357,7 +433,7 @@ export default function MateApply() {
                 </div>
               </div>
               <div className="min-w-0">
-                <h3 className="text-base font-black leading-tight text-primary sm:text-lg">
+                <h3 className="min-w-0 text-base font-black leading-tight text-primary [overflow-wrap:anywhere] sm:text-lg">
                   {stadiumDisplayName}
                 </h3>
                 <p className="mt-1 text-body text-gray-600 dark:text-white">
@@ -370,7 +446,7 @@ export default function MateApply() {
                 <p className={mateMetaLabelClass}>
                   {summaryAmountLabel}
                 </p>
-                <p className="text-xl font-black text-primary sm:mt-2 sm:text-2xl">
+                <p className="min-w-0 break-all text-right text-xl font-black text-primary sm:mt-2 sm:text-2xl">
                   {primaryAmount.toLocaleString()}원
                 </p>
               </div>
@@ -380,19 +456,19 @@ export default function MateApply() {
           <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
             <div className={`${insetPanelClass} col-span-2 p-3 md:col-span-1`}>
               <p className={mateMetaLabelClass}>좌석</p>
-              <p className="mt-1 text-body font-semibold text-gray-900 dark:text-white line-clamp-2">{party.section}</p>
+              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white line-clamp-2">{party.section}</p>
             </div>
             <div className={`${insetPanelClass} p-3`}>
               <p className={mateMetaLabelClass}>호스트</p>
-              <p className="mt-1 text-body font-semibold text-gray-900 dark:text-white">{party.hostName}</p>
+              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{party.hostName}</p>
             </div>
             <div className={`${insetPanelClass} col-span-2 p-3 md:col-span-1`}>
               <p className={mateMetaLabelClass}>신뢰 신호</p>
-              <p className="mt-1 text-body font-semibold text-gray-900 dark:text-white">{summaryTrustLabel}</p>
+              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{summaryTrustLabel}</p>
             </div>
             <div className={`${insetPanelClass} p-3`}>
               <p className={mateMetaLabelClass}>현재 상태</p>
-              <p className="mt-1 text-body font-semibold text-gray-900 dark:text-white">{isSelling ? '구매 신청 가능' : '참여 신청 가능'}</p>
+              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{isSelling ? '구매 신청 가능' : '참여 신청 가능'}</p>
             </div>
           </div>
         </Card>
@@ -425,21 +501,25 @@ export default function MateApply() {
 
         {!isSelling && (
           <Card className={`mb-6 p-5 sm:p-6 ${sectionCardClass}`}>
-            <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-muted/70" />}>
-              <MateApplyTicketVerificationPanel
-                gameDate={party.gameDate}
-                ticketVerified={ticketVerified}
-                ticketInfo={ticketInfo}
-                onVerified={(nextTicketInfo) => {
-                  setTicketInfo(nextTicketInfo);
-                  setTicketVerified(Boolean(nextTicketInfo.verificationToken));
-                }}
-                onReset={() => {
-                  setTicketVerified(false);
-                  setTicketInfo(null);
-                }}
-              />
-            </Suspense>
+            {visualQaStateOverride?.ticketPanelPhase === 'fallback' ? (
+              ticketVerificationFallback
+            ) : (
+              <Suspense fallback={ticketVerificationFallback}>
+                <MateApplyTicketVerificationPanel
+                  gameDate={party.gameDate}
+                  ticketVerified={ticketVerified}
+                  ticketInfo={ticketInfo}
+                  onVerified={(nextTicketInfo) => {
+                    setTicketInfo(nextTicketInfo);
+                    setTicketVerified(Boolean(nextTicketInfo.verificationToken));
+                  }}
+                  onReset={() => {
+                    setTicketVerified(false);
+                    setTicketInfo(null);
+                  }}
+                />
+              </Suspense>
+            )}
           </Card>
         )}
 
@@ -454,7 +534,7 @@ export default function MateApply() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-700 dark:text-white">티켓 가격</span>
-                  <span className="text-gray-900 dark:text-white">
+                  <span className="min-w-0 break-all text-right text-gray-900 dark:text-white">
                     {ticketAmount.toLocaleString()}원
                   </span>
                 </div>
@@ -463,7 +543,7 @@ export default function MateApply() {
                   <span className="font-bold text-gray-900 dark:text-white">
                     거래 기준 금액
                   </span>
-                  <span className="text-lg font-bold text-primary">
+                  <span className="min-w-0 break-all text-right text-lg font-bold text-primary">
                     {ticketAmount.toLocaleString()}원
                   </span>
                 </div>
@@ -473,7 +553,7 @@ export default function MateApply() {
             {isSelling && (
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-gray-700 dark:text-white">티켓 판매가</span>
-                <span className="text-lg font-bold text-primary">
+                <span className="min-w-0 break-all text-right text-lg font-bold text-primary">
                   {sellingPrice.toLocaleString()}원
                 </span>
               </div>
@@ -514,6 +594,7 @@ export default function MateApply() {
 
           <div className="mt-6 hidden lg:block">
             <Button
+              data-testid="mate-apply-submit-desktop"
               onClick={handleSubmit}
               disabled={!isSubmitReady || isSubmitting || isSellingPaymentBlocked}
               className="w-full bg-primary text-white"
@@ -531,13 +612,13 @@ export default function MateApply() {
         </Card>
       </div>
 
-      <div className={`${mateMobileBarClass} lg:hidden`}>
+      <div className={`${mateMobileBarClass} mx-4 sm:mx-auto sm:max-w-3xl lg:hidden`}>
         <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 sm:gap-3">
           <div className="min-w-0 flex-1 basis-[180px]">
             <p className={mateMetaLabelClass}>
               {summaryAmountLabel}
             </p>
-            <p className="mt-1 text-lg font-black text-primary">
+            <p className="mt-1 min-w-0 break-all text-lg font-black text-primary">
               {primaryAmount.toLocaleString()}원
             </p>
             {!isSelling && !isSubmitReady && (
@@ -547,10 +628,11 @@ export default function MateApply() {
             )}
           </div>
           <Button
+            data-testid="mate-apply-submit-mobile"
             onClick={handleSubmit}
             disabled={!isSubmitReady || isSubmitting || isSellingPaymentBlocked}
             className="w-full bg-primary text-white sm:w-auto sm:min-w-[150px]"
-            size="lg"
+            size="touchLg"
           >
             {submitLabel}
           </Button>

@@ -1211,21 +1211,20 @@ export default function HomeRuntime() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
-            {showConnectionRecoveryBanner && (
-                <Suspense fallback={null}>
-                    <LazyHomeRecoveryBanner
-                        loadFailureReason={loadFailureReason}
-                        manualDataRequest={manualDataRequest}
-                        onRetry={() => {
-                            setConnectionError(false);
-                            setManualDataRequest(null);
-                            void loadHomeBootstrap(selectedDate);
-                        }}
-                    />
-                </Suspense>
-            )}
-
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+                {showConnectionRecoveryBanner && (
+                    <Suspense fallback={null}>
+                        <LazyHomeRecoveryBanner
+                            loadFailureReason={loadFailureReason}
+                            manualDataRequest={manualDataRequest}
+                            onRetry={() => {
+                                setConnectionError(false);
+                                setManualDataRequest(null);
+                                void loadHomeBootstrap(selectedDate);
+                            }}
+                        />
+                    </Suspense>
+                )}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border/70 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
                     <div>
                         <div className="flex items-center gap-3">
@@ -1410,7 +1409,7 @@ export default function HomeRuntime() {
                     aria-hidden="true"
                     data-testid="home-mobile-bottom-spacer"
                 />
-            </main>
+            </div>
         </div>
     );
 }

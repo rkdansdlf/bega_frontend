@@ -1,4 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { requestLoadTrace } from '../utils/requestLoadTrace';
 
@@ -21,6 +28,23 @@ type HomeFirstCardReadyWindow = Window & {
 
 type LayoutProps = {
   authenticated?: boolean;
+  visualQaOutletOverride?: ReactNode;
+  visualQaRuntimeOverrides?: {
+    authenticatedLayoutChrome?: ComponentType<{ enableAuthenticatedServices?: boolean }>;
+    footer?: ComponentType;
+    navbar?: ComponentType<{ authenticatedShell?: boolean }>;
+    publicNavbar?: ComponentType;
+  };
+  visualQaRuntimePhases?: {
+    authenticatedLayoutChrome?: 'loading' | 'resolved';
+    footer?: 'loading' | 'resolved';
+    navbar?: 'loading' | 'resolved';
+    publicNavbar?: 'loading' | 'resolved';
+  };
+  visualQaStateOverride?: {
+    isFooterRequested: boolean;
+    publicHomeChromeReadyStage: 0 | 1 | 2;
+  };
 };
 
 function PublicNavbarFallback() {
@@ -55,13 +79,31 @@ function PublicNavbarFallback() {
   );
 }
 
-export default function Layout({ authenticated = true }: LayoutProps) {
-  const [isFooterRequested, setIsFooterRequested] = useState(false);
+export default function Layout(props: LayoutProps) {
+  const { authenticated = true } = props;
+  const visualQaStateOverride = import.meta.env.DEV ? props.visualQaStateOverride : undefined;
+  const visualQaRuntimePhases = import.meta.env.DEV ? props.visualQaRuntimePhases : undefined;
+  const visualQaRuntimeOverrides = import.meta.env.DEV ? props.visualQaRuntimeOverrides : undefined;
+  const visualQaOutletOverride = import.meta.env.DEV ? props.visualQaOutletOverride : undefined;
+  const [liveIsFooterRequested, setLiveIsFooterRequested] = useState(false);
+  const isFooterRequested = visualQaStateOverride?.isFooterRequested ?? liveIsFooterRequested;
   const location = useLocation();
   const isPublicHomeRoute = !authenticated && /^\/home\/?$/.test(location.pathname);
-  const [publicHomeChromeReadyStage, setPublicHomeChromeReadyStage] = useState(() => (
+  const [livePublicHomeChromeReadyStage, setLivePublicHomeChromeReadyStage] = useState(() => (
     isPublicHomeRoute ? 0 : PUBLIC_HOME_CHROME_CHAT_READY_STAGE
   ));
+  const publicHomeChromeReadyStage = visualQaStateOverride?.publicHomeChromeReadyStage
+    ?? livePublicHomeChromeReadyStage;
+  const PublicNavbarComponent = visualQaRuntimeOverrides?.publicNavbar ?? PublicNavbar;
+  const NavbarComponent = visualQaRuntimeOverrides?.navbar ?? Navbar;
+  const FooterComponent = visualQaRuntimeOverrides?.footer ?? Footer;
+  const AuthenticatedLayoutChromeComponent = visualQaRuntimeOverrides?.authenticatedLayoutChrome
+    ?? AuthenticatedLayoutChrome;
+  const navbarPhase = visualQaRuntimePhases?.navbar ?? 'resolved';
+  const publicNavbarPhase = visualQaRuntimePhases?.publicNavbar ?? 'resolved';
+  const footerPhase = visualQaRuntimePhases?.footer ?? 'resolved';
+  const authenticatedLayoutChromePhase = visualQaRuntimePhases?.authenticatedLayoutChrome
+    ?? 'resolved';
 
   const shouldShowChatLauncher = authenticated || isPublicHomeRoute;
   const shouldMountChatChrome = shouldShowChatLauncher && (
@@ -78,6 +120,10 @@ export default function Layout({ authenticated = true }: LayoutProps) {
   }, [authenticated]);
 
   useEffect(() => {
+    if (visualQaStateOverride !== undefined) {
+      return undefined;
+    }
+
     let timeoutId: ReturnType<typeof globalThis.setTimeout> | undefined;
     let fallbackTimeoutId: ReturnType<typeof globalThis.setTimeout> | undefined;
     let idleId: number | undefined;
@@ -89,7 +135,7 @@ export default function Layout({ authenticated = true }: LayoutProps) {
         return;
       }
       hasRequestedFooter = true;
-      setIsFooterRequested(true);
+      setLiveIsFooterRequested(true);
     };
 
     const requestFooterWhenReady = () => {
@@ -104,7 +150,7 @@ export default function Layout({ authenticated = true }: LayoutProps) {
     };
 
     if (isPublicHomeRoute) {
-      setIsFooterRequested(false);
+      setLiveIsFooterRequested(false);
 
       const handleHomeFirstCardReady = () => {
         const readyPathname = (window as HomeFirstCardReadyWindow).__begaHomeFirstCardReadyPathname;
@@ -148,15 +194,19 @@ export default function Layout({ authenticated = true }: LayoutProps) {
         globalThis.clearTimeout(timeoutId);
       }
     };
-  }, [isPublicHomeRoute, location.pathname]);
+  }, [isPublicHomeRoute, location.pathname, visualQaStateOverride]);
 
   useEffect(() => {
-    if (!isPublicHomeRoute) {
-      setPublicHomeChromeReadyStage(PUBLIC_HOME_CHROME_CHAT_READY_STAGE);
-      return;
+    if (visualQaStateOverride !== undefined) {
+      return undefined;
     }
 
-    setPublicHomeChromeReadyStage(0);
+    if (!isPublicHomeRoute) {
+      setLivePublicHomeChromeReadyStage(PUBLIC_HOME_CHROME_CHAT_READY_STAGE);
+      return undefined;
+    }
+
+    setLivePublicHomeChromeReadyStage(0);
 
     let minDelayTimeoutId: ReturnType<typeof globalThis.setTimeout> | undefined;
     let chatDelayTimeoutId: ReturnType<typeof globalThis.setTimeout> | undefined;
@@ -174,7 +224,7 @@ export default function Layout({ authenticated = true }: LayoutProps) {
         return;
       }
       hasRequestedChrome = true;
-      setPublicHomeChromeReadyStage((stage) => Math.max(stage, PUBLIC_HOME_CHROME_NAV_READY_STAGE));
+      setLivePublicHomeChromeReadyStage((stage) => Math.max(stage, PUBLIC_HOME_CHROME_NAV_READY_STAGE));
     };
 
     const requestChatChrome = () => {
@@ -182,7 +232,7 @@ export default function Layout({ authenticated = true }: LayoutProps) {
         return;
       }
       hasRequestedChatChrome = true;
-      setPublicHomeChromeReadyStage(PUBLIC_HOME_CHROME_CHAT_READY_STAGE);
+      setLivePublicHomeChromeReadyStage(PUBLIC_HOME_CHROME_CHAT_READY_STAGE);
     };
 
     const requestChromeWhenReady = () => {
@@ -255,32 +305,41 @@ export default function Layout({ authenticated = true }: LayoutProps) {
         globalThis.clearTimeout(fallbackTimeoutId);
       }
     };
-  }, [isPublicHomeRoute, location.pathname]);
+  }, [isPublicHomeRoute, location.pathname, visualQaStateOverride]);
+
+  const authenticatedNavbarFallback = <PublicNavbarFallback />;
+  const footerFallback = <div className="border-t border-zinc-200 dark:border-gray-800" />;
 
   return (
     <>
       {authenticated ? (
-        <Suspense fallback={<div className="h-16 border-b border-gray-200 dark:border-border bg-background/80 backdrop-blur-md" />}>
-          <Navbar authenticatedShell />
-        </Suspense>
+        navbarPhase === 'loading' ? authenticatedNavbarFallback : (
+          <Suspense fallback={authenticatedNavbarFallback}>
+            <NavbarComponent authenticatedShell />
+          </Suspense>
+        )
       ) : shouldMountPublicNavbar ? (
-        <Suspense fallback={<PublicNavbarFallback />}>
-          <PublicNavbar />
-        </Suspense>
+        publicNavbarPhase === 'loading' ? <PublicNavbarFallback /> : (
+          <Suspense fallback={<PublicNavbarFallback />}>
+            <PublicNavbarComponent />
+          </Suspense>
+        )
       ) : (
         <PublicNavbarFallback />
       )}
       <main className="min-h-screen bg-background text-base font-sans leading-relaxed text-foreground antialiased transition-colors duration-200 max-lg:mobile-chrome-safe-bottom">
-        <Outlet /> {/* 자식 라우트 컴포넌트가 렌더링될 위치 */}
+        {visualQaOutletOverride !== undefined ? visualQaOutletOverride : <Outlet />}
       </main>
       {isFooterRequested ? (
-        <Suspense fallback={<div className="border-t border-zinc-200 dark:border-gray-800" />}>
-          <Footer />
-        </Suspense>
+        footerPhase === 'loading' ? footerFallback : (
+          <Suspense fallback={footerFallback}>
+            <FooterComponent />
+          </Suspense>
+        )
       ) : null}
-      {shouldMountChatChrome && (
+      {shouldMountChatChrome && authenticatedLayoutChromePhase === 'resolved' && (
         <Suspense fallback={null}>
-          <AuthenticatedLayoutChrome enableAuthenticatedServices={authenticated} />
+          <AuthenticatedLayoutChromeComponent enableAuthenticatedServices={authenticated} />
         </Suspense>
       )}
     </>

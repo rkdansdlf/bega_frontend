@@ -1,9 +1,22 @@
 import { lazy, Suspense } from 'react';
 
+import type { OffSeasonHomeVisualQaStateOverride } from './OffSeasonHome';
+
 const OffSeasonHomeRuntime = lazy(() => import('./OffSeasonHome'));
 
-const OffSeasonHomeFallback = () => (
-  <div className="min-h-screen bg-gray-50 px-4 py-6 transition-colors dark:bg-background sm:px-6 md:px-6 md:py-8">
+export type OffSeasonHomePageVisualQaOverride =
+  | { phase: 'fallback' }
+  | { phase: 'runtime'; runtime: OffSeasonHomeVisualQaStateOverride };
+
+interface OffSeasonHomePageProps {
+  visualQaStateOverride?: OffSeasonHomePageVisualQaOverride;
+}
+
+const offseasonHomeFallback = (
+  <div
+    className="min-h-screen bg-gray-50 px-4 py-6 transition-colors dark:bg-background sm:px-6 md:px-6 md:py-8"
+    data-testid="offseason-home-page-fallback"
+  >
     <div className="space-y-8 md:space-y-12">
       <div className="h-11 w-44 rounded-full border-2 border-primary/20 bg-white dark:bg-card" />
       <div className="rounded-3xl bg-primary px-6 py-10 shadow-xl">
@@ -23,10 +36,22 @@ const OffSeasonHomeFallback = () => (
   </div>
 );
 
-export default function OffSeasonHomePage() {
+export default function OffSeasonHomePage(props: OffSeasonHomePageProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
+
+  if (visualQaStateOverride?.phase === 'fallback') {
+    return offseasonHomeFallback;
+  }
+
   return (
-    <Suspense fallback={<OffSeasonHomeFallback />}>
-      <OffSeasonHomeRuntime />
+    <Suspense fallback={offseasonHomeFallback}>
+      <OffSeasonHomeRuntime
+        visualQaStateOverride={visualQaStateOverride?.phase === 'runtime'
+          ? visualQaStateOverride.runtime
+          : undefined}
+      />
     </Suspense>
   );
 }

@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo } from 'react';
 
 import type { CheckIn, Party } from '../types/mate';
 import { hasSameMateUserIdentity } from '../utils/mate';
-import { mateSectionCardClass } from '../utils/mateFlowUi';
+import { mateMobileBarClass, mateSectionCardClass } from '../utils/mateFlowUi';
 import { Alert, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -11,6 +11,13 @@ const MateCheckInOverviewRuntime = lazy(() => import('./MateCheckInOverviewRunti
 const MateCheckInRosterRuntime = lazy(() => import('./MateCheckInRosterRuntime'));
 const MateCheckInActionRuntime = lazy(() => import('./MateCheckInActionRuntime'));
 const MateCheckInStatusRuntime = lazy(() => import('./MateCheckInStatusRuntime'));
+
+export type MateCheckInContentVisualQaStateOverride = {
+  actionPhase?: 'fallback' | 'runtime';
+  overviewPhase?: 'fallback' | 'runtime';
+  rosterPhase?: 'fallback' | 'runtime';
+  statusPhase?: 'fallback' | 'runtime';
+};
 
 interface MateCheckInContentRuntimeProps {
   party: Party;
@@ -33,6 +40,7 @@ interface MateCheckInContentRuntimeProps {
   onCheckIn: () => void;
   onComplete: () => void;
   onNavigateToChat: () => void;
+  visualQaStateOverride?: MateCheckInContentVisualQaStateOverride;
 }
 
 export default function MateCheckInContentRuntime({
@@ -56,7 +64,15 @@ export default function MateCheckInContentRuntime({
   onCheckIn,
   onComplete,
   onNavigateToChat,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MateCheckInContentRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const overviewPhase = visualQaStateOverride?.overviewPhase ?? 'runtime';
+  const statusPhase = visualQaStateOverride?.statusPhase ?? 'runtime';
+  const rosterPhase = visualQaStateOverride?.rosterPhase ?? 'runtime';
+  const actionPhase = visualQaStateOverride?.actionPhase ?? 'runtime';
   const sessionLabel = qrSessionId ? 'QR 세션 진입' : '일반 진입';
   const otherCheckIns = useMemo(
     () => checkInStatus.filter((checkIn) => !hasSameMateUserIdentity(
@@ -68,44 +84,132 @@ export default function MateCheckInContentRuntime({
     )),
     [checkInStatus, currentUserHandle, party.hostHandle],
   );
+  const overviewFallback = (
+    <div
+      data-testid="mate-check-in-overview-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="체크인 개요 준비 중"
+      className="min-w-0 space-y-3"
+    >
+      <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
+        <div className="space-y-4">
+          <div>
+            <p className="text-body font-semibold text-gray-800 dark:text-white">체크인 정보를 준비하고 있습니다.</p>
+            <p className="mt-1 text-caption text-gray-500 dark:text-white">경기와 참여자 상태를 확인 중입니다.</p>
+          </div>
+          <div className="space-y-4 animate-pulse">
+            <div className="h-8 w-32 rounded bg-muted dark:bg-white/10" />
+            <div className="h-24 rounded-2xl bg-muted/70 dark:bg-white/10" />
+          </div>
+        </div>
+      </Card>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div key={index} className="h-32 animate-pulse rounded-2xl bg-muted/70 dark:bg-white/10" />
+        ))}
+      </div>
+    </div>
+  );
+  const statusFallback = (
+    <div
+      data-testid="mate-check-in-status-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="체크인 상태 준비 중"
+      className="min-w-0 space-y-6"
+    >
+      <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
+        <div className="space-y-4">
+          <p className="text-body font-semibold text-gray-800 dark:text-white">내 체크인 상태 확인 중</p>
+          <div className="space-y-4 animate-pulse">
+            <div className="h-6 w-40 rounded bg-muted dark:bg-white/10" />
+            <div className="h-24 rounded-2xl bg-muted/70 dark:bg-white/10" />
+          </div>
+        </div>
+      </Card>
+      <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
+        <div className="space-y-4">
+          <p className="text-body font-semibold text-gray-800 dark:text-white">진행률을 불러오고 있습니다.</p>
+          <div className="space-y-4 animate-pulse">
+            <div className="h-6 w-40 rounded bg-muted dark:bg-white/10" />
+            <div className="h-20 rounded-2xl bg-muted/70 dark:bg-white/10" />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="h-20 rounded-2xl bg-muted/70 dark:bg-white/10" />
+              <div className="h-20 rounded-2xl bg-muted/70 dark:bg-white/10" />
+              <div className="h-20 rounded-2xl bg-muted/70 dark:bg-white/10" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+  const rosterFallback = (
+    <Card
+      data-testid="mate-check-in-roster-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="참여자 명단 준비 중"
+      className={`min-w-0 p-5 sm:p-6 ${mateSectionCardClass}`}
+    >
+      <div className="space-y-4">
+        <p className="text-body font-semibold text-gray-800 dark:text-white">참여자 명단을 불러오고 있습니다.</p>
+        <div className="space-y-4 animate-pulse">
+          <div className="h-6 w-36 rounded bg-muted dark:bg-white/10" />
+          <div className="h-24 rounded-2xl bg-muted/70 dark:bg-white/10" />
+          <div className="h-24 rounded-2xl bg-muted/70 dark:bg-white/10" />
+          <div className="h-24 rounded-2xl bg-muted/70 dark:bg-white/10" />
+        </div>
+      </div>
+    </Card>
+  );
+  const actionFallback = (
+    <div
+      data-testid="mate-check-in-action-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="체크인 액션 준비 중"
+      className="min-w-0"
+    >
+      <Card className={`hidden overflow-hidden p-5 lg:sticky lg:top-6 lg:block ${mateSectionCardClass}`}>
+        <div className="space-y-4 animate-pulse">
+          <div className="h-4 w-20 rounded bg-muted dark:bg-white/10" />
+          <div className="h-7 w-36 rounded bg-muted dark:bg-white/10" />
+          <div className="h-20 rounded-2xl bg-muted/70 dark:bg-white/10" />
+          <div className="h-11 rounded-xl bg-muted dark:bg-white/10" />
+        </div>
+      </Card>
+      <div className={`${mateMobileBarClass} lg:hidden`}>
+        <div className="mx-auto min-w-0 max-w-6xl overflow-hidden">
+          <p className="text-body font-semibold text-gray-700 dark:text-white">체크인 액션을 준비하고 있습니다.</p>
+          <div className="mt-3 grid grid-cols-2 gap-2 animate-pulse">
+            <div className="h-11 rounded-xl bg-muted dark:bg-white/10" />
+            <div className="h-11 rounded-xl bg-muted dark:bg-white/10" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <>
+    <div data-testid="mate-check-in-content" className="min-w-0 overflow-x-clip">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
-          <Suspense fallback={(
-            <div className="space-y-3">
-              <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-body font-semibold text-gray-800 dark:text-white">체크인 정보를 준비하고 있습니다.</p>
-                    <p className="mt-1 text-caption text-gray-500 dark:text-white">경기와 참여자 상태를 확인 중입니다.</p>
-                  </div>
-                  <div className="space-y-4 animate-pulse">
-                    <div className="h-8 w-32 rounded bg-muted" />
-                    <div className="h-24 rounded-2xl bg-muted/70" />
-                  </div>
-                </div>
-              </Card>
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {Array.from({ length: 4 }, (_, index) => (
-                  <div key={index} className="h-32 animate-pulse rounded-2xl bg-muted/70" />
-                ))}
-              </div>
-            </div>
-          )}>
-            <MateCheckInOverviewRuntime
-              party={party}
-              isHost={isHost}
-              isCheckedIn={isCheckedIn}
-              qrSessionId={qrSessionId}
-              allCheckedIn={allCheckedIn}
-              checkedInCount={checkedInCount}
-              totalParticipants={totalParticipants}
-              remainingCount={remainingCount}
-              myCheckIn={myCheckIn}
-            />
-          </Suspense>
+        <div className="min-w-0 space-y-6">
+          {overviewPhase === 'fallback' ? overviewFallback : (
+            <Suspense fallback={overviewFallback}>
+              <MateCheckInOverviewRuntime
+                party={party}
+                isHost={isHost}
+                isCheckedIn={isCheckedIn}
+                qrSessionId={qrSessionId}
+                allCheckedIn={allCheckedIn}
+                checkedInCount={checkedInCount}
+                totalParticipants={totalParticipants}
+                remainingCount={remainingCount}
+                myCheckIn={myCheckIn}
+              />
+            </Suspense>
+          )}
 
           {isPartyRevalidating && (
             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/20">
@@ -124,13 +228,17 @@ export default function MateCheckInContentRuntime({
           )}
 
           {statusLoadError && (
-            <Alert className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20">
+            <Alert
+              data-testid="mate-check-in-status-error"
+              className="min-w-0 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20"
+            >
               <AlertDescription className="flex flex-wrap items-center justify-between gap-2 text-body text-amber-800 dark:text-amber-200">
-                <span>{statusLoadError}</span>
+                <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{statusLoadError}</span>
                 <Button
+                  data-testid="mate-check-in-status-retry"
                   variant="outline"
-                  size="sm"
-                  className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:text-amber-200 dark:hover:bg-amber-950/40"
+                  size="touch"
+                  className="w-full shrink-0 border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:text-amber-200 dark:hover:bg-amber-950/40 sm:w-auto"
                   onClick={onRetryStatus}
                 >
                   다시 시도
@@ -139,94 +247,58 @@ export default function MateCheckInContentRuntime({
             </Alert>
           )}
 
-          <Suspense
-            fallback={(
-              <div className="space-y-6">
-                <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
-                  <div className="space-y-4">
-                    <p className="text-body font-semibold text-gray-800 dark:text-white">내 체크인 상태 확인 중</p>
-                    <div className="space-y-4 animate-pulse">
-                      <div className="h-6 w-40 rounded bg-muted" />
-                      <div className="h-24 rounded-2xl bg-muted/70" />
-                    </div>
-                  </div>
-                </Card>
-                <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
-                  <div className="space-y-4">
-                    <p className="text-body font-semibold text-gray-800 dark:text-white">진행률을 불러오고 있습니다.</p>
-                    <div className="space-y-4 animate-pulse">
-                      <div className="h-6 w-40 rounded bg-muted" />
-                      <div className="h-20 rounded-2xl bg-muted/70" />
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div className="h-20 rounded-2xl bg-muted/70" />
-                        <div className="h-20 rounded-2xl bg-muted/70" />
-                        <div className="h-20 rounded-2xl bg-muted/70" />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            )}
-          >
-            <MateCheckInStatusRuntime
-              isCheckedIn={isCheckedIn}
-              isChecking={isChecking}
-              allCheckedIn={allCheckedIn}
-              checkedInCount={checkedInCount}
-              totalParticipants={totalParticipants}
-              remainingCount={remainingCount}
-              progressValue={progressValue}
-              sessionLabel={sessionLabel}
-              myCheckIn={myCheckIn}
-              onCheckIn={onCheckIn}
-              onComplete={onComplete}
-            />
-          </Suspense>
+          {statusPhase === 'fallback' ? statusFallback : (
+            <Suspense fallback={statusFallback}>
+              <MateCheckInStatusRuntime
+                isCheckedIn={isCheckedIn}
+                isChecking={isChecking}
+                allCheckedIn={allCheckedIn}
+                checkedInCount={checkedInCount}
+                totalParticipants={totalParticipants}
+                remainingCount={remainingCount}
+                progressValue={progressValue}
+                sessionLabel={sessionLabel}
+                myCheckIn={myCheckIn}
+                onCheckIn={onCheckIn}
+                onComplete={onComplete}
+              />
+            </Suspense>
+          )}
 
-          <Suspense
-            fallback={(
-              <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
-                <div className="space-y-4">
-                  <p className="text-body font-semibold text-gray-800 dark:text-white">참여자 명단을 불러오고 있습니다.</p>
-                  <div className="space-y-4 animate-pulse">
-                    <div className="h-6 w-36 rounded bg-muted" />
-                    <div className="h-24 rounded-2xl bg-muted/70" />
-                    <div className="h-24 rounded-2xl bg-muted/70" />
-                    <div className="h-24 rounded-2xl bg-muted/70" />
-                  </div>
-                </div>
-              </Card>
-            )}
-          >
-            <MateCheckInRosterRuntime
-              party={party}
-              isHost={isHost}
-              isCheckedIn={isCheckedIn}
-              hostCheckedIn={hostCheckedIn}
-              otherCheckIns={otherCheckIns}
-              remainingCount={remainingCount}
-              hasAnyCheckIn={checkInStatus.length > 0}
-              onNavigateToChat={onNavigateToChat}
-            />
-          </Suspense>
+          {rosterPhase === 'fallback' ? rosterFallback : (
+            <Suspense fallback={rosterFallback}>
+              <MateCheckInRosterRuntime
+                party={party}
+                isHost={isHost}
+                isCheckedIn={isCheckedIn}
+                hostCheckedIn={hostCheckedIn}
+                otherCheckIns={otherCheckIns}
+                remainingCount={remainingCount}
+                hasAnyCheckIn={checkInStatus.length > 0}
+                onNavigateToChat={onNavigateToChat}
+              />
+            </Suspense>
+          )}
         </div>
 
-        <div className="space-y-4">
-          <Suspense fallback={null}>
-            <MateCheckInActionRuntime
-              isCheckedIn={isCheckedIn}
-              isChecking={isChecking}
-              allCheckedIn={allCheckedIn}
-              isHost={isHost}
-              checkedInCount={checkedInCount}
-              totalParticipants={totalParticipants}
-              onCheckIn={onCheckIn}
-              onComplete={onComplete}
-              onNavigateToChat={onNavigateToChat}
-            />
-          </Suspense>
+        <div className="min-w-0 space-y-4">
+          {actionPhase === 'fallback' ? actionFallback : (
+            <Suspense fallback={actionFallback}>
+              <MateCheckInActionRuntime
+                isCheckedIn={isCheckedIn}
+                isChecking={isChecking}
+                allCheckedIn={allCheckedIn}
+                isHost={isHost}
+                checkedInCount={checkedInCount}
+                totalParticipants={totalParticipants}
+                onCheckIn={onCheckIn}
+                onComplete={onComplete}
+                onNavigateToChat={onNavigateToChat}
+              />
+            </Suspense>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

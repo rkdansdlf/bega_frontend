@@ -283,37 +283,56 @@ export default function TeamLogo({ team, teamId, size = 64, className = '' }: Te
 
   // size가 문자열이면 숫자로 변환
   const numericSize = typeof size === 'string' && size !== 'full' ? sizeMap[size] : size;
+  const resolvedNumericSize = typeof numericSize === 'number' && Number.isFinite(numericSize) && numericSize > 0
+    ? numericSize
+    : 64;
 
   const logoImage = canonicalKey ? teamLogoImages[canonicalKey] : undefined;
   const isResponsive = size === 'full';
+  const fallbackLabel = teamName || team || '?';
+  const surfaceStyle = isResponsive
+    ? { maxWidth: '100%', aspectRatio: '1 / 1' }
+    : { width: resolvedNumericSize, maxWidth: '100%', aspectRatio: '1 / 1' };
 
   if (!logoImage) {
     // 로고가 없는 경우 기본 표시
     return (
       <div
-        className={`rounded-full bg-white/90 flex items-center justify-center text-primary ${className}`}
-        style={!isResponsive ? { width: numericSize, height: numericSize, fontWeight: 900, fontSize: Number(numericSize) * 0.28 } : { fontWeight: 900 }}
+        className={`flex min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/90 text-primary ${className}`}
+        style={surfaceStyle}
+        role="img"
+        aria-label={`${fallbackLabel} 팀 로고`}
+        title={fallbackLabel}
       >
-        {teamName || team || '?'}
+        <span
+          aria-hidden="true"
+          className="max-w-full overflow-hidden px-1 text-center leading-tight [overflow-wrap:anywhere]"
+          style={{
+            display: '-webkit-box',
+            fontSize: isResponsive ? 10 : Math.min(20, Math.max(8, resolvedNumericSize * 0.28)),
+            fontWeight: 900,
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+          }}
+        >
+          {fallbackLabel}
+        </span>
       </div>
     );
   }
 
   return (
     <div
-      className={`flex items-center justify-center rounded-full bg-white ${className}`}
-      style={!isResponsive ? {
-        width: numericSize,
-        height: numericSize,
-      } : {}}
+      className={`flex min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ${className}`}
+      style={surfaceStyle}
     >
       <img
         src={logoImage}
-        alt={`${teamName || team} 로고`}
-        className="image-render-quality"
+        alt={`${fallbackLabel} 로고`}
+        className="block h-full w-full max-w-full image-render-quality"
         style={{
-          width: isResponsive ? '100%' : numericSize,
-          height: isResponsive ? '100%' : numericSize,
+          width: '100%',
+          height: '100%',
           objectFit: 'contain',
         }}
       />

@@ -17,6 +17,10 @@ export const getMateDDayLabel = (
 
   const dayDifference = getDayDifference(gameDate, now);
 
+  if (!Number.isFinite(dayDifference)) {
+    return '';
+  }
+
   if (dayDifference < 0) {
     return '';
   }

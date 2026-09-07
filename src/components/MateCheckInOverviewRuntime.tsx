@@ -44,19 +44,27 @@ interface MateCheckInOverviewRuntimeProps {
   myCheckIn?: CheckIn;
 }
 
+const normalizeMateCount = (value: number) => {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(Math.max(Math.trunc(value), 0), Number.MAX_SAFE_INTEGER);
+};
+
 function SummaryItem({ icon: Icon, label, value, detail }: SummaryItemProps) {
   return (
-    <div className={`${mateInsetPanelClass} p-4`}>
+    <div
+      data-testid="mate-check-in-summary-item"
+      className={`${mateInsetPanelClass} min-w-0 overflow-hidden p-4`}
+    >
       <div className="flex items-start gap-3">
-        <div className="rounded-2xl border border-gray-200/80 bg-white p-2.5 shadow-sm dark:border-border/70 dark:bg-card/80">
+        <div className="shrink-0 rounded-2xl border border-gray-200/80 bg-white p-2.5 shadow-sm dark:border-border/70 dark:bg-card/80">
           <Icon className="h-4 w-4 text-primary" />
         </div>
-        <div className="min-w-0">
-          <p className={mateMetaLabelClass}>
+        <div className="min-w-0 flex-1">
+          <p className={`${mateMetaLabelClass} [overflow-wrap:anywhere]`}>
             {label}
           </p>
-          <p className="mt-2 text-base font-bold text-gray-900 dark:text-white">{value}</p>
-          <p className="mt-1 text-body text-gray-500 dark:text-white">{detail}</p>
+          <p className="mt-2 text-base font-bold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{value}</p>
+          <p className="mt-1 text-body text-gray-500 [overflow-wrap:anywhere] dark:text-white">{detail}</p>
         </div>
       </div>
     </div>
@@ -65,7 +73,10 @@ function SummaryItem({ icon: Icon, label, value, detail }: SummaryItemProps) {
 
 function MatePill({ className = '', children }: { className?: string; children: ReactNode }) {
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-body font-semibold ${className}`}>
+    <span
+      data-testid="mate-check-in-pill"
+      className={`inline-flex max-w-full min-w-0 items-center rounded-full border px-2.5 py-1 text-body font-semibold whitespace-normal [overflow-wrap:anywhere] ${className}`}
+    >
       {children}
     </span>
   );
@@ -97,6 +108,17 @@ export default function MateCheckInOverviewRuntime({
     : isCheckedIn
       ? '다른 참여자의 도착 상태를 기다리는 중입니다.'
       : '경기장 도착 후 체크인을 진행해주세요.';
+  const safeTotalParticipants = normalizeMateCount(totalParticipants);
+  const safeCheckedInCount = Math.min(
+    normalizeMateCount(checkedInCount),
+    safeTotalParticipants,
+  );
+  const safeRemainingCount = allCheckedIn
+    ? 0
+    : Math.min(
+      normalizeMateCount(remainingCount),
+      Math.max(safeTotalParticipants - safeCheckedInCount, 0),
+    );
   const summaryItems = [
     {
       icon: MateCheckCircleIcon,
@@ -107,8 +129,8 @@ export default function MateCheckInOverviewRuntime({
     {
       icon: MateUsersIcon,
       label: '진행률',
-      value: `${checkedInCount}/${totalParticipants}명`,
-      detail: remainingCount > 0 ? `아직 ${remainingCount}명 도착 대기 중` : '전원 체크인 완료',
+      value: `${safeCheckedInCount}/${safeTotalParticipants}명`,
+      detail: safeRemainingCount > 0 ? `아직 ${safeRemainingCount}명 도착 대기 중` : '전원 체크인 완료',
     },
     {
       icon: isCheckedIn ? MateCheckCircleIcon : MateClockIcon,
@@ -127,8 +149,14 @@ export default function MateCheckInOverviewRuntime({
   ];
 
   return (
-    <>
-      <Card className={`status-badge-hover-scope p-0 ${mateHeroCardClass}`}>
+    <section
+      data-testid="mate-check-in-overview"
+      className="min-w-0 space-y-6 overflow-x-clip"
+    >
+      <Card
+        data-testid="mate-check-in-overview-hero"
+        className={`status-badge-hover-scope min-w-0 p-0 ${mateHeroCardClass}`}
+      >
         <div className="border-b border-gray-200/70 bg-[linear-gradient(135deg,_rgba(22,163,74,0.12),_rgba(255,255,255,0.92)_55%,_rgba(22,163,74,0.04))] px-5 py-5 dark:border-border/70 dark:bg-[linear-gradient(135deg,_rgba(16,185,129,0.18),_rgba(0,0,0,0.94)_58%,_rgba(16,185,129,0.08))] sm:px-8 sm:py-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex min-w-0 gap-3 sm:gap-4">
@@ -142,7 +170,7 @@ export default function MateCheckInOverviewRuntime({
                 <h1 className="mt-2 text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">
                   체크인
                 </h1>
-                <p className="mt-3 max-w-2xl text-body leading-6 text-gray-600 dark:text-white">
+                <p className="mt-3 max-w-2xl text-body leading-6 text-gray-600 [overflow-wrap:anywhere] dark:text-white">
                   경기장 도착 상태와 전체 진행률을 한 화면에서 확인합니다. 개인 인증과 그룹 진행 상황을 분리해서 보여줍니다.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -155,8 +183,8 @@ export default function MateCheckInOverviewRuntime({
                   </MatePill>
                   {qrSessionId && (
                     <MatePill className="border border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/35 dark:text-sky-300">
-                      <span className="flex items-center gap-1">
-                        <MateQrCodeIcon className="h-3.5 w-3.5" />
+                      <span className="flex min-w-0 items-center gap-1 [overflow-wrap:anywhere]">
+                        <MateQrCodeIcon className="h-3.5 w-3.5 shrink-0" />
                         QR 세션
                       </span>
                     </MatePill>
@@ -165,34 +193,34 @@ export default function MateCheckInOverviewRuntime({
               </div>
             </div>
 
-            <div className={`${mateInsetPanelClass} min-w-full p-4 sm:min-w-[280px] lg:max-w-[320px]`}>
+            <div className={`${mateInsetPanelClass} w-full min-w-0 p-4 sm:min-w-[280px] lg:max-w-[320px]`}>
               <div className="grid gap-3 text-body text-gray-600 dark:text-white">
                 <div className="flex items-start gap-3">
-                  <MateCalendarIcon className="mt-0.5 h-4 w-4 text-primary" />
-                  <div>
+                  <MateCalendarIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <div className="min-w-0 flex-1">
                     <p className={mateMetaLabelClass}>일정</p>
-                    <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+                    <p className="mt-1 font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">
                       {formatGameDate(party.gameDate)} {party.gameTime}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MateMapPinIcon className="mt-0.5 h-4 w-4 text-primary" />
-                  <div>
+                  <MateMapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <div className="min-w-0 flex-1">
                     <p className={mateMetaLabelClass}>경기장 / 좌석</p>
-                    <p className="mt-1 font-semibold text-gray-900 dark:text-white">{stadiumDisplayName}</p>
-                    <p className="text-body text-gray-500 dark:text-white">{party.section}</p>
+                    <p className="mt-1 font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{stadiumDisplayName}</p>
+                    <p className="text-body text-gray-500 [overflow-wrap:anywhere] dark:text-white">{party.section}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MateUsersIcon className="mt-0.5 h-4 w-4 text-primary" />
-                  <div>
+                  <MateUsersIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <div className="min-w-0 flex-1">
                     <p className={mateMetaLabelClass}>참여 인원</p>
-                    <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                      {checkedInCount}/{totalParticipants}명 체크인
+                    <p className="mt-1 font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">
+                      {safeCheckedInCount}/{safeTotalParticipants}명 체크인
                     </p>
-                    <p className="text-body text-gray-500 dark:text-white">
-                      {remainingCount > 0 ? `${remainingCount}명 도착 대기` : '전원 도착 완료'}
+                    <p className="text-body text-gray-500 [overflow-wrap:anywhere] dark:text-white">
+                      {safeRemainingCount > 0 ? `${safeRemainingCount}명 도착 대기` : '전원 도착 완료'}
                     </p>
                   </div>
                 </div>
@@ -207,6 +235,6 @@ export default function MateCheckInOverviewRuntime({
           <SummaryItem key={item.label} {...item} />
         ))}
       </div>
-    </>
+    </section>
   );
 }

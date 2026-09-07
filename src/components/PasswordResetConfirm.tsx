@@ -20,9 +20,32 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-export default function PasswordResetConfirm() {
+export type PasswordResetConfirmVisualQaStateOverride = Pick<
+  ReturnType<typeof usePasswordResetConfirm>,
+  | 'token'
+  | 'formData'
+  | 'fieldErrors'
+  | 'showNewPassword'
+  | 'showConfirmPassword'
+  | 'isCompleted'
+  | 'isLoading'
+  | 'error'
+>;
+
+interface PasswordResetConfirmProps {
+  visualQaStateOverride?: PasswordResetConfirmVisualQaStateOverride;
+}
+
+const passwordVisibilityButtonClassName = 'absolute right-1 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50';
+
+export default function PasswordResetConfirm(props: PasswordResetConfirmProps) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const liveState = usePasswordResetConfirm();
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
 
   const {
     token,
@@ -33,12 +56,14 @@ export default function PasswordResetConfirm() {
     isCompleted,
     isLoading,
     error,
+  } = visualQaStateOverride ?? liveState;
+  const {
     handleFieldChange,
     handleFieldBlur,
     handleSubmit,
     toggleNewPasswordVisibility,
     toggleConfirmPasswordVisibility,
-  } = usePasswordResetConfirm();
+  } = liveState;
 
   const redirectPath = new URLSearchParams(location.search).get('redirect') || getStoredLoginRedirect();
   const loginPath = buildLoginPath(redirectPath);
@@ -76,7 +101,7 @@ export default function PasswordResetConfirm() {
                   <LockIcon className="h-4 w-4 text-primary" />
                   새 비밀번호
                 </label>
-                <div className="relative">
+                <div className="relative" data-vqa-overlap="allowed">
                   <Input
                     id="newPassword"
                     name="newPassword"
@@ -85,7 +110,7 @@ export default function PasswordResetConfirm() {
                     value={formData.newPassword}
                     onChange={(event) => handleFieldChange('newPassword', event.target.value)}
                     onBlur={() => handleFieldBlur('newPassword')}
-                    className={`auth-input auth-autofill-input pr-12 ${fieldErrors.newPassword ? 'auth-input-error' : ''}`}
+                    className={`auth-input auth-autofill-input pr-14 ${fieldErrors.newPassword ? 'auth-input-error' : ''}`}
                     placeholder={`새 비밀번호를 입력하세요 (최소 ${VALIDATION_RULES.PASSWORD.MIN_LENGTH}자)`}
                     disabled={isLoading || !token}
                     data-testid="password-reset-confirm-new-password"
@@ -93,7 +118,7 @@ export default function PasswordResetConfirm() {
                   <button
                     type="button"
                     onClick={toggleNewPasswordVisibility}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className={passwordVisibilityButtonClassName}
                     disabled={isLoading || !token}
                     aria-label={showNewPassword ? '새 비밀번호 숨기기' : '새 비밀번호 보기'}
                     data-testid="password-reset-confirm-new-password-visibility"
@@ -117,7 +142,7 @@ export default function PasswordResetConfirm() {
                   <LockIcon className="h-4 w-4 text-primary" />
                   비밀번호 확인
                 </label>
-                <div className="relative">
+                <div className="relative" data-vqa-overlap="allowed">
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -126,7 +151,7 @@ export default function PasswordResetConfirm() {
                     value={formData.confirmPassword}
                     onChange={(event) => handleFieldChange('confirmPassword', event.target.value)}
                     onBlur={() => handleFieldBlur('confirmPassword')}
-                    className={`auth-input auth-autofill-input pr-12 ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
+                    className={`auth-input auth-autofill-input pr-14 ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
                     placeholder="비밀번호를 다시 입력하세요"
                     disabled={isLoading || !token}
                     data-testid="password-reset-confirm-confirm-password"
@@ -134,7 +159,7 @@ export default function PasswordResetConfirm() {
                   <button
                     type="button"
                     onClick={toggleConfirmPasswordVisibility}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className={passwordVisibilityButtonClassName}
                     disabled={isLoading || !token}
                     aria-label={showConfirmPassword ? '비밀번호 확인 숨기기' : '비밀번호 확인 보기'}
                     data-testid="password-reset-confirm-confirm-password-visibility"

@@ -109,7 +109,7 @@ export function OffseasonListContentRuntime({
     };
 
     return (
-        <>
+        <div className="space-y-8" data-testid="offseason-list-content-runtime">
             {!isLoading && !isError && filteredList.length > 0 && (
                 <ViewportDeferred fallback={<OffseasonInsightsFallback />}>
                     <Suspense fallback={<OffseasonInsightsFallback />}>
@@ -119,15 +119,15 @@ export function OffseasonListContentRuntime({
             )}
 
             <section className="space-y-4">
-                <div className="flex items-center justify-between px-1">
-                    <div>
+                <div className="flex flex-col items-start gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
                         <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">이적 타임라인</h2>
                         <p className="mt-1 text-15 font-semibold text-zinc-500 dark:text-white">
                             {isMobile ? '모바일 카드 보기' : '데스크톱 테이블 보기'}로 현재 필터 결과를 확인하세요.
                         </p>
                     </div>
                     {!isMobile && (
-                        <span className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-caption font-semibold text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white">
+                            <span className="max-w-full break-words rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-caption font-semibold text-zinc-500 [overflow-wrap:anywhere] dark:border-zinc-800 dark:bg-zinc-900 dark:text-white">
                             {sortOrder === 'headline'
                                 ? '주요 소식 우선 정렬'
                                 : SORT_OPTIONS.find((option) => option.value === sortOrder)?.label}
@@ -146,13 +146,13 @@ export function OffseasonListContentRuntime({
                         onReset={onReset}
                     />
                 ) : (
-                    <Card className="overflow-visible rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:overflow-hidden">
-                        <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                            <div className="space-y-1">
+                    <Card className="overflow-visible rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                        <div className="flex flex-col items-start gap-3 border-b border-zinc-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-zinc-800">
+                            <div className="min-w-0 space-y-1">
                                 <p className="text-15 font-black tracking-tight text-zinc-900 dark:text-white">
                                     현재 조건에 맞는 이적 {filteredList.length}건
                                 </p>
-                                <p className="text-caption font-semibold text-zinc-500 dark:text-white">
+                                <p className="break-words text-caption font-semibold text-zinc-500 [overflow-wrap:anywhere] dark:text-white">
                                     선수, 팀, 계약 내용을 같은 구조로 보여주도록 목록을 정리했습니다.
                                 </p>
                             </div>
@@ -193,6 +193,6 @@ export function OffseasonListContentRuntime({
                     />
                 </Suspense>
             )}
-        </>
+        </div>
     );
 }

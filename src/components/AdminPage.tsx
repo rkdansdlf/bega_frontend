@@ -1,17 +1,27 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { AdminShieldIcon } from './AdminIcons';
 
 const AdminPageRuntimeContent = lazy(() => import('./AdminPageRuntimeContent'));
 
 const AdminPageRuntimeFallback = () => (
-  <div className="rounded-xl border border-slate-800 bg-slate-900/80 px-6 py-12 text-center text-caption text-slate-300 shadow-sm">
+  <div
+    className="rounded-xl border border-slate-800 bg-slate-900/80 px-6 py-12 text-center text-caption text-slate-300 shadow-sm"
+    data-testid="admin-page-runtime-fallback"
+  >
     관리자 패널을 준비하고 있습니다.
   </div>
 );
 
-export default function AdminPage() {
+type AdminPageProps = {
+  runtimeContentOverride?: ReactNode;
+};
+
+export default function AdminPage({ runtimeContentOverride }: AdminPageProps = {}) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 text-15 admin-page">
+    <div
+      className="min-h-screen min-w-0 overflow-x-clip bg-slate-950 text-slate-100 text-15 admin-page"
+      data-testid="admin-page-shell"
+    >
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-10">
           <div className="flex items-center gap-4 mb-3">
@@ -39,9 +49,11 @@ export default function AdminPage() {
           </div>
         </header>
 
-        <Suspense fallback={<AdminPageRuntimeFallback />}>
-          <AdminPageRuntimeContent />
-        </Suspense>
+        {runtimeContentOverride !== undefined ? runtimeContentOverride : (
+          <Suspense fallback={<AdminPageRuntimeFallback />}>
+            <AdminPageRuntimeContent />
+          </Suspense>
+        )}
       </div>
     </div>
   );

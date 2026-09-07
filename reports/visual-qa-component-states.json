@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-31T18:52:36.453Z",
-  "ok": false,
+  "generatedAt": "2026-09-03T06:29:41.803Z",
+  "ok": true,
   "total": 1010,
-  "registered": 453,
+  "registered": 458,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -550,11 +550,6 @@
     "src/components/stadiumSeatMap/SeatMapDetailPanel.tsx#InfoTile",
     "src/components/stadiumSeatMap/SeatMapDetailPanel.tsx#SeatMapDetailPanel",
     "src/components/stadiumSeatMap/SeatMapFilterBar.tsx#SeatMapFilterBar",
-    "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
-    "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
-    "src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder",
-    "src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell",
-    "src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal",
     "src/components/suwon/SuwonSeatMap.tsx#SuwonCompareAction",
     "src/components/suwon/SuwonSeatMap.tsx#SuwonCompareTray",
     "src/components/suwon/SuwonSeatMap.tsx#SuwonFirstVisitGuide",
@@ -567,5 +562,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 71968
+  "validCombinations": 72662
 }

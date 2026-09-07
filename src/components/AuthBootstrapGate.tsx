@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import {
@@ -21,10 +21,23 @@ const shouldSkipAuthBootstrap = (pathname: string): boolean => !shouldMountAuthB
   hasInjectedAuthProfile: hasInjectedAuthProfileForTests(),
 });
 
-export default function AuthBootstrapGate() {
+type AuthBootstrapGateProps = {
+  runtimeOverride?: ReactNode;
+  shouldMountOverride?: boolean;
+};
+
+export default function AuthBootstrapGate(props: AuthBootstrapGateProps = {}) {
   const { pathname } = useLocation();
 
-  if (shouldSkipAuthBootstrap(pathname)) {
+  if (import.meta.env.DEV && props.shouldMountOverride !== undefined) {
+    if (!props.shouldMountOverride) {
+      return null;
+    }
+
+    if (props.runtimeOverride !== undefined) {
+      return <>{props.runtimeOverride}</>;
+    }
+  } else if (shouldSkipAuthBootstrap(pathname)) {
     return null;
   }
 

@@ -23,6 +23,7 @@ import {
     normalizeHexColor,
     getReadableAccent,
     getDarkModeAccentText,
+    getLightModeAccentText,
     DEFAULT_BRAND_COLOR,
 } from '../utils/teamColors';
 import { useTheme } from '../hooks/useTheme';
@@ -88,7 +89,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                                 onTabChange(tab.key);
                             }}
                             className={cn(
-                                'relative flex min-h-11 items-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
+                                'relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
                                 isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                                     : 'text-[#64748B] hover:bg-white/70 hover:text-[#0F172A] dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
@@ -348,7 +349,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     const teamContrastText = getAccessibleCheerTextColor(teamAccent);
     const tabActiveAccentText = resolvedTheme === 'dark'
         ? getDarkModeAccentText(teamColor)
-        : teamAccent;
+        : getLightModeAccentText(teamColor);
     const favoriteTeamId = hasFavoriteTeam ? authUserFavoriteTeam ?? null : null;
     const favoriteTeamLabel = favoriteTeamId ? TEAM_DATA[favoriteTeamId]?.name ?? favoriteTeamId : null;
     const favoriteTeamFull = favoriteTeamId ? TEAM_DATA[favoriteTeamId]?.fullName ?? favoriteTeamId : null;
@@ -451,7 +452,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                             </button>
                         </aside>
 
-                        <main className="relative flex w-full flex-col gap-0 bg-slate-50/50 dark:bg-card md:pb-24 lg:pb-0">
+                        <div className="relative flex w-full flex-col gap-0 bg-slate-50/50 dark:bg-card md:pb-24 lg:pb-0">
                             <header className="border-b border-slate-200 bg-white px-4 py-3 dark:border-border dark:bg-card">
                                 <div
                                     className="relative"
@@ -624,7 +625,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                 />
                               </Suspense>
                             ) : (<CheerFeedRuntimeFallback />)}
-                        </main>
+                        </div>
 
                         {shouldRenderSidebar ? (
                             <aside className="sticky top-24 hidden w-[264px] self-start md:flex xl:w-[270px]">
@@ -677,6 +678,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                     userProfilePath={userProfilePath}
                     onWriteClick={handleWriteClick}
                     teamAccent={teamAccent}
+                    activeTextAccent={tabActiveAccentText}
                 />
             </Suspense>
 

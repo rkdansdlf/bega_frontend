@@ -2,13 +2,7 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
-// `whitespace-nowrap` here means a long label cannot wrap, which at 320px with
-// text scaled to 200% pushes the page into horizontal scroll. To let a specific
-// button wrap you must pass `!whitespace-normal` (plus `h-auto`): a plain
-// `whitespace-normal` has the same specificity as this one, so which wins is
-// decided by Tailwind's output order rather than by the className you pass, and
-// it silently loses. See OffSeasonHomeNewsRuntime's "전체 이적 현황" CTA.
-const BUTTON_BASE_CLASS = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-15 font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
+const BUTTON_BASE_CLASS = "bf rounded-md text-15 font-semibold outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
 
 const BUTTON_VARIANT_CLASSES = {
   default: "bg-primary text-primary-foreground hover:bg-primary/90",
@@ -22,13 +16,13 @@ const BUTTON_VARIANT_CLASSES = {
 } as const;
 
 const BUTTON_SIZE_CLASSES = {
-  default: "h-9 px-4 py-2 has-[>svg]:px-3",
-  sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-  lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-  icon: "size-9 rounded-md",
-  iconTouch: "size-11 rounded-xl p-0",
-  touch: "h-11 rounded-xl px-4 text-15 has-[>svg]:px-3",
-  touchLg: "h-12 rounded-xl px-6 text-base has-[>svg]:px-4",
+  default: "min-h-11 px-4 py-2 sm:min-h-9 has-[>svg]:px-3",
+  sm: "min-h-11 gap-1.5 px-3 sm:min-h-8 has-[>svg]:px-2.5",
+  lg: "min-h-11 px-6 sm:min-h-10 has-[>svg]:px-4",
+  icon: "size-11 shrink-0 sm:size-9",
+  iconTouch: "size-11 shrink-0 rounded-xl p-0",
+  touch: "min-h-11 rounded-xl px-4 has-[>svg]:px-3",
+  touchLg: "min-h-12 rounded-xl px-6 text-base has-[>svg]:px-4",
 } as const;
 
 export type ButtonVariant = keyof typeof BUTTON_VARIANT_CLASSES;

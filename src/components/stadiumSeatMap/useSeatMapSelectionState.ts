@@ -11,6 +11,7 @@ interface UseSeatMapSelectionStateOptions<
   getId: (section: TSection) => string;
   getCategoryId: (section: TSection) => string;
   initialFilterId?: string;
+  initialSelected?: TSection | null;
   isSectionVisible?: (section: TSection, filterGroup: TFilterGroup | null, filterCats: readonly string[] | null) => boolean;
 }
 
@@ -23,9 +24,10 @@ export function useSeatMapSelectionState<
   getId,
   getCategoryId,
   initialFilterId = 'all',
+  initialSelected = null,
   isSectionVisible,
 }: UseSeatMapSelectionStateOptions<TSection, TFilterGroup>) {
-  const [selected, setSelected] = useState<TSection | null>(null);
+  const [selected, setSelected] = useState<TSection | null>(initialSelected);
   const [hover, setHover] = useState<string | null>(null);
   const [filterId, setFilterId] = useState(initialFilterId);
   const [toast, setToast] = useState<string | null>(null);

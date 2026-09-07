@@ -13,6 +13,9 @@ import {
   getStadiumGuideStadiumsQueryOptions,
   isStadiumGuideDbCategory,
 } from './stadiumGuideQueryOptions';
+import { resolveSelectedStadium } from './stadiumGuideSelection';
+
+const EMPTY_STADIUMS: Stadium[] = [];
 
 export const useStadiumGuide = () => {
   const [selectedStadium, setSelectedStadium] = useState<Stadium | null>(null);
@@ -25,7 +28,7 @@ export const useStadiumGuide = () => {
   const [mapError, setMapError] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const stadiumsQuery = useQuery(getStadiumGuideStadiumsQueryOptions());
-  const stadiums = stadiumsQuery.data ?? [];
+  const stadiums = stadiumsQuery.data ?? EMPTY_STADIUMS;
   const stadiumId = selectedStadium?.stadiumId ?? '';
   const isDbCategory = isStadiumGuideDbCategory(selectedCategory);
   const placesQuery = useQuery(getStadiumGuidePlacesQueryOptions(stadiumId, selectedCategory));
@@ -112,7 +115,7 @@ export const useStadiumGuide = () => {
     if (stadiumsQuery.isError) {
       console.error('구장 목록 로드 실패:', stadiumsQuery.error);
       setSelectedStadium(null);
-      setPlaces([]);
+      setPlaces((currentPlaces) => currentPlaces.length === 0 ? currentPlaces : []);
       setSelectedPlace(null);
       return;
     }
@@ -123,14 +126,12 @@ export const useStadiumGuide = () => {
 
     if (stadiums.length === 0) {
       setSelectedStadium(null);
-      setPlaces([]);
+      setPlaces((currentPlaces) => currentPlaces.length === 0 ? currentPlaces : []);
       setSelectedPlace(null);
       return;
     }
 
-    setSelectedStadium((previousSelected) =>
-      stadiums.find((stadium) => stadium.stadiumId === previousSelected?.stadiumId) ?? stadiums[0]
-    );
+    setSelectedStadium((previousSelected) => resolveSelectedStadium(stadiums, previousSelected));
   }, [stadiums, stadiumsQuery.error, stadiumsQuery.isError, stadiumsQuery.isSuccess]);
 
   // ========== 지도 초기화 ==========

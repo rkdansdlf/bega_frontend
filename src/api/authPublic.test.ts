@@ -4,12 +4,16 @@ import test from 'node:test';
 import {
   buildSocialLoginUrl,
   checkSignUpHandleAvailability,
+  confirmOAuthEmailChallenge,
   getSocialLoginUrl,
+  getOAuthEmailChallenge,
   loginUser,
   confirmPasswordReset,
   consumeOAuth2State,
+  resendOAuthEmailChallenge,
   resolveOAuthLoginBaseUrl,
   requestPasswordReset,
+  submitOAuthEmailChallengeEmail,
   SignUpSubmissionError,
   signupUser,
 } from './authPublic';
@@ -393,4 +397,118 @@ test('resolveOAuthLoginBaseUrl는 배포 공개 호스트에서 loopback OAuth f
 test('buildSocialLoginUrl는 운영 backend origin으로 소셜 로그인 URL을 만든다', () => {
   const url = buildSocialLoginUrl('naver', undefined, 'https://api.begabaseball.xyz');
   assert.equal(url, 'https://api.begabaseball.xyz/oauth2/authorization/naver');
+});
+
+test('getOAuthEmailChallenge는 최종 상태 DTO를 공개 GET으로 조회한다', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+
+    return new Response(JSON.stringify({
+      success: true,
+      data: {
+        challengeId: 'challenge-id',
+        status: 'EMAIL_SENT',
+        maskedEmail: 'u***@example.com',
+        expiresAt: '2026-08-08T18:30:00',
+      },
+    }), {
+      headers: { 'content-type': 'application/json' },
+      status: 200,
+    });
+  });
+
+  const response = await getOAuthEmailChallenge('challenge-id');
+
+  assert.match(requestUrl, /\/api\/auth\/oauth2\/email-challenge\/challenge-id$/);
+  assert.equal(requestInit?.method, 'GET');
+  assert.deepEqual(response, {
+    challengeId: 'challenge-id',
+    status: 'EMAIL_SENT',
+    maskedEmail: 'u***@example.com',
+    expiresAt: '2026-08-08T18:30:00',
+  });
+});
+
+test('submitOAuthEmailChallengeEmail은 이메일을 POST body로만 전송한다', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+    return new Response(JSON.stringify({
+      success: true,
+      data: { challengeId: 'challenge-id', status: 'EMAIL_SENT' },
+    }), { headers: { 'content-type': 'application/json' }, status: 200 });
+  });
+
+  const response = await submitOAuthEmailChallengeEmail('challenge-id', 'fan@example.com');
+
+  assert.match(requestUrl, /\/api\/auth\/oauth2\/email-challenge\/challenge-id\/email$/);
+  assert.equal(requestUrl.includes('fan%40example.com'), false);
+  assert.equal(requestInit?.method, 'POST');
+  assert.equal(requestInit?.body, JSON.stringify({ email: 'fan@example.com' }));
+  assert.equal(response.status, 'EMAIL_SENT');
+});
+
+test('resendOAuthEmailChallenge는 공개 resend 경로를 POST로 호출한다', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+    return new Response(JSON.stringify({
+      success: true,
+      data: { challengeId: 'challenge-id', status: 'EMAIL_SENT' },
+    }), { headers: { 'content-type': 'application/json' }, status: 200 });
+  });
+
+  const response = await resendOAuthEmailChallenge('challenge-id');
+
+  assert.match(requestUrl, /\/api\/auth\/oauth2\/email-challenge\/challenge-id\/resend$/);
+  assert.equal(requestInit?.method, 'POST');
+  assert.equal(response.status, 'EMAIL_SENT');
+});
+
+test('confirmOAuthEmailChallenge는 토큰을 URL이 아닌 POST body로만 전송한다', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+    return new Response(JSON.stringify({
+      success: true,
+      data: { confirmed: true, userId: 27 },
+    }), { headers: { 'content-type': 'application/json' }, status: 200 });
+  });
+
+  const response = await confirmOAuthEmailChallenge('secret-confirm-token');
+
+  assert.match(requestUrl, /\/api\/auth\/oauth2\/email-challenge\/confirm$/);
+  assert.equal(requestUrl.includes('secret-confirm-token'), false);
+  assert.equal(requestInit?.method, 'POST');
+  assert.equal(requestInit?.body, JSON.stringify({ token: 'secret-confirm-token' }));
+  assert.deepEqual(response, { confirmed: true, userId: 27 });
 });

@@ -630,7 +630,7 @@ export default function CheerComposerRuntime({
                     <div className="min-w-0 flex-1">
                         <AutosizeTextarea
                             placeholder="지금 우리 팀에게 응원을 남겨주세요!"
-                            className="w-full resize-none border-none bg-transparent text-body text-[#0f1419] placeholder:text-[#536471] focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500"
+                            className="w-full resize-none border-none bg-transparent text-base text-[#0f1419] placeholder:text-[#536471] focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500 sm:text-body"
                             minRows={2}
                             maxRows={10}
                             value={composerContent}

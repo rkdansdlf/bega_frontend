@@ -102,6 +102,21 @@ const retroThemeStyles = `
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  .retro-theme-button:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    filter: brightness(1.08);
+  }
+
+  .retro-theme-button:focus-visible {
+    outline: 3px solid #67e8f9;
+    outline-offset: 3px;
+  }
+
+  .retro-theme-button:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    filter: brightness(0.92);
+  }
 `;
 
 const ensureRetroThemeStyles = () => {
@@ -187,9 +202,13 @@ export function RetroContainer({ children, style, ...props }: PropsWithChildren<
       {...props}
       style={{
         position: 'relative',
+        boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: '100%',
         background: 'linear-gradient(180deg, #000000 0%, #1a1a2e 100%)',
         borderRadius: '8px',
         overflow: 'hidden',
+        overflowWrap: 'anywhere',
         ...crtScanlines,
         ...style,
       }}
@@ -210,7 +229,13 @@ export function FlickerText({
     <span
       {...props}
       style={{
+        display: 'inline-block',
+        boxSizing: 'border-box',
+        maxWidth: '100%',
         fontFamily: fonts.retroDisplay,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...crispText,
         animation: $active ? 'retroThemeFlicker 1.5s infinite alternate' : undefined,
         ...style,
@@ -221,30 +246,52 @@ export function FlickerText({
 
 export function PixelNumber({
   $color,
+  children,
   style,
   ...props
 }: PropsWithChildren<BaseSpanProps & { $color?: string }>) {
+  const numericContent = typeof children === 'number'
+    ? String(children)
+    : typeof children === 'string' && /^-?[\d,.]+$/.test(children)
+      ? children
+      : null;
+  const numericContentLength = numericContent?.length;
+
   return (
     <span
       {...props}
       style={{
+        display: 'inline-block',
+        boxSizing: 'border-box',
+        maxWidth: '100%',
         fontFamily: fonts.retroDisplay,
-        fontSize: '24px',
+        fontSize: numericContentLength
+          ? `clamp(12px, calc((100vw - 80px) / ${numericContentLength}), 24px)`
+          : '24px',
         color: $color || '#00ff00',
         textShadow: '2px 2px 0 rgba(0,0,0,0.8)',
         letterSpacing: '2px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...crispText,
         ...style,
       }}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 export function RetroButton({
   $variant = 'primary',
+  children,
+  className,
   style,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { $variant?: 'primary' | 'secondary' | 'danger' }) {
+  useRetroThemeStyles();
+
   const variantStyle =
     $variant === 'danger'
       ? {
@@ -267,7 +314,15 @@ export function RetroButton({
   return (
     <button
       {...props}
+      className={['retro-theme-button', className].filter(Boolean).join(' ')}
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxSizing: 'border-box',
+        minWidth: 0,
+        minHeight: '44px',
+        maxWidth: '100%',
         fontFamily: fonts.retroText,
         fontSize: '11px',
         padding: '12px 20px',
@@ -277,12 +332,29 @@ export function RetroButton({
         textTransform: 'uppercase',
         transition: 'all 0.1s ease',
         opacity: props.disabled ? 0.5 : 1,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        touchAction: 'manipulation',
         ...crispText,
         ...textOutline,
         ...variantStyle,
         ...style,
       }}
-    />
+    >
+      <span
+        style={{
+          display: 'block',
+          minWidth: 0,
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {children}
+      </span>
+    </button>
   );
 }
 
@@ -298,8 +370,12 @@ export function RetroCard({
     <div
       {...props}
       style={{
+        boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: '100%',
         background: 'linear-gradient(180deg, #1a1a2e 0%, #0a0a1e 100%)',
         padding: '16px',
+        overflowWrap: 'anywhere',
         ...pixelBorder,
         color: $glow ? ($glowColor || '#00ffff') : undefined,
         borderColor: $glow ? ($glowColor || '#00ffff') : undefined,
@@ -312,6 +388,7 @@ export function RetroCard({
 
 export function RankBadge({
   $rank,
+  children,
   style,
   ...props
 }: PropsWithChildren<BaseDivProps & { $rank: number }>) {
@@ -352,16 +429,34 @@ export function RankBadge({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        boxSizing: 'border-box',
         minWidth: '48px',
+        maxWidth: '100%',
         height: '32px',
         fontFamily: fonts.retroDisplay,
         fontSize: '11px',
         padding: '0 8px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...crispText,
         ...badgeStyle,
         ...style,
       }}
-    />
+    >
+      <span
+        style={{
+          display: 'block',
+          minWidth: 0,
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {children}
+      </span>
+    </div>
   );
 }
 
@@ -376,10 +471,15 @@ export function ScoreDisplay({
     <div
       {...props}
       style={{
+        boxSizing: 'border-box',
+        maxWidth: '100%',
         fontFamily: fonts.retroDisplay,
         fontSize: '16px',
         color: '#00ff00',
         textShadow: '0 0 4px #00ff00, 0 0 8px #00ff00',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...crispText,
         animation: $animate ? 'retroThemeScorePop 0.5s ease-out' : undefined,
         ...style,
@@ -390,6 +490,7 @@ export function ScoreDisplay({
 
 export function StreakCounter({
   $streak,
+  children,
   style,
   ...props
 }: PropsWithChildren<BaseDivProps & { $streak: number }>) {
@@ -426,16 +527,34 @@ export function StreakCounter({
         display: 'inline-flex',
         alignItems: 'center',
         gap: '4px',
+        boxSizing: 'border-box',
+        maxWidth: '100%',
         fontFamily: fonts.retroText,
         fontSize: '11px',
         padding: '6px 12px',
         borderRadius: '4px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...crispText,
         ...textOutline,
         ...streakStyle,
         ...style,
       }}
-    />
+    >
+      <span
+        style={{
+          display: 'block',
+          minWidth: 0,
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {children}
+      </span>
+    </div>
   );
 }
 
@@ -444,6 +563,9 @@ export function RetroDivider({ style, ...props }: BaseDivProps) {
     <div
       {...props}
       style={{
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: '100%',
         height: '2px',
         background: 'linear-gradient(90deg, transparent 0%, #4a4a6a 10%, #6a6a8a 50%, #4a4a6a 90%, transparent 100%)',
         margin: '16px 0',
@@ -461,9 +583,14 @@ export function PixelCrown({ style, ...props }: PropsWithChildren<BaseSpanProps>
       {...props}
       style={{
         display: 'inline-block',
+        boxSizing: 'border-box',
+        maxWidth: '100%',
         fontSize: '16px',
         animation: 'retroThemePixelBounce 1s ease-in-out infinite',
         filter: 'drop-shadow(0 2px 4px rgba(255,215,0,0.5))',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...style,
       }}
     />
@@ -489,6 +616,11 @@ export function GlitchWrapper({
     <div
       {...props}
       style={{
+        boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: 'calc(100% - 4px)',
+        marginInline: '2px',
+        overflowWrap: 'anywhere',
         animation: $active ? 'retroThemeGlitch 0.3s ease-out' : undefined,
         ...style,
       }}
@@ -504,17 +636,26 @@ export function DotMatrixText({ children, style, ...props }: PropsWithChildren<B
       {...props}
       style={{
         position: 'relative',
+        boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: '100%',
         padding: '8px 16px',
         background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 4px), repeating-linear-gradient(90deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 4px), linear-gradient(180deg, #1a0a2a 0%, #0a0a1a 100%)',
         border: '2px solid #ff00ff',
         borderRadius: '4px',
+        overflowWrap: 'anywhere',
         ...style,
       }}
     >
       <span
         style={{
+          display: 'block',
+          minWidth: 0,
+          maxWidth: '100%',
           fontFamily: fonts.retroText,
           animation: 'retroThemeDotMatrixBlink 2s infinite',
+          animationPlayState: style?.animationPlayState,
+          overflowWrap: 'anywhere',
           ...crispText,
         }}
       >
@@ -532,10 +673,15 @@ export function AnimatedCrown({ style, ...props }: PropsWithChildren<BaseSpanPro
       {...props}
       style={{
         display: 'inline-block',
+        boxSizing: 'border-box',
+        maxWidth: 'calc(100% - 4px)',
         fontSize: '20px',
         animation: 'retroThemeCrownWiggle 1s infinite ease-in-out',
         filter: 'drop-shadow(0 0 6px rgba(255, 215, 0, 0.8))',
         marginRight: '4px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
         ...style,
       }}
     />
@@ -565,8 +711,13 @@ export function PixelEmptyState({ style, ...props }: PropsWithChildren<BaseDivPr
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '60px 20px',
+        boxSizing: 'border-box',
+        minWidth: 0,
+        width: '100%',
+        maxWidth: '100%',
+        padding: 'clamp(24px, 12vw, 60px) clamp(12px, 6vw, 20px)',
         textAlign: 'center',
+        overflowWrap: 'anywhere',
         ...style,
       }}
     />

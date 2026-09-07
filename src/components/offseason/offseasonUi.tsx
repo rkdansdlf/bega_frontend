@@ -12,7 +12,7 @@ export function OffseasonPill({
   return (
     <span
       className={joinClassNames(
-        'inline-flex items-center justify-center rounded-full whitespace-nowrap',
+        'inline-flex min-w-0 max-w-full items-center justify-center whitespace-normal break-words rounded-full text-center [overflow-wrap:anywhere]',
         className,
       )}
       {...props}

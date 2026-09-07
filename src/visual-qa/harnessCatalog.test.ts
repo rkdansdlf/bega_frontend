@@ -14,6 +14,672 @@ import {
 } from './harnessCatalog';
 import { KNOWN_COMPONENT_STATE_ADAPTER_IDS } from './stateAdapters';
 
+test('SeatMapLegend catalog exposes exactly 14 direct synthetic light and dark scenarios', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: {
+          values?: string[];
+          reason?: string;
+          owner?: string;
+          testEvidence?: string;
+        };
+        permissions?: {
+          notApplicable?: { reason?: string; owner?: string; testEvidence?: string };
+        };
+        interactions?: {
+          notApplicable?: { reason?: string; owner?: string; testEvidence?: string };
+        };
+        system?: {
+          notApplicable?: { reason?: string; owner?: string; testEvidence?: string };
+        };
+      };
+      variants?: {
+        dimensions?: Array<{
+          name?: string;
+          values?: string[];
+          reason?: string;
+          owner?: string;
+          testEvidence?: string;
+        }>;
+      };
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'seat-map-legend');
+  assert.deepEqual(component.axes?.data?.values, [
+    'empty',
+    'single',
+    'null-optional',
+    'populated',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ]);
+  const assertMetadata = (metadata: {
+    reason?: string;
+    owner?: string;
+    testEvidence?: string;
+  } | undefined) => {
+    assert.ok(metadata);
+    assert.equal(metadata.owner, 'frontend-platform');
+    assert.ok(typeof metadata.reason === 'string' && metadata.reason.length > 0);
+    assert.ok(typeof metadata.testEvidence === 'string' && metadata.testEvidence.length > 0);
+  };
+  assertMetadata(component.axes?.data);
+  assertMetadata(component.axes?.permissions?.notApplicable);
+  assertMetadata(component.axes?.interactions?.notApplicable);
+  assertMetadata(component.axes?.system?.notApplicable);
+  const themeDimension = component.variants?.dimensions?.find(({ name }) => name === 'theme');
+  assert.ok(themeDimension);
+  assert.equal(themeDimension.name, 'theme');
+  assert.deepEqual(themeDimension.values, ['light', 'dark']);
+  assertMetadata(themeDimension);
+  assert.deepEqual(component.constraints, []);
+  const scenarioIds = AUTOMATIC_COMPONENT_STATE_SCENARIOS
+    .filter((scenario) => scenario.componentId === componentId)
+    .map(({ id }) => id)
+    .sort();
+  assert.deepEqual(scenarioIds, [
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=empty|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=empty|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=long-korean|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=long-korean|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=maximum-supported|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=maximum-supported|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=null-optional|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=null-optional|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=populated|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=populated|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=single|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=single|variant.theme=light',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=unbroken-token|variant.theme=dark',
+    'state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=unbroken-token|variant.theme=light',
+  ]);
+  for (const scenarioId of scenarioIds) {
+    const scenario = resolveHarnessScenario(scenarioId);
+    assert.ok(scenario && scenario.kind === 'component-state');
+    assert.equal(scenario.file, 'src/components/stadiumSeatMap/SeatMapLegend.tsx');
+    assert.equal(scenario.moduleKey, '../components/stadiumSeatMap/SeatMapLegend.tsx');
+    assert.equal(scenario.exportName, 'SeatMapLegend');
+    assert.equal(scenario.renderAccess, 'module-export');
+    assert.equal(scenario.adapterId, 'seat-map-legend');
+    assert.equal(scenario.interactionPlan, undefined);
+  }
+});
+
+test('SeatMapRuntimeShell catalog exposes exactly 72 direct mobile runtime scenarios', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        permissions?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+        interactions?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+        system?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+      };
+      variants?: {
+        dimensions?: Array<{
+          name?: string;
+          values?: string[];
+          reason?: string;
+          owner?: string;
+          testEvidence?: string;
+        }>;
+      };
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'seat-map-runtime-shell');
+  const dataValues = [
+    'empty', 'populated', 'null-optional', 'long-korean', 'unbroken-token', 'maximum-supported',
+  ];
+  const systemValues = ['idle', 'loading', 'error-503'];
+  const geometryValues = ['coordinate', 'non-coordinate'];
+  const themeValues = ['light', 'dark'];
+  assert.deepEqual(component.axes?.data?.values, dataValues);
+  assert.deepEqual(component.axes?.system?.values, systemValues);
+  const assertMetadata = (metadata: {
+    reason?: string;
+    owner?: string;
+    testEvidence?: string;
+  } | undefined) => {
+    assert.ok(metadata);
+    assert.equal(metadata.owner, 'frontend-platform');
+    assert.ok(typeof metadata.reason === 'string' && metadata.reason.length > 0);
+    assert.equal(metadata.testEvidence, 'src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx');
+  };
+  assertMetadata(component.axes?.data);
+  assertMetadata(component.axes?.system);
+  assertMetadata(component.axes?.permissions?.notApplicable);
+  assertMetadata(component.axes?.interactions?.notApplicable);
+  const geometry = component.variants?.dimensions?.find(({ name }) => name === 'geometry');
+  const theme = component.variants?.dimensions?.find(({ name }) => name === 'theme');
+  assert.deepEqual(geometry?.values, geometryValues);
+  assert.deepEqual(theme?.values, themeValues);
+  assertMetadata(geometry);
+  assertMetadata(theme);
+  assert.deepEqual(component.constraints, []);
+
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
+  const expectedIds = new Set(dataValues.flatMap((data) => systemValues.flatMap((system) => (
+    geometryValues.flatMap((geometryValue) => themeValues.map((themeValue) => (
+      `state:${componentId}:data=${data}|system=${system}|variant.geometry=${geometryValue}|variant.theme=${themeValue}`
+    )))
+  ))));
+  assert.equal(scenarios.length, 72);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, renderAccess, adapterId, interactionPlan }) => (
+    file === 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx'
+      && moduleKey === '../components/stadiumSeatMap/SeatMapRuntimeShell.tsx'
+      && exportName === 'SeatMapRuntimeShell'
+      && renderAccess === 'module-export'
+      && adapterId === 'seat-map-runtime-shell'
+      && interactionPlan === undefined
+  )));
+  assert.ok(scenarios.every(({ id }) => resolveHarnessScenario(id)?.componentId === componentId));
+});
+
+test('SeatMapSectionFinder catalog exposes exactly 228 executable mobile scenarios', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        permissions?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+        interactions?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        system?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+      };
+      variants?: {
+        dimensions?: Array<{
+          name?: string;
+          values?: string[];
+          reason?: string;
+          owner?: string;
+          testEvidence?: string;
+        }>;
+      };
+      interactionPlans?: Record<string, {
+        action?: string;
+        targets?: Array<{
+          id?: string;
+          selector?: string;
+          value?: string;
+          key?: string;
+          when?: Record<string, string | string[]>;
+        }>;
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }>;
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'seat-map-section-finder');
+  const dataValues = [
+    'empty',
+    'single',
+    'null-optional',
+    'populated',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ];
+  const interactionValues = [
+    'default',
+    'input',
+    'focus-visible',
+    'hover',
+    'selected',
+    'keyboard-navigation',
+  ];
+  assert.deepEqual(component.axes?.data?.values, dataValues);
+  assert.deepEqual(component.axes?.interactions?.values, interactionValues);
+  const assertMetadata = (metadata: {
+    reason?: string;
+    owner?: string;
+    testEvidence?: string;
+  } | undefined) => {
+    assert.ok(metadata);
+    assert.equal(metadata.owner, 'frontend-platform');
+    assert.ok(typeof metadata.reason === 'string' && metadata.reason.length > 0);
+    assert.equal(metadata.testEvidence, 'src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx');
+  };
+  assertMetadata(component.axes?.data);
+  assertMetadata(component.axes?.interactions);
+  assertMetadata(component.axes?.permissions?.notApplicable);
+  assertMetadata(component.axes?.system?.notApplicable);
+  const filterDimension = component.variants?.dimensions?.find(({ name }) => name === 'filter');
+  const themeDimension = component.variants?.dimensions?.find(({ name }) => name === 'theme');
+  assert.deepEqual(filterDimension?.values, ['all', 'restricted']);
+  assert.deepEqual(themeDimension?.values, ['light', 'dark']);
+  assertMetadata(filterDimension);
+  assertMetadata(themeDimension);
+  assert.deepEqual(component.constraints, []);
+  assert.deepEqual(Object.keys(component.interactionPlans ?? {}).sort(), [
+    'focus-visible', 'hover', 'input', 'keyboard-navigation', 'selected',
+  ]);
+  for (const plan of Object.values(component.interactionPlans ?? {})) assertMetadata(plan);
+
+  const targetsFor = (data: string, interaction: string) => {
+    if (interaction === 'default') return [undefined];
+    if (interaction === 'input') return data === 'empty'
+      ? ['no-result-query']
+      : ['match-query', 'no-result-query'];
+    if (interaction === 'focus-visible') return data === 'empty' ? ['search'] : ['search', 'item'];
+    if (data === 'empty') return [];
+    if (interaction === 'keyboard-navigation') return ['enter', 'space'];
+    return ['item'];
+  };
+  const expectedIds = new Set(dataValues.flatMap((data) => interactionValues.flatMap((interaction) => (
+    targetsFor(data, interaction).flatMap((target) => (
+      ['all', 'restricted'].flatMap((filter) => ['light', 'dark'].map((theme) => {
+        const values = [
+          `data=${data}`,
+          `interactions=${interaction}`,
+          `variant.filter=${filter}`,
+          `variant.theme=${theme}`,
+        ];
+        if (target !== undefined) values.push(`interactionTarget=${target}`);
+        return `state:${componentId}:${values.join('|')}`;
+      }))
+    ))
+  ))));
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
+  assert.equal(scenarios.length, 228);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  for (const scenario of scenarios) {
+    assert.equal(scenario.file, 'src/components/stadiumSeatMap/SeatMapSectionFinder.tsx');
+    assert.equal(scenario.moduleKey, '../components/stadiumSeatMap/SeatMapSectionFinder.tsx');
+    assert.equal(scenario.exportName, 'SeatMapSectionFinder');
+    assert.equal(scenario.renderAccess, 'module-export');
+    assert.equal(scenario.adapterId, 'seat-map-section-finder');
+    assert.equal(resolveHarnessScenario(scenario.id)?.componentId, componentId);
+    if (scenario.states.interactions === 'default') {
+      assert.equal(scenario.interactionPlan, undefined);
+      continue;
+    }
+    assert.ok(scenario.interactionPlan);
+    const expectedTargetId = scenario.id.match(/\|interactionTarget=([^|]+)/)?.[1];
+    assert.equal(scenario.interactionPlan.targetId, expectedTargetId);
+    const expectedAction = {
+      input: 'fill',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      selected: 'click',
+      'keyboard-navigation': 'press-key',
+    }[scenario.states.interactions ?? ''];
+    assert.equal(scenario.interactionPlan.action, expectedAction);
+    if (scenario.interactionPlan.targetId === 'match-query') {
+      assert.equal(scenario.interactionPlan.value, 'SYNTHETIC-MATCH-0');
+    }
+    if (scenario.interactionPlan.targetId === 'no-result-query') {
+      assert.equal(scenario.interactionPlan.value, 'SYNTHETIC-NO-RESULT');
+    }
+    if (scenario.interactionPlan.targetId === 'enter') assert.equal(scenario.interactionPlan.key, 'Enter');
+    if (scenario.interactionPlan.targetId === 'space') assert.equal(scenario.interactionPlan.key, 'Space');
+    if (scenario.states.interactions === 'selected' || scenario.states.interactions === 'keyboard-navigation') {
+      assert.equal(
+        scenario.interactionPlan.waitForSelector,
+        '[data-testid="visual-qa-section-finder-section-finder"][data-visual-qa-selected-id="synthetic-0"]',
+      );
+    }
+  }
+});
+
+test('SeatMapTemplateShell catalog exposes exactly 264 constrained composition scenarios', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        permissions?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+        interactions?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        system?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+      };
+      variants?: { dimensions?: Array<{
+        name?: string;
+        values?: string[];
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }> };
+      interactionPlans?: Record<string, {
+        action?: string;
+        targets?: Array<{
+          id?: string;
+          selector?: string;
+          waitForSelector?: string;
+          waitForHiddenSelector?: string;
+          when?: Record<string, string | string[]>;
+        }>;
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }>;
+      constraints?: Array<{
+        excludeWhen?: Record<string, string>;
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }>;
+    }>;
+  };
+  const componentId = 'src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'seat-map-template-shell');
+  const compositionValues = [
+    'base',
+    'optional-populated',
+    'null-optional',
+    'filter-fallback',
+    'filter-override',
+    'mobile-secondary',
+    'mobile-legacy-side',
+    'mobile-bottom-sheet',
+    'mobile-side-reserve',
+    'desktop-secondary',
+    'desktop-side',
+    'desktop-both',
+    'auxiliary-guide',
+    'toast',
+    'fullscreen',
+    'fullscreen-toast',
+  ];
+  const interactionValues = ['default', 'focus-visible', 'selected'];
+  assert.deepEqual(component.axes?.data?.values, ['populated']);
+  assert.deepEqual(component.axes?.interactions?.values, interactionValues);
+  const assertMetadata = (metadata: {
+    reason?: string;
+    owner?: string;
+    testEvidence?: string;
+  } | undefined) => {
+    assert.ok(metadata);
+    assert.equal(metadata.owner, 'frontend-platform');
+    assert.ok(typeof metadata.reason === 'string' && metadata.reason.length > 0);
+    assert.equal(metadata.testEvidence, 'src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx');
+  };
+  assertMetadata(component.axes?.data);
+  assertMetadata(component.axes?.interactions);
+  assertMetadata(component.axes?.permissions?.notApplicable);
+  assertMetadata(component.axes?.system?.notApplicable);
+  const compositionDimension = component.variants?.dimensions?.find(({ name }) => name === 'composition');
+  const pressureDimension = component.variants?.dimensions?.find(({ name }) => name === 'pressure');
+  const layoutDimension = component.variants?.dimensions?.find(({ name }) => name === 'layout');
+  const themeDimension = component.variants?.dimensions?.find(({ name }) => name === 'theme');
+  assert.deepEqual(compositionDimension?.values, compositionValues);
+  assert.deepEqual(pressureDimension?.values, ['default', 'long-korean', 'unbroken-token', 'maximum-supported']);
+  assert.deepEqual(layoutDimension?.values, ['mobile', 'desktop']);
+  assert.deepEqual(themeDimension?.values, ['light', 'dark']);
+  assertMetadata(compositionDimension);
+  assertMetadata(pressureDimension);
+  assertMetadata(layoutDimension);
+  assertMetadata(themeDimension);
+  assert.equal(component.constraints?.length, 35);
+  assert.deepEqual(Object.keys(component.interactionPlans ?? {}).sort(), ['focus-visible', 'selected']);
+  for (const plan of Object.values(component.interactionPlans ?? {})) assertMetadata(plan);
+
+  const generic = new Set([
+    'base', 'optional-populated', 'null-optional', 'filter-fallback', 'filter-override',
+    'auxiliary-guide', 'toast', 'fullscreen', 'fullscreen-toast',
+  ]);
+  const mobileOnly = new Set(['mobile-secondary', 'mobile-legacy-side', 'mobile-bottom-sheet', 'mobile-side-reserve']);
+  const desktopOnly = new Set(['desktop-secondary', 'desktop-side', 'desktop-both']);
+  const validLayouts = (composition: string) => generic.has(composition)
+    ? ['mobile', 'desktop']
+    : mobileOnly.has(composition)
+      ? ['mobile']
+      : desktopOnly.has(composition)
+        ? ['desktop']
+        : [];
+  const validInteractions = (composition: string) => (
+    composition === 'fullscreen' || composition === 'fullscreen-toast'
+      ? interactionValues
+      : ['default']
+  );
+  const expectedIds = new Set(compositionValues.flatMap((composition) => (
+    validInteractions(composition).flatMap((interaction) => (
+      validLayouts(composition).flatMap((layout) => (
+        ['default', 'long-korean', 'unbroken-token', 'maximum-supported'].flatMap((pressure) => (
+          ['light', 'dark'].map((theme) => {
+            const values = [
+              'data=populated',
+              `interactions=${interaction}`,
+              `variant.composition=${composition}`,
+              `variant.pressure=${pressure}`,
+              `variant.layout=${layout}`,
+              `variant.theme=${theme}`,
+            ];
+            if (interaction !== 'default') values.push('interactionTarget=close');
+            return `state:${componentId}:${values.join('|')}`;
+          })
+        ))
+      ))
+    ))
+  )));
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
+  assert.equal(expectedIds.size, 264);
+  assert.equal(scenarios.length, 264);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  for (const scenario of scenarios) {
+    assert.equal(scenario.file, 'src/components/stadiumSeatMap/SeatMapTemplateShell.tsx');
+    assert.equal(scenario.moduleKey, '../components/stadiumSeatMap/SeatMapTemplateShell.tsx');
+    assert.equal(scenario.exportName, 'SeatMapTemplateShell');
+    assert.equal(scenario.renderAccess, 'module-export');
+    assert.equal(scenario.adapterId, 'seat-map-template-shell');
+    assert.equal(resolveHarnessScenario(scenario.id)?.componentId, componentId);
+    if (scenario.states.interactions === 'default') {
+      assert.equal(scenario.interactionPlan, undefined);
+    } else {
+      assert.equal(scenario.interactionPlan?.targetId, 'close');
+      assert.equal(
+        scenario.interactionPlan?.action,
+        scenario.states.interactions === 'selected' ? 'click' : 'focus-visible',
+      );
+    }
+  }
+});
+
+test('SeatViewDirectUploadModal catalog exposes exactly 116 constrained form scenarios', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        permissions?: { notApplicable?: { reason?: string; owner?: string; testEvidence?: string } };
+        interactions?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+        system?: { values?: string[]; reason?: string; owner?: string; testEvidence?: string };
+      };
+      variants?: { dimensions?: Array<{
+        name?: string;
+        values?: string[];
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }> };
+      interactionPlans?: Record<string, {
+        action?: string;
+        targets?: Array<{
+          id?: string;
+          selector?: string;
+          value?: string;
+          waitForSelector?: string;
+        }>;
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }>;
+      constraints?: Array<{ excludeWhen?: Record<string, string> }>;
+    }>;
+  };
+  const componentId = 'src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'seat-view-direct-upload-modal');
+
+  const dataValues = ['empty', 'populated', 'maximum-supported'];
+  const systemValues = ['idle', 'loading', 'error-503'];
+  const interactionValues = ['default', 'hover', 'focus-visible', 'pressed', 'selected', 'input'];
+  const feedbackValues = ['none', 'file-required', 'rating-required', 'tag-limit'];
+  const locationValues = ['missing', 'short', 'long-korean', 'unbroken-token'];
+  const themeValues = ['light', 'dark'];
+  assert.deepEqual(component.axes?.data?.values, dataValues);
+  assert.deepEqual(component.axes?.interactions?.values, interactionValues);
+  assert.deepEqual(component.axes?.system?.values, systemValues);
+  assert.deepEqual(
+    component.variants?.dimensions?.find(({ name }) => name === 'feedback')?.values,
+    feedbackValues,
+  );
+  assert.deepEqual(
+    component.variants?.dimensions?.find(({ name }) => name === 'location')?.values,
+    locationValues,
+  );
+  assert.deepEqual(
+    component.variants?.dimensions?.find(({ name }) => name === 'theme')?.values,
+    themeValues,
+  );
+  const assertMetadata = (metadata: {
+    reason?: string;
+    owner?: string;
+    testEvidence?: string;
+  } | undefined) => {
+    assert.ok(metadata);
+    assert.equal(metadata.owner, 'frontend-platform');
+    assert.ok(typeof metadata.reason === 'string' && metadata.reason.length > 0);
+    assert.equal(
+      metadata.testEvidence,
+      'src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx',
+    );
+  };
+  assertMetadata(component.axes?.data);
+  assertMetadata(component.axes?.interactions);
+  assertMetadata(component.axes?.system);
+  assertMetadata(component.axes?.permissions?.notApplicable);
+  for (const dimension of component.variants?.dimensions ?? []) assertMetadata(dimension);
+  assert.equal(component.constraints?.length, 66);
+  for (const constraint of component.constraints ?? []) assertMetadata(constraint);
+
+  const targets = {
+    hover: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+    'focus-visible': ['close', 'file', 'row', 'seat', 'rating', 'tag', 'comment', 'cancel', 'submit'],
+    pressed: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+    selected: ['rating', 'tag'],
+    input: ['row', 'seat', 'comment'],
+  } as const;
+  assert.deepEqual(Object.keys(component.interactionPlans ?? {}), Object.keys(targets));
+  for (const [interaction, expectedTargets] of Object.entries(targets)) {
+    const plan = component.interactionPlans?.[interaction];
+    assertMetadata(plan);
+    assert.deepEqual(plan?.targets?.map(({ id }) => id), expectedTargets);
+  }
+
+  const validDefaultPairs = [
+    ['empty', 'idle', 'none'],
+    ['empty', 'idle', 'file-required'],
+    ['populated', 'idle', 'none'],
+    ['populated', 'idle', 'rating-required'],
+    ['maximum-supported', 'idle', 'none'],
+    ['maximum-supported', 'idle', 'tag-limit'],
+    ['maximum-supported', 'loading', 'none'],
+    ['maximum-supported', 'error-503', 'none'],
+  ] as const;
+  const expectedIds = new Set<string>();
+  for (const [data, system, feedback] of validDefaultPairs) {
+    for (const location of locationValues) {
+      for (const theme of themeValues) {
+        expectedIds.add(`state:${componentId}:data=${data}|interactions=default|system=${system}|variant.feedback=${feedback}|variant.location=${location}|variant.theme=${theme}`);
+      }
+    }
+  }
+  for (const [interaction, interactionTargets] of Object.entries(targets)) {
+    for (const target of interactionTargets) {
+      for (const theme of themeValues) {
+        expectedIds.add(`state:${componentId}:data=populated|interactions=${interaction}|system=idle|variant.feedback=none|variant.location=short|variant.theme=${theme}|interactionTarget=${target}`);
+      }
+    }
+  }
+
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((scenario) => scenario.componentId === componentId);
+  assert.equal(expectedIds.size, 116);
+  assert.equal(scenarios.length, 116);
+  assert.deepEqual(new Set(scenarios.map(({ id }) => id)), expectedIds);
+  const expectedActions = {
+    hover: 'hover',
+    'focus-visible': 'focus-visible',
+    pressed: 'pressed',
+    selected: 'click',
+    input: 'fill',
+  } as const;
+  for (const scenario of scenarios) {
+    assert.equal(scenario.file, 'src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx');
+    assert.equal(scenario.moduleKey, '../components/stadiumSeatMap/SeatViewDirectUploadModal.tsx');
+    assert.equal(scenario.exportName, 'default');
+    assert.equal(scenario.renderAccess, 'module-export');
+    assert.equal(scenario.adapterId, 'seat-view-direct-upload-modal');
+    assert.equal(resolveHarnessScenario(scenario.id)?.componentId, componentId);
+    const interaction = scenario.states.interactions ?? 'default';
+    if (interaction === 'default') {
+      assert.equal(scenario.interactionPlan, undefined);
+      continue;
+    }
+    assert.equal(scenario.interactionPlan?.action, expectedActions[interaction as keyof typeof expectedActions]);
+    assert.ok(scenario.interactionPlan?.targetId);
+    if (interaction === 'input') assert.ok(typeof scenario.interactionPlan?.value === 'string');
+    if (interaction === 'selected') assert.ok(scenario.interactionPlan?.waitForSelector);
+  }
+});
+
 test('automatic icon scenarios include every module-export gallery symbol exactly once', () => {
   assert.ok(AUTOMATIC_ICON_SCENARIOS.length > 0);
   assert.equal(
@@ -76,7 +742,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 70965);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 71659);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -89,7 +755,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    286,
+    291,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (

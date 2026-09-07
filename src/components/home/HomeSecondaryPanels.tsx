@@ -730,18 +730,18 @@ export default function HomeSecondaryPanels({
 
       {showCalendar && (
         <div
-          className="fixed inset-0 z-[80] bg-black/50 px-4"
+          className="fixed inset-0 z-[80] overflow-y-auto bg-black/50 px-0 sm:px-4"
           onClick={onCloseCalendar}
         >
-          <div className="flex min-h-full items-center justify-center py-6">
+          <div className="flex min-h-full items-start justify-center py-2 sm:items-center sm:py-6">
             <div
               role="dialog"
               aria-modal="true"
               aria-labelledby={calendarDialogTitleId}
-              className="grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-xl border border-zinc-200/90 bg-white p-6 text-foreground shadow-dialog ring-1 ring-black/5 dark:border-zinc-700/70 dark:bg-zinc-900 dark:ring-white/10 sm:max-w-lg"
+              className="grid max-h-[calc(100dvh-1rem)] w-full max-w-lg gap-4 overflow-y-auto rounded-xl border border-zinc-200/90 bg-white p-0 text-foreground shadow-dialog ring-1 ring-black/5 dark:border-zinc-700/70 dark:bg-zinc-900 dark:ring-white/10 sm:p-6"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:p-0">
                 <h2 id={calendarDialogTitleId} className="text-lg font-bold leading-none">
                   날짜 선택
                 </h2>
@@ -781,7 +781,7 @@ export default function HomeSecondaryPanels({
                     nextDate.setHours(12, 0, 0, 0);
                     onSelectCalendarDate(nextDate);
                   }}
-                  className="mx-auto rounded-md border"
+                  className="mb-2 mx-auto rounded-md border"
                 />
               </Suspense>
             </div>

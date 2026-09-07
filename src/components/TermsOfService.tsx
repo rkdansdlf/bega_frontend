@@ -9,7 +9,7 @@ export default function TermsOfService() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 border-b border-zinc-200/80 dark:border-border pb-4">
             이용약관
           </h1>
-          <SimpleMarkdownContent content={termsContent} />
+          <SimpleMarkdownContent content={termsContent} omitFirstHeading />
         </div>
       </div>
     </div>

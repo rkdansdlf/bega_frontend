@@ -3,13 +3,14 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
 
-import { createElement } from 'react';
+import { createElement, type ComponentType } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import SajikSeatMap from './SajikSeatMap';
-import SajikSeatMapEditor from './SajikSeatMapEditor';
-import SajikSeatMapSvg from './SajikSeatMapSvg';
+import SajikSeatMapEditor, { PathValidationStatus } from './SajikSeatMapEditor';
+import SajikSeatMapSvg, { MissingOfficialSeatMap } from './SajikSeatMapSvg';
 import {
   SAJIK_CANONICAL_SEATMAP_SUMMARY,
   validateSajikCanonicalSeatMap,
@@ -60,6 +61,111 @@ test('SajikSeatMap은 canonical 1151x1367 단일 좌석도를 렌더링한다', 
   assert.doesNotMatch(html, /data-testid="sajik-operator-reference-preview-layer"/);
   assert.doesNotMatch(html, /data-testid="sajik-official-seatmap-required"/);
   assert.doesNotMatch(html, /MANUAL_BASEBALL_DATA_REQUIRED/);
+});
+
+test('SajikSeatMap state override는 선택·전체화면·로그인 사용자 업로드 화면을 첫 렌더에 재현한다', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const StateDrivenSajikSeatMap = SajikSeatMap as unknown as ComponentType<{
+    stateOverride: {
+      guideIntent: 'all';
+      guideQuery: string;
+      isFullscreenOpen: boolean;
+      isLoggedIn: boolean;
+      isSectionFinderOpen: boolean;
+      selectedBlockId: string;
+      uploadBlockId: string;
+    };
+  }>;
+  const html = renderToStaticMarkup(createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    createElement(
+      MemoryRouter,
+      null,
+      createElement(StateDrivenSajikSeatMap, {
+        stateOverride: {
+          guideIntent: 'all',
+          guideQuery: '',
+          isFullscreenOpen: true,
+          isLoggedIn: true,
+          isSectionFinderOpen: false,
+          selectedBlockId: 'sajik-canonical-322',
+          uploadBlockId: 'sajik-canonical-322',
+        },
+      }),
+    ),
+  ));
+
+  assert.match(html, /3루 내야상단석A 322블록/);
+  assert.match(html, /data-testid="sajik-seatmap-fullscreen"/);
+  assert.match(html, /data-testid="seat-view-direct-upload-modal"/);
+  assert.doesNotMatch(html, /data-testid="sajik-section-finder"/);
+  queryClient.clear();
+});
+
+test('사직 가이드와 지도 오버레이의 모바일 조작부는 44px 터치 영역을 유지한다', () => {
+  const mapHtml = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(SajikSeatMap)));
+  const svgHtml = renderToStaticMarkup(createElement(SajikSeatMapSvg, svgBaseProps));
+
+  assert.match(mapHtml, /data-testid="sajik-guide-search"[^>]+class="[^"]*h-11/);
+  assert.match(mapHtml, /data-testid="sajik-guide-intent-all"[^>]+class="[^"]*min-h-11/);
+  assert.match(mapHtml, /data-testid="sajik-guide-result-[^"]+"[^>]+class="[^"]*max-w-/);
+  assert.match(mapHtml, /class="[^"]*\[overflow-wrap:anywhere\][^"]*"/);
+  assert.match(svgHtml, /data-testid="sajik-seatmap-zoom-in"[^>]+class="[^"]*h-11[^"]*w-11/);
+  assert.match(svgHtml, /data-testid="sajik-seatmap-zoom-reset"[^>]+class="[^"]*min-h-11[^"]*min-w-11/);
+  assert.match(svgHtml, /data-testid="sajik-seatmap-zoom-out"[^>]+class="[^"]*h-11[^"]*w-11/);
+  assert.ok(
+    svgHtml.indexOf('data-testid="sajik-seatmap-zoom-in"')
+      < svgHtml.indexOf('data-testid="sajik-seatmap-viewport"'),
+    'mobile controls must be laid out before the map viewport instead of covering seat geometry',
+  );
+});
+
+test('사직 SVG의 이미지 준비·완료·오류 상태는 첫 렌더에서 결정적으로 재현된다', () => {
+  const StateDrivenSajikSeatMapSvg = SajikSeatMapSvg as unknown as ComponentType<{
+    stateOverride: { imageState: 'loading' | 'loaded' | 'error' };
+  } & typeof svgBaseProps>;
+  const loadingHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapSvg, {
+    ...svgBaseProps,
+    stateOverride: { imageState: 'loading' },
+  }));
+  const loadedHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapSvg, {
+    ...svgBaseProps,
+    stateOverride: { imageState: 'loaded' },
+  }));
+  const errorHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapSvg, {
+    ...svgBaseProps,
+    stateOverride: { imageState: 'error' },
+  }));
+
+  assert.match(loadingHtml, /<rect[^>]+fill="#e5e7eb"/);
+  assert.match(loadingHtml, /opacity:0/);
+  assert.doesNotMatch(loadedHtml, /<rect[^>]+fill="#e5e7eb"/);
+  assert.match(loadedHtml, /opacity:1/);
+  assert.match(errorHtml, /data-testid="sajik-official-seatmap-required"/);
+});
+
+test('사직 이미지 누락 상태와 path validator는 독립 렌더와 모바일 긴 문구를 지원한다', () => {
+  const missingHtml = renderToStaticMarkup(createElement(MissingOfficialSeatMap, { mode: 'dark' }));
+  const passHtml = renderToStaticMarkup(createElement(PathValidationStatus, {
+    label: 'visualPath',
+    issues: [],
+  }));
+  const failHtml = renderToStaticMarkup(createElement(PathValidationStatus, {
+    label: `hitPath-${'X'.repeat(120)}`,
+    issues: [{} as never, {} as never],
+  }));
+
+  assert.match(missingHtml, /data-testid="sajik-official-seatmap-required"/);
+  assert.match(missingHtml, /\[overflow-wrap:anywhere\]/);
+  assert.match(passHtml, /validator-pass/);
+  assert.match(passHtml, />PASS</);
+  assert.match(failHtml, /validator-fail/);
+  assert.match(failHtml, />2 ISSUES</);
+  assert.match(failHtml, /min-w-0/);
+  assert.match(failHtml, /break-all/);
 });
 
 test('SajikSeatMapSvg는 canonical section과 marker만 활성 runtime layer로 렌더링한다', () => {
@@ -132,6 +238,43 @@ test('SajikSeatMapEditor는 dev-only editor/export shell 계약을 렌더링한�
   assert.match(html, /PATCH PASS/);
   assert.match(html, /data-testid="sajik-editor-dataset-json"/);
   assert.match(html, /BUSAN_SAJIK_2026_MANUAL_POLYGON_V2/);
+});
+
+test('SajikSeatMapEditor는 clean·dirty·invalid 상태와 모바일 reflow를 결정적으로 렌더링한다', () => {
+  const StateDrivenSajikSeatMapEditor = SajikSeatMapEditor as unknown as ComponentType<{
+    stateOverride: {
+      dataState: 'clean' | 'dirty-pass' | 'invalid-hitpath';
+      editingTarget?: 'visualPath' | 'hitPath' | 'labelPoint';
+      query?: string;
+      selectedSectionId?: string;
+    };
+  }>;
+  const cleanHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapEditor, {
+    stateOverride: { dataState: 'clean' },
+  }));
+  const dirtyHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapEditor, {
+    stateOverride: { dataState: 'dirty-pass' },
+  }));
+  const invalidHtml = renderToStaticMarkup(createElement(StateDrivenSajikSeatMapEditor, {
+    stateOverride: {
+      dataState: 'invalid-hitpath',
+      editingTarget: 'labelPoint',
+      query: `SAJIK-${'X'.repeat(120)}`,
+      selectedSectionId: '112',
+    },
+  }));
+
+  assert.match(cleanHtml, /data-testid="sajik-editor-draft-status"[^>]*>draft clean</);
+  assert.match(dirtyHtml, /data-testid="sajik-editor-draft-status"[^>]*>draft dirty</);
+  assert.match(dirtyHtml, /data-testid="sajik-editor-patch-status-pass"/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-patch-status-fail"/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-labelpoint-handle"/);
+  assert.match(invalidHtml, /overflow-x-hidden/);
+  assert.match(invalidHtml, /grid-cols-2[^\"]*sm:grid-cols-4/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-reset-draft"[^>]+class="[^"]*min-h-11/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-nudge-y-minus"[^>]+class="[^"]*h-11[^\"]*w-11/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-patch-json"[^>]+class="[^"]*h-48[^\"]*min-w-0[^\"]*xl:h-auto/);
+  assert.match(invalidHtml, /data-testid="sajik-editor-dataset-json"[^>]+class="[^"]*h-48[^\"]*min-w-0[^\"]*xl:h-auto/);
 });
 
 test('SajikSeatMapEditor route는 production navigation에 노출되지 않는 dev-only 내부 route다', () => {

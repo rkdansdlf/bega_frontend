@@ -1,7 +1,9 @@
+import { lazy, Suspense } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useLoginForm } from '../hooks/useLoginForm';
 import { buildPasswordResetPath, buildSignUpPath } from '../utils/loginRedirect';
+import { getOAuthEmailChallengeEntry } from '../utils/oauthEmailChallenge';
 import { sanitizeLoginPasswordText, sanitizeLoginText } from '../utils/validation';
 import AuthLayout from './auth/AuthLayout';
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from './icons/AuthFlowIcons';
@@ -14,9 +16,25 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-export default function Login() {
+const OAuthEmailChallengePanel = lazy(() => import('./auth/OAuthEmailChallengePanel'));
+
+export type LoginVisualQaStateOverride = Pick<
+  ReturnType<typeof useLoginForm>,
+  'formData' | 'fieldErrors' | 'showPassword' | 'isLoading' | 'error' | 'rememberEmail'
+>;
+
+interface LoginProps {
+  visualQaStateOverride?: LoginVisualQaStateOverride;
+}
+
+export default function Login(props: LoginProps) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const liveState = useLoginForm();
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
 
   const {
     formData,
@@ -25,14 +43,17 @@ export default function Login() {
     isLoading,
     error,
     rememberEmail,
+  } = visualQaStateOverride ?? liveState;
+  const {
     handleFieldChange,
     handleFieldBlur,
     handleRememberEmailChange,
     handleSubmit,
     togglePasswordVisibility,
-  } = useLoginForm();
+  } = liveState;
 
   const redirectPath = new URLSearchParams(location.search).get('redirect');
+  const emailChallengeEntry = getOAuthEmailChallengeEntry(location.search);
   const signUpPath = buildSignUpPath(redirectPath);
   const passwordResetPath = buildPasswordResetPath(redirectPath);
 
@@ -42,6 +63,24 @@ export default function Login() {
       window.location.href = getSocialLoginUrl(provider);
     }
   };
+
+  if (emailChallengeEntry) {
+    return (
+      <AuthLayout showHomeButton={true}>
+        <Suspense fallback={(
+          <AuthStatusPanel role="status">
+            <p className="text-body font-semibold">이메일 확인 중...</p>
+          </AuthStatusPanel>
+        )}>
+          <OAuthEmailChallengePanel
+            challengeId={emailChallengeEntry.challengeId}
+            reason={emailChallengeEntry.reason}
+            onReturnToLogin={() => navigate('/login', { replace: true })}
+          />
+        </Suspense>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout showHomeButton={true}>
@@ -88,7 +127,7 @@ export default function Login() {
               <LockIcon className="h-4 w-4 text-primary" />
               Password
             </label>
-            <div className="relative">
+            <div className="relative" data-vqa-overlap="allowed">
               <Input
                 id="password"
                 name="password"
@@ -153,7 +192,7 @@ export default function Login() {
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -194,7 +233,7 @@ export default function Login() {
           className="auth-provider-button auth-provider-google"
           data-testid="login-social-google"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M18.17 8.36h-8.04v3.45h4.62c-.39 2.11-2.26 3.45-4.62 3.45a5.26 5.26 0 1 1 3.42-9.25l2.58-2.58A8.76 8.76 0 1 0 10.13 18.7c4.35 0 8.23-3.02 8.04-10.34z" fill="#4285F4" />
             <path d="M18.17 8.36h-8.04v3.45h4.62c-.39 2.11-2.26 3.45-4.62 3.45a5.26 5.26 0 0 1-5.14-4.24l-2.99 2.31A8.76 8.76 0 0 0 10.13 18.7c4.35 0 8.23-3.02 8.04-10.34z" fill="#34A853" />
             <path d="M5.14 10.02a5.26 5.26 0 0 1 0-3.36L2.15 4.35a8.76 8.76 0 0 0 0 7.98l2.99-2.31z" fill="#FBBC05" />
@@ -221,7 +260,7 @@ export default function Login() {
           className="auth-provider-button auth-provider-kakao"
           data-testid="login-social-kakao"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M10 3C5.589 3 2 5.792 2 9.22c0 2.155 1.396 4.046 3.505 5.146-.15.554-.976 3.505-1.122 4.045-.174.646.237.637.501.463.21-.138 3.429-2.282 3.996-2.657.373.053.754.08 1.12.08 4.411 0 8-2.792 8-6.22C18 5.793 14.411 3 10 3z" fill="currentColor" />
           </svg>
           카카오로 로그인

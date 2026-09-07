@@ -57,6 +57,7 @@ export default function MateFilterBottomSheet({
       placement="bottom"
       title="메이트 필터"
       description="내 팀 경기와 좌석 유형을 빠르게 좁혀보세요."
+      contentTestId="mate-filter-sheet"
       className="max-h-[82vh] max-w-2xl rounded-b-none rounded-t-3xl border-none bg-gray-50 dark:bg-[#000000]"
       bodyClassName="max-h-[calc(82vh-132px)] overflow-y-auto px-5 pb-5 pt-4"
       footer={(
@@ -133,7 +134,7 @@ export default function MateFilterBottomSheet({
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => handleToggleSeat(option.label)}
-                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-left text-12 font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
+                  className={`inline-flex min-h-11 items-center rounded-full border px-3 py-1.5 text-left text-12 font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
                     isActive
                       ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light'
                       : 'border-gray-200 bg-white text-gray-700 hover:border-primary/30 hover:bg-primary/5 dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20'

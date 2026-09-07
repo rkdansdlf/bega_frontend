@@ -27,6 +27,7 @@ import type { PostsAdminPanel as PostsAdminPanelComponent } from '../components/
 import type { UsersAdminPanel as UsersAdminPanelComponent } from '../components/admin/UsersAdminPanel';
 import type GlobalErrorDialogContentComponent from '../components/GlobalErrorDialogContent';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
+import type { SeatViewDirectUploadVisualQaStateOverride } from '../components/stadiumSeatMap/SeatViewDirectUploadModal';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
 import {
   CardAction,
@@ -356,6 +357,273 @@ const stadiumNames = {
   missing: null,
   short: '잠실야구장',
   'long-korean': '서울특별시 종합운동장 야구장 공식 좌석 안내 구역',
+};
+
+const seatMapRuntimeShellUnbroken = `SEATMAPRUNTIMESHELL${'X'.repeat(220)}`;
+const seatMapRuntimeShellMaximum = `${'최대지원좌석도상태'.repeat(48)}${seatMapRuntimeShellUnbroken}`;
+const seatMapRuntimeShellCopy = {
+  empty: { badgeLabel: '', stadiumName: undefined, child: '' },
+  populated: { badgeLabel: '합성 공식 좌석도', stadiumName: '합성 테스트 구장', child: '합성 좌석도 콘텐츠' },
+  'null-optional': { badgeLabel: '합성 공식 좌석도', stadiumName: null, child: '선택한 구장 좌석도' },
+  'long-korean': {
+    badgeLabel: '모바일에서 여러 줄과 잘림 상태를 확인하는 합성 공식 좌석도 안내',
+    stadiumName: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 합성 테스트 구장 이름',
+    child: '모바일 화면에서 자식 좌석도 콘텐츠가 자연스럽게 여러 줄로 표시되는지 확인합니다.',
+  },
+  'unbroken-token': {
+    badgeLabel: seatMapRuntimeShellUnbroken,
+    stadiumName: seatMapRuntimeShellUnbroken,
+    child: seatMapRuntimeShellUnbroken,
+  },
+  'maximum-supported': {
+    badgeLabel: seatMapRuntimeShellMaximum,
+    stadiumName: seatMapRuntimeShellMaximum,
+    child: seatMapRuntimeShellMaximum,
+  },
+} as const;
+
+type VisualQaSeatMapSectionFinderData =
+  | 'empty'
+  | 'single'
+  | 'null-optional'
+  | 'populated'
+  | 'long-korean'
+  | 'unbroken-token'
+  | 'maximum-supported';
+
+type VisualQaSeatMapSectionBlock = {
+  id: string;
+  name: string;
+  block: string;
+  categoryId: string;
+  level: string;
+  officialBlocks: string[];
+  side: string;
+  fan: string;
+  sourceLabel: string;
+  sourceNote: string;
+  seatViewSections: string[];
+};
+
+const seatMapSectionFinderUnbroken = `SEATMAPSECTIONFINDER${'X'.repeat(220)}`;
+const seatMapSectionFinderMaximum = `${'최대지원합성좌석구역'.repeat(36)}${seatMapSectionFinderUnbroken}`;
+const makeVisualQaSeatMapSectionBlock = (
+  index: number,
+  overrides: Partial<VisualQaSeatMapSectionBlock> = {},
+): VisualQaSeatMapSectionBlock => ({
+  id: `synthetic-${index}`,
+  name: `합성 좌석 구역 ${index + 1}`,
+  block: `S${index + 1}`,
+  categoryId: index % 2 === 0 ? 'alpha' : 'beta',
+  level: '합성 레벨',
+  officialBlocks: [`SYNTHETIC-MATCH-${index}`],
+  side: index % 2 === 0 ? '합성 1루 방향' : '합성 3루 방향',
+  fan: '합성 응원 역할',
+  sourceLabel: '비생산 합성 자료',
+  sourceNote: 'Visual QA 전용 합성 설명',
+  seatViewSections: [`SYNTHETIC-VIEW-${index}`],
+  ...overrides,
+});
+
+const seatMapSectionFinderBlocks: Record<VisualQaSeatMapSectionFinderData, VisualQaSeatMapSectionBlock[]> = {
+  empty: [],
+  single: [makeVisualQaSeatMapSectionBlock(0)],
+  'null-optional': [makeVisualQaSeatMapSectionBlock(0, { categoryId: 'missing', side: '', fan: '' })],
+  populated: [
+    makeVisualQaSeatMapSectionBlock(0),
+    makeVisualQaSeatMapSectionBlock(1),
+    makeVisualQaSeatMapSectionBlock(2),
+  ],
+  'long-korean': [
+    makeVisualQaSeatMapSectionBlock(0, {
+      name: '모바일 화면에서 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 합성 좌석 구역 이름',
+      block: '모바일긴합성블록코드',
+      side: '모바일에서도 내용이 잘리지 않아야 하는 매우 긴 합성 방향 설명',
+      fan: '모바일에서 자연스럽게 표시되어야 하는 매우 긴 합성 응원 역할 설명',
+    }),
+    makeVisualQaSeatMapSectionBlock(1),
+    makeVisualQaSeatMapSectionBlock(2),
+  ],
+  'unbroken-token': [
+    makeVisualQaSeatMapSectionBlock(0, {
+      name: seatMapSectionFinderUnbroken,
+      block: seatMapSectionFinderUnbroken,
+    }),
+    makeVisualQaSeatMapSectionBlock(1),
+  ],
+  'maximum-supported': Array.from({ length: 24 }, (_, index) => makeVisualQaSeatMapSectionBlock(
+    index,
+    index === 0 ? { name: seatMapSectionFinderMaximum, block: seatMapSectionFinderMaximum } : {},
+  )),
+};
+
+const seatMapSectionFinderLabels: Record<VisualQaSeatMapSectionFinderData, string> = {
+  empty: '합성구장',
+  single: '합성구장',
+  'null-optional': '합성구장',
+  populated: '합성구장',
+  'long-korean': '모바일 화면에서 잘리지 않고 표시되어야 하는 매우 긴 합성 구장 벳지',
+  'unbroken-token': seatMapSectionFinderUnbroken,
+  'maximum-supported': seatMapSectionFinderMaximum,
+};
+
+const seatMapSectionFinderCategories = {
+  alpha: { label: '합성 일반 구역', light: '#166534', dark: '#86efac' },
+  beta: { label: '합성 응원 구역', light: '#9a3412', dark: '#fdba74' },
+};
+
+const seatMapSectionFinderAdapter = {
+  getId: (block: VisualQaSeatMapSectionBlock) => block.id,
+  getName: (block: VisualQaSeatMapSectionBlock) => block.name,
+  getBlock: (block: VisualQaSeatMapSectionBlock) => block.block,
+  getCategoryId: (block: VisualQaSeatMapSectionBlock) => block.categoryId,
+  getLevel: (block: VisualQaSeatMapSectionBlock) => block.level,
+  getOfficialBlocks: (block: VisualQaSeatMapSectionBlock) => block.officialBlocks,
+  getSideLabel: (block: VisualQaSeatMapSectionBlock) => block.side,
+  getFanRoleLabel: (block: VisualQaSeatMapSectionBlock) => block.fan,
+  getSourceLabel: (block: VisualQaSeatMapSectionBlock) => block.sourceLabel,
+  getSourceNote: (block: VisualQaSeatMapSectionBlock) => block.sourceNote,
+  getSeatViewSections: (block: VisualQaSeatMapSectionBlock) => block.seatViewSections,
+};
+
+type VisualQaSeatMapTemplateComposition =
+  | 'base'
+  | 'optional-populated'
+  | 'null-optional'
+  | 'filter-fallback'
+  | 'filter-override'
+  | 'mobile-secondary'
+  | 'mobile-legacy-side'
+  | 'mobile-bottom-sheet'
+  | 'mobile-side-reserve'
+  | 'desktop-secondary'
+  | 'desktop-side'
+  | 'desktop-both'
+  | 'auxiliary-guide'
+  | 'toast'
+  | 'fullscreen'
+  | 'fullscreen-toast';
+
+const seatMapTemplateShellUnbroken = `SEATMAPTEMPLATESHELL${'X'.repeat(220)}`;
+const seatMapTemplateShellMaximum = `${'최대지원합성좌석도템플릿문구'.repeat(40)}${seatMapTemplateShellUnbroken}`;
+const seatMapTemplateShellCopy = {
+  default: {
+    title: '합성 좌석도',
+    subtitle: '비생산 자료',
+    toast: '합성 알림',
+    fullscreenTitle: '합성 전체화면 좌석도',
+    fullscreenSubtitle: '비생산 합성 자료',
+  },
+  'long-korean': {
+    title: '모바일 화면에서도 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 합성 좌석도 제목',
+    subtitle: '모바일에서 다른 요소를 가리지 않아야 하는 매우 긴 합성 부제목',
+    toast: '모바일 화면에서 좌우 가장자리를 벗어나지 않고 자연스럽게 줄바꿈되어야 하는 매우 긴 합성 알림입니다',
+    fullscreenTitle: '닫기 버튼을 가리지 않고 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 합성 전체화면 좌석도 제목',
+    fullscreenSubtitle: '전체화면 헤더 안에서 잘리지 않아야 하는 매우 긴 합성 부제목',
+  },
+  'unbroken-token': {
+    title: seatMapTemplateShellUnbroken,
+    subtitle: seatMapTemplateShellUnbroken,
+    toast: seatMapTemplateShellUnbroken,
+    fullscreenTitle: seatMapTemplateShellUnbroken,
+    fullscreenSubtitle: seatMapTemplateShellUnbroken,
+  },
+  'maximum-supported': {
+    title: seatMapTemplateShellMaximum,
+    subtitle: seatMapTemplateShellMaximum,
+    toast: seatMapTemplateShellMaximum,
+    fullscreenTitle: seatMapTemplateShellMaximum,
+    fullscreenSubtitle: seatMapTemplateShellMaximum,
+  },
+} as const;
+
+const visualQaSeatMapTemplateNode = (testId: string, label: string) => createElement(
+  'div',
+  {
+    className: 'min-w-0 max-w-full break-words rounded-lg border border-slate-300 p-2 text-xs [overflow-wrap:anywhere] dark:border-slate-700',
+    'data-testid': testId,
+  },
+  label,
+);
+
+type VisualQaSeatViewDirectUploadData = 'empty' | 'populated' | 'maximum-supported';
+type VisualQaSeatViewDirectUploadSystem =
+  | 'idle'
+  | 'loading'
+  | 'error-503';
+type VisualQaSeatViewDirectUploadFeedback =
+  | 'none'
+  | 'file-required'
+  | 'rating-required'
+  | 'tag-limit';
+
+const seatViewDirectUploadPreview = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="180"%3E%3Crect width="320" height="180" fill="%232563eb"/%3E%3Ctext x="24" y="96" fill="white" font-size="20"%3EVisual QA synthetic seat view%3C/text%3E%3C/svg%3E';
+const seatViewDirectUploadTags = [
+  '탁 트임',
+  '응원석 가까움',
+  '그늘',
+  '비/햇빛 가림',
+  '통로 가까움',
+] as const;
+const seatViewDirectUploadUnbroken = `SEATVIEWDIRECTUPLOAD${'X'.repeat(220)}`;
+
+const seatViewDirectUploadLocations = {
+  missing: {
+    stadium: 'SYNTHETIC',
+    section: null,
+    block: null,
+  },
+  short: {
+    stadium: 'SYNTHETIC',
+    section: '합성 좌석 구역',
+    block: 'S-01',
+  },
+  'long-korean': {
+    stadium: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 합성 테스트 야구장 이름',
+    section: '여러 줄로 표시되어도 다른 요소를 가리지 않아야 하는 합성 좌석 구역 이름',
+    block: '모바일긴합성블록코드',
+  },
+  'unbroken-token': {
+    stadium: seatViewDirectUploadUnbroken,
+    section: seatViewDirectUploadUnbroken,
+    block: seatViewDirectUploadUnbroken,
+  },
+} as const;
+
+const buildSeatViewDirectUploadVisualState = (
+  data: VisualQaSeatViewDirectUploadData,
+  system: VisualQaSeatViewDirectUploadSystem,
+  feedback: VisualQaSeatViewDirectUploadFeedback,
+): SeatViewDirectUploadVisualQaStateOverride => {
+  const populated: SeatViewDirectUploadVisualQaStateOverride = {
+    previewUrl: seatViewDirectUploadPreview,
+    seatRow: '10열',
+    seatNumber: '12번',
+    rating: 4,
+    comment: '비운영 합성 시야 설명',
+    tags: ['탁 트임', '전광판 잘 보임'],
+  };
+  const maximum: SeatViewDirectUploadVisualQaStateOverride = {
+    previewUrl: seatViewDirectUploadPreview,
+    seatRow: 'R'.repeat(100),
+    seatNumber: 'S'.repeat(100),
+    rating: 5,
+    comment: '합'.repeat(140),
+    tags: [...seatViewDirectUploadTags],
+  };
+  const state = data === 'empty' ? {} : data === 'populated' ? populated : maximum;
+  if (feedback === 'file-required') return { ...state, errorMessage: '사진 파일을 선택해주세요.' };
+  if (feedback === 'rating-required') {
+    return { ...state, rating: 0, errorMessage: '별점을 선택해주세요.' };
+  }
+  if (feedback === 'tag-limit') {
+    return { ...state, errorMessage: '태그는 최대 5개까지 선택할 수 있습니다.' };
+  }
+  if (system === 'error-503') {
+    return { ...state, errorMessage: '합성 시야뷰 업로드에 실패했습니다.' };
+  }
+  if (system === 'loading') return { ...state, submitting: true };
+  return state;
 };
 
 const franchiseTeamColors = Object.fromEntries(FRANCHISE_TEAM_IDS.map((teamId) => {
@@ -2972,6 +3240,23 @@ function VisualQaThrowingState({ message }: { message: string }): never {
   throw new Error(message);
 }
 
+const visualQaSeatMapRuntimePending = new Promise<never>(() => {});
+
+function VisualQaSeatMapRuntimePendingState(): never {
+  throw visualQaSeatMapRuntimePending;
+}
+
+function VisualQaSeatMapRuntimeResolvedState({ children }: { children: string }) {
+  return createElement(
+    'div',
+    {
+      className: 'min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-900 [overflow-wrap:anywhere] dark:border-slate-700 dark:bg-slate-900 dark:text-white',
+      'data-testid': 'seat-map-runtime-resolved',
+    },
+    children,
+  );
+}
+
 function VisualQaAuthenticatedLayoutNullRuntime() {
   return null;
 }
@@ -4417,6 +4702,477 @@ const buildVisualQaGlobalErrorProps = (
 };
 
 const adapters: Record<string, ComponentStateAdapter> = {
+  'seat-map-runtime-shell': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell') {
+      throw new Error('seat-map-runtime-shell only supports SeatMapRuntimeShell');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data' && key !== 'system')) {
+      throw new Error('seat-map-runtime-shell only supports data and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'geometry' && key !== 'theme')) {
+      throw new Error('seat-map-runtime-shell only supports geometry and theme variants');
+    }
+    if (context.interactionTargetId !== undefined) {
+      throw new Error('seat-map-runtime-shell does not support interaction targets');
+    }
+    const copy = requireStateValueFromMap(context, 'data', seatMapRuntimeShellCopy);
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+    });
+    const geometry = resolveDeclaredVariant(context, 'geometry', {
+      coordinate: true,
+      'non-coordinate': false,
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const children = system === 'loading'
+      ? createElement(VisualQaSeatMapRuntimePendingState)
+      : system === 'error-503'
+        ? createElement(VisualQaThrowingState, { message: 'Synthetic SeatMapRuntimeShell render failure' })
+        : createElement(VisualQaSeatMapRuntimeResolvedState, { children: copy.child });
+    return {
+      props: {
+        template: 'standard',
+        usesCoordinateGeometry: geometry,
+        badgeLabel: copy.badgeLabel,
+        stadiumName: copy.stadiumName,
+        resetKey: `visual-qa:${context.states.data}:${system}:${context.variants.geometry}`,
+        children,
+      },
+      captureSelector: system === 'loading'
+        ? '[data-testid="stadium-seatmap-loading"]'
+        : system === 'error-503'
+          ? '[data-testid="stadium-seatmap-error"]'
+          : '[data-testid="seat-map-runtime-resolved"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none',
+      theme,
+    };
+  },
+  'seat-map-section-finder': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder') {
+      throw new Error('seat-map-section-finder only supports SeatMapSectionFinder');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data' && key !== 'interactions')) {
+      throw new Error('seat-map-section-finder only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'filter' && key !== 'theme')) {
+      throw new Error('seat-map-section-finder only supports filter and theme variants');
+    }
+    const data = requireStateValueFromMap<VisualQaSeatMapSectionFinderData>(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      'null-optional': 'null-optional',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      selected: 'selected',
+      'keyboard-navigation': 'keyboard-navigation',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      all: 'all',
+      restricted: 'restricted',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const hasItems = data !== 'empty';
+    const allowedTargets: Record<typeof interaction, Array<string | undefined>> = {
+      default: [undefined],
+      input: hasItems ? ['match-query', 'no-result-query'] : ['no-result-query'],
+      'focus-visible': hasItems ? ['search', 'item'] : ['search'],
+      hover: hasItems ? ['item'] : [],
+      selected: hasItems ? ['item'] : [],
+      'keyboard-navigation': hasItems ? ['enter', 'space'] : [],
+    };
+    if (!allowedTargets[interaction].includes(context.interactionTargetId)) {
+      throw new Error(
+        `seat-map-section-finder unsupported interaction target: ${interaction}/${context.interactionTargetId ?? '<missing>'}/${data}`,
+      );
+    }
+    const blocks = seatMapSectionFinderBlocks[data];
+    let selectCount = 0;
+    const onSelect = (block: VisualQaSeatMapSectionBlock) => {
+      if ((interaction === 'selected' || interaction === 'keyboard-navigation') && block.id === blocks[0]?.id) {
+        selectCount += 1;
+        if (selectCount > 1) throw new Error('SeatMapSectionFinder Visual QA selection callback repeated');
+        if (typeof document !== 'undefined') {
+          document
+            .querySelector('[data-testid="visual-qa-section-finder-section-finder"]')
+            ?.setAttribute('data-visual-qa-selected-id', block.id);
+        }
+      }
+    };
+    let hoverCount = 0;
+    const onHoverChange = (value: string | null) => {
+      if (interaction === 'hover' && value !== null) {
+        hoverCount += 1;
+        if (value !== blocks[0]?.id) throw new Error(`SeatMapSectionFinder Visual QA unexpected hover: ${value}`);
+        if (hoverCount > 1) throw new Error('SeatMapSectionFinder Visual QA hover callback repeated');
+      }
+    };
+    return {
+      props: {
+        blocks,
+        adapter: seatMapSectionFinderAdapter,
+        categories: seatMapSectionFinderCategories,
+        filterCats: filter === 'restricted' ? ['alpha', 'missing'] : null,
+        selected: interaction === 'selected' ? blocks[0] ?? null : null,
+        onSelect,
+        onHoverChange,
+        mode: theme,
+        testIdPrefix: 'visual-qa-section-finder',
+        accentColor: '#2563eb',
+        stadiumShortLabel: seatMapSectionFinderLabels[data],
+        autoFocusInput: false,
+      },
+      captureSelector: '[data-testid="visual-qa-section-finder-section-finder"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none',
+      theme,
+    };
+  },
+  'seat-map-template-shell': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell') {
+      throw new Error('seat-map-template-shell only supports SeatMapTemplateShell');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data' && key !== 'interactions')) {
+      throw new Error('seat-map-template-shell only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['composition', 'layout', 'pressure', 'theme'].includes(key))) {
+      throw new Error('seat-map-template-shell only supports composition, layout, pressure, and theme variants');
+    }
+    requireStateValue(context, 'data', 'populated');
+    const composition = resolveDeclaredVariant<VisualQaSeatMapTemplateComposition>(context, 'composition', {
+      base: 'base',
+      'optional-populated': 'optional-populated',
+      'null-optional': 'null-optional',
+      'filter-fallback': 'filter-fallback',
+      'filter-override': 'filter-override',
+      'mobile-secondary': 'mobile-secondary',
+      'mobile-legacy-side': 'mobile-legacy-side',
+      'mobile-bottom-sheet': 'mobile-bottom-sheet',
+      'mobile-side-reserve': 'mobile-side-reserve',
+      'desktop-secondary': 'desktop-secondary',
+      'desktop-side': 'desktop-side',
+      'desktop-both': 'desktop-both',
+      'auxiliary-guide': 'auxiliary-guide',
+      toast: 'toast',
+      fullscreen: 'fullscreen',
+      'fullscreen-toast': 'fullscreen-toast',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      selected: 'selected',
+    });
+    const isMobile = resolveDeclaredVariant(context, 'layout', {
+      mobile: true,
+      desktop: false,
+    });
+    const copy = resolveDeclaredVariant(context, 'pressure', seatMapTemplateShellCopy);
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const mobileOnly = new Set<VisualQaSeatMapTemplateComposition>([
+      'mobile-secondary',
+      'mobile-legacy-side',
+      'mobile-bottom-sheet',
+      'mobile-side-reserve',
+    ]);
+    const desktopOnly = new Set<VisualQaSeatMapTemplateComposition>([
+      'desktop-secondary',
+      'desktop-side',
+      'desktop-both',
+    ]);
+    if ((mobileOnly.has(composition) && !isMobile) || (desktopOnly.has(composition) && isMobile)) {
+      throw new Error(`seat-map-template-shell unsupported layout: ${composition}/${context.variants.layout}`);
+    }
+    const isFullscreenComposition = composition === 'fullscreen' || composition === 'fullscreen-toast';
+    const expectedTarget = interaction === 'default' ? undefined : 'close';
+    if ((!isFullscreenComposition && interaction !== 'default') || context.interactionTargetId !== expectedTarget) {
+      throw new Error(
+        `seat-map-template-shell unsupported interaction target: ${composition}/${interaction}/${context.interactionTargetId ?? '<missing>'}`,
+      );
+    }
+
+    const sharedFilter = visualQaSeatMapTemplateNode('visual-qa-template-shared-filter', '공통 합성 필터');
+    const mobileFilter = visualQaSeatMapTemplateNode('visual-qa-template-mobile-filter', '모바일 합성 필터');
+    const desktopFilter = visualQaSeatMapTemplateNode('visual-qa-template-desktop-filter', '데스크톱 합성 필터');
+    const optionalProps: Record<string, unknown> = {};
+    if (composition === 'null-optional') {
+      Object.assign(optionalProps, {
+        filterBar: null,
+        mobileFilterBar: null,
+        desktopFilterBar: null,
+        legend: null,
+        mobileSidePanel: null,
+        mobileSecondaryPanel: null,
+        mobileBottomSheet: null,
+        desktopSidePanel: null,
+        desktopSecondaryPanel: null,
+      });
+    }
+    if (composition === 'optional-populated') {
+      Object.assign(optionalProps, {
+        filterBar: sharedFilter,
+        legend: visualQaSeatMapTemplateNode('visual-qa-template-legend', '합성 범례'),
+        mobileSecondaryPanel: visualQaSeatMapTemplateNode('visual-qa-template-mobile-secondary', '모바일 보조 패널'),
+        desktopSecondaryPanel: visualQaSeatMapTemplateNode('visual-qa-template-desktop-secondary', '데스크톱 보조 패널'),
+      });
+    }
+    if (composition === 'filter-fallback') optionalProps.filterBar = sharedFilter;
+    if (composition === 'filter-override') {
+      Object.assign(optionalProps, {
+        filterBar: sharedFilter,
+        mobileFilterBar: mobileFilter,
+        desktopFilterBar: desktopFilter,
+      });
+    }
+    if (composition === 'mobile-secondary') {
+      optionalProps.mobileSecondaryPanel = visualQaSeatMapTemplateNode(
+        'visual-qa-template-mobile-secondary',
+        '모바일 보조 패널',
+      );
+    }
+    if (composition === 'mobile-legacy-side') {
+      optionalProps.mobileSidePanel = visualQaSeatMapTemplateNode(
+        'visual-qa-template-mobile-legacy-side',
+        '모바일 레거시 패널',
+      );
+    }
+    if (composition === 'mobile-bottom-sheet') {
+      optionalProps.mobileBottomSheet = visualQaSeatMapTemplateNode(
+        'visual-qa-template-mobile-bottom-sheet',
+        '모바일 하단 시트',
+      );
+    }
+    if (composition === 'mobile-side-reserve') optionalProps.mobileHasSidePanel = true;
+    if (composition === 'desktop-secondary' || composition === 'desktop-both') {
+      optionalProps.desktopSecondaryPanel = visualQaSeatMapTemplateNode(
+        'visual-qa-template-desktop-secondary',
+        '데스크톱 보조 패널',
+      );
+    }
+    if (composition === 'desktop-side' || composition === 'desktop-both') {
+      optionalProps.desktopSidePanel = visualQaSeatMapTemplateNode(
+        'visual-qa-template-desktop-side',
+        '데스크톱 사이드 패널',
+      );
+    }
+    if (composition === 'auxiliary-guide') {
+      Object.assign(optionalProps, {
+        filterBar: sharedFilter,
+        mobileSecondaryPanel: visualQaSeatMapTemplateNode(
+          'visual-qa-template-mobile-secondary',
+          '모바일 보조 패널',
+        ),
+        mobileBottomSheet: visualQaSeatMapTemplateNode(
+          'visual-qa-template-mobile-bottom-sheet',
+          '모바일 하단 시트',
+        ),
+        desktopSecondaryPanel: visualQaSeatMapTemplateNode(
+          'visual-qa-template-desktop-secondary',
+          '데스크톱 보조 패널',
+        ),
+        desktopSidePanel: visualQaSeatMapTemplateNode(
+          'visual-qa-template-desktop-side',
+          '데스크톱 사이드 패널',
+        ),
+      });
+    }
+
+    let closeCount = 0;
+    const onFullscreenClose = () => {
+      closeCount += 1;
+      if (closeCount > 1) throw new Error('SeatMapTemplateShell Visual QA close callback repeated');
+      if (typeof document === 'undefined') return;
+      document
+        .querySelector('[data-testid="visual-qa-seat-map-template-shell-map"]')
+        ?.setAttribute('data-visual-qa-close-count', String(closeCount));
+      const dialog = document.querySelector<HTMLElement>('[data-testid="visual-qa-seat-map-template-shell-fullscreen"]');
+      if (dialog) dialog.hidden = true;
+    };
+    const isAuxiliaryGuideActive = composition === 'auxiliary-guide';
+    return {
+      props: {
+        mode: theme,
+        title: copy.title,
+        subtitle: copy.subtitle,
+        titleAccentColor: theme === 'dark' ? '#86efac' : '#166534',
+        seatMapTestId: 'visual-qa-seat-map-template-shell-map',
+        isMobile,
+        isAuxiliaryGuideActive,
+        mapContent: visualQaSeatMapTemplateNode('visual-qa-template-map-content', '합성 좌석도 본문'),
+        attribution: visualQaSeatMapTemplateNode('visual-qa-template-attribution', '비생산 합성 자료'),
+        toast: composition === 'toast' || composition === 'fullscreen-toast' ? copy.toast : null,
+        isFullscreenOpen: isFullscreenComposition || isAuxiliaryGuideActive,
+        fullscreenMapContent: visualQaSeatMapTemplateNode(
+          'visual-qa-template-fullscreen-map-content',
+          '합성 전체화면 좌석도 본문',
+        ),
+        onFullscreenClose,
+        fullscreenDialogTestId: 'visual-qa-seat-map-template-shell-fullscreen',
+        fullscreenCloseTestId: 'visual-qa-seat-map-template-shell-fullscreen-close',
+        fullscreenTitle: copy.fullscreenTitle,
+        fullscreenSubtitle: copy.fullscreenSubtitle,
+        ...optionalProps,
+      },
+      captureSelector: 'body',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none',
+      theme,
+    };
+  },
+  'seat-view-direct-upload-modal': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal') {
+      throw new Error('seat-view-direct-upload-modal only supports SeatViewDirectUploadModal');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('seat-view-direct-upload-modal only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['feedback', 'location', 'theme'].includes(key))) {
+      throw new Error('seat-view-direct-upload-modal only supports feedback, location, and theme variants');
+    }
+    const data = requireStateValueFromMap<VisualQaSeatViewDirectUploadData>(context, 'data', {
+      empty: 'empty',
+      populated: 'populated',
+      'maximum-supported': 'maximum-supported',
+    });
+    const system = requireStateValueFromMap<VisualQaSeatViewDirectUploadSystem>(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      selected: 'selected',
+      input: 'input',
+    });
+    const feedback = resolveDeclaredVariant<VisualQaSeatViewDirectUploadFeedback>(context, 'feedback', {
+      none: 'none',
+      'file-required': 'file-required',
+      'rating-required': 'rating-required',
+      'tag-limit': 'tag-limit',
+    });
+    const location = resolveDeclaredVariant(context, 'location', seatViewDirectUploadLocations);
+    const locationName = context.variants.location;
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const validStates = new Set([
+      'empty:idle:none',
+      'empty:idle:file-required',
+      'populated:idle:none',
+      'populated:idle:rating-required',
+      'maximum-supported:idle:none',
+      'maximum-supported:idle:tag-limit',
+      'maximum-supported:loading:none',
+      'maximum-supported:error-503:none',
+    ]);
+    if (!validStates.has(`${data}:${system}:${feedback}`)) {
+      throw new Error(`seat-view-direct-upload-modal unsupported data/system/feedback: ${data}/${system}/${feedback}`);
+    }
+    if (
+      interaction !== 'default'
+      && (data !== 'populated' || system !== 'idle' || feedback !== 'none' || locationName !== 'short')
+    ) {
+      throw new Error(
+        `seat-view-direct-upload-modal interactive scenarios require populated/idle/none/short: ${data}/${system}/${feedback}/${locationName}`,
+      );
+    }
+    const allowedTargets: Record<typeof interaction, Array<string | undefined>> = {
+      default: [undefined],
+      hover: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+      'focus-visible': ['close', 'file', 'row', 'seat', 'rating', 'tag', 'comment', 'cancel', 'submit'],
+      pressed: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+      selected: ['rating', 'tag'],
+      input: ['row', 'seat', 'comment'],
+    };
+    if (!allowedTargets[interaction].includes(context.interactionTargetId)) {
+      throw new Error(
+        `seat-view-direct-upload-modal unsupported interaction target: ${interaction}/${context.interactionTargetId ?? '<missing>'}`,
+      );
+    }
+
+    return {
+      props: {
+        ...location,
+        accentColor: theme === 'dark' ? '#93c5fd' : '#2563eb',
+        onClose: () => {},
+        onSubmitted: () => {},
+        submitUpload: async () => {
+          throw new Error('Visual QA must not submit a seat-view upload');
+        },
+        visualQaStateOverride: buildSeatViewDirectUploadVisualState(data, system, feedback),
+      },
+      captureSelector: '[data-testid="seat-view-direct-upload-modal"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'seat-map-legend': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend') {
+      throw new Error('seat-map-legend only supports SeatMapLegend');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('seat-map-legend only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('seat-map-legend only supports the theme variant');
+    }
+    if (context.interactionTargetId !== undefined) {
+      throw new Error('seat-map-legend does not support interaction targets');
+    }
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', { dark: 'dark', light: 'light' });
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      'null-optional': 'null-optional',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    const categories = {
+      alpha: { label: '합성 일반석', light: '#16a34a', dark: '#86efac' },
+      beta: { label: '합성 응원석', light: '#ea580c', dark: '#fdba74' },
+      gamma: { label: '합성 테이블석', light: '#7c3aed', dark: '#c4b5fd' },
+      delta: { label: '합성 가족석', light: '#be123c', dark: '#fda4af' },
+      long: { label: '합성 모바일 긴 이름 좌석 구역 안내', light: '#2563eb', dark: '#93c5fd' },
+      token: { label: 'SEATMAPLEGENDUNBROKENTOKEN0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', light: '#0f766e', dark: '#5eead4' },
+      epsilon: { label: '합성 외야 지정석', light: '#ca8a04', dark: '#fde047' },
+      zeta: { label: '합성 스카이박스', light: '#0369a1', dark: '#7dd3fc' },
+    };
+    const categoryIds = {
+      empty: [],
+      single: ['alpha'],
+      'null-optional': ['missing', 'beta'],
+      populated: ['alpha', 'beta', 'gamma'],
+      'long-korean': ['long', 'beta', 'gamma'],
+      'unbroken-token': ['token', 'alpha'],
+      'maximum-supported': ['alpha', 'beta', 'gamma', 'delta', 'long', 'token', 'epsilon', 'zeta'],
+    }[data];
+    return {
+      props: { categoryIds, categories, mode: theme },
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
   'seat-map-hover-preview': (context) => {
     if (context.componentId !== 'src/components/SeatMapHoverPreview.tsx#SeatMapHoverPreview') {
       throw new Error('지원하지 않는 SeatMapHoverPreview component');

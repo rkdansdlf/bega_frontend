@@ -18,12 +18,12 @@ export function useIsDark(): boolean {
     return isDark;
 }
 
-export function parseHighlight(text: string): ReactNode[] {
+export function parseHighlight(text: string, highlightBg: string = '#fde68a'): ReactNode[] {
     return text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
         i % 2 === 1
             ? createElement(
                 'strong',
-                { key: i, style: { fontWeight: 800, background: 'linear-gradient(180deg, transparent 60%, #fde68a 60%)' } },
+                { key: i, style: { fontWeight: 800, background: `linear-gradient(180deg, transparent 60%, ${highlightBg} 60%)` } },
                 part,
             )
             : part,

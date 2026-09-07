@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Answer, TeamScore } from '../types/teamTest';
+import { Answer, TeamScore, TeamTestInitialState } from '../types/teamTest';
 import { TEAM_TEST_QUESTIONS } from '../constants/teamTestQuestions';
 import { FRANCHISE_TEAM_IDS, TEAM_NAME_TO_ID } from '../constants/teams';
 
@@ -60,18 +60,26 @@ const getTopTeamFromScores = (scores: TeamScore): string => {
   })[0];
 };
 
-export const useTeamTest = (onSelectTeam: (team: string) => void, onClose: () => void) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+export const useTeamTest = (
+  onSelectTeam: (team: string) => void,
+  onClose: () => void,
+  initialState: TeamTestInitialState = {},
+) => {
+  const initialQuestion = Math.min(
+    TEAM_TEST_QUESTIONS.length - 1,
+    Math.max(0, Math.trunc(initialState.currentQuestion ?? 0)),
+  );
+  const [currentQuestion, setCurrentQuestion] = useState(initialQuestion);
   const [questionTeamScores, setQuestionTeamScores] = useState<Array<TeamScore | null>>(
-    () => Array(TEAM_TEST_QUESTIONS.length).fill(null),
+    () => initialState.questionTeamScores ?? Array(TEAM_TEST_QUESTIONS.length).fill(null),
   );
   const [currentQuestionSelections, setCurrentQuestionSelections] = useState<Array<number | null>>(
-    () => Array(TEAM_TEST_QUESTIONS.length).fill(null),
+    () => initialState.currentQuestionSelections ?? Array(TEAM_TEST_QUESTIONS.length).fill(null),
   );
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
-  const [recommendedTeam, setRecommendedTeam] = useState<string>('');
-  const [direction, setDirection] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(initialState.selectedAnswer ?? null);
+  const [showResult, setShowResult] = useState(initialState.showResult ?? false);
+  const [recommendedTeam, setRecommendedTeam] = useState<string>(initialState.recommendedTeam ?? '');
+  const [direction, setDirection] = useState(initialState.direction ?? 0);
 
   const progress = ((currentQuestion + 1) / TEAM_TEST_QUESTIONS.length) * 100;
   const currentQuestionData = TEAM_TEST_QUESTIONS[currentQuestion];

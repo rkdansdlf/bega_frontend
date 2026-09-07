@@ -26,11 +26,23 @@ const stackGapClasses: Record<Gap, string> = {
 };
 
 function Container({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="container" className={cn("ds-container", className)} {...props} />;
+  return (
+    <div
+      data-slot="container"
+      className={cn("ds-container min-w-0 max-w-full [overflow-wrap:anywhere]", className)}
+      {...props}
+    />
+  );
 }
 
 function Section({ className, ...props }: React.ComponentProps<"section">) {
-  return <section data-slot="section" className={cn("ds-section", className)} {...props} />;
+  return (
+    <section
+      data-slot="section"
+      className={cn("ds-section min-w-0 max-w-full [overflow-wrap:anywhere]", className)}
+      {...props}
+    />
+  );
 }
 
 interface TextBlockProps extends React.ComponentProps<"div"> {
@@ -47,7 +59,12 @@ function TextBlock({
   return (
     <div
       data-slot="text-block"
-      className={cn("flex flex-col gap-4", measureClasses[measure], alignClasses[align], className)}
+      className={cn(
+        "flex min-w-0 max-w-full flex-col gap-4 [overflow-wrap:anywhere]",
+        measureClasses[measure],
+        alignClasses[align],
+        className,
+      )}
       {...props}
     />
   );
@@ -61,7 +78,7 @@ function Stack({ className, gap = "md", ...props }: StackProps) {
   return (
     <div
       data-slot="stack"
-      className={cn("flex flex-col", stackGapClasses[gap], className)}
+      className={cn("flex min-w-0 max-w-full flex-col", stackGapClasses[gap], className)}
       {...props}
     />
   );
@@ -85,13 +102,19 @@ function SectionHeader({
   return (
     <header
       data-slot="section-header"
-      className={cn("mx-auto mb-12 flex max-w-full flex-col", alignClasses[align], className)}
+      className={cn(
+        "mx-auto mb-8 flex min-w-0 max-w-full flex-col sm:mb-12",
+        alignClasses[align],
+        className,
+      )}
       {...props}
     >
       <Stack gap="sm" className={cn(align === "center" && "items-center", align === "start" && "items-start")}>
         <TextBlock measure={measure} align={align}>
-          <h2 className="ds-section-title">{title}</h2>
-          {description ? <p className="ds-section-copy">{description}</p> : null}
+          <h2 className="ds-section-title break-words [overflow-wrap:anywhere]">{title}</h2>
+          {description ? (
+            <p className="ds-section-copy break-words [overflow-wrap:anywhere]">{description}</p>
+          ) : null}
         </TextBlock>
       </Stack>
     </header>
@@ -107,7 +130,7 @@ function CTAGroup({ className, align = "start", ...props }: CTAGroupProps) {
     <div
       data-slot="cta-group"
       className={cn(
-        "flex w-full flex-col gap-3 sm:w-auto sm:flex-row",
+        "flex min-w-0 w-full flex-col gap-3 sm:w-auto sm:max-w-full sm:flex-row sm:flex-wrap",
         align === "center" ? "justify-center" : "justify-start",
         className,
       )}
@@ -117,7 +140,16 @@ function CTAGroup({ className, align = "start", ...props }: CTAGroupProps) {
 }
 
 function MockupFrame({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="mockup-frame" className={cn("landing-hero-panel", className)} {...props} />;
+  return (
+    <div
+      data-slot="mockup-frame"
+      className={cn(
+        "landing-hero-panel min-w-0 max-w-full overflow-hidden [overflow-wrap:anywhere]",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export {

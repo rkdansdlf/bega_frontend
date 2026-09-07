@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from './ui/plain-button';
 import {
@@ -31,6 +31,11 @@ export interface MateDetailActionButton {
   className?: string;
 }
 
+export interface MateDetailActionSectionVisualQaStateOverride {
+  layout: 'desktop' | 'mobile';
+  sheetOpen: boolean;
+}
+
 interface MateDetailActionSectionProps {
   party: Party;
   actionContext: MateDetailActionContext;
@@ -44,6 +49,7 @@ interface MateDetailActionSectionProps {
   onShareToCheer: () => void;
   isShareToCheerPending: boolean;
   onBrowsePartyList: () => void;
+  visualQaStateOverride?: MateDetailActionSectionVisualQaStateOverride;
 }
 
 const getMobileActionClass = (actionKey: string) => {
@@ -69,8 +75,14 @@ export default function MateDetailActionSection({
   onShareToCheer,
   isShareToCheerPending,
   onBrowsePartyList,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MateDetailActionSectionProps) {
-  const [showSheet, setShowSheet] = useState(false);
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaLayout = visualQaStateOverride?.layout;
+  const [showSheet, setShowSheet] = useState(visualQaStateOverride?.sheetOpen ?? false);
+  const showSheetValue = showSheet;
   const view = buildMateDetailViewModel(party);
   const applyLabel = view.remainingSeats === 1 ? '마지막 자리 신청하기' : '메이트 신청하기';
   const compactAmountLabel = view.reservationDepositAmount > 0
@@ -88,12 +100,25 @@ export default function MateDetailActionSection({
     return action.label;
   };
 
-  const renderActionButtons = () => (
-    <div className="space-y-2">
+  useEffect(() => {
+    if (!showSheetValue || typeof window === 'undefined') return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowSheet(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSheetValue]);
+
+  const renderActionButtons = (surface: 'desktop' | 'sheet') => (
+    <div className="min-w-0 space-y-2">
       {isAwaitingApproval && (
-        <div className="flex items-start gap-3 rounded-13 border border-amber-100 bg-amber-50 p-4 text-13 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200" data-testid="mate-pending-status">
+        <div
+          className="flex min-w-0 items-start gap-3 rounded-13 border border-amber-100 bg-amber-50 p-4 text-13 text-amber-800 [overflow-wrap:anywhere] dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
+          data-testid={surface === 'desktop' ? 'mate-pending-status' : 'mate-detail-sheet-pending-status'}
+        >
           <MateClockIcon className="mt-0.5 h-4 w-4 shrink-0" />
-          <div>
+          <div className="min-w-0">
             <p className="font-black">신청이 접수되었습니다.</p>
             <p className="mt-1 leading-[1.45]">호스트 승인 전까지는 자유롭게 취소할 수 있고, 승인되면 채팅방 입장 버튼이 열립니다.</p>
           </div>
@@ -105,7 +130,19 @@ export default function MateDetailActionSection({
           onClick={action.onClick}
           disabled={action.disabled}
           variant={action.variant}
-          className={action.className}
+          data-testid={surface === 'desktop'
+            ? `mate-detail-action-${action.key}`
+            : `mate-detail-sheet-action-${action.key}`}
+          data-pending={action.disabled}
+          style={{
+            height: 'auto',
+            lineHeight: 1.45,
+            overflowWrap: 'anywhere',
+            paddingBottom: '0.75rem',
+            paddingTop: '0.75rem',
+            whiteSpace: 'normal',
+          }}
+          className={`min-h-11 min-w-0 w-full focus-visible:ring-2 active:scale-[0.98] motion-reduce:transform-none sm:min-h-11 ${action.className ?? ''}`}
         >
           {getActionLabel(action)}
         </Button>
@@ -119,14 +156,25 @@ export default function MateDetailActionSection({
 
   return (
     <>
-      <aside data-testid="mate-desktop-action-rail" className="hidden flex-col gap-3.5 lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100dvh_-_7rem)] lg:overflow-y-auto lg:pr-1">
+      <aside
+        data-testid="mate-desktop-action-rail"
+        data-layout={visualQaLayout === 'desktop' ? 'desktop' : 'responsive'}
+        className={visualQaLayout === 'desktop'
+          ? 'flex min-w-0 flex-col gap-3.5 overflow-x-hidden'
+          : 'hidden flex-col gap-3.5 lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100dvh_-_7rem)] lg:overflow-y-auto lg:pr-1'}
+      >
         <MateDetailReferenceCard className="p-5 shadow-[0_8px_24px_rgba(15,23,42,0.07)]">
           <MateDetailParticipationBlock party={party} />
           <div className="my-3.5">
             <MateDetailPriceBox party={party} />
           </div>
-          {renderActionButtons()}
-          <Button variant="outline" className="mt-2 h-auto w-full rounded-13 border-gray-200 bg-white px-3 py-3 text-caption font-bold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10" onClick={onBrowsePartyList}>
+          {renderActionButtons('desktop')}
+          <Button
+            data-testid="mate-detail-desktop-browse"
+            variant="outline"
+            className="mt-2 min-h-11 w-full rounded-13 border-gray-200 bg-white px-3 py-3 text-caption font-bold text-gray-700 focus-visible:ring-2 active:scale-[0.98] motion-reduce:transform-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:min-h-11"
+            onClick={onBrowsePartyList}
+          >
             비슷한 파티 보기
           </Button>
           <p className="m-0 mt-3 text-center text-12 leading-[1.5] text-gray-400 dark:text-white/55">승인 전 결제 없음 · 채팅에서 장소 조율</p>
@@ -136,7 +184,7 @@ export default function MateDetailActionSection({
           <button
             type="button"
             data-testid="mate-share-to-cheer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-11 border border-primary bg-white p-3 text-13 font-bold text-primary disabled:cursor-not-allowed disabled:opacity-60 dark:bg-card dark:text-emerald-300"
+            className="inline-flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-11 border border-primary bg-white p-3 text-13 font-bold text-primary [overflow-wrap:anywhere] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none dark:bg-card dark:text-emerald-300 dark:focus-visible:ring-offset-[#000000]"
             onClick={shareActions.cheer.onClick}
             disabled={isShareToCheerPending}
             aria-busy={isShareToCheerPending}
@@ -148,20 +196,24 @@ export default function MateDetailActionSection({
         )}
         <button
           type="button"
-          className="inline-flex items-center justify-center gap-1.5 rounded-11 border border-gray-200 bg-white p-3 text-13 font-bold text-gray-600 dark:border-border dark:bg-card dark:text-white"
+          data-testid="mate-detail-desktop-share-friend"
+          className="inline-flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-11 border border-gray-200 bg-white p-3 text-13 font-bold text-gray-600 [overflow-wrap:anywhere] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98] motion-reduce:transform-none dark:border-border dark:bg-card dark:text-white dark:focus-visible:ring-offset-[#000000]"
           onClick={shareActions.friend.onClick}
         >
           <MateShareIcon className="h-4 w-4" /> 친구에게 공유
         </button>
       </aside>
 
-      {primaryMobileAction && (
-        <div data-testid="mate-mobile-action-bar" className={`${mateMobileBarClass} pb-[calc(0.75rem_+_env(safe-area-inset-bottom))] lg:hidden`}>
+      {primaryMobileAction && visualQaLayout !== 'desktop' && (
+        <div data-testid="mate-mobile-action-bar" data-layout="mobile" className={`${mateMobileBarClass} min-w-0 overflow-x-hidden pb-[calc(0.75rem_+_env(safe-area-inset-bottom))] lg:hidden`}>
           <div className="mx-auto max-w-3xl">
             <button
               type="button"
               onClick={() => setShowSheet(true)}
-              className="mb-2 flex w-full items-center justify-between gap-3 bg-transparent px-0.5 pb-1 text-left"
+              data-testid="mate-detail-mobile-summary"
+              aria-expanded={showSheetValue}
+              aria-controls="mate-detail-action-sheet"
+              className="mb-2 flex min-h-11 min-w-0 w-full items-center justify-between gap-3 rounded-lg bg-transparent px-2 py-1 text-left [overflow-wrap:anywhere] hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:hover:bg-white/5"
             >
               <span className="inline-flex min-w-0 flex-1 items-center gap-1.5 text-12 font-bold text-gray-900 dark:text-white sm:gap-2 sm:text-13">
                 <span className="min-w-0 truncate text-primary">{compactAmountLabel}</span>
@@ -171,10 +223,13 @@ export default function MateDetailActionSection({
               <span className="shrink-0 text-12 font-semibold text-gray-500 dark:text-white/60">자세히</span>
             </button>
             <Button
+              data-testid="mate-detail-mobile-primary"
               onClick={() => setShowSheet(true)}
               disabled={primaryMobileAction.disabled}
+              aria-expanded={showSheetValue}
+              aria-controls="mate-detail-action-sheet"
               variant={primaryMobileAction.key === 'manage' || primaryMobileAction.key === 'apply' || primaryMobileAction.key === 'chat' ? 'default' : (primaryMobileAction.variant ?? 'outline')}
-              className={`h-auto w-full rounded-13 px-4 py-[15px] text-body font-black ${primaryMobileAction.disabled ? 'bg-gray-300 text-gray-500 dark:bg-secondary/80 dark:text-white' : getMobileActionClass(primaryMobileAction.key)}`}
+              className={`min-h-11 min-w-0 w-full whitespace-normal rounded-13 px-4 py-[15px] text-body font-black [overflow-wrap:anywhere] focus-visible:ring-2 active:scale-[0.98] motion-reduce:transform-none sm:min-h-11 ${primaryMobileAction.disabled ? 'bg-gray-300 text-gray-500 dark:bg-secondary/80 dark:text-white' : getMobileActionClass(primaryMobileAction.key)}`}
             >
               {getActionLabel(primaryMobileAction)}
             </Button>
@@ -182,19 +237,44 @@ export default function MateDetailActionSection({
         </div>
       )}
 
-      {showSheet && (
-        <div className="fixed inset-0 z-[90] flex items-end bg-slate-900/45 dark:bg-black/70 lg:hidden" onClick={() => setShowSheet(false)}>
-          <div className="max-h-[calc(100dvh_-_1.5rem_-_env(safe-area-inset-bottom))] w-full overflow-y-auto rounded-t-20 bg-white px-[18px] pb-[calc(1.25rem_+_env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-18px_44px_rgba(15,23,42,0.18)] dark:bg-[#000000] dark:shadow-[0_-18px_44px_rgba(0,0,0,0.45)]" onClick={(event) => event.stopPropagation()}>
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-300 dark:bg-white/20" />
-            <h3 className="m-0 text-18 font-black text-gray-900 dark:text-white">{actionContext.eyebrow}</h3>
-            <p className="mb-4 mt-1 text-13 text-gray-500 dark:text-white/60">{party.section} · {view.seatDetailLabel}</p>
+      {showSheetValue && visualQaLayout !== 'desktop' && (
+        <div
+          data-testid="mate-detail-action-sheet-backdrop"
+          className="fixed inset-0 z-[90] flex min-w-0 items-end overflow-x-hidden bg-slate-900/45 dark:bg-black/70 lg:hidden"
+          onClick={() => setShowSheet(false)}
+        >
+          <section
+            id="mate-detail-action-sheet"
+            data-testid="mate-detail-action-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mate-detail-action-sheet-title"
+            className="max-h-[calc(100dvh_-_1.5rem_-_env(safe-area-inset-bottom))] min-w-0 w-full overflow-x-hidden overflow-y-auto rounded-t-20 bg-white px-[18px] pb-[calc(1.25rem_+_env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-18px_44px_rgba(15,23,42,0.18)] [overflow-wrap:anywhere] dark:bg-[#000000] dark:shadow-[0_-18px_44px_rgba(0,0,0,0.45)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex min-h-11 items-center justify-between gap-3">
+              <div className="h-1 w-10 rounded-full bg-gray-300 dark:bg-white/20" aria-hidden="true" />
+              <button
+                type="button"
+                data-testid="mate-detail-action-sheet-close"
+                aria-label="상세 액션 닫기"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-24 leading-none text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:text-white/70"
+                onClick={() => setShowSheet(false)}
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <p className="m-0 text-12 font-black text-primary dark:text-emerald-300">{actionContext.eyebrow}</p>
+            <h3 id="mate-detail-action-sheet-title" className="m-0 mt-1 text-18 font-black text-gray-900 [overflow-wrap:anywhere] dark:text-white">{actionContext.title}</h3>
+            <p className="m-0 mt-1 text-13 leading-[1.5] text-gray-600 [overflow-wrap:anywhere] dark:text-white/70">{actionContext.detail}</p>
+            <p className="mb-4 mt-2 text-13 text-gray-500 [overflow-wrap:anywhere] dark:text-white/60">{party.section} · {view.seatDetailLabel}</p>
             <div className="mb-3.5"><MateDetailParticipationBlock party={party} /></div>
             <div className="mb-4"><MateDetailPriceBox party={party} /></div>
-            {renderActionButtons()}
+            {renderActionButtons('sheet')}
             {shareActions.cheer && (
               <Button
-                data-testid="mate-share-to-cheer"
-                className="mt-2 h-auto w-full rounded-13 border-primary px-4 py-3 text-body font-black text-primary"
+                data-testid="mate-detail-sheet-share-to-cheer"
+                className="mt-2 min-h-11 min-w-0 w-full whitespace-normal rounded-13 border-primary px-4 py-3 text-body font-black text-primary [overflow-wrap:anywhere] focus-visible:ring-2 active:scale-[0.98] motion-reduce:transform-none sm:min-h-11"
                 variant="outline"
                 onClick={shareActions.cheer.onClick}
                 disabled={isShareToCheerPending}
@@ -205,7 +285,7 @@ export default function MateDetailActionSection({
               </Button>
             )}
             <p className="m-0 mt-3 text-center text-12 text-gray-400 dark:text-white/55">승인 전 결제 없음 · 채팅에서 장소 조율</p>
-          </div>
+          </section>
         </div>
       )}
     </>

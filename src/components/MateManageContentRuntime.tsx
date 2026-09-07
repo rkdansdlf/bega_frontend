@@ -286,6 +286,7 @@ export default function MateManageContentRuntime({
                 <Button
                   onClick={secondaryMobileAction.onClick}
                   variant={secondaryMobileAction.variant ?? 'outline'}
+                  size="touch"
                   className={cn('w-full sm:flex-1', secondaryMobileAction.className)}
                 >
                   {secondaryMobileAction.label}
@@ -295,6 +296,7 @@ export default function MateManageContentRuntime({
                 <Button
                   onClick={primaryMobileAction.onClick}
                   variant={primaryMobileAction.variant}
+                  size="touch"
                   className={cn('w-full sm:flex-1', primaryMobileAction.className)}
                 >
                   {primaryMobileAction.label}

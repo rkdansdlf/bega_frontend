@@ -40,17 +40,17 @@ export default function EmptyState({
         className,
       )}
     >
-      <div className={cn('flex max-w-md flex-col items-center', contentClassName)}>
+      <div className={cn('flex w-full max-w-md min-w-0 flex-col items-center', contentClassName)}>
         {icon ? (
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-background/80 text-current shadow-inner">
             {icon}
           </div>
         ) : null}
-        <h3 className="text-18 font-bold leading-snug tracking-normal text-current">
+        <h3 className="text-18 font-bold leading-snug tracking-normal text-current break-all">
           {title}
         </h3>
         {description ? (
-          <p className="mt-2 text-15 font-semibold leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-15 font-semibold leading-relaxed text-muted-foreground break-all">
             {description}
           </p>
         ) : null}

@@ -405,7 +405,7 @@ export function CheerWriteModalContent({
                             <AutosizeTextarea
                                 autoFocus
                                 placeholder="지금 우리 팀에게 응원을 남겨주세요!"
-                                className="w-full resize-none border-none bg-transparent text-body sm:text-19 lg:text-20 leading-relaxed text-[#0f1419] dark:text-white placeholder:text-[#536471] dark:placeholder:text-slate-500 focus:outline-none focus:ring-0 min-h-[150px] sm:min-h-[200px] lg:min-h-[300px]"
+                                className="w-full resize-none border-none bg-transparent text-base sm:text-19 lg:text-20 leading-relaxed text-[#0f1419] dark:text-white placeholder:text-[#536471] dark:placeholder:text-slate-500 focus:outline-none focus:ring-0 min-h-[150px] sm:min-h-[200px] lg:min-h-[300px]"
                                 minRows={8}
                                 maxRows={15}
                                 value={content}
@@ -434,7 +434,8 @@ export function CheerWriteModalContent({
                                     <button
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-full transition-colors"
+                                        className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                        aria-label="이미지 첨부"
                                     >
                                         <ImagePlusIcon className="w-5 h-5" />
                                     </button>
@@ -442,12 +443,13 @@ export function CheerWriteModalContent({
                                         <button
                                             type="button"
                                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                            className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-full transition-colors"
+                                            className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                            aria-label="이모지 선택"
                                         >
                                             <SmileIcon className="w-5 h-5" />
                                         </button>
                                         {showEmojiPicker && (
-                                            <div className="absolute top-0 left-full z-50 ml-2 sm:left-auto sm:right-0 sm:top-full sm:mt-2">
+                                            <div className="absolute top-full left-0 z-50 mt-2 sm:left-auto sm:right-0">
                                                 <LazyEmojiPicker
                                                     isDarkMode={isDarkMode}
                                                     onEmojiSelect={handleEmojiSelect}

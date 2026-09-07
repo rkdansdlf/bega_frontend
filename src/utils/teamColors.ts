@@ -102,6 +102,27 @@ export const getContrastText = (hex: string): string => {
 };
 
 /**
+ * 라이트모드의 활성 탭 배경 위에서 작은 팀 액센트 텍스트가 WCAG 4.5:1 대비를 갖도록 보정합니다.
+ */
+export const getLightModeAccentText = (hex: string, lightBg = '#F4F4F4'): string => {
+    const bgLuminance = getLuminance(lightBg);
+    const contrastRatio = (fg: string) => {
+        const fgLuminance = getLuminance(fg);
+        const lighter = Math.max(fgLuminance, bgLuminance);
+        const darker = Math.min(fgLuminance, bgLuminance);
+        return (lighter + 0.05) / (darker + 0.05);
+    };
+
+    let t = 0;
+    let candidate = normalizeHexColor(hex);
+    while (contrastRatio(candidate) < 4.5 && t < 0.85) {
+        t += 0.05;
+        candidate = darkenColor(hex, t);
+    }
+    return candidate;
+};
+
+/**
  * 다크모드에서 카드 배경 위에 놓일 팀 액센트 텍스트(해시태그 등)의 밝기를 보정합니다.
  * 원색 그대로면 두산(#1a1a4e)·KT(#3c3c3c) 같은 어두운 팀 컬러가 다크 카드 배경과
  * 대비가 나오지 않으므로, WCAG 대비 4.5:1을 만족할 때까지 흰색 쪽으로 조금씩 섞는다.

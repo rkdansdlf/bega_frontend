@@ -114,7 +114,7 @@ export default function MyPageRuntime() {
               />
             </Suspense>
 
-            <main className="mypage-season-main">
+            <div className="mypage-season-main">
               <div className="mypage-season-view-scope">
                 <Suspense fallback={null}>
                   <MyPageViewRuntime
@@ -135,7 +135,7 @@ export default function MyPageRuntime() {
                   />
                 </Suspense>
               </div>
-            </main>
+            </div>
           </div>
         </div>
       </div>

@@ -37,6 +37,7 @@ export default function FeatureCard({
         onClick={onToggle}
         aria-expanded={isExpanded}
         data-testid={`landing-feature-card-${index}`}
+        data-vqa-min-touch="44"
         className={cn(
           'landing-feature-card',
           isActive && 'landing-feature-card-active',
@@ -51,9 +52,9 @@ export default function FeatureCard({
           >
             <Icon className="h-6 w-6" />
           </div>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-4">
-              <h3 className="ds-card-title text-left">{feature.title}</h3>
+              <h3 className="ds-card-title min-w-0 break-words text-left">{feature.title}</h3>
               <ChevronDownIcon
                 className={cn(
                   'mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300',
@@ -61,7 +62,7 @@ export default function FeatureCard({
                 )}
               />
             </div>
-            <p className="mt-2 text-body leading-6 text-muted-foreground">
+            <p className="mt-2 text-body break-words leading-6 text-muted-foreground">
               {feature.description}
             </p>
           </div>
@@ -77,13 +78,15 @@ export default function FeatureCard({
             height={844}
             loading="lazy"
             decoding="async"
-            className="landing-feature-mobile-image mb-3 h-auto w-full rounded-lg border border-white/10 bg-gray-100 object-contain lg:hidden"
+            className="landing-feature-mobile-image mb-3 h-auto w-full max-w-full rounded-lg border border-white/10 bg-gray-100 object-contain lg:hidden"
             onError={(event) => {
               const target = event.currentTarget;
-              if (target.dataset.fallbacked !== '1') {
+              if (target.dataset.fallbacked !== '1' && imageSource !== fallbackImage) {
                 target.dataset.fallbacked = '1';
                 target.src = fallbackImage;
+                return;
               }
+              target.hidden = true;
             }}
           />
           <h4 className="mb-4 text-base font-bold text-foreground">
@@ -93,7 +96,7 @@ export default function FeatureCard({
             {feature.guide.map((step, stepIndex) => (
               <li key={stepIndex} className="flex items-start gap-3 text-body leading-6 text-foreground/80">
                 <span className="landing-guide-marker flex-shrink-0" aria-hidden="true" />
-                <span className="pt-0.5">{step}</span>
+                <span className="min-w-0 break-words pt-0.5">{step}</span>
               </li>
             ))}
           </ul>

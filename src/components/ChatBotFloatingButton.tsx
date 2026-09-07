@@ -11,9 +11,9 @@ interface ChatBotFloatingButtonProps {
 export default function ChatBotFloatingButton({
   ariaLabel = '챗봇 열기',
   className = '',
-  compactOnMobile = false,
+  compactOnMobile = true,
   onClick,
-  testId,
+  testId = 'chatbot-floating-button',
 }: ChatBotFloatingButtonProps) {
   const sizeClassName = compactOnMobile
     ? 'h-12 w-12 sm:h-[4.5rem] sm:w-[4.5rem]'
@@ -29,6 +29,7 @@ export default function ChatBotFloatingButton({
                   shadow-md hover:bg-green-900 active:bg-green-950
                   transition-colors duration-200 active:scale-95
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300
+                  focus-visible:ring-offset-2 focus-visible:ring-offset-background
                   dark:bg-green-800 dark:hover:bg-green-700
                   ${className}`}
       aria-label={ariaLabel}

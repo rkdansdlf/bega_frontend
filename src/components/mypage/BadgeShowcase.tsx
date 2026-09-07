@@ -46,7 +46,7 @@ export default function BadgeShowcase({ earnedBadges = [] }: BadgeShowcaseProps)
                                 data-testid="mypage-badge-orb"
                                 style={isEarned ? { backgroundColor: badge.color } : undefined}
                             >
-                                <Icon className="h-7 w-7" strokeWidth={1.5} />
+                                <Icon className="h-6 w-6 md:h-7 md:w-7" strokeWidth={1.5} />
                                 {!isEarned && (
                                     <span className="mypage-season-badge-lock">
                                         <MyPageLockIcon className="lucide-lock h-4 w-4" />

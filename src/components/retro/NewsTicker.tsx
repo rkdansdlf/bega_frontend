@@ -10,7 +10,7 @@ const newsTickerStyles = `
     100% { transform: translateX(-50%); }
   }
 
-  .retro-news-ticker-track:hover {
+  .retro-news-ticker:hover .retro-news-ticker-track {
     animation-play-state: paused;
   }
 `;
@@ -60,6 +60,7 @@ export interface TickerMessage {
 interface NewsTickerProps {
   messages: TickerMessage[];
   speed?: number;
+  containerTestId?: string;
 }
 
 function getTypeIcon(type: string): string {
@@ -73,7 +74,7 @@ function getTypeIcon(type: string): string {
   }
 }
 
-export default function NewsTicker({ messages, speed = 50 }: NewsTickerProps) {
+export default function NewsTicker({ messages, speed = 50, containerTestId }: NewsTickerProps) {
   const duration = useMemo(() => {
     if (messages.length === 0) return 10;
     const totalChars = messages.reduce((acc, message) => acc + message.text.length, 0);
@@ -82,6 +83,8 @@ export default function NewsTicker({ messages, speed = 50 }: NewsTickerProps) {
   }, [messages, speed]);
 
   const containerStyle: CSSProperties = {
+    boxSizing: 'border-box',
+    minWidth: 0,
     background: 'linear-gradient(180deg, #1a0a1a 0%, #000000 100%)',
     borderTop: '2px solid #ff00ff',
     borderBottom: '2px solid #ff00ff',
@@ -96,7 +99,7 @@ export default function NewsTicker({ messages, speed = 50 }: NewsTickerProps) {
 
   if (messages.length === 0) {
     return (
-      <div style={containerStyle}>
+      <div className="retro-news-ticker" data-testid={containerTestId} style={containerStyle}>
         <style>{newsTickerStyles}</style>
         <div
           style={{
@@ -119,7 +122,7 @@ export default function NewsTicker({ messages, speed = 50 }: NewsTickerProps) {
   const duplicatedMessages = [...messages, ...messages];
 
   return (
-    <div style={containerStyle}>
+    <div className="retro-news-ticker" data-testid={containerTestId} style={containerStyle}>
       <style>{newsTickerStyles}</style>
       <div
         aria-hidden="true"
@@ -145,6 +148,7 @@ export default function NewsTicker({ messages, speed = 50 }: NewsTickerProps) {
       />
       <div
         className="retro-news-ticker-track"
+        data-testid="retro-news-ticker-track"
         style={{
           display: 'inline-flex',
           animation: `retroNewsTickerScroll ${duration}s linear infinite`,

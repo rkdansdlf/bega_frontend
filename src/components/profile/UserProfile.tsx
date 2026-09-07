@@ -213,7 +213,7 @@ export default function UserProfile() {
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="flex items-center text-primary font-semibold hover:underline"
+                    className="flex min-h-11 items-center rounded-lg px-3 text-primary font-semibold hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                     <UserProfileArrowLeftIcon className="w-4 h-4 mr-2" />
                     뒤로 가기

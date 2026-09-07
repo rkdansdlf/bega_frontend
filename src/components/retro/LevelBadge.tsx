@@ -56,6 +56,7 @@ interface LevelBadgeProps {
   compact?: boolean;
   showTitle?: boolean;
   className?: string;
+  containerTestId?: string;
 }
 
 export function getRankTier(level: number): RankTier {
@@ -79,6 +80,7 @@ export default function LevelBadge({
   compact = false,
   showTitle = true,
   className,
+  containerTestId,
 }: LevelBadgeProps) {
   const rank = getRankTier(level);
   const theme = rankThemes[rank];
@@ -89,6 +91,7 @@ export default function LevelBadge({
     return (
       <div
         className={className}
+        data-testid={containerTestId}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -113,6 +116,7 @@ export default function LevelBadge({
   return (
     <div
       className={className}
+      data-testid={containerTestId}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

@@ -24,15 +24,27 @@ export default function LaptopMockup({
             key={activeFeature}
             src={sourceImage}
             alt={feature.title}
+            data-testid="landing-laptop-image"
             className="h-full w-full object-contain animate-fade-in"
             onError={(event) => {
               const target = event.currentTarget;
-              if (target.dataset.fallbacked !== '1') {
+              if (target.dataset.fallbacked !== '1' && sourceImage !== fallbackImage) {
                 target.dataset.fallbacked = '1';
                 target.src = fallbackImage;
+                return;
               }
+              target.hidden = true;
+              target.nextElementSibling?.removeAttribute('hidden');
             }}
           />
+          <span
+            hidden
+            role="status"
+            data-testid="landing-laptop-image-fallback"
+            className="landing-preview-image-fallback"
+          >
+            미리보기 이미지를 불러올 수 없습니다.
+          </span>
         </div>
       </div>
     </div>

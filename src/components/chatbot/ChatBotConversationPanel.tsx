@@ -195,7 +195,7 @@ const ChatConversationMessage = memo(function ChatConversationMessage({
             );
           })()}
           {!isStreamError && (
-            <div className="absolute -top-2 -right-2 flex items-center gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+            <div className="mt-1.5 flex items-center justify-end gap-1 opacity-100 transition-opacity duration-150 sm:absolute sm:-right-2 sm:-top-2 sm:mt-0 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
               {isFavoritable && (
                 <button
                   type="button"
@@ -204,7 +204,7 @@ const ChatConversationMessage = memo(function ChatConversationMessage({
                   }}
                   data-testid="chatbot-message-favorite-toggle"
                   data-message-server-id={message.serverId ?? ''}
-                  className="rounded-full border border-gray-200 bg-white p-1 text-gray-400 shadow-sm hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:text-amber-300"
+                  className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gray-200 bg-white p-1 text-gray-400 shadow-sm hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:min-h-10 sm:min-w-10 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:text-amber-300"
                   aria-label={message.favorite ? '즐겨찾기 해제' : '즐겨찾기'}
                   title={message.favorite ? '즐겨찾기 해제' : '즐겨찾기'}
                 >
@@ -216,7 +216,7 @@ const ChatConversationMessage = memo(function ChatConversationMessage({
               <button
                 type="button"
                 onClick={() => onCopyMessage(message.text, index)}
-                className="rounded-full border border-gray-200 bg-white p-1 text-gray-400 shadow-sm hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:text-white"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gray-200 bg-white p-1 text-gray-400 shadow-sm hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:min-h-10 sm:min-w-10 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:text-white"
                 aria-label="메시지 복사"
                 title="복사"
               >
@@ -363,7 +363,7 @@ export default function ChatBotConversationPanel({
           <button
             type="button"
             onClick={onNavigateToPrediction}
-            className="flex w-full items-center gap-1.5 text-body font-semibold text-muted-foreground transition-colors hover:text-primary"
+            className="flex min-h-11 w-full items-center gap-1.5 text-body font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ChatBotBrainCircuitIcon className="h-[13px] w-[13px] shrink-0" />
           <span>팀 심층 분석 (AI 코치)</span>

@@ -319,7 +319,7 @@ export default function CheerDetailArticleRuntime({
                                 <button
                                     type="button"
                                     onClick={onGoBack}
-                                    className="rounded-full p-1.5 -ml-2 text-slate-700 transition-colors hover:bg-black/5 sm:p-2 dark:text-white dark:hover:bg-white/10"
+                                    className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
                                     aria-label="이전으로"
                                 >
                                     <ArrowLeftIcon className="h-5 w-5" />
@@ -423,7 +423,7 @@ export default function CheerDetailArticleRuntime({
                                         <button
                                             type="button"
                                             onClick={() => onOwnerMenuOpenChange(!isOwnerMenuOpen)}
-                                            className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-black/5 hover:text-slate-700 sm:p-2 dark:hover:bg-white/10 dark:hover:text-slate-100"
+                                            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-black/5 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-slate-100"
                                             aria-label="게시물 메뉴"
                                             aria-expanded={isOwnerMenuOpen}
                                             aria-haspopup="menu"

@@ -10,16 +10,17 @@ describe('resolveNavbarViewportCompactProgress', () => {
   it('fully compacts the desktop navbar at tablet-width desktop breakpoints', () => {
     assert.equal(resolveNavbarViewportCompactProgress(768), 1);
     assert.equal(resolveNavbarViewportCompactProgress(920), 1);
+    assert.equal(resolveNavbarViewportCompactProgress(1024), 1);
+    assert.equal(resolveNavbarViewportCompactProgress(1040), 1);
   });
 
   it('does not compact the navbar on spacious desktop widths', () => {
-    assert.equal(resolveNavbarViewportCompactProgress(1024), 0);
     assert.equal(resolveNavbarViewportCompactProgress(1280), 0);
     assert.equal(resolveNavbarViewportCompactProgress(1440), 0);
   });
 
   it('eases compact progress between narrow and spacious desktop widths', () => {
-    assert.equal(resolveNavbarViewportCompactProgress(972), 0.5);
+    assert.equal(resolveNavbarViewportCompactProgress(1160), 0.5);
   });
 });
 

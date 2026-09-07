@@ -63,6 +63,7 @@ const NoticePage = lazy(() => import('./NoticePage'));
 const TermsOfService = lazy(() => import('./TermsOfService'));
 const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'));
 const OAuthCallback = lazy(() => import('./OAuthCallback'));
+const OAuthEmailChallengeConfirm = lazy(() => import('./OAuthEmailChallengeConfirm'));
 const TestError = lazy(() => import('./TestError'));
 const ModuleFederationDesignSystemProbe = import.meta.env.DEV || import.meta.env.VITE_MF_DESIGN_SYSTEM_ENTRY
   ? lazy(() => import('./moduleFederation/ModuleFederationDesignSystemProbe'))
@@ -94,6 +95,7 @@ export default function AppRoutes() {
         <Route path="/account/deletion/recovery" element={<AccountDeletionRecovery />} />
       </Route>
       <Route path="/oauth/callback" element={<OAuthCallback />} />
+      <Route path="/oauth/email/confirm" element={<OAuthEmailChallengeConfirm />} />
 
       <Route path="/" element={<RootEntryRoute />} />
 

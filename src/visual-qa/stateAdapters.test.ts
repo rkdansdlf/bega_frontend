@@ -9,7 +9,96 @@ import type { PartyFormData } from '../utils/mateCreateDraft';
 import {
   KNOWN_COMPONENT_STATE_ADAPTER_IDS,
   resolveComponentStateAdapter,
+  type ComponentStateAdapterContext,
 } from './stateAdapters';
+
+test('SeatMapLegend resolves its fourteen literal synthetic direct props and fails closed', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend';
+  const categories = {
+    alpha: { label: '합성 일반석', light: '#16a34a', dark: '#86efac' },
+    beta: { label: '합성 응원석', light: '#ea580c', dark: '#fdba74' },
+    gamma: { label: '합성 테이블석', light: '#7c3aed', dark: '#c4b5fd' },
+    delta: { label: '합성 가족석', light: '#be123c', dark: '#fda4af' },
+    long: { label: '합성 모바일 긴 이름 좌석 구역 안내', light: '#2563eb', dark: '#93c5fd' },
+    token: {
+      label: 'SEATMAPLEGENDUNBROKENTOKEN0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      light: '#0f766e',
+      dark: '#5eead4',
+    },
+    epsilon: { label: '합성 외야 지정석', light: '#ca8a04', dark: '#fde047' },
+    zeta: { label: '합성 스카이박스', light: '#0369a1', dark: '#7dd3fc' },
+  };
+  const expected = [
+    ['empty', [], 'light'],
+    ['empty', [], 'dark'],
+    ['single', ['alpha'], 'light'],
+    ['single', ['alpha'], 'dark'],
+    ['null-optional', ['missing', 'beta'], 'light'],
+    ['null-optional', ['missing', 'beta'], 'dark'],
+    ['populated', ['alpha', 'beta', 'gamma'], 'light'],
+    ['populated', ['alpha', 'beta', 'gamma'], 'dark'],
+    ['long-korean', ['long', 'beta', 'gamma'], 'light'],
+    ['long-korean', ['long', 'beta', 'gamma'], 'dark'],
+    ['unbroken-token', ['token', 'alpha'], 'light'],
+    ['unbroken-token', ['token', 'alpha'], 'dark'],
+    ['maximum-supported', ['alpha', 'beta', 'gamma', 'delta', 'long', 'token', 'epsilon', 'zeta'], 'light'],
+    ['maximum-supported', ['alpha', 'beta', 'gamma', 'delta', 'long', 'token', 'epsilon', 'zeta'], 'dark'],
+  ] as const;
+
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('seat-map-legend'), true);
+  for (const [data, categoryIds, theme] of expected) {
+    assert.deepEqual(
+      resolveComponentStateAdapter('seat-map-legend', {
+        componentId,
+        states: { data },
+        variants: { theme },
+      }),
+      {
+        props: { categoryIds, categories, mode: theme },
+        surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
+        theme,
+      },
+    );
+  }
+
+  const validContext = {
+    componentId,
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+  } as const;
+  assert.throws(() => resolveComponentStateAdapter('unknown-seat-map-legend', validContext));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId: 'src/components/stadiumSeatMap/SeatMapLegend.tsx#WrongComponent',
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId,
+    states: { data: 'unknown' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId,
+    states: { data: 'empty' },
+    variants: {},
+  }));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId,
+    states: { data: 'empty' },
+    variants: { theme: 'neon' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId,
+    states: { data: 'empty', permissions: 'admin' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('seat-map-legend', {
+    componentId,
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'pill',
+  }));
+});
 
 type VisualQaReleaseDecisionState = {
   releaseArtifactAction: { artifactId: string; mode: string } | null;
@@ -254,6 +343,11 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'sajik.seat-map-editor',
     'sajik.seat-map-svg',
     'seat-map-hover-preview',
+    'seat-map-legend',
+    'seat-map-runtime-shell',
+    'seat-map-section-finder',
+    'seat-map-template-shell',
+    'seat-view-direct-upload-modal',
     'simple-markdown.content',
     'stadium-seatmap.error',
     'stadium-seatmap.loading',
@@ -350,6 +444,438 @@ test('SeatMapHoverPreview adapter resolves every declared prop shape in both the
       assert.equal(result.surfaceClassName, 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none');
       assert.equal(result.theme, theme);
     }
+  }
+});
+
+test('SeatMapRuntimeShell adapter resolves all 72 direct runtime combinations', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell';
+  const expectedCopy = {
+    empty: { badgeLabel: '', stadiumName: undefined },
+    populated: { badgeLabel: '합성 공식 좌석도', stadiumName: '합성 테스트 구장' },
+    'null-optional': { badgeLabel: '합성 공식 좌석도', stadiumName: null },
+    'long-korean': {
+      badgeLabel: '모바일에서 여러 줄과 잘림 상태를 확인하는 합성 공식 좌석도 안내',
+      stadiumName: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 합성 테스트 구장 이름',
+    },
+    'unbroken-token': {
+      badgeLabel: `SEATMAPRUNTIMESHELL${'X'.repeat(220)}`,
+      stadiumName: `SEATMAPRUNTIMESHELL${'X'.repeat(220)}`,
+    },
+    'maximum-supported': {
+      badgeLabel: `${'최대지원좌석도상태'.repeat(48)}SEATMAPRUNTIMESHELL${'X'.repeat(220)}`,
+      stadiumName: `${'최대지원좌석도상태'.repeat(48)}SEATMAPRUNTIMESHELL${'X'.repeat(220)}`,
+    },
+  } as const;
+  let count = 0;
+  for (const [data, copy] of Object.entries(expectedCopy)) {
+    for (const system of ['idle', 'loading', 'error-503'] as const) {
+      for (const geometry of ['coordinate', 'non-coordinate'] as const) {
+        for (const theme of ['light', 'dark'] as const) {
+          const result = resolveComponentStateAdapter('seat-map-runtime-shell', {
+            componentId,
+            states: { data, system },
+            variants: { geometry, theme },
+          });
+          assert.equal(result.props.template, 'standard');
+          assert.equal(result.props.usesCoordinateGeometry, geometry === 'coordinate');
+          assert.equal(result.props.badgeLabel, copy.badgeLabel);
+          assert.equal(result.props.stadiumName, copy.stadiumName);
+          assert.equal(result.props.resetKey, `visual-qa:${data}:${system}:${geometry}`);
+          assert.ok(result.props.children);
+          assert.equal(result.captureSelector, system === 'loading'
+            ? '[data-testid="stadium-seatmap-loading"]'
+            : system === 'error-503'
+              ? '[data-testid="stadium-seatmap-error"]'
+              : '[data-testid="seat-map-runtime-resolved"]');
+          assert.equal(result.surfaceClassName, 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none');
+          assert.equal(result.theme, theme);
+          count += 1;
+        }
+      }
+    }
+  }
+  assert.equal(count, 72);
+});
+
+test('SeatMapRuntimeShell adapter fails closed outside its exact matrix', () => {
+  const valid = {
+    componentId: 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell',
+    states: { data: 'populated', system: 'idle' },
+    variants: { geometry: 'coordinate', theme: 'light' },
+  } as const;
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    componentId: 'src/components/Other.tsx#Other',
+  }), /seat-map-runtime-shell only supports SeatMapRuntimeShell/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    states: { ...valid.states, data: 'unknown' },
+  }), /지원하지 않는 Visual QA state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    states: { ...valid.states, system: 'offline' },
+  }), /지원하지 않는 Visual QA state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    variants: { ...valid.variants, geometry: 'unknown' },
+  }), /지원하지 않는 Visual QA variant/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    variants: { ...valid.variants, theme: 'blue' },
+  }), /지원하지 않는 Visual QA variant/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    states: { ...valid.states, permissions: 'admin' },
+  }), /seat-map-runtime-shell only supports data and system state axes/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    states: { ...valid.states, interactions: 'hover' },
+  }), /seat-map-runtime-shell only supports data and system state axes/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    variants: { ...valid.variants, extra: 'present' },
+  }), /seat-map-runtime-shell only supports geometry and theme variants/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-runtime-shell', {
+    ...valid,
+    interactionTargetId: 'retry',
+  }), /seat-map-runtime-shell does not support interaction targets/);
+});
+
+test('SeatMapSectionFinder adapter resolves its exact 228 direct mobile scenarios', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder';
+  const dataValues = [
+    'empty',
+    'single',
+    'null-optional',
+    'populated',
+    'long-korean',
+    'unbroken-token',
+    'maximum-supported',
+  ] as const;
+  const interactionValues = [
+    'default',
+    'input',
+    'focus-visible',
+    'hover',
+    'selected',
+    'keyboard-navigation',
+  ] as const;
+  const expectedBlockCounts = {
+    empty: 0,
+    single: 1,
+    'null-optional': 1,
+    populated: 3,
+    'long-korean': 3,
+    'unbroken-token': 2,
+    'maximum-supported': 24,
+  } as const;
+  const targetsFor = (data: typeof dataValues[number], interaction: typeof interactionValues[number]) => {
+    if (interaction === 'default') return [undefined];
+    if (interaction === 'input') return data === 'empty'
+      ? ['no-result-query']
+      : ['match-query', 'no-result-query'];
+    if (interaction === 'focus-visible') return data === 'empty' ? ['search'] : ['search', 'item'];
+    if (data === 'empty') return [];
+    if (interaction === 'keyboard-navigation') return ['enter', 'space'];
+    return ['item'];
+  };
+  let count = 0;
+  for (const data of dataValues) {
+    for (const interaction of interactionValues) {
+      for (const interactionTargetId of targetsFor(data, interaction)) {
+        for (const filter of ['all', 'restricted'] as const) {
+          for (const theme of ['light', 'dark'] as const) {
+            const result = resolveComponentStateAdapter('seat-map-section-finder', {
+              componentId,
+              states: { data, interactions: interaction },
+              variants: { filter, theme },
+              ...(interactionTargetId === undefined ? {} : { interactionTargetId }),
+            });
+            const props = result.props as {
+              blocks: Array<{ id: string; name: string; block: string; categoryId: string }>;
+              filterCats: readonly string[] | null;
+              selected: { id: string } | null;
+              mode: string;
+              testIdPrefix: string;
+              accentColor: string;
+              stadiumShortLabel: string;
+              autoFocusInput: boolean;
+              onSelect: unknown;
+              onHoverChange: unknown;
+            };
+            assert.equal(props.blocks.length, expectedBlockCounts[data], `${data}/${interaction}/${interactionTargetId} blocks`);
+            assert.deepEqual(props.filterCats, filter === 'restricted' ? ['alpha', 'missing'] : null);
+            assert.equal(props.selected?.id ?? null, interaction === 'selected' ? 'synthetic-0' : null);
+            assert.equal(props.mode, theme);
+            assert.equal(props.testIdPrefix, 'visual-qa-section-finder');
+            assert.equal(props.accentColor, '#2563eb');
+            assert.equal(props.autoFocusInput, false);
+            assert.equal(typeof props.onSelect, 'function');
+            assert.equal(typeof props.onHoverChange, 'function');
+            if (data === 'unbroken-token') assert.match(props.stadiumShortLabel, /^SEATMAPSECTIONFINDERX{20}/);
+            if (data === 'null-optional') assert.equal(props.blocks[0]?.categoryId, 'missing');
+            assert.equal(result.captureSelector, '[data-testid="visual-qa-section-finder-section-finder"]');
+            assert.equal(result.surfaceClassName, 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none');
+            assert.equal(result.theme, theme);
+            count += 1;
+          }
+        }
+      }
+    }
+  }
+  assert.equal(count, 228);
+});
+
+test('SeatMapSectionFinder adapter fails closed outside its exact scenario matrix', () => {
+  const valid = {
+    componentId: 'src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder',
+    states: { data: 'single', interactions: 'default' },
+    variants: { filter: 'all', theme: 'light' },
+  } as const;
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    componentId: 'src/components/Other.tsx#Other',
+  }), /seat-map-section-finder only supports SeatMapSectionFinder/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    states: { ...valid.states, data: 'unknown' },
+  }), /지원하지 않는 Visual QA state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    states: { ...valid.states, interactions: 'pressed' },
+  }), /지원하지 않는 Visual QA state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    states: { ...valid.states, system: 'loading' },
+  }), /seat-map-section-finder only supports data and interactions state axes/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    variants: { ...valid.variants, filter: 'unknown' },
+  }), /지원하지 않는 Visual QA variant/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    variants: { ...valid.variants, extra: 'present' },
+  }), /seat-map-section-finder only supports filter and theme variants/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    interactionTargetId: 'item',
+  }), /unsupported interaction target/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    states: { data: 'single', interactions: 'input' },
+  }), /unsupported interaction target/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-section-finder', {
+    ...valid,
+    states: { data: 'empty', interactions: 'hover' },
+    interactionTargetId: 'item',
+  }), /unsupported interaction target/);
+});
+
+test('SeatMapTemplateShell adapter maps every owned composition branch and rejects invalid combinations', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell';
+  const resolve = (
+    composition: string,
+    interactions: string,
+    layout: string,
+    pressure = 'default',
+    theme = 'light',
+    interactionTargetId?: string,
+  ) => resolveComponentStateAdapter('seat-map-template-shell', {
+    componentId,
+    states: { data: 'populated', interactions },
+    variants: { composition, layout, pressure, theme },
+    ...(interactionTargetId === undefined ? {} : { interactionTargetId }),
+  });
+
+  const base = resolve('base', 'default', 'mobile');
+  assert.equal(base.props.isMobile, true);
+  assert.equal(base.props.isAuxiliaryGuideActive, false);
+  assert.equal(base.props.isFullscreenOpen, false);
+  assert.equal(base.props.filterBar, undefined);
+  assert.equal(base.props.toast, null);
+  assert.equal(base.captureSelector, 'body');
+  assert.equal(base.theme, 'light');
+
+  const optional = resolve('optional-populated', 'default', 'desktop', 'long-korean', 'dark');
+  assert.equal(optional.props.isMobile, false);
+  assert.ok(optional.props.filterBar);
+  assert.ok(optional.props.legend);
+  assert.ok(optional.props.mobileSecondaryPanel);
+  assert.ok(optional.props.desktopSecondaryPanel);
+  assert.equal(optional.theme, 'dark');
+  assert.match(String(optional.props.title), /모바일 화면에서도/);
+
+  const fallback = resolve('filter-fallback', 'default', 'desktop');
+  assert.ok(fallback.props.filterBar);
+  assert.equal(fallback.props.desktopFilterBar, undefined);
+  const override = resolve('filter-override', 'default', 'mobile');
+  assert.ok(override.props.filterBar);
+  assert.ok(override.props.mobileFilterBar);
+  assert.ok(override.props.desktopFilterBar);
+  assert.ok(resolve('mobile-secondary', 'default', 'mobile').props.mobileSecondaryPanel);
+  assert.ok(resolve('mobile-legacy-side', 'default', 'mobile').props.mobileSidePanel);
+  assert.ok(resolve('mobile-bottom-sheet', 'default', 'mobile').props.mobileBottomSheet);
+  assert.equal(resolve('mobile-side-reserve', 'default', 'mobile').props.mobileHasSidePanel, true);
+  assert.ok(resolve('desktop-secondary', 'default', 'desktop').props.desktopSecondaryPanel);
+  assert.ok(resolve('desktop-side', 'default', 'desktop').props.desktopSidePanel);
+  const both = resolve('desktop-both', 'default', 'desktop');
+  assert.ok(both.props.desktopSecondaryPanel);
+  assert.ok(both.props.desktopSidePanel);
+  const auxiliary = resolve('auxiliary-guide', 'default', 'desktop');
+  assert.equal(auxiliary.props.isAuxiliaryGuideActive, true);
+  assert.equal(auxiliary.props.isFullscreenOpen, true);
+  assert.ok(auxiliary.props.desktopSecondaryPanel);
+  assert.ok(resolve('toast', 'default', 'mobile', 'unbroken-token').props.toast);
+
+  const fullscreen = resolve('fullscreen-toast', 'selected', 'desktop', 'maximum-supported', 'dark', 'close');
+  assert.equal(fullscreen.props.isFullscreenOpen, true);
+  assert.ok(fullscreen.props.toast);
+  assert.match(String(fullscreen.props.fullscreenTitle), /최대지원합성좌석도템플릿문구/);
+  assert.equal(typeof fullscreen.props.onFullscreenClose, 'function');
+  (fullscreen.props.onFullscreenClose as () => void)();
+  assert.throws(
+    () => (fullscreen.props.onFullscreenClose as () => void)(),
+    /close callback repeated/,
+  );
+
+  const invalidContexts: ComponentStateAdapterContext[] = [
+    { componentId: 'src/components/Other.tsx#Other', states: { data: 'populated', interactions: 'default' }, variants: { composition: 'base', layout: 'mobile', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'unknown', interactions: 'default' }, variants: { composition: 'base', layout: 'mobile', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'default' }, variants: { composition: 'unknown', layout: 'mobile', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'default', system: 'idle' }, variants: { composition: 'base', layout: 'mobile', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'default' }, variants: { composition: 'base', layout: 'mobile', pressure: 'default', theme: 'light', extra: 'present' } },
+    { componentId, states: { data: 'populated', interactions: 'default' }, variants: { composition: 'mobile-secondary', layout: 'desktop', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'default' }, variants: { composition: 'desktop-side', layout: 'mobile', pressure: 'default', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'focus-visible' }, variants: { composition: 'base', layout: 'mobile', pressure: 'default', theme: 'light' }, interactionTargetId: 'close' },
+    { componentId, states: { data: 'populated', interactions: 'default' }, variants: { composition: 'fullscreen', layout: 'mobile', pressure: 'default', theme: 'light' }, interactionTargetId: 'close' },
+    { componentId, states: { data: 'populated', interactions: 'selected' }, variants: { composition: 'fullscreen', layout: 'mobile', pressure: 'default', theme: 'light' }, interactionTargetId: 'unknown' },
+  ];
+  for (const context of invalidContexts) {
+    assert.throws(
+      () => resolveComponentStateAdapter('seat-map-template-shell', context),
+      /seat-map-template-shell|지원하지 않는 Visual QA/,
+    );
+  }
+});
+
+test('SeatViewDirectUploadModal adapter maps every owned form and lifecycle branch and rejects invalid combinations', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal';
+  const resolve = (
+    data: string,
+    system: string,
+    interactions = 'default',
+    location = 'short',
+    theme = 'light',
+    interactionTargetId?: string,
+    feedback = 'none',
+  ) => resolveComponentStateAdapter('seat-view-direct-upload-modal', {
+    componentId,
+    states: { data, interactions, system },
+    variants: { feedback, location, theme },
+    ...(interactionTargetId === undefined ? {} : { interactionTargetId }),
+  });
+
+  const empty = resolve('empty', 'idle');
+  assert.equal(empty.props.stadium, 'SYNTHETIC');
+  assert.equal(empty.props.section, '합성 좌석 구역');
+  assert.equal(empty.props.block, 'S-01');
+  assert.equal(empty.captureSelector, '[data-testid="seat-view-direct-upload-modal"]');
+  assert.equal(empty.theme, 'light');
+  assert.deepEqual(empty.props.visualQaStateOverride, {});
+  assert.equal(typeof empty.props.onClose, 'function');
+  assert.equal(typeof empty.props.onSubmitted, 'function');
+
+  const missing = resolve('empty', 'idle', 'default', 'missing', 'light', undefined, 'file-required');
+  assert.equal(missing.props.section, null);
+  assert.equal(missing.props.block, null);
+  assert.deepEqual(missing.props.visualQaStateOverride, {
+    errorMessage: '사진 파일을 선택해주세요.',
+  });
+
+  const populated = resolve('populated', 'idle', 'focus-visible', 'short', 'dark', 'comment');
+  const populatedState = populated.props.visualQaStateOverride as {
+    comment: string;
+    previewUrl: string;
+    rating: number;
+    seatNumber: string;
+    seatRow: string;
+    tags: string[];
+  };
+  assert.equal(populated.theme, 'dark');
+  assert.match(populatedState.previewUrl, /^data:image\/svg\+xml/);
+  assert.equal(populatedState.rating, 4);
+  assert.equal(populatedState.tags.length, 2);
+  assert.equal(populatedState.seatRow, '10열');
+  assert.equal(populatedState.seatNumber, '12번');
+  assert.match(populatedState.comment, /비운영 합성/);
+
+  const maximum = resolve('maximum-supported', 'idle', 'default', 'unbroken-token');
+  const maximumState = maximum.props.visualQaStateOverride as {
+    comment: string;
+    rating: number;
+    seatNumber: string;
+    seatRow: string;
+    tags: string[];
+  };
+  assert.equal(String(maximum.props.stadium).startsWith('SEATVIEWDIRECTUPLOAD'), true);
+  assert.equal(maximumState.seatRow.length, 100);
+  assert.equal(maximumState.seatNumber.length, 100);
+  assert.equal(maximumState.comment.length, 140);
+  assert.equal(maximumState.rating, 5);
+  assert.equal(maximumState.tags.length, 5);
+
+  assert.deepEqual(
+    (resolve('populated', 'idle', 'default', 'short', 'light', undefined, 'rating-required').props.visualQaStateOverride as { errorMessage: string; rating: number }),
+    {
+      comment: '비운영 합성 시야 설명',
+      errorMessage: '별점을 선택해주세요.',
+      previewUrl: populatedState.previewUrl,
+      rating: 0,
+      seatNumber: '12번',
+      seatRow: '10열',
+      tags: ['탁 트임', '전광판 잘 보임'],
+    },
+  );
+  assert.match(
+    String((resolve('maximum-supported', 'idle', 'default', 'short', 'light', undefined, 'tag-limit').props.visualQaStateOverride as { errorMessage: string }).errorMessage),
+    /최대 5개/,
+  );
+  assert.match(
+    String((resolve('maximum-supported', 'error-503').props.visualQaStateOverride as { errorMessage: string }).errorMessage),
+    /업로드에 실패/,
+  );
+  assert.equal(
+    (resolve('maximum-supported', 'loading').props.visualQaStateOverride as { submitting: boolean }).submitting,
+    true,
+  );
+
+  for (const [interaction, targets] of Object.entries({
+    hover: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+    'focus-visible': ['close', 'file', 'row', 'seat', 'rating', 'tag', 'comment', 'cancel', 'submit'],
+    pressed: ['close', 'file', 'rating', 'tag', 'cancel', 'submit'],
+    selected: ['rating', 'tag'],
+    input: ['row', 'seat', 'comment'],
+  })) {
+    for (const target of targets) {
+      assert.doesNotThrow(() => resolve('populated', 'idle', interaction, 'short', 'light', target));
+    }
+  }
+
+  const invalidContexts: ComponentStateAdapterContext[] = [
+    { componentId: 'src/components/Other.tsx#Other', states: { data: 'empty', interactions: 'default', system: 'idle' }, variants: { feedback: 'none', location: 'short', theme: 'light' } },
+    { componentId, states: { data: 'unknown', interactions: 'default', system: 'idle' }, variants: { feedback: 'none', location: 'short', theme: 'light' } },
+    { componentId, states: { data: 'empty', interactions: 'default', system: 'error-503' }, variants: { feedback: 'none', location: 'short', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'hover', system: 'idle' }, variants: { feedback: 'none', location: 'long-korean', theme: 'light' }, interactionTargetId: 'close' },
+    { componentId, states: { data: 'populated', interactions: 'input', system: 'idle' }, variants: { feedback: 'none', location: 'short', theme: 'light' }, interactionTargetId: 'submit' },
+    { componentId, states: { data: 'populated', interactions: 'default', system: 'idle', permissions: 'user' }, variants: { feedback: 'none', location: 'short', theme: 'light' } },
+    { componentId, states: { data: 'populated', interactions: 'default', system: 'idle' }, variants: { feedback: 'none', location: 'short', theme: 'blue' } },
+    { componentId, states: { data: 'populated', interactions: 'default', system: 'idle' }, variants: { feedback: 'none', location: 'short', theme: 'light', extra: 'present' } },
+  ];
+  for (const context of invalidContexts) {
+    assert.throws(
+      () => resolveComponentStateAdapter('seat-view-direct-upload-modal', context),
+      /seat-view-direct-upload-modal|지원하지 않는 Visual QA/,
+    );
   }
 });
 

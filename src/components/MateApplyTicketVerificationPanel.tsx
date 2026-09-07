@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, type KeyboardEvent } from 'react';
 
 import { toast } from 'sonner';
 
@@ -13,12 +13,17 @@ import {
 } from './icons/MateFlowIcons';
 import { Button } from './ui/button';
 
+export type MateApplyTicketVerificationVisualQaStateOverride = {
+  isScanning: boolean;
+};
+
 interface MateApplyTicketVerificationPanelProps {
   gameDate: string;
   ticketVerified: boolean;
   ticketInfo: TicketInfo | null;
   onVerified: (ticketInfo: TicketInfo) => void;
   onReset: () => void;
+  visualQaStateOverride?: MateApplyTicketVerificationVisualQaStateOverride;
 }
 
 const sanitizeUserFacingMessage = (message: string, fallback: string): string => {
@@ -38,8 +43,13 @@ export default function MateApplyTicketVerificationPanel({
   ticketInfo,
   onVerified,
   onReset,
+  visualQaStateOverride: visualQaStateOverrideProp,
 }: MateApplyTicketVerificationPanelProps) {
-  const [isScanning, setIsScanning] = useState(false);
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : visualQaStateOverrideProp;
+  const [runtimeIsScanning, setRuntimeIsScanning] = useState(false);
+  const isScanning = visualQaStateOverride?.isScanning ?? runtimeIsScanning;
 
   const handleTicketUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,7 +64,7 @@ export default function MateApplyTicketVerificationPanel({
       return;
     }
 
-    setIsScanning(true);
+    setRuntimeIsScanning(true);
     try {
       const result = await analyzeTicket(file);
       onVerified(result);
@@ -72,18 +82,30 @@ export default function MateApplyTicketVerificationPanel({
       const fallbackMessage = '티켓 분석에 실패했습니다. 다시 시도해주세요.';
       toast.error(sanitizeUserFacingMessage(getApiErrorMessage(error, fallbackMessage), fallbackMessage));
     } finally {
-      setIsScanning(false);
+      setRuntimeIsScanning(false);
+    }
+  };
+
+  const handleUploadKeyDown = (event: KeyboardEvent<HTMLLabelElement>) => {
+    if (isScanning) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.currentTarget.click();
     }
   };
 
   return (
-    <>
+    <section
+      data-testid="mate-apply-ticket-panel"
+      aria-labelledby="mate-apply-ticket-title"
+      className="min-w-0"
+    >
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <MateTicketIcon className="w-5 h-5 text-primary" />
-        <h3 className="font-bold text-primary">티켓 인증 (선택)</h3>
+        <MateTicketIcon className="w-5 h-5 text-primary" aria-hidden="true" />
+        <h3 id="mate-apply-ticket-title" className="font-bold text-primary">티켓 인증 (선택)</h3>
         {ticketVerified && (
           <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-body font-semibold text-green-600 dark:bg-green-950/30 dark:text-green-300">
-            <MateCheckCircleIcon className="w-3.5 h-3.5" />
+            <MateCheckCircleIcon className="w-3.5 h-3.5" aria-hidden="true" />
             인증 완료
           </span>
         )}
@@ -96,11 +118,11 @@ export default function MateApplyTicketVerificationPanel({
         <div className="space-y-3">
           <div className="rounded-2xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
             <div className="mb-2 flex items-center gap-2">
-              <MateShieldIcon className="w-4 h-4 text-green-600" />
+              <MateShieldIcon className="w-4 h-4 text-green-600" aria-hidden="true" />
               <span className="font-semibold text-green-700 dark:text-green-400">티켓 인증 완료</span>
             </div>
             {ticketInfo && (
-              <div className="space-y-1.5 text-body text-green-600 dark:text-green-300">
+              <div className="min-w-0 space-y-1.5 text-body text-green-600 [overflow-wrap:anywhere] dark:text-green-300">
                 {ticketInfo.date && <p>📅 {ticketInfo.date}</p>}
                 {ticketInfo.stadium && <p>🏟️ {formatStadiumDisplayName(ticketInfo.stadium)}</p>}
                 {(ticketInfo.section || ticketInfo.row || ticketInfo.seat) && (
@@ -110,8 +132,9 @@ export default function MateApplyTicketVerificationPanel({
             )}
           </div>
           <Button
+            data-testid="mate-ticket-reset"
             variant="ghost"
-            className="text-body text-gray-500 dark:text-white"
+            className="w-full text-body text-gray-500 focus-visible:ring-inset dark:text-white sm:w-auto"
             onClick={onReset}
           >
             다시 인증하기
@@ -132,15 +155,28 @@ export default function MateApplyTicketVerificationPanel({
             className="hidden"
             disabled={isScanning}
           />
-          <label htmlFor="ticketVerifyFile" className={`block cursor-pointer ${isScanning ? 'pointer-events-none' : ''}`}>
+          <label
+            data-testid="mate-ticket-upload"
+            htmlFor="ticketVerifyFile"
+            role="button"
+            tabIndex={isScanning ? -1 : 0}
+            aria-disabled={isScanning}
+            onKeyDown={handleUploadKeyDown}
+            className={`block min-h-11 rounded-xl outline-none transition-transform focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[0.98] ${isScanning ? 'pointer-events-none' : 'cursor-pointer'}`}
+          >
             {isScanning ? (
-              <div className="flex flex-col items-center gap-2">
-                <MateLoaderIcon className="w-10 h-10 text-primary animate-spin" />
+              <div
+                data-testid="mate-ticket-scanning"
+                role="status"
+                aria-live="polite"
+                className="flex flex-col items-center gap-2"
+              >
+                <MateLoaderIcon className="w-10 h-10 text-primary animate-spin" aria-hidden="true" />
                 <p className="font-semibold text-primary">AI가 티켓을 분석 중...</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <MateTicketIcon className="w-10 h-10 text-primary" />
+                <MateTicketIcon className="w-10 h-10 text-primary" aria-hidden="true" />
                 <p className="font-semibold text-primary">티켓 사진 업로드</p>
                 <p className="text-body text-gray-400">JPG, PNG (최대 10MB)</p>
               </div>
@@ -148,6 +184,6 @@ export default function MateApplyTicketVerificationPanel({
           </label>
         </div>
       )}
-    </>
+    </section>
   );
 }

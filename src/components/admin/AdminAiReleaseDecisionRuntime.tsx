@@ -38,8 +38,41 @@ import {
   AdminBotIcon,
 } from './AdminPanelIcons';
 
+type ReleaseArtifactAction = {
+  artifactId: string;
+  mode: 'load' | 'markdown' | 'json';
+} | null;
+
+export interface AdminAiReleaseDecisionVisualQaState {
+  releasePresets: ReleaseDecisionPreset[];
+  releasePresetsLoading: boolean;
+  releaseSelectedScenario: string;
+  releaseTaskPrompt: string;
+  releaseSeedPathsInput: string;
+  releaseAllowedRootsInput: string;
+  releaseDraftResult: ReleaseDecisionDraftResponse | null;
+  releaseDraftLoading: boolean;
+  releaseDraftError: string | null;
+  releaseCopyState: 'idle' | 'done' | 'error';
+  releaseEvalCases: ReleaseDecisionEvalCase[];
+  releaseEvalCasesLoading: boolean;
+  releaseSelectedCaseId: string;
+  releaseEvaluationResult: ReleaseDecisionEvaluateResponse | null;
+  releaseEvaluationLoading: boolean;
+  releaseEvaluationError: string | null;
+  releaseArtifacts: ReleaseDecisionArtifactSummary[];
+  releaseArtifactsLoading: boolean;
+  releaseArtifactsError: string | null;
+  releaseLoadedArtifact: ReleaseDecisionArtifactRecord | null;
+  releaseSaveLoading: boolean;
+  releaseSaveMessage: string | null;
+  releaseSaveError: string | null;
+  releaseArtifactAction: ReleaseArtifactAction;
+}
+
 interface AdminAiReleaseDecisionRuntimeProps {
   autoBriefPanel: ReactNode;
+  visualQaStateOverride?: AdminAiReleaseDecisionVisualQaState;
 }
 
 const parseMultilineEntries = (value: string): string[] =>
@@ -62,36 +95,85 @@ const downloadTextFile = (filename: string, content: string, mimeType: string) =
 
 export default function AdminAiReleaseDecisionRuntime({
   autoBriefPanel,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AdminAiReleaseDecisionRuntimeProps) {
-  const [releasePresets, setReleasePresets] = useState<ReleaseDecisionPreset[]>([]);
-  const [releasePresetsLoading, setReleasePresetsLoading] = useState(false);
-  const [releaseSelectedScenario, setReleaseSelectedScenario] = useState('');
-  const [releaseTaskPrompt, setReleaseTaskPrompt] = useState('');
-  const [releaseSeedPathsInput, setReleaseSeedPathsInput] = useState('');
-  const [releaseAllowedRootsInput, setReleaseAllowedRootsInput] = useState('');
-  const [releaseDraftResult, setReleaseDraftResult] = useState<ReleaseDecisionDraftResponse | null>(null);
-  const [releaseDraftLoading, setReleaseDraftLoading] = useState(false);
-  const [releaseDraftError, setReleaseDraftError] = useState<string | null>(null);
-  const [releaseCopyState, setReleaseCopyState] = useState<'idle' | 'done' | 'error'>('idle');
-  const [releaseEvalCases, setReleaseEvalCases] = useState<ReleaseDecisionEvalCase[]>([]);
-  const [releaseEvalCasesLoading, setReleaseEvalCasesLoading] = useState(false);
-  const [releaseSelectedCaseId, setReleaseSelectedCaseId] = useState('');
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const [releasePresets, setReleasePresets] = useState<ReleaseDecisionPreset[]>(
+    visualQaStateOverride?.releasePresets ?? [],
+  );
+  const [releasePresetsLoading, setReleasePresetsLoading] = useState(
+    visualQaStateOverride?.releasePresetsLoading ?? false,
+  );
+  const [releaseSelectedScenario, setReleaseSelectedScenario] = useState(
+    visualQaStateOverride?.releaseSelectedScenario ?? '',
+  );
+  const [releaseTaskPrompt, setReleaseTaskPrompt] = useState(
+    visualQaStateOverride?.releaseTaskPrompt ?? '',
+  );
+  const [releaseSeedPathsInput, setReleaseSeedPathsInput] = useState(
+    visualQaStateOverride?.releaseSeedPathsInput ?? '',
+  );
+  const [releaseAllowedRootsInput, setReleaseAllowedRootsInput] = useState(
+    visualQaStateOverride?.releaseAllowedRootsInput ?? '',
+  );
+  const [releaseDraftResult, setReleaseDraftResult] = useState<ReleaseDecisionDraftResponse | null>(
+    visualQaStateOverride?.releaseDraftResult ?? null,
+  );
+  const [releaseDraftLoading, setReleaseDraftLoading] = useState(
+    visualQaStateOverride?.releaseDraftLoading ?? false,
+  );
+  const [releaseDraftError, setReleaseDraftError] = useState<string | null>(
+    visualQaStateOverride?.releaseDraftError ?? null,
+  );
+  const [releaseCopyState, setReleaseCopyState] = useState<'idle' | 'done' | 'error'>(
+    visualQaStateOverride?.releaseCopyState ?? 'idle',
+  );
+  const [releaseEvalCases, setReleaseEvalCases] = useState<ReleaseDecisionEvalCase[]>(
+    visualQaStateOverride?.releaseEvalCases ?? [],
+  );
+  const [releaseEvalCasesLoading, setReleaseEvalCasesLoading] = useState(
+    visualQaStateOverride?.releaseEvalCasesLoading ?? false,
+  );
+  const [releaseSelectedCaseId, setReleaseSelectedCaseId] = useState(
+    visualQaStateOverride?.releaseSelectedCaseId ?? '',
+  );
   const [releaseEvaluationResult, setReleaseEvaluationResult] =
-    useState<ReleaseDecisionEvaluateResponse | null>(null);
-  const [releaseEvaluationLoading, setReleaseEvaluationLoading] = useState(false);
-  const [releaseEvaluationError, setReleaseEvaluationError] = useState<string | null>(null);
-  const [releaseArtifacts, setReleaseArtifacts] = useState<ReleaseDecisionArtifactSummary[]>([]);
-  const [releaseArtifactsLoading, setReleaseArtifactsLoading] = useState(false);
-  const [releaseArtifactsError, setReleaseArtifactsError] = useState<string | null>(null);
+    useState<ReleaseDecisionEvaluateResponse | null>(
+      visualQaStateOverride?.releaseEvaluationResult ?? null,
+    );
+  const [releaseEvaluationLoading, setReleaseEvaluationLoading] = useState(
+    visualQaStateOverride?.releaseEvaluationLoading ?? false,
+  );
+  const [releaseEvaluationError, setReleaseEvaluationError] = useState<string | null>(
+    visualQaStateOverride?.releaseEvaluationError ?? null,
+  );
+  const [releaseArtifacts, setReleaseArtifacts] = useState<ReleaseDecisionArtifactSummary[]>(
+    visualQaStateOverride?.releaseArtifacts ?? [],
+  );
+  const [releaseArtifactsLoading, setReleaseArtifactsLoading] = useState(
+    visualQaStateOverride?.releaseArtifactsLoading ?? false,
+  );
+  const [releaseArtifactsError, setReleaseArtifactsError] = useState<string | null>(
+    visualQaStateOverride?.releaseArtifactsError ?? null,
+  );
   const [releaseLoadedArtifact, setReleaseLoadedArtifact] =
-    useState<ReleaseDecisionArtifactRecord | null>(null);
-  const [releaseSaveLoading, setReleaseSaveLoading] = useState(false);
-  const [releaseSaveMessage, setReleaseSaveMessage] = useState<string | null>(null);
-  const [releaseSaveError, setReleaseSaveError] = useState<string | null>(null);
-  const [releaseArtifactAction, setReleaseArtifactAction] = useState<{
-    artifactId: string;
-    mode: 'load' | 'markdown' | 'json';
-  } | null>(null);
+    useState<ReleaseDecisionArtifactRecord | null>(
+      visualQaStateOverride?.releaseLoadedArtifact ?? null,
+    );
+  const [releaseSaveLoading, setReleaseSaveLoading] = useState(
+    visualQaStateOverride?.releaseSaveLoading ?? false,
+  );
+  const [releaseSaveMessage, setReleaseSaveMessage] = useState<string | null>(
+    visualQaStateOverride?.releaseSaveMessage ?? null,
+  );
+  const [releaseSaveError, setReleaseSaveError] = useState<string | null>(
+    visualQaStateOverride?.releaseSaveError ?? null,
+  );
+  const [releaseArtifactAction, setReleaseArtifactAction] = useState<ReleaseArtifactAction>(
+    visualQaStateOverride?.releaseArtifactAction ?? null,
+  );
 
   const selectedReleasePreset = useMemo(
     () => releasePresets.find((preset) => preset.scenario === releaseSelectedScenario) ?? null,
@@ -158,6 +240,7 @@ export default function AdminAiReleaseDecisionRuntime({
   }, []);
 
   useEffect(() => {
+    if (visualQaStateOverride) return;
     if (releasePresets.length === 0 && !releasePresetsLoading) {
       void loadReleasePresets();
     }
@@ -171,6 +254,7 @@ export default function AdminAiReleaseDecisionRuntime({
     loadReleaseArtifacts,
     loadReleaseEvalCases,
     loadReleasePresets,
+    visualQaStateOverride,
     releaseArtifacts.length,
     releaseArtifactsLoading,
     releaseEvalCases.length,
@@ -374,14 +458,29 @@ export default function AdminAiReleaseDecisionRuntime({
     }
   };
 
+  const isBusy = releasePresetsLoading
+    || releaseDraftLoading
+    || releaseEvalCasesLoading
+    || releaseEvaluationLoading
+    || releaseArtifactsLoading
+    || releaseSaveLoading
+    || releaseArtifactAction !== null;
+
   return (
-    <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
-      <div className="space-y-6">
+    <div
+      data-testid="admin-ai-release-decision-runtime"
+      aria-busy={isBusy}
+      className="grid min-w-0 gap-6 overflow-hidden xl:grid-cols-[420px_minmax(0,1fr)]"
+    >
+      <div className="min-w-0 space-y-6">
         {autoBriefPanel}
 
-        <div className="rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+        <div
+          data-testid="admin-ai-release-composer-card"
+          className="min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
+        >
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
               <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
                 <AdminSparklesIcon className="h-5 w-5 text-amber-300" />
                 릴리즈 결정 초안 생성
@@ -395,6 +494,8 @@ export default function AdminAiReleaseDecisionRuntime({
               variant="ghost"
               onClick={loadReleasePresets}
               data-testid="admin-ai-refresh-presets"
+              aria-label="릴리즈 프리셋 새로고침"
+              title="릴리즈 프리셋 새로고침"
               disabled={releasePresetsLoading}
               className="text-slate-300 hover:bg-amber-500/10 hover:text-amber-200"
             >
@@ -405,9 +506,10 @@ export default function AdminAiReleaseDecisionRuntime({
           </div>
 
           <div className="mt-5 space-y-4">
-            <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">시나리오</label>
+            <div className="grid min-w-0 gap-1.5">
+              <label htmlFor="admin-ai-scenario-trigger" className="text-caption text-slate-400">시나리오</label>
               <select
+                id="admin-ai-scenario-trigger"
                 data-testid="admin-ai-scenario-trigger"
                 value={releaseSelectedScenario}
                 onChange={(e) => handleReleaseScenarioChange(e.target.value)}
@@ -427,9 +529,11 @@ export default function AdminAiReleaseDecisionRuntime({
               </select>
             </div>
 
-            <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">작업 프롬프트</label>
+            <div className="grid min-w-0 gap-1.5">
+              <label htmlFor="admin-ai-task-prompt" className="text-caption text-slate-400">작업 프롬프트</label>
               <Textarea
+                id="admin-ai-task-prompt"
+                data-testid="admin-ai-task-prompt"
                 value={releaseTaskPrompt}
                 onChange={(e) => setReleaseTaskPrompt(e.target.value)}
                 rows={5}
@@ -438,9 +542,11 @@ export default function AdminAiReleaseDecisionRuntime({
               />
             </div>
 
-            <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">추가 seed path (줄바꿈)</label>
+            <div className="grid min-w-0 gap-1.5">
+              <label htmlFor="admin-ai-seed-paths" className="text-caption text-slate-400">추가 seed path (줄바꿈)</label>
               <Textarea
+                id="admin-ai-seed-paths"
+                data-testid="admin-ai-seed-paths"
                 value={releaseSeedPathsInput}
                 onChange={(e) => setReleaseSeedPathsInput(e.target.value)}
                 rows={4}
@@ -449,9 +555,11 @@ export default function AdminAiReleaseDecisionRuntime({
               />
             </div>
 
-            <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">추가 allowed root (줄바꿈)</label>
+            <div className="grid min-w-0 gap-1.5">
+              <label htmlFor="admin-ai-allowed-roots" className="text-caption text-slate-400">추가 allowed root (줄바꿈)</label>
               <Textarea
+                id="admin-ai-allowed-roots"
+                data-testid="admin-ai-allowed-roots"
                 value={releaseAllowedRootsInput}
                 onChange={(e) => setReleaseAllowedRootsInput(e.target.value)}
                 rows={3}
@@ -472,16 +580,20 @@ export default function AdminAiReleaseDecisionRuntime({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
           <div className="flex items-center gap-2 text-white">
             <AdminFileSearchIcon className="h-4 w-4 text-amber-300" />
             <h4 className="font-semibold">현재 프리셋 문서 범위</h4>
           </div>
           {selectedReleasePreset ? (
-            <div className="mt-4 space-y-4">
-              <div>
+            <div className="mt-4 min-w-0 space-y-4">
+              <div className="min-w-0">
                 <p className="text-caption uppercase tracking-wide text-slate-500">Seed Paths</p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div
+                  data-testid="admin-ai-preset-seed-list"
+                  style={{ maxHeight: '60dvh' }}
+                  className="mt-2 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain pr-1"
+                >
                   {selectedReleasePreset.seed_paths.map((path) => (
                     <AdminBadge
                       key={path}
@@ -492,9 +604,13 @@ export default function AdminAiReleaseDecisionRuntime({
                   ))}
                 </div>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-caption uppercase tracking-wide text-slate-500">Allowed Roots</p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div
+                  data-testid="admin-ai-preset-root-list"
+                  style={{ maxHeight: '60dvh' }}
+                  className="mt-2 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain pr-1"
+                >
                   {selectedReleasePreset.allowed_roots.map((path) => (
                     <AdminBadge
                       key={path}
@@ -513,9 +629,9 @@ export default function AdminAiReleaseDecisionRuntime({
           )}
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
               <h4 className="flex items-center gap-2 font-semibold text-white">
                 <AdminActivityIcon className="h-4 w-4 text-emerald-300" />
                 Deterministic Eval
@@ -529,6 +645,8 @@ export default function AdminAiReleaseDecisionRuntime({
               variant="ghost"
               onClick={loadReleaseEvalCases}
               data-testid="admin-ai-refresh-eval-cases"
+              aria-label="평가 케이스 새로고침"
+              title="평가 케이스 새로고침"
               disabled={releaseEvalCasesLoading}
               className="text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-200"
             >
@@ -539,9 +657,10 @@ export default function AdminAiReleaseDecisionRuntime({
           </div>
 
           <div className="mt-4 space-y-4">
-            <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">평가 케이스</label>
+            <div className="grid min-w-0 gap-1.5">
+              <label htmlFor="admin-ai-eval-case-trigger" className="text-caption text-slate-400">평가 케이스</label>
               <select
+                id="admin-ai-eval-case-trigger"
                 data-testid="admin-ai-eval-case-trigger"
                 value={releaseSelectedCaseId}
                 onChange={(e) => handleReleaseCaseChange(e.target.value)}
@@ -566,7 +685,7 @@ export default function AdminAiReleaseDecisionRuntime({
             </div>
 
             {selectedEvalCase && (
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+              <div className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-slate-950/70 p-4">
                 <p className="text-caption uppercase tracking-wide text-slate-500">
                   Expected Decision
                 </p>
@@ -576,7 +695,11 @@ export default function AdminAiReleaseDecisionRuntime({
                 <p className="mt-4 text-caption uppercase tracking-wide text-slate-500">
                   Required Keywords
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div
+                  data-testid="admin-ai-required-keyword-list"
+                  style={{ maxHeight: '60dvh' }}
+                  className="mt-2 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain pr-1"
+                >
                   {selectedEvalCase.required_keywords.map((item) => (
                     <AdminBadge
                       key={item}
@@ -601,9 +724,9 @@ export default function AdminAiReleaseDecisionRuntime({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
               <h4 className="flex items-center gap-2 font-semibold text-white">
                 <AdminSaveIcon className="h-4 w-4 text-sky-300" />
                 저장된 아티팩트
@@ -617,6 +740,8 @@ export default function AdminAiReleaseDecisionRuntime({
               variant="ghost"
               onClick={loadReleaseArtifacts}
               data-testid="admin-ai-refresh-artifacts"
+              aria-label="저장된 아티팩트 새로고침"
+              title="저장된 아티팩트 새로고침"
               disabled={releaseArtifactsLoading}
               className="text-slate-300 hover:bg-sky-500/10 hover:text-sky-200"
             >
@@ -626,7 +751,11 @@ export default function AdminAiReleaseDecisionRuntime({
             </Button>
           </div>
 
-          <div className="mt-4 space-y-3">
+          <div
+            data-testid="admin-ai-artifact-list"
+            style={{ maxHeight: '60dvh' }}
+            className="mt-4 min-w-0 space-y-3 overflow-y-auto overscroll-contain pr-1"
+          >
             {releaseArtifactsLoading ? (
               <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-5 text-caption text-slate-500">
                 저장된 아티팩트 목록을 불러오는 중입니다.
@@ -643,7 +772,8 @@ export default function AdminAiReleaseDecisionRuntime({
                 return (
                   <div
                     key={artifact.artifact_id}
-                    className={`rounded-xl border px-4 py-4 ${
+                    data-testid={`admin-ai-artifact-${artifact.artifact_id}`}
+                    className={`min-w-0 rounded-xl border px-4 py-4 [overflow-wrap:anywhere] ${
                       isLoaded
                         ? 'border-sky-500/30 bg-sky-500/5'
                         : 'border-slate-800 bg-slate-950/70'
@@ -665,7 +795,7 @@ export default function AdminAiReleaseDecisionRuntime({
                     <p className="mt-2 break-all text-caption font-semibold text-white">
                       {artifact.artifact_id}
                     </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-3 flex min-w-0 flex-wrap gap-2">
                       <Button
                         type="button"
                         variant="outline"
@@ -714,37 +844,57 @@ export default function AdminAiReleaseDecisionRuntime({
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         {releaseDraftError && (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300">
+          <div
+            data-testid="admin-ai-draft-error"
+            role="alert"
+            className="min-w-0 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300 [overflow-wrap:anywhere]"
+          >
             {releaseDraftError}
           </div>
         )}
         {releaseEvaluationError && (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300">
+          <div
+            data-testid="admin-ai-evaluation-error"
+            role="alert"
+            className="min-w-0 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300 [overflow-wrap:anywhere]"
+          >
             {releaseEvaluationError}
           </div>
         )}
         {releaseSaveError && (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300">
+          <div
+            data-testid="admin-ai-save-error"
+            role="alert"
+            className="min-w-0 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300 [overflow-wrap:anywhere]"
+          >
             {releaseSaveError}
           </div>
         )}
         {releaseArtifactsError && (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300">
+          <div
+            data-testid="admin-ai-artifacts-error"
+            role="alert"
+            className="min-w-0 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-caption text-red-300 [overflow-wrap:anywhere]"
+          >
             {releaseArtifactsError}
           </div>
         )}
         {releaseSaveMessage && (
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-caption text-emerald-300">
+          <div
+            data-testid="admin-ai-save-message"
+            role="status"
+            className="min-w-0 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-caption text-emerald-300 [overflow-wrap:anywhere]"
+          >
             {releaseSaveMessage}
           </div>
         )}
 
         {releaseDraftResult ? (
           <>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+            <div className="grid min-w-0 gap-4 md:grid-cols-3">
+              <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                 <p className="text-caption uppercase tracking-wide text-slate-500">Decision</p>
                 <div className="mt-3 flex items-center gap-2">
                   <AdminStatusBadge status={releaseDraftResult.result.draft.decision} />
@@ -752,22 +902,22 @@ export default function AdminAiReleaseDecisionRuntime({
                     {releaseDraftResult.result.draft.confidence}
                   </AdminBadge>
                 </div>
-                <p className="mt-4 text-caption text-slate-300">
+                <p className="mt-4 text-caption text-slate-300 [overflow-wrap:anywhere]">
                   {releaseDraftResult.result.draft.title}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+              <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                 <p className="text-caption uppercase tracking-wide text-slate-500">Scenario</p>
-                <p className="mt-3 text-caption font-semibold text-white">
+                <p className="mt-3 text-caption font-semibold text-white [overflow-wrap:anywhere]">
                   {releaseDraftResult.result.scenario}
                 </p>
-                <p className="mt-2 text-caption text-slate-500">
+                <p className="mt-2 text-caption text-slate-500 [overflow-wrap:anywhere]">
                   model: {releaseDraftResult.result.model}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+              <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                 <p className="text-caption uppercase tracking-wide text-slate-500">Evidence</p>
                 <p className="mt-3 text-2xl font-semibold text-amber-200">
                   {releaseDraftResult.result.draft.evidence.length}
@@ -785,10 +935,10 @@ export default function AdminAiReleaseDecisionRuntime({
             </div>
 
             {releaseEvaluationResult && (
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
+              <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                  <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+                    <div className="min-w-0">
                       <h4 className="text-base font-semibold text-white">Eval Result</h4>
                       <p className="mt-1 text-caption text-slate-500">
                         case: {releaseEvaluationResult.case.case_id}
@@ -796,7 +946,7 @@ export default function AdminAiReleaseDecisionRuntime({
                     </div>
                     <AdminStatusBadge status={releaseEvaluationResult.evaluation.status} />
                   </div>
-                  <div className="mt-4 flex items-center gap-2">
+                  <div className="mt-4 flex min-w-0 flex-wrap items-center gap-2">
                     <AdminStatusBadge
                       status={releaseEvaluationResult.case.expected_decision}
                       label={`expected ${releaseEvaluationResult.case.expected_decision}`}
@@ -808,10 +958,14 @@ export default function AdminAiReleaseDecisionRuntime({
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                <div className="grid min-w-0 gap-4 md:grid-cols-2">
+                  <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                     <h4 className="text-base font-semibold text-white">Missing Keywords</h4>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div
+                      data-testid="admin-ai-missing-keyword-list"
+                      style={{ maxHeight: '60dvh' }}
+                      className="mt-3 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain pr-1"
+                    >
                       {(releaseEvaluationResult.evaluation.missing_keywords.length
                         ? releaseEvaluationResult.evaluation.missing_keywords
                         : ['없음']).map((item) => (
@@ -829,9 +983,13 @@ export default function AdminAiReleaseDecisionRuntime({
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                  <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                     <h4 className="text-base font-semibold text-white">Missing Sources</h4>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div
+                      data-testid="admin-ai-missing-source-list"
+                      style={{ maxHeight: '60dvh' }}
+                      className="mt-3 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain pr-1"
+                    >
                       {(releaseEvaluationResult.evaluation.missing_sources.length
                         ? releaseEvaluationResult.evaluation.missing_sources
                         : ['없음']).map((item) => (
@@ -852,10 +1010,10 @@ export default function AdminAiReleaseDecisionRuntime({
               </div>
             )}
 
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
+            <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+              <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <h4 className="text-base font-semibold text-white">Markdown Draft</h4>
                     <p className="mt-1 text-caption text-slate-500">
                       운영 문서에 바로 붙일 수 있는 초안입니다.
@@ -866,6 +1024,7 @@ export default function AdminAiReleaseDecisionRuntime({
                       type="button"
                       variant="outline"
                       onClick={handleReleaseMarkdownCopy}
+                      data-testid="admin-ai-copy-markdown"
                       className="border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700"
                     >
                       <AdminClipboardIcon className="mr-2 h-4 w-4" />
@@ -878,6 +1037,7 @@ export default function AdminAiReleaseDecisionRuntime({
                     <Button
                       type="button"
                       onClick={handleReleaseSave}
+                      data-testid="admin-ai-save-artifact"
                       disabled={releaseSaveLoading}
                       className="bg-amber-500 text-slate-950 shadow-sm hover:bg-amber-400 disabled:bg-slate-700 disabled:text-slate-500"
                     >
@@ -886,28 +1046,35 @@ export default function AdminAiReleaseDecisionRuntime({
                     </Button>
                   </div>
                 </div>
-                <pre className="mt-4 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-slate-800 bg-slate-950/80 p-4 text-caption leading-6 text-slate-200">
+                <pre
+                  data-testid="admin-ai-markdown-draft"
+                  className="mt-4 min-w-0 max-w-full max-h-[520px] overflow-y-auto whitespace-pre-wrap break-all rounded-xl border border-slate-800 bg-slate-950/80 p-4 text-caption leading-6 text-slate-200"
+                >
                   {releaseDraftResult.markdown}
                 </pre>
               </div>
 
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+              <div className="min-w-0 space-y-4">
+                <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                   <h4 className="text-base font-semibold text-white">Summary</h4>
-                  <p className="mt-3 text-caption leading-6 text-slate-300">
+                  <p className="mt-3 text-caption leading-6 text-slate-300 [overflow-wrap:anywhere]">
                     {releaseDraftResult.result.draft.summary}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                   <h4 className="text-base font-semibold text-white">Blockers</h4>
-                  <div className="mt-3 space-y-2">
+                  <div
+                    data-testid="admin-ai-blocker-list"
+                    style={{ maxHeight: '60dvh' }}
+                    className="mt-3 min-w-0 space-y-2 overflow-y-auto overscroll-contain pr-1"
+                  >
                     {(releaseDraftResult.result.draft.blockers.length
                       ? releaseDraftResult.result.draft.blockers
                       : ['없음']).map((item) => (
                       <div
                         key={item}
-                        className="rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2 text-caption text-slate-300"
+                        className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2 text-caption text-slate-300 [overflow-wrap:anywhere]"
                       >
                         {item}
                       </div>
@@ -915,15 +1082,19 @@ export default function AdminAiReleaseDecisionRuntime({
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+                <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
                   <h4 className="text-base font-semibold text-white">Next Actions</h4>
-                  <div className="mt-3 space-y-2">
+                  <div
+                    data-testid="admin-ai-next-action-list"
+                    style={{ maxHeight: '60dvh' }}
+                    className="mt-3 min-w-0 space-y-2 overflow-y-auto overscroll-contain pr-1"
+                  >
                     {(releaseDraftResult.result.draft.next_actions.length
                       ? releaseDraftResult.result.draft.next_actions
                       : ['없음']).map((item) => (
                       <div
                         key={item}
-                        className="rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2 text-caption text-slate-300"
+                        className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2 text-caption text-slate-300 [overflow-wrap:anywhere]"
                       >
                         {item}
                       </div>
@@ -933,13 +1104,18 @@ export default function AdminAiReleaseDecisionRuntime({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
               <h4 className="text-base font-semibold text-white">Evidence</h4>
-              <div className="mt-4 grid gap-3">
+              <div
+                data-testid="admin-ai-evidence-list"
+                style={{ maxHeight: '60dvh' }}
+                className="mt-4 grid min-w-0 gap-3 overflow-y-auto overscroll-contain pr-1"
+              >
                 {releaseDraftResult.result.draft.evidence.map((item, index) => (
                   <div
                     key={`${item.source}-${index}`}
-                    className="rounded-xl border border-slate-800 bg-slate-950/70 p-4"
+                    data-testid={`admin-ai-evidence-item-${index}`}
+                    className="min-w-0 rounded-xl border border-slate-800 bg-slate-950/70 p-4 [overflow-wrap:anywhere]"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <AdminBadge className="border-slate-700 bg-slate-800 text-slate-300">

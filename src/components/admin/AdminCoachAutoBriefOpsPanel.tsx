@@ -87,9 +87,13 @@ export function AdminCoachAutoBriefOpsPanel({
   const gateThresholds = gate?.thresholds;
 
   return (
-    <div className="rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div>
+    <div
+      data-testid="admin-coach-auto-brief-ops-panel"
+      aria-busy={loading}
+      className="min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
+    >
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
           <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
             <AdminAlertTriangleIcon className="h-5 w-5 text-amber-300" />
             Coach Auto Brief Ops
@@ -103,6 +107,8 @@ export function AdminCoachAutoBriefOpsPanel({
           variant="ghost"
           onClick={onRefresh}
           data-testid="admin-ai-auto-brief-refresh"
+          aria-label="운영 상태 새로고침"
+          title="운영 상태 새로고침"
           disabled={loading}
           className="text-slate-300 hover:bg-amber-500/10 hover:text-amber-200"
         >
@@ -111,10 +117,11 @@ export function AdminCoachAutoBriefOpsPanel({
       </div>
 
       <div className="mt-5 space-y-4">
-        <div className="grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
-          <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">조회 window</label>
+        <div className="grid min-w-0 gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+          <div className="grid min-w-0 gap-1.5">
+            <label htmlFor="admin-ai-auto-brief-window" className="text-caption text-slate-400">조회 window</label>
             <select
+              id="admin-ai-auto-brief-window"
               data-testid="admin-ai-auto-brief-window-trigger"
               value={selectedWindow}
               onChange={(event) => onWindowChange(event.target.value as AdminCoachAutoBriefOpsWindow)}
@@ -127,23 +134,27 @@ export function AdminCoachAutoBriefOpsPanel({
           </div>
 
           {selectedWindow === 'custom' ? (
-            <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-              <label className="grid gap-1.5 text-caption text-slate-400">
+            <div className="grid min-w-0 gap-3 md:grid-cols-[1fr_1fr_auto]">
+              <label htmlFor="admin-ai-auto-brief-start-date" className="grid min-w-0 gap-1.5 text-caption text-slate-400">
                 시작일
                 <input
+                  id="admin-ai-auto-brief-start-date"
+                  data-testid="admin-ai-auto-brief-start-date"
                   type="date"
                   value={startDate}
                   onChange={(event) => onStartDateChange(event.target.value)}
-                  className="rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  className="min-w-0 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 />
               </label>
-              <label className="grid gap-1.5 text-caption text-slate-400">
+              <label htmlFor="admin-ai-auto-brief-end-date" className="grid min-w-0 gap-1.5 text-caption text-slate-400">
                 종료일
                 <input
+                  id="admin-ai-auto-brief-end-date"
+                  data-testid="admin-ai-auto-brief-end-date"
                   type="date"
                   value={endDate}
                   onChange={(event) => onEndDateChange(event.target.value)}
-                  className="rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  className="min-w-0 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 />
               </label>
               <div className="flex items-end">
@@ -159,15 +170,21 @@ export function AdminCoachAutoBriefOpsPanel({
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-caption text-slate-400">
-              <AdminCalendarIcon className="h-4 w-4 text-amber-300" />
-              {health?.date_window ?? '선택된 window를 불러오는 중입니다.'}
+            <div className="flex min-w-0 items-start gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-caption text-slate-400">
+              <AdminCalendarIcon className="h-4 w-4 shrink-0 text-amber-300" />
+              <span className="min-w-0 [overflow-wrap:anywhere]">
+                {health?.date_window ?? '선택된 window를 불러오는 중입니다.'}
+              </span>
             </div>
           )}
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-caption text-red-200">
+          <div
+            data-testid="admin-ai-auto-brief-error"
+            role="alert"
+            className="min-w-0 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-caption text-red-200 [overflow-wrap:anywhere]"
+          >
             {error}
           </div>
         )}
@@ -203,14 +220,14 @@ export function AdminCoachAutoBriefOpsPanel({
             </p>
           )}
           {gateFailures.length > 0 && (
-            <div className="mt-3 space-y-1 text-caption text-red-200">
+            <div className="mt-3 min-w-0 space-y-1 text-caption text-red-200 [overflow-wrap:anywhere]">
               {gateFailures.map((item) => (
                 <p key={item}>{item}</p>
               ))}
             </div>
           )}
           {gateFailures.length === 0 && gateWarnings.length > 0 && (
-            <div className="mt-3 space-y-1 text-caption text-amber-200">
+            <div className="mt-3 min-w-0 space-y-1 text-caption text-amber-200 [overflow-wrap:anywhere]">
               {gateWarnings.map((item) => (
                 <p key={item}>{item}</p>
               ))}
@@ -226,7 +243,7 @@ export function AdminCoachAutoBriefOpsPanel({
         <div className="grid gap-3 md:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-caption uppercase tracking-wide text-slate-500">Unresolved</p>
-            <p className="mt-3 text-2xl font-semibold text-amber-200">
+            <p className="mt-3 min-w-0 break-all text-2xl font-semibold text-amber-200">
               {formatCount(summary?.unresolved_count)}
             </p>
             <p className="mt-2 text-caption text-slate-500">
@@ -235,25 +252,28 @@ export function AdminCoachAutoBriefOpsPanel({
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-caption uppercase tracking-wide text-slate-500">FAILED_LOCKED</p>
-            <p className="mt-3 text-2xl font-semibold text-red-200">{failedLockedCount}</p>
+            <p className="mt-3 min-w-0 break-all text-2xl font-semibold text-red-200">{failedLockedCount}</p>
             <p className="mt-2 text-caption text-slate-500">운영 재예열 필요</p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-caption uppercase tracking-wide text-slate-500">PENDING_WAIT</p>
-            <p className="mt-3 text-2xl font-semibold text-amber-200">{pendingWaitCount}</p>
+            <p className="mt-3 min-w-0 break-all text-2xl font-semibold text-amber-200">{pendingWaitCount}</p>
             <p className="mt-2 text-caption text-slate-500">대기/재확인 상태</p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-caption uppercase tracking-wide text-slate-500">Insufficient</p>
-            <p className="mt-3 text-2xl font-semibold text-red-200">{insufficientCount}</p>
+            <p className="mt-3 min-w-0 break-all text-2xl font-semibold text-red-200">{insufficientCount}</p>
             <p className="mt-2 text-caption text-slate-500">근거 부족 브리핑</p>
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-          <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+          <div
+            data-testid="admin-ai-auto-brief-command-card"
+            className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-slate-950/70 p-4"
+          >
+            <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
                 <h4 className="font-semibold text-white">권장 prewarm 명령</h4>
                 <p className="mt-1 text-caption text-slate-500">
                   unresolved 우선 예열용 기본 명령입니다.
@@ -271,18 +291,30 @@ export function AdminCoachAutoBriefOpsPanel({
                 {commandCopyState === 'done' ? '복사됨' : commandCopyState === 'error' ? '복사 실패' : '명령 복사'}
               </Button>
             </div>
-            <pre className="mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-caption leading-6 text-slate-300">
+            <pre
+              data-testid="admin-ai-auto-brief-command"
+              className="mt-4 min-w-0 max-w-full overflow-hidden whitespace-pre-wrap break-all rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-caption leading-6 text-slate-300"
+            >
               {health?.recommended_command ?? 'health 응답을 불러오면 권장 명령이 표시됩니다.'}
             </pre>
-            <p className="mt-3 text-caption text-slate-500">
-              runbook: <span className="font-mono text-slate-300">{health?.runbook_path ?? 'task/operations/coach-auto-brief-prewarm-runbook.md'}</span>
+            <p
+              data-testid="admin-ai-auto-brief-runbook-row"
+              className="mt-3 min-w-0 overflow-hidden text-caption text-slate-500"
+            >
+              runbook: <span data-testid="admin-ai-auto-brief-runbook" className="block max-w-full break-all font-mono text-slate-300">{health?.runbook_path ?? 'task/operations/coach-auto-brief-prewarm-runbook.md'}</span>
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+          <div
+            data-testid="admin-ai-auto-brief-report-card"
+            className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-slate-950/70 p-4"
+          >
             <h4 className="font-semibold text-white">최신 report</h4>
             {latestReport ? (
-              <div className="mt-4 space-y-3 text-caption text-slate-300">
+              <div
+                data-testid="admin-ai-auto-brief-report-content"
+                className="mt-4 min-w-0 space-y-3 text-caption text-slate-300 [overflow-wrap:anywhere]"
+              >
                 <p className="break-all font-mono text-caption text-slate-400">{latestReport.path}</p>
                 <p>finished: {latestReport.run_finished_at ?? '-'}</p>
                 <p>date window: {latestReport.date_window ?? '-'}</p>
@@ -309,12 +341,16 @@ export function AdminCoachAutoBriefOpsPanel({
             <h4 className="font-semibold">최근 unresolved 경기</h4>
           </div>
           {(health?.unresolved_targets.length ?? 0) > 0 ? (
-            <div className="mt-4 space-y-3">
+            <div
+              data-testid="admin-ai-auto-brief-unresolved-list"
+              style={{ maxHeight: '60dvh' }}
+              className="mt-4 min-w-0 space-y-3 overflow-y-auto overscroll-contain pr-1"
+            >
               {health?.unresolved_targets.map((item) => (
                 <div
                   key={item.cache_key}
                   data-testid={`admin-ai-auto-brief-unresolved-${item.game_id}`}
-                  className="rounded-xl border border-slate-800 bg-slate-900/70 p-4"
+                  className="min-w-0 rounded-xl border border-slate-800 bg-slate-900/70 p-4 [overflow-wrap:anywhere]"
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <AdminBadge className={cacheStateTone(item.cache_state)}>

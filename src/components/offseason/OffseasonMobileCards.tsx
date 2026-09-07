@@ -13,7 +13,7 @@ export function OffseasonMobileCards({
     onSelect: (movement: OffseasonMovement) => void;
 }) {
     return (
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="divide-y divide-zinc-100 dark:divide-zinc-800" data-testid="offseason-mobile-cards">
             {movements.map((item) => {
                 const teamName = getTeamKoreanName(item.team);
                 const amountLabel = getDisplayAmount(item);
@@ -22,8 +22,11 @@ export function OffseasonMobileCards({
                 return (
                     <article
                         key={item.id}
-                        className={`space-y-4 p-5 transition-colors ${item.isBigEvent ? 'bg-emerald-50/50 dark:bg-emerald-950/10' : 'bg-white dark:bg-zinc-900'}`}
+                        className={`min-w-0 cursor-pointer space-y-4 p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.99] sm:p-5 ${item.isBigEvent ? 'bg-emerald-50/50 dark:bg-emerald-950/10' : 'bg-white dark:bg-zinc-900'}`}
+                        role="button"
                         tabIndex={0}
+                        aria-label={`${item.player} ${teamName} 이적 상세 보기`}
+                        data-testid={`offseason-mobile-card-${item.id}`}
                         onClick={() => onSelect(item)}
                         onKeyDown={(event) => {
                             if (event.key === 'Enter' || event.key === ' ') {
@@ -37,16 +40,16 @@ export function OffseasonMobileCards({
                                 <div className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                                     <TeamLogo team={teamName} size={32} />
                                 </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                    <p className="text-caption font-bold uppercase tracking-wide text-zinc-400 dark:text-white">{teamName}</p>
+                                <div className="min-w-0 space-y-1">
+                                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                    <p className="min-w-0 break-words text-caption font-bold uppercase tracking-wide text-zinc-400 [overflow-wrap:anywhere] dark:text-white">{teamName}</p>
                                         {item.isBigEvent && (
                                             <OffseasonPill className="rounded-full border border-yellow-200 bg-yellow-100 px-2 py-0.5 text-caption font-black text-yellow-800 dark:border-yellow-900/60 dark:bg-yellow-950/40 dark:text-yellow-200">
                                                 주요
                                             </OffseasonPill>
                                         )}
                                     </div>
-                                    <h3 className="min-w-0 text-xl font-black tracking-tight text-zinc-900 dark:text-white">{item.player}</h3>
+                                    <h3 className="min-w-0 break-words text-xl font-black tracking-tight text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{item.player}</h3>
                                 </div>
                             </div>
                             <OffseasonSectionPill section={item.section} />
@@ -66,7 +69,7 @@ export function OffseasonMobileCards({
                         </div>
 
                         <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-3 dark:border-zinc-800 dark:bg-zinc-950/60">
-                            <p className="text-15 font-semibold leading-relaxed text-zinc-700 dark:text-white">
+                            <p className="min-w-0 break-words text-15 font-semibold leading-relaxed text-zinc-700 [overflow-wrap:anywhere] dark:text-white">
                                 {formatRemarks(summary)}
                             </p>
                         </div>

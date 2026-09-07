@@ -667,23 +667,23 @@ export default function GameCard({ game, featured = false, variant = 'default', 
                 <div className="flex items-center gap-4 mt-1">
                   <div className="flex items-center gap-1.5 text-body font-bold">
                     <span className={`w-1.5 h-1.5 rounded-full ${awayOutcomeLabel === '승'
-                      ? 'bg-[#2ecc71] shadow-[0_0_6px_rgba(46,204,113,0.5)]'
+                      ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]'
                       : awayOutcomeLabel === '패'
                         ? 'bg-rose-500'
                         : 'bg-zinc-500'
                     }`}
                     ></span>
-                    <span className={awayOutcomeLabel === '승' ? 'text-[#2ecc71]' : awayOutcomeLabel === '패' ? 'text-rose-500' : 'text-zinc-500'}>
+                    <span className={awayOutcomeLabel === '승' ? 'text-emerald-500' : awayOutcomeLabel === '패' ? 'text-rose-500' : 'text-zinc-500'}>
                       {awayOutcomeLabel || '-'}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5 text-body font-bold">
-                    <span className={homeOutcomeLabel === '승' ? 'text-[#2ecc71]' : homeOutcomeLabel === '패' ? 'text-rose-500' : 'text-zinc-500'}>
+                    <span className={homeOutcomeLabel === '승' ? 'text-emerald-500' : homeOutcomeLabel === '패' ? 'text-rose-500' : 'text-zinc-500'}>
                       {homeOutcomeLabel || '-'}
                     </span>
                     <span className={`w-1.5 h-1.5 rounded-full ${homeOutcomeLabel === '승'
-                      ? 'bg-[#2ecc71] shadow-[0_0_6px_rgba(46,204,113,0.5)]'
+                      ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]'
                       : homeOutcomeLabel === '패'
                         ? 'bg-rose-500'
                         : 'bg-zinc-500'

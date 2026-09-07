@@ -68,7 +68,7 @@ export const DEFAULT_ROUTES = [...PUBLIC_ROUTES, ...AUTHED_ROUTES];
  * The synthetic profile the stubbed `/auth/mypage` returns. Mirrors the fixture
  * cypress/support/commands.ts uses, so both harnesses drive the same shape.
  */
-const AUDIT_USER = {
+export const AUDIT_USER = {
   id: 123,
   email: 'test@example.com',
   name: 'TestUser',
@@ -262,7 +262,7 @@ const PAGE_PROBE = async (zoomRootFontPx) => {
   return result;
 };
 
-const loadPlaywright = async () => {
+export const loadPlaywright = async () => {
   const candidates = [process.env.PLAYWRIGHT_MODULE_URL, 'playwright'].filter(Boolean);
   const failures = [];
   for (const candidate of candidates) {
@@ -286,7 +286,7 @@ const loadPlaywright = async () => {
  * a page that legitimately never leaves its skeleton is still measured, and
  * reported as such.
  */
-const settle = async (page) => {
+export const settle = async (page) => {
   await page.waitForLoadState('domcontentloaded');
   await page.evaluate(() => new Promise((done) => {
     let frames = 0;
@@ -327,14 +327,12 @@ const settle = async (page) => {
  * letting responses race the measurement is what made results flip between the
  * loading and loaded state depending on backend latency.
  *
- * Every route therefore renders its empty/error state — which is where the
- * reflow bugs this gate was written for actually live (footer, bottom nav,
- * tabs, markdown, skeletons, empty-count CTA labels). Populated-state coverage
- * needs fixtures and is not attempted here.
+ * Unmatched requests render their empty/error state, while selected high-risk
+ * routes use deterministic populated fixtures for long-content coverage.
  *
  * Set REFLOW_ALLOW_API=1 to run against a real backend instead.
  */
-const stubApi = async (context) => {
+export const stubApi = async (context) => {
   // Order matters: Playwright gives precedence to the most recently registered
   // matching handler, so the catch-all has to be registered *before* the
   // specific one or it swallows it.
@@ -350,10 +348,16 @@ const stubApi = async (context) => {
   await context.route('**/api/**', (route) => {
     const fixture = findFixture(route.request().url());
     if (!fixture) return route.fallback();
+    let pagePathname = '';
+    try {
+      pagePathname = new URL(route.request().frame().page().url()).pathname;
+    } catch {
+      // Navigation requests can briefly have no attached page URL.
+    }
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(fixture.body(route.request().url())),
+      body: JSON.stringify(fixture.body(route.request().url(), { pagePathname })),
     });
   });
   // authStore bootstraps the session from this call; a 503 here bounces every

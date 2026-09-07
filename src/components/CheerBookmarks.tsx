@@ -6,15 +6,28 @@ import { BookmarkIcon, HomeIcon, LineChartIcon, MegaphoneIcon, UserIcon } from '
 import { PenSquareIcon } from './icons/CheerShellIcons';
 import { cn } from '../lib/utils';
 import { useAuthProfileSnapshot } from '../store/authStore';
-import { DEFAULT_BRAND_COLOR, getReadableAccent, normalizeHexColor } from '../utils/teamColors';
+import { useTheme } from '../hooks/useTheme';
+import {
+  DEFAULT_BRAND_COLOR,
+  getDarkModeAccentText,
+  getLightModeAccentText,
+  getReadableAccent,
+  normalizeHexColor,
+} from '../utils/teamColors';
+import { requestChatbotOpen } from '../utils/chatbotLauncher';
 import CheerMobileBottomNav from './CheerMobileBottomNav';
 
 export default function CheerBookmarks() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { resolvedTheme } = useTheme();
   const { userHandle, userFavoriteTeamColor } = useAuthProfileSnapshot();
   const userProfilePath = userHandle ? `/profile/${userHandle.startsWith('@') ? userHandle : `@${userHandle}`}` : '/mypage';
-  const teamAccent = getReadableAccent(normalizeHexColor(userFavoriteTeamColor || DEFAULT_BRAND_COLOR));
+  const teamColor = normalizeHexColor(userFavoriteTeamColor || DEFAULT_BRAND_COLOR);
+  const teamAccent = getReadableAccent(teamColor);
+  const activeTextAccent = resolvedTheme === 'dark'
+    ? getDarkModeAccentText(teamColor)
+    : getLightModeAccentText(teamColor);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['cheer-bookmarks'],
@@ -72,7 +85,7 @@ export default function CheerBookmarks() {
             </button>
           </aside>
 
-          <main className="relative flex w-full flex-col gap-0 bg-[var(--cheer-card-bg)] border-x border-[var(--cheer-line-10)] md:pb-24 lg:pb-0">
+          <div className="relative flex w-full flex-col gap-0 bg-[var(--cheer-card-bg)] border-x border-[var(--cheer-line-10)] md:pb-24 lg:pb-0">
             <div className="border-b border-[var(--cheer-line-10)] px-4 py-4">
               <h1 className="text-lg font-bold text-[#0F172A] dark:text-white">북마크</h1>
               <p className="text-body text-slate-500 dark:text-white">저장해둔 게시글을 모아볼 수 있어요.</p>
@@ -144,7 +157,7 @@ export default function CheerBookmarks() {
                 ))}
               </div>
             )}
-          </main>
+          </div>
 
           <aside className="sticky top-6 hidden w-[264px] flex-col gap-4 self-start md:flex xl:w-[270px]">
             <div className="rounded-2xl border border-[var(--cheer-line-10)] p-4 bg-[var(--cheer-sub-card)]">
@@ -162,13 +175,15 @@ export default function CheerBookmarks() {
         userProfilePath={userProfilePath}
         onWriteClick={handleWriteClick}
         teamAccent={teamAccent}
+        activeTextAccent={activeTextAccent}
+        onChatBotClick={() => requestChatbotOpen()}
       />
 
       {/* 태블릿 세로(768-1023): 우하단 FAB 56px — 이 구간에서만 게시 진입점 노출 */}
       <button
         type="button"
         onClick={handleWriteClick}
-        className="fixed bottom-6 right-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] md:flex lg:hidden"
+        className="fixed bottom-6 right-24 z-40 hidden h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] md:flex lg:hidden"
         style={{ backgroundColor: teamAccent }}
         aria-label="게시하기"
       >

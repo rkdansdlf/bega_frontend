@@ -82,23 +82,11 @@ interface MergeEntry {
   token: string;
 }
 
-const TEXT_SIZE_TOKENS = new Set([
-  'xs',
-  'sm',
-  'base',
-  'lg',
-  'xl',
-  '2xl',
-  '3xl',
-  '4xl',
-  '5xl',
-  '6xl',
-  '7xl',
-  '8xl',
-  '9xl',
-]);
+const TEXT_SIZE_TOKEN = /^(?:xs|sm|base|lg|xl|[2-9]xl|body|caption|\d+)$/;
 
 const TEXT_ALIGNMENT_TOKENS = new Set([
+  'clip',
+  'ellipsis',
   'left',
   'center',
   'right',
@@ -306,7 +294,7 @@ const getTextRule = (base: string): MergeRule | null => {
 
   const value = base.slice('text-'.length);
 
-  if (TEXT_SIZE_TOKENS.has(value) || value.startsWith('[')) {
+  if (TEXT_SIZE_TOKEN.test(value) || value.startsWith('[')) {
     return { family: 'text-size', dimensions: ['size'] };
   }
   if (TEXT_ALIGNMENT_TOKENS.has(value)) {

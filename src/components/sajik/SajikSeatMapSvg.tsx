@@ -34,15 +34,20 @@ import {
 interface SajikExtraProps {
   guideMatchedBlockIds?: readonly string[];
   guideActive?: boolean;
+  stateOverride?: SajikSeatMapSvgStateOverride;
 }
 
 type Props = SeatMapSvgBaseProps<SajikCanonicalBlock> & SajikExtraProps;
+
+export interface SajikSeatMapSvgStateOverride {
+  imageState?: 'loading' | 'loaded' | 'error';
+}
 
 function getGeometryLabelPoint(geometry: SajikBlock['imageGeometry']): [number, number] {
   return geometry.labelPoint ?? [geometry.labelX, geometry.labelY];
 }
 
-function MissingOfficialSeatMap({ mode }: { mode: 'light' | 'dark' }) {
+export function MissingOfficialSeatMap({ mode }: { mode: 'light' | 'dark' }) {
   return (
     <div
       data-testid="sajik-official-seatmap-required"
@@ -57,7 +62,7 @@ function MissingOfficialSeatMap({ mode }: { mode: 'light' | 'dark' }) {
       <p className="mt-2 max-w-md text-sm font-semibold leading-relaxed text-slate-600 dark:text-white">
         operator-reference 기준 이미지 파일이 제공되면 canonical polygon 위에서 블록 단위 선택을 활성화합니다.
       </p>
-      <div className="mt-4 rounded-xl bg-white/80 px-4 py-3 text-left text-xs font-semibold text-slate-600 shadow-sm dark:bg-slate-900/70 dark:text-white">
+      <div className="mt-4 max-w-full rounded-xl bg-white/80 px-4 py-3 text-left text-xs font-semibold text-slate-600 shadow-sm [overflow-wrap:anywhere] dark:bg-slate-900/70 dark:text-white">
         <div>필요 파일: {SAJIK_CANONICAL_SEATMAP_IMAGE.requiredAssetFileName}</div>
         <div>저장 위치: {SAJIK_CANONICAL_SEATMAP_IMAGE.imagePath}</div>
         <div>참고: {SAJIK_CANONICAL_SEATMAP_IMAGE.sourceLabel}</div>
@@ -104,6 +109,7 @@ export default function SajikSeatMapSvg({
   onFullscreen,
   guideMatchedBlockIds = [],
   guideActive = false,
+  stateOverride,
 }: Props) {
   const [imageFailed, setImageFailed] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -142,7 +148,7 @@ export default function SajikSeatMapSvg({
   const effectivePan = clampPan(pan, zoom, measuredViewportSize);
   const canDrag = zoom > minZoom;
 
-  const zoomBtnCls = 'pointer-events-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800';
+  const zoomBtnCls = 'pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8 sm:w-8';
   const mapSelectableBlocks = [...SAJIK_CANONICAL_BLOCKS]
     .filter((block) => block.mapInteractionStatus === 'MAP_SELECTABLE')
     .sort((a, b) => a.displayPriority - b.displayPriority);
@@ -150,6 +156,9 @@ export default function SajikSeatMapSvg({
   const accessibilityMarkerAliasBlocks = mapSelectableBlocks.filter((block) => block.sectionKind === 'ACCESSIBILITY_MARKER');
   const accessibilityMarkerBlocks = SAJIK_CANONICAL_ACCESSIBILITY_MARKERS;
   const guideMatchedBlockIdSet = useMemo(() => new Set(guideMatchedBlockIds), [guideMatchedBlockIds]);
+  const effectiveImageFailed = stateOverride?.imageState === 'error' || imageFailed;
+  const effectiveImageLoaded = stateOverride?.imageState === 'loaded'
+    || (stateOverride?.imageState === undefined && imageLoaded);
 
   useEffect(() => {
     setImageFailed(false);
@@ -547,7 +556,7 @@ export default function SajikSeatMapSvg({
   }, [maxZoom, minZoom, onPanChange, onZoom]);
 
   const zoomControls = (
-    <div className="pointer-events-none absolute right-3 top-3 z-10 flex shrink-0 items-center gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900/95">
+    <div className="pointer-events-auto relative z-10 mb-2 ml-auto grid w-fit shrink-0 grid-cols-2 items-center gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900/95 sm:pointer-events-none sm:absolute sm:right-3 sm:top-3 sm:mb-0 sm:flex">
       <button
         type="button"
         data-testid="sajik-seatmap-zoom-in"
@@ -561,7 +570,7 @@ export default function SajikSeatMapSvg({
       <button
         type="button"
         data-testid="sajik-seatmap-zoom-reset"
-        className="pointer-events-auto min-h-7 min-w-10 rounded-md border-0 bg-transparent px-1.5 py-0.5 text-center text-10 font-black text-slate-500 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-slate-800"
+        className="pointer-events-auto min-h-11 min-w-11 rounded-md border-0 bg-transparent px-1.5 py-0.5 text-center text-10 font-black text-slate-500 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-slate-800 sm:min-h-8 sm:min-w-10"
         onClick={() => updateZoomFromControls(minZoom)}
         disabled={zoom <= minZoom}
         aria-label="사직 좌석도 원래 크기"
@@ -594,7 +603,7 @@ export default function SajikSeatMapSvg({
     </div>
   );
 
-  if (!seatMapImageUrl || imageWidth <= 0 || imageHeight <= 0 || imageFailed) {
+  if (!seatMapImageUrl || imageWidth <= 0 || imageHeight <= 0 || effectiveImageFailed) {
     return (
       <div className="relative rounded-xl bg-slate-100 dark:bg-[#000000]">
         <MissingOfficialSeatMap mode={mode} />
@@ -610,6 +619,7 @@ export default function SajikSeatMapSvg({
       data-coordinate-source="operator-reference-1151x1367"
       className="relative w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-[#000000]"
     >
+      {zoomControls}
       <div
         ref={viewportRef}
         data-testid="sajik-seatmap-viewport"
@@ -668,7 +678,7 @@ export default function SajikSeatMapSvg({
               if (showDebug) setDebugPoint(null);
             }}
           >
-            {!imageLoaded && !imageFailed && (
+            {!effectiveImageLoaded && !effectiveImageFailed && (
               <rect x={0} y={0} width={imageWidth} height={imageHeight} fill="#e5e7eb" />
             )}
             <image
@@ -682,7 +692,7 @@ export default function SajikSeatMapSvg({
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageFailed(true)}
               pointerEvents="none"
-              style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.25s ease-in' }}
+              style={{ opacity: effectiveImageLoaded ? 1 : 0, transition: 'opacity 0.25s ease-in' }}
             />
             <defs>
               <filter id="sajik-hit-glow">
@@ -927,7 +937,6 @@ export default function SajikSeatMapSvg({
             )}
           </svg>
         </div>
-        {zoomControls}
       </div>
       {showDebug && (
         <div className="pointer-events-none absolute left-3 top-3 rounded-lg border border-slate-900/10 bg-white/90 px-3 py-2 text-11 font-bold text-slate-800 shadow-lg dark:border-white/10 dark:bg-slate-950/90 dark:text-white">

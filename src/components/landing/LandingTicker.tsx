@@ -40,7 +40,7 @@ export default function LandingTicker() {
   const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <aside data-testid="landing-score-ticker" aria-label="BEGA 기능 예시 스코어">
+    <aside data-testid="landing-score-ticker" data-vqa-overflow="allowed" aria-label="BEGA 기능 예시 스코어">
       <div
         className="landing-ticker-track"
         data-motion-loop
@@ -53,6 +53,7 @@ export default function LandingTicker() {
         type="button"
         className="landing-ticker-toggle"
         data-testid="landing-ticker-toggle"
+        data-vqa-min-touch="44"
         aria-pressed={isPaused}
         onClick={() => setIsPaused((paused) => !paused)}
       >

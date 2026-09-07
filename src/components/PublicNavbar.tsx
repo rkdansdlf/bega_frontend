@@ -1,7 +1,7 @@
 import baseballLogo from '../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
 import './NavigationMenu.css';
 import { type ComponentType, type CSSProperties, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAnimatedPresence } from '../hooks/useAnimatedPresence';
 import { useAuthBootstrapUiState } from '../hooks/useAuthBootstrapUiState';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
@@ -23,6 +23,7 @@ import { useScrollMetrics } from '../hooks/useScrollStage';
 import { useTheme } from '../hooks/useTheme';
 import { cn } from '../lib/utils';
 import { hasPersistedAuthBootstrapHint } from '../utils/authBootstrap';
+import { requestChatbotOpen } from '../utils/chatbotLauncher';
 import { buildNavbarNavPath, isNavbarNavItemActive } from '../utils/navbarNavigation';
 import { loadPredictionPage } from './lazyRouteLoaders';
 
@@ -59,16 +60,48 @@ const EMPTY_ACTIVE_PILL_METRICS: ActivePillMetrics = {
   opacity: 0,
 };
 
-export default function PublicNavbar() {
+type PublicNavbarVisualQaStateOverride = {
+  compactProgress: number;
+  dmUnreadCount: number;
+  fastCompactProgress: number;
+  isAuthBootstrapPending: boolean;
+  isDesktop: boolean;
+  isLoggedIn: boolean;
+  isMenuOpen: boolean;
+  isMobileMenuMounted: boolean;
+  isMobileMenuVisible: boolean;
+  notificationUnreadCount: number;
+  shrinkProgress: number;
+  userName?: string;
+  userProfileImageUrl?: string | null;
+  userRole?: string;
+  viewportFitProgress: number;
+};
+
+type PublicNavbarProps = {
+  visualQaStateOverride?: PublicNavbarVisualQaStateOverride;
+};
+
+export default function PublicNavbar(props: PublicNavbarProps = {}) {
+  const visualQaStateOverride = import.meta.env.DEV ? props.visualQaStateOverride : undefined;
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthBootstrapPending, isLoggedIn } = useAuthBootstrapUiState();
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-  const { isMounted: isMobileMenuMounted, isVisible: isMobileMenuVisible } = useAnimatedPresence(
-    !isDesktop && isMenuOpen,
+  const [liveIsMenuOpen, setIsMenuOpen] = useState(false);
+  const liveAuthState = useAuthBootstrapUiState();
+  const liveIsDesktop = useMediaQuery('(min-width: 768px)');
+  const liveMobileMenuPresence = useAnimatedPresence(
+    !liveIsDesktop && liveIsMenuOpen,
     MOBILE_MENU_TRANSITION_MS,
   );
+  const isAuthBootstrapPending = visualQaStateOverride?.isAuthBootstrapPending
+    ?? liveAuthState.isAuthBootstrapPending;
+  const isLoggedIn = visualQaStateOverride?.isLoggedIn ?? liveAuthState.isLoggedIn;
+  const isDesktop = visualQaStateOverride?.isDesktop ?? liveIsDesktop;
+  const isMenuOpen = visualQaStateOverride?.isMenuOpen ?? liveIsMenuOpen;
+  const isMobileMenuMounted = visualQaStateOverride?.isMobileMenuMounted
+    ?? liveMobileMenuPresence.isMounted;
+  const isMobileMenuVisible = visualQaStateOverride?.isMobileMenuVisible
+    ?? liveMobileMenuPresence.isVisible;
   const shouldRenderMobileMenu = !isDesktop && isMobileMenuMounted;
   const shouldShowTopThemeToggle = isDesktop;
   const shouldShowDesktopNotificationButton = isLoggedIn && isDesktop;
@@ -77,12 +110,15 @@ export default function PublicNavbar() {
     location.pathname === '/cheer'
     || location.pathname === '/cheer/write'
     || location.pathname === '/cheer/bookmarks';
-  const {
-    shrinkProgress,
-    compactProgress,
-    fastCompactProgress,
-  } = useScrollMetrics();
-  const viewportFitProgress = useNavbarViewportCompactProgress();
+  const shouldShowMobileChatbotTab = /^\/home\/?$/.test(location.pathname);
+  const liveScrollMetrics = useScrollMetrics();
+  const liveViewportFitProgress = useNavbarViewportCompactProgress();
+  const shrinkProgress = visualQaStateOverride?.shrinkProgress ?? liveScrollMetrics.shrinkProgress;
+  const compactProgress = visualQaStateOverride?.compactProgress ?? liveScrollMetrics.compactProgress;
+  const fastCompactProgress = visualQaStateOverride?.fastCompactProgress
+    ?? liveScrollMetrics.fastCompactProgress;
+  const viewportFitProgress = visualQaStateOverride?.viewportFitProgress
+    ?? liveViewportFitProgress;
   const scrollChromeProgress = isLoggedIn ? fastCompactProgress : compactProgress;
   const authControlsCompactProgress = mergeNavbarCompactProgress(scrollChromeProgress, viewportFitProgress);
   const strongestCompactProgress = Math.max(scrollChromeProgress, viewportFitProgress);
@@ -100,7 +136,7 @@ export default function PublicNavbar() {
   const menuPopupRef = useRef<HTMLDivElement | null>(null);
   const preMenuFocusRef = useRef<HTMLElement | null>(null);
   const navSegmentRef = useRef<HTMLDivElement | null>(null);
-  const navButtonRefs = useRef<Record<PublicNavbarNavItemId, HTMLButtonElement | null>>({
+  const navButtonRefs = useRef<Record<PublicNavbarNavItemId, HTMLAnchorElement | null>>({
     cheer: null,
     stadium: null,
     prediction: null,
@@ -134,14 +170,16 @@ export default function PublicNavbar() {
   useBodyScrollLock(shouldRenderMobileMenu);
 
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (isDesktop && isMenuOpen) {
+    if (visualQaStateOverride === undefined) {
       setIsMenuOpen(false);
     }
-  }, [isDesktop, isMenuOpen]);
+  }, [location.pathname, visualQaStateOverride]);
+
+  useEffect(() => {
+    if (visualQaStateOverride === undefined && liveIsDesktop && liveIsMenuOpen) {
+      setIsMenuOpen(false);
+    }
+  }, [liveIsDesktop, liveIsMenuOpen, visualQaStateOverride]);
 
   useEffect(() => {
     if (!shouldRenderMobileMenu) {
@@ -163,7 +201,9 @@ export default function PublicNavbar() {
 
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsMenuOpen(false);
+        if (visualQaStateOverride === undefined) {
+          setIsMenuOpen(false);
+        }
       }
     };
 
@@ -173,7 +213,7 @@ export default function PublicNavbar() {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [shouldRenderMobileMenu]);
+  }, [shouldRenderMobileMenu, visualQaStateOverride]);
 
   useEffect(() => {
     if (!isDesktop || !activeNavItemId) {
@@ -237,7 +277,9 @@ export default function PublicNavbar() {
     viewportFitProgress,
   ]);
 
-  const shouldReserveAuthenticatedChrome = isAuthBootstrapPending || isLoggedIn || hasPersistedAuthBootstrapHint();
+  const shouldReserveAuthenticatedChrome = isAuthBootstrapPending
+    || isLoggedIn
+    || (visualQaStateOverride === undefined && hasPersistedAuthBootstrapHint());
   const desktopCapsuleExpandedWidth = shouldReserveAuthenticatedChrome
     ? DESKTOP_NAVBAR_AUTH_WIDTH
     : DESKTOP_NAVBAR_GUEST_WIDTH;
@@ -317,20 +359,20 @@ export default function PublicNavbar() {
         style={capsuleStyle}
       >
         {/* Logo */}
-        <button
-          type="button"
-          onClick={() => navigate('/home')}
+        <Link
+          to="/home"
+          aria-label="BEGA 홈"
           className="flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
         >
           <img
             src={baseballLogo}
-            alt="Baseball"
+            alt=""
             className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
           />
           <div className="flex flex-col items-start leading-none">
-            <h1 className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
+            <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
               BEGA
-            </h1>
+            </span>
             <p
               className="hidden overflow-hidden text-10 font-bold text-muted-foreground dark:text-white tracking-tight transition-all duration-150 ease-out md:block"
               style={logoSubtitleStyle}
@@ -338,7 +380,7 @@ export default function PublicNavbar() {
               BASEBALL GUIDE
             </p>
           </div>
-        </button>
+        </Link>
 
         {/* Desktop segmented nav */}
         {isDesktop && (
@@ -359,15 +401,14 @@ export default function PublicNavbar() {
               {publicNavbarNavItems.map((item) => {
                 const isActive = isNavbarNavItemActive(item.id, location.pathname);
                 return (
-                  <button
-                    type="button"
+                  <Link
                     key={item.id}
+                    to={buildNavbarNavPath(item.id)}
                     ref={(node) => {
                       navButtonRefs.current[item.id] = node;
                     }}
                     data-nav-id={item.id}
                     aria-current={isActive ? 'page' : undefined}
-                    onClick={() => navigate(buildNavbarNavPath(item.id))}
                     onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                     onFocus={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                     onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
@@ -380,7 +421,7 @@ export default function PublicNavbar() {
                     style={navItemStyle}
                   >
                     {item.label}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -398,7 +439,13 @@ export default function PublicNavbar() {
           )}
 
           {shouldShowDesktopNotificationButton && (
-            <NavbarNotificationControls buttonClassName={navIconToggleClass} />
+            <NavbarNotificationControls
+              buttonClassName={navIconToggleClass}
+              onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
+              openOverride={visualQaStateOverride ? false : undefined}
+              panelContentOverride={visualQaStateOverride ? <div /> : undefined}
+              unreadCountOverride={visualQaStateOverride?.notificationUnreadCount}
+            />
           )}
 
           {isLoggedIn && isDesktop && (
@@ -411,7 +458,7 @@ export default function PublicNavbar() {
             >
               <MessageSquareIcon className={navIconSizeClass} />
               <Suspense fallback={null}>
-                <PublicNavbarDmUnreadBadge />
+                <PublicNavbarDmUnreadBadge unreadCountOverride={visualQaStateOverride?.dmUnreadCount} />
               </Suspense>
             </button>
           )}
@@ -422,6 +469,12 @@ export default function PublicNavbar() {
                 <PublicNavbarDesktopAuthControls
                   isAuthBootstrapPending={isAuthBootstrapPending}
                   compactProgress={authControlsCompactProgress}
+                  visualQaStateOverride={visualQaStateOverride ? {
+                    isLoggedIn: visualQaStateOverride.isLoggedIn,
+                    userName: visualQaStateOverride.userName,
+                    userProfileImageUrl: visualQaStateOverride.userProfileImageUrl,
+                    userRole: visualQaStateOverride.userRole,
+                  } : undefined}
                 />
               </div>
             </Suspense>
@@ -430,7 +483,13 @@ export default function PublicNavbar() {
           {!isDesktop && (
             <>
               {shouldShowMobileNotificationButton && (
-                <NavbarNotificationControls buttonClassName={navIconToggleClass} />
+                <NavbarNotificationControls
+                  buttonClassName={navIconToggleClass}
+                  onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
+                  openOverride={visualQaStateOverride ? false : undefined}
+                  panelContentOverride={visualQaStateOverride ? <div /> : undefined}
+                  unreadCountOverride={visualQaStateOverride?.notificationUnreadCount}
+                />
               )}
               {isLoggedIn && !shouldRenderMobileMenu && (
                 <button
@@ -442,7 +501,7 @@ export default function PublicNavbar() {
                 >
                   <MessageSquareIcon className={navIconSizeClass} />
                   <Suspense fallback={null}>
-                    <PublicNavbarDmUnreadBadge />
+                    <PublicNavbarDmUnreadBadge unreadCountOverride={visualQaStateOverride?.dmUnreadCount} />
                   </Suspense>
                 </button>
               )}
@@ -460,6 +519,7 @@ export default function PublicNavbar() {
                 aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
                 aria-expanded={isMenuOpen}
                 aria-controls={shouldRenderMobileMenu ? 'mobile-menu-popup' : undefined}
+                data-testid={import.meta.env.DEV ? 'public-navbar-menu-toggle' : undefined}
               >
                 {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" /> : <MenuIcon className="w-6 h-6" />}
               </button>
@@ -490,6 +550,12 @@ export default function PublicNavbar() {
                   isAuthBootstrapPending={isAuthBootstrapPending}
                   onClose={() => setIsMenuOpen(false)}
                   prefetchPredictionPage={prefetchPredictionPage}
+                  visualQaStateOverride={visualQaStateOverride ? {
+                    isLoggedIn: visualQaStateOverride.isLoggedIn,
+                    userName: visualQaStateOverride.userName,
+                    userProfileImageUrl: visualQaStateOverride.userProfileImageUrl,
+                    userRole: visualQaStateOverride.userRole,
+                  } : undefined}
                 />
               </Suspense>
             </div>
@@ -501,24 +567,30 @@ export default function PublicNavbar() {
     {!shouldRenderMobileMenu && !shouldDeferMobileBottomTabbar && (
       <nav
         data-testid="public-mobile-bottom-nav"
+        data-vqa-content-overlay="allowed"
         className="md:hidden fixed inset-x-3.5 z-50"
         style={{
           bottom: 'calc(var(--mobile-chrome-bottom-offset) + env(safe-area-inset-bottom))',
         }}
         aria-label="하단 탭바"
       >
-        <div className="grid h-[var(--mobile-chrome-height)] grid-cols-4 gap-0.5 rounded-3xl border border-border bg-card p-1.5 shadow-sm dark:border-white/10 dark:bg-[hsl(var(--surface-raised))]">
+        <div
+          className={cn(
+            'grid h-[var(--mobile-chrome-height)] gap-0.5 rounded-3xl border border-border bg-card p-1.5 shadow-sm dark:border-white/10 dark:bg-[hsl(var(--surface-raised))]',
+            shouldShowMobileChatbotTab ? 'grid-cols-5' : 'grid-cols-4',
+          )}
+        >
           {publicNavbarNavItems.map((item) => {
             const Icon = NAV_ITEM_ICONS[item.id];
             const isActive = isNavbarNavItemActive(item.id, location.pathname);
             return (
-              <button
+              <Link
                 key={item.id}
-                type="button"
+                to={buildNavbarNavPath(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                onClick={() => navigate(buildNavbarNavPath(item.id))}
                 onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
+                data-testid={import.meta.env.DEV ? `public-navbar-bottom-${item.id}` : undefined}
                 className={cn(
                   'relative flex min-w-0 min-h-11 flex-col items-center justify-center gap-0.5 rounded-18 transition-colors duration-150',
                   isActive
@@ -527,10 +599,22 @@ export default function PublicNavbar() {
                 )}
               >
                 {Icon && <Icon className="w-5 h-5 shrink-0" />}
-                <span className="text-[10.5px] font-bold leading-none">{item.label}</span>
-              </button>
+                <span className="max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
+              </Link>
             );
           })}
+          {shouldShowMobileChatbotTab && (
+            <button
+              type="button"
+              onClick={() => requestChatbotOpen()}
+              className="flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-18 text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-foreground dark:text-white"
+              aria-label="BEGA 챗봇 열기"
+              data-testid="public-mobile-chatbot-tab"
+            >
+              <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
+              <span className="text-[10.5px] font-bold leading-none">BEGA</span>
+            </button>
+          )}
         </div>
       </nav>
     )}

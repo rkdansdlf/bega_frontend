@@ -22,15 +22,15 @@ export function OffseasonDesktopTable({
     const activeSortLabel = SORT_OPTIONS.find((option) => option.value === sortOrder)?.label ?? '최신순';
 
     return (
-        <div className="space-y-4 px-4 pb-4 pt-2 md:px-5 md:pb-5">
-            <div className="flex items-center justify-between rounded-28 border border-zinc-200/80 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-                <div className="space-y-1">
+        <div className="space-y-4 px-4 pb-4 pt-2 md:px-5 md:pb-5" data-testid="offseason-desktop-table">
+            <div className="flex min-w-0 items-center justify-between gap-3 rounded-28 border border-zinc-200/80 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="min-w-0 space-y-1">
                     <p className="text-15 font-black uppercase tracking-[0.2em] text-zinc-400">Desktop Table View</p>
                     <p className="text-15 font-semibold text-zinc-600 dark:text-white">
                         헤드라인 {headlineCount}건, 금액 표기 {amountVisibleCount}건 포함
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
                     <OffseasonPill className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-caption font-bold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
                         정렬: {activeSortLabel}
                     </OffseasonPill>
@@ -51,6 +51,8 @@ export function OffseasonDesktopTable({
                                     ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200'
                                     : 'border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:hover:text-zinc-100'
                                     }`}
+                                aria-pressed={sortOrder === 'latest'}
+                                data-testid="offseason-table-sort-latest"
                             >
                                 <span className="space-y-1">
                                     <span className="block text-caption font-black uppercase tracking-[0.2em]">Date</span>
@@ -99,6 +101,8 @@ export function OffseasonDesktopTable({
                                     ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200'
                                     : 'border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:hover:text-zinc-100'
                                     }`}
+                                aria-pressed={sortOrder === 'amount'}
+                                data-testid="offseason-table-sort-amount"
                             >
                                 <span className="space-y-1 text-right">
                                     <span className="block text-caption font-black uppercase tracking-[0.2em]">Amount</span>
@@ -119,7 +123,10 @@ export function OffseasonDesktopTable({
                             <TableRow
                                 key={item.id}
                                 className="group cursor-pointer border-none hover:bg-transparent"
+                                role="button"
                                 tabIndex={0}
+                                aria-label={`${item.player} ${teamName} 이적 상세 보기`}
+                                data-testid={`offseason-table-row-${item.id}`}
                                 onClick={() => onSelect(item)}
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter' || event.key === ' ') {
@@ -160,8 +167,8 @@ export function OffseasonDesktopTable({
                                             <TeamLogo team={teamName} size={28} />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <p className="text-15 font-extrabold tracking-tight text-zinc-800 dark:text-white">{teamName}</p>
-                                            <p className="text-caption font-semibold uppercase tracking-wide text-zinc-400 dark:text-white">{item.team}</p>
+                                            <p className="break-words text-15 font-extrabold tracking-tight text-zinc-800 [overflow-wrap:anywhere] dark:text-white">{teamName}</p>
+                                            <p className="break-words text-caption font-semibold uppercase tracking-wide text-zinc-400 [overflow-wrap:anywhere] dark:text-white">{item.team}</p>
                                         </div>
                                     </div>
                                 </TableCell>
@@ -171,7 +178,7 @@ export function OffseasonDesktopTable({
                                     }`}>
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-base font-black tracking-tight text-zinc-900 dark:text-white">{item.player}</span>
+                                            <span className="break-words text-base font-black tracking-tight text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{item.player}</span>
                                             {item.isBigEvent && (
                                                 <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400/90 text-[#173b34] shadow-sm">
                                                     <SparklesIcon className="h-3.5 w-3.5" />
@@ -191,7 +198,7 @@ export function OffseasonDesktopTable({
                                     }`}>
                                     <div className="space-y-2">
                                         <p className="text-15 font-black uppercase tracking-[0.18em] text-zinc-400">Summary</p>
-                                        <div className="line-clamp-2">{formatRemarks(summary)}</div>
+                                        <div className="line-clamp-2 break-words [overflow-wrap:anywhere]">{formatRemarks(summary)}</div>
                                     </div>
                                 </TableCell>
                                 <TableCell className={`rounded-r-26 border-y border-r px-5 py-4 align-top text-right ${item.isBigEvent

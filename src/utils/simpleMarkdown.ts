@@ -182,6 +182,19 @@ const renderBlockquote = (lines: string[], startIndex: number): [string, number]
   return [`<blockquote>${quoteLines.map((line) => `<p>${renderInline(line)}</p>`).join('')}</blockquote>`, index];
 };
 
+export const stripLeadingMarkdownHeading = (content: string): string => {
+  const contentWithoutBom = content.replace(/^\uFEFF/, '');
+  const headingMatch = contentWithoutBom.match(/^[ \t]*#{1,6}[ \t]+[^\r\n]+(?:\r?\n|$)/);
+
+  if (!headingMatch) {
+    return content;
+  }
+
+  return contentWithoutBom
+    .slice(headingMatch[0].length)
+    .replace(/^(?:[ \t]*\r?\n)+/, '');
+};
+
 export const renderMarkdownToHtml = (content: string): string => {
   const lines = content.replace(/\r\n/g, '\n').split('\n');
   const blocks: string[] = [];

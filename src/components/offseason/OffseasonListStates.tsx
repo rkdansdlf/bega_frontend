@@ -33,7 +33,7 @@ export function OffseasonErrorState({
     const message = normalizeOffseasonErrorMessage(error);
 
     return (
-        <Card className="rounded-3xl border border-red-200 bg-red-50/60 p-8 text-center shadow-sm dark:border-red-900/50 dark:bg-red-950/20">
+        <Card className="rounded-3xl border border-red-200 bg-red-50/60 p-6 text-center shadow-sm sm:p-8 dark:border-red-900/50 dark:bg-red-950/20">
             <div className="mx-auto flex max-w-md flex-col items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-red-500 shadow-sm dark:bg-zinc-900">
                     <AlertCircleIcon className="h-8 w-8" />
@@ -61,7 +61,7 @@ export function OffseasonEmptyState({
     onReset: () => void;
 }) {
     return (
-        <Card className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/70 p-12 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900/70">
+        <Card className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/70 p-6 text-center shadow-sm sm:p-12 dark:border-zinc-800 dark:bg-zinc-900/70">
             <div className="mx-auto flex max-w-sm flex-col items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
                     <SearchIcon className="h-7 w-7" />

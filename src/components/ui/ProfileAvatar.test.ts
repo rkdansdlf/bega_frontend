@@ -41,6 +41,8 @@ test('cheer 아바타 fallback도 동일한 원형 프레임을 유지한다', (
 
   assert.match(html, /data-testid="profile-avatar-frame"/);
   assert.match(html, /data-testid="profile-avatar-fallback"/);
+  assert.match(html, /role="img"/);
+  assert.match(html, /aria-label="홍길동"/);
   assert.match(html, /rounded-full/);
   assert.match(html, /overflow-hidden/);
   assert.doesNotMatch(html, /avatar-circle-mask/);
@@ -60,4 +62,30 @@ test('ring 없는 아바타는 클래스 크기를 유지하고 부모 폭으로
   assert.match(html, /w-20 h-20 md:w-24 md:h-24/);
   assert.doesNotMatch(html, /width:100%/);
   assert.doesNotMatch(html, /height:100%/);
+});
+
+test('빈 alt의 fallback은 장식 이미지 의미를 유지한다', () => {
+  const html = renderToStaticMarkup(createElement(ProfileAvatar, {
+    alt: '',
+  }));
+
+  assert.match(html, /data-testid="profile-avatar-fallback"/);
+  assert.match(html, /aria-hidden="true"/);
+  assert.doesNotMatch(html, /role="img"/);
+});
+
+test('서로 다른 고정 치수는 작은 축으로 정규화해 원형을 유지한다', () => {
+  const html = renderToStaticMarkup(createElement(ProfileAvatar, {
+    src: 'https://example.com/avatar.webp',
+    alt: '프로필',
+    width: 96,
+    height: 24,
+    showRing: true,
+  }));
+
+  assert.match(html, /data-testid="profile-avatar-frame"/);
+  assert.match(html, /style="width:24px;height:24px"/);
+  assert.match(html, /width="24"/);
+  assert.match(html, /height="24"/);
+  assert.doesNotMatch(html, /width:96px/);
 });

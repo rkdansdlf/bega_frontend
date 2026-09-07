@@ -199,7 +199,7 @@ export default function PredictionRuntime() {
             <div className="mt-3 flex items-center gap-2">
               <Link
                 to="/mypage"
-                className="min-w-0 flex-1 truncate text-12 font-bold leading-relaxed text-emerald-200 hover:text-white sm:text-13"
+                className="inline-flex min-h-10 min-w-0 flex-1 items-center truncate rounded-lg text-12 font-bold leading-relaxed text-emerald-200 hover:text-white sm:text-13"
               >
                 📸 다이어리 시야 사진 공유 → 리더보드 +50P
               </Link>
@@ -207,7 +207,10 @@ export default function PredictionRuntime() {
           ) : null}
 
           <div className="mt-4 flex flex-nowrap items-center gap-2 overflow-x-auto sm:overflow-visible">
-            <div className="relative flex shrink-0 overflow-hidden rounded-xl border border-white/20 bg-slate-950/25 p-1">
+            <div
+              className="relative flex shrink-0 overflow-hidden rounded-xl border border-white/20 bg-slate-950/25 p-1"
+              data-vqa-overlap="allowed"
+            >
               <span
                 className="pointer-events-none absolute bottom-1 left-1 top-1 z-0 w-[calc(50%-0.25rem)] rounded-lg bg-white shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
                 style={{ transform: activeTab === 'match' ? 'translateX(0)' : 'translateX(100%)' }}

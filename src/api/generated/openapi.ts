@@ -1156,6 +1156,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/oauth2/email-challenge/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submitEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/oauth2/state/{stateId}": {
         parameters: {
             query?: never;
@@ -4461,6 +4525,15 @@ export interface components {
             message?: string;
             success?: boolean;
         };
+        ApiResponseChallengeStatus: {
+            code?: string;
+            data?: components["schemas"]["ChallengeStatus"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
         ApiResponseChatFavoriteItem: {
             code?: string;
             data?: components["schemas"]["ChatFavoriteItem"];
@@ -4956,6 +5029,13 @@ export interface components {
             /** Format: int64 */
             roomId?: number;
             targetUser?: components["schemas"]["TargetUser"];
+        };
+        ChallengeStatus: {
+            challengeId?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+            maskedEmail?: string;
+            status?: string;
         };
         ChangePasswordRequest: {
             confirmPassword: string;
@@ -6419,6 +6499,13 @@ export interface components {
             rawStatus?: string;
             reasons?: string[];
             startTime?: string;
+        };
+        OAuthEmailChallengeConfirmDto: {
+            token: string;
+        };
+        OAuthEmailChallengeSubmitDto: {
+            /** Format: email */
+            email: string;
         };
         OffseasonMetaDto: {
             awards?: components["schemas"]["AwardDto"][];
@@ -9250,6 +9337,100 @@ export interface operations {
                 "application/json": components["schemas"]["UserProfileDto"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OAuthEmailChallengeConfirmDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseChallengeStatus"];
+                };
+            };
+        };
+    };
+    submitEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OAuthEmailChallengeSubmitDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    resend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

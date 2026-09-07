@@ -21,7 +21,6 @@ import {
 import { useTheme } from '../../hooks/useTheme';
 import { useAuthAccessActions } from '../../store/authStore';
 import { getCurrentRelativeUrl } from '../../utils/loginRedirect';
-import SeatViewGallery from '../SeatViewGallery';
 import SeatMapHoverPreview from '../SeatMapHoverPreview';
 import SajikSeatMapSvg from './SajikSeatMapSvg';
 import type { SeatMapPan } from '../stadiumSeatMap/seatMapCommonTypes';
@@ -75,7 +74,7 @@ function clampZoom(value: number) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(value.toFixed(2))));
 }
 
-function SajikFirstVisitGuide({
+export function SajikFirstVisitGuide({
   intent,
   query,
   matches,
@@ -114,7 +113,7 @@ function SajikFirstVisitGuide({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="블록/좌석 검색"
-            className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-slate-500 sm:w-56"
+            className="h-11 min-w-0 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-slate-500 sm:h-9 sm:w-56"
           />
         </div>
       </div>
@@ -129,7 +128,7 @@ function SajikFirstVisitGuide({
               data-testid={`sajik-guide-intent-${option.id}`}
               onClick={() => onIntentChange(option.id)}
               aria-pressed={active}
-              className="shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-all"
+              className="inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border px-3 py-1.5 text-xs font-bold transition-all sm:min-h-9"
               style={{
                 background: active ? '#041E42' : 'transparent',
                 borderColor: active ? '#041E42' : (isDark ? '#334155' : '#e2e8f0'),
@@ -154,7 +153,7 @@ function SajikFirstVisitGuide({
                 type="button"
                 data-testid={`sajik-guide-result-${block.id}`}
                 onClick={() => onSelectBlock(block)}
-                className="shrink-0 cursor-pointer rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700"
+                className="min-h-11 max-w-[calc(100vw-2rem)] shrink-0 cursor-pointer overflow-hidden rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700 sm:max-w-72"
                 style={{
                   borderColor: accent ? `${accent}66` : undefined,
                   background: isDark ? '#000000' : '#f8fafc',
@@ -166,7 +165,7 @@ function SajikFirstVisitGuide({
                     {cat?.label ?? block.name}
                   </span>
                 </div>
-                <div className="mt-1 text-10 font-bold text-slate-500 dark:text-white">
+                <div className="mt-1 max-w-full break-words text-10 font-bold text-slate-500 [overflow-wrap:anywhere] dark:text-white">
                   {reasons.slice(0, 2).join(' · ')}
                 </div>
               </button>
@@ -182,114 +181,46 @@ function SajikFirstVisitGuide({
   );
 }
 
-function DetailPanel({
-  section,
-  mode,
-  onClose,
-  onUpload,
-}: {
-  section: SajikBlock | null;
-  mode: 'light' | 'dark';
-  onClose: () => void;
-  onUpload: () => void;
-}) {
-  if (!section) {
-    return (
-      <div className="sticky top-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <div className="flex min-h-[220px] flex-col items-center justify-center p-6 text-center">
-          <p className="text-sm font-bold text-slate-700 dark:text-white">구역을 선택하세요</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-white">
-            공식 좌석도에서 블록을 선택하면 실제 시야 사진을 확인하고 시야 사진을 올릴 수 있습니다.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const cat = SAJIK_CATEGORIES[section.category];
-  const accent = mode === 'dark' ? cat.dark : cat.light;
-  const info = SAJIK_VIEW_INFO[section.id] ?? SAJIK_VIEW_INFO.default;
-
-  return (
-    <div className="sticky top-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <div className="relative px-5 pb-4 pt-5">
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
-        >
-          ×
-        </button>
-        <div className="mb-2 flex flex-wrap gap-2 pr-10">
-          <span className="rounded-full px-2.5 py-1 text-11 font-bold" style={{ background: `${accent}22`, color: accent }}>
-            {cat.label} · {section.level}
-          </span>
-          <span className="rounded-full bg-amber-100 px-2.5 py-1 text-11 font-bold text-amber-800">
-            {getSajikSourceLabel(section.sourceConfidence)}
-          </span>
-        </div>
-        <h2 className="text-2xl font-black text-slate-900 dark:text-white">{section.name}</h2>
-        <p className="mt-1 text-sm font-semibold text-slate-500 dark:text-white">블록 {section.block}</p>
-      </div>
-      <div className="grid grid-cols-2 gap-2.5 px-5 pb-4">
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800">
-          <div className="mb-1 text-10 font-bold tracking-widest text-slate-400">위치</div>
-          <div className="text-base font-black text-slate-800 dark:text-white">{getSajikSideLabel(section.side)}</div>
-        </div>
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800">
-          <div className="mb-1 text-10 font-bold tracking-widest text-slate-400">팬 구분</div>
-          <div className="text-base font-black text-slate-800 dark:text-white">{getSajikFanRoleLabel(section.fanRole)}</div>
-        </div>
-        <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800">
-          <div className="mb-1 text-10 font-bold tracking-widest text-slate-400">시야 거리</div>
-          <div className="text-base font-black text-slate-800 dark:text-white">{info.distance ?? '-'}</div>
-        </div>
-      </div>
-      <div className="border-t border-slate-100 px-5 py-4 dark:border-slate-800">
-        <div className="mb-2 text-10 font-black uppercase tracking-widest text-slate-400">공식 블록 묶음</div>
-        <div className="flex flex-wrap gap-1.5">
-          {section.officialBlocks.map((block) => (
-            <span key={block} className="rounded-full border px-2.5 py-1 text-11 font-bold" style={{ background: `${accent}14`, borderColor: `${accent}44`, color: accent }}>
-              {block}
-            </span>
-          ))}
-        </div>
-        <p className="mt-2 text-12 font-semibold leading-relaxed text-slate-500 dark:text-white">{section.sourceNote}</p>
-        {section.accessibilityNote && (
-          <p className="mt-2 rounded-xl bg-cyan-50 px-3 py-2 text-12 font-semibold leading-relaxed text-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-200">
-            {section.accessibilityNote}
-          </p>
-        )}
-      </div>
-      <div className="border-t border-slate-100 px-5 py-4 dark:border-slate-800">
-        <div className="mb-2 text-10 font-black uppercase tracking-widest text-slate-400">실제 시야 사진</div>
-        <SeatViewGallery stadium="SAJIK" section={section.name} sectionAliases={getSajikSeatViewAliases(section)} compact />
-      </div>
-      <div className="sticky bottom-0 border-t border-slate-100 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
-        <button
-          type="button"
-          onClick={onUpload}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
-          style={{ background: accent }}
-        >
-          시야 사진 올리기
-        </button>
-      </div>
-    </div>
-  );
+export interface SajikSeatMapStateOverride {
+  guideIntent?: SajikGuideIntent;
+  guideQuery?: string;
+  isFullscreenOpen?: boolean;
+  isLoggedIn: boolean;
+  isSectionFinderOpen?: boolean;
+  selectedBlockId?: string;
+  uploadBlockId?: string;
 }
 
-export default function SajikSeatMap() {
+interface SajikSeatMapProps {
+  stateOverride?: SajikSeatMapStateOverride;
+}
+
+function resolveSajikStateBlock(blockId: string | undefined, fieldName: string) {
+  if (blockId === undefined) {
+    return null;
+  }
+  const block = SAJIK_CANONICAL_BLOCKS.find((candidate) => candidate.id === blockId);
+  if (!block) {
+    throw new Error(`지원하지 않는 사직 좌석 상태: ${fieldName}=${blockId}`);
+  }
+  return block;
+}
+
+export default function SajikSeatMap({ stateOverride }: SajikSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });
-  const [uploadFor, setUploadFor] = useState<SajikCanonicalBlock | null>(null);
-  const [guideIntent, setGuideIntent] = useState<SajikGuideIntent>('all');
-  const [guideQuery, setGuideQuery] = useState('');
-  const [isSectionFinderOpen, setIsSectionFinderOpen] = useState(true);
+  const [uploadFor, setUploadFor] = useState<SajikCanonicalBlock | null>(() => (
+    resolveSajikStateBlock(stateOverride?.uploadBlockId, 'uploadBlockId')
+  ));
+  const [guideIntent, setGuideIntent] = useState<SajikGuideIntent>(stateOverride?.guideIntent ?? 'all');
+  const [guideQuery, setGuideQuery] = useState(stateOverride?.guideQuery ?? '');
+  const [isSectionFinderOpen, setIsSectionFinderOpen] = useState(stateOverride?.isSectionFinderOpen ?? true);
   const [sectionFinderAutoFocus, setSectionFinderAutoFocus] = useState(false);
   const {
     selected,
@@ -308,6 +239,7 @@ export default function SajikSeatMap() {
     filterGroups: SAJIK_CATEGORY_GROUPS,
     getId: (section) => section.id,
     getCategoryId: (section) => section.category,
+    initialSelected: resolveSajikStateBlock(stateOverride?.selectedBlockId, 'selectedBlockId'),
     isSectionVisible: (block, filterGroup, cats) => {
       if (cats !== null && !cats.includes(block.category)) return false;
       if (filterGroup?.sides != null && !filterGroup.sides.includes(block.side)) return false;
@@ -320,7 +252,9 @@ export default function SajikSeatMap() {
     isFullscreenOpen,
     openFullscreen,
     closeFullscreen,
-  } = useSeatMapTemplateShellState();
+  } = useSeatMapTemplateShellState({
+    initialFullscreenOpen: stateOverride?.isFullscreenOpen,
+  });
 
   useEffect(() => {
     if (!selected) {

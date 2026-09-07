@@ -69,7 +69,151 @@ const page = (items) => ({
  */
 const envelope = (data) => ({ success: true, data });
 
+const auditParty = {
+  id: 1,
+  hostId: 123,
+  hostHandle: 'testuser',
+  hostName: '비주얼 QA 호스트',
+  hostBadge: 'VERIFIED',
+  hostAverageRating: 4.8,
+  hostReviewCount: 15,
+  hostProfileImageUrl: null,
+  hostFavoriteTeam: 'HH',
+  status: 'CHECKED_IN',
+  gameDate: '2026-08-06',
+  gameTime: '18:30',
+  stadium: '대전 한화생명볼파크',
+  teamId: 'HH',
+  homeTeam: 'HH',
+  awayTeam: 'LT',
+  section: '3루 내야지정석',
+  seatDetail: '312블록 14열',
+  maxParticipants: 4,
+  currentParticipants: 2,
+  ticketPrice: 26000,
+  reservationDepositAmount: 10000,
+  ticketVerified: true,
+  description: `${LONG_KOREAN} #직관메이트 #함께응원`,
+  members: [
+    { initial: '비', profileImageUrl: null, role: '호스트', host: true },
+    { initial: '참', profileImageUrl: null, role: '참여자', host: false },
+  ],
+  createdAt: '2026-08-01T09:00:00',
+};
+
+const auditPartyForRoute = (pagePathname = '') => {
+  if (pagePathname.endsWith('/apply')) {
+    return {
+      ...auditParty,
+      hostId: 999,
+      hostHandle: 'visualqa_host',
+      status: 'PENDING',
+      gameDate: '2026-09-20',
+      currentParticipants: 1,
+      members: [auditParty.members[0]],
+    };
+  }
+  return auditParty;
+};
+
 export const FIXTURES = [
+  {
+    name: 'cheer post detail',
+    match: (url) => /\/api\/cheer\/posts\/1(\?|$)/.test(url),
+    body: () => ({ ...post(1), isOwner: true }),
+  },
+  {
+    name: 'cheer post comments',
+    match: (url) => /\/api\/cheer\/posts\/1\/comments(\?|$)/.test(url),
+    body: () => page([]),
+  },
+  {
+    name: 'cheer post images',
+    match: (url) => /\/api\/cheer\/posts\/1\/images(\?|$)/.test(url),
+    body: () => [],
+  },
+  {
+    name: 'public profile',
+    match: (url) => /\/api\/users\/profile\/(?:%40)?testuser(\?|$)/i.test(url),
+    body: () => envelope({
+      name: 'TestUser',
+      handle: 'testuser',
+      favoriteTeam: 'HH',
+      profileImageUrl: null,
+      bio: LONG_KOREAN,
+      cheerPoints: 12345,
+    }),
+  },
+  {
+    name: 'public profile follow counts',
+    match: (url) => /\/api\/users\/profile\/(?:%40)?testuser\/follow-counts(\?|$)/i.test(url),
+    body: () => ({
+      followerCount: 128,
+      followingCount: 42,
+      isFollowedByMe: false,
+      notifyNewPosts: false,
+      blockedByMe: false,
+      blockingMe: false,
+    }),
+  },
+  {
+    name: 'public profile posts',
+    match: (url) => /\/api\/cheer\/user\/testuser\/posts(\?|$)/i.test(url),
+    body: () => page([1, 2, 3].map(post)),
+  },
+  {
+    name: 'mate party detail',
+    match: (url) => /\/api\/parties\/1(\?|$)/.test(url),
+    body: (_url, context = {}) => auditPartyForRoute(context.pagePathname),
+  },
+  {
+    name: 'mate party applications',
+    match: (url) => /\/api\/applications\/party\/1(\?|$)/.test(url),
+    body: () => [{
+      id: 11,
+      partyId: 1,
+      applicantId: 456,
+      applicantHandle: 'visualparticipant',
+      applicantName: '비주얼 참여자',
+      applicantBadge: 'TRUSTED',
+      applicantRating: 4.7,
+      message: '함께 즐겁게 응원하겠습니다.',
+      depositAmount: 10000,
+      paymentType: 'DEPOSIT',
+      paymentStatus: 'PAID',
+      settlementStatus: 'PENDING',
+      isApproved: true,
+      isRejected: false,
+      ticketVerified: true,
+      createdAt: '2026-08-02T10:00:00Z',
+    }],
+  },
+  {
+    name: 'mate current application',
+    match: (url) => /\/api\/applications\/party\/1\/mine(\?|$)/.test(url),
+    body: () => null,
+  },
+  {
+    name: 'mate check-ins',
+    match: (url) => /\/api\/checkin\/party\/1(\?|$)/.test(url),
+    body: () => [
+      { id: 21, partyId: 1, userHandle: 'testuser', userName: 'TestUser', location: '대전', checkedInAt: '2026-08-06T17:40:00Z' },
+      { id: 22, partyId: 1, userHandle: 'visualparticipant', userName: '비주얼 참여자', location: '대전', checkedInAt: '2026-08-06T17:45:00Z' },
+    ],
+  },
+  {
+    name: 'mate chat messages',
+    match: (url) => /\/api\/chat\/party\/1(\?|$)/.test(url),
+    body: () => [
+      { id: 31, partyId: 1, senderId: 123, senderName: 'TestUser', message: '경기 시작 전에 3루 출입구에서 만나요.', createdAt: '2026-08-06T08:00:00Z' },
+      { id: 32, partyId: 1, senderId: 456, senderName: '비주얼 참여자', message: LONG_KOREAN, createdAt: '2026-08-06T08:05:00Z' },
+    ],
+  },
+  {
+    name: 'mate party reviews',
+    match: (url) => /\/api\/reviews\/party\/1(\?|$)/.test(url),
+    body: () => [],
+  },
   {
     // Returns the page object bare, not wrapped in {success,data} — confirmed
     // against the live endpoint, which answers {"content":[...]}.

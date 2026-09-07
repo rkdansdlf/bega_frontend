@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 type ButtonVariant = 'default' | 'outline' | 'ghost' | 'secondary' | 'destructive' | 'link';
-type ButtonSize = 'default' | 'sm' | 'icon' | 'iconTouch';
+type ButtonSize = 'default' | 'sm' | 'icon' | 'iconTouch' | 'touch';
 
 interface PlainButtonProps extends React.ComponentProps<'button'> {
   variant?: ButtonVariant;
@@ -19,10 +19,11 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  default: 'h-9 px-4 py-2',
-  sm: 'h-8 rounded-md px-3 text-15',
-  icon: 'h-9 w-9 rounded-md p-0',
-  iconTouch: 'h-11 w-11 rounded-xl p-0',
+  default: 'min-h-11 px-4 py-2 sm:min-h-9',
+  sm: 'min-h-11 rounded-md px-3 text-15 sm:min-h-8',
+  icon: 'size-11 shrink-0 rounded-md p-0 sm:size-9',
+  iconTouch: 'size-11 shrink-0 rounded-xl p-0',
+  touch: 'min-h-11 rounded-xl px-4 text-15',
 };
 
 const joinClassNames = (...classes: Array<string | false | null | undefined>) =>
@@ -55,7 +56,7 @@ const Button = React.forwardRef<HTMLButtonElement, PlainButtonProps>(({
   ...props
 }, ref) => {
   const resolvedClassName = joinClassNames(
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-15 font-semibold transition-all outline-none focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+    "bf rounded-md text-15 font-semibold outline-none focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50",
     variantClasses[variant],
     sizeClasses[size],
     className,

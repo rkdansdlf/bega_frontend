@@ -53,6 +53,8 @@ const overlayStyle: CSSProperties = {
 
 const comboContentStyle: CSSProperties = {
   animation: 'combo-reveal 0.55s cubic-bezier(0.22, 1, 0.36, 1)',
+  maxWidth: '100%',
+  minWidth: 0,
   transformOrigin: 'center',
 };
 
@@ -72,6 +74,9 @@ interface ComboAnimationProps {
   score?: number;
   show?: boolean;
   onComplete?: () => void;
+  autoHideMs?: number | null;
+  particleRandom?: () => number;
+  containerTestId?: string;
 }
 
 const getComboContainerStyle = (streak: number): CSSProperties => ({
@@ -80,18 +85,25 @@ const getComboContainerStyle = (streak: number): CSSProperties => ({
   left: '50%',
   transform: 'translate(-50%, -50%)',
   textAlign: 'center',
+  maxWidth: 'calc(100vw - 32px)',
+  width: 'max-content',
   animation: streak >= 7
     ? 'combo-explode 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), combo-shake 0.5s 0.6s infinite'
     : 'combo-explode 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
 });
 
 const getComboNumberStyle = (streak: number): CSSProperties => {
+  const digitCount = Math.max(1, String(streak).length);
   const baseStyle: CSSProperties = {
     fontFamily: "'Press Start 2P', monospace",
-    fontSize: `${Math.min(120, 60 + streak * 8)}px`,
+    fontSize: `min(${Math.min(120, 60 + streak * 8)}px, calc((100vw - 32px) / ${digitCount}))`,
     fontWeight: 700,
     lineHeight: 1,
     marginBottom: '16px',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   };
 
   if (streak >= 10) {
@@ -136,13 +148,20 @@ const getComboNumberStyle = (streak: number): CSSProperties => {
   };
 };
 
-const getComboTextStyle = (streak: number): CSSProperties => ({
-  fontFamily: "'Press Start 2P', monospace",
-  fontSize: `${Math.min(32, 16 + streak * 2)}px`,
-  color: '#fff',
-  textShadow: '2px 2px 0 #000, -2px -2px 0 #000',
-  marginBottom: '8px',
-});
+const getComboTextStyle = (streak: number): CSSProperties => {
+  const copyLength = Math.max(1, `${streak}연승!`.length);
+  return {
+    fontFamily: "'Press Start 2P', monospace",
+    fontSize: `min(${Math.min(32, 16 + streak * 2)}px, calc((100vw - 32px) / ${copyLength}))`,
+    color: '#fff',
+    textShadow: '2px 2px 0 #000, -2px -2px 0 #000',
+    marginBottom: '8px',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
+};
 
 const getBonusTextStyle = (streak: number): CSSProperties => ({
   fontFamily: "'Press Start 2P', monospace",
@@ -150,7 +169,11 @@ const getBonusTextStyle = (streak: number): CSSProperties => ({
   color: streak >= 5 ? '#ffd700' : '#00ff00',
   textShadow: '1px 1px 0 #000',
   marginTop: '8px',
+  maxWidth: '100%',
+  overflow: 'hidden',
   opacity: 0,
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
   animation: 'combo-bonusReveal 0.35s ease-out 0.3s forwards',
 });
 
@@ -167,6 +190,9 @@ export default function ComboAnimation({
   score: externalScore,
   show: externalShow,
   onComplete,
+  autoHideMs = 2500,
+  particleRandom = Math.random,
+  containerTestId,
 }: ComboAnimationProps = {}) {
   const { showComboAnimation: storeComboState, comboStreak: storeComboStreak, comboScore: storeComboScore } =
     useLeaderboardStore(
@@ -190,15 +216,19 @@ export default function ComboAnimation({
 
     ensureRetroFontsLoaded();
 
+    if (autoHideMs === null) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       hideCombo();
       onComplete?.();
-    }, 2500);
+    }, autoHideMs);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [hideCombo, onComplete, shouldShow]);
+  }, [autoHideMs, hideCombo, onComplete, shouldShow]);
 
   const getComboMessage = (comboStreak: number): string => {
     if (comboStreak >= 10) return 'LEGENDARY!';
@@ -212,15 +242,15 @@ export default function ComboAnimation({
     const count = Math.min(12, 4 + comboStreak);
     return Array.from({ length: count }, (_, index) => {
       const angle = (index / count) * Math.PI * 2;
-      const radius = 80 + Math.random() * 40;
+      const radius = 80 + particleRandom() * 40;
       return {
         x: Math.cos(angle) * radius,
         y: Math.sin(angle) * radius,
-        delay: Math.random() * 0.3,
-        emoji: PARTICLE_EMOJI[PARTICLES[Math.floor(Math.random() * PARTICLES.length)]],
+        delay: particleRandom() * 0.3,
+        emoji: PARTICLE_EMOJI[PARTICLES[Math.floor(particleRandom() * PARTICLES.length)]],
       };
     });
-  }, []);
+  }, [particleRandom]);
 
   const particles = useMemo(() => {
     if (!shouldShow || streak < 3) {
@@ -236,7 +266,12 @@ export default function ComboAnimation({
   return (
     <>
       <style>{comboAnimationCss}</style>
-      <div aria-live="polite" role="status" style={overlayStyle}>
+      <div
+        aria-live="polite"
+        data-testid={containerTestId}
+        role="status"
+        style={overlayStyle}
+      >
         <div style={getComboContainerStyle(streak)}>
           {particles.map((particle, index) => (
             <div

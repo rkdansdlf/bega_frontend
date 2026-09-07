@@ -122,12 +122,38 @@ export const toast = Object.assign(
 ) as ToastFn;
 
 const positionStyleMap: Record<NonNullable<ToasterProps['position']>, CSSProperties> = {
-  'top-left': { top: 16, left: 16, alignItems: 'flex-start' },
-  'top-center': { top: 16, left: '50%', transform: 'translateX(-50%)', alignItems: 'center' },
-  'top-right': { top: 16, right: 16, alignItems: 'flex-end' },
-  'bottom-left': { bottom: 16, left: 16, alignItems: 'flex-start' },
-  'bottom-center': { bottom: 16, left: '50%', transform: 'translateX(-50%)', alignItems: 'center' },
-  'bottom-right': { bottom: 16, right: 16, alignItems: 'flex-end' },
+  'top-left': {
+    top: 'max(12px, env(safe-area-inset-top))',
+    left: 'max(12px, env(safe-area-inset-left))',
+    alignItems: 'flex-start',
+  },
+  'top-center': {
+    top: 'max(12px, env(safe-area-inset-top))',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    alignItems: 'center',
+  },
+  'top-right': {
+    top: 'max(12px, env(safe-area-inset-top))',
+    right: 'max(12px, env(safe-area-inset-right))',
+    alignItems: 'flex-end',
+  },
+  'bottom-left': {
+    bottom: 'max(12px, env(safe-area-inset-bottom))',
+    left: 'max(12px, env(safe-area-inset-left))',
+    alignItems: 'flex-start',
+  },
+  'bottom-center': {
+    bottom: 'max(12px, env(safe-area-inset-bottom))',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    alignItems: 'center',
+  },
+  'bottom-right': {
+    bottom: 'max(12px, env(safe-area-inset-bottom))',
+    right: 'max(12px, env(safe-area-inset-right))',
+    alignItems: 'flex-end',
+  },
 };
 
 const variantTokenMap: Record<ToastVariant, { rail: string; tint: string; darkRail: string; darkTint: string }> = {
@@ -187,7 +213,7 @@ export function Toaster({
     flexDirection: 'column',
     gap: 12,
     pointerEvents: 'none',
-    maxWidth: 'min(420px, calc(100vw - 24px))',
+    maxWidth: 'min(420px, calc(100vw - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right))))',
     width: '100%',
     ...positionStyleMap[position],
     ...style,
@@ -226,7 +252,7 @@ export function Toaster({
               fontFamily: "'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif",
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 42px 14px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 58px 14px 14px' }}>
               {/* Icon chip */}
               <span
                 aria-hidden="true"
@@ -247,7 +273,7 @@ export function Toaster({
                   __html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor">${iconSvg}</svg>`,
                 }}
               />
-              <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ minWidth: 0, flex: 1, overflowWrap: 'anywhere' }}>
                 <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.45 }}>
                   {entry.title}
                 </div>
@@ -264,15 +290,16 @@ export function Toaster({
               type="button"
               onClick={() => dismissToast(entry.id)}
               aria-label="알림 닫기"
+              className="bega-toast-close"
               style={{
                 position: 'absolute',
-                top: 9,
-                right: 9,
-                width: 22,
-                height: 22,
-                borderRadius: 6,
+                top: 3,
+                right: 3,
+                width: 44,
+                height: 44,
+                borderRadius: 10,
                 border: 0,
-                background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)',
+                background: 'transparent',
                 color: isDark ? '#8db4a8' : '#6b7280',
                 cursor: 'pointer',
                 display: 'flex',
@@ -282,7 +309,20 @@ export function Toaster({
                 lineHeight: 1,
               }}
             >
-              ×
+              <span
+                aria-hidden="true"
+                style={{
+                  alignItems: 'center',
+                  background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)',
+                  borderRadius: 6,
+                  display: 'flex',
+                  height: 24,
+                  justifyContent: 'center',
+                  width: 24,
+                }}
+              >
+                ×
+              </span>
             </button>
 
             {shouldShowProgress ? (

@@ -53,6 +53,7 @@ export interface CoachTokens {
     dashedBorder: string;
     tapeBg: string;
     paperShadow: string;
+    paperHighlightBg: string;
     // ── C1 결과뷰(CoachAnalysisResultView) 표면 — 인라인 style 로 소비.
     //    LIGHT = 현재 라이트 hex, DARK = 현재 dark: Tailwind 클래스의 환산값(외형 동일 보장).
     c1RailBg: string;
@@ -117,6 +118,7 @@ const LIGHT: CoachTokens = {
     dashedBorder: '#d6c884',
     tapeBg: 'rgba(180,150,80,0.18)',
     paperShadow: '0 1px 0 #e9e2c8, 0 8px 24px -16px rgba(120,95,30,0.25)',
+    paperHighlightBg: '#fde68a',
     c1RailBg: '#f7fafc',
     c1RailBorder: '#eef2f0',
     c1TextHeading: '#0f1419',
@@ -179,6 +181,7 @@ const DARK: CoachTokens = {
     dashedBorder: '#4a3c1a',
     tapeBg: 'rgba(180,150,80,0.10)',
     paperShadow: '0 1px 0 #3a3420, 0 8px 24px -16px rgba(0,0,0,0.5)',
+    paperHighlightBg: 'rgba(250,204,21,0.35)',
     // dark: 클래스 환산: white/[0.02]=rgba(255,255,255,0.02), white/10=…0.10, black/20=rgba(0,0,0,0.20)
     c1RailBg: 'rgba(255,255,255,0.02)',
     c1RailBorder: 'rgba(255,255,255,0.10)',

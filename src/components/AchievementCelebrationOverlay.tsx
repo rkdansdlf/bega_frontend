@@ -33,7 +33,13 @@ const overlayStyle: CSSProperties = {
 
 const cardStyle: CSSProperties = {
   position: 'relative',
-  width: 'min(320px, calc(100vw - 48px))',
+  width: 'min(320px, 100%)',
+  maxHeight: 'calc(100dvh - 32px)',
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column',
+  overflowX: 'hidden',
+  overflowY: 'hidden',
   padding: '32px 24px 24px',
   borderRadius: 20,
   background: '#ffffff',
@@ -53,11 +59,11 @@ export default function AchievementCelebrationOverlay({
     }
     return Array.from({ length: PARTICLE_COUNT }, (_, index) => {
       const angle = (index / PARTICLE_COUNT) * Math.PI * 2;
-      const radius = 70 + Math.random() * 40;
+      const radius = 70 + (index % 4) * 10;
       return {
         tx: Math.cos(angle) * radius,
         ty: Math.sin(angle) * radius,
-        delay: Math.random() * 0.15,
+        delay: (index % 5) * 0.03,
       };
     });
   }, [achievement]);
@@ -70,50 +76,58 @@ export default function AchievementCelebrationOverlay({
     <>
       <style>{overlayCss}</style>
       <div
+        data-testid="achievement-celebration-overlay"
         role="dialog"
         aria-modal="true"
         aria-label="배지 획득"
         style={overlayStyle}
+        className="p-4 [padding-top:max(1rem,env(safe-area-inset-top))] [padding-right:max(1rem,env(safe-area-inset-right))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))] [padding-left:max(1rem,env(safe-area-inset-left))]"
         onClick={(event) => {
           if (event.target === event.currentTarget) {
             onClose();
           }
         }}
       >
-        <div style={cardStyle}>
-          <div className="relative mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#e8f5f0]">
-            {particles.map((particle, index) => (
-              <span
-                key={index}
-                aria-hidden="true"
-                className="absolute h-1.5 w-1.5 rounded-full bg-[#2d5f4f]"
-                style={{
-                  '--achievement-cel-tx': `${particle.tx}px`,
-                  '--achievement-cel-ty': `${particle.ty}px`,
-                  animation: `achievement-cel-burst 0.7s ${particle.delay}s ease-out forwards`,
-                } as CSSProperties}
-              />
-            ))}
-            <HomeSecondaryTrophyIcon className="h-9 w-9 text-[#2d5f4f]" />
+        <div data-testid="achievement-celebration-card" style={cardStyle}>
+          <div
+            data-testid="achievement-celebration-content"
+            className="min-h-0 overflow-y-auto overscroll-contain"
+          >
+            <div className="relative mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#e8f5f0]">
+              {particles.map((particle, index) => (
+                <span
+                  key={index}
+                  aria-hidden="true"
+                  className="absolute h-1.5 w-1.5 rounded-full bg-[#2d5f4f]"
+                  style={{
+                    '--achievement-cel-tx': `${particle.tx}px`,
+                    '--achievement-cel-ty': `${particle.ty}px`,
+                    animation: `achievement-cel-burst 0.7s ${particle.delay}s ease-out forwards`,
+                  } as CSSProperties}
+                />
+              ))}
+              <HomeSecondaryTrophyIcon className="h-9 w-9 text-[#2d5f4f]" />
+            </div>
+
+            <span className="inline-block rounded-full bg-[#173b34] px-3 py-1 text-11 font-black tracking-wide text-white">
+              배지 획득
+            </span>
+
+            <h2 className="mt-3 break-words text-lg font-black text-slate-950 [overflow-wrap:anywhere]">
+              {achievement.name}
+            </h2>
+            {achievement.description ? (
+              <p className="mt-1.5 break-words text-body font-semibold text-slate-500 [overflow-wrap:anywhere]">
+                {achievement.description}
+              </p>
+            ) : null}
           </div>
-
-          <span className="inline-block rounded-full bg-[#173b34] px-3 py-1 text-11 font-black tracking-wide text-white">
-            배지 획득
-          </span>
-
-          <h2 className="mt-3 text-lg font-black text-slate-950">
-            {achievement.name}
-          </h2>
-          {achievement.description ? (
-            <p className="mt-1.5 text-body font-semibold text-slate-500">
-              {achievement.description}
-            </p>
-          ) : null}
 
           <button
             type="button"
+            data-testid="achievement-celebration-confirm"
             onClick={onClose}
-            className="mt-5 w-full rounded-xl bg-[#2d5f4f] py-2.5 text-14 font-bold text-white transition-colors hover:bg-[#2f6c5c]"
+            className="mt-5 min-h-11 w-full shrink-0 rounded-xl bg-[#2d5f4f] px-4 py-2.5 text-14 font-bold text-white transition-colors hover:bg-[#2f6c5c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2d5f4f]"
           >
             확인
           </button>

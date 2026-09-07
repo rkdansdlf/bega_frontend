@@ -473,25 +473,25 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                             <Suspense
                                 fallback={(
                                     <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
-                                        <button type="button" className="group/comment flex min-h-11 min-w-11 items-center gap-1.5 rounded-full" aria-label={`댓글 ${commentCount}개`}>
+                                        <button type="button" className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`댓글 ${commentCount}개`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
                                             </span>
                                             <RollingNumber value={commentCount} />
                                         </button>
-                                        <button type="button" className="group/repost flex min-h-11 min-w-11 items-center gap-1.5 rounded-full" aria-label={`리포스트 (현재 ${repostCount}회)`}>
+                                        <button type="button" className="group/repost flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`리포스트 (현재 ${repostCount}회)`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
                                             </span>
                                             <RollingNumber value={repostCount} />
                                         </button>
-                                        <button type="button" className="group/like flex min-h-11 min-w-11 items-center gap-1.5 rounded-full" aria-label={`좋아요 (현재 ${likeCount}개)`}>
+                                        <button type="button" className="group/like flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`좋아요 (현재 ${likeCount}개)`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
                                             </span>
                                             <RollingNumber value={likeCount} />
                                         </button>
-                                        <button type="button" className="group/bookmark flex min-h-11 min-w-11 items-center gap-1.5 rounded-full" aria-label={`북마크 (현재 ${bookmarkCount}개)`}>
+                                        <button type="button" className="group/bookmark flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`북마크 (현재 ${bookmarkCount}개)`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
                                             </span>
@@ -510,7 +510,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                             <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
                                 <button
                                     type="button"
-                                    className="group/comment flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors hover:text-sky-500"
+                                    className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-sky-500 sm:gap-1.5"
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         openInteractions('comment');
@@ -524,7 +524,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                 </button>
                                 <button
                                     type="button"
-                                    className="group/repost flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors hover:text-[var(--cheer-repost-on)]"
+                                    className="group/repost flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-[var(--cheer-repost-on)] sm:gap-1.5"
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         openInteractions('repost');
@@ -544,7 +544,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                 </button>
                                 <button
                                     type="button"
-                                    className={`group/like flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors ${likeActive ? 'text-rose-500' : 'hover:text-rose-500'}`}
+                                    className={`group/like flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${likeActive ? 'text-rose-500' : 'hover:text-rose-500'}`}
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         openInteractions('like');
@@ -563,7 +563,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                 </button>
                                 <button
                                     type="button"
-                                    className={`group/bookmark flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors ${bookmarkActive ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
+                                    className={`group/bookmark flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${bookmarkActive ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         openInteractions('bookmark');

@@ -131,7 +131,7 @@ describe('Cheer mobile bottom navigation', () => {
     cy.get('[data-testid="cheer-bottom-nav-write"]').should(($button) => assertMinTarget($button, 'write nav'));
     cy.get('[data-testid="cheer-bottom-nav-bookmarks"]').should(($button) => assertMinTarget($button, 'bookmarks nav'));
     cy.get('[data-testid="cheer-bottom-nav-profile"]').should(($button) => assertMinTarget($button, 'profile nav'));
-    cy.contains('button', '전체').should(($button) => assertMinTarget($button, 'feed tab', { minHeight: 36 }));
+    cy.contains('button', '전체').should(($button) => assertMinTarget($button, 'feed tab'));
     cy.get('button[aria-label="이미지 첨부"]').should(($button) => assertMinTarget($button, 'image attach'));
     cy.get('[data-testid="write-post-btn"]').should(($button) => assertMinTarget($button, 'inline write button'));
     cy.get('[data-testid="cheer-post-card"]').first().within(() => {
@@ -192,5 +192,19 @@ describe('Cheer mobile bottom navigation', () => {
     cy.get('[data-testid="cheer-bottom-nav-write"]').should(($button) => assertMinTarget($button, 'bookmarks write nav'));
     cy.get('button[aria-label="글쓰기"]').click();
     cy.location('pathname').should('eq', '/cheer/write');
+  });
+
+  it('opens BEGA from the bookmarks nav without a floating mobile overlay', () => {
+    cy.visit('/cheer/bookmarks', {
+      onBeforeLoad: seedLoggedInUser,
+    });
+    cy.wait('@getBookmarks');
+
+    cy.get('[data-testid="chatbot-request-launcher"]').should('not.be.visible');
+    cy.get('[data-testid="cheer-bottom-nav-chatbot"]')
+      .should('be.visible')
+      .and(($button) => assertMinTarget($button, 'bookmarks chatbot nav'))
+      .click();
+    cy.get('[data-testid="chatbot-panel"]', { timeout: 10000 }).should('be.visible');
   });
 });

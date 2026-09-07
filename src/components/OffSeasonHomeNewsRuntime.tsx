@@ -35,14 +35,14 @@ export default function OffSeasonHomeNewsRuntime({
   onNavigateList,
 }: OffSeasonHomeNewsRuntimeProps) {
   return (
-    <>
+    <div className="space-y-8" data-testid="offseason-home-news-runtime">
       <section>
         <div className="mb-6 flex flex-wrap items-center gap-3 md:mb-8">
           <div className="rounded-lg bg-primary p-1.5 md:rounded-xl md:p-2">
             <TrendingUpIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
           <h3 className="min-w-0 text-xl font-black text-primary md:text-2xl">2025 주요 이적 소식</h3>
-          <OffseasonPill className="ml-2 animate-pulse border-none px-2 py-1 text-15 text-white md:px-3 md:text-15" style={{ backgroundColor: '#ef4444' }}>
+          <OffseasonPill className="border-none px-2 py-1 text-15 text-white md:px-3 md:text-15" style={{ backgroundColor: '#ef4444' }}>
             Breaking
           </OffseasonPill>
         </div>
@@ -73,7 +73,7 @@ export default function OffSeasonHomeNewsRuntime({
         ) : (
           <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2">
             {bigEvents.map((news) => (
-              <Card key={news.id} className="group relative overflow-hidden border-none bg-white p-4 ring-1 ring-black/5 transition-all cursor-pointer hover:-translate-y-1 hover:shadow-xl md:p-6 dark:bg-background dark:ring-white/10">
+              <Card key={news.id} className="group relative overflow-hidden border-none bg-white p-4 ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-xl md:p-6 dark:bg-background dark:ring-white/10">
                 <div className="absolute top-0 right-0 -mt-10 -mr-10 h-20 w-20 rounded-bl-full bg-yellow-400/10 transition-transform group-hover:scale-150" />
                 <div className="relative z-10 flex items-start gap-4 md:gap-5">
                   <div className="flex-shrink-0">
@@ -82,14 +82,14 @@ export default function OffSeasonHomeNewsRuntime({
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1.5 flex items-center gap-2 md:mb-2">
+                    <div className="mb-1.5 flex min-w-0 flex-wrap items-center gap-2 md:mb-2">
                       <OffseasonPill className="bg-primary px-2 py-0.5 text-15 font-bold text-white">{news.section}</OffseasonPill>
-                      <span className="text-15 font-semibold text-gray-400 dark:text-white">{news.date}</span>
+                      <span className="min-w-0 break-words text-15 font-semibold text-gray-400 [overflow-wrap:anywhere] dark:text-white">{news.date}</span>
                     </div>
-                    <p className="line-clamp-1 text-base font-bold text-gray-900 transition-colors group-hover:text-primary md:text-lg dark:text-white">
+                    <p className="line-clamp-2 min-w-0 break-words text-base font-bold text-gray-900 [overflow-wrap:anywhere] transition-colors group-hover:text-primary md:text-lg dark:text-white">
                       {news.player} ({getTeamName(news.team)})
                     </p>
-                    <div className="mt-1 line-clamp-1 text-15 text-gray-600 dark:text-white">
+                    <div className="mt-1 line-clamp-2 min-w-0 break-words text-15 text-gray-600 [overflow-wrap:anywhere] dark:text-white">
                       {formatRemarks(news.remarks)}
                     </div>
                   </div>
@@ -108,12 +108,13 @@ export default function OffSeasonHomeNewsRuntime({
           // The important modifier is required: plain `whitespace-normal` is the
           // same specificity as the base's `whitespace-nowrap`, so the winner is
           // decided by Tailwind's output order, not by class-attribute order.
-          className="h-auto max-w-full !whitespace-normal rounded-full border border-primary/20 bg-white px-6 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-primary/5 hover:shadow-xl sm:px-8 sm:py-6 dark:bg-card"
+          className="h-auto min-h-11 max-w-full break-words !whitespace-normal rounded-full border border-primary/20 bg-white px-6 py-4 text-lg font-bold text-primary shadow-lg [overflow-wrap:anywhere] transition-all hover:bg-primary/5 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary sm:px-8 sm:py-6 dark:bg-card"
+          data-testid="offseason-home-list-link"
         >
           전체 이적 현황 보러가기 ({movementsCount}건)
           <ChevronDownIcon className="ml-2 h-5 w-5 -rotate-90" />
         </Button>
       </section>
-    </>
+    </div>
   );
 }

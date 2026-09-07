@@ -132,4 +132,31 @@ describe('Badge Showcase in Diary Statistics', () => {
         cy.contains(/업적 배지 \(3\/5\)/).scrollIntoView().should('be.visible');
         cy.get('[data-screen-label="나의 기록"]').should('exist');
     });
+
+    it('keeps badge cards compact without horizontal overflow through the mobile breakpoint', () => {
+        openStats();
+
+        [320, 390, 767].forEach((width) => {
+            cy.viewport(width, 844);
+            cy.getBySel('mypage-badge-showcase').scrollIntoView().should('be.visible');
+            cy.getBySel('mypage-badge-showcase')
+                .find('[data-testid="mypage-badge-orb"]')
+                .first()
+                .then(($orb) => {
+                    const rect = $orb[0].getBoundingClientRect();
+                    expect(rect.width, `${width}px badge orb width`).to.be.closeTo(44, 0.01);
+                    expect(rect.height, `${width}px badge orb height`).to.be.closeTo(44, 0.01);
+                });
+            cy.getBySel('mypage-badge-showcase')
+                .find('.mypage-season-badge-desc')
+                .first()
+                .then(($description) => {
+                    expect(getComputedStyle($description[0]).webkitLineClamp).to.eq('2');
+                });
+            cy.document().then((doc) => {
+                expect(doc.documentElement.scrollWidth, `${width}px document width`)
+                    .to.be.at.most(doc.documentElement.clientWidth);
+            });
+        });
+    });
 });

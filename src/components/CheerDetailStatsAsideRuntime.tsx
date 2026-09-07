@@ -35,7 +35,7 @@ export default function CheerDetailStatsAsideRuntime({
                 <button
                     type="button"
                     onClick={() => setIsStatsOpen((prev) => !prev)}
-                    className="flex w-full items-center justify-between rounded-md py-0.5 text-left"
+                    className="flex min-h-11 w-full items-center justify-between rounded-md px-2 py-1 text-left"
                     aria-label="응원 현황 토글"
                     aria-expanded={isStatsOpen}
                     aria-controls="cheer-detail-stats"

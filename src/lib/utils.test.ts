@@ -22,6 +22,18 @@ test('preserves distinct text size and color utilities', () => {
     cn('text-sm font-medium', 'text-gray-500 dark:text-white py-2'),
     'text-sm font-medium text-gray-500 dark:text-white py-2',
   );
+  assert.equal(
+    cn('text-15', 'text-muted-foreground'),
+    'text-15 text-muted-foreground',
+  );
+  assert.equal(
+    cn('text-caption text-muted-foreground', 'text-17'),
+    'text-muted-foreground text-17',
+  );
+  assert.equal(
+    cn('overflow-hidden text-ellipsis whitespace-nowrap', 'text-slate-500'),
+    'overflow-hidden text-ellipsis whitespace-nowrap text-slate-500',
+  );
 });
 
 test('matches the project button override patterns', () => {

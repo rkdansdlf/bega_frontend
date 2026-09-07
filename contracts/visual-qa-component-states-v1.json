@@ -32883,19 +32883,31 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32909,19 +32921,31 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32935,19 +32959,31 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             },
             {
               "id": "next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]"
             }
           ],
@@ -32961,40 +32997,67 @@
             {
               "id": "close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
             {
               "id": "backdrop",
               "selector": "[data-testid=\"image-lightbox\"]",
-              "clickPosition": { "x": 1, "y": 1 },
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "clickPosition": {
+                "x": 1,
+                "y": 1
+              },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
             {
               "id": "prev-first-to-last",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "first",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "prev-middle-to-first",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "next-middle-to-last",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "next-last-to-first",
               "selector": "[data-testid=\"image-lightbox-next\"]",
-              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "last",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
             }
           ],
@@ -33009,7 +33072,11 @@
               "id": "escape",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Escape",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33017,63 +33084,99 @@
               "id": "arrow-left-first-to-last",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowLeft",
-              "when": { "data": "populated", "variant.index": "first", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "first",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "arrow-left-middle-to-first",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowLeft",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "arrow-right-middle-to-last",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowRight",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "arrow-right-last-to-first",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "ArrowRight",
-              "when": { "data": "populated", "variant.index": "last", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "last",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "tab-close-to-prev",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Tab",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-prev\"]:focus-visible"
             },
             {
               "id": "tab-prev-to-next",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Tab",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
             },
             {
               "id": "tab-next-to-close",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Tab",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-close\"]:focus-visible"
             },
             {
               "id": "shift-tab-close-to-next",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Shift+Tab",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible"
             },
             {
               "id": "enter-close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Enter",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33081,21 +33184,33 @@
               "id": "enter-prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Enter",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "enter-next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Enter",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             },
             {
               "id": "space-close",
               "selector": "[data-testid=\"image-lightbox-close\"]",
               "key": "Space",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
               "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]"
             },
@@ -33103,14 +33218,22 @@
               "id": "space-prev",
               "selector": "[data-testid=\"image-lightbox-prev\"]",
               "key": "Space",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]"
             },
             {
               "id": "space-next",
               "selector": "[data-testid=\"image-lightbox-next\"]",
               "key": "Space",
-              "when": { "data": "populated", "variant.index": "middle", "variant.theme": "light" },
+              "when": {
+                "data": "populated",
+                "variant.index": "middle",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]"
             }
           ],
@@ -33120,16 +33243,96 @@
         }
       },
       "constraints": [
-        { "excludeWhen": { "data": "single", "variant.index": "first" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "single", "variant.index": "middle" }, "reason": "A single image has only index zero.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "single", "variant.index": "last" }, "reason": "A single image uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "populated", "variant.index": "only" }, "reason": "The populated fixture is fixed to three images and exposes first, middle, and last positions rather than only.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "maximum-supported", "variant.index": "only" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "maximum-supported", "variant.index": "first" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "maximum-supported", "variant.index": "middle" }, "reason": "The ten-image fixture is intentionally captured at its last legal index.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "broken-image", "variant.index": "first" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "broken-image", "variant.index": "middle" }, "reason": "The broken fixture contains one intentionally invalid source.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" },
-        { "excludeWhen": { "data": "broken-image", "variant.index": "last" }, "reason": "The broken fixture uses the explicit only position.", "owner": "frontend-community", "testEvidence": "src/components/ImageLightbox.mobile.test.tsx" }
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.index": "first"
+          },
+          "reason": "A single image has only index zero.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.index": "middle"
+          },
+          "reason": "A single image has only index zero.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "variant.index": "last"
+          },
+          "reason": "A single image uses the explicit only position.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "variant.index": "only"
+          },
+          "reason": "The populated fixture is fixed to three images and exposes first, middle, and last positions rather than only.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.index": "only"
+          },
+          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.index": "first"
+          },
+          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "variant.index": "middle"
+          },
+          "reason": "The ten-image fixture is intentionally captured at its last legal index.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "variant.index": "first"
+          },
+          "reason": "The broken fixture contains one intentionally invalid source.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "variant.index": "middle"
+          },
+          "reason": "The broken fixture contains one intentionally invalid source.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "variant.index": "last"
+          },
+          "reason": "The broken fixture uses the explicit only position.",
+          "owner": "frontend-community",
+          "testEvidence": "src/components/ImageLightbox.mobile.test.tsx"
+        }
       ]
     },
     {
@@ -72268,9 +72471,33 @@
         "hover": {
           "action": "hover",
           "targets": [
-            { "id": "complete-hover", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
-            { "id": "save-hover", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
-            { "id": "share-hover", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+            {
+              "id": "complete-hover",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "save-hover",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "share-hover",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              }
+            }
           ],
           "reason": "Each visible action exposes hover feedback without callbacks.",
           "owner": "frontend-prediction",
@@ -72279,9 +72506,33 @@
         "focus-visible": {
           "action": "focus-visible",
           "targets": [
-            { "id": "complete-focus", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
-            { "id": "save-focus", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
-            { "id": "share-focus", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+            {
+              "id": "complete-focus",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "save-focus",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "share-focus",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              }
+            }
           ],
           "reason": "Each visible action exposes a contained keyboard focus ring without callbacks.",
           "owner": "frontend-prediction",
@@ -72290,9 +72541,33 @@
         "pressed": {
           "action": "pressed",
           "targets": [
-            { "id": "complete-pressed", "selector": "[data-testid=\"ranking-complete-btn\"]", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" } },
-            { "id": "save-pressed", "selector": "[data-testid=\"ranking-save-btn\"]", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" } },
-            { "id": "share-pressed", "selector": "[data-testid=\"ranking-share-btn\"]", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" } }
+            {
+              "id": "complete-pressed",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "save-pressed",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              }
+            },
+            {
+              "id": "share-pressed",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              }
+            }
           ],
           "reason": "Each visible action exposes pressed feedback without firing before release.",
           "owner": "frontend-prediction",
@@ -72304,19 +72579,31 @@
             {
               "id": "complete-click",
               "selector": "[data-testid=\"ranking-complete-btn\"]",
-              "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" },
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
             },
             {
               "id": "save-click",
               "selector": "[data-testid=\"ranking-save-btn\"]",
-              "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" },
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
             },
             {
               "id": "share-click",
               "selector": "[data-testid=\"ranking-share-btn\"]",
-              "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" },
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              },
               "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
             }
           ],
@@ -72327,14 +72614,94 @@
         "keyboard-navigation": {
           "action": "press-key",
           "targets": [
-            { "id": "complete-enter", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
-            { "id": "complete-space", "selector": "[data-testid=\"ranking-complete-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "complete", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]" },
-            { "id": "save-enter", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
-            { "id": "save-space", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]" },
-            { "id": "share-enter", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Enter", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
-            { "id": "share-space", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Space", "when": { "data": "single", "variant.phase": "saved", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]" },
-            { "id": "tab-save-share", "selector": "[data-testid=\"ranking-save-btn\"]", "key": "Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible" },
-            { "id": "shift-tab-share-save", "selector": "[data-testid=\"ranking-share-btn\"]", "key": "Shift+Tab", "when": { "data": "single", "variant.phase": "ready-to-save", "variant.theme": "light" }, "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible" }
+            {
+              "id": "complete-enter",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "key": "Enter",
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
+            },
+            {
+              "id": "complete-space",
+              "selector": "[data-testid=\"ranking-complete-btn\"]",
+              "key": "Space",
+              "when": {
+                "data": "single",
+                "variant.phase": "complete",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"1\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"][data-vqa-effective-phase=\"ready-to-save\"] [data-testid=\"ranking-save-btn\"]"
+            },
+            {
+              "id": "save-enter",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "key": "Enter",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
+            },
+            {
+              "id": "save-space",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "key": "Space",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"1\"][data-vqa-share-count=\"0\"][data-vqa-save-requested=\"true\"]"
+            },
+            {
+              "id": "share-enter",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "key": "Enter",
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
+            },
+            {
+              "id": "share-space",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "key": "Space",
+              "when": {
+                "data": "single",
+                "variant.phase": "saved",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"1\"][data-vqa-share-requested=\"true\"]"
+            },
+            {
+              "id": "tab-save-share",
+              "selector": "[data-testid=\"ranking-save-btn\"]",
+              "key": "Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-share-btn\"]:focus-visible"
+            },
+            {
+              "id": "shift-tab-share-save",
+              "selector": "[data-testid=\"ranking-share-btn\"]",
+              "key": "Shift+Tab",
+              "when": {
+                "data": "single",
+                "variant.phase": "ready-to-save",
+                "variant.theme": "light"
+              },
+              "waitForSelector": "[data-testid=\"ranking-completion-stateful-host\"][data-vqa-complete-count=\"0\"][data-vqa-save-count=\"0\"][data-vqa-share-count=\"0\"] [data-testid=\"ranking-save-btn\"]:focus-visible"
+            }
           ],
           "reason": "Enter and Space cover each action; Tab and Shift+Tab cover both directions in the ready stack with zero callbacks.",
           "owner": "frontend-prediction",
@@ -78750,28 +79117,1657 @@
     },
     {
       "id": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "seat-map-legend"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "null-optional",
+            "populated",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Covers the static synthetic SeatMapLegend data shapes at its direct leaf boundary.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapLegend.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "SeatMapLegend is a direct presentational leaf with no permission state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapLegend.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "SeatMapLegend is a direct leaf and has no callback/API dispatch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapLegend.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "SeatMapLegend has no system-state dependency.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapLegend.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The leaf renders distinct light and dark category colors.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapLegend.mobile.test.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "seat-map-runtime-shell"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Covers every bounded synthetic copy pressure shape forwarded through the runtime shell into resolved, loading, and error surfaces.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "SeatMapRuntimeShell selects no identity or authorization branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The owned retry control is enumerated by StadiumSeatMapErrorFallback; this shell's real retry recovery is covered by its browser regression test.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+          }
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading",
+            "error-503"
+          ],
+          "reason": "The shell maps idle to resolved content and owns Suspense loading and render-error fallback branches.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "geometry",
+            "values": [
+              "coordinate",
+              "non-coordinate"
+            ],
+            "reason": "The only caller supplies both registry geometry classifications and the shell must remain stable for both.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The shell-owned loading and error surfaces expose distinct light and dark styling.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "seat-map-section-finder"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "null-optional",
+            "populated",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Covers empty, bounded populated, missing optional metadata, Korean copy pressure, unbroken tokens, and the maximum supported synthetic block list.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "SeatMapSectionFinder selects no identity or authorization branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "input",
+            "focus-visible",
+            "hover",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "Executes matching and empty-result search, keyboard focus, pointer hover, click selection, and native Enter and Space selection without duplicate callback dispatch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The finder is a synchronous controlled leaf with no transport or asynchronous system state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "filter",
+            "values": [
+              "all",
+              "restricted"
+            ],
+            "reason": "Both the null all-category path and the explicit category inclusion path are owned by the component.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The finder owns distinct light and dark surfaces, borders, category accents, and text colors.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "match-query",
+              "selector": "[data-testid=\"visual-qa-section-finder-block-search\"]",
+              "value": "SYNTHETIC-MATCH-0",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            },
+            {
+              "id": "no-result-query",
+              "selector": "[data-testid=\"visual-qa-section-finder-block-search\"]",
+              "value": "SYNTHETIC-NO-RESULT"
+            }
+          ],
+          "reason": "The real search input is filled with a unique matching token and a guaranteed empty-result token.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "search",
+              "selector": "[data-testid=\"visual-qa-section-finder-block-search\"]"
+            },
+            {
+              "id": "item",
+              "selector": "[data-testid=\"visual-qa-section-finder-section-finder-item-synthetic-0\"]",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            }
+          ],
+          "reason": "The search field and the first available result remain keyboard reachable at mobile widths.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "item",
+              "selector": "[data-testid=\"visual-qa-section-finder-section-finder-item-synthetic-0\"]",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            }
+          ],
+          "reason": "The first result executes the owned hover callback and exposes its pointer treatment.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "item",
+              "selector": "[data-testid=\"visual-qa-section-finder-section-finder-item-synthetic-0\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-section-finder-section-finder\"][data-visual-qa-selected-id=\"synthetic-0\"]",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            }
+          ],
+          "reason": "The selected result is rendered and its real click handler must dispatch exactly once.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "enter",
+              "selector": "[data-testid=\"visual-qa-section-finder-section-finder-item-synthetic-0\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-section-finder-section-finder\"][data-visual-qa-selected-id=\"synthetic-0\"]",
+              "key": "Enter",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            },
+            {
+              "id": "space",
+              "selector": "[data-testid=\"visual-qa-section-finder-section-finder-item-synthetic-0\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-section-finder-section-finder\"][data-visual-qa-selected-id=\"synthetic-0\"]",
+              "key": "Space",
+              "when": {
+                "data": [
+                  "single",
+                  "null-optional",
+                  "populated",
+                  "long-korean",
+                  "unbroken-token",
+                  "maximum-supported"
+                ]
+              }
+            }
+          ],
+          "reason": "Native button Enter and Space activation must each dispatch one selection callback without duplication.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapSectionFinder.mobile.test.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "seat-map-template-shell"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "populated"
+          ],
+          "reason": "Uses populated synthetic child nodes while variant.composition covers the bare shell, optional nullability, filter precedence, panel branches, reserved space, auxiliary suppression, toast, and fullscreen overlays.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "SeatMapTemplateShell is a presentation composition component with no identity or authorization branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "focus-visible",
+            "selected"
+          ],
+          "reason": "The fullscreen close control is verified for keyboard focus and a single click callback; non-fullscreen compositions are static.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The shell owns no transport, asynchronous loading, or error state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "composition",
+            "values": [
+              "base",
+              "optional-populated",
+              "null-optional",
+              "filter-fallback",
+              "filter-override",
+              "mobile-secondary",
+              "mobile-legacy-side",
+              "mobile-bottom-sheet",
+              "mobile-side-reserve",
+              "desktop-secondary",
+              "desktop-side",
+              "desktop-both",
+              "auxiliary-guide",
+              "toast",
+              "fullscreen",
+              "fullscreen-toast"
+            ],
+            "reason": "Enumerates every shell-owned composition branch independently from the populated synthetic child data.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          },
+          {
+            "name": "pressure",
+            "values": [
+              "default",
+              "long-korean",
+              "unbroken-token",
+              "maximum-supported"
+            ],
+            "reason": "Exercises ordinary copy, Korean wrapping pressure, an unbroken token, and the maximum supported synthetic copy in every shell-owned text surface.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          },
+          {
+            "name": "layout",
+            "values": [
+              "mobile",
+              "desktop"
+            ],
+            "reason": "The component owns distinct mobile and desktop composition branches, including their valid panel-only states.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The shell owns light and dark frame, overlay, border, text, and accent styling.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"visual-qa-seat-map-template-shell-fullscreen-close\"]",
+              "when": {
+                "variant.composition": [
+                  "fullscreen",
+                  "fullscreen-toast"
+                ]
+              }
+            }
+          ],
+          "reason": "The real fullscreen close control remains keyboard reachable under every pressure, layout, and theme.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"visual-qa-seat-map-template-shell-fullscreen-close\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-seat-map-template-shell-map\"][data-visual-qa-close-count=\"1\"]",
+              "waitForHiddenSelector": "[data-testid=\"visual-qa-seat-map-template-shell-fullscreen\"]",
+              "when": {
+                "variant.composition": [
+                  "fullscreen",
+                  "fullscreen-toast"
+                ]
+              }
+            }
+          ],
+          "reason": "The real close button executes the controlled callback exactly once and hides the QA dialog surface.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-secondary",
+            "variant.layout": "desktop"
+          },
+          "reason": "This composition is owned only by the mobile branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-legacy-side",
+            "variant.layout": "desktop"
+          },
+          "reason": "This composition is owned only by the mobile branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-bottom-sheet",
+            "variant.layout": "desktop"
+          },
+          "reason": "This composition is owned only by the mobile branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-side-reserve",
+            "variant.layout": "desktop"
+          },
+          "reason": "This composition is owned only by the mobile branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-secondary",
+            "variant.layout": "mobile"
+          },
+          "reason": "This composition is owned only by the desktop branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-side",
+            "variant.layout": "mobile"
+          },
+          "reason": "This composition is owned only by the desktop branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-both",
+            "variant.layout": "mobile"
+          },
+          "reason": "This composition is owned only by the desktop branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "base",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "base",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "optional-populated",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "optional-populated",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "null-optional",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "null-optional",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "filter-fallback",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "filter-fallback",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "filter-override",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "filter-override",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-secondary",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-secondary",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-legacy-side",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-legacy-side",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-bottom-sheet",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-bottom-sheet",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-side-reserve",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "mobile-side-reserve",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-secondary",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-secondary",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-side",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-side",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-both",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "desktop-both",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "auxiliary-guide",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "auxiliary-guide",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "toast",
+            "interactions": "focus-visible"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.composition": "toast",
+            "interactions": "selected"
+          },
+          "reason": "The close control exists only in fullscreen and fullscreen-toast compositions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatMapTemplateShell.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "seat-view-direct-upload-modal"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "maximum-supported"
+          ],
+          "reason": "The form owns empty, normally populated, and maximum supported content pressure branches.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authentication is enforced by each parent seat-map before this shared modal is mounted.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "selected",
+            "input"
+          ],
+          "reason": "The modal owns pointer, keyboard focus, selection, and controlled-input presentations.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading",
+            "error-503"
+          ],
+          "reason": "The modal owns idle, in-flight upload, and upload-failure lifecycle presentations.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "feedback",
+            "values": [
+              "none",
+              "file-required",
+              "rating-required",
+              "tag-limit"
+            ],
+            "reason": "File-required, rating-required, and tag-limit feedback are component-local validation presentations.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+          },
+          {
+            "name": "location",
+            "values": [
+              "missing",
+              "short",
+              "long-korean",
+              "unbroken-token"
+            ],
+            "reason": "Optional section and block props plus long and unbroken location labels change header pressure.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The modal and its accent, error, tag, input, and overlay surfaces have explicit light and dark presentations.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"seat-view-direct-upload-close\"]"
+            },
+            {
+              "id": "file",
+              "selector": "[data-testid=\"seat-view-direct-upload-file-surface\"]"
+            },
+            {
+              "id": "rating",
+              "selector": "[data-testid=\"seat-view-direct-upload-rating-5\"]"
+            },
+            {
+              "id": "tag",
+              "selector": "[data-testid=\"seat-view-direct-upload-tag-1\"]"
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"seat-view-direct-upload-cancel\"]"
+            },
+            {
+              "id": "submit",
+              "selector": "[data-testid=\"seat-view-direct-upload-submit\"]"
+            }
+          ],
+          "reason": "Every pointer control type owned by the modal exposes hover feedback without invoking callbacks.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"seat-view-direct-upload-close\"]"
+            },
+            {
+              "id": "file",
+              "selector": "[data-testid=\"seat-view-direct-upload-file\"]"
+            },
+            {
+              "id": "row",
+              "selector": "[data-testid=\"seat-view-direct-upload-row\"]"
+            },
+            {
+              "id": "seat",
+              "selector": "[data-testid=\"seat-view-direct-upload-seat\"]"
+            },
+            {
+              "id": "rating",
+              "selector": "[data-testid=\"seat-view-direct-upload-rating-5\"]"
+            },
+            {
+              "id": "tag",
+              "selector": "[data-testid=\"seat-view-direct-upload-tag-1\"]"
+            },
+            {
+              "id": "comment",
+              "selector": "[data-testid=\"seat-view-direct-upload-comment\"]"
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"seat-view-direct-upload-cancel\"]"
+            },
+            {
+              "id": "submit",
+              "selector": "[data-testid=\"seat-view-direct-upload-submit\"]"
+            }
+          ],
+          "reason": "Every keyboard-reachable control type owned by the modal must expose a visible focus presentation.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "targets": [
+            {
+              "id": "close",
+              "selector": "[data-testid=\"seat-view-direct-upload-close\"]"
+            },
+            {
+              "id": "file",
+              "selector": "[data-testid=\"seat-view-direct-upload-file-surface\"]"
+            },
+            {
+              "id": "rating",
+              "selector": "[data-testid=\"seat-view-direct-upload-rating-5\"]"
+            },
+            {
+              "id": "tag",
+              "selector": "[data-testid=\"seat-view-direct-upload-tag-1\"]"
+            },
+            {
+              "id": "cancel",
+              "selector": "[data-testid=\"seat-view-direct-upload-cancel\"]"
+            },
+            {
+              "id": "submit",
+              "selector": "[data-testid=\"seat-view-direct-upload-submit\"]"
+            }
+          ],
+          "reason": "Every pointer control type owned by the modal keeps its pressed state measurable through capture.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "rating",
+              "selector": "[data-testid=\"seat-view-direct-upload-rating-5\"]",
+              "waitForSelector": "[data-testid=\"seat-view-direct-upload-rating-5\"][aria-pressed=\"true\"]"
+            },
+            {
+              "id": "tag",
+              "selector": "[data-testid=\"seat-view-direct-upload-tag-1\"]",
+              "waitForSelector": "[data-testid=\"seat-view-direct-upload-tag-1\"][aria-pressed=\"true\"]"
+            }
+          ],
+          "reason": "Rating and tag controls own distinct selected states that must be captured after real clicks.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        "input": {
+          "action": "fill",
+          "targets": [
+            {
+              "id": "row",
+              "selector": "[data-testid=\"seat-view-direct-upload-row\"]",
+              "value": "합성 11열"
+            },
+            {
+              "id": "seat",
+              "selector": "[data-testid=\"seat-view-direct-upload-seat\"]",
+              "value": "합성 22번"
+            },
+            {
+              "id": "comment",
+              "selector": "[data-testid=\"seat-view-direct-upload-comment\"]",
+              "value": "모바일 합성 시야 후기 입력"
+            }
+          ],
+          "reason": "Every controlled text field must retain and display browser-entered Korean input.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "system": "idle",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "system": "idle",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle states use the maximum populated form fixture only.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle states use the maximum populated form fixture only.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "system": "idle",
+            "variant.feedback": "file-required"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "system": "idle",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle states use the maximum populated form fixture only.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "populated",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle states use the maximum populated form fixture only.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "system": "idle",
+            "variant.feedback": "file-required"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "maximum-supported",
+            "system": "idle",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "This idle form-data and feedback tuple cannot occur in the modal-owned state model.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Lifecycle loading and upload failure do not render a simultaneous validation feedback branch.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "data": "empty"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "data": "maximum-supported"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.location": "missing"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.location": "long-korean"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "hover",
+            "variant.location": "unbroken-token"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "data": "empty"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "data": "maximum-supported"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.location": "missing"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.location": "long-korean"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "focus-visible",
+            "variant.location": "unbroken-token"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "data": "empty"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "data": "maximum-supported"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.location": "missing"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.location": "long-korean"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "pressed",
+            "variant.location": "unbroken-token"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "data": "empty"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "data": "maximum-supported"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.location": "missing"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.location": "long-korean"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "selected",
+            "variant.location": "unbroken-token"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "data": "empty"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "data": "maximum-supported"
+          },
+          "reason": "Executable interaction captures use the normally populated form so the owned target remains present and enabled.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "system": "loading"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "system": "error-503"
+          },
+          "reason": "Loading and upload-failure lifecycle captures are static and do not admit executable control interactions.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.feedback": "file-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.feedback": "rating-required"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.feedback": "tag-limit"
+          },
+          "reason": "Validation feedback captures remain static; executable control interactions use the no-feedback baseline.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.location": "missing"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.location": "long-korean"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        },
+        {
+          "excludeWhen": {
+            "interactions": "input",
+            "variant.location": "unbroken-token"
+          },
+          "reason": "Executable control interactions use the short location fixture; location pressure is covered independently by default captures.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/SeatViewDirectUploadModal.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary",

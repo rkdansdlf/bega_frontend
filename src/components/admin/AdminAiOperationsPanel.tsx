@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 
 import type {
   AdminCoachAutoBriefOpsHealth,
@@ -7,6 +7,12 @@ import type {
 
 const AdminCoachAutoBriefOpsPanelRuntime = lazy(() => import('./AdminCoachAutoBriefOpsPanelRuntime'));
 const AdminAiReleaseDecisionRuntime = lazy(() => import('./AdminAiReleaseDecisionRuntime'));
+
+export interface AdminAiOperationsPanelVisualQaState {
+  releaseDecisionPhase: 'fallback' | 'resolved';
+  autoBriefPhase: 'fallback' | 'resolved';
+  copy: string;
+}
 
 export interface AdminAiOperationsPanelProps {
   autoBriefOpsPanel: {
@@ -24,35 +30,96 @@ export interface AdminAiOperationsPanelProps {
     onApplyCustomWindow: () => void | Promise<void>;
     onCopyCommand: () => void | Promise<void>;
   };
+  visualQaStateOverride?: AdminAiOperationsPanelVisualQaState;
 }
+
+const AutoBriefFallback = () => (
+  <div
+    data-testid="admin-ai-operations-auto-brief-fallback"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+    className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-12 text-center text-caption text-slate-400 [overflow-wrap:anywhere]"
+  >
+    Coach auto brief ops 패널 로딩 중...
+  </div>
+);
+
+const ReleaseDecisionFallback = ({ autoBriefPanel }: { autoBriefPanel: ReactNode }) => (
+  <div
+    data-testid="admin-ai-operations-layout"
+    className="grid min-w-0 gap-6 overflow-hidden xl:grid-cols-[420px_minmax(0,1fr)]"
+  >
+    {autoBriefPanel}
+    <div
+      data-testid="admin-ai-operations-release-fallback"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400 [overflow-wrap:anywhere]"
+    >
+      AI 릴리즈 결정 패널 로딩 중...
+    </div>
+  </div>
+);
 
 export function AdminAiOperationsPanel({
   autoBriefOpsPanel,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AdminAiOperationsPanelProps) {
-  const autoBriefPanel = (
-    <Suspense
-      fallback={(
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-12 text-center text-caption text-slate-400">
-          Coach auto brief ops 패널 로딩 중...
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const autoBriefPanel = visualQaStateOverride
+    ? visualQaStateOverride.autoBriefPhase === 'fallback'
+      ? <AutoBriefFallback />
+      : (
+        <section
+          data-testid="admin-ai-operations-auto-brief-resolved"
+          className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-caption text-slate-300 [overflow-wrap:anywhere]"
+        >
+          {visualQaStateOverride.copy}
+        </section>
+      )
+    : (
+      <Suspense fallback={<AutoBriefFallback />}>
+        <AdminCoachAutoBriefOpsPanelRuntime {...autoBriefOpsPanel} />
+      </Suspense>
+    );
+
+  const content = visualQaStateOverride?.releaseDecisionPhase === 'fallback'
+    ? <ReleaseDecisionFallback autoBriefPanel={autoBriefPanel} />
+    : visualQaStateOverride?.releaseDecisionPhase === 'resolved'
+      ? (
+        <div
+          data-testid="admin-ai-operations-layout"
+          className="grid min-w-0 gap-6 overflow-hidden xl:grid-cols-[420px_minmax(0,1fr)]"
+        >
+          {autoBriefPanel}
+          <section
+            data-testid="admin-ai-operations-release-resolved"
+            className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-caption text-slate-300 [overflow-wrap:anywhere]"
+          >
+            {visualQaStateOverride.copy}
+          </section>
         </div>
-      )}
-    >
-      <AdminCoachAutoBriefOpsPanelRuntime {...autoBriefOpsPanel} />
-    </Suspense>
-  );
+      )
+      : (
+        <Suspense fallback={<ReleaseDecisionFallback autoBriefPanel={autoBriefPanel} />}>
+          <AdminAiReleaseDecisionRuntime autoBriefPanel={autoBriefPanel} />
+        </Suspense>
+      );
 
   return (
-    <Suspense
-      fallback={(
-        <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
-          {autoBriefPanel}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">
-            AI 릴리즈 결정 패널 로딩 중...
-          </div>
-        </div>
-      )}
+    <section
+      data-testid="admin-ai-operations-panel"
+      aria-busy={visualQaStateOverride
+        ? visualQaStateOverride.releaseDecisionPhase === 'fallback'
+          || visualQaStateOverride.autoBriefPhase === 'fallback'
+        : undefined}
+      className="min-w-0 overflow-hidden"
     >
-      <AdminAiReleaseDecisionRuntime autoBriefPanel={autoBriefPanel} />
-    </Suspense>
+      {content}
+    </section>
   );
 }

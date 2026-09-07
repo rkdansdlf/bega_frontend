@@ -50,7 +50,11 @@ const renderActionIcon = (icon: typeof ENTRY_ACTIONS[number]['icon']) => {
   );
 };
 
-export default function WelcomeGuide() {
+interface WelcomeGuideProps {
+  logoSrc?: string;
+}
+
+export default function WelcomeGuide({ logoSrc = baseballLogo }: WelcomeGuideProps = {}) {
   const { showWelcome, setShowWelcome } = useUIStore(
     useShallow((state) => ({
       showWelcome: state.showWelcome,
@@ -106,7 +110,7 @@ export default function WelcomeGuide() {
           </div>
         ) : (
           <img
-            src={baseballLogo}
+            src={logoSrc}
             alt="BEGA 로고"
             className="h-10 w-10 shrink-0"
             onError={() => setImageError(true)}

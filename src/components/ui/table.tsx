@@ -8,11 +8,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className="relative w-full max-w-full overflow-x-auto overscroll-x-contain"
     >
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-15", className)}
+        className={cn("w-full min-w-full caption-bottom text-15", className)}
         {...props}
       />
     </div>
@@ -70,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-semibold whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-foreground h-10 min-w-24 max-w-[min(18rem,75vw)] break-words px-2 text-left align-middle font-semibold whitespace-normal [overflow-wrap:anywhere] sm:min-w-0 sm:whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className,
       )}
       {...props}
@@ -83,7 +83,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "min-w-24 max-w-[min(18rem,75vw)] break-words p-2 align-middle whitespace-normal [overflow-wrap:anywhere] sm:min-w-0 sm:whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className,
       )}
       {...props}
@@ -96,9 +96,12 @@ function TableCaption({
   ...props
 }: React.ComponentProps<"caption">) {
   return (
-      <caption
+    <caption
       data-slot="table-caption"
-      className={cn("text-muted-foreground mt-4 text-15", className)}
+      className={cn(
+        "mt-4 max-w-full break-words whitespace-normal [overflow-wrap:anywhere] text-15 text-muted-foreground",
+        className,
+      )}
       {...props}
     />
   );

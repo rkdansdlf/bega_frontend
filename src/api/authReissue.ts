@@ -3,6 +3,7 @@ import {
   buildApiUrl,
   toJsonRequestBody,
 } from './httpClientCore';
+import { markAuthSessionEstablished } from './authSessionGeneration';
 
 let reissueInFlight: Promise<boolean> | null = null;
 
@@ -21,6 +22,7 @@ export const requestAuthReissue = async (): Promise<boolean> => {
         throw new Error(`Reissue failed with status ${response.status}`);
       }
 
+      markAuthSessionEstablished();
       return true;
     })().finally(() => {
       reissueInFlight = null;

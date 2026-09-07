@@ -37,6 +37,7 @@ const compareTeamScores = (a: [string, number], b: [string, number]): number => 
 const getTeamDisplayName = (team: string): string => TEAM_DATA[team]?.fullName || TEAM_DATA[team]?.name || team;
 
 export default function TeamRecommendationTest({
+  initialState,
   isOpen,
   onClose,
   onSelectTeam,
@@ -47,7 +48,6 @@ export default function TeamRecommendationTest({
     selectedAnswer,
     showResult,
     recommendedTeam,
-    direction,
     progress,
     currentQuestionData,
     totalQuestions,
@@ -56,7 +56,7 @@ export default function TeamRecommendationTest({
     handlePrevious,
     handleReset,
     handleAcceptRecommendation,
-  } = useTeamTest(onSelectTeam, onClose);
+  } = useTeamTest(onSelectTeam, onClose, initialState);
 
   const sortedTeamScores = useMemo(
     () => Object.entries(teamScores).sort(compareTeamScores),
@@ -73,7 +73,7 @@ export default function TeamRecommendationTest({
       hideHeader={true}
       hideCloseButton={true}
       className="max-w-5xl border-gray-200 dark:border-border"
-      bodyClassName="relative max-h-[80vh] overflow-hidden p-6"
+      bodyClassName="relative max-h-[80vh] overflow-hidden p-4 sm:p-6"
     >
         <h2 className="sr-only">응원구단 추천 테스트</h2>
         <p className="sr-only">
@@ -82,8 +82,9 @@ export default function TeamRecommendationTest({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-0 top-0 rounded-full p-2 text-gray-400 transition hover:bg-black/5 hover:text-gray-600 dark:text-white dark:hover:bg-white/10 dark:hover:text-gray-200"
+          className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-gray-400 transition hover:bg-black/5 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-white dark:hover:bg-white/10 dark:hover:text-gray-200"
           aria-label="테스트 닫기"
+          data-testid="team-test-close"
         >
           <TeamRecommendationCloseIcon className="h-5 w-5" />
         </button>
@@ -137,13 +138,15 @@ export default function TeamRecommendationTest({
 
                   {/* Answers - Scrollable if needed */}
                   <div className="flex-1 overflow-y-auto pr-2">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {currentQuestionData.answers.map((answer, index) => (
                         <button
                           key={index}
+                          type="button"
                           onClick={() => handleAnswer(answer, index)}
+                          data-testid={`team-test-answer-${index}`}
                           className={`
-                            p-3 rounded-lg border-2 text-left transition-all duration-150 hover:-translate-y-px
+                            min-h-11 p-3 rounded-lg border-2 text-left transition-all duration-150 hover:-translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
                             ${
                               selectedAnswer === index
                                 ? 'bg-green-50 dark:bg-primary/20 shadow-lg border-primary'
@@ -255,7 +258,7 @@ export default function TeamRecommendationTest({
               {/* Scores Summary */}
               <div className="mb-4">
                 <p className="text-body text-gray-600 dark:text-white mb-2">팀별 점수</p>
-                <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto px-1">
+                <div className="grid max-h-40 grid-cols-1 gap-2 overflow-y-auto px-1 sm:grid-cols-2">
                   {sortedTeamScores.map(([team, score]) => {
                     const teamLabel = getTeamDisplayName(team);
 
@@ -296,6 +299,7 @@ export default function TeamRecommendationTest({
               <div className="flex flex-col gap-2">
                 <Button
                   onClick={handleAcceptRecommendation}
+                  data-testid="team-test-result-accept"
                   className="w-full py-4 text-white rounded-full shadow-lg hover:shadow-xl transition-all bg-primary"
                 >
                   {recommendedTeamLabel} 팬으로 시작하기
@@ -303,6 +307,7 @@ export default function TeamRecommendationTest({
                 <Button
                   variant="outline"
                   onClick={handleReset}
+                  data-testid="team-test-result-reset"
                   className="w-full py-4 rounded-full border-2 border-primary text-primary dark:text-primary-light dark:border-primary/70"
                 >
                   다시 테스트하기

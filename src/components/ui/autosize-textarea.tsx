@@ -1,5 +1,7 @@
 import { forwardRef, TextareaHTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react';
 
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
 interface AutosizeTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     minRows?: number;
     maxRows?: number;
@@ -7,6 +9,7 @@ interface AutosizeTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaEleme
 
 const AutosizeTextarea = forwardRef<HTMLTextAreaElement, AutosizeTextareaProps>(function AutosizeTextarea(
     {
+        className,
         minRows = 1,
         maxRows,
         onChange,
@@ -51,7 +54,7 @@ const AutosizeTextarea = forwardRef<HTMLTextAreaElement, AutosizeTextareaProps>(
         element.style.height = `${nextHeight}px`;
     };
 
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         resize();
     }, [maxRows, minRows, props.value]);
 
@@ -82,6 +85,7 @@ const AutosizeTextarea = forwardRef<HTMLTextAreaElement, AutosizeTextareaProps>(
     return (
         <textarea
             {...props}
+            className={`min-w-0 max-w-full ${className ?? ''}`}
             ref={setTextareaRef}
             rows={rows ?? minRows}
             onChange={handleChange}
