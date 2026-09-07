@@ -96,7 +96,7 @@ export default function CheerLivePanel({
           {gamesErrorPresentation.message}
         </h2>
         {gamesErrorPresentation.codeToken ? (
-          <code className="mt-2 inline-flex rounded border border-red-300/70 bg-red-100/70 px-2 py-0.5 text-[11px] text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
+          <code className="mt-2 inline-flex rounded border border-red-300/70 bg-red-100/70 px-2 py-0.5 text-11 text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
             {gamesErrorPresentation.codeToken}
           </code>
         ) : null}

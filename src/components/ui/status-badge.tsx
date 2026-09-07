@@ -162,7 +162,7 @@ export function StatusBadge({
               className={cn(
                 'grid place-items-center font-black leading-none',
                 markerIconSizeClass[size],
-                marker === 'diamond' ? 'text-[8px]' : null,
+                marker === 'diamond' ? 'text-8' : null,
               )}
             >
               {markerGlyph[marker]}
