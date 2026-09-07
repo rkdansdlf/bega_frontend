@@ -36,6 +36,7 @@ import { resolveLeagueBadge } from '../utils/homeLeagueBadge';
 import { buildHomeRequestErrorContext, buildHomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeAuthSnapshot } from './home/HomeAuthBridge';
+import HomePullToRefresh from './home/HomePullToRefresh';
 import {
     MANUAL_BASEBALL_DATA_REQUIRED_CODE,
 } from '../utils/manualBaseballDataContract';
@@ -428,6 +429,7 @@ export default function HomeRuntime() {
     });
 
     const [isLoading, setIsLoading] = useState(true);
+    const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
     const [isGamesError, setIsGamesError] = useState(false);
     const [connectionError, setConnectionError] = useState(false);
     const [loadFailureReason, setLoadFailureReason] = useState<HomeLoadFailureReason | null>(null);
@@ -655,6 +657,9 @@ export default function HomeRuntime() {
 
         setScheduledGames(normalizedScheduledGames);
         const showConnectionError = shouldShowHomeConnectionError(snapshot.success);
+        if (!showConnectionError) {
+            setLastRefreshedAt(new Date());
+        }
 
         setIsLoading(false);
         setIsGamesError(!snapshot.success.games && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'games'));
@@ -816,6 +821,26 @@ export default function HomeRuntime() {
             }
         }
     }, [applyHomeSnapshot, buildLegacyFailureSnapshot, leagueStartDates]);
+
+    /**
+     * 풀투리프레시 전용 — loadHomeBootstrap과 달리 로딩 스켈레톤으로
+     * 되돌리지 않고 조용히 최신 데이터로 교체합니다.
+     */
+    const refreshHomeSilently = useCallback(async (date: Date) => {
+        const requestId = ++bootstrapRequestIdRef.current;
+        try {
+            const data = await fetchHomeBootstrapWithRetry(date);
+            if (requestId !== bootstrapRequestIdRef.current) {
+                return;
+            }
+            applyHomeSnapshot(date, buildBootstrapHomeSnapshot(date, false, data));
+        } catch (error) {
+            if (requestId !== bootstrapRequestIdRef.current) {
+                return;
+            }
+            console.warn('[HomePullToRefresh] Failed to refresh:', error);
+        }
+    }, [applyHomeSnapshot]);
 
     const handleTabChange = (tabValue: LeagueTab) => {
         if (!isVisibleLeagueTab(tabValue, visibleLeagueTabs)) {
@@ -1211,7 +1236,12 @@ export default function HomeRuntime() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <HomePullToRefresh
+                contentClassName="space-y-5"
+                lastRefreshedLabel={lastRefreshedAt ? lastRefreshedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : null}
+                onRefresh={() => refreshHomeSilently(selectedDate)}
+              >
                 {showConnectionRecoveryBanner && (
                     <Suspense fallback={null}>
                         <LazyHomeRecoveryBanner
@@ -1383,6 +1413,7 @@ export default function HomeRuntime() {
                         </div>
                     </div>
                 </div>
+              </HomePullToRefresh>
 
                 {shouldMountDeferredSurfaces || showCalendar ? (
                     <Suspense fallback={null}>

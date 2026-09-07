@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBookmarks } from '../api/cheerApi';
+import { useCheerMutations } from '../hooks/useCheerQueries';
 import CheerCard from './CheerCard';
+import SwipeToRevealRow from './common/SwipeToRevealRow';
 import { BookmarkIcon, HomeIcon, LineChartIcon, MegaphoneIcon, UserIcon } from './icons/CheerFlowIcons';
 import { PenSquareIcon } from './icons/CheerShellIcons';
 import { cn } from '../lib/utils';
@@ -35,6 +37,7 @@ export default function CheerBookmarks() {
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });
+  const { toggleBookmarkMutation } = useCheerMutations();
 
   const bookmarkedPosts = data?.content ?? [];
   const handleWriteClick = () => navigate('/cheer/write');
@@ -153,7 +156,13 @@ export default function CheerBookmarks() {
             ) : (
               <div className="px-4 py-4 space-y-3">
                 {bookmarkedPosts.map((post) => (
-                  <CheerCard key={post.id} post={post} teamColor={teamAccent} />
+                  <SwipeToRevealRow
+                    key={post.id}
+                    deleteLabel="북마크 해제"
+                    onDelete={() => toggleBookmarkMutation.mutate(post.id)}
+                  >
+                    <CheerCard post={post} teamColor={teamAccent} />
+                  </SwipeToRevealRow>
                 ))}
               </div>
             )}
