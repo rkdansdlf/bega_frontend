@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 
 import { CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
 import { openKakaoMapRoute } from '../utils/kakaoMap';
@@ -91,6 +91,13 @@ export default function StadiumGuidePlacesRuntime({
       return next;
     });
     handlePlaceClick(place);
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>, place: Place) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleCardClick(place);
+    }
   };
 
   return (
@@ -218,8 +225,13 @@ export default function StadiumGuidePlacesRuntime({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div
-                          className="flex-1 min-w-0"
+                          className="flex-1 min-w-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2"
+                          role="button"
+                          tabIndex={0}
+                          aria-expanded={isExpanded}
+                          aria-label={`${place.name} 상세 정보 ${isExpanded ? '접기' : '펼치기'}`}
                           onClick={() => handleCardClick(place)}
+                          onKeyDown={(event) => handleCardKeyDown(event, place)}
                         >
                           <div className="flex items-center gap-2 mb-1">
                             <Icon className="w-5 h-5 flex-shrink-0" style={{ color: placeAccent }} />
@@ -268,7 +280,7 @@ export default function StadiumGuidePlacesRuntime({
                               openKakaoMapRoute(place.name, place.lat, place.lng);
                             }}
                             disabled={!hasPlaceCoordinates}
-                            className="min-h-11 px-3 py-2 sm:px-4 rounded-lg text-white text-sm transition-colors hover:opacity-90 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="min-h-11 px-3 py-2 sm:px-4 rounded-lg text-white text-sm transition-colors hover:opacity-90 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2"
                             style={{
                               backgroundColor: isDark ? STADIUM_DARK_COLORS.accent : THEME_COLORS.primary,
                               color: isDark ? '#03100b' : '#ffffff',
