@@ -86,6 +86,7 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pull-requests: write
     with:
       comment_on_pr: true
       mode: smoke
@@ -98,6 +99,7 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pull-requests: write
     with:
       comment_on_pr: true
       mode: regression
