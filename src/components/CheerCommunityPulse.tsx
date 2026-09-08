@@ -43,7 +43,7 @@ export default function CheerCommunityPulse() {
               <button
                 key={item.tag}
                 type="button"
-                className="min-h-9 rounded-full bg-slate-100 px-3 text-caption font-black text-slate-700 hover:bg-slate-200 dark:bg-secondary dark:text-white dark:hover:bg-slate-700"
+                className="min-h-11 rounded-full bg-slate-100 px-3 text-caption font-black text-slate-700 hover:bg-slate-200 dark:bg-secondary dark:text-white dark:hover:bg-slate-700"
                 onClick={() => navigate(`/cheer?q=${encodeURIComponent(`#${item.tag}`)}`)}
               >
                 #{item.tag} <span className="ml-1 text-slate-400 dark:text-slate-300">{item.count}</span>

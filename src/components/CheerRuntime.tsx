@@ -500,7 +500,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                                 <p className="text-caption font-black text-slate-700 dark:text-white">최근 검색</p>
                                                 <button
                                                     type="button"
-                                                    className="min-h-9 rounded-full px-3 text-caption font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-secondary"
+                                                    className="min-h-11 rounded-full px-3 text-caption font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-secondary"
                                                     onClick={clearRecentSearches}
                                                 >
                                                     전체 삭제

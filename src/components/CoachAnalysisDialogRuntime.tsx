@@ -557,7 +557,7 @@ export default function CoachAnalysisDialogRuntime({
                     type="button"
                     onClick={onRequestClose}
                     aria-label="닫기"
-                    className="ml-auto inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#e5e7eb] bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
+                    className="ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-[#e5e7eb] bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
                 >
                     <PredictionCloseIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
