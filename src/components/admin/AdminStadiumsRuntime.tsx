@@ -338,37 +338,39 @@ export default function AdminStadiumsRuntime({
         ? 'delete'
         : null;
 
-  if (visualQaStateOverride?.panelPhase === 'resolved' && !visualQaRenderers?.panel) {
-    throw new Error('AdminStadiumsRuntime Visual QA panel renderer is required.');
-  }
-  if (visualQaStateOverride && placeDialog !== null && deletingPlaceId !== null) {
-    throw new Error('AdminStadiumsRuntime Visual QA dialog state must be exclusive.');
-  }
-  if (visualQaStateOverride?.dialogPhase !== 'closed' && dialogMode === null) {
-    throw new Error('AdminStadiumsRuntime Visual QA dialog state is required.');
-  }
-  if (visualQaStateOverride?.dialogPhase === 'closed' && dialogMode !== null) {
-    throw new Error('AdminStadiumsRuntime Visual QA closed dialog state must be empty.');
-  }
-  if (
-    visualQaStateOverride?.dialogPhase !== 'closed'
-    && visualQaStateOverride?.panelPhase !== 'resolved'
-  ) {
-    throw new Error('AdminStadiumsRuntime Visual QA dialog requires the resolved panel.');
-  }
-  if (
-    visualQaStateOverride?.dialogPhase === 'resolved'
-    && dialogMode !== 'delete'
-    && !visualQaRenderers?.placeDialog
-  ) {
-    throw new Error('AdminStadiumsRuntime Visual QA place dialog renderer is required.');
-  }
-  if (
-    visualQaStateOverride?.dialogPhase === 'resolved'
-    && dialogMode === 'delete'
-    && !visualQaRenderers?.deleteDialog
-  ) {
-    throw new Error('AdminStadiumsRuntime Visual QA delete dialog renderer is required.');
+  if (visualQaStateOverride) {
+    if (visualQaStateOverride.panelPhase === 'resolved' && !visualQaRenderers?.panel) {
+      throw new Error('AdminStadiumsRuntime Visual QA panel renderer is required.');
+    }
+    if (placeDialog !== null && deletingPlaceId !== null) {
+      throw new Error('AdminStadiumsRuntime Visual QA dialog state must be exclusive.');
+    }
+    if (visualQaStateOverride.dialogPhase !== 'closed' && dialogMode === null) {
+      throw new Error('AdminStadiumsRuntime Visual QA dialog state is required.');
+    }
+    if (visualQaStateOverride.dialogPhase === 'closed' && dialogMode !== null) {
+      throw new Error('AdminStadiumsRuntime Visual QA closed dialog state must be empty.');
+    }
+    if (
+      visualQaStateOverride.dialogPhase !== 'closed'
+      && visualQaStateOverride.panelPhase !== 'resolved'
+    ) {
+      throw new Error('AdminStadiumsRuntime Visual QA dialog requires the resolved panel.');
+    }
+    if (
+      visualQaStateOverride.dialogPhase === 'resolved'
+      && dialogMode !== 'delete'
+      && !visualQaRenderers?.placeDialog
+    ) {
+      throw new Error('AdminStadiumsRuntime Visual QA place dialog renderer is required.');
+    }
+    if (
+      visualQaStateOverride.dialogPhase === 'resolved'
+      && dialogMode === 'delete'
+      && !visualQaRenderers?.deleteDialog
+    ) {
+      throw new Error('AdminStadiumsRuntime Visual QA delete dialog renderer is required.');
+    }
   }
 
   const renderResolvedPanel = (): ReactNode => visualQaStateOverride
