@@ -46,7 +46,7 @@ jobs:
       - name: Checkout canonical backend contract
         uses: actions/checkout@v4
         with:
-          repository: BegaBaseball/backend
+          repository: rkdansdlf/bega_backend
           ref: main
           path: backend
 
