@@ -101,42 +101,72 @@ test('first-load partitions successful mascot requests by request start when com
   );
 });
 
-test('landing interactive contract accepts the labelled ticker toggle and home CTA', () => {
+test('landing interactive contract accepts the ticker toggle, home CTA, app-preview steps, and footer nav links', () => {
   assert.equal(typeof helpers.getLandingInteractiveSetFailures, 'function');
 
   const tickerToggle = {
     tagName: 'button',
     testId: 'landing-ticker-toggle',
     label: '티커 일시정지',
+    stepIndex: null,
+    isInsideFooter: false,
     descriptor: 'button[data-testid="landing-ticker-toggle"] "티커 일시정지"',
   };
   const homeCta = {
     tagName: 'button',
     testId: 'landing-home-cta',
     label: '홈으로 이동',
+    stepIndex: null,
+    isInsideFooter: false,
     descriptor: 'button[data-testid="landing-home-cta"] "홈으로 이동"',
   };
+  const stepButtons = [0, 1, 2].map((index) => ({
+    tagName: 'div',
+    testId: null,
+    label: `단계 ${index}`,
+    role: 'button',
+    stepIndex: String(index),
+    isInsideFooter: false,
+    descriptor: `div[role="button"][data-step-index="${index}"] "단계 ${index}"`,
+  }));
+  const footerLinks = Array.from({ length: 14 }, (_, index) => ({
+    tagName: 'a',
+    testId: null,
+    label: `푸터 링크 ${index}`,
+    stepIndex: null,
+    isInsideFooter: true,
+    descriptor: `a[href="#"] "푸터 링크 ${index}"`,
+  }));
 
-  assert.deepEqual(helpers.getLandingInteractiveSetFailures([tickerToggle, homeCta]), []);
+  assert.deepEqual(
+    helpers.getLandingInteractiveSetFailures([tickerToggle, homeCta, ...stepButtons, ...footerLinks]),
+    [],
+  );
 
   const failures = helpers.getLandingInteractiveSetFailures([
     tickerToggle,
     homeCta,
+    ...stepButtons,
+    ...footerLinks,
     {
       tagName: 'a',
       testId: null,
       label: '로그인',
+      stepIndex: null,
+      isInsideFooter: false,
       descriptor: 'a[href="/login"] "로그인"',
     },
     {
       tagName: 'div',
       testId: 'rogue-focus-target',
       label: '추가 메뉴',
+      stepIndex: null,
+      isInsideFooter: false,
       descriptor: 'div[data-testid="rogue-focus-target"][tabindex="0"] "추가 메뉴"',
     },
   ]);
 
-  assert.ok(failures.some((failure) => failure.includes('expected exactly 2 interactive elements, received 4')));
+  assert.ok(failures.some((failure) => failure.includes('expected exactly 5 interactive elements outside the footer, received 7')));
   assert.ok(failures.some((failure) => failure.includes('a[href="/login"] "로그인"')));
   assert.ok(failures.some((failure) => failure.includes('rogue-focus-target')));
 });

@@ -835,7 +835,7 @@ const main = async () => {
             heroFontSize: heroHeading ? getComputedStyle(heroHeading).fontSize : null,
             phoneWidth: phone ? Number(phone.getBoundingClientRect().width.toFixed(2)) : null,
             featureCount: document.querySelectorAll('[data-testid^="landing-feature-0"]').length,
-            ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"], a').length : null,
+            ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"]').length : null,
           });
         })()
       `);
@@ -903,6 +903,9 @@ const main = async () => {
                 tagName,
                 testId,
                 label,
+                role: element.getAttribute('role'),
+                stepIndex: element.getAttribute('data-step-index'),
+                isInsideFooter: !!element.closest('footer'),
                 descriptor: tagName + attributes + ' "' + label + '"',
               };
             })
@@ -920,7 +923,7 @@ const main = async () => {
             .map((element) => element.getAttribute('data-testid')),
           stadiumChipCount: document.querySelectorAll('[data-testid="landing-stadium-chip"]').length,
           diaryResultCount: document.querySelectorAll('[data-testid="landing-diary-result"]').length,
-          ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"], a').length : null,
+          ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"]').length : null,
           interactiveElements,
           footerCount: landing ? landing.querySelectorAll('footer').length : null,
         });
@@ -1021,8 +1024,8 @@ const main = async () => {
       (failure) => `Structure: ${failure}.`,
     ));
 
-    if (structure.footerCount !== 0) {
-      failures.push(`Structure: expected no footer, received ${structure.footerCount}.`);
+    if (structure.footerCount !== 1) {
+      failures.push(`Structure: expected exactly 1 footer, received ${structure.footerCount}.`);
     }
 
     if (!theme.darkClass) {
