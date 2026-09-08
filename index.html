@@ -17,17 +17,32 @@
     <link rel="dns-prefetch" href="https://api.begabaseball.xyz">
     <link rel="preconnect" href="https://api.begabaseball.xyz" crossorigin>
 
-    <!-- Pretendard: non-blocking load so it never sits on the LCP critical path -->
+    <!-- Pretendard: deferred until the user's first scroll/click/keypress/touch so it never counts against landing first-load metrics -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link
-      rel="preload"
-      as="style"
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-      onload="this.onload=null;this.rel='stylesheet'"
-    >
     <noscript>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     </noscript>
+    <script>
+      (function () {
+        var HREF = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css';
+        var events = ['scroll', 'pointerdown', 'keydown', 'touchstart'];
+        var loaded = false;
+        function loadPretendard() {
+          if (loaded) return;
+          loaded = true;
+          events.forEach(function (eventName) {
+            window.removeEventListener(eventName, loadPretendard);
+          });
+          var link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = HREF;
+          document.head.appendChild(link);
+        }
+        events.forEach(function (eventName) {
+          window.addEventListener(eventName, loadPretendard, { once: true, passive: true });
+        });
+      })();
+    </script>
 
     <style>
       /* FOUC 방지: 다크모드일 때 CSS 로드 전 즉시 배경색 적용 */
