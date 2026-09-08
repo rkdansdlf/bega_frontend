@@ -162,6 +162,15 @@ const defaultRankings = [
   { teamId: 'KT', teamName: 'KT 위즈', rank: 4, wins: 70, losses: 65, draws: 0, winRate: '0.518', games: 135, gamesBehind: 3.0 },
 ];
 
+// AI stream v2 contract (src/api/aiStreamContract.ts): every SSE event must
+// carry a {version:2, type, data} envelope whose `type` matches the SSE
+// `event:` line, and the client requires the X-AI-Event-Version: 2 response
+// header (default when VITE_AI_EVENT_VERSION is unset) or it rejects the
+// response before ever reading the body.
+const sseEnvelope = (type: string, data: Record<string, unknown>) => [
+  `event: ${type}`, `data: ${JSON.stringify({ version: 2, type, data })}`, '',
+].join('\n');
+
 const buildSseResponse = ({
   delta,
   meta,
@@ -171,19 +180,13 @@ const buildSseResponse = ({
 }) => {
   const lines: string[] = [];
   if (delta) {
-    lines.push('event: message');
-    lines.push(`data: ${JSON.stringify({ delta })}`);
-    lines.push('');
+    lines.push(sseEnvelope('coach.message.delta', { delta }));
   }
 
-  lines.push('event: meta');
-  lines.push(`data: ${JSON.stringify(meta)}`);
-  lines.push('');
-  lines.push('event: done');
-  lines.push('data: [DONE]');
-  lines.push('');
+  lines.push(sseEnvelope('coach.meta', meta));
+  lines.push(sseEnvelope('stream.done', { reason: 'completed' }));
 
-  return lines.join('\n');
+  return lines.join('');
 };
 
 const parseCoachRequestBody = (rawBody: unknown): Record<string, unknown> => {
@@ -211,9 +214,9 @@ const structuredCoachResponse = ({
   headline,
   sentiment: 'positive',
   key_metrics: [
-    { label: '최근 흐름', value: 'HH 7승 3패 · SS 6승 4패', status: 'good', trend: 'up' },
-    { label: '불펜 소모', value: 'HH 28% · SS 36%', status: 'warning', trend: 'neutral' },
-    { label: '발표 선발', value: '홈 선발 안정 우위', status: 'good', trend: 'up' },
+    { label: '최근 흐름', value: 'HH 7승 3패 · SS 6승 4패', status: 'good', trend: 'up', is_critical: false },
+    { label: '불펜 소모', value: 'HH 28% · SS 36%', status: 'warning', trend: 'neutral', is_critical: true },
+    { label: '발표 선발', value: '홈 선발 안정 우위', status: 'good', trend: 'up', is_critical: false },
   ],
   analysis: {
     verdict: note,
@@ -332,7 +335,7 @@ const installCoachAnalyzeResponse = ({
     req.reply({
       delay: delayMs,
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         delta: requestMode === 'auto_brief' && dataQuality !== 'partial'
           ? JSON.stringify({ headline, coach_note: note })
@@ -685,6 +688,17 @@ const openAndCaptureDialog = (theme: ThemeMode, viewport: ViewportCase) => {
   assertNoHorizontalOverflow('[data-testid="coach-analysis-dialog"]');
   assertNoHorizontalOverflow('[data-testid="coach-c1-versus-hero"]');
   assertNoHorizontalOverflow('[data-testid="coach-risk-versus"]');
+
+  // Cypress's element-screenshot stitching crashes (RangeError: offset out of
+  // range) when the target sits inside a nested scrollable container (the
+  // mobile sheet's own overflow-y-auto body) and is taller than the browser
+  // viewport. Growing the viewport height here removes the need for any
+  // internal scroll/stitch pass — h-[100dvh] grows with it, so the dialog
+  // renders its full content in one frame. This spec has no pixel-diff
+  // assertions, only capture-for-review, so the taller frame is harmless.
+  if (viewport.id === 'mobile') {
+    cy.viewport(viewport.width, 2600);
+  }
   captureElement('[data-testid="coach-analysis-dialog"]', 'live', `${viewport.id}-${theme}-dialog-full`);
   captureElement('[data-testid="coach-section-verdict"]', 'live', `${viewport.id}-${theme}-dialog-verdict`);
   captureElement('[data-testid="coach-section-risks"]', 'live', `${viewport.id}-${theme}-dialog-risks`);

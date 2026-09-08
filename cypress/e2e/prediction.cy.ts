@@ -54,6 +54,17 @@ describe('Game Prediction', () => {
     let rangeScheduleCallCount = 0;
     let rangeScheduleMode: 'normal' | 'empty-then-data' = 'normal';
 
+    // AI stream v2 contract (src/api/aiStreamContract.ts): every SSE event must
+    // carry a {version:2, type, data} envelope whose `type` matches the SSE
+    // `event:` line, and the client requires the X-AI-Event-Version: 2 response
+    // header (default when VITE_AI_EVENT_VERSION is unset) or it rejects the
+    // response before ever reading the body.
+    const AI_EVENT_VERSION_HEADERS = { 'X-AI-Event-Version': '2' };
+    const sseEnvelopeTop = (type: string, data: Record<string, unknown>) => [
+        `event: ${type}`, `data: ${JSON.stringify({ version: 2, type, data })}`, '',
+    ].join('\n');
+    const sseDoneTop = (reason: 'completed' | 'error' | 'cancelled' = 'completed') => sseEnvelopeTop('stream.done', { reason });
+
     const parseCoachRequestBody = (rawBody: unknown): Record<string, unknown> => {
         if (rawBody == null) {
             return {};
@@ -520,20 +531,17 @@ describe('Game Prediction', () => {
         }).as('getRankingsPostseason');
 
         const autoCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\\\"headline\\\":\\\"포스트시즌\\\",\\\"coach_note\\\":\\\"요약 테스트\\\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v3","request_mode":"auto_brief","cached":false}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"포스트시즌","coach_note":"요약 테스트"}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'auto', cache_key_version: 'v3', request_mode: 'auto_brief', cached: false,
+            }),
+            sseDoneTop(),
+        ].join('');
 
         cy.intercept('POST', '**/coach/analyze*', {
             statusCode: 200,
-            headers: { 'content-type': 'text/event-stream' },
+            headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
             body: autoCoachResponse,
         }).as('coachAnalyzePostseason');
 
@@ -562,16 +570,13 @@ describe('Game Prediction', () => {
 
     it('should send automatic AI brief request for selected game with auto payload', () => {
         const autoCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\"headline\":\"테스트\",\"coach_note\":\"요약 테스트\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v3","request_mode":"auto_brief","cached":false}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"테스트","coach_note":"요약 테스트"}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'auto', cache_key_version: 'v3', request_mode: 'auto_brief', cached: false,
+            }),
+            sseDoneTop(),
+        ].join('');
 
         cy.intercept('**/api/kbo/rankings/snapshot*', {
             statusCode: 200,
@@ -585,7 +590,7 @@ describe('Game Prediction', () => {
         cy.intercept('POST', '**/coach/analyze*', (req) => {
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: autoCoachResponse,
             });
         }).as('coachAnalyzeAuto');
@@ -613,8 +618,8 @@ describe('Game Prediction', () => {
 
         cy.intercept('POST', '**/coach/analyze*', {
             statusCode: 200,
-            headers: { 'content-type': 'text/event-stream' },
-            body: 'event: done\ndata: [DONE]\n\n',
+            headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+            body: sseDoneTop(),
         }).as('coachAnalyze');
         openPredictionPage();
         cy.wait('@getRankingsMeaningfulScheduled');
@@ -754,8 +759,8 @@ describe('Game Prediction', () => {
 
         cy.intercept('POST', '**/coach/analyze*', {
             statusCode: 200,
-            headers: { 'content-type': 'text/event-stream' },
-            body: 'event: done\ndata: [DONE]\n\n',
+            headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+            body: sseDoneTop(),
         }).as('coachAnalyzePast');
 
         cy.intercept('GET', '**/api/matches/*', (req) => {
@@ -862,8 +867,8 @@ describe('Game Prediction', () => {
 
         cy.intercept('POST', '**/coach/analyze*', {
             statusCode: 200,
-            headers: { 'content-type': 'text/event-stream' },
-            body: 'event: done\ndata: [DONE]\n\n',
+            headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+            body: sseDoneTop(),
         }).as('coachAnalyze');
 
         openPredictionPage();
@@ -902,22 +907,19 @@ describe('Game Prediction', () => {
         }).as('getRankingsMeaningfulManual');
 
         const manualCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\"headline\":\"테스트\",\"coach_note\":\"요약 테스트\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"q:manualtest","cache_key_version":"v3","request_mode":"manual_detail","cached":false}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"테스트","coach_note":"요약 테스트"}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'q:manualtest', cache_key_version: 'v3', request_mode: 'manual_detail', cached: false,
+            }),
+            sseDoneTop(),
+        ].join('');
 
         let manualCoachBody: Record<string, unknown> = {};
         cy.intercept('POST', '**/coach/analyze*', (req) => {
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: manualCoachResponse,
             });
         }).as('coachAnalyzeManual');
@@ -961,28 +963,32 @@ describe('Game Prediction', () => {
         }).as('getRankingsAbortCoach');
 
         const firstCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\\"headline\\":\\"닫기 전 요청 결과\\",\\"coach_note\\":\\"닫았다가 다시 열어도 보이면 안 됩니다.\\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"q:first-abort-check","cache_key_version":"v3","request_mode":"manual_detail","cached":false,"structured_response":{"headline":"닫기 전 요청 결과","sentiment":"negative","key_metrics":[],"analysis":{"summary":"닫기 전 요청은 폐기되어야 합니다.","verdict":"첫 번째 요청 폐기","strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"닫기 전 상세 리포트","coach_note":"닫았다가 다시 열어도 보이면 안 됩니다."}}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"닫기 전 요청 결과","coach_note":"닫았다가 다시 열어도 보이면 안 됩니다."}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'q:first-abort-check', cache_key_version: 'v3', request_mode: 'manual_detail', cached: false,
+                structured_response: {
+                    headline: '닫기 전 요청 결과', sentiment: 'negative', key_metrics: [],
+                    analysis: { summary: '닫기 전 요청은 폐기되어야 합니다.', verdict: '첫 번째 요청 폐기', strengths: [], weaknesses: [], risks: [] },
+                    detailed_markdown: '닫기 전 상세 리포트', coach_note: '닫았다가 다시 열어도 보이면 안 됩니다.',
+                },
+            }),
+            sseDoneTop(),
+        ].join('');
 
         const secondCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\\"headline\\":\\"다시 연 분석 결과\\",\\"coach_note\\":\\"두 번째 요청 결과만 유지되어야 합니다.\\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"q:second-run-check","cache_key_version":"v3","request_mode":"manual_detail","cached":false,"structured_response":{"headline":"다시 연 분석 결과","sentiment":"positive","key_metrics":[],"analysis":{"summary":"두 번째 분석이 정상 완료되어야 합니다.","verdict":"두 번째 요청 유지","strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"두 번째 상세 리포트","coach_note":"두 번째 요청 결과만 유지되어야 합니다."}}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"다시 연 분석 결과","coach_note":"두 번째 요청 결과만 유지되어야 합니다."}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'q:second-run-check', cache_key_version: 'v3', request_mode: 'manual_detail', cached: false,
+                structured_response: {
+                    headline: '다시 연 분석 결과', sentiment: 'positive', key_metrics: [],
+                    analysis: { summary: '두 번째 분석이 정상 완료되어야 합니다.', verdict: '두 번째 요청 유지', strengths: [], weaknesses: [], risks: [] },
+                    detailed_markdown: '두 번째 상세 리포트', coach_note: '두 번째 요청 결과만 유지되어야 합니다.',
+                },
+            }),
+            sseDoneTop(),
+        ].join('');
 
         let coachAnalyzeCallCount = 0;
 
@@ -992,15 +998,20 @@ describe('Game Prediction', () => {
                 req.alias = 'coachAnalyzeAbortAutoSeed';
                 req.reply({
                     statusCode: 200,
-                    headers: { 'content-type': 'text/event-stream' },
+                    headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                     body: [
-                        'event: meta',
-                        'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v3","request_mode":"auto_brief","cached":false,"cache_state":"MISS_GENERATE","in_progress":false,"structured_response":{"headline":"자동 브리핑","sentiment":"neutral","key_metrics":[],"analysis":{"strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"자동 브리핑 본문","coach_note":"자동 브리핑 메모"}}',
-                        '',
-                        'event: done',
-                        'data: [DONE]',
-                        '',
-                    ].join('\n'),
+                        sseEnvelopeTop('coach.meta', {
+                            validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                            question_signature: 'auto', cache_key_version: 'v3', request_mode: 'auto_brief', cached: false,
+                            cache_state: 'MISS_GENERATE', in_progress: false,
+                            structured_response: {
+                                headline: '자동 브리핑', sentiment: 'neutral', key_metrics: [],
+                                analysis: { strengths: [], weaknesses: [], risks: [] },
+                                detailed_markdown: '자동 브리핑 본문', coach_note: '자동 브리핑 메모',
+                            },
+                        }),
+                        sseDoneTop(),
+                    ].join(''),
                 });
                 return;
             }
@@ -1010,7 +1021,7 @@ describe('Game Prediction', () => {
             req.reply({
                 delay: coachAnalyzeCallCount === 1 ? 3000 : 1800,
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: coachAnalyzeCallCount === 1 ? firstCoachResponse : secondCoachResponse,
             });
         });
@@ -1077,16 +1088,35 @@ describe('Game Prediction', () => {
         }).as('getRankingsMobileAnalysis');
 
         const manualCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\\"headline\\":\\"한화 우세, 후반 불펜 관리가 핵심\\",\\"coach_note\\":\\"초반 OPS 우세는 분명하지만 7회 이후 불펜 운용이 승부를 가를 수 있습니다.\\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form","bullpen","starter"],"focus_signature":"recent_form+bullpen+starter","question_signature":"manual","cache_key_version":"v4","request_mode":"manual_detail","cached":false,"cache_state":"MISS_GENERATE","in_progress":false,"generation_mode":"llm_manual","game_status_bucket":"PREVIEW","structured_response":{"headline":"한화 우세, 후반 불펜 관리가 핵심","sentiment":"positive","key_metrics":[{"label":"OPS 비교","value":"0.812 vs 0.744","status":"good","trend":"up","is_critical":true},{"label":"불펜 소모","value":"18% vs 31%","status":"warning","trend":"down","is_critical":false},{"label":"발표 선발","value":"문동주 vs 원태인","status":"good","trend":"neutral","is_critical":true}],"analysis":{"summary":"최근 타격 생산성과 선발 구위에서 한화가 앞서지만, 불펜 과부하가 후반 변수입니다.","verdict":"한화가 초반 주도권을 잡을 가능성이 높습니다.","strengths":["상위 타선 OPS 상승세가 뚜렷합니다."],"weaknesses":["불펜 연투 관리가 필요합니다."],"risks":[{"area":"불펜","level":1,"description":"7회 이후 필승조 투입 타이밍이 승부처입니다."}],"why_it_matters":["초반 장타 생산성이 선취점 확률을 끌어올립니다."],"swing_factors":["문동주의 초반 제구 안정 여부"],"watch_points":["7회 이전 리드 확보"],"uncertainty":["라인업 최종 확정 전까지 하위 타순 변수는 남아 있습니다."]},"detailed_markdown":"상세 리포트 본문입니다.\\n불펜 운영과 선발 구위가 핵심입니다.","coach_note":"초반 OPS 우세는 분명하지만 7회 이후 불펜 운용이 승부를 가를 수 있습니다."}}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"한화 우세, 후반 불펜 관리가 핵심","coach_note":"초반 OPS 우세는 분명하지만 7회 이후 불펜 운용이 승부를 가를 수 있습니다."}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form', 'bullpen', 'starter'], focus_signature: 'recent_form+bullpen+starter',
+                question_signature: 'manual', cache_key_version: 'v4', request_mode: 'manual_detail', cached: false,
+                cache_state: 'MISS_GENERATE', in_progress: false, generation_mode: 'llm_manual', game_status_bucket: 'PREVIEW',
+                structured_response: {
+                    headline: '한화 우세, 후반 불펜 관리가 핵심', sentiment: 'positive',
+                    key_metrics: [
+                        { label: 'OPS 비교', value: '0.812 vs 0.744', status: 'good', trend: 'up', is_critical: true },
+                        { label: '불펜 소모', value: '18% vs 31%', status: 'warning', trend: 'down', is_critical: false },
+                        { label: '발표 선발', value: '문동주 vs 원태인', status: 'good', trend: 'neutral', is_critical: true },
+                    ],
+                    analysis: {
+                        summary: '최근 타격 생산성과 선발 구위에서 한화가 앞서지만, 불펜 과부하가 후반 변수입니다.',
+                        verdict: '한화가 초반 주도권을 잡을 가능성이 높습니다.',
+                        strengths: ['상위 타선 OPS 상승세가 뚜렷합니다.'],
+                        weaknesses: ['불펜 연투 관리가 필요합니다.'],
+                        risks: [{ area: '불펜', level: 1, description: '7회 이후 필승조 투입 타이밍이 승부처입니다.' }],
+                        why_it_matters: ['초반 장타 생산성이 선취점 확률을 끌어올립니다.'],
+                        swing_factors: ['문동주의 초반 제구 안정 여부'],
+                        watch_points: ['7회 이전 리드 확보'],
+                        uncertainty: ['라인업 최종 확정 전까지 하위 타순 변수는 남아 있습니다.'],
+                    },
+                    detailed_markdown: '상세 리포트 본문입니다.\n불펜 운영과 선발 구위가 핵심입니다.',
+                    coach_note: '초반 OPS 우세는 분명하지만 7회 이후 불펜 운용이 승부를 가를 수 있습니다.',
+                },
+            }),
+            sseDoneTop(),
+        ].join('');
 
         cy.intercept('POST', '**/coach/analyze*', (req) => {
             const body = parseCoachRequestBody(req.body);
@@ -1095,15 +1125,20 @@ describe('Game Prediction', () => {
                 req.alias = 'coachAnalyzeMobileAutoSeed';
                 req.reply({
                     statusCode: 200,
-                    headers: { 'content-type': 'text/event-stream' },
+                    headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                     body: [
-                        'event: meta',
-                        'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v4","request_mode":"auto_brief","cached":false,"cache_state":"MISS_GENERATE","in_progress":false,"generation_mode":"deterministic_auto","game_status_bucket":"PREVIEW","structured_response":{"headline":"자동 브리핑","sentiment":"neutral","key_metrics":[],"analysis":{"strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"자동 브리핑 본문","coach_note":"자동 브리핑 메모"}}',
-                        '',
-                        'event: done',
-                        'data: [DONE]',
-                        '',
-                    ].join('\n'),
+                        sseEnvelopeTop('coach.meta', {
+                            validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                            question_signature: 'auto', cache_key_version: 'v4', request_mode: 'auto_brief', cached: false,
+                            cache_state: 'MISS_GENERATE', in_progress: false, generation_mode: 'deterministic_auto', game_status_bucket: 'PREVIEW',
+                            structured_response: {
+                                headline: '자동 브리핑', sentiment: 'neutral', key_metrics: [],
+                                analysis: { strengths: [], weaknesses: [], risks: [] },
+                                detailed_markdown: '자동 브리핑 본문', coach_note: '자동 브리핑 메모',
+                            },
+                        }),
+                        sseDoneTop(),
+                    ].join(''),
                 });
                 return;
             }
@@ -1112,7 +1147,7 @@ describe('Game Prediction', () => {
             req.reply({
                 delay: 1800,
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: manualCoachResponse,
             });
         });
@@ -1162,15 +1197,30 @@ describe('Game Prediction', () => {
                 req.alias = 'coachAnalyzeManualPartial';
                 req.reply({
                     statusCode: 200,
-                    headers: { 'content-type': 'text/event-stream' },
+                    headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                     body: [
-                        'event: meta',
-                        'data: {"validation_status":"success","resolved_focus":["matchup","batting"],"focus_signature":"matchup+batting","question_signature":"manual","cache_key_version":"v4","request_mode":"manual_detail","cached":false,"cache_state":"MISS_GENERATE","in_progress":false,"generation_mode":"evidence_fallback","data_quality":"partial","grounding_reasons":["missing_clutch_moments","focus_data_unavailable"],"grounding_warnings":["WPA 기반 승부처 데이터가 부족합니다.","요청한 focus 중 상대 전적, 타격 생산성 근거가 부족해 확인 가능한 항목만 분석합니다.","요청한 focus 근거가 부족해 확인 가능한 항목만 분석하거나 보수 요약으로 전환합니다."],"structured_response":{"headline":"확인 정보 중심 상세 분석","sentiment":"neutral","key_metrics":[],"analysis":{"summary":"확인 가능한 경기 데이터를 기준으로만 분석했습니다.","verdict":"상세 지표가 일부 비어 있어 보수적으로 해석해야 합니다.","strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"확인 정보 중심 상세 분석 본문","coach_note":"확인 가능한 근거만 반영했습니다."}}',
-                        '',
-                        'event: done',
-                        'data: [DONE]',
-                        '',
-                    ].join('\n'),
+                        sseEnvelopeTop('coach.meta', {
+                            validation_status: 'success', resolved_focus: ['matchup', 'batting'], focus_signature: 'matchup+batting',
+                            question_signature: 'manual', cache_key_version: 'v4', request_mode: 'manual_detail', cached: false,
+                            cache_state: 'MISS_GENERATE', in_progress: false, generation_mode: 'evidence_fallback', data_quality: 'partial',
+                            grounding_reasons: ['missing_clutch_moments', 'focus_data_unavailable'],
+                            grounding_warnings: [
+                                'WPA 기반 승부처 데이터가 부족합니다.',
+                                '요청한 focus 중 상대 전적, 타격 생산성 근거가 부족해 확인 가능한 항목만 분석합니다.',
+                                '요청한 focus 근거가 부족해 확인 가능한 항목만 분석하거나 보수 요약으로 전환합니다.',
+                            ],
+                            structured_response: {
+                                headline: '확인 정보 중심 상세 분석', sentiment: 'neutral', key_metrics: [],
+                                analysis: {
+                                    summary: '확인 가능한 경기 데이터를 기준으로만 분석했습니다.',
+                                    verdict: '상세 지표가 일부 비어 있어 보수적으로 해석해야 합니다.',
+                                    strengths: [], weaknesses: [], risks: [],
+                                },
+                                detailed_markdown: '확인 정보 중심 상세 분석 본문', coach_note: '확인 가능한 근거만 반영했습니다.',
+                            },
+                        }),
+                        sseDoneTop(),
+                    ].join(''),
                 });
                 return;
             }
@@ -1178,15 +1228,20 @@ describe('Game Prediction', () => {
             req.alias = 'coachAnalyzeAutoPartialSeed';
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: [
-                    'event: meta',
-                    'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v4","request_mode":"auto_brief","cached":false,"cache_state":"MISS_GENERATE","in_progress":false,"data_quality":"grounded","structured_response":{"headline":"자동 브리핑","sentiment":"neutral","key_metrics":[],"analysis":{"summary":"자동 브리핑 요약","verdict":"자동 브리핑 결론","strengths":[],"weaknesses":[],"risks":[]},"detailed_markdown":"자동 브리핑 본문","coach_note":"자동 브리핑 메모"}}',
-                    '',
-                    'event: done',
-                    'data: [DONE]',
-                    '',
-                ].join('\n'),
+                    sseEnvelopeTop('coach.meta', {
+                        validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                        question_signature: 'auto', cache_key_version: 'v4', request_mode: 'auto_brief', cached: false,
+                        cache_state: 'MISS_GENERATE', in_progress: false, data_quality: 'grounded',
+                        structured_response: {
+                            headline: '자동 브리핑', sentiment: 'neutral', key_metrics: [],
+                            analysis: { summary: '자동 브리핑 요약', verdict: '자동 브리핑 결론', strengths: [], weaknesses: [], risks: [] },
+                            detailed_markdown: '자동 브리핑 본문', coach_note: '자동 브리핑 메모',
+                        },
+                    }),
+                    sseDoneTop(),
+                ].join(''),
             });
         });
 
@@ -1283,10 +1338,9 @@ describe('Game Prediction', () => {
                 req.alias = 'coachAnalyzeScheduledManualCopy';
                 req.reply({
                     statusCode: 200,
-                    headers: { 'content-type': 'text/event-stream' },
+                    headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                     body: [
-                        'event: meta',
-                        `data: ${JSON.stringify({
+                        sseEnvelopeTop('coach.meta', {
                             validation_status: 'success',
                             resolved_focus: ['recent_form', 'bullpen'],
                             focus_signature: 'recent_form+bullpen',
@@ -1337,12 +1391,9 @@ describe('Game Prediction', () => {
                                 detailed_markdown: '## 최근 전력\n- 한화 이글스는 팀 폼 점수 90.1점을 기록하며 최근 흐름이 상승세입니다.\n\n## 불펜 상태\n- SSG 랜더스는 불펜 소모가 적어 경기 후반 운영 여력이 남아 있습니다.',
                                 coach_note: '발표 선발 한화 이글스 발표 전 / SSG 랜더스 발표 전 뒤 첫 번째 불펜 선택이 가장 큰 변수입니다.',
                             },
-                        })}`,
-                        '',
-                        'event: done',
-                        'data: [DONE]',
-                        '',
-                    ].join('\n'),
+                        }),
+                        sseDoneTop(),
+                    ].join(''),
                 });
                 return;
             }
@@ -1350,10 +1401,9 @@ describe('Game Prediction', () => {
             req.alias = 'coachAnalyzeScheduledAutoCopy';
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: [
-                    'event: meta',
-                    `data: ${JSON.stringify({
+                    sseEnvelopeTop('coach.meta', {
                         validation_status: 'success',
                         resolved_focus: ['recent_form', 'bullpen'],
                         focus_signature: 'recent_form+bullpen',
@@ -1386,12 +1436,9 @@ describe('Game Prediction', () => {
                             detailed_markdown: '## 최근 전력\n- 최근 흐름 요약',
                             coach_note: 'SSG 랜더스의 최근 흐름이 좋지만, 불펜 운용 데이터 부족으로 인해 경기 후반 운영에 주의해야 합니다. 한화 이글스의 불펜진이 예상외의 활약을 펼칠 가능성도 배제할 수 없습니다.',
                         },
-                    })}`,
-                    '',
-                    'event: done',
-                    'data: [DONE]',
-                    '',
-                ].join('\n'),
+                    }),
+                    sseDoneTop(),
+                ].join(''),
             });
         });
 
@@ -1438,16 +1485,13 @@ describe('Game Prediction', () => {
 
     it('should keep only latest AI brief request after rapid game switch', () => {
         const autoCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\"headline\":\"테스트\",\"coach_note\":\"요약 테스트\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v3","request_mode":"auto_brief","cached":false}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"테스트","coach_note":"요약 테스트"}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'auto', cache_key_version: 'v3', request_mode: 'auto_brief', cached: false,
+            }),
+            sseDoneTop(),
+        ].join('');
 
         cy.intercept('**/api/kbo/rankings/snapshot*', {
             statusCode: 200,
@@ -1483,7 +1527,7 @@ describe('Game Prediction', () => {
         cy.intercept('POST', '**/coach/analyze*', (req) => {
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: autoCoachResponse,
             });
         }).as('coachAnalyzeRapid');
@@ -1525,16 +1569,13 @@ describe('Game Prediction', () => {
 
     it('should keep AI brief requests single-flight when theme or tab is toggled without game change', () => {
         const autoCoachResponse = [
-            'event: message',
-            'data: {"delta":"{\"headline\":\"테스트\",\"coach_note\":\"요약 테스트\"}"}',
-            '',
-            'event: meta',
-            'data: {"validation_status":"success","resolved_focus":["recent_form"],"focus_signature":"recent_form","question_signature":"auto","cache_key_version":"v3","request_mode":"auto_brief","cached":false}',
-            '',
-            'event: done',
-            'data: [DONE]',
-            '',
-        ].join('\n');
+            sseEnvelopeTop('coach.message.delta', { delta: '{"headline":"테스트","coach_note":"요약 테스트"}' }),
+            sseEnvelopeTop('coach.meta', {
+                validation_status: 'success', resolved_focus: ['recent_form'], focus_signature: 'recent_form',
+                question_signature: 'auto', cache_key_version: 'v3', request_mode: 'auto_brief', cached: false,
+            }),
+            sseDoneTop(),
+        ].join('');
 
         cy.intercept('**/api/kbo/rankings/snapshot*', {
             statusCode: 200,
@@ -1549,7 +1590,7 @@ describe('Game Prediction', () => {
         cy.intercept('POST', '**/coach/analyze*', (req) => {
             req.reply({
                 statusCode: 200,
-                headers: { 'content-type': 'text/event-stream' },
+                headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
                 body: autoCoachResponse,
             });
         }).as('coachAnalyzeSingleFlight');
@@ -2200,9 +2241,20 @@ describe('Game Prediction', () => {
             uncertainty: ['강풍 영향'],
         };
 
-        const sse = (obj: Record<string, unknown>) => [
-            'event: meta', `data: ${JSON.stringify(obj)}`, '', 'event: done', 'data: [DONE]', '',
+        // AI stream v2 contract (src/api/aiStreamContract.ts): every SSE event
+        // must carry a {version:2, type, data} envelope whose `type` matches the
+        // SSE `event:` line, and the client requires the X-AI-Event-Version: 2
+        // response header (default when VITE_AI_EVENT_VERSION is unset) or it
+        // rejects the response outright before ever reading the body.
+        const AI_EVENT_VERSION_HEADERS = { 'X-AI-Event-Version': '2' };
+
+        const sseEnvelope = (type: string, data: Record<string, unknown>) => [
+            `event: ${type}`, `data: ${JSON.stringify({ version: 2, type, data })}`, '',
         ].join('\n');
+
+        const sseDone = (reason: 'completed' | 'error' | 'cancelled' = 'completed') => sseEnvelope('stream.done', { reason });
+
+        const sse = (obj: Record<string, unknown>) => [sseEnvelope('coach.meta', obj), sseDone()].join('');
 
         const autoSeedSse = sse({
             request_mode: 'auto_brief', validation_status: 'success', cache_state: 'MISS_GENERATE',
@@ -2237,6 +2289,9 @@ describe('Game Prediction', () => {
                     generation_mode: 'evidence_fallback', data_quality: 'insufficient',
                     grounding_warnings: ['야구 데이터 준비가 필요합니다.'],
                     manual_data_request: {
+                        scope: 'game_id',
+                        operator_message: '경기 정보가 확인될 때까지 분석을 진행할 수 없습니다.',
+                        blocking: true,
                         missing_items: [{ key: 'game_id', label: '경기 ID', reason: '경기 row 부재', expected_format: '20240510HHSS0' }],
                     },
                 });
@@ -2284,23 +2339,31 @@ describe('Game Prediction', () => {
                         return;
                     }
                     if (manualStatus !== 200) {
-                        // 스트림 error 이벤트로 비-인증 분석 실패를 모사 → result.error 설정.
+                        // stream.error 이벤트로 비-인증 분석 실패를 모사 → result.error 설정.
                         req.reply({
                             statusCode: 200,
-                            headers: { 'content-type': 'text/event-stream' },
-                            body: [
-                                'event: error',
-                                'data: {"message":"분석 중 오류가 발생했습니다."}',
-                                '', '',
-                            ].join('\n'),
+                            headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+                            body: sseEnvelope('stream.error', {
+                                code: 'AI_ANALYSIS_ERROR',
+                                message: '분석 중 오류가 발생했습니다.',
+                                retryable: true,
+                            }),
                         });
                         return;
                     }
-                    req.reply({ statusCode: 200, headers: { 'content-type': 'text/event-stream' }, body: manualSse(manualOpts) });
+                    req.reply({
+                        statusCode: 200,
+                        headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+                        body: manualSse(manualOpts),
+                    });
                     return;
                 }
                 req.alias = 'coachDataShapeSeed';
-                req.reply({ statusCode: 200, headers: { 'content-type': 'text/event-stream' }, body: autoSeedSse });
+                req.reply({
+                    statusCode: 200,
+                    headers: { 'content-type': 'text/event-stream', ...AI_EVENT_VERSION_HEADERS },
+                    body: autoSeedSse,
+                });
             });
         };
 

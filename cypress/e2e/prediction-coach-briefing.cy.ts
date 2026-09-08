@@ -89,6 +89,15 @@ describe('Prediction Coach Briefing Regression', () => {
     }, {} as Record<string, GameDetailMock>);
   };
 
+  // AI stream v2 contract (src/api/aiStreamContract.ts): every SSE event must
+  // carry a {version:2, type, data} envelope whose `type` matches the SSE
+  // `event:` line, and the client requires the X-AI-Event-Version: 2 response
+  // header (default when VITE_AI_EVENT_VERSION is unset) or it rejects the
+  // response before ever reading the body.
+  const sseEnvelope = (type: string, data: Record<string, unknown>) => [
+    `event: ${type}`, `data: ${JSON.stringify({ version: 2, type, data })}`, '',
+  ].join('\n');
+
   const buildSseResponse = ({
     delta,
     meta,
@@ -98,19 +107,13 @@ describe('Prediction Coach Briefing Regression', () => {
   }) => {
     const lines: string[] = [];
     if (delta) {
-      lines.push('event: message');
-      lines.push(`data: ${JSON.stringify({ delta })}`);
-      lines.push('');
+      lines.push(sseEnvelope('coach.message.delta', { delta }));
     }
 
-    lines.push('event: meta');
-    lines.push(`data: ${JSON.stringify(meta)}`);
-    lines.push('');
-    lines.push('event: done');
-    lines.push('data: [DONE]');
-    lines.push('');
+    lines.push(sseEnvelope('coach.meta', meta));
+    lines.push(sseEnvelope('stream.done', { reason: 'completed' }));
 
-    return lines.join('\n');
+    return lines.join('');
   };
 
   const openPredictionPage = ({
@@ -375,7 +378,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           delta: JSON.stringify({
             headline: '재시도 테스트',
@@ -451,7 +454,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: {
             validation_status: 'success',
@@ -476,6 +479,7 @@ describe('Prediction Coach Briefing Regression', () => {
                 risks: [],
               },
               detailed_markdown: '비핵심 정규시즌도 자동 브리핑을 제공합니다.',
+              coach_note: '비핵심 정규시즌도 자동 브리핑을 제공합니다.',
             },
           },
         }),
@@ -506,7 +510,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: {
             validation_status: 'success',
@@ -562,7 +566,7 @@ describe('Prediction Coach Briefing Regression', () => {
   it('shows FAILED_LOCKED empty-response message instead of silent fallback', () => {
     cy.intercept('POST', '**/coach/analyze*', {
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         meta: {
           validation_status: 'success',
@@ -591,7 +595,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           delta: JSON.stringify({
             headline: '주요 흐름 중심 브리핑',
@@ -659,7 +663,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           delta: JSON.stringify({
             headline: '요청키 전환 테스트',
@@ -752,7 +756,7 @@ describe('Prediction Coach Briefing Regression', () => {
       coachAnalyzeHydrationCount += 1;
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           delta: JSON.stringify({
             headline: '지연 상세 응답 안정화',
@@ -819,7 +823,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
     cy.intercept('POST', '**/coach/analyze*', {
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         delta: JSON.stringify({
           headline: '접근성 테스트',
@@ -919,7 +923,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
     cy.intercept('POST', '**/coach/analyze*', {
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         meta: {
           validation_status: 'success',
@@ -985,7 +989,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
     cy.intercept('POST', '**/coach/analyze*', {
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         meta: {
           validation_status: 'success',
@@ -1076,7 +1080,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', {
       delay: 1800,
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         meta: {
           validation_status: 'success',
@@ -1133,7 +1137,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
     cy.intercept('POST', '**/coach/analyze*', {
       statusCode: 200,
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
       body: buildSseResponse({
         delta: JSON.stringify({
           headline: '마크다운 테스트',
@@ -1222,7 +1226,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           delta: JSON.stringify({
             headline,
@@ -1316,7 +1320,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({ meta }),
       });
     }).as('coachAnalyzeMeta');
@@ -1390,7 +1394,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({ meta }),
       });
     }).as('coachAnalyzePartialDetail');
@@ -1416,7 +1420,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: {
             validation_status: 'success',
@@ -1473,7 +1477,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: isManualDetail
             ? {
@@ -1489,11 +1493,13 @@ describe('Prediction Coach Briefing Regression', () => {
                 generation_mode: 'evidence_fallback',
                 data_quality: 'grounded',
                 game_status_bucket: 'SCHEDULED',
+                supported_fact_count: 14,
+                used_evidence: ['game', 'game_summary'],
                 structured_response: {
                   headline: '모바일 상세 분석',
                   sentiment: 'positive',
                   key_metrics: [
-                    { label: '예상 승률', value: '62%', status: '홈 우위', trend: 'up', is_critical: false },
+                    { label: '예상 승률', value: '62%', status: 'good', trend: 'up', is_critical: false },
                   ],
                   analysis: {
                     summary: '홈팀이 후반 운영에서 근소하게 앞섭니다.',
@@ -1536,7 +1542,7 @@ describe('Prediction Coach Briefing Regression', () => {
                 game_status_bucket: 'SCHEDULED',
                 supported_fact_count: 14,
                 used_evidence: ['game', 'game_summary'],
-                win_probability_home: 62,
+                win_probability_home: 0.62,
                 structured_response: {
                   headline: '모바일 상세 자동 브리핑',
                   sentiment: 'positive',
@@ -1620,7 +1626,7 @@ describe('Prediction Coach Briefing Regression', () => {
 
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: {
             validation_status: 'success',
@@ -1688,7 +1694,7 @@ describe('Prediction Coach Briefing Regression', () => {
     cy.intercept('POST', '**/coach/analyze*', (req) => {
       req.reply({
         statusCode: 200,
-        headers: { 'content-type': 'text/event-stream' },
+        headers: { 'content-type': 'text/event-stream', 'X-AI-Event-Version': '2' },
         body: buildSseResponse({
           meta: {
             validation_status: 'success',

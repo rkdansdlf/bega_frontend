@@ -131,6 +131,16 @@ const setStoredMessageFavorite = (messageId: number, favorite: boolean) => {
     );
 };
 
+// AI stream v2 contract (src/api/aiStreamContract.ts): every SSE event must
+// carry a {version:2, type, data} envelope whose `type` matches the SSE
+// `event:` line, and the client requires the X-AI-Event-Version: 2 response
+// header (default when VITE_AI_EVENT_VERSION is unset) or it rejects the
+// response before ever reading the body.
+const AI_EVENT_VERSION_HEADERS = { 'X-AI-Event-Version': '2' };
+const sseEnvelope = (type: string, data: Record<string, unknown>) => [
+    `event: ${type}`, `data: ${JSON.stringify({ version: 2, type, data })}`, '',
+].join('\n');
+
 const buildSseBody = ({
     delta,
     queueEvents = [],
@@ -147,36 +157,26 @@ const buildSseBody = ({
     const chunks: string[] = [];
 
     queueEvents.forEach((queueEvent) => {
-        chunks.push('event: queue');
-        chunks.push(`data: ${JSON.stringify(queueEvent)}`);
-        chunks.push('');
+        chunks.push(sseEnvelope('chat.queue', queueEvent));
     });
 
     if (delta) {
-        chunks.push('event: message');
-        chunks.push(`data: ${JSON.stringify({ delta })}`);
-        chunks.push('');
+        chunks.push(sseEnvelope('chat.message.delta', { delta }));
     }
 
     if (error) {
-        chunks.push('event: error');
-        chunks.push(`data: ${JSON.stringify(error)}`);
-        chunks.push('');
+        chunks.push(sseEnvelope('stream.error', error));
     }
 
     if (meta) {
-        chunks.push('event: meta');
-        chunks.push(`data: ${JSON.stringify(meta)}`);
-        chunks.push('');
+        chunks.push(sseEnvelope('chat.meta', meta));
     }
 
     if (done) {
-        chunks.push('event: done');
-        chunks.push('data: [DONE]');
-        chunks.push('');
+        chunks.push(sseEnvelope('stream.done', { reason: 'completed' }));
     }
 
-    return chunks.join('\n');
+    return chunks.join('');
 };
 
 const openChatbot = () => {
@@ -478,7 +478,7 @@ const visitLoggedInShell = (allowSessionExpiry = false) => {
         req.reply({
             statusCode: 200,
             headers: {
-                'content-type': 'text/event-stream',
+                'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
             },
             body: isCachedScenario
                 ? buildSseBody({
@@ -602,7 +602,7 @@ describe('AI Chatbot', () => {
             cy.intercept('POST', '**/ai/chat/stream*', {
                 statusCode: 200,
                 headers: {
-                    'content-type': 'text/event-stream',
+                    'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                 },
                 body: buildSseBody({ delta: reply }),
             }).as('persistedMessage');
@@ -634,7 +634,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: firstReply }),
                     });
@@ -645,7 +645,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: secondReply }),
                     });
@@ -717,7 +717,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: firstReply }),
                     });
@@ -728,7 +728,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: secondReply }),
                     });
@@ -786,7 +786,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: firstReply }),
                     });
@@ -797,7 +797,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: secondReply }),
                     });
@@ -866,7 +866,7 @@ describe('AI Chatbot', () => {
                     delay: 3000,
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     body: buildSseBody({ delta: '이 응답은 도착하면 안 됩니다.' }),
                 });
@@ -895,7 +895,7 @@ describe('AI Chatbot', () => {
                     delay: 3000,
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     body: buildSseBody({ delta: staleResponse }),
                 });
@@ -931,7 +931,7 @@ describe('AI Chatbot', () => {
                         delay: 3000,
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: staleFirstResponse }),
                     });
@@ -942,7 +942,7 @@ describe('AI Chatbot', () => {
                     req.reply({
                         statusCode: 200,
                         headers: {
-                            'content-type': 'text/event-stream',
+                            'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                         },
                         body: buildSseBody({ delta: secondResponse }),
                     });
@@ -996,7 +996,7 @@ describe('AI Chatbot', () => {
                 req.reply({
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     body: buildSseBody({ delta: '재시도 후 정상 응답이 도착했습니다.' }),
                 });
@@ -1034,9 +1034,12 @@ describe('AI Chatbot', () => {
             const message = 'queue this chatbot request';
             const queuePadding = Array.from({ length: 1200 }, () => ': queue-wait').join('\n');
             const body = [
-                'event: queue',
-                'data: {"state":"queued","queuePosition":2,"estimatedWaitTime":7,"rpmLimit":18}',
-                '',
+                ...sseEnvelope('chat.queue', {
+                    state: 'queued',
+                    queue_position: 2,
+                    estimated_wait_time: 7,
+                    rpm_limit: 18,
+                }).split('\n'),
                 queuePadding,
                 '',
                 ...buildSseBody({ delta: '대기 후 정상 응답이 도착했습니다.' }).split('\n'),
@@ -1051,7 +1054,7 @@ describe('AI Chatbot', () => {
                 req.reply({
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     throttleKbps: 4,
                     body,
@@ -1116,12 +1119,14 @@ describe('AI Chatbot', () => {
                 req.reply({
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     body: buildSseBody({
                         error: {
+                            code: 'temporary_generation_issue',
                             message: 'temporary_generation_issue',
                             detail: '일시적인 생성 오류가 발생했습니다.',
+                            retryable: true,
                         },
                         meta: null,
                         done: false,
@@ -1155,7 +1160,7 @@ describe('AI Chatbot', () => {
                 req.reply({
                     statusCode: 200,
                     headers: {
-                        'content-type': 'text/event-stream',
+                        'content-type': 'text/event-stream', 'X-AI-Event-Version': '2',
                     },
                     body: buildSseBody({
                         delta: '중간 응답까지만 전송합니다.',
