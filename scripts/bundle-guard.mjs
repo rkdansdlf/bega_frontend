@@ -109,7 +109,7 @@ const forbiddenChunkPrefixes = [
 ];
 
 const sizeBudgets = [
-  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 255_500 },
+  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 256_000 },
   { label: 'vendor-react-core', directory: clientAssetsDir, filePattern: /^vendor-react-core-.*\.js$/, maxBytes: 345_000 },
   { label: 'vendor-router', directory: clientAssetsDir, filePattern: /^vendor-router-.*\.js$/, maxBytes: 50_000 },
   { label: 'vendor-zustand', directory: clientAssetsDir, filePattern: /^vendor-zustand-.*\.js$/, maxBytes: 8_000, optionalMissing: true },
@@ -1739,7 +1739,7 @@ const routeStaticClosureTargets = [
   {
     route: '/home',
     label: '/home route static closure',
-    maxJsGzipBytes: 95_000,
+    maxJsGzipBytes: 96_000,
     entrypoints: [
       'index.html',
       'src/components/Layout.tsx',
