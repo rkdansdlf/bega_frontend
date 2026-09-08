@@ -101,8 +101,8 @@ const viewports = [
 
 const interactionTargets = {
   '/': [
-    { label: 'landing feature flow CTA', selector: '[data-testid="landing-hero-cta-secondary"]' },
-    { label: 'landing login CTA', selector: '[data-testid="landing-header-login"]' },
+    { label: 'landing ticker toggle', selector: '[data-testid="landing-ticker-toggle"]' },
+    { label: 'landing home CTA', selector: '[data-testid="landing-home-cta"]' },
   ],
   '/home': [
     { label: 'home scheduled tab', role: 'tab', name: '예정경기' },
