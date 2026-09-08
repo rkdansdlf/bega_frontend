@@ -37,6 +37,7 @@ export default function HomeDeferredSurfaces({
   const navigate = useNavigate();
   const calendarDialogTitleId = useId();
   const adSlotTimeoutRef = useRef<number | null>(null);
+  const wasCalendarOpenRef = useRef(false);
   const [calendarMonth, setCalendarMonth] = useState(() => getCalendarMonth(selectedDate));
   const [shouldMountAdSlot, setShouldMountAdSlot] = useState(false);
   const [shouldMountWelcomeGuide, setShouldMountWelcomeGuide] = useState(false);
@@ -69,11 +70,20 @@ export default function HomeDeferredSurfaces({
   }, []);
 
   useEffect(() => {
+    // Only re-sync the browsed month when the dialog transitions from closed
+    // to open, not on every selectedDate change while it stays open (e.g. an
+    // external navigation shouldn't yank the user out of the month they're
+    // currently browsing to pick a date).
+    if (showCalendar && !wasCalendarOpenRef.current) {
+      setCalendarMonth(getCalendarMonth(selectedDate));
+    }
+    wasCalendarOpenRef.current = showCalendar;
+  }, [showCalendar, selectedDate]);
+
+  useEffect(() => {
     if (!showCalendar) {
       return undefined;
     }
-
-    setCalendarMonth(getCalendarMonth(selectedDate));
 
     const previousOverflow = document.body.style.overflow;
     const handleEscape = (event: KeyboardEvent) => {
@@ -89,7 +99,7 @@ export default function HomeDeferredSurfaces({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleEscape);
     };
-  }, [onCloseCalendar, selectedDate, showCalendar]);
+  }, [onCloseCalendar, showCalendar]);
 
   return (
     <>

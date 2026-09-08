@@ -43,8 +43,8 @@ const buildParty = (overrides: Record<string, unknown> = {}) => {
 describe('Mate Selling Flow', () => {
   const fakeToken = 'e2e-mate-token';
   const revealDeferredMateDetailContent = () => {
-    cy.contains('체크인 QR').should('be.visible');
     cy.scrollTo(0, 900);
+    cy.contains('체크인 QR').should('be.visible');
   };
   const authState = {
     state: {

@@ -23,6 +23,14 @@ const defaultEmoji = '/emojis/happy.png';
 const lightsOutDarkSurfaceToken = '0 0% 0%';
 const lightsOutDarkSurfaceColor = 'rgb(0, 0, 0)';
 const lightsOutTextColor = 'rgb(255, 255, 255)';
+// mypage-season-root runs its own navy dark palette (MyPageSeason.css), not the
+// global pure-black "lights out" tokens above — restored in 8cf548190 ("프로토타입
+// 시즌 레이아웃 복원") after the app-wide lights-out pass had already landed.
+const mypageDarkSurfaceColor = 'rgb(15, 23, 32)';
+const mypageDarkTextColor = 'rgb(248, 250, 252)';
+const mypageDarkCardColor = 'rgb(23, 33, 43)';
+const mypageDarkFieldColor = 'rgb(37, 49, 61)';
+const mypageDarkHairlineColor = 'rgb(38, 51, 63)';
 
 const buildStatistics = (overrides: Record<string, unknown> = {}) => ({
     totalCount: 1,
@@ -253,32 +261,32 @@ describe('Personal Diary', () => {
         });
         cy.get('.mypage-season-root').should(($root) => {
             const style = getComputedStyle($root[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
-            expect(style.color).to.eq(lightsOutTextColor);
+            expect(style.backgroundColor).to.eq(mypageDarkSurfaceColor);
+            expect(style.color).to.eq(mypageDarkTextColor);
         });
         cy.getBySel('diary-editor-calendar-card').should(($card) => {
             const style = getComputedStyle($card[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
-            expect(style.borderTopColor).to.eq('rgba(138, 159, 153, 0.16)');
+            expect(style.backgroundColor).to.eq(mypageDarkCardColor);
+            expect(style.borderTopColor).to.eq(mypageDarkHairlineColor);
         });
         cy.getBySel('diary-editor-form-card').should(($card) => {
             const style = getComputedStyle($card[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
+            expect(style.backgroundColor).to.eq(mypageDarkCardColor);
         });
         cy.get('.diary-green-surface select').should(($select) => {
             const style = getComputedStyle($select[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
-            expect(style.color).to.eq(lightsOutTextColor);
+            expect(style.backgroundColor).to.eq(mypageDarkFieldColor);
+            expect(style.color).to.eq(mypageDarkTextColor);
         });
         cy.get('.diary-green-surface textarea').should(($textarea) => {
             const style = getComputedStyle($textarea[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
-            expect(style.color).to.eq(lightsOutTextColor);
+            expect(style.backgroundColor).to.eq(mypageDarkFieldColor);
+            expect(style.color).to.eq(mypageDarkTextColor);
         });
         cy.getBySel('diary-editor-seat-panel').should(($panel) => {
             const style = getComputedStyle($panel[0]);
-            expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
-            expect(style.borderTopColor).to.eq('rgba(138, 159, 153, 0.16)');
+            expect(style.backgroundColor).to.eq(mypageDarkFieldColor);
+            expect(style.borderTopColor).to.eq(mypageDarkHairlineColor);
         });
     });
 
@@ -542,7 +550,7 @@ describe('Personal Diary', () => {
             const style = getComputedStyle($dialog[0]);
             expect(style.backgroundColor).to.eq(lightsOutDarkSurfaceColor);
             expect(style.color).to.eq(lightsOutTextColor);
-            expect(style.borderTopColor).to.eq('rgba(138, 159, 153, 0.16)');
+            expect(style.borderTopColor).to.eq('rgba(64, 74, 89, 0.16)');
         });
         cy.getBySel('diary-seat-view-submit-button').click();
 

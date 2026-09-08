@@ -223,7 +223,7 @@ describe('Home to Prediction deep link', () => {
         // 인증 완료 대기 (Navbar에 유저 이름 표시 확인 - 없으면 실패)
         cy.contains('TestUser 님', { timeout: 10000 }).should('be.visible');
 
-        cy.contains('[data-slot="card"]', '한화')
+        cy.contains('[role="button"]', '한화')
             .should('contain.text', 'LG')
             .click();
 
@@ -248,7 +248,7 @@ describe('Home to Prediction deep link', () => {
         cy.get('@getMe.all').should('have.length', 0);
         cy.contains('TestUser 님', { timeout: 10000 }).should('be.visible');
 
-        cy.contains('[data-slot="card"]', '삼성')
+        cy.contains('[role="button"]', '삼성')
             .should('contain.text', 'KT')
             .click();
 
@@ -350,7 +350,7 @@ describe('Home to Prediction deep link', () => {
         cy.location('search').should('include', 'tab=scheduled');
         cy.wait('@getHomeBootstrapRouteState');
 
-        cy.contains('[data-slot="card"]', '삼성')
+        cy.contains('[role="button"]', '삼성')
             .should('contain.text', 'KT')
             .click();
 
@@ -366,7 +366,7 @@ describe('Home to Prediction deep link', () => {
         cy.location('search').should('include', 'tab=scheduled');
         cy.get('[aria-controls="home-tabpanel-scheduled"]', { timeout: 10000 })
             .should('have.attr', 'aria-selected', 'true');
-        cy.contains('[data-slot="card"]', '삼성')
+        cy.contains('[role="button"]', '삼성')
             .should('contain.text', 'KT')
             .should('be.visible');
     });
@@ -417,7 +417,7 @@ describe('Home to Prediction deep link', () => {
         cy.wait('@getHomeWidgetsCustom');
         cy.get('@getMe.all').should('have.length', 0);
 
-        cy.contains('[data-slot="card"]', '한화')
+        cy.contains('[role="button"]', '한화')
             .should('contain.text', 'LG')
             .click();
 

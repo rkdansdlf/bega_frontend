@@ -243,13 +243,13 @@ function Calendar({
           >
             {displayedMonth.getFullYear()}년 {displayedMonth.getMonth() + 1}월
           </div>
-          <div className={cn("absolute inset-x-0 top-0 flex items-center justify-between", classNames?.nav)}>
+          <div className={cn("pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between", classNames?.nav)}>
             <button
               type="button"
               onClick={() => updateMonth(-1)}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "size-11 sm:size-7 bg-transparent p-0 opacity-70 hover:opacity-100",
+                "pointer-events-auto size-11 sm:size-7 bg-transparent p-0 opacity-70 hover:opacity-100",
                 classNames?.nav_button,
                 classNames?.nav_button_previous,
               )}
@@ -262,7 +262,7 @@ function Calendar({
               onClick={() => updateMonth(1)}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "size-11 sm:size-7 bg-transparent p-0 opacity-70 hover:opacity-100",
+                "pointer-events-auto size-11 sm:size-7 bg-transparent p-0 opacity-70 hover:opacity-100",
                 classNames?.nav_button,
                 classNames?.nav_button_next,
               )}

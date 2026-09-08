@@ -118,13 +118,13 @@ describe('Mate Chat Image Upload', () => {
       );
     });
 
-    cy.get('img[alt="Preview"]').should('be.visible');
+    cy.get('img[alt="선택한 채팅 이미지 미리보기"]').should('be.visible');
     cy.get('button[type="submit"]').should('be.enabled').click();
 
     cy.wait('@initChatImageUpload');
     cy.wait('@putChatImageUpload');
     cy.wait('@finalizeChatImageUpload');
     cy.wait('@sendChatMessage');
-    cy.get('img[alt="Preview"]').should('not.exist');
+    cy.get('img[alt="선택한 채팅 이미지 미리보기"]').should('not.exist');
   });
 });
