@@ -1099,12 +1099,12 @@ describe('AI Chatbot', () => {
             cy.wait('@serviceUnavailableRequest');
             cy.wait('@saveAssistantChatMessage').its('request.body').should((body) => {
                 expect(body.status).to.eq('ERROR');
-                expect(body.content).to.eq('서비스 점검 중이거나 일시적인 오류입니다.');
-                expect(body.errorCode).to.eq('STATUS_503');
+                expect(body.content).to.eq('AI 서비스가 현재 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');
+                expect(body.errorCode).to.eq('AI_STREAM_REQUEST_FAILED');
             });
             cy.get('[aria-label="대화 내용"]').invoke('text')
                 .should('include', '응답 중 오류가 발생했습니다. 다시 시도해주세요.');
-            cy.contains('STATUS_503').should('not.exist');
+            cy.contains('AI_STREAM_REQUEST_FAILED').should('not.exist');
         });
 
         it('handles SSE error events without exposing internal stream details', () => {

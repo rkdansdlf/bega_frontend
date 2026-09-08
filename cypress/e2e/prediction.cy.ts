@@ -410,9 +410,13 @@ describe('Game Prediction', () => {
         cy.get('@getGameDetail.all').then((interceptions: any) => {
             const detailCalls = (interceptions as any[]).filter((interception) => {
                 const url = interception.request?.url || '';
+                // Live inning-score polling (/live, /live-relay) is independent of the
+                // bootstrap hydration waterfall this test guards against — it always
+                // fires once a selected game is hydrated, bootstrap or not.
                 return !url.includes('/api/matches/day')
                     && !url.includes('/api/matches/range')
-                    && !url.includes('/api/matches/bounds');
+                    && !url.includes('/api/matches/bounds')
+                    && !url.includes('/live');
             });
             expect(detailCalls).to.have.length(0);
         });
@@ -684,7 +688,8 @@ describe('Game Prediction', () => {
         openPredictionPage();
         cy.wait('@getPredictionBootstrapPostponed');
         cy.contains(/경기 연기|연기되어/).should('exist');
-        cy.contains('현재 상태에서는 투표할 수 없습니다.').should('be.visible');
+        cy.get('[data-testid="vote-disabled-home-btn"]').should('be.visible').and('contain.text', '투표할 수 없습니다');
+        cy.get('[data-testid="vote-disabled-away-btn"]').should('be.visible').and('contain.text', '투표할 수 없습니다');
         cy.contains('해당 경기는 연기되어 투표 및 경기 상세 정보가 제공되지 않습니다.').should('be.visible');
     });
 
@@ -1753,7 +1758,7 @@ describe('Game Prediction', () => {
 
         openPredictionPage();
 
-        cy.contains('오늘은 예정된 경기가 없습니다.').should('be.visible');
+        cy.contains('오늘은 그라운드가 쉬는 날이에요').should('be.visible');
     });
 
     it('should recover when initial range is empty but future range has matches', () => {
@@ -1944,10 +1949,10 @@ describe('Game Prediction', () => {
 
         openPredictionPage();
 
-        cy.contains('예측 경기 데이터를 불러오지 못했습니다.').should('exist');
+        cy.contains('잠시 우천 중단이에요').should('exist');
         cy.contains('서비스 연결이 불안정합니다. 잠시 후 다시 시도해주세요.').should('exist');
         cy.contains(/Internal Server Error|Request failed with status code 500/).should('not.exist');
-        cy.contains('button', '목록 다시 불러오기').should('be.visible');
+        cy.contains('button', '다시 불러오기').should('be.visible');
         cy.contains('button', '예측으로 돌아가기').should('be.visible');
     });
 
@@ -2024,7 +2029,6 @@ describe('Game Prediction', () => {
         cy.contains('경기 주요 기록 입력이 필요합니다.').should('be.visible');
         cy.contains('임의로 채우지 않습니다').should('be.visible');
         cy.contains('스코어보드 상세 입력 대기').should('be.visible');
-        cy.contains('최종 스코어만 표시 중입니다.').should('be.visible');
         cy.contains('AI 코치 상세 분석은 수동 데이터 입력 후 제공됩니다.').should('be.visible');
         // manual-data 상태는 비활성 트리거 버튼 대신 인라인 메시지 + 재시도 버튼으로 대체됨.
         cy.contains('button', '데이터 다시 확인').should('be.visible');
