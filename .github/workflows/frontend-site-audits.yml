@@ -280,6 +280,7 @@ jobs:
       install_playwright: true
       env_exports: |
         VITE_SITE_URL=${{ vars.VITE_SITE_URL || 'https://www.begabaseball.xyz' }}
+        VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL || 'https://api.begabaseball.xyz' }}
       run_script: |
         npm run gate:cwv:lab
       summary_script: |
