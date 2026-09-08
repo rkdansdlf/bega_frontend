@@ -363,7 +363,7 @@ describe('Mate execution flow UI', () => {
 
     visitWithAuth('/mate/940');
     cy.wait('@getRouteParty');
-    cy.get('[data-testid="mate-open-qr-panel"]').should('be.visible');
+    cy.get('[data-testid="mate-open-qr-panel"]').scrollIntoView().should('be.visible');
     cy.get('@getRouteParty.all').then((calls) => {
       baselinePartyRequestCount = calls.length;
       expect(baselinePartyRequestCount).to.be.greaterThan(0);
