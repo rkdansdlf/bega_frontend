@@ -379,7 +379,7 @@ const runDirectCypressAndExit = (executionPlan, { useDocker = false, useAutoDock
   if (!useDocker && !useAutoDocker && !disableAutoDockerFallback) {
     console.log('\nPrimary Cypress execution failed.');
     console.log('Attempting auto-docker fallback (if Docker is available).');
-    console.log('Prediction subset rescue: npm run test:e2e:prediction:rescue');
+    console.log('Docker rescue: npm run cy:run:rescue');
     const rescueStatus = runCypressWithFallback(
       buildCypressCommandArgs('cy:run:rescue', executionPlan.cypressArgsWithBaseUrl),
       executionEnv,
@@ -606,7 +606,7 @@ try {
 
     if (!useDocker && !useAutoDocker && !disableAutoDockerFallback) {
       console.log('Primary execution failed. Trying auto-docker fallback.');
-      console.log('Prediction subset rescue: npm run test:e2e:prediction:rescue');
+      console.log('Docker rescue: npm run cy:run:rescue');
       const rescueStatus = runCypressWithFallback(
         buildCypressCommandArgs('cy:run:rescue', executionPlan.cypressArgsWithBaseUrl),
         executionEnv,
