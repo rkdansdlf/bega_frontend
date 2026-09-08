@@ -57,16 +57,17 @@ export default function CheerEdit() {
     <div className="min-h-screen bg-white dark:bg-background transition-colors duration-200">
       {/* Header */}
       <div className="border-b bg-gray-50 dark:bg-secondary">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4">
             <button
               type="button"
               onClick={handleCancel}
-              className="text-gray-600 dark:text-white transition-colors hover:text-gray-900 dark:hover:text-white"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label="뒤로"
             >
               <ArrowLeftIcon className="h-6 w-6" />
             </button>
-            <h2 className="text-primary">응원글 수정</h2>
+            <h2 className="min-w-0 break-words text-primary">응원글 수정</h2>
           </div>
           <div className="flex items-center gap-3">
             <Button

@@ -1,5 +1,5 @@
 import chatBotIcon from '../../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, type KeyboardEvent } from 'react';
 
 import { useChatBot } from '../../hooks/useChatBot';
 import type { ChatFavoriteItem } from '../../types/chatbot';
@@ -15,6 +15,14 @@ import type { ChatBotSessionRuntimeProps } from './ChatBotSessionRuntime';
 const ChatBotConversationRuntime = lazy(() => import('./ChatBotConversationRuntime'));
 const ChatBotHistoryTab = lazy(() => import('./ChatBotHistoryTab'));
 const ChatBotFavoritesTab = lazy(() => import('./ChatBotFavoritesTab'));
+
+const CHATBOT_TABS = [
+  { value: 'conversation', label: '대화', icon: ChatBotMessageSquareTextIcon, testId: 'chatbot-tab-conversation' },
+  { value: 'history', label: '히스토리', icon: ChatBotHistoryIcon, testId: 'chatbot-tab-history' },
+  { value: 'favorites', label: '즐겨찾기', icon: ChatBotStarIcon, testId: 'chatbot-tab-favorites' },
+] as const;
+
+type ChatbotTab = (typeof CHATBOT_TABS)[number]['value'];
 
 export default function ChatBotSessionStateRuntime({
   isOpen,
@@ -49,7 +57,7 @@ export default function ChatBotSessionStateRuntime({
     handleUseFavoritePrompt,
   } = useChatBot(true);
 
-  const [activeTab, setActiveTab] = useState<'conversation' | 'history' | 'favorites'>('conversation');
+  const [activeTab, setActiveTab] = useState<ChatbotTab>('conversation');
   const [hasOpenedHistoryTab, setHasOpenedHistoryTab] = useState(false);
   const [hasOpenedFavoritesTab, setHasOpenedFavoritesTab] = useState(false);
 
@@ -81,6 +89,20 @@ export default function ChatBotSessionStateRuntime({
 
   const handleFavoriteSessionClick = async (favorite: ChatFavoriteItem) => {
     await handleOpenSession(favorite.sessionId, favorite.sessionTitle);
+  };
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex = index;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % CHATBOT_TABS.length;
+    else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + CHATBOT_TABS.length) % CHATBOT_TABS.length;
+    else if (event.key === 'Home') nextIndex = 0;
+    else if (event.key === 'End') nextIndex = CHATBOT_TABS.length - 1;
+    else return;
+
+    event.preventDefault();
+    setActiveTab(CHATBOT_TABS[nextIndex].value);
+    const tabs = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    tabs?.[nextIndex]?.focus();
   };
 
   const handleCopyMessage = async (text: string) => {
@@ -139,21 +161,24 @@ export default function ChatBotSessionStateRuntime({
 
       <div className="flex h-full flex-col gap-0">
         <div className="border-b border-gray-200 px-4 py-3 dark:border-white/10">
-          <div className="flex w-full rounded-2xl border border-gray-200 bg-gray-100 p-1 dark:border-white/10 dark:bg-white/5">
-            {[
-              { value: 'conversation', label: '대화', icon: ChatBotMessageSquareTextIcon, testId: 'chatbot-tab-conversation' },
-              { value: 'history', label: '히스토리', icon: ChatBotHistoryIcon, testId: 'chatbot-tab-history' },
-              { value: 'favorites', label: '즐겨찾기', icon: ChatBotStarIcon, testId: 'chatbot-tab-favorites' },
-            ].map(({ value, label, icon: Icon, testId }) => {
+          <div
+            className="flex w-full rounded-2xl border border-gray-200 bg-gray-100 p-1 dark:border-white/10 dark:bg-white/5"
+            role="tablist"
+            aria-label="챗봇 보기"
+          >
+            {CHATBOT_TABS.map(({ value, label, icon: Icon, testId }, index) => {
               const isActive = activeTab === value;
               return (
                 <button
                   key={value}
                   type="button"
                   data-testid={testId}
-                  aria-pressed={isActive}
-                  onClick={() => setActiveTab(value as typeof activeTab)}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
+                  role="tab"
+                  aria-selected={isActive}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setActiveTab(value)}
+                  onKeyDown={(event) => handleTabKeyDown(event, index)}
+                  className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
                     isActive
                       ? 'bg-white text-gray-900 shadow-sm dark:bg-white/15 dark:text-white'
                       : 'text-gray-600 hover:bg-white/70 dark:text-white dark:hover:bg-white/10'

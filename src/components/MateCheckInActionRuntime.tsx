@@ -32,6 +32,12 @@ export default function MateCheckInActionRuntime({
   onComplete,
   onNavigateToChat,
 }: MateCheckInActionRuntimeProps) {
+  const safeTotalParticipants = Number.isFinite(totalParticipants)
+    ? Math.max(0, Math.trunc(totalParticipants))
+    : 0;
+  const safeCheckedInCount = Number.isFinite(checkedInCount)
+    ? Math.min(safeTotalParticipants, Math.max(0, Math.trunc(checkedInCount)))
+    : 0;
   const primaryMobileAction = !isCheckedIn
     ? {
       label: isChecking ? '처리 중...' : '체크인하기',
@@ -47,11 +53,18 @@ export default function MateCheckInActionRuntime({
         className: 'bg-primary text-white',
       }
       : null;
+  const mobileSummary = !isCheckedIn
+    ? `${safeCheckedInCount}/${safeTotalParticipants}명 체크인 완료`
+    : allCheckedIn
+      ? `${safeCheckedInCount}/${safeTotalParticipants}명 · 전원 체크인 완료`
+      : isHost
+        ? `${safeCheckedInCount}/${safeTotalParticipants}명 · 참여자 도착 확인 중`
+        : `${safeCheckedInCount}/${safeTotalParticipants}명 · 다른 참여자의 체크인을 기다리는 중`;
 
   return (
-    <>
-      <Card className={`hidden p-5 lg:flex lg:sticky lg:top-6 ${mateSectionCardClass}`}>
-        <div>
+    <div data-testid="mate-check-in-action-runtime" className="min-w-0">
+      <Card className={`hidden overflow-hidden p-5 lg:sticky lg:top-6 lg:flex ${mateSectionCardClass}`}>
+        <div className="min-w-0">
           <p className={mateMetaLabelClass}>
             우선 작업
           </p>
@@ -69,6 +82,7 @@ export default function MateCheckInActionRuntime({
           <div className="mt-4 space-y-2">
             {!isCheckedIn ? (
               <Button
+                data-testid="mate-check-in-desktop-check-in"
                 onClick={onCheckIn}
                 disabled={isChecking}
                 className="w-full bg-primary text-white"
@@ -86,7 +100,11 @@ export default function MateCheckInActionRuntime({
                 )}
               </Button>
             ) : allCheckedIn ? (
-              <Button onClick={onComplete} className="w-full bg-primary text-white">
+              <Button
+                data-testid="mate-check-in-desktop-complete"
+                onClick={onComplete}
+                className="w-full bg-primary text-white"
+              >
                 완료 확인
               </Button>
             ) : (
@@ -96,6 +114,7 @@ export default function MateCheckInActionRuntime({
             )}
 
             <Button
+              data-testid="mate-check-in-desktop-chat"
               variant="outline"
               className="w-full border-primary text-primary hover:bg-primary/10"
               onClick={onNavigateToChat}
@@ -124,36 +143,44 @@ export default function MateCheckInActionRuntime({
         </div>
       </Card>
 
-      {primaryMobileAction ? (
-        <div className={`${mateMobileBarClass} lg:hidden`}>
-          <div className="mx-auto max-w-6xl">
-            <div className="min-w-0">
-              <p className={mateMetaLabelClass}>
-                체크인 요약
-              </p>
-              <p className="mt-1 text-body font-semibold text-gray-900 dark:text-white">
-                {checkedInCount}/{totalParticipants}명 체크인 완료
-              </p>
-            </div>
-            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+      <div
+        data-testid="mate-check-in-mobile-bar"
+        aria-live="polite"
+        className={`${mateMobileBarClass} lg:hidden`}
+      >
+        <div className="mx-auto min-w-0 max-w-6xl overflow-hidden">
+          <div className="min-w-0">
+            <p className={mateMetaLabelClass}>
+              체크인 요약
+            </p>
+            <p className="mt-1 max-w-full text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">
+              {mobileSummary}
+            </p>
+          </div>
+          <div className={cn('mt-3 grid min-w-0 gap-2', primaryMobileAction ? 'grid-cols-2' : 'grid-cols-1')}>
+            <Button
+              data-testid="mate-check-in-mobile-chat"
+              onClick={onNavigateToChat}
+              variant="outline"
+              size="touch"
+              className="min-w-0 w-full border-primary px-3 text-primary hover:bg-primary/10"
+            >
+              채팅으로
+            </Button>
+            {primaryMobileAction ? (
               <Button
-                onClick={onNavigateToChat}
-                variant="outline"
-                className="w-full border-primary text-primary hover:bg-primary/10 sm:flex-1"
-              >
-                채팅으로
-              </Button>
-              <Button
+                data-testid="mate-check-in-mobile-primary"
                 onClick={primaryMobileAction.onClick}
                 disabled={primaryMobileAction.disabled}
-                className={cn('w-full sm:flex-1', primaryMobileAction.className)}
+                size="touch"
+                className={cn('min-w-0 w-full px-3', primaryMobileAction.className)}
               >
                 {primaryMobileAction.label}
               </Button>
-            </div>
+            ) : null}
           </div>
         </div>
-      ) : null}
-    </>
+      </div>
+    </div>
   );
 }

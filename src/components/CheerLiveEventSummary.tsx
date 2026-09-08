@@ -73,7 +73,7 @@ export default function CheerLiveEventSummary({
           {isManualDataRequired ? (
             <>
               <p className="mt-1 leading-relaxed">내부 game_events 데이터가 준비되지 않아 임의로 채우지 않습니다. 운영자 데이터 입력 후 갱신됩니다.</p>
-              <code className="mt-2 inline-flex rounded border border-amber-300/70 bg-amber-100/70 px-2 py-0.5 text-[11px] dark:border-amber-300/50 dark:bg-amber-900/30">
+              <code className="mt-2 inline-flex rounded border border-amber-300/70 bg-amber-100/70 px-2 py-0.5 text-11 dark:border-amber-300/50 dark:bg-amber-900/30">
                 {MANUAL_BASEBALL_DATA_REQUIRED_CODE}
               </code>
             </>

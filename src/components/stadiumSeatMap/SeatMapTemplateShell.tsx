@@ -98,11 +98,20 @@ export function SeatMapTemplateShell({
       }}
     >
       <div
-        className="flex justify-between items-center mb-2.5 px-1 text-sm font-black text-slate-800 dark:text-white"
+        className="flex min-w-0 justify-between items-center gap-2 mb-2.5 px-1 text-sm font-black text-slate-800 dark:text-white"
         style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined }}
       >
-        {title}
-        <span className="ml-2 text-11 font-semibold" style={{ color: titleAccentColor }}>
+        <span
+          className="min-w-0 flex-1 line-clamp-3 break-words [overflow-wrap:anywhere]"
+          title={title}
+        >
+          {title}
+        </span>
+        <span
+          className="min-w-0 max-w-[50%] line-clamp-3 break-words text-right [overflow-wrap:anywhere] text-11 font-semibold"
+          style={{ color: titleAccentColor }}
+          title={subtitle}
+        >
           {subtitle}
         </span>
       </div>
@@ -139,22 +148,29 @@ export function SeatMapTemplateShell({
           <div
             className="grid gap-4"
             style={{
-              gridTemplateColumns: hasDesktopPanel ? 'minmax(0, 1fr) 380px' : 'minmax(0, 1fr)',
+              gridTemplateColumns: hasDesktopPanel
+                ? 'minmax(0, 1fr) minmax(0, min(380px, 45%))'
+                : 'minmax(0, 1fr)',
               alignItems: 'start',
             }}
           >
             {mapFrame}
-            {resolvedDesktopPanel}
+            {hasDesktopPanel && resolvedDesktopPanel}
           </div>
         </>
       )}
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] px-4 py-2.5 rounded-full text-sm font-bold shadow-xl"
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] max-w-full line-clamp-3 break-words px-4 py-2.5 rounded-2xl text-center text-sm font-bold shadow-xl [overflow-wrap:anywhere]"
           style={{
             background: isDark ? STADIUM_SEATMAP_DARK_COLORS.accent : '#0f172a',
             color: isDark ? '#03100b' : '#f8fafc',
+            maxWidth: 'calc(100vw - 2rem)',
           }}
+          title={toast}
         >
           {toast}
         </div>
@@ -177,14 +193,20 @@ export function SeatMapTemplateShell({
             }}
           >
             <div
-              className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-3 py-3 sm:px-5"
+              className="flex min-w-0 shrink-0 items-center justify-between gap-3 border-b border-white/10 px-3 py-3 sm:px-5"
               style={{ borderColor: isDark ? STADIUM_SEATMAP_DARK_COLORS.border : undefined }}
             >
-              <div>
-                <div className="text-sm font-black text-white">{fullscreenTitle}</div>
+              <div className="min-w-0 flex-1">
                 <div
-                  className="text-11 font-semibold text-slate-400"
+                  className="max-w-full line-clamp-3 break-words text-sm font-black text-white [overflow-wrap:anywhere]"
+                  title={fullscreenTitle}
+                >
+                  {fullscreenTitle}
+                </div>
+                <div
+                  className="max-w-full line-clamp-3 break-words text-11 font-semibold text-slate-400 [overflow-wrap:anywhere]"
                   style={{ color: isDark ? STADIUM_SEATMAP_DARK_COLORS.muted : undefined }}
+                  title={fullscreenSubtitle}
                 >
                   {fullscreenSubtitle}
                 </div>
@@ -194,7 +216,7 @@ export function SeatMapTemplateShell({
                 data-testid={fullscreenCloseTestId}
                 aria-label={`${fullscreenTitle} 전체화면 닫기`}
                 onClick={onFullscreenClose}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-700 text-slate-200 transition-colors hover:bg-slate-800"
+                className="shrink-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-700 text-slate-200 transition-colors hover:bg-slate-800"
                 style={{
                   borderColor: isDark ? STADIUM_SEATMAP_DARK_COLORS.borderStrong : undefined,
                   color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined,
@@ -203,9 +225,9 @@ export function SeatMapTemplateShell({
                 <XIcon className="h-4 w-4" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 overflow-hidden px-2 py-3 sm:px-4 sm:py-4">
-              <div className="mx-auto flex h-full w-full max-w-[calc(100vh-120px)] items-center justify-center">
-                <div className="w-full">
+            <div className="min-w-0 min-h-0 flex-1 overflow-hidden px-2 py-3 sm:px-4 sm:py-4">
+              <div className="mx-auto flex h-full w-full min-w-0 max-w-[calc(100vh-120px)] items-center justify-center">
+                <div className="w-full min-w-0">
                   {fullscreenMapContent}
                 </div>
               </div>

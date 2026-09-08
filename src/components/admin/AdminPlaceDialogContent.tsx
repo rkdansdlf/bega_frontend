@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 
 import type { PlaceFormData } from '../../api/admin';
 import { Button } from '../ui/button';
@@ -17,9 +17,14 @@ interface AdminPlaceDialogContentProps {
   placeSubmitting: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: () => void;
+  visualQaStateOverride?: AdminPlaceDialogVisualQaStateOverride;
 }
 
-const selectClassName = 'w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500';
+export type AdminPlaceDialogVisualQaStateOverride = {
+  interactive: boolean;
+};
+
+const selectClassName = 'h-11 min-w-0 w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-base text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 sm:h-9 sm:text-body';
 
 export default function AdminPlaceDialogContent({
   open,
@@ -32,57 +37,97 @@ export default function AdminPlaceDialogContent({
   placeSubmitting,
   onOpenChange,
   onSubmit,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AdminPlaceDialogContentProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaInteractive = visualQaStateOverride?.interactive === true;
+  const [visualQaPlaceForm, setVisualQaPlaceForm] = useState(placeForm);
+  const effectivePlaceForm = visualQaInteractive ? visualQaPlaceForm : placeForm;
+  const updatePlaceForm = visualQaInteractive ? setVisualQaPlaceForm : setPlaceForm;
   const isCreate = mode === 'create';
+  const dialogDescription = isCreate
+    ? `${stadiumName} 구장에 새 장소를 추가합니다.`
+    : '장소 정보를 수정합니다.';
+
+  useEffect(() => {
+    if (visualQaInteractive) {
+      setVisualQaPlaceForm(placeForm);
+    }
+  }, [placeForm, visualQaInteractive]);
 
   return (
     <PlainDialog
       open={open}
       onClose={() => onOpenChange(false)}
+      initialFocus="container"
       title={(
-        <span className="flex items-center gap-2 text-white">
-          <AdminMapPinIcon className="w-5 h-5 text-amber-300" />
+        <span className="flex min-w-0 items-center gap-2 text-white [overflow-wrap:anywhere]">
+          <AdminMapPinIcon className="h-5 w-5 shrink-0 text-amber-300" />
           {isCreate ? '장소 추가' : '장소 수정'}
         </span>
       )}
-      description={isCreate ? `${stadiumName} 구장에 새 장소를 추가합니다.` : '장소 정보를 수정합니다.'}
-      className="max-w-lg max-h-[90vh] overflow-y-auto border-slate-800 bg-slate-900 text-slate-100"
+      description={(
+        <span className="line-clamp-3 [overflow-wrap:anywhere]" title={dialogDescription}>
+          {dialogDescription}
+        </span>
+      )}
+      contentTestId="admin-place-dialog"
+      className="max-w-lg border-slate-800 bg-slate-900 text-slate-100 focus:outline-none"
       footer={(
         <>
           <Button
+            type="button"
+            data-testid="admin-place-cancel"
             variant="ghost"
             onClick={() => onOpenChange(false)}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="w-full min-h-11 border-slate-700 text-slate-300 hover:bg-slate-800 sm:min-h-9 sm:w-auto"
           >
             취소
           </Button>
           <Button
+            type="button"
+            data-testid="admin-place-submit"
             onClick={onSubmit}
-            disabled={placeSubmitting || !placeForm.name || !placeForm.category}
-            className="bg-amber-500 text-slate-950 shadow-sm hover:bg-amber-400 disabled:bg-slate-700 disabled:text-slate-500"
+            disabled={placeSubmitting || !effectivePlaceForm.name || !effectivePlaceForm.category}
+            className="w-full min-h-11 bg-amber-500 text-slate-950 shadow-sm hover:bg-amber-400 disabled:bg-slate-700 disabled:text-slate-500 sm:min-h-9 sm:w-auto"
           >
             {placeSubmitting ? '저장 중...' : (isCreate ? '추가' : '저장')}
           </Button>
         </>
       )}
     >
-      <div className="grid gap-4 py-2">
+      <div className="min-w-0 [overflow-wrap:anywhere]">
+        {stadiumError && (
+          <p
+            role="alert"
+            aria-live="polite"
+            className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-caption text-red-300 [overflow-wrap:anywhere]"
+          >
+            {stadiumError}
+          </p>
+        )}
+
+        <div className="grid gap-4 py-2">
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">이름 *</label>
+            <label htmlFor="admin-place-name" className="text-caption text-slate-400">이름 *</label>
             <Input
-              value={placeForm.name}
-              onChange={(e) => setPlaceForm((form) => ({ ...form, name: e.target.value }))}
+              id="admin-place-name"
+              value={effectivePlaceForm.name}
+              onChange={(e) => updatePlaceForm((form) => ({ ...form, name: e.target.value }))}
               placeholder="장소 이름"
               className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">카테고리 *</label>
+            <label htmlFor="admin-place-category" className="text-caption text-slate-400">카테고리 *</label>
             <select
+              id="admin-place-category"
               data-testid="admin-place-category-trigger"
-              value={placeForm.category}
-              onChange={(e) => setPlaceForm((form) => ({ ...form, category: e.target.value }))}
+              value={effectivePlaceForm.category}
+              onChange={(e) => updatePlaceForm((form) => ({ ...form, category: e.target.value }))}
               className={selectClassName}
             >
               <option value="">카테고리 선택</option>
@@ -95,54 +140,60 @@ export default function AdminPlaceDialogContent({
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">설명</label>
+            <label htmlFor="admin-place-description" className="text-caption text-slate-400">설명</label>
             <Input
-              value={placeForm.description ?? ''}
-              onChange={(e) => setPlaceForm((form) => ({ ...form, description: e.target.value }))}
+              id="admin-place-description"
+              value={effectivePlaceForm.description ?? ''}
+              onChange={(e) => updatePlaceForm((form) => ({ ...form, description: e.target.value }))}
               placeholder="장소 설명"
               className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">주소</label>
+            <label htmlFor="admin-place-address" className="text-caption text-slate-400">주소</label>
             <Input
-              value={placeForm.address ?? ''}
-              onChange={(e) => setPlaceForm((form) => ({ ...form, address: e.target.value }))}
+              id="admin-place-address"
+              value={effectivePlaceForm.address ?? ''}
+              onChange={(e) => updatePlaceForm((form) => ({ ...form, address: e.target.value }))}
               placeholder="도로명 주소"
               className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">전화번호</label>
+            <label htmlFor="admin-place-phone" className="text-caption text-slate-400">전화번호</label>
             <Input
-              value={placeForm.phone ?? ''}
-              onChange={(e) => setPlaceForm((form) => ({ ...form, phone: e.target.value }))}
+              id="admin-place-phone"
+              type="tel"
+              value={effectivePlaceForm.phone ?? ''}
+              onChange={(e) => updatePlaceForm((form) => ({ ...form, phone: e.target.value }))}
               placeholder="대표 전화번호"
               className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">위도 *</label>
+              <label htmlFor="admin-place-lat" className="text-caption text-slate-400">위도 *</label>
               <Input
+                id="admin-place-lat"
                 type="number"
                 step="any"
-                value={placeForm.lat}
-                onChange={(e) => setPlaceForm((form) => ({ ...form, lat: parseFloat(e.target.value) || 0 }))}
+                value={effectivePlaceForm.lat}
+                onChange={(e) => updatePlaceForm((form) => ({ ...form, lat: parseFloat(e.target.value) || 0 }))}
                 placeholder="37.5121"
                 className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
               />
             </div>
             <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">경도 *</label>
+              <label htmlFor="admin-place-lng" className="text-caption text-slate-400">경도 *</label>
               <Input
+                id="admin-place-lng"
                 type="number"
                 step="any"
-                value={placeForm.lng}
-                onChange={(e) => setPlaceForm((form) => ({ ...form, lng: parseFloat(e.target.value) || 0 }))}
+                value={effectivePlaceForm.lng}
+                onChange={(e) => updatePlaceForm((form) => ({ ...form, lng: parseFloat(e.target.value) || 0 }))}
                 placeholder="127.0719"
                 className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
               />
@@ -150,47 +201,47 @@ export default function AdminPlaceDialogContent({
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-caption text-slate-400">평점 (0.0 ~ 5.0)</label>
+            <label htmlFor="admin-place-rating" className="text-caption text-slate-400">평점 (0.0 ~ 5.0)</label>
             <Input
+              id="admin-place-rating"
               type="number"
               step="0.1"
               min="0"
               max="5"
-              value={placeForm.rating ?? ''}
+              value={effectivePlaceForm.rating ?? ''}
               onChange={(e) => {
                 const value = e.target.value;
-                setPlaceForm((form) => ({ ...form, rating: value === '' ? undefined : parseFloat(value) }));
+                updatePlaceForm((form) => ({ ...form, rating: value === '' ? undefined : parseFloat(value) }));
               }}
               placeholder="4.3"
               className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">오픈 시간</label>
+              <label htmlFor="admin-place-open-time" className="text-caption text-slate-400">오픈 시간</label>
               <Input
-                value={placeForm.openTime ?? ''}
-                onChange={(e) => setPlaceForm((form) => ({ ...form, openTime: e.target.value }))}
+                id="admin-place-open-time"
+                value={effectivePlaceForm.openTime ?? ''}
+                onChange={(e) => updatePlaceForm((form) => ({ ...form, openTime: e.target.value }))}
                 placeholder="09:00"
                 className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
               />
             </div>
             <div className="grid gap-1.5">
-              <label className="text-caption text-slate-400">마감 시간</label>
+              <label htmlFor="admin-place-close-time" className="text-caption text-slate-400">마감 시간</label>
               <Input
-                value={placeForm.closeTime ?? ''}
-                onChange={(e) => setPlaceForm((form) => ({ ...form, closeTime: e.target.value }))}
+                id="admin-place-close-time"
+                value={effectivePlaceForm.closeTime ?? ''}
+                onChange={(e) => updatePlaceForm((form) => ({ ...form, closeTime: e.target.value }))}
                 placeholder="22:00"
                 className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg"
               />
             </div>
           </div>
         </div>
-
-        {stadiumError && (
-          <p className="text-red-400 text-caption mt-1">{stadiumError}</p>
-        )}
+      </div>
     </PlainDialog>
   );
 }

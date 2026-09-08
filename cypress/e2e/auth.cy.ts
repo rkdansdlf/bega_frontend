@@ -100,7 +100,7 @@ describe('Authentication Flow', () => {
         it('should replace login history after successful login so back does not reopen login', () => {
             cy.fixture('user').then((user) => {
                 cy.visit('/home');
-                cy.contains('button', '로그인').first().click();
+                cy.get('button[aria-label="로그인"]').first().click();
                 cy.location('pathname').should('eq', '/login');
 
                 cy.intercept('POST', '**/api/auth/login', {

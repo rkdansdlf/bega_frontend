@@ -4,6 +4,7 @@ export default function RetroLeaderboardDecorations() {
   return (
     <div
       aria-hidden="true"
+      data-testid="retro-leaderboard-decorations"
       style={{
         position: 'absolute',
         inset: 0,

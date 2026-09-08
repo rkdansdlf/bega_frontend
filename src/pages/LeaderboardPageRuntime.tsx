@@ -1,33 +1,83 @@
-import { lazy, Suspense, useCallback, useMemo } from 'react';
+import {
+  createElement,
+  lazy,
+  Suspense,
+  useCallback,
+  useMemo,
+  type ComponentType,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLeaderboard } from '../hooks/useLeaderboardPublic';
 import { isLoggedInUser, useAuthStore } from '../store/authStore';
 import RetroLeaderboard from '../components/retro/RetroLeaderboard';
+import type { LeaderboardEntry, HotStreak } from '../api/leaderboard';
+import type { TickerMessage } from '../components/retro/NewsTicker';
+import type {
+  AuthenticatedRetroLeaderboardProps,
+  AuthenticatedRetroLeaderboardStateOverride,
+} from '../components/retro/AuthenticatedRetroLeaderboard';
 
 const AuthenticatedRetroLeaderboard = lazy(() => import('../components/retro/AuthenticatedRetroLeaderboard'));
+
+interface LeaderboardPageRuntimeAuthStateOverride {
+  isLoggedIn: boolean;
+  isAuthLoading: boolean;
+  currentUserHandle?: string;
+}
+
+interface LeaderboardPageRuntimeDataOverride {
+  leaderboard: LeaderboardEntry[];
+  hotStreaks: HotStreak[];
+  tickerMessages: TickerMessage[];
+  isLoading: boolean;
+}
+
+export interface LeaderboardPageRuntimeProps {
+  authStateOverride?: LeaderboardPageRuntimeAuthStateOverride;
+  leaderboardStateOverride?: LeaderboardPageRuntimeDataOverride;
+  authenticatedStateOverride?: AuthenticatedRetroLeaderboardStateOverride;
+  authenticatedRuntimeLoader?: () => Promise<{
+    default: ComponentType<AuthenticatedRetroLeaderboardProps>;
+  }>;
+}
 
 /**
  * 리더보드 페이지 컨테이너
  * useLeaderboard 훅으로 데이터를 가져와 RetroLeaderboard에 전달
  */
-export default function LeaderboardPageRuntime() {
+export default function LeaderboardPageRuntime({
+  authStateOverride,
+  leaderboardStateOverride,
+  authenticatedStateOverride,
+  authenticatedRuntimeLoader,
+}: LeaderboardPageRuntimeProps = {}) {
   const navigate = useNavigate();
 
-  const isLoggedIn = useAuthStore((state) => isLoggedInUser(state.user));
-  const isAuthLoading = useAuthStore((state) => state.isAuthLoading);
-  const currentUserHandle = useAuthStore((state) => state.user?.handle);
+  const storeIsLoggedIn = useAuthStore((state) => isLoggedInUser(state.user));
+  const storeIsAuthLoading = useAuthStore((state) => state.isAuthLoading);
+  const storeCurrentUserHandle = useAuthStore((state) => state.user?.handle);
 
+  const leaderboardQuery = useLeaderboard('season', 0, 10);
   const {
     leaderboard,
     hotStreaks,
     tickerMessages,
     isLoading,
-    refetch,
-  } = useLeaderboard('season', 0, 10);
+  } = leaderboardStateOverride ?? leaderboardQuery;
+  const isLoggedIn = authStateOverride?.isLoggedIn ?? storeIsLoggedIn;
+  const isAuthLoading = authStateOverride?.isAuthLoading ?? storeIsAuthLoading;
+  const currentUserHandle = authStateOverride?.currentUserHandle ?? storeCurrentUserHandle;
+  const refetchLeaderboard = leaderboardQuery.refetch;
+  const authenticatedComponent = useMemo<ComponentType<AuthenticatedRetroLeaderboardProps>>(
+    () => (authenticatedRuntimeLoader
+      ? lazy(authenticatedRuntimeLoader)
+      : AuthenticatedRetroLeaderboard),
+    [authenticatedRuntimeLoader],
+  );
 
   const handleRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+    void refetchLeaderboard();
+  }, [refetchLeaderboard]);
 
   const handlePredict = useCallback(() => {
     navigate('/prediction');
@@ -51,12 +101,16 @@ export default function LeaderboardPageRuntime() {
     currentUserHandle,
     onRefresh: handleRefresh,
     onPredict: handlePredict,
+    containerTestId: 'leaderboard-page-runtime',
   } as const;
 
   if (isLoggedIn && !isAuthLoading) {
     return (
       <Suspense fallback={<RetroLeaderboard {...retroLeaderboardProps} />}>
-        <AuthenticatedRetroLeaderboard {...retroLeaderboardProps} />
+        {createElement(authenticatedComponent, {
+          ...retroLeaderboardProps,
+          stateOverride: authenticatedStateOverride,
+        })}
       </Suspense>
     );
   }

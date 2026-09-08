@@ -1,0 +1,399 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T09:04:00.454Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots"
+  },
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=closed|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-48f1e0099510.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=closed|variant.theme=light",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-87bbb5290477.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=idle|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-9c5b277e7af1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=idle|variant.theme=light",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-9d7156a3786f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=saving|variant.theme=dark",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-dab1488c92a8.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=default|variant.phase=saving|variant.theme=light",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-7f3f4b0743c9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=focus-visible|variant.phase=idle|variant.theme=light|interactionTarget=cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-cefcde6b8d56.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=focus-visible|variant.phase=idle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-a7ffe0a030a9.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=focus-visible|variant.phase=idle|variant.theme=light|interactionTarget=confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-ee4c573db0d6.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=hover|variant.phase=idle|variant.theme=light|interactionTarget=cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-fa3a8ceb5b8a.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=hover|variant.phase=idle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-e3bd49c5c3a8.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=hover|variant.phase=idle|variant.theme=light|interactionTarget=confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-03a755f8faa6.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=enter-confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-259361ee921b.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+        "targetId": "enter-confirm",
+        "key": "Enter",
+        "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"1\"][data-vqa-effective-open=\"true\"][data-vqa-effective-saving=\"true\"]) [data-testid=\"ranking-save-dialog-confirm\"][aria-busy=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=escape",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-e9726f45d359.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "escape",
+        "key": "Escape",
+        "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=shift-tab-close-to-confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-023e3532ae8d.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "shift-tab-close-to-confirm",
+        "key": "Shift+Tab",
+        "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-confirm\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=space-cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-75d3bff2b4bd.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "space-cancel",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=tab-cancel-to-confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-e7a52dc06b84.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "tab-cancel-to-confirm",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-confirm\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=keyboard-navigation|variant.phase=idle|variant.theme=light|interactionTarget=tab-close-to-cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-c1a977d15c4e.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "tab-close-to-cancel",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"0\"]) [data-testid=\"ranking-save-dialog-cancel\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=pressed|variant.phase=idle|variant.theme=light|interactionTarget=cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-da3c6bb890f3.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "cancel",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=pressed|variant.phase=idle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-46a430ffe2c3.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=pressed|variant.phase=idle|variant.theme=light|interactionTarget=confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-89553eeb9089.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=selected|variant.phase=idle|variant.theme=light|interactionTarget=backdrop",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-0669aa97e421.png",
+      "interaction": {
+        "action": "click",
+        "selector": "body:has([role=\"dialog\"]) > .fixed.inset-0 > div:has(> [role=\"dialog\"])",
+        "targetId": "backdrop",
+        "clickPosition": {
+          "x": 1,
+          "y": 1
+        },
+        "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=selected|variant.phase=idle|variant.theme=light|interactionTarget=cancel",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-f8c78eb28725.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"ranking-save-dialog-cancel\"]",
+        "targetId": "cancel",
+        "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=selected|variant.phase=idle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-ec947663de9c.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[role=\"dialog\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "waitForSelector": "[data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-confirm-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[role=\"dialog\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog:data=single|interactions=selected|variant.phase=idle|variant.theme=light|interactionTarget=confirm",
+      "componentId": "src/components/RankingPredictionSaveDialog.tsx#RankingPredictionSaveDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-ranking-prediction-save-dialog-mobile-screenshots/rankingpredictionsavedialog-rankingpredictionsavedialog-data-single-interactions-81ac310fa5f9.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"ranking-save-dialog-confirm\"]",
+        "targetId": "confirm",
+        "waitForSelector": "body:has([data-testid=\"ranking-save-dialog-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-confirm-count=\"1\"][data-vqa-effective-open=\"true\"][data-vqa-effective-saving=\"true\"]) [data-testid=\"ranking-save-dialog-confirm\"][aria-busy=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    }
+  ]
+}

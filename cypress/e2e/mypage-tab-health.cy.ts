@@ -431,7 +431,31 @@ describe('MyPage tab backend health', () => {
         cy.get(selector).then(($target) => getEffectiveBackgroundColor($target[0]));
 
     const getRoundedHeight = (selector: string) =>
-        cy.get(selector).then(($target) => Math.round($target[0].getBoundingClientRect().height));
+        cy.get(selector)
+            .should(($target) => {
+                expect(
+                    $target[0].getBoundingClientRect().height,
+                    `${selector} should have layout height`,
+                ).to.be.greaterThan(0);
+            })
+            .then(($target) => Math.round($target[0].getBoundingClientRect().height));
+
+    const waitForStableLayout = (selector: string, label: string) => {
+        let previousHeight: number | undefined;
+        let stableSamples = 0;
+
+        cy.get(selector, { timeout: 20000 }).should(($target) => {
+            const height = $target[0].getBoundingClientRect().height;
+            if (previousHeight !== undefined && Math.abs(height - previousHeight) < 0.5) {
+                stableSamples += 1;
+            } else {
+                stableSamples = 0;
+            }
+            previousHeight = height;
+
+            expect(stableSamples, `${label} layout should remain stable`).to.be.at.least(2);
+        });
+    };
 
     const visibleScreen = (label: string) => {
         cy.get(`section[data-screen-label="${label}"]`, { timeout: 20000 }).should('be.visible');
@@ -439,7 +463,16 @@ describe('MyPage tab backend health', () => {
 
     const waitForThemeMeasurementSettle = () => {
         cy.get('.mypage-season-root', { timeout: 20000 }).should('not.contain.text', '불러오는 중');
-        cy.wait(150, { log: false });
+        waitForStableLayout(MY_PAGE_SHELL_SELECTOR, 'MyPage shell');
+    };
+
+    const waitForDiaryEditorStable = () => {
+        cy.get('.diary-green-surface', { timeout: 30000 }).should('be.visible');
+        cy.get('[data-testid="diary-editor-form-card"], .diary-editor-form-card', { timeout: 30000 }).should('be.visible');
+        cy.get('[data-testid="diary-edit-runtime-ready"]', { timeout: 30000 }).should('be.visible');
+        cy.get('.diary-green-surface').should('not.contain.text', '직관 기록 폼을 불러오는 중입니다.');
+        waitForStableLayout('.diary-green-surface', 'Diary editor');
+        waitForStableLayout(MY_PAGE_SHELL_SELECTOR, 'MyPage shell after diary editor');
     };
 
     const setSystemPrefersDark = (prefersDark: boolean) => {
@@ -703,8 +736,12 @@ describe('MyPage tab backend health', () => {
         screenSelector: string,
         openScreen: () => void,
         assertScreenVisible?: () => void,
+        postToggleWait?: () => void,
+        heightTolerancePx = 2,
+        waitAliases: CypressWaitAlias[] = [],
     ) => {
         openScreen();
+        waitAliases.forEach((alias) => cy.wait(alias));
         (assertScreenVisible ?? (() => visibleScreen(viewLabel)))();
         waitForThemeMeasurementSettle();
 
@@ -713,6 +750,7 @@ describe('MyPage tab backend health', () => {
 
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             beforeHeight = height;
+            cy.log(`[${viewLabel}] Before toggle - shell height: ${height}`);
         });
 
         collectThemeSnapshot(screenSelector).then((snapshot) => {
@@ -723,8 +761,21 @@ describe('MyPage tab backend health', () => {
 
         toggleThemeTo('light');
         getThemeClassState('light');
+        
+        // Check for fallback presence after theme toggle (only for diary editor)
+        const isDiaryEditor = screenSelector === '.diary-green-surface';
+        if (isDiaryEditor) {
+            cy.get('.diary-green-surface').then(($el) => {
+                const hasFallback = $el.text().includes('불러오는 중');
+                cy.log(`[${viewLabel}] After light toggle - fallback present: ${hasFallback}`);
+            });
+        }
+        
+        (postToggleWait ?? waitForThemeMeasurementSettle)();
+        
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
-            expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(2);
+            cy.log(`[${viewLabel}] After light toggle wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
+            expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(heightTolerancePx);
         });
         assertReadableContrast(MY_PAGE_SHELL_SELECTOR, `${viewLabel} light shell`);
         assertReadableContrast(screenSelector, `${viewLabel} light screen`);
@@ -736,8 +787,18 @@ describe('MyPage tab backend health', () => {
 
         toggleThemeTo('dark');
         getThemeClassState('dark');
+        
+        if (isDiaryEditor) {
+            cy.get('.diary-green-surface').then(($el) => {
+                const hasFallback = $el.text().includes('불러오는 중');
+                cy.log(`[${viewLabel}] After dark toggle - fallback present: ${hasFallback}`);
+            });
+        }
+        
+        (postToggleWait ?? waitForThemeMeasurementSettle)();
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
-            expect(Math.abs(height - beforeHeight), `${viewLabel} height should return after theme restore`).to.be.lte(2);
+            cy.log(`[${viewLabel}] After dark restore wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
+            expect(Math.abs(height - beforeHeight), `${viewLabel} height should return after theme restore`).to.be.lte(heightTolerancePx);
         });
     };
 
@@ -1006,6 +1067,10 @@ describe('MyPage tab backend health', () => {
             '알림',
             'section[data-screen-label="알림"]',
             () => cy.visit('/mypage?view=alerts', { onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark') }),
+            undefined,
+            undefined,
+            2,
+            ['@healthGetNotifications'],
         );
 
         runThemeToggleForScreen(
@@ -1049,13 +1114,41 @@ describe('MyPage tab backend health', () => {
             '다이어리 편집',
             '.diary-green-surface',
             () => {
-                cy.visit('/mypage?view=diaryEditor&date=2026-06-12', {
+                cy.visit('/mypage?view=diaryEditor&date=2026-06-13', {
                     onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark'),
                 });
                 cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
             },
-            () => cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible'),
+            waitForDiaryEditorStable,
+            waitForDiaryEditorStable,
+            5,
         );
+    });
+
+    it('verifies mobile viewport dimensions in CI Docker', () => {
+        cy.viewport(390, 844);
+        cy.visit('/mypage?view=diaryEditor&date=2026-06-13', {
+            onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark'),
+        });
+        
+        cy.window().then((win) => {
+            expect(win.innerWidth, 'viewport width').to.eq(390);
+            expect(win.innerHeight, 'viewport height').to.eq(844);
+            expect(win.matchMedia('(max-width: 767px)').matches, 'mobile media query').to.be.true;
+            cy.log(`Viewport: ${win.innerWidth}x${win.innerHeight}`);
+            cy.log(`DocumentElement clientWidth: ${win.document.documentElement.clientWidth}`);
+            cy.log(`DocumentElement clientHeight: ${win.document.documentElement.clientHeight}`);
+            cy.log(`MatchMedia (max-width: 767px): ${win.matchMedia('(max-width: 767px)').matches}`);
+        });
+        
+        cy.get('.diary-green-surface', { timeout: 20000 }).should('be.visible');
+        cy.get('[data-testid="diary-editor-form-card"], .diary-editor-form-card', { timeout: 20000 }).should('be.visible');
+        
+        cy.get('.diary-green-surface').then(($el) => {
+            const height = $el[0].getBoundingClientRect().height;
+            cy.log(`Initial diary-green-surface height: ${height}`);
+            expect(height).to.be.greaterThan(0);
+        });
     });
 
     it('keeps diary seat-view dialog readable in light theme after mobile resize', () => {

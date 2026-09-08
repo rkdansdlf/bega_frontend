@@ -20,6 +20,7 @@ test('fallback probe smoke clears remote configuration before starting Cypress',
     '5192',
     '--spec',
     'cypress/e2e/module-federation-probe.cy.ts',
+    '--docker',
   ]);
   assert.deepEqual(plan.env, {
     VITE_ENABLE_MODULE_FEDERATION: '',
@@ -53,6 +54,7 @@ test('remote probe smoke enables Module Federation and asserts remote mode in Cy
     '5193',
     '--spec',
     'cypress/e2e/module-federation-probe.cy.ts',
+    '--docker',
     '--env',
     'EXPECT_MF_REMOTE=true',
   ]);

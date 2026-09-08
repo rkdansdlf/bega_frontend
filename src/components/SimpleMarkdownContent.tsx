@@ -1,13 +1,19 @@
-import { renderMarkdownToHtml } from '../utils/simpleMarkdown';
+import { renderMarkdownToHtml, stripLeadingMarkdownHeading } from '../utils/simpleMarkdown';
+
+import './simple-markdown-content.css';
 
 type SimpleMarkdownContentProps = {
   content: string;
   className?: string;
+  omitFirstHeading?: boolean;
 };
 
 export default function SimpleMarkdownContent({
   content,
-  className = 'prose prose-lg max-w-none dark:prose-invert',
+  className = 'simple-markdown-content',
+  omitFirstHeading = false,
 }: SimpleMarkdownContentProps) {
-  return <div className={className} dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(content) }} />;
+  const resolvedContent = omitFirstHeading ? stripLeadingMarkdownHeading(content) : content;
+
+  return <div className={className} dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(resolvedContent) }} />;
 }

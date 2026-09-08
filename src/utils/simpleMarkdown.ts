@@ -136,8 +136,13 @@ const renderTable = (lines: string[], startIndex: number): [string, number] => {
     .map((row) => `<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join('')}</tr>`)
     .join('');
 
+  // Tables are 2D content: WCAG reflow allows them to scroll, but only inside
+  // their own region — never by scrolling the page. Styles are inline because
+  // this markup is injected via dangerouslySetInnerHTML and never sees Tailwind.
   return [
-    `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`,
+    '<div style="overflow-x:auto;max-width:100%">'
+    + `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`
+    + '</div>',
     index,
   ];
 };
@@ -175,6 +180,19 @@ const renderBlockquote = (lines: string[], startIndex: number): [string, number]
   }
 
   return [`<blockquote>${quoteLines.map((line) => `<p>${renderInline(line)}</p>`).join('')}</blockquote>`, index];
+};
+
+export const stripLeadingMarkdownHeading = (content: string): string => {
+  const contentWithoutBom = content.replace(/^\uFEFF/, '');
+  const headingMatch = contentWithoutBom.match(/^[ \t]*#{1,6}[ \t]+[^\r\n]+(?:\r?\n|$)/);
+
+  if (!headingMatch) {
+    return content;
+  }
+
+  return contentWithoutBom
+    .slice(headingMatch[0].length)
+    .replace(/^(?:[ \t]*\r?\n)+/, '');
 };
 
 export const renderMarkdownToHtml = (content: string): string => {

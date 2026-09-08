@@ -129,7 +129,7 @@ export default function MateManageOverviewRuntime({
   );
 
   return (
-    <div className={`${matePageShellClass} pb-40 lg:pb-10`}>
+    <div className={`${matePageShellClass} pb-10`}>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.10),_transparent_55%)] dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_48%)]" />
       <img
         src={grassDecor}
@@ -140,6 +140,7 @@ export default function MateManageOverviewRuntime({
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
+          size="touch"
           onClick={onNavigateBack}
           className="mb-3 -ml-2 sm:mb-4"
         >

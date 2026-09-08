@@ -13,10 +13,22 @@ import {
   getAdExperimentVariant,
   trackAdEvent,
   type AdCreativeType,
+  type AdExperimentVariant,
   type AdRolloutWave,
 } from '../../utils/adAnalytics';
 
 type AdSlotRenderMode = 'filled' | 'no_fill';
+
+interface AdSlotRuntime {
+  adClient: string;
+  adSlotUnit: string;
+  enabled: boolean;
+  variant: AdExperimentVariant;
+  testMode: boolean;
+  loadScript: typeof loadAdSenseScript;
+  requestFill: typeof requestAdSenseFill;
+  trackEvent: typeof trackAdEvent;
+}
 
 interface AdSlotProps {
   slotId: string;
@@ -34,6 +46,7 @@ interface AdSlotProps {
   renderMode?: AdSlotRenderMode;
   noFillReason?: string;
   children?: ReactNode;
+  runtime?: AdSlotRuntime | null;
 }
 
 const VIEWABLE_THRESHOLD = 0.5;
@@ -75,6 +88,7 @@ export default function AdSlot({
   renderMode,
   noFillReason = 'adsense_no_fill',
   children,
+  runtime = null,
 }: AdSlotProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const adRef = useRef<HTMLElement | null>(null);
@@ -87,13 +101,18 @@ export default function AdSlot({
 
   const slotConfig = useMemo(() => getAdSlotConfig(slotId), [slotId]);
   const resolvedWave = slotConfig?.wave ?? wave;
-  const variant = useMemo(() => getAdExperimentVariant(resolvedWave), [resolvedWave]);
+  const configuredVariant = useMemo(() => getAdExperimentVariant(resolvedWave), [resolvedWave]);
+  const variant = runtime?.variant ?? configuredVariant;
   const resolvedCreativeType = creativeType ?? slotConfig?.creativeType ?? 'banner';
   const resolvedRenderMode = renderMode ?? 'filled';
   const resolvedMinHeight = minHeight ?? slotConfig?.minHeight ?? 140;
-  const adClient = getAdSenseClient();
-  const adSlotUnit = getAdSenseSlotUnit(slotId);
-  const isEnabledByConfig = isAdSlotEnabled(slotId);
+  const adClient = runtime?.adClient ?? getAdSenseClient();
+  const adSlotUnit = runtime?.adSlotUnit ?? getAdSenseSlotUnit(slotId);
+  const isEnabledByConfig = runtime?.enabled ?? isAdSlotEnabled(slotId);
+  const loadScript = runtime?.loadScript ?? loadAdSenseScript;
+  const requestFill = runtime?.requestFill ?? requestAdSenseFill;
+  const trackEvent = runtime?.trackEvent ?? trackAdEvent;
+  const testMode = runtime?.testMode ?? isAdSenseTestMode();
   const isControlGroup = hideInControl && variant === 'control';
   const shouldTrack = !disabled && isEnabledByConfig && !isControlGroup;
   const canRequestAd = shouldTrack && resolvedRenderMode === 'filled' && Boolean(adClient) && Boolean(adSlotUnit);
@@ -123,7 +142,7 @@ export default function AdSlot({
     }
 
     requestedRef.current = true;
-    trackAdEvent('ad_slot_requested', {
+    trackEvent('ad_slot_requested', {
       slotId,
       slotExposureId: exposureIdRef.current,
       pageType,
@@ -141,7 +160,7 @@ export default function AdSlot({
     }
 
     terminalRef.current = true;
-    trackAdEvent('ad_slot_no_fill', {
+    trackEvent('ad_slot_no_fill', {
       slotId,
       slotExposureId: exposureIdRef.current,
       pageType,
@@ -166,6 +185,7 @@ export default function AdSlot({
     resolvedCreativeType,
     shouldTrack,
     slotId,
+    trackEvent,
     userId,
     variant,
   ]);
@@ -177,16 +197,16 @@ export default function AdSlot({
 
     let cancelled = false;
 
-    void loadAdSenseScript(adClient)
+    void loadScript(adClient)
       .then(() => {
         if (cancelled || !adRef.current || terminalRef.current) {
           return;
         }
 
-        const didRequest = requestAdSenseFill(adRef.current);
+        const didRequest = requestFill(adRef.current);
         if (!didRequest) {
           terminalRef.current = true;
-          trackAdEvent('ad_slot_no_fill', {
+          trackEvent('ad_slot_no_fill', {
             slotId,
             slotExposureId: exposureIdRef.current,
             pageType,
@@ -203,7 +223,7 @@ export default function AdSlot({
         }
 
         terminalRef.current = true;
-        trackAdEvent('ad_slot_rendered', {
+        trackEvent('ad_slot_rendered', {
           slotId,
           slotExposureId: exposureIdRef.current,
           pageType,
@@ -224,7 +244,7 @@ export default function AdSlot({
         }
 
         terminalRef.current = true;
-        trackAdEvent('ad_slot_no_fill', {
+        trackEvent('ad_slot_no_fill', {
           slotId,
           slotExposureId: exposureIdRef.current,
           pageType,
@@ -248,10 +268,13 @@ export default function AdSlot({
     canRequestAd,
     contentId,
     listIndex,
+    loadScript,
     loggedIn,
     pageType,
     resolvedCreativeType,
+    requestFill,
     slotId,
+    trackEvent,
     userId,
     variant,
   ]);
@@ -288,7 +311,7 @@ export default function AdSlot({
 
               viewTrackedRef.current = true;
               viewTimerRef.current = null;
-              trackAdEvent('ad_slot_viewable', {
+              trackEvent('ad_slot_viewable', {
                 slotId,
                 slotExposureId: exposureIdRef.current,
                 pageType,
@@ -330,6 +353,7 @@ export default function AdSlot({
     pageType,
     resolvedCreativeType,
     slotId,
+    trackEvent,
     userId,
     variant,
   ]);
@@ -351,8 +375,8 @@ export default function AdSlot({
       data-ad-variant={variant}
     >
       <div className="mb-3 flex items-center justify-between gap-2 text-15 font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-white">
-        <span>광고</span>
-        <span>{slotId}</span>
+        <span className="shrink-0">광고</span>
+        <span className="min-w-0 truncate text-right">{slotId}</span>
       </div>
       {children ? <div className="mb-3">{children}</div> : null}
       <ins
@@ -366,7 +390,7 @@ export default function AdSlot({
         data-ad-format={slotConfig?.adFormat ?? 'auto'}
         data-ad-layout={slotConfig?.adLayout}
         data-full-width-responsive={slotConfig?.fullWidthResponsive ? 'true' : 'false'}
-        data-adtest={isAdSenseTestMode() ? 'on' : undefined}
+        data-adtest={testMode ? 'on' : undefined}
       />
     </div>
   );

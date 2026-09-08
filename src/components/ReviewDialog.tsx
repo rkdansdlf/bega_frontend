@@ -1,10 +1,11 @@
-import { useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { createReview } from '../api/mate';
 import { getApiErrorStatus } from '../api/errorStatus';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import { MateStarIcon } from './icons/MateFlowIcons';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface ReviewDialogProps {
   isOpen: boolean;
@@ -15,21 +16,32 @@ interface ReviewDialogProps {
     name: string;
   };
   onSuccess: () => void;
+  submitReview?: typeof createReview;
 }
 
-export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuccess }: ReviewDialogProps) {
+export default function ReviewDialog({
+  isOpen,
+  onClose,
+  partyId,
+  reviewee,
+  onSuccess,
+  submitReview = createReview,
+}: ReviewDialogProps) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setRating(0);
     setHoverRating(0);
     setComment('');
     onClose();
-  };
+  }, [onClose]);
+
+  useFocusTrap(dialogRef, { active: isOpen });
 
   useEffect(() => {
     if (!isOpen) {
@@ -56,7 +68,7 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
     if (rating === 0) return;
     setIsSubmitting(true);
     try {
-      await createReview({
+      await submitReview({
         partyId,
         revieweeHandle: reviewee.handle,
         rating,
@@ -76,6 +88,26 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
     }
   };
 
+  const handleRatingKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, currentRating: number) => {
+    let nextRating = currentRating;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextRating = currentRating === 5 ? 1 : currentRating + 1;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      nextRating = currentRating === 1 ? 5 : currentRating - 1;
+    } else if (event.key === 'Home') {
+      nextRating = 1;
+    } else if (event.key === 'End') {
+      nextRating = 5;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    setRating(nextRating);
+    const radios = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+    radios?.[nextRating - 1]?.focus();
+  };
+
   const ratingLabels = ['', '별로예요', '아쉬워요', '괜찮아요', '좋았어요', '최고예요'];
 
   if (!isOpen || typeof document === 'undefined') {
@@ -85,16 +117,23 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
   return createPortal(
     <div className="fixed inset-0 z-[90]">
       <div className="absolute inset-0 bg-black/50" aria-hidden="true" onClick={handleClose} />
-      <div className="absolute inset-0 flex items-center justify-center p-4" onClick={handleClose}>
+      <div className="absolute inset-0 flex items-center justify-center overflow-y-auto p-4" onClick={handleClose}>
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
+          tabIndex={-1}
           onClick={(event) => event.stopPropagation()}
-          className="w-full rounded-xl border bg-white shadow-dialog ring-1 ring-black/5 dark:border-border dark:bg-card sm:max-w-[400px]"
+          data-testid="review-dialog"
+          className="max-h-[calc(100dvh-2rem)] w-full overflow-y-auto overscroll-contain rounded-xl border bg-white shadow-dialog ring-1 ring-black/5 dark:border-border dark:bg-card sm:max-w-[400px]"
         >
           <div className="border-b border-gray-100 px-5 py-4 dark:border-border">
-            <h2 id={titleId} className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h2
+              id={titleId}
+              title={`${reviewee.name}님에 대한 리뷰`}
+              className="line-clamp-3 text-lg font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white"
+            >
               {reviewee.name}님에 대한 리뷰
             </h2>
           </div>
@@ -102,16 +141,22 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
           <div className="p-5">
             <div className="flex flex-col gap-5 py-2">
               <div className="flex flex-col items-center gap-2">
-                <div className="flex gap-1">
+                <div className="flex max-w-full gap-1" role="radiogroup" aria-label="메이트 평가 별점">
                   {[1, 2, 3, 4, 5].map((num) => (
                     <button
                       key={num}
                       type="button"
+                      role="radio"
+                      aria-checked={rating === num}
+                      aria-label={`${num}점: ${ratingLabels[num]}`}
+                      tabIndex={rating === num || (rating === 0 && num === 1) ? 0 : -1}
                       disabled={isSubmitting}
+                      data-testid={`review-rating-${num}`}
                       onClick={() => setRating(num)}
+                      onKeyDown={(event) => handleRatingKeyDown(event, num)}
                       onMouseEnter={() => setHoverRating(num)}
                       onMouseLeave={() => setHoverRating(0)}
-                      className="p-1 transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-md p-1 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <MateStarIcon
                         className={`h-8 w-8 transition-colors ${num <= (hoverRating || rating)
@@ -129,7 +174,10 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
 
               <div className="flex flex-col gap-1.5">
                 <textarea
+                  aria-label="한줄 후기"
+                  data-testid="review-comment"
                   value={comment}
+                  disabled={isSubmitting}
                   onChange={(event) => setComment(event.target.value.slice(0, 200))}
                   placeholder="한줄 후기를 남겨주세요 (선택)"
                   className="min-h-[80px] w-full resize-none rounded-md border border-input bg-input-background px-3 py-2 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
@@ -143,7 +191,8 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
             <button
               type="button"
               onClick={handleClose}
-              className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 py-2 text-body font-semibold text-foreground transition-all hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
+              data-testid="review-cancel"
+              className="inline-flex min-h-11 items-center justify-center rounded-md border bg-background px-4 py-2 text-body font-semibold text-foreground transition-all hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
             >
               취소
             </button>
@@ -151,7 +200,10 @@ export default function ReviewDialog({ isOpen, onClose, partyId, reviewee, onSuc
               type="button"
               onClick={handleSubmit}
               disabled={rating === 0 || isSubmitting}
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-body font-semibold text-white transition-all disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90"
+              aria-busy={isSubmitting}
+              data-submitting={isSubmitting}
+              data-testid="review-submit"
+              className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-4 py-2 text-body font-semibold text-white transition-all hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             >
               {isSubmitting ? '제출 중...' : '리뷰 제출'}
             </button>

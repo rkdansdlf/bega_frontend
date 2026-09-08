@@ -9,6 +9,7 @@ interface RetroLeaderboardFooterPanelsProps {
   powerups: PowerupInventoryState;
   activePowerups: string[];
   onUsePowerup?: (type: string) => Promise<void>;
+  containerTestId?: string;
 }
 
 export default function RetroLeaderboardFooterPanels({
@@ -16,9 +17,13 @@ export default function RetroLeaderboardFooterPanels({
   powerups,
   activePowerups,
   onUsePowerup,
+  containerTestId,
 }: RetroLeaderboardFooterPanelsProps) {
   return (
-    <>
+    <div
+      data-testid={containerTestId}
+      style={{ boxSizing: 'border-box', minWidth: 0, width: '100%', maxWidth: '100%' }}
+    >
       {hotStreaks.length > 0 && (
         <div style={{ width: '90%', maxWidth: '800px', margin: '20px auto 0' }}>
           <div
@@ -44,9 +49,10 @@ export default function RetroLeaderboardFooterPanels({
             >
               🔥 연승 중인 플레이어
             </div>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', minWidth: 0 }}>
               {hotStreaks.map((entry) => (
                 <div
+                  className="retro-leaderboard-hot-streak-card"
                   key={entry.handle ?? entry.userName}
                   style={{
                     background: 'rgba(255, 102, 0, 0.1)',
@@ -56,13 +62,44 @@ export default function RetroLeaderboardFooterPanels({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
+                    boxSizing: 'border-box',
+                    flex: '0 1 auto',
+                    maxWidth: '100%',
+                    minWidth: 0,
                   }}
                 >
-                  <span style={{ fontSize: '16px' }}>🔥</span>
-                  <span style={{ fontFamily: "'Galmuri11', 'Galmuri9', sans-serif", fontSize: '12px', color: '#fff' }}>
+                  <span style={{ flex: '0 0 auto', fontSize: '16px' }}>🔥</span>
+                  <span
+                    className="retro-leaderboard-hot-streak-name"
+                    style={{
+                      color: '#fff',
+                      display: '-webkit-box',
+                      flex: '1 1 auto',
+                      fontFamily: "'Galmuri11', 'Galmuri9', sans-serif",
+                      fontSize: '12px',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2,
+                      minWidth: 0,
+                      overflow: 'hidden',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
                     {entry.userName}
                   </span>
-                  <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '14px', color: '#ff6600' }}>
+                  <span
+                    className="retro-leaderboard-hot-streak-count"
+                    style={{
+                      color: '#ff6600',
+                      flex: '0 1 auto',
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: 'clamp(9px, 3vw, 14px)',
+                      minWidth: 0,
+                      maxWidth: '45%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {entry.streak}연승
                   </span>
                 </div>
@@ -79,6 +116,6 @@ export default function RetroLeaderboardFooterPanels({
           onUsePowerup={onUsePowerup}
         />
       </div>
-    </>
+    </div>
   );
 }

@@ -231,6 +231,7 @@ function ActionButtons({
       </Button>
       <Button
         onClick={onOpenTicketUploadModal}
+        data-testid="mypage-ticket-upload-open"
         className={`${secondaryActionButtonClass} order-4 col-span-2 2xl:order-3 2xl:col-span-1`}
       >
         <MyPageTicketIcon className="h-4 w-4 flex-shrink-0" />

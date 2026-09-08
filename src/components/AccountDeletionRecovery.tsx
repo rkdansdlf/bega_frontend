@@ -17,11 +17,44 @@ import { Button } from './ui/button';
 
 const ACCOUNT_SETTINGS_REDIRECT_PATH = '/mypage?view=accountSettings';
 
+export type AccountDeletionRecoveryInitialState = {
+  scheduledFor?: string;
+  canRecover?: boolean;
+  isLoading?: boolean;
+  isRecovering?: boolean;
+  isRecovered?: boolean;
+  error?: string;
+};
+
+export type AccountDeletionRecoveryRuntime = {
+  getRecoveryInfo: (token: string) => Promise<{ scheduledFor: string }>;
+  requestRecovery: (token: string) => Promise<void>;
+  navigate?: (path: string) => void;
+};
+
+type AccountDeletionRecoveryProps = {
+  tokenOverride?: string;
+  redirectPathOverride?: string;
+  initialStateOverride?: AccountDeletionRecoveryInitialState;
+  runtimeOverride?: AccountDeletionRecoveryRuntime;
+};
+
 let recoveryPublicModulePromise: Promise<typeof import('../api/accountDeletionRecoveryPublic')> | null = null;
 
 const loadRecoveryPublicModule = () => {
   recoveryPublicModulePromise ??= import('../api/accountDeletionRecoveryPublic');
   return recoveryPublicModulePromise;
+};
+
+const productionRuntime: AccountDeletionRecoveryRuntime = {
+  getRecoveryInfo: async (token) => {
+    const { getAccountDeletionRecoveryInfo } = await loadRecoveryPublicModule();
+    return getAccountDeletionRecoveryInfo(token);
+  },
+  requestRecovery: async (token) => {
+    const { requestAccountDeletionRecovery } = await loadRecoveryPublicModule();
+    await requestAccountDeletionRecovery(token);
+  },
 };
 
 const formatSchedule = (value?: string) => {
@@ -43,19 +76,31 @@ const formatSchedule = (value?: string) => {
   });
 };
 
-export default function AccountDeletionRecovery() {
+export default function AccountDeletionRecovery({
+  tokenOverride,
+  redirectPathOverride,
+  initialStateOverride,
+  runtimeOverride,
+}: AccountDeletionRecoveryProps = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || '';
-  const redirectPath = searchParams.get('redirect') || getStoredLoginRedirect() || ACCOUNT_SETTINGS_REDIRECT_PATH;
+  const token = tokenOverride ?? searchParams.get('token') ?? '';
+  const redirectPath = redirectPathOverride
+    ?? searchParams.get('redirect')
+    ?? getStoredLoginRedirect()
+    ?? ACCOUNT_SETTINGS_REDIRECT_PATH;
   const loginPath = buildLoginPath(redirectPath);
-  const [scheduledFor, setScheduledFor] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRecovering, setIsRecovering] = useState(false);
-  const [isRecovered, setIsRecovered] = useState(false);
-  const [error, setError] = useState('');
+  const runtime = runtimeOverride ?? productionRuntime;
+  const navigateTo = runtime.navigate ?? navigate;
+  const [scheduledFor, setScheduledFor] = useState(initialStateOverride?.scheduledFor ?? '');
+  const [canRecover, setCanRecover] = useState(initialStateOverride?.canRecover ?? false);
+  const [isLoading, setIsLoading] = useState(initialStateOverride?.isLoading ?? true);
+  const [isRecovering, setIsRecovering] = useState(initialStateOverride?.isRecovering ?? false);
+  const [isRecovered, setIsRecovered] = useState(initialStateOverride?.isRecovered ?? false);
+  const [error, setError] = useState(initialStateOverride?.error ?? '');
 
   useEffect(() => {
+    if (initialStateOverride) return;
     let cancelled = false;
 
     const loadRecoveryInfo = async () => {
@@ -66,10 +111,10 @@ export default function AccountDeletionRecovery() {
       }
 
       try {
-        const { getAccountDeletionRecoveryInfo } = await loadRecoveryPublicModule();
-        const info = await getAccountDeletionRecoveryInfo(token);
+        const info = await runtime.getRecoveryInfo(token);
         if (!cancelled) {
           setScheduledFor(info.scheduledFor);
+          setCanRecover(true);
         }
       } catch (loadError) {
         if (!cancelled) {
@@ -86,7 +131,7 @@ export default function AccountDeletionRecovery() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [initialStateOverride, runtime, token]);
 
   const handleRecover = async () => {
     if (!token) {
@@ -98,8 +143,7 @@ export default function AccountDeletionRecovery() {
     setError('');
 
     try {
-      const { requestAccountDeletionRecovery } = await loadRecoveryPublicModule();
-      await requestAccountDeletionRecovery(token);
+      await runtime.requestRecovery(token);
       setIsRecovered(true);
     } catch (recoverError) {
       setError(recoverError instanceof Error ? recoverError.message : '계정 복구에 실패했습니다.');
@@ -112,8 +156,8 @@ export default function AccountDeletionRecovery() {
     <AuthLayout>
       <button
         type="button"
-        onClick={() => navigate(loginPath)}
-        className="auth-back-link"
+        onClick={() => navigateTo(loginPath)}
+        className="auth-back-link min-h-11"
         data-testid="account-recovery-back-link"
       >
         <ArrowLeftIcon className="h-5 w-5" />
@@ -128,7 +172,10 @@ export default function AccountDeletionRecovery() {
             data-testid="account-recovery-header"
           />
 
-          <div className="space-y-6 text-center">
+          <div
+            className="min-w-0 space-y-6 text-center"
+            data-testid="account-recovery-complete-panel"
+          >
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white">
               <CheckCircleIcon className="h-10 w-10" />
             </div>
@@ -139,7 +186,7 @@ export default function AccountDeletionRecovery() {
                 variant="brand"
                 size="touchLg"
                 className="w-full"
-                onClick={() => navigate(loginPath)}
+                onClick={() => navigateTo(loginPath)}
                 data-testid="account-recovery-login"
               >
                 로그인하기
@@ -155,7 +202,11 @@ export default function AccountDeletionRecovery() {
             data-testid="account-recovery-header"
           />
 
-          <div className="space-y-6" data-testid="account-recovery-panel">
+          <div
+            className="min-w-0 space-y-6"
+            data-testid="account-recovery-panel"
+            aria-busy={isLoading || isRecovering}
+          >
             <div className="flex items-center justify-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <ShieldAlertIcon className="h-7 w-7" />
@@ -164,16 +215,32 @@ export default function AccountDeletionRecovery() {
 
             {isLoading ? (
               <AuthStatusPanel tone="default" data-testid="account-recovery-status-panel" role="status">
-                <p className="text-body font-semibold">복구 가능 여부를 확인하고 있습니다.</p>
+                <p className="min-w-0 break-words text-body font-semibold [overflow-wrap:anywhere]">
+                  복구 가능 여부를 확인하고 있습니다.
+                </p>
               </AuthStatusPanel>
-            ) : error ? (
+            ) : error && !canRecover ? (
               <AuthStatusPanel tone="error" data-testid="account-recovery-status-panel" role="alert">
-                <p className="text-body font-semibold">{error}</p>
+                <p className="min-w-0 break-words text-body font-semibold [overflow-wrap:anywhere]">
+                  {error}
+                </p>
               </AuthStatusPanel>
             ) : (
               <>
-                <AuthStatusPanel tone="default" role="status">
-                  <div className="space-y-2 text-body">
+                {error && canRecover ? (
+                  <AuthStatusPanel tone="error" data-testid="account-recovery-status-panel" role="alert">
+                    <p className="min-w-0 break-words text-body font-semibold [overflow-wrap:anywhere]">
+                      {error}
+                    </p>
+                  </AuthStatusPanel>
+                ) : null}
+
+                <AuthStatusPanel
+                  tone="default"
+                  role="status"
+                  data-testid="account-recovery-schedule-panel"
+                >
+                  <div className="min-w-0 space-y-2 break-words text-body [overflow-wrap:anywhere]">
                     <p className="font-semibold text-foreground">최종 삭제 예정 시각</p>
                     <p>{formatSchedule(scheduledFor)}</p>
                     <p className="auth-helper-text">이 시각 전까지 예약을 취소할 수 있으며, 취소가 끝나면 다시 로그인할 수 있습니다.</p>

@@ -66,8 +66,12 @@ export default function LoadingSpinner({
         className={`flex flex-col items-center justify-center ${fullScreen ? 'min-h-screen bg-background' : 'py-12'} ${className}`}
       >
         <div className="text-center">
-          <div className={`inline-block animate-spin rounded-full border-b-2 border-primary ${sizeClasses[size]}`} />
-          {resolvedMessage && <p className="mt-4 text-muted-foreground font-semibold text-lg">{resolvedMessage}</p>}
+          <div className={`inline-block animate-spin rounded-full border-b-2 border-primary motion-reduce:animate-none ${sizeClasses[size]}`} />
+          {resolvedMessage && (
+            <p className="mt-4 min-w-0 max-w-full text-muted-foreground font-semibold text-lg [overflow-wrap:anywhere]">
+              {resolvedMessage}
+            </p>
+          )}
         </div>
       </div>
     );
@@ -77,9 +81,9 @@ export default function LoadingSpinner({
     <div
       role="status"
       aria-live="polite"
-      className={`relative min-h-screen w-full overflow-hidden bg-background ${className} flex items-center justify-center px-6 py-12`}
+      className={`relative min-h-screen w-full overflow-x-clip bg-background ${className} flex items-center justify-center px-3 py-12 sm:px-6`}
     >
-      <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
+      <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-card p-6 text-center shadow-sm sm:p-8">
         {/* 상단 장식용 막대 */}
         <div className="mx-auto mb-5 h-2 w-12 rounded-full bg-muted/40" />
 
@@ -89,15 +93,21 @@ export default function LoadingSpinner({
           <div className="absolute inset-0 rounded-full border-4 border-muted/20" />
 
           {/* 2. 회전하는 메인 스피너 (상단과 우측에만 색상을 주어 세련되게 회전) */}
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary border-r-primary/70 animate-spin" />
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-r-primary/70 border-t-primary motion-reduce:animate-none" />
 
           {/* 3. 중앙에서 맥박 뛰는 포인트 (크기를 sizeClasses에 맞게 유동적으로 적용) */}
-          <div className={`rounded-full bg-primary/20 animate-pulse flex items-center justify-center ${sizeClasses[size]}`}>
+          <div className={`flex animate-pulse items-center justify-center rounded-full bg-primary/20 motion-reduce:animate-none ${sizeClasses[size]}`}>
             <div className="h-1/3 w-1/3 rounded-full bg-primary" />
           </div>
         </div>
-        <p className="text-lg font-semibold text-foreground mb-2">{resolvedMessage}</p>
-        {showTagline && subMessage && <p className="text-body text-muted-foreground">{subMessage}</p>}
+        <p className="mb-2 min-w-0 max-w-full break-keep text-base font-semibold text-foreground [overflow-wrap:anywhere] sm:text-lg">
+          {resolvedMessage}
+        </p>
+        {showTagline && subMessage && (
+          <p className="min-w-0 max-w-full break-keep text-body text-muted-foreground [overflow-wrap:anywhere]">
+            {subMessage}
+          </p>
+        )}
       </div>
     </div>
   );

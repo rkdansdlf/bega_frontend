@@ -1,10 +1,10 @@
-import type { Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 
-import { AdminBadge } from './AdminPanelPrimitives';
+import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import PlainDialog from '../ui/plain-dialog';
-import { Button } from '../ui/button';
 import { AdminUserCogIcon } from './AdminPanelIcons';
+import { AdminBadge } from './AdminPanelPrimitives';
 
 interface PendingRoleChangeLike {
   userId: number;
@@ -21,7 +21,14 @@ interface AdminRoleChangeDialogContentProps {
   setRoleChangeReason: Dispatch<SetStateAction<string>>;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => Promise<void> | void;
+  visualQaStateOverride?: AdminRoleChangeDialogVisualQaStateOverride;
 }
+
+export type AdminRoleChangeDialogVisualQaStateOverride = {
+  interactive: boolean;
+};
+
+const roleActionClassName = 'min-h-11 w-full whitespace-normal [overflow-wrap:anywhere] sm:min-h-9 sm:w-auto';
 
 export default function AdminRoleChangeDialogContent({
   open,
@@ -30,75 +37,125 @@ export default function AdminRoleChangeDialogContent({
   setRoleChangeReason,
   onOpenChange,
   onConfirm,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AdminRoleChangeDialogContentProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaInteractive = visualQaStateOverride?.interactive === true;
+  const [visualQaRoleChangeReason, setVisualQaRoleChangeReason] = useState(roleChangeReason);
+
+  useEffect(() => {
+    if (visualQaInteractive) {
+      setVisualQaRoleChangeReason(roleChangeReason);
+    }
+  }, [roleChangeReason, visualQaInteractive]);
+
+  const effectiveRoleChangeReason = visualQaInteractive
+    ? visualQaRoleChangeReason
+    : roleChangeReason;
+  const updateRoleChangeReason = visualQaInteractive
+    ? setVisualQaRoleChangeReason
+    : setRoleChangeReason;
+  const hasPendingRoleChange = pendingRoleChange !== null;
+  const isPromotion = pendingRoleChange?.targetRole === 'ROLE_ADMIN';
+
   return (
     <PlainDialog
       open={open}
       onClose={() => onOpenChange(false)}
+      contentTestId="admin-role-change-dialog"
       title={(
-        <span className="flex items-center gap-2 text-white">
-          <AdminUserCogIcon className="w-5 h-5 text-amber-400" />
+        <span className="flex min-w-0 items-center gap-2 text-foreground">
+          <AdminUserCogIcon className="h-5 w-5 shrink-0 text-amber-500" />
           역할 변경 확인
         </span>
       )}
-      description={(
-        <span className="space-y-2 text-slate-400">
-          <span className="block">
-            <span className="text-slate-200 font-semibold">{pendingRoleChange?.userName}</span>
-            {' '}({pendingRoleChange?.userEmail}) 의 역할을 변경합니다.
-          </span>
-          <span className="flex items-center gap-2 text-caption">
-            <AdminBadge className="bg-slate-700 text-slate-300 border-0">
-              {pendingRoleChange?.currentRole === 'ROLE_ADMIN' ? '관리자' : '일반 사용자'}
-            </AdminBadge>
-            <span className="text-slate-500">→</span>
-            <AdminBadge
-              className={
-                pendingRoleChange?.targetRole === 'ROLE_ADMIN'
-                  ? 'bg-amber-500/20 text-amber-200 border-0'
-                  : 'bg-slate-700 text-slate-300 border-0'
-              }
+      description={hasPendingRoleChange ? (
+        <span className="space-y-2 text-muted-foreground">
+          <span className="block min-w-0 [overflow-wrap:anywhere]">
+            <span
+              className="min-w-0 line-clamp-2 font-semibold text-foreground [overflow-wrap:anywhere]"
+              title={pendingRoleChange.userName || '이름 없음'}
             >
-              {pendingRoleChange?.targetRole === 'ROLE_ADMIN' ? '관리자' : '일반 사용자'}
+              {pendingRoleChange.userName || '이름 없음'}
+            </span>
+            <span
+              className="mt-0.5 block min-w-0 truncate"
+              title={pendingRoleChange.userEmail || '이메일 없음'}
+            >
+              ({pendingRoleChange.userEmail || '이메일 없음'})
+            </span>
+            <span className="mt-1 block">의 역할을 변경합니다.</span>
+          </span>
+          <span className="flex min-w-0 flex-wrap items-center gap-2 text-caption">
+            <AdminBadge className="border-0 bg-muted text-muted-foreground">
+              {pendingRoleChange.currentRole === 'ROLE_ADMIN' ? '관리자' : '일반 사용자'}
+            </AdminBadge>
+            <span className="shrink-0 text-muted-foreground" aria-hidden="true">→</span>
+            <AdminBadge
+              className={isPromotion
+                ? 'border-0 bg-amber-100 text-amber-800 dark:bg-amber-950/35 dark:text-amber-200'
+                : 'border-0 bg-muted text-muted-foreground'}
+            >
+              {isPromotion ? '관리자' : '일반 사용자'}
             </AdminBadge>
           </span>
         </span>
+      ) : (
+        <span className="text-muted-foreground [overflow-wrap:anywhere]" role="status">
+          변경할 사용자 정보가 없습니다.
+        </span>
       )}
-      className="max-w-md border-slate-800 bg-slate-900 text-slate-100"
+      className="max-w-md border-border text-foreground"
       footer={(
         <>
           <Button
             variant="outline"
             data-testid="admin-role-change-cancel"
-            className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+            className={roleActionClassName}
             onClick={() => onOpenChange(false)}
           >
             취소
           </Button>
           <Button
+            variant={isPromotion ? 'default' : 'secondary'}
             data-testid="admin-role-change-confirm"
-            className={
-              pendingRoleChange?.targetRole === 'ROLE_ADMIN'
-                ? 'bg-amber-500 text-slate-950 border-0 shadow-sm hover:bg-amber-400'
-                : 'bg-slate-700 text-slate-100 border-0 hover:bg-slate-600'
-            }
+            className={`${roleActionClassName} ${isPromotion
+              ? 'border-0 bg-amber-500 text-slate-950 shadow-sm hover:bg-amber-400'
+              : ''}`}
+            disabled={!hasPendingRoleChange}
             onClick={onConfirm}
           >
-            {pendingRoleChange?.targetRole === 'ROLE_ADMIN' ? '관리자로 승격' : '일반 사용자로 강등'}
+            {hasPendingRoleChange
+              ? isPromotion ? '관리자로 승격' : '일반 사용자로 강등'
+              : '변경 대상 없음'}
           </Button>
         </>
       )}
     >
-      <div className="px-1 pb-2">
-          <label className="block text-caption text-slate-400 mb-1">변경 사유 (선택)</label>
+      {hasPendingRoleChange ? (
+        <div className="min-w-0 px-1 pb-2">
+          <label
+            htmlFor="admin-role-change-reason"
+            className="mb-1 block text-caption text-muted-foreground"
+          >
+            변경 사유 (선택)
+          </label>
           <Input
+            id="admin-role-change-reason"
             data-testid="admin-role-change-reason"
             placeholder="역할 변경 사유를 입력하세요..."
-            value={roleChangeReason}
-            onChange={(e) => setRoleChangeReason(e.target.value)}
-            className="bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500 rounded-lg focus:ring-amber-500 focus:border-amber-500"
+            value={effectiveRoleChangeReason}
+            onChange={(event) => updateRoleChangeReason(event.target.value)}
+            className="min-h-11 rounded-lg border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-amber-500 focus:ring-amber-500 sm:min-h-9"
           />
-      </div>
+        </div>
+      ) : (
+        <p className="px-1 pb-2 text-body text-muted-foreground [overflow-wrap:anywhere]">
+          사용자 목록에서 변경 대상을 다시 선택해 주세요.
+        </p>
+      )}
     </PlainDialog>
   );
 }

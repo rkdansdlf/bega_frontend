@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T02:39:25.045Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 8,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 90000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots"
+  },
+  "summary": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=dDay|variant.phase=closed|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-dday-v-f1536107d714.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=dDay|variant.phase=closed|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-dday-v-bf40c33444a3.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=dDay|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-dday-v-a740db67d702.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=dDay|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-dday-v-32590b51f8ce.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=latest|variant.phase=closed|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-latest-e309d3470923.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=latest|variant.phase=closed|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-latest-429079583ff4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=latest|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-latest-8e36700adb82.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=latest|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-latest-eb83129c0423.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=popular|variant.phase=closed|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-popula-24a8f75b7be2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=popular|variant.phase=closed|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-popula-2c597937c541.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=popular|variant.phase=open|variant.theme=dark",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-popula-68d6cba04ffb.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=default|variant.activeSort=popular|variant.phase=open|variant.theme=light",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-default-variant-activesort-popula-678e567f42ba.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=focus-visible|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=dDay",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-focus-visible-variant-activesort-73b5266f3e4c.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+        "targetId": "dDay",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=focus-visible|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=latest",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-focus-visible-variant-activesort-08334c8d735d.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-sort-option-latest\"]",
+        "targetId": "latest",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=focus-visible|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=popular",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-focus-visible-variant-activesort-9f1f13f68f78.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-sort-option-popular\"]",
+        "targetId": "popular",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=focus-visible|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=trigger",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-focus-visible-variant-activesort-05b6a9950e24.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "trigger",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=hover|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=dDay",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-hover-variant-activesort-latest-v-1e45fd76a06b.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+        "targetId": "dDay",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=hover|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=latest",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-hover-variant-activesort-latest-v-0376420a5d2d.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-sort-option-latest\"]",
+        "targetId": "latest",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=hover|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=popular",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-hover-variant-activesort-latest-v-97b0a5d4c67e.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-sort-option-popular\"]",
+        "targetId": "popular",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=hover|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=trigger",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-hover-variant-activesort-latest-v-e15da2594e68.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "trigger",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=keyboard-navigation|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=escape",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-keyboard-navigation-variant-activ-04c2f904f6cb.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "escape",
+        "key": "Escape",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "waitForHiddenSelector": "[role=\"menu\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=keyboard-navigation|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=trigger-to-first-option",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-keyboard-navigation-variant-activ-e4495f946938.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "trigger-to-first-option",
+        "key": "Tab",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"mate-sort-option-latest\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=open|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=trigger",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-open-variant-activesort-latest-va-d08a96d03fb8.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "trigger",
+        "waitForSelector": "[role=\"menu\"][aria-label=\"메이트 정렬\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=pressed|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=dDay",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-pressed-variant-activesort-latest-3c8a0dbc3f71.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+        "targetId": "dDay",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=pressed|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=latest",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-pressed-variant-activesort-latest-e696f37cbec8.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-sort-option-latest\"]",
+        "targetId": "latest",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=pressed|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=popular",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-pressed-variant-activesort-latest-076c9518f489.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-sort-option-popular\"]",
+        "targetId": "popular",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=pressed|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=trigger",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-pressed-variant-activesort-latest-e8b5593d9dd3.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-sort-trigger\"]",
+        "targetId": "trigger",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=selected|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=dDay",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-selected-variant-activesort-lates-3460f6714695.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-sort-option-dDay\"]",
+        "targetId": "dDay",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"dDay\"][data-vqa-effective-value=\"dDay\"]",
+        "waitForHiddenSelector": "[role=\"menu\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=selected|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=latest",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-selected-variant-activesort-lates-0d11483be39f.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-sort-option-latest\"]",
+        "targetId": "latest",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"latest\"][data-vqa-effective-value=\"latest\"]",
+        "waitForHiddenSelector": "[role=\"menu\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSortDropdown.tsx#MateSortDropdown:interactions=selected|variant.activeSort=latest|variant.phase=closed|variant.theme=light|interactionTarget=popular",
+      "componentId": "src/components/MateSortDropdown.tsx#MateSortDropdown",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-sort-dropdown-mobile-screenshots/matesortdropdown-matesortdropdown-interactions-selected-variant-activesort-lates-f56e56b82f26.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-sort-option-popular\"]",
+        "targetId": "popular",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"mate-sort-trigger\"]",
+            "waitForSelector": "[role=\"menu\"]"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"mate-sort-dropdown-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"popular\"][data-vqa-effective-value=\"popular\"]",
+        "waitForHiddenSelector": "[role=\"menu\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    }
+  ]
+}

@@ -329,9 +329,9 @@ function NonCanonicalGameRow({ game }: { game: AdminNonCanonicalGame }) {
       <TableCell>
         <AdminGameStatusBadge status={game.rawStatus} />
       </TableCell>
-      <TableCell className="text-slate-200">{formatTeamLabel(game.homeTeam, game.awayTeam)}</TableCell>
+      <TableCell style={{ minWidth: 240 }} className="text-slate-200">{formatTeamLabel(game.homeTeam, game.awayTeam)}</TableCell>
       <TableCell className="text-slate-200">{formatScoreLabel(game.homeScore, game.awayScore)}</TableCell>
-      <TableCell className="max-w-xl">
+      <TableCell style={{ minWidth: 280 }} className="max-w-xl">
         <MismatchReasons reasons={game.reasons} />
       </TableCell>
     </TableRow>
@@ -491,17 +491,17 @@ function CleanupArtifactPaths({
       {closureCommand && (
         <div className="space-y-1">
           <p className="text-12 text-slate-500">closure rerun</p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
             <code
               data-testid={`${testIdPrefix}-closure-command`}
-              className="break-all rounded bg-slate-900 px-2 py-1 text-12 text-slate-300"
+              className="block min-w-0 max-w-full overflow-x-auto whitespace-nowrap rounded bg-slate-900 px-2 py-1 text-12 text-slate-300"
             >
               {closureCommand}
             </code>
             <Button
               type="button"
               variant="outline"
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className="self-start border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
               data-testid={`${testIdPrefix}-copy-closure-command`}
               onClick={() => onCopyClosureCommand(closureCommand)}
             >
@@ -514,17 +514,17 @@ function CleanupArtifactPaths({
       {trackerSyncCommand && (
         <div className="space-y-1">
           <p className="text-12 text-slate-500">closure + tracker sync</p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
             <code
               data-testid={`${testIdPrefix}-tracker-sync-command`}
-              className="break-all rounded bg-slate-900 px-2 py-1 text-12 text-slate-300"
+              className="block min-w-0 max-w-full overflow-x-auto whitespace-nowrap rounded bg-slate-900 px-2 py-1 text-12 text-slate-300"
             >
               {trackerSyncCommand}
             </code>
             <Button
               type="button"
               variant="outline"
-              className="border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
+              className="self-start border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800"
               data-testid={`${testIdPrefix}-copy-tracker-sync-command`}
               onClick={() => onCopyTrackerSyncCommand(trackerSyncCommand)}
             >
@@ -583,33 +583,67 @@ function CleanupClosureStatus({
   );
 }
 
-export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
-  const today = formatInputDate();
+export interface AdminGameStatusRepairVisualQaState {
+  today: string;
+  startDate: string;
+  endDate: string;
+  loadingMismatches: boolean;
+  loadingRepair: boolean;
+  loadingSuggestions: boolean;
+  loadingCleanupTrackers: boolean;
+  savingCleanupTracker: boolean;
+  panelError: string | null;
+  suggestionsError: string | null;
+  lastActionMessage: string | null;
+  mismatchResult: AdminGameStatusMismatchBatchResult | null;
+  repairResult: AdminGameStatusRepairBatchResult | null;
+  recentRecommendations: AdminGameStatusDateRecommendation[];
+  cleanupTrackers: AdminNonCanonicalCleanupTrackerEntry[];
+  nonCanonicalCopyState: 'idle' | 'done' | 'error';
+  cleanupTicketUrl: string;
+  cleanupAssignee: string;
+  cleanupStatus: AdminNonCanonicalCleanupTrackerStatus;
+  cleanupNote: string;
+  cleanupSavedAt: string | null;
+  cleanupTrackerMessage: string | null;
+}
+
+export interface AdminGameStatusRepairPanelProps {
+  active: boolean;
+  visualQaStateOverride?: AdminGameStatusRepairVisualQaState;
+}
+
+export function AdminGameStatusRepairPanel({
+  active,
+  visualQaStateOverride,
+}: AdminGameStatusRepairPanelProps) {
+  const visualQaState = import.meta.env?.PROD ? undefined : visualQaStateOverride;
+  const today = visualQaState?.today ?? formatInputDate();
   const suggestionWindowStartDate = shiftInputDate(today, -13);
   const { confirm } = useConfirmDialog();
 
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
-  const [loadingMismatches, setLoadingMismatches] = useState(false);
-  const [loadingRepair, setLoadingRepair] = useState(false);
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [loadingCleanupTrackers, setLoadingCleanupTrackers] = useState(false);
-  const [savingCleanupTracker, setSavingCleanupTracker] = useState(false);
-  const [panelError, setPanelError] = useState<string | null>(null);
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
-  const [lastActionMessage, setLastActionMessage] = useState<string | null>(null);
-  const [mismatchResult, setMismatchResult] = useState<AdminGameStatusMismatchBatchResult | null>(null);
-  const [repairResult, setRepairResult] = useState<AdminGameStatusRepairBatchResult | null>(null);
-  const [recentRecommendations, setRecentRecommendations] = useState<AdminGameStatusDateRecommendation[]>([]);
-  const [cleanupTrackers, setCleanupTrackers] = useState<AdminNonCanonicalCleanupTrackerEntry[]>([]);
-  const [hasAutoLoaded, setHasAutoLoaded] = useState(false);
-  const [nonCanonicalCopyState, setNonCanonicalCopyState] = useState<'idle' | 'done' | 'error'>('idle');
-  const [cleanupTicketUrl, setCleanupTicketUrl] = useState('');
-  const [cleanupAssignee, setCleanupAssignee] = useState('');
-  const [cleanupStatus, setCleanupStatus] = useState<AdminNonCanonicalCleanupTrackerStatus>('draft');
-  const [cleanupNote, setCleanupNote] = useState('');
-  const [cleanupSavedAt, setCleanupSavedAt] = useState<string | null>(null);
-  const [cleanupTrackerMessage, setCleanupTrackerMessage] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(visualQaState?.startDate ?? today);
+  const [endDate, setEndDate] = useState(visualQaState?.endDate ?? today);
+  const [loadingMismatches, setLoadingMismatches] = useState(visualQaState?.loadingMismatches ?? false);
+  const [loadingRepair, setLoadingRepair] = useState(visualQaState?.loadingRepair ?? false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(visualQaState?.loadingSuggestions ?? false);
+  const [loadingCleanupTrackers, setLoadingCleanupTrackers] = useState(visualQaState?.loadingCleanupTrackers ?? false);
+  const [savingCleanupTracker, setSavingCleanupTracker] = useState(visualQaState?.savingCleanupTracker ?? false);
+  const [panelError, setPanelError] = useState<string | null>(visualQaState?.panelError ?? null);
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(visualQaState?.suggestionsError ?? null);
+  const [lastActionMessage, setLastActionMessage] = useState<string | null>(visualQaState?.lastActionMessage ?? null);
+  const [mismatchResult, setMismatchResult] = useState<AdminGameStatusMismatchBatchResult | null>(visualQaState?.mismatchResult ?? null);
+  const [repairResult, setRepairResult] = useState<AdminGameStatusRepairBatchResult | null>(visualQaState?.repairResult ?? null);
+  const [recentRecommendations, setRecentRecommendations] = useState<AdminGameStatusDateRecommendation[]>(visualQaState?.recentRecommendations ?? []);
+  const [cleanupTrackers, setCleanupTrackers] = useState<AdminNonCanonicalCleanupTrackerEntry[]>(visualQaState?.cleanupTrackers ?? []);
+  const [hasAutoLoaded, setHasAutoLoaded] = useState(Boolean(visualQaState));
+  const [nonCanonicalCopyState, setNonCanonicalCopyState] = useState<'idle' | 'done' | 'error'>(visualQaState?.nonCanonicalCopyState ?? 'idle');
+  const [cleanupTicketUrl, setCleanupTicketUrl] = useState(visualQaState?.cleanupTicketUrl ?? '');
+  const [cleanupAssignee, setCleanupAssignee] = useState(visualQaState?.cleanupAssignee ?? '');
+  const [cleanupStatus, setCleanupStatus] = useState<AdminNonCanonicalCleanupTrackerStatus>(visualQaState?.cleanupStatus ?? 'draft');
+  const [cleanupNote, setCleanupNote] = useState(visualQaState?.cleanupNote ?? '');
+  const [cleanupSavedAt, setCleanupSavedAt] = useState<string | null>(visualQaState?.cleanupSavedAt ?? null);
+  const [cleanupTrackerMessage, setCleanupTrackerMessage] = useState<string | null>(visualQaState?.cleanupTrackerMessage ?? null);
 
   const runDiagnosis = async ({
     silent = false,
@@ -620,6 +654,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
     nextStartDate?: string;
     nextEndDate?: string;
   } = {}) => {
+    if (visualQaState) {
+      return visualQaState.mismatchResult;
+    }
+
     setLoadingMismatches(true);
     setPanelError(null);
     setNonCanonicalCopyState('idle');
@@ -649,6 +687,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const loadCleanupTrackers = async () => {
+    if (visualQaState) {
+      return;
+    }
+
     setLoadingCleanupTrackers(true);
 
     try {
@@ -662,6 +704,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const loadRecentRecommendations = async () => {
+    if (visualQaState) {
+      return;
+    }
+
     setLoadingSuggestions(true);
     setSuggestionsError(null);
 
@@ -682,6 +728,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const runRepair = async (dryRun: boolean) => {
+    if (visualQaState) {
+      return;
+    }
+
     if (!dryRun) {
       const accepted = await confirm({
         title: '실제 복구 실행',
@@ -734,7 +784,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   useEffect(() => {
-    if (!active || hasAutoLoaded) {
+    if (visualQaState || !active || hasAutoLoaded) {
       return;
     }
 
@@ -818,6 +868,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   );
 
   useEffect(() => {
+    if (visualQaState) {
+      return;
+    }
+
     setCleanupTicketUrl(currentRangeCleanupTracker?.ticketUrl ?? '');
     setCleanupAssignee(currentRangeCleanupTracker?.assignee ?? '');
     setCleanupStatus(currentRangeCleanupTracker?.status ?? 'draft');
@@ -826,6 +880,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   }, [cleanupTrackerKey, currentRangeCleanupTracker, currentRangeCleanupUserNote]);
 
   useEffect(() => {
+    if (visualQaState) {
+      return;
+    }
+
     setCleanupTrackerMessage(null);
   }, [cleanupTrackerKey]);
 
@@ -945,6 +1003,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const handleCleanupTrackerSave = async () => {
+    if (visualQaState) {
+      return;
+    }
+
     setSavingCleanupTracker(true);
     try {
       const saved = await upsertAdminNonCanonicalCleanupTracker({
@@ -979,6 +1041,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const handleCleanupTrackerDone = async () => {
+    if (visualQaState) {
+      return;
+    }
+
     setSavingCleanupTracker(true);
     try {
       const saved = await upsertAdminNonCanonicalCleanupTracker({
@@ -1014,6 +1080,10 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   const handleCleanupTrackerClear = async () => {
+    if (visualQaState) {
+      return;
+    }
+
     setSavingCleanupTracker(true);
     try {
       await deleteAdminNonCanonicalCleanupTracker({
@@ -1037,8 +1107,8 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
   };
 
   return (
-    <div data-testid="admin-game-status-panel" className="space-y-6">
-      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+    <div data-testid="admin-game-status-panel" className="min-w-0 space-y-6 overflow-hidden [overflow-wrap:anywhere]">
+      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-caption font-semibold text-emerald-300">
@@ -1371,7 +1441,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
         )}
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="text-lg font-bold text-white">최근 이슈 날짜 추천</h3>
@@ -1409,7 +1479,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
             최근 14일 범위에서 추천할 이상 날짜가 없습니다.
           </div>
         ) : (
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
             {recentRecommendations.map((recommendation) => (
               <MismatchDateSuggestionCard
                 key={recommendation.gameDate}
@@ -1427,7 +1497,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
       </section>
 
       {savedCleanupTrackers.length > 0 && (
-        <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+        <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h3 className="text-lg font-bold text-white">저장된 정제 이력</h3>
@@ -1440,7 +1510,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
             </AdminBadge>
           </div>
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-3 max-h-[60dvh] overflow-auto overscroll-contain pr-1">
             {savedCleanupTrackers.map(({ key, startDate: savedStartDate, endDate: savedEndDate, record }) => {
               const trackerTestId = key.replace(/[^0-9A-Za-z_-]/g, '-');
               const isCurrentRange = key === cleanupTrackerKey;
@@ -1553,7 +1623,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
         />
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-lg font-bold text-white">진단 결과</h3>
@@ -1587,12 +1657,12 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
                       점수/이닝 근거와 raw 상태가 어긋난 경기입니다.
                     </p>
                   </div>
-                  <AdminBadge className="border-amber-500/25 bg-amber-500/10 text-amber-200">
+                  <AdminBadge className="shrink-0 border-amber-500/25 bg-amber-500/10 text-amber-200">
                     {mismatchList.length}건
                   </AdminBadge>
                 </div>
-                <div className="overflow-hidden rounded-2xl border border-slate-800">
-                  <Table>
+                <div className="max-h-[60dvh] overflow-auto overscroll-contain rounded-2xl border border-slate-800">
+                  <Table className="min-w-[860px]">
                     <TableHeader className="bg-slate-900/90">
                       <TableRow className="border-slate-800/80">
                         <TableHead>경기일</TableHead>
@@ -1625,7 +1695,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
                             {formatScoreLabel(mismatch.homeScore, mismatch.awayScore)}
                           </TableCell>
                           <TableCell className="text-slate-300">{mismatch.inningScoreCount}</TableCell>
-                          <TableCell className="max-w-xl">
+                          <TableCell style={{ minWidth: 280 }} className="max-w-xl">
                             <MismatchReasons reasons={mismatch.reasons} />
                           </TableCell>
                         </TableRow>
@@ -1649,12 +1719,12 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
                       canonical 팀 코드로 해석되지 않아 prediction/AI 대상에서 제외된 raw row입니다.
                     </p>
                   </div>
-                  <AdminBadge className="border-rose-500/25 bg-rose-500/10 text-rose-200">
+                  <AdminBadge className="shrink-0 border-rose-500/25 bg-rose-500/10 text-rose-200">
                     {nonCanonicalList.length}건
                   </AdminBadge>
                 </div>
-                <div className="overflow-hidden rounded-2xl border border-slate-800">
-                  <Table>
+                <div className="max-h-[60dvh] overflow-auto overscroll-contain rounded-2xl border border-slate-800">
+                  <Table className="min-w-[860px]">
                     <TableHeader className="bg-slate-900/90">
                       <TableRow className="border-slate-800/80">
                         <TableHead>경기일</TableHead>
@@ -1680,7 +1750,7 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
       </section>
 
       {repairResult && repairResult.repairedGames.length > 0 && (
-        <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+        <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-white">복구 반영 목록</h3>
@@ -1688,13 +1758,13 @@ export function AdminGameStatusRepairPanel({ active }: { active: boolean }) {
                 {formatRangeLabel(repairResult.startDate, repairResult.endDate)} 범위에서 실제로 반영된 경기입니다.
               </p>
             </div>
-            <AdminBadge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-200">
+            <AdminBadge className="shrink-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-200">
               {repairResult.repairedCount}건 반영
             </AdminBadge>
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-800">
-            <Table>
+          <div className="mt-6 max-h-[60dvh] overflow-auto overscroll-contain rounded-2xl border border-slate-800">
+            <Table className="min-w-[860px]">
               <TableHeader className="bg-slate-900/90">
                 <TableRow className="border-slate-800/80">
                   <TableHead>경기 ID</TableHead>

@@ -89,7 +89,7 @@ export default function CoachVerdictMemo({
                 color: textColor,
                 letterSpacing: 0,
             }}>
-                {parseHighlight(text)}
+                {parseHighlight(text, t.paperHighlightBg)}
             </p>
 
             {/* 서명 */}

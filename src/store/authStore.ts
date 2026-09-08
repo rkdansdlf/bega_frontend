@@ -21,6 +21,7 @@ import {
   sanitizeLoginRedirect,
   setStoredLoginRedirect,
 } from '../utils/loginRedirect';
+import { markAuthSessionEstablished } from '../api/authSessionGeneration';
 
 const LEGACY_AUTH_TOKEN_KEY = 'authToken';
 const PUBLIC_OPTIONAL_BOOTSTRAP_DEDUP_MS = 60_000;
@@ -340,6 +341,7 @@ export const useAuthStore = create<AuthStore>()(
               retryOn401: !isPublicOptional,
             });
             markPersistedAuthBootstrapSuccess();
+            markAuthSessionEstablished();
             cacheAuthenticatedUserProfile(profile);
             set({
               user: profile,
@@ -418,6 +420,7 @@ export const useAuthStore = create<AuthStore>()(
       login: (email: string, name: string, profileImageUrl?: string | null, role?: string, favoriteTeam?: string, id?: number, cheerPoints?: number, handle?: string, provider?: string, hasPassword?: boolean) => {
         const normalizedId = Number(id) || 0;
         markPersistedAuthBootstrapSuccess();
+        markAuthSessionEstablished();
 
         set({
           user: {

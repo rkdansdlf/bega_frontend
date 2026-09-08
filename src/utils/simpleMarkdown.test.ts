@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { renderMarkdownToHtml } from './simpleMarkdown';
+import { renderMarkdownToHtml, stripLeadingMarkdownHeading } from './simpleMarkdown';
+
+test('leading document heading can be omitted without removing later headings', () => {
+  const markdown = '\uFEFF# 문서 제목\r\n\r\n## 첫 번째 조항\r\n본문';
+
+  assert.equal(stripLeadingMarkdownHeading(markdown), '## 첫 번째 조항\r\n본문');
+  assert.equal(stripLeadingMarkdownHeading('서문\n# 문서 제목'), '서문\n# 문서 제목');
+});
 
 test('raw HTML is escaped before dangerouslySetInnerHTML receives it', () => {
   const html = renderMarkdownToHtml('<script>alert(1)</script>\n<img src=x onerror=alert(1)>');

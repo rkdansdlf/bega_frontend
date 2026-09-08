@@ -42,6 +42,38 @@ interface PublicApiEnvelope {
   errors?: Record<string, unknown>;
 }
 
+const OAUTH_EMAIL_CHALLENGE_STATUSES = [
+  'EMAIL_REQUIRED',
+  'EMAIL_SENT',
+  'VERIFIED',
+  'EXPIRED',
+] as const;
+
+export type OAuthEmailChallengeStatus = typeof OAUTH_EMAIL_CHALLENGE_STATUSES[number];
+
+export interface OAuthEmailChallengeStatusDto {
+  challengeId: string;
+  status: OAuthEmailChallengeStatus;
+  maskedEmail: string | null;
+  expiresAt: string | null;
+}
+
+export interface OAuthEmailChallengeMutationDto {
+  challengeId: string;
+  status: 'EMAIL_SENT';
+}
+
+export interface OAuthEmailChallengeConfirmDto {
+  confirmed: true;
+  userId: number;
+}
+
+interface PublicApiDataEnvelope<T> {
+  success?: boolean;
+  message?: string | null;
+  data?: T | null;
+}
+
 interface RequiredPolicyItem {
   policyType?: string;
   version?: string;
@@ -112,6 +144,68 @@ const normalizeLoginResponse = (payload: RawLoginResponse): LoginResponse => ({
     cheerPoints: normalizeOptionalNumber(payload.data?.cheerPoints),
   },
 });
+
+const isOAuthEmailChallengeStatus = (value: unknown): value is OAuthEmailChallengeStatus => (
+  typeof value === 'string'
+  && OAUTH_EMAIL_CHALLENGE_STATUSES.some((status) => status === value)
+);
+
+const normalizeOAuthEmailChallengeStatus = (
+  payload: PublicApiDataEnvelope<Partial<OAuthEmailChallengeStatusDto>>,
+): OAuthEmailChallengeStatusDto => {
+  const data = payload.data;
+  if (
+    !data
+    || typeof data.challengeId !== 'string'
+    || !isOAuthEmailChallengeStatus(data.status)
+  ) {
+    throw new Error('이메일 확인 상태 응답이 올바르지 않습니다.');
+  }
+
+  return {
+    challengeId: data.challengeId,
+    status: data.status,
+    maskedEmail: typeof data.maskedEmail === 'string' ? data.maskedEmail : null,
+    expiresAt: typeof data.expiresAt === 'string' ? data.expiresAt : null,
+  };
+};
+
+const normalizeOAuthEmailChallengeMutation = (
+  payload: PublicApiDataEnvelope<Partial<OAuthEmailChallengeMutationDto>>,
+): OAuthEmailChallengeMutationDto => {
+  const data = payload.data;
+  if (!data || typeof data.challengeId !== 'string' || data.status !== 'EMAIL_SENT') {
+    throw new Error('이메일 확인 발송 응답이 올바르지 않습니다.');
+  }
+
+  return {
+    challengeId: data.challengeId,
+    status: data.status,
+  };
+};
+
+const normalizeOAuthEmailChallengeConfirmation = (
+  payload: PublicApiDataEnvelope<Partial<OAuthEmailChallengeConfirmDto>>,
+): OAuthEmailChallengeConfirmDto => {
+  const data = payload.data;
+  if (!data || data.confirmed !== true || typeof data.userId !== 'number') {
+    throw new Error('이메일 확인 완료 응답이 올바르지 않습니다.');
+  }
+
+  return {
+    confirmed: true,
+    userId: data.userId,
+  };
+};
+
+const getOAuthEmailChallengePath = (challengeId: string): string => {
+  const normalizedChallengeId = challengeId.trim();
+  if (!normalizedChallengeId) {
+    throw new Error('이메일 확인 요청 식별자가 없습니다.');
+  }
+
+  return `/auth/oauth2/email-challenge/${encodeURIComponent(normalizedChallengeId)}`;
+};
 
 const getFieldErrorMessage = (error: unknown): string | null => {
   if (!error || typeof error !== 'object' || !('data' in (error as Record<string, unknown>))) {
@@ -454,6 +548,55 @@ export const getSocialLoginUrl = (
   provider: SocialLoginProvider,
   params?: SocialLoginParams,
 ): string => buildSocialLoginUrl(provider, params);
+
+export const getOAuthEmailChallenge = async (
+  challengeId: string,
+): Promise<OAuthEmailChallengeStatusDto> => {
+  const response = await publicGet<PublicApiDataEnvelope<Partial<OAuthEmailChallengeStatusDto>>>(
+    getOAuthEmailChallengePath(challengeId),
+  );
+  return normalizeOAuthEmailChallengeStatus(response);
+};
+
+export const submitOAuthEmailChallengeEmail = async (
+  challengeId: string,
+  email: string,
+): Promise<OAuthEmailChallengeMutationDto> => {
+  const response = await publicPost<
+    PublicApiDataEnvelope<Partial<OAuthEmailChallengeMutationDto>>,
+    { email: string }
+  >(
+    `${getOAuthEmailChallengePath(challengeId)}/email`,
+    { email },
+  );
+  return normalizeOAuthEmailChallengeMutation(response);
+};
+
+export const resendOAuthEmailChallenge = async (
+  challengeId: string,
+): Promise<OAuthEmailChallengeMutationDto> => {
+  const response = await publicPost<
+    PublicApiDataEnvelope<Partial<OAuthEmailChallengeMutationDto>>,
+    Record<string, never>
+  >(
+    `${getOAuthEmailChallengePath(challengeId)}/resend`,
+    {},
+  );
+  return normalizeOAuthEmailChallengeMutation(response);
+};
+
+export const confirmOAuthEmailChallenge = async (
+  token: string,
+): Promise<OAuthEmailChallengeConfirmDto> => {
+  const response = await publicPost<
+    PublicApiDataEnvelope<Partial<OAuthEmailChallengeConfirmDto>>,
+    { token: string }
+  >(
+    '/auth/oauth2/email-challenge/confirm',
+    { token },
+  );
+  return normalizeOAuthEmailChallengeConfirmation(response);
+};
 
 export const requestPasswordReset = async (
   email: string,

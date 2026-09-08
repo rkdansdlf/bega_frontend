@@ -2,12 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createJSONStorage } from 'zustand/middleware';
 
-import { authStoreApi, useAuthStore } from './authStore';
 import { queryClient } from '../lib/queryClient';
 import {
   getPersistedAuthBootstrapMeta,
   setPersistedAuthBootstrapMeta,
 } from '../utils/authBootstrap';
+import {
+  claimAuthSessionExpiry,
+  markAuthSessionEstablished,
+} from '../api/authSessionGeneration';
 
 const createStorage = () => {
   const values = new Map<string, string>();
@@ -30,13 +33,26 @@ const createStorage = () => {
   };
 };
 
+const installGlobalLocalStorage = (storage: ReturnType<typeof createStorage>) => {
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    writable: true,
+    value: storage,
+  });
+};
+
+const initialStorage = createStorage();
+installGlobalLocalStorage(initialStorage);
+
+const { authStoreApi, useAuthStore } = await import('./authStore');
+
 const installPersistStorage = (storage: ReturnType<typeof createStorage>) => {
   useAuthStore.persist.setOptions({
     storage: createJSONStorage(() => storage),
   });
 };
 
-installPersistStorage(createStorage());
+installPersistStorage(initialStorage);
 
 test.afterEach(() => {
   queryClient.clear();
@@ -85,6 +101,35 @@ test('fetchProfileAndAuthenticate는 성공한 프로필을 MyPage 쿼리 캐시
     cheerPoints: 120,
     hasPassword: false,
   });
+});
+
+test('login과 profile bootstrap 성공은 새 auth session generation을 수립한다', async (t) => {
+  const storage = createStorage();
+  withWindowLocalStorage(storage, '/mypage');
+
+  markAuthSessionEstablished();
+  assert.equal(claimAuthSessionExpiry(), true);
+  useAuthStore.getState().login('login@example.com', 'Login User', null, 'ROLE_USER', undefined, 11);
+  assert.equal(claimAuthSessionExpiry(), true);
+
+  t.mock.method(authStoreApi, 'fetchCurrentUserProfile', async () => ({
+    id: 11,
+    email: 'login@example.com',
+    name: 'Login User',
+    handle: 'login-user',
+    favoriteTeam: 'LG',
+    favoriteTeamColor: '#c00',
+    role: 'ROLE_USER',
+    profileImageUrl: null,
+    provider: 'KAKAO',
+    providerId: 'provider-11',
+    bio: null,
+    cheerPoints: 0,
+    hasPassword: false,
+  }) as never);
+
+  await useAuthStore.getState().fetchProfileAndAuthenticate();
+  assert.equal(claimAuthSessionExpiry(), true);
 });
 
 const withWindowLocalStorage = (

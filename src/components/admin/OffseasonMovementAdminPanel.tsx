@@ -1,4 +1,12 @@
-import { lazy, Suspense, type ChangeEvent, useEffect, useRef, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   createAdminOffseasonMovement,
@@ -17,6 +25,12 @@ import PlainDialog from '../ui/plain-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
 import type { AdminOffseasonMovement, AdminOffseasonMovementPayload } from '../../types/admin';
+import type { OffseasonMovementAdminPanelContentProps } from './OffseasonMovementAdminPanelContent';
+import {
+  createOffseasonMovementListCoordinator,
+  createOffseasonMovementMutationCoordinator,
+  type OffseasonMovementListFilters,
+} from './offseasonMovementAdminCoordinator';
 
 const OffseasonMovementAdminPanelContent = lazy(() => import('./OffseasonMovementAdminPanelContent'));
 
@@ -288,50 +302,146 @@ const readFileAsText = async (file: File) =>
 
 const buildCsvTemplate = () => `${CSV_TEMPLATE_HEADERS.join(',')}\n`;
 
-export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
-  const [movements, setMovements] = useState<AdminOffseasonMovement[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [importingCsv, setImportingCsv] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [csvReport, setCsvReport] = useState<CsvImportReport | null>(null);
-  const [search, setSearch] = useState('');
-  const [sectionFilter, setSectionFilter] = useState(ALL_VALUE);
-  const [teamFilter, setTeamFilter] = useState(ALL_VALUE);
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [qualityFilter, setQualityFilter] = useState<QualityFilterValue>(QUALITY_ALL_VALUE);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingMovement, setEditingMovement] = useState<AdminOffseasonMovement | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<AdminOffseasonMovement | null>(null);
-  const [formData, setFormData] = useState<AdminOffseasonMovementPayload>(createEmptyPayload);
+export type OffseasonMovementAdminLazyPhase = 'fallback' | 'resolved';
+
+export interface OffseasonMovementAdminPanelVisualQaState {
+  active: true;
+  movements: AdminOffseasonMovement[];
+  loading: boolean;
+  submitting: boolean;
+  importingCsv: boolean;
+  error: string | null;
+  successMessage: string | null;
+  csvReport: CsvImportReport | null;
+  search: string;
+  sectionFilter: string;
+  teamFilter: string;
+  fromDate: string;
+  toDate: string;
+  qualityFilter: QualityFilterValue;
+  dialogOpen: boolean;
+  editingMovement: AdminOffseasonMovement | null;
+  deleteTarget: AdminOffseasonMovement | null;
+  formData: AdminOffseasonMovementPayload;
+  contentPhase: OffseasonMovementAdminLazyPhase;
+  resultsPhase: OffseasonMovementAdminLazyPhase;
+  dialogsPhase: OffseasonMovementAdminLazyPhase;
+}
+
+export interface OffseasonMovementAdminPanelVisualQaRenderers {
+  content: (props: OffseasonMovementAdminPanelContentProps) => ReactNode;
+}
+
+interface OffseasonMovementAdminPanelProps {
+  active: boolean;
+  visualQaStateOverride?: OffseasonMovementAdminPanelVisualQaState;
+  visualQaRenderers?: OffseasonMovementAdminPanelVisualQaRenderers;
+}
+
+export function OffseasonMovementAdminPanel({
+  active: requestedActive,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+  visualQaRenderers: requestedVisualQaRenderers,
+}: OffseasonMovementAdminPanelProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaRenderers = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaRenderers;
+  const active = visualQaStateOverride?.active ?? requestedActive;
+  const [movements, setMovements] = useState<AdminOffseasonMovement[]>(
+    visualQaStateOverride?.movements ?? [],
+  );
+  const [loading, setLoading] = useState(visualQaStateOverride?.loading ?? false);
+  const [submitting, setSubmitting] = useState(visualQaStateOverride?.submitting ?? false);
+  const [importingCsv, setImportingCsv] = useState(visualQaStateOverride?.importingCsv ?? false);
+  const [error, setError] = useState<string | null>(visualQaStateOverride?.error ?? null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(
+    visualQaStateOverride?.successMessage ?? null,
+  );
+  const [csvReport, setCsvReport] = useState<CsvImportReport | null>(
+    visualQaStateOverride?.csvReport ?? null,
+  );
+  const [search, setSearch] = useState(visualQaStateOverride?.search ?? '');
+  const [sectionFilter, setSectionFilter] = useState(
+    visualQaStateOverride?.sectionFilter ?? ALL_VALUE,
+  );
+  const [teamFilter, setTeamFilter] = useState(visualQaStateOverride?.teamFilter ?? ALL_VALUE);
+  const [fromDate, setFromDate] = useState(visualQaStateOverride?.fromDate ?? '');
+  const [toDate, setToDate] = useState(visualQaStateOverride?.toDate ?? '');
+  const [qualityFilter, setQualityFilter] = useState<QualityFilterValue>(
+    visualQaStateOverride?.qualityFilter ?? QUALITY_ALL_VALUE,
+  );
+  const [dialogOpen, setDialogOpen] = useState(visualQaStateOverride?.dialogOpen ?? false);
+  const [editingMovement, setEditingMovement] = useState<AdminOffseasonMovement | null>(
+    visualQaStateOverride?.editingMovement ?? null,
+  );
+  const [deleteTarget, setDeleteTarget] = useState<AdminOffseasonMovement | null>(
+    visualQaStateOverride?.deleteTarget ?? null,
+  );
+  const [formData, setFormData] = useState<AdminOffseasonMovementPayload>(
+    visualQaStateOverride?.formData ?? createEmptyPayload,
+  );
   const csvInputRef = useRef<HTMLInputElement | null>(null);
+  const mountedRef = useRef(false);
+  const listCoordinatorRef = useRef<ReturnType<
+    typeof createOffseasonMovementListCoordinator<AdminOffseasonMovement[]>
+  > | null>(null);
+  const mutationCoordinatorRef = useRef(createOffseasonMovementMutationCoordinator());
+  const latestFiltersRef = useRef<OffseasonMovementListFilters>({});
 
-  const loadMovements = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data = await fetchAdminOffseasonMovements({
-        search: search.trim() || undefined,
-        section: sectionFilter !== ALL_VALUE ? sectionFilter : undefined,
-        teamCode: teamFilter !== ALL_VALUE ? teamFilter : undefined,
-        fromDate: fromDate || undefined,
-        toDate: toDate || undefined,
-      });
-      setMovements(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 목록을 불러오지 못했습니다.');
-    } finally {
-      setLoading(false);
-    }
+  latestFiltersRef.current = {
+    search,
+    section: sectionFilter,
+    teamCode: teamFilter,
+    fromDate,
+    toDate,
   };
 
-  useEffect(() => {
-    if (active) {
-      void loadMovements();
+  if (listCoordinatorRef.current === null) {
+    listCoordinatorRef.current = createOffseasonMovementListCoordinator({
+      onData: setMovements,
+      onError: (requestError) => setError(requestError.message),
+      onLoading: setLoading,
+    });
+  }
+
+  const currentFilters = (): OffseasonMovementListFilters => ({
+    ...latestFiltersRef.current,
+  });
+
+  const loadMovements = (
+    filters: OffseasonMovementListFilters = currentFilters(),
+    options: { forceFresh?: boolean } = {},
+  ): Promise<void> => {
+    if (visualQaStateOverride) {
+      return Promise.resolve();
     }
+    if (mountedRef.current) setError(null);
+    return listCoordinatorRef.current!.request(filters, fetchAdminOffseasonMovements, options);
+  };
+
+  const refreshLatestMovements = () => loadMovements(
+    { ...latestFiltersRef.current },
+    { forceFresh: true },
+  );
+
+  useEffect(() => {
+    mountedRef.current = true;
+    if (active) {
+      listCoordinatorRef.current?.activate();
+      mutationCoordinatorRef.current.activate();
+      void loadMovements();
+    } else {
+      listCoordinatorRef.current?.deactivate();
+      mutationCoordinatorRef.current.deactivate();
+    }
+    return () => {
+      mountedRef.current = false;
+      listCoordinatorRef.current?.deactivate();
+      mutationCoordinatorRef.current.deactivate();
+    };
   }, [active]);
 
   useEffect(() => {
@@ -343,7 +453,7 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
     return () => window.clearTimeout(timer);
   }, [successMessage]);
 
-  const resetFilters = async () => {
+  const resetFilters = () => {
     setSearch('');
     setSectionFilter(ALL_VALUE);
     setTeamFilter(ALL_VALUE);
@@ -351,17 +461,7 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
     setToDate('');
     setQualityFilter(QUALITY_ALL_VALUE);
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data = await fetchAdminOffseasonMovements();
-      setMovements(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 목록을 불러오지 못했습니다.');
-    } finally {
-      setLoading(false);
-    }
+    return loadMovements({});
   };
 
   const openCreateDialog = () => {
@@ -395,26 +495,33 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
       return;
     }
 
-    setSubmitting(true);
-    setError(null);
-
+    let isCurrentMutation = () => false;
     try {
-      if (editingMovement) {
-        await updateAdminOffseasonMovement(editingMovement.id, payload);
-        setSuccessMessage('스토브리그 이동을 수정했습니다.');
-      } else {
-        await createAdminOffseasonMovement(payload);
-        setSuccessMessage('스토브리그 이동을 등록했습니다.');
-      }
-
-      setDialogOpen(false);
-      setEditingMovement(null);
-      setFormData(createEmptyPayload());
-      await loadMovements();
+      await mutationCoordinatorRef.current.run('save', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
+        setSubmitting(true);
+        setError(null);
+        if (visualQaStateOverride) return undefined;
+        if (editingMovement) {
+          await updateAdminOffseasonMovement(editingMovement.id, payload);
+          if (!mutationContext.isActive()) return undefined;
+          setSuccessMessage('스토브리그 이동을 수정했습니다.');
+        } else {
+          await createAdminOffseasonMovement(payload);
+          if (!mutationContext.isActive()) return undefined;
+          setSuccessMessage('스토브리그 이동을 등록했습니다.');
+        }
+        setDialogOpen(false);
+        setEditingMovement(null);
+        setFormData(createEmptyPayload());
+        return undefined;
+      }, refreshLatestMovements);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 저장에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : '스토브리그 이동 저장에 실패했습니다.');
+      }
     } finally {
-      setSubmitting(false);
+      if (mountedRef.current && isCurrentMutation()) setSubmitting(false);
     }
   };
 
@@ -423,18 +530,25 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
       return;
     }
 
-    setSubmitting(true);
-    setError(null);
-
+    let isCurrentMutation = () => false;
     try {
-      await deleteAdminOffseasonMovement(deleteTarget.id);
-      setSuccessMessage('스토브리그 이동을 삭제했습니다.');
-      setDeleteTarget(null);
-      await loadMovements();
+      await mutationCoordinatorRef.current.run('delete', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
+        setSubmitting(true);
+        setError(null);
+        if (visualQaStateOverride) return undefined;
+        await deleteAdminOffseasonMovement(deleteTarget.id);
+        if (!mutationContext.isActive()) return undefined;
+        setSuccessMessage('스토브리그 이동을 삭제했습니다.');
+        setDeleteTarget(null);
+        return undefined;
+      }, refreshLatestMovements);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '스토브리그 이동 삭제에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : '스토브리그 이동 삭제에 실패했습니다.');
+      }
     } finally {
-      setSubmitting(false);
+      if (mountedRef.current && isCurrentMutation()) setSubmitting(false);
     }
   };
 
@@ -457,32 +571,36 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
       return;
     }
 
-    setImportingCsv(true);
-    setError(null);
-    setCsvReport(null);
-
+    let isCurrentMutation = () => false;
     try {
-      const csvText = await readFileAsText(file);
-      const rows = parseCsvRows(csvText);
+      await mutationCoordinatorRef.current.run('csv-import', async (mutationContext) => {
+        isCurrentMutation = mutationContext.isActive;
+        setImportingCsv(true);
+        setError(null);
+        setCsvReport(null);
+        if (visualQaStateOverride) return { createdCount: 0, updatedCount: 0 };
+        const csvText = await readFileAsText(file);
+        if (!mutationContext.isActive()) return { createdCount: 0, updatedCount: 0 };
+        const rows = parseCsvRows(csvText);
 
-      if (rows.length < 2) {
-        throw new Error('헤더와 데이터 행이 포함된 CSV 파일이 필요합니다.');
-      }
+        if (rows.length < 2) {
+          throw new Error('헤더와 데이터 행이 포함된 CSV 파일이 필요합니다.');
+        }
 
-      const headers = rows[0].map((header) => CSV_HEADER_ALIASES[normalizeCsvHeader(header)] || header.trim());
-      const requiredHeaders: Array<keyof AdminOffseasonMovementPayload> = ['movementDate', 'section', 'teamCode', 'playerName'];
-      const missingHeaders = requiredHeaders.filter((header) => !headers.includes(header));
+        const headers = rows[0].map((header) => CSV_HEADER_ALIASES[normalizeCsvHeader(header)] || header.trim());
+        const requiredHeaders: Array<keyof AdminOffseasonMovementPayload> = ['movementDate', 'section', 'teamCode', 'playerName'];
+        const missingHeaders = requiredHeaders.filter((header) => !headers.includes(header));
 
-      if (missingHeaders.length > 0) {
-        throw new Error(`필수 헤더가 없습니다: ${missingHeaders.join(', ')}`);
-      }
+        if (missingHeaders.length > 0) {
+          throw new Error(`필수 헤더가 없습니다: ${missingHeaders.join(', ')}`);
+        }
 
-      let createdCount = 0;
-      let updatedCount = 0;
-      const errors: string[] = [];
-      const dataRows = rows.slice(1);
+        let createdCount = 0;
+        let updatedCount = 0;
+        const errors: string[] = [];
+        const dataRows = rows.slice(1);
 
-      for (let index = 0; index < dataRows.length; index += 1) {
+        for (let index = 0; index < dataRows.length; index += 1) {
         const row = dataRows[index];
         const rowNumber = index + 2;
         const rowRecord = headers.reduce<Record<string, string>>((acc, header, headerIndex) => {
@@ -522,34 +640,44 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
 
           if (rowId) {
             await updateAdminOffseasonMovement(rowId, payload);
+            if (!mutationContext.isActive()) return { createdCount, updatedCount };
             updatedCount += 1;
           } else {
             await createAdminOffseasonMovement(payload);
+            if (!mutationContext.isActive()) return { createdCount, updatedCount };
             createdCount += 1;
           }
         } catch (err) {
+          if (!mutationContext.isActive()) return { createdCount, updatedCount };
           errors.push(`${rowNumber}행: ${err instanceof Error ? err.message : '업로드에 실패했습니다.'}`);
         }
-      }
+        }
 
-      setCsvReport({
-        fileName: file.name,
-        totalRows: dataRows.length,
-        createdCount,
-        updatedCount,
-        failedCount: errors.length,
-        errors,
-      });
+        if (!mutationContext.isActive()) return { createdCount, updatedCount };
 
-      if (createdCount > 0 || updatedCount > 0) {
-        setSuccessMessage(`CSV 업로드를 반영했습니다. 등록 ${createdCount}건, 수정 ${updatedCount}건`);
-        await loadMovements();
-      }
+        setCsvReport({
+          fileName: file.name,
+          totalRows: dataRows.length,
+          createdCount,
+          updatedCount,
+          failedCount: errors.length,
+          errors,
+        });
+
+        if (createdCount > 0 || updatedCount > 0) {
+          setSuccessMessage(`CSV 업로드를 반영했습니다. 등록 ${createdCount}건, 수정 ${updatedCount}건`);
+        }
+        return { createdCount, updatedCount };
+      }, refreshLatestMovements, ({ createdCount, updatedCount }) => createdCount > 0 || updatedCount > 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'CSV 업로드에 실패했습니다.');
+      if (mountedRef.current && isCurrentMutation()) {
+        setError(err instanceof Error ? err.message : 'CSV 업로드에 실패했습니다.');
+      }
     } finally {
-      setImportingCsv(false);
-      event.target.value = '';
+      if (mountedRef.current && isCurrentMutation()) {
+        setImportingCsv(false);
+        event.target.value = '';
+      }
     }
   };
 
@@ -606,8 +734,90 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
 
   const activeQualityOption = qualityOptions.find((option) => option.value === qualityFilter) || qualityOptions[0];
 
+  const contentProps: OffseasonMovementAdminPanelContentProps = {
+    successMessage,
+    error,
+    movements,
+    filteredMovements,
+    loading,
+    importingCsv,
+    submitting,
+    csvReport,
+    search,
+    sectionFilter,
+    teamFilter,
+    fromDate,
+    toDate,
+    qualityFilter,
+    qualityOptions,
+    activeQualityOption,
+    qualityCounts,
+    summaryCount,
+    detailsCount,
+    structuredCount,
+    sourcedCount,
+    dialogOpen,
+    editingMovement,
+    deleteTarget,
+    formData,
+    onSearchChange: setSearch,
+    onSectionFilterChange: setSectionFilter,
+    onTeamFilterChange: setTeamFilter,
+    onFromDateChange: setFromDate,
+    onToDateChange: setToDate,
+    onApplyFilters: () => void loadMovements(),
+    onResetFilters: () => void resetFilters(),
+    onQualityFilterChange: (value) => setQualityFilter(value as QualityFilterValue),
+    onRefresh: () => void loadMovements(),
+    onDownloadCsvTemplate: downloadCsvTemplate,
+    onOpenCsvImport: () => csvInputRef.current?.click(),
+    onOpenCreateDialog: openCreateDialog,
+    onOpenEditDialog: openEditDialog,
+    onDeleteTargetChange: setDeleteTarget,
+    onDialogClose: closeDialog,
+    onUpdateField: updateField,
+    onSubmit: () => void handleSubmit(),
+    onDelete: () => void handleDelete(),
+    visualQaStateOverride: visualQaStateOverride ? {
+      resultsPhase: visualQaStateOverride.resultsPhase,
+      dialogsPhase: visualQaStateOverride.dialogsPhase,
+    } : undefined,
+  };
+  const content = visualQaStateOverride
+    ? visualQaStateOverride.contentPhase === 'fallback'
+      ? (
+        <div
+          aria-busy="true"
+          aria-live="polite"
+          data-testid="admin-offseason-content-fallback"
+          role="status"
+          className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400"
+        >
+          스토브리그 관리 패널 로딩 중...
+        </div>
+      )
+      : visualQaRenderers?.content(contentProps)
+    : (
+      <Suspense
+        fallback={(
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">
+            스토브리그 관리 패널 로딩 중...
+          </div>
+        )}
+      >
+        <OffseasonMovementAdminPanelContent {...contentProps} />
+      </Suspense>
+    );
+
+  if (visualQaStateOverride?.contentPhase === 'resolved' && !visualQaRenderers?.content) {
+    throw new Error('OffseasonMovementAdminPanel Visual QA resolved content renderer is required.');
+  }
+
   return (
-    <>
+    <section
+      data-testid="admin-offseason-movement-panel"
+      className="w-full min-w-0 max-w-full overflow-x-clip p-0"
+    >
       <input
         ref={csvInputRef}
         type="file"
@@ -616,59 +826,7 @@ export function OffseasonMovementAdminPanel({ active }: { active: boolean }) {
         className="hidden"
         onChange={(event) => void handleCsvImport(event)}
       />
-      <Suspense
-        fallback={(
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">
-            스토브리그 관리 패널 로딩 중...
-          </div>
-        )}
-      >
-        <OffseasonMovementAdminPanelContent
-          successMessage={successMessage}
-          error={error}
-          movements={movements}
-          filteredMovements={filteredMovements}
-          loading={loading}
-          importingCsv={importingCsv}
-          submitting={submitting}
-          csvReport={csvReport}
-          search={search}
-          sectionFilter={sectionFilter}
-          teamFilter={teamFilter}
-          fromDate={fromDate}
-          toDate={toDate}
-          qualityFilter={qualityFilter}
-          qualityOptions={qualityOptions}
-          activeQualityOption={activeQualityOption}
-          qualityCounts={qualityCounts}
-          summaryCount={summaryCount}
-          detailsCount={detailsCount}
-          structuredCount={structuredCount}
-          sourcedCount={sourcedCount}
-          dialogOpen={dialogOpen}
-          editingMovement={editingMovement}
-          deleteTarget={deleteTarget}
-          formData={formData}
-          onSearchChange={setSearch}
-          onSectionFilterChange={setSectionFilter}
-          onTeamFilterChange={setTeamFilter}
-          onFromDateChange={setFromDate}
-          onToDateChange={setToDate}
-          onApplyFilters={() => void loadMovements()}
-          onResetFilters={() => void resetFilters()}
-          onQualityFilterChange={(value) => setQualityFilter(value as QualityFilterValue)}
-          onRefresh={() => void loadMovements()}
-          onDownloadCsvTemplate={downloadCsvTemplate}
-          onOpenCsvImport={() => csvInputRef.current?.click()}
-          onOpenCreateDialog={openCreateDialog}
-          onOpenEditDialog={openEditDialog}
-          onDeleteTargetChange={setDeleteTarget}
-          onDialogClose={closeDialog}
-          onUpdateField={updateField}
-          onSubmit={() => void handleSubmit()}
-          onDelete={() => void handleDelete()}
-        />
-      </Suspense>
-    </>
+      {content}
+    </section>
   );
 }

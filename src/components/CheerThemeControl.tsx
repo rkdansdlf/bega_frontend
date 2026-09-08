@@ -2,11 +2,19 @@ import { useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import type { Theme } from '../hooks/useTheme';
 import { cn } from '../lib/utils';
-import { getDarkModeAccentText } from '../utils/teamColors';
+import { getDarkModeAccentText, getLightModeAccentText } from '../utils/teamColors';
+
+export interface CheerThemeControlState {
+  resolvedTheme: 'dark' | 'light';
+  systemTheme: 'dark' | 'light';
+  theme: Theme;
+}
 
 interface CheerThemeControlProps {
   accentColor: string;
   compact?: boolean;
+  onThemeChangeOverride?: (theme: Theme) => void;
+  themeStateOverride?: CheerThemeControlState;
 }
 
 const themeOptions: { value: Theme; label: string }[] = [
@@ -15,10 +23,22 @@ const themeOptions: { value: Theme; label: string }[] = [
   { value: 'dark', label: '다크' },
 ];
 
-export default function CheerThemeControl({ accentColor, compact = false }: CheerThemeControlProps) {
-  const { theme, resolvedTheme, systemTheme, setTheme } = useTheme();
+export default function CheerThemeControl({
+  accentColor,
+  compact = false,
+  onThemeChangeOverride,
+  themeStateOverride,
+}: CheerThemeControlProps) {
+  const liveThemeState = useTheme();
+  const themeState = themeStateOverride ?? liveThemeState;
+  const { theme, resolvedTheme, systemTheme } = themeState;
+  const setTheme = onThemeChangeOverride ?? liveThemeState.setTheme;
   const activeAccentText = useMemo(
-    () => (resolvedTheme === 'dark' ? getDarkModeAccentText(accentColor) : accentColor),
+    () => (
+      resolvedTheme === 'dark'
+        ? getDarkModeAccentText(accentColor)
+        : getLightModeAccentText(accentColor)
+    ),
     [accentColor, resolvedTheme],
   );
 
@@ -47,8 +67,9 @@ export default function CheerThemeControl({ accentColor, compact = false }: Chee
               type="button"
               aria-pressed={isActive}
               onClick={() => setTheme(option.value)}
+              data-testid={`cheer-theme-option-${option.value}`}
               className={cn(
-                'min-h-9 whitespace-nowrap rounded-full px-2 text-caption font-black transition-colors active:scale-[0.98]',
+                'min-h-11 whitespace-nowrap rounded-full px-2 text-caption font-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cheer-panel-bg)] active:scale-[0.98]',
                 isActive
                   ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                   : 'text-slate-600 hover:bg-white dark:text-white dark:hover:bg-card',

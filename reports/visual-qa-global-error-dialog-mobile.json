@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T22:09:34.333Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 22,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 120000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-global-error-dialog-mobile"
+  },
+  "summary": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=boundary-maximum|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-boundary-maximum-variant-preset-idle-6027425b3c86.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=boundary-minimum|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-boundary-minimum-variant-preset-idle-2fa8984f82c6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=empty|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-empty-variant-preset-idle-f8cf30135d25.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=long-korean|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-long-korean-variant-preset-idle-e424fa23c9c1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=maximum-supported|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-maximum-supported-variant-preset-idle-e3a33e841bd1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=null-optional|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-null-optional-variant-preset-idle-54bfeaf0ebd3.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=content-loading-fallback",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-content-loadin-659064339d4f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=cypress-suppressed",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-cypress-suppre-b208d3f8d0f3.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-idle-3d7a918b5733.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=idle-no-event",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-idle-no-event-50484cb60e36.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=ignored-cancelled-request",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-ignored-cancel-07b22c4bb430.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=ignored-home-endpoint",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-ignored-home-e-faa13c613a74.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=ignored-invalid-author",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-ignored-invali-bb67283542cf.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=latest-event-wins",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-latest-event-w-deddc161bf75.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=retry-missing",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-retry-missing-ba6313fb07fa.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=source-runtime",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-source-runtime-364e0ff432a2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=source-unhandled-rejection",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-source-unhandl-dadd76b00d6f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-404",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-status-404-263664de5826.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-409",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-status-409-f985d9f28698.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-500",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-status-500-b6888eaf71c8.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=populated|variant.preset=status-null",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-populated-variant-preset-status-null-18bd0a0e3410.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialog.tsx#GlobalErrorDialog:data=unbroken-token|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialog.tsx#GlobalErrorDialog",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-mobile/globalerrordialog-globalerrordialog-data-unbroken-token-variant-preset-idle-5a390b84ebd8.png",
+      "attempts": 1
+    }
+  ]
+}

@@ -35,14 +35,16 @@ function AvailabilityMessage({
   state,
   message,
   idleMessage,
+  testId,
 }: {
   state: 'idle' | 'checking' | 'available' | 'taken' | 'error';
   message?: string;
   idleMessage?: string;
+  testId: string;
 }) {
   if (state !== 'idle' && message) {
     return (
-      <p className={getAvailabilityMessageClassName(state)}>
+      <p className={getAvailabilityMessageClassName(state)} data-testid={testId}>
         {state === 'taken' || state === 'error' ? '* ' : ''}
         {message}
       </p>
@@ -50,7 +52,7 @@ function AvailabilityMessage({
   }
 
   if (idleMessage) {
-    return <p className="auth-helper-text">{idleMessage}</p>;
+    return <p className="auth-helper-text" data-testid={testId}>{idleMessage}</p>;
   }
 
   return null;
@@ -62,32 +64,59 @@ function PasswordVisibilityButton({
   disabled,
   showLabel,
   hideLabel,
+  testId,
 }: {
   isVisible: boolean;
   onToggle: () => void;
   disabled: boolean;
   showLabel: string;
   hideLabel: string;
+  testId: string;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
-      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+      className="absolute right-1 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       disabled={disabled}
       aria-label={isVisible ? hideLabel : showLabel}
+      data-testid={testId}
     >
       {isVisible ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
     </button>
   );
 }
 
-export default function SignUp() {
+export type SignUpVisualQaStateOverride = Pick<
+  ReturnType<typeof useSignUpForm>,
+  | 'formData'
+  | 'fieldErrors'
+  | 'handleAvailability'
+  | 'emailAvailability'
+  | 'isLoading'
+  | 'isSubmitDisabled'
+  | 'isSuccess'
+  | 'error'
+> & {
+  showPassword: boolean;
+  showConfirmPassword: boolean;
+};
+
+interface SignUpProps {
+  visualQaStateOverride?: SignUpVisualQaStateOverride;
+}
+
+export default function SignUp(props: SignUpProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [liveShowPassword, setShowPassword] = useState(false);
+  const [liveShowConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showTeamTest, setShowTeamTest] = useState(false);
+
+  const liveState = useSignUpForm();
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
 
   const {
     formData,
@@ -98,10 +127,14 @@ export default function SignUp() {
     isSubmitDisabled,
     isSuccess,
     error,
+  } = visualQaStateOverride ?? liveState;
+  const {
     handleFieldChange,
     handleFieldBlur,
     handleSubmit,
-  } = useSignUpForm();
+  } = liveState;
+  const showPassword = visualQaStateOverride?.showPassword ?? liveShowPassword;
+  const showConfirmPassword = visualQaStateOverride?.showConfirmPassword ?? liveShowConfirmPassword;
 
   const loginPath = buildLoginPath(new URLSearchParams(location.search).get('redirect'));
   const isFormLocked = isLoading || isSuccess;
@@ -111,9 +144,10 @@ export default function SignUp() {
       <AuthHeader
         title="회원가입"
         description="응원팀과 프로필 정보를 설정해 BEGA 경험을 바로 시작하세요."
+        data-testid="signup-header"
       />
 
-      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate data-testid="signup-form">
         {isSuccess || error ? (
           <Suspense fallback={null}>
             <LazySignUpStatusPanel error={error} isSuccess={isSuccess} />
@@ -137,6 +171,7 @@ export default function SignUp() {
               className={`auth-input auth-autofill-input ${fieldErrors.name ? 'auth-input-error' : ''}`}
               placeholder="잠실직관러"
               disabled={isFormLocked}
+              data-testid="signup-name"
             />
             {fieldErrors.name ? <p className="auth-error-text">* {fieldErrors.name}</p> : null}
           </div>
@@ -159,12 +194,14 @@ export default function SignUp() {
               className={`auth-input auth-autofill-input ${fieldErrors.handle ? 'auth-input-error' : ''}`}
               placeholder="@jamsil_rookie"
               disabled={isFormLocked}
+              data-testid="signup-handle"
             />
             {fieldErrors.handle ? <p className="auth-error-text">* {fieldErrors.handle}</p> : (
               <AvailabilityMessage
                 state={handleAvailability.state}
                 message={handleAvailability.message}
                 idleMessage="핸들은 내 프로필 주소로 사용되며 소문자로 저장됩니다. (기호는 _만 가능)"
+                testId="signup-handle-availability"
               />
             )}
           </div>
@@ -188,11 +225,13 @@ export default function SignUp() {
               className={`auth-input auth-autofill-input ${fieldErrors.email ? 'auth-input-error' : ''}`}
               placeholder="fan@begabaseball.kr"
               disabled={isFormLocked}
+              data-testid="signup-email"
             />
             {fieldErrors.email ? <p className="auth-error-text">* {fieldErrors.email}</p> : (
               <AvailabilityMessage
                 state={emailAvailability.state}
                 message={emailAvailability.message}
+                testId="signup-email-availability"
               />
             )}
           </div>
@@ -202,7 +241,7 @@ export default function SignUp() {
               <LockIcon className="h-4 w-4 text-primary" />
               비밀번호
             </label>
-            <div className="relative">
+            <div className="relative" data-vqa-overlap="allowed">
               <Input
                 id="password"
                 name="password"
@@ -214,6 +253,7 @@ export default function SignUp() {
                 className={`auth-input auth-autofill-input pr-12 ${fieldErrors.password ? 'auth-input-error' : ''}`}
                 placeholder={`${VALIDATION_RULES.PASSWORD.MIN_LENGTH}자 이상 입력`}
                 disabled={isFormLocked}
+                data-testid="signup-password"
               />
               <PasswordVisibilityButton
                 isVisible={showPassword}
@@ -221,6 +261,7 @@ export default function SignUp() {
                 disabled={isFormLocked}
                 showLabel="비밀번호 보기"
                 hideLabel="비밀번호 숨기기"
+                testId="signup-password-visibility"
               />
             </div>
             {fieldErrors.password ? (
@@ -239,7 +280,7 @@ export default function SignUp() {
               <LockIcon className="h-4 w-4 text-primary" />
               비밀번호 확인
             </label>
-            <div className="relative">
+            <div className="relative" data-vqa-overlap="allowed">
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -251,6 +292,7 @@ export default function SignUp() {
                 className={`auth-input auth-autofill-input pr-12 ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
                 placeholder="비밀번호 재입력"
                 disabled={isFormLocked}
+                data-testid="signup-confirm-password"
               />
               <PasswordVisibilityButton
                 isVisible={showConfirmPassword}
@@ -258,6 +300,7 @@ export default function SignUp() {
                 disabled={isFormLocked}
                 showLabel="비밀번호 확인 보기"
                 hideLabel="비밀번호 확인 숨기기"
+                testId="signup-confirm-password-visibility"
               />
             </div>
             {fieldErrors.confirmPassword ? <p className="auth-error-text">* {fieldErrors.confirmPassword}</p> : null}
@@ -274,6 +317,7 @@ export default function SignUp() {
               onChange={(event) => handleFieldChange('favoriteTeam', event.target.value)}
               disabled={isFormLocked}
               className={`auth-select-trigger ${fieldErrors.favoriteTeam ? 'auth-input-error' : ''}`}
+              data-testid="signup-favorite-team"
             >
               <option value="" disabled>
                 팀을 선택하세요
@@ -288,7 +332,7 @@ export default function SignUp() {
             {fieldErrors.favoriteTeam ? <p className="auth-error-text">* {fieldErrors.favoriteTeam}</p> : null}
 
             {formData.favoriteTeam === '없음' ? (
-              <AuthStatusPanel tone="warning" role="status">
+              <AuthStatusPanel tone="warning" role="status" data-testid="signup-no-team-warning">
                 <div className="space-y-1 text-body">
                   <p className="font-semibold">응원구단을 선택하지 않으면 응원석을 이용할 수 없습니다.</p>
                   <p>회원가입 후에도 마이페이지 &gt; 내 정보 수정에서 언제든 변경할 수 있습니다.</p>
@@ -302,8 +346,9 @@ export default function SignUp() {
                 type="button"
                 variant="ghost"
                 onClick={() => setShowTeamTest(true)}
-                className="h-auto px-2 py-1 text-body text-primary hover:bg-primary/10 dark:hover:bg-primary/20"
+                className="min-h-11 px-2 py-1 text-body text-primary hover:bg-primary/10 dark:hover:bg-primary/20"
                 disabled={isFormLocked}
+                data-testid="signup-team-test"
               >
                 구단 테스트 해보기
               </Button>
@@ -333,6 +378,7 @@ export default function SignUp() {
             size="touchLg"
             className="w-full"
             disabled={isSubmitDisabled}
+            data-testid="signup-submit"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -349,8 +395,9 @@ export default function SignUp() {
             <button
               type="button"
               onClick={() => navigate(loginPath)}
-              className="auth-link"
+              className="auth-link inline-flex min-h-11 items-center"
               disabled={isFormLocked}
+              data-testid="signup-login-link"
             >
               로그인
             </button>

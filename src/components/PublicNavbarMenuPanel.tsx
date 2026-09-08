@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { isAdminRole, useAuthAccessActions, useAuthProfileSnapshot, useAuthSession } from '../store/authStore';
 import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
@@ -18,6 +18,7 @@ import { publicNavbarNavItems, type PublicNavbarNavItemId } from './publicNavbar
 
 const navIconToggleClass = 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-secondary';
 const navIconSizeClass = 'h-6 w-6';
+const menuActionFocusClass = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
 const navItemIconMap: Record<PublicNavbarNavItemId, typeof MegaphoneIcon> = {
   cheer: MegaphoneIcon,
@@ -30,20 +31,34 @@ interface PublicNavbarMenuPanelProps {
   isAuthBootstrapPending?: boolean;
   onClose: () => void;
   prefetchPredictionPage: () => void;
+  visualQaStateOverride?: {
+    isLoggedIn: boolean;
+    userName?: string;
+    userProfileImageUrl?: string | null;
+    userRole?: string;
+  };
 }
 
 export default function PublicNavbarMenuPanel({
   isAuthBootstrapPending = false,
   onClose,
   prefetchPredictionPage,
+  visualQaStateOverride: visualQaStateOverrideProp,
 }: PublicNavbarMenuPanelProps) {
+  const isVisualQaDev = import.meta.env?.DEV === true;
+  const visualQaStateOverride = isVisualQaDev ? visualQaStateOverrideProp : undefined;
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, resolvedTheme } = useTheme();
   const isDarkMode = (resolvedTheme || theme) === 'dark';
-  const { isLoggedIn } = useAuthSession();
-  const { userName, userProfileImageUrl, userRole } = useAuthProfileSnapshot();
+  const liveSession = useAuthSession();
+  const liveProfile = useAuthProfileSnapshot();
   const { logout } = useAuthAccessActions();
+  const isLoggedIn = visualQaStateOverride?.isLoggedIn ?? liveSession.isLoggedIn;
+  const userName = visualQaStateOverride?.userName ?? liveProfile.userName;
+  const userProfileImageUrl = visualQaStateOverride?.userProfileImageUrl
+    ?? liveProfile.userProfileImageUrl;
+  const userRole = visualQaStateOverride?.userRole ?? liveProfile.userRole;
   const isAdmin = isAdminRole(userRole);
   const displayName = userName?.trim() || '회원';
 
@@ -68,26 +83,29 @@ export default function PublicNavbarMenuPanel({
           >
             메뉴
           </p>
-          <ThemeToggleButton
-            className={navIconToggleClass}
-            iconClassName={navIconSizeClass}
-          />
+          <div data-testid={isVisualQaDev ? 'public-navbar-menu-theme-toggle' : undefined}>
+            <ThemeToggleButton
+              className={navIconToggleClass}
+              iconClassName={navIconSizeClass}
+            />
+          </div>
         </div>
         <div className="space-y-1">
           {publicNavbarNavItems.map((item, index) => {
             const Icon = navItemIconMap[item.id];
             const isActive = isNavbarNavItemActive(item.id, location.pathname);
             return (
-              <button
-                type="button"
+              <Link
                 key={item.id}
+                to={buildNavbarNavPath(item.id)}
                 autoFocus={index === 0}
                 aria-current={isActive ? 'page' : undefined}
-                onClick={() => handleMobileNav(buildNavbarNavPath(item.id))}
+                onClick={onClose}
                 onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 onFocus={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
-                className={`flex items-center gap-4 w-full text-left py-4 px-4 text-lg font-semibold rounded-xl transition-all duration-200 ${isActive
+                data-testid={isVisualQaDev ? `public-navbar-menu-${item.id}` : undefined}
+                className={`flex items-center gap-4 w-full text-left py-4 px-4 text-lg font-semibold rounded-xl transition-all duration-200 ${menuActionFocusClass} ${isActive
                   ? 'bg-primary/15 text-primary dark:text-primary-light'
                   : isDarkMode
                     ? 'text-gray-100 hover:bg-secondary'
@@ -99,7 +117,7 @@ export default function PublicNavbarMenuPanel({
                 {isActive && (
                   <span className="ml-auto w-2 h-2 rounded-full bg-current" />
                 )}
-              </button>
+              </Link>
             );
           })}
         </div>
@@ -114,7 +132,8 @@ export default function PublicNavbarMenuPanel({
             <button
               type="button"
               onClick={() => handleMobileNav('/mypage')}
-              className={`flex items-center gap-4 w-full py-4 px-4 rounded-xl transition-all duration-200 ${isDarkMode
+              data-testid={isVisualQaDev ? 'public-navbar-menu-profile' : undefined}
+              className={`flex min-w-0 items-center gap-4 w-full py-4 px-4 rounded-xl transition-all duration-200 ${menuActionFocusClass} ${isDarkMode
                 ? 'bg-card hover:bg-secondary'
                 : 'bg-gray-50 hover:bg-gray-100'
                 }`}
@@ -129,8 +148,12 @@ export default function PublicNavbarMenuPanel({
                 showRing
                 ringClassName="bg-primary/15 p-px dark:bg-white/10"
               />
-              <div className="flex-1 text-left">
-                <p className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <div className="min-w-0 flex-1 text-left">
+                <p
+                  className={`line-clamp-2 font-bold text-base [overflow-wrap:anywhere] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  data-testid={isVisualQaDev ? 'public-navbar-menu-profile-name' : undefined}
+                  data-vqa-max-height={isVisualQaDev ? '48' : undefined}
+                >
                   {displayName} 님
                 </p>
                 <p className="text-body text-gray-500 dark:text-white">
@@ -143,8 +166,9 @@ export default function PublicNavbarMenuPanel({
               <button
                 type="button"
                 onClick={() => handleMobileNav('/admin')}
-                className="flex items-center gap-3 w-full py-4 px-4 rounded-xl transition-all duration-200 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                className={`flex items-center gap-3 w-full py-4 px-4 rounded-xl transition-all duration-200 hover:bg-amber-50 dark:hover:bg-amber-900/20 ${menuActionFocusClass}`}
                 aria-label="관리자 페이지로 이동"
+                data-testid={isVisualQaDev ? 'public-navbar-menu-admin' : undefined}
               >
                 <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
                   <ShieldAlertIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -159,8 +183,9 @@ export default function PublicNavbarMenuPanel({
             <button
               type="button"
               onClick={handleLogout}
-              className="flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold"
+              className={`flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold ${menuActionFocusClass}`}
               aria-label="로그아웃"
+              data-testid={isVisualQaDev ? 'public-navbar-menu-logout' : undefined}
             >
               <LogOutIcon className="w-5 h-5" />
               <span>로그아웃</span>
@@ -171,6 +196,7 @@ export default function PublicNavbarMenuPanel({
             type="button"
             disabled={isAuthBootstrapPending}
             aria-busy={isAuthBootstrapPending}
+            data-testid={isVisualQaDev ? 'public-navbar-menu-login' : undefined}
             onClick={() => {
               if (isAuthBootstrapPending) {
                 return;

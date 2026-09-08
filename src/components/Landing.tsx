@@ -4,8 +4,10 @@ import landingCriticalCss from './Landing.css?inline';
 import LandingAppPreview from './landing/LandingAppPreview';
 import LandingClosing from './landing/LandingClosing';
 import LandingFeatureSection from './landing/LandingFeatureSection';
+import LandingFooter from './landing/LandingFooter';
 import LandingHero from './landing/LandingHero';
 import LandingOffseason from './landing/LandingOffseason';
+import LandingStadiumSection from './landing/LandingStadiumSection';
 import LandingStartGuide from './landing/LandingStartGuide';
 import LandingTicker from './landing/LandingTicker';
 import {
@@ -18,9 +20,6 @@ import LandingDiaryVignette from './landing/vignettes/LandingDiaryVignette';
 import LandingGameDataVignette from './landing/vignettes/LandingGameDataVignette';
 import LandingMateVignette from './landing/vignettes/LandingMateVignette';
 import LandingPredictionVignette from './landing/vignettes/LandingPredictionVignette';
-import LandingStadiumVignette, {
-  LandingStadiumChips,
-} from './landing/vignettes/LandingStadiumVignette';
 import { requestLoadTrace } from '../utils/requestLoadTrace';
 
 export default function Landing() {
@@ -67,14 +66,7 @@ export default function Landing() {
         visualFirst
         tone="plain"
       />
-      <LandingFeatureSection
-        number="05"
-        title={LANDING_SECONDARY_FEATURE_COPY['05'].title}
-        description={LANDING_SECONDARY_FEATURE_COPY['05'].description}
-        copySupplement={<LandingStadiumChips />}
-        visual={<LandingStadiumVignette />}
-        tone="muted"
-      />
+      <LandingStadiumSection />
       <LandingFeatureSection
         number="06"
         title={LANDING_SECONDARY_FEATURE_COPY['06'].title}
@@ -86,6 +78,7 @@ export default function Landing() {
       <LandingOffseason />
       <LandingStartGuide />
       <LandingClosing />
+      <LandingFooter />
     </main>
   );
 }

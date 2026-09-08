@@ -41,7 +41,7 @@ export default function RankingPredictionResultPanel({ result }: RankingPredicti
             <div
               key={detail.teamId}
               data-testid={`ranking-result-row-${detail.teamId}`}
-              className={`flex items-center gap-2.5 rounded-xl border p-2.5 ${
+              className={`min-w-0 overflow-hidden flex items-center gap-2.5 rounded-xl border p-2.5 ${
                 isExactMatch
                   ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900/60 dark:bg-primary/10'
                   : 'border-slate-200 bg-white dark:border-border dark:bg-card'
@@ -53,7 +53,7 @@ export default function RankingPredictionResultPanel({ result }: RankingPredicti
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-100 bg-slate-50 dark:border-border dark:bg-secondary/40">
                 <TeamLogo teamId={detail.teamId} size={24} />
               </div>
-              <span className="min-w-0 flex-1 truncate font-bold text-slate-900 dark:text-white">
+              <span className="block min-w-0 flex-1 truncate font-bold text-slate-900 dark:text-white">
                 {detail.teamName}
               </span>
               {isExactMatch ? (

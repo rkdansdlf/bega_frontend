@@ -222,7 +222,7 @@ export default function CheerCardInteractionsRuntime({
         <div className="mt-1.5 flex max-w-[420px] items-center justify-between text-body font-semibold text-[#536471] dark:text-white">
             <button
                 type="button"
-                className="group/comment flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors hover:text-sky-500"
+                className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-sky-500 sm:gap-1.5"
                 onClick={handleCommentClick}
                 aria-label={`댓글 ${commentCount}개`}
             >
@@ -245,7 +245,7 @@ export default function CheerCardInteractionsRuntime({
                 trigger={(
                     <button
                         type="button"
-                        className={`group/repost flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors ${repostButtonActive ? 'text-emerald-500' : 'hover:text-emerald-500'}`}
+                        className={`group/repost flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${repostButtonActive ? 'text-emerald-500' : 'hover:text-emerald-500'}`}
                         onClick={(event) => {
                             event.stopPropagation();
                             setIsRepostMenuOpen((prev) => !prev);
@@ -354,7 +354,7 @@ export default function CheerCardInteractionsRuntime({
 
             <button
                 type="button"
-                className={`group/like flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors ${likeActive ? 'text-rose-500' : 'hover:text-rose-500'}`}
+                className={`group/like flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${likeActive ? 'text-rose-500' : 'hover:text-rose-500'}`}
                 onClick={handleLikeClick}
                 aria-label={likeActive ? `좋아요 취소 (현재 ${likeCount}개)` : `좋아요 (현재 ${likeCount}개)`}
                 aria-pressed={likeActive}
@@ -377,7 +377,7 @@ export default function CheerCardInteractionsRuntime({
 
             <button
                 type="button"
-                className={`group/bookmark flex min-h-11 min-w-11 items-center gap-1.5 rounded-full transition-colors ${bookmarkActive ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
+                className={`group/bookmark flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${bookmarkActive ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
                 onClick={handleBookmarkClick}
                 aria-label={bookmarkActive ? '북마크 취소' : '북마크'}
                 aria-pressed={bookmarkActive}

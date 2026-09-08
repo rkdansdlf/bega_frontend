@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { fetchCurrentUserProfile } from './auth';
+import { fetchCurrentUserProfile, logoutUser } from './auth';
 import { PrivateApiError } from './privateClient';
 
 test('fetchCurrentUserProfile는 부트스트랩용 인증 예외 플래그를 전달한다', async (t) => {
@@ -149,4 +149,53 @@ test('fetchCurrentUserProfile는 retryOn401=false면 401에서 재시도하지 �
 
   assert.equal(urls.filter((url) => url.endsWith('/api/auth/mypage')).length, 1);
   assert.equal(urls.some((url) => url.endsWith('/api/auth/reissue')), false);
+});
+
+test('logoutUser는 XSRF-TOKEN 쿠키 값을 logout POST header에 명시한다', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  Object.defineProperty(globalThis, 'document', {
+    configurable: true,
+    value: { cookie: 'theme=dark; XSRF-TOKEN=csrf-token%2Evalue' },
+  });
+  t.after(() => {
+    delete (globalThis as { document?: unknown }).document;
+  });
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+    return new Response(null, { status: 204 });
+  });
+
+  await logoutUser();
+
+  assert.match(requestUrl, /\/api\/auth\/logout$/);
+  assert.equal(requestInit?.method, 'POST');
+  assert.equal(requestInit?.credentials, 'include');
+  assert.equal(new Headers(requestInit?.headers).get('X-XSRF-TOKEN'), 'csrf-token.value');
+});
+
+test('logoutUser는 XSRF-TOKEN 쿠키가 없으면 보호되지 않은 POST를 보내지 않는다', async (t) => {
+  let fetchCalls = 0;
+
+  Object.defineProperty(globalThis, 'document', {
+    configurable: true,
+    value: { cookie: 'theme=dark' },
+  });
+  t.after(() => {
+    delete (globalThis as { document?: unknown }).document;
+  });
+  t.mock.method(globalThis, 'fetch', async () => {
+    fetchCalls += 1;
+    return new Response(null, { status: 204 });
+  });
+
+  await assert.rejects(() => logoutUser(), /CSRF 보호 토큰/);
+  assert.equal(fetchCalls, 0);
 });

@@ -55,6 +55,7 @@ export default function OffSeasonHomePrimaryRuntime({
   onNavigateHome,
   onNavigateList,
 }: OffSeasonHomePrimaryRuntimeProps) {
+  const isOpeningUpcoming = daysUntilOpening > 0;
   const highlightsFallback = (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
@@ -93,11 +94,15 @@ export default function OffSeasonHomePrimaryRuntime({
   );
 
   return (
-    <div className="min-h-screen space-y-8 bg-gray-50 px-4 py-6 transition-colors sm:px-6 md:space-y-12 md:px-6 md:py-8 dark:bg-background">
+    <div
+      className="min-h-screen space-y-8 bg-gray-50 px-4 py-6 transition-colors sm:px-6 md:space-y-12 md:px-6 md:py-8 dark:bg-background"
+      data-testid="offseason-home-primary-runtime"
+    >
       <button
         type="button"
         onClick={onNavigateHome}
-        className="mb-2 flex min-h-11 items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-15 text-primary transition-all hover:bg-gray-100 group dark:hover:bg-gray-800"
+        className="group mb-2 flex min-h-11 max-w-full items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-15 text-primary transition-all hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-gray-800"
+        data-testid="offseason-home-back"
       >
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10/10 transition-all group-hover:scale-110">
           <ChevronLeftIcon className="h-4 w-4" />
@@ -109,14 +114,14 @@ export default function OffSeasonHomePrimaryRuntime({
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-20 pointer-events-none" />
         <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-            <div>
+            <div className="min-w-0">
               <OffseasonPill className="mb-3 border-none bg-yellow-400 px-3 py-1 text-15 font-bold text-gray-900 dark:text-white md:mb-4">2025-26 스토브리그</OffseasonPill>
               <h2 className="mb-2 text-2xl text-white md:text-4xl" style={{ fontWeight: 900 }}>스토브리그 하이라이트</h2>
               <p className="text-base text-emerald-100/80 md:text-lg">다가오는 새로운 시즌을 준비하는 뜨거운 기록들</p>
             </div>
-            <div className="w-fit rounded-xl border border-white/10 bg-black/20 p-3 text-white backdrop-blur-sm md:rounded-2xl md:p-4 md:text-right">
+            <div className="w-full min-w-0 max-w-full rounded-xl border border-white/10 bg-black/20 p-3 text-white backdrop-blur-sm md:w-fit md:rounded-2xl md:p-4 md:text-right">
               <div className="mb-1 text-13 font-semibold text-white/65 md:text-15">오프시즌 상태</div>
-              <div className="text-lg font-black md:text-2xl">
+              <div className="min-w-0 break-words text-lg font-black [overflow-wrap:anywhere] md:text-2xl">
                 {statusDateLabel} 기준
               </div>
             </div>
@@ -133,15 +138,17 @@ export default function OffSeasonHomePrimaryRuntime({
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-md md:h-20 md:w-20">
               <ClockIcon className="h-8 w-8 animate-pulse text-yellow-400 md:h-10 md:w-10" />
             </div>
-            <h3 className="mb-6 text-xl text-white md:mb-8 md:text-3xl font-black tracking-tight">
-              2026 시즌 개막까지
+            <h3 className="mb-6 text-xl font-black tracking-tight text-white md:mb-8 md:text-3xl">
+              {isOpeningUpcoming ? '2026 시즌 개막까지' : '2026 시즌'}
             </h3>
-            <div className="mb-6 inline-block rounded-30 border border-white/20 px-6 py-3 shadow-2xl sm:px-8 sm:py-4 md:mb-8 md:rounded-40 md:px-12 md:py-8" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-              <div className="text-5xl font-black tracking-tighter text-white md:text-8xl">
-                D-{daysUntilOpening}
+            <div className="mb-6 inline-block max-w-full rounded-30 border border-white/20 px-6 py-3 shadow-2xl sm:px-8 sm:py-4 md:mb-8 md:rounded-40 md:px-12 md:py-8" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="break-words text-4xl font-black tracking-tighter text-white [overflow-wrap:anywhere] sm:text-5xl md:text-8xl">
+                {isOpeningUpcoming ? `D-${daysUntilOpening}` : '시즌 진행 중'}
               </div>
             </div>
-            <p className="text-base font-semibold text-emerald-100/90 md:text-xl">2026년 3월 28일 개막 예정 ⚾</p>
+            <p className="break-words text-base font-semibold text-emerald-100/90 [overflow-wrap:anywhere] md:text-xl">
+              {isOpeningUpcoming ? '2026년 3월 28일 개막 예정 ⚾' : '새 시즌 경기가 진행 중입니다. ⚾'}
+            </p>
           </div>
         </div>
       </Card>

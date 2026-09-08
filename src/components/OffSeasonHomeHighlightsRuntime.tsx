@@ -30,7 +30,7 @@ export default function OffSeasonHomeHighlightsRuntime({
   const [featuredAward, ...secondaryAwards] = awards;
 
   return (
-    <>
+    <div className="space-y-8" data-testid="offseason-home-highlights-runtime">
       <section>
         <div className="flex items-center gap-3 mb-6 md:mb-8">
           <div className="bg-primary p-1.5 md:p-2 rounded-lg md:rounded-xl">
@@ -48,14 +48,14 @@ export default function OffSeasonHomeHighlightsRuntime({
                     <TeamLogo team={featuredAward.team} size={46} className="md:h-14 md:w-14" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="mb-1 text-13 font-semibold text-primary/80">{featuredAward.award}</h4>
-                    <p className="text-2xl font-black tracking-tight text-gray-900 dark:text-white md:text-3xl">
+                    <h4 className="mb-1 break-words text-13 font-semibold text-primary/80 [overflow-wrap:anywhere]">{featuredAward.award}</h4>
+                    <p className="break-words text-2xl font-black tracking-tight text-gray-900 [overflow-wrap:anywhere] dark:text-white md:text-3xl">
                       {featuredAward.playerName}
                     </p>
                   </div>
                 </div>
                 <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 dark:border-white/10 dark:bg-card">
-                  <p className="text-base font-semibold leading-relaxed text-gray-700 dark:text-white md:text-lg">
+                  <p className="break-words text-base font-semibold leading-relaxed text-gray-700 [overflow-wrap:anywhere] dark:text-white md:text-lg">
                     {featuredAward.stats}
                   </p>
                 </div>
@@ -72,10 +72,10 @@ export default function OffSeasonHomeHighlightsRuntime({
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                          <h4 className="text-13 font-semibold text-primary/80">{award.award}</h4>
-                          <p className="font-bold text-gray-900 dark:text-white">{award.playerName}</p>
+                          <h4 className="min-w-0 break-words text-13 font-semibold text-primary/80 [overflow-wrap:anywhere]">{award.award}</h4>
+                          <p className="min-w-0 break-words font-bold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{award.playerName}</p>
                         </div>
-                        <p className="mt-2 text-15 font-semibold leading-relaxed text-gray-600 dark:text-white">
+                        <p className="mt-2 break-words text-15 font-semibold leading-relaxed text-gray-600 [overflow-wrap:anywhere] dark:text-white">
                           {award.stats}
                         </p>
                       </div>
@@ -304,7 +304,7 @@ export default function OffSeasonHomeHighlightsRuntime({
                         <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-white dark:bg-card border border-gray-100 dark:border-border shadow-sm flex-shrink-0">
                           <TeamLogo team={team.teamId} size={24} className="md:w-7 md:h-7" />
                         </div>
-                        <span className="text-gray-900 dark:text-white font-bold text-15 truncate max-w-[70px] md:max-w-none">
+                        <span className="max-w-[70px] min-w-0 break-words text-15 font-bold text-gray-900 [overflow-wrap:anywhere] dark:text-white md:max-w-none">
                           {team.teamName}
                         </span>
                       </div>
@@ -324,6 +324,6 @@ export default function OffSeasonHomeHighlightsRuntime({
           </div>
         </Card>
       </section>
-    </>
+    </div>
   );
 }

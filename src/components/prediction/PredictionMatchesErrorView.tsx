@@ -68,6 +68,7 @@ export default function PredictionMatchesErrorView({
               다시 불러오기
             </Button>
             <Button
+              data-testid="prediction-empty-recovery"
               size="touch"
               variant="outline"
               className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"

@@ -40,6 +40,20 @@ const loadMateValidationModule = () => {
 const CHAT_UNREAD_UPDATED_EVENT = 'chat-unread-updated';
 const CHAT_HISTORY_PAGE_SIZE = 50;
 
+export type MateChatApprovedVisualQaStateOverride = {
+  chatLoadError: string | null;
+  hasOlderMessages: boolean;
+  isConnected: boolean;
+  isLoadingOlderMessages: boolean;
+  isUploadingImage: boolean;
+  imagePreviewUrl: string | null;
+  messageText: string;
+  messages: ChatMessage[];
+  messagesPending: boolean;
+  nowIso: string;
+  viewPhase: 'messages-loading' | 'runtime' | 'view-fallback';
+};
+
 type MateChatApprovedRuntimeProps = {
   party: Party;
   partyId: string;
@@ -49,6 +63,7 @@ type MateChatApprovedRuntimeProps = {
   };
   isHost: boolean;
   isPartyRevalidating: boolean;
+  visualQaStateOverride?: MateChatApprovedVisualQaStateOverride;
 };
 
 export default function MateChatApprovedRuntime({
@@ -57,15 +72,21 @@ export default function MateChatApprovedRuntime({
   currentUser,
   isHost,
   isPartyRevalidating,
+  visualQaStateOverride: visualQaStateOverrideProp,
 }: MateChatApprovedRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : visualQaStateOverrideProp;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState(visualQaStateOverride?.messageText ?? '');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [hasOlderMessages, setHasOlderMessages] = useState(false);
-  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(visualQaStateOverride?.imagePreviewUrl ?? null);
+  const [isUploadingImage, setIsUploadingImage] = useState(visualQaStateOverride?.isUploadingImage ?? false);
+  const [hasOlderMessages, setHasOlderMessages] = useState(visualQaStateOverride?.hasOlderMessages ?? false);
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(
+    visualQaStateOverride?.isLoadingOlderMessages ?? false,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -144,39 +165,57 @@ export default function MateChatApprovedRuntime({
   }, []);
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     return () => {
       if (imagePreviewUrl) {
         URL.revokeObjectURL(imagePreviewUrl);
       }
     };
-  }, [imagePreviewUrl]);
+  }, [imagePreviewUrl, visualQaStateOverride]);
 
-  const messagesQuery = useQuery(getMatePartyMessagesQueryOptions(party.id));
-  const messages = messagesQuery.data ?? [];
-  const chatLoadError = messagesQuery.error
-    ? (getApiErrorStatus(messagesQuery.error) === 403
-      ? '승인된 참여자와 호스트만 채팅 기록을 조회할 수 있습니다.'
-      : '이전 메시지를 불러오지 못했습니다. 다시 시도해주세요.')
-    : null;
+  const messagesQuery = useQuery({
+    ...getMatePartyMessagesQueryOptions(party.id),
+    enabled: visualQaStateOverride == null,
+  });
+  const messages = visualQaStateOverride?.messages ?? messagesQuery.data ?? [];
+  const chatLoadError = visualQaStateOverride?.chatLoadError ?? (
+    messagesQuery.error
+      ? (getApiErrorStatus(messagesQuery.error) === 403
+        ? '승인된 참여자와 호스트만 채팅 기록을 조회할 수 있습니다.'
+        : '이전 메시지를 불러오지 못했습니다. 다시 시도해주세요.')
+      : null
+  );
+  const messagesPending = visualQaStateOverride?.messagesPending ?? messagesQuery.isPending;
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     if (historyPartyIdRef.current === party.id || messagesQuery.isPending || messagesQuery.error) {
       return;
     }
 
     historyPartyIdRef.current = party.id;
     setHasOlderMessages(messages.length === CHAT_HISTORY_PAGE_SIZE);
-  }, [messages.length, messagesQuery.error, messagesQuery.isPending, party.id]);
+  }, [messages.length, messagesQuery.error, messagesQuery.isPending, party.id, visualQaStateOverride]);
 
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     if (messagesQuery.error && getApiErrorStatus(messagesQuery.error) !== 403) {
       toast.error('이전 메시지를 불러오지 못했습니다.');
     }
-  }, [messagesQuery.error]);
+  }, [messagesQuery.error, visualQaStateOverride]);
 
   useEffect(() => {
     const element = scrollAreaRef.current;
@@ -191,6 +230,10 @@ export default function MateChatApprovedRuntime({
   }, [messages]);
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     const markAsRead = async () => {
       try {
         await updateChatReadTimestamp(party.id);
@@ -202,7 +245,7 @@ export default function MateChatApprovedRuntime({
 
     const timer = setTimeout(markAsRead, 500);
     return () => clearTimeout(timer);
-  }, [messages, notifyChatUnreadCount, party.id]);
+  }, [messages, notifyChatUnreadCount, party.id, visualQaStateOverride]);
 
   const mergeMessages = useCallback((current: ChatMessage[], older: ChatMessage[]) => {
     const merged = older.reduce<ChatMessage[]>(
@@ -280,12 +323,13 @@ export default function MateChatApprovedRuntime({
     })();
   }, [mergeMessages, party.id, queryClient]);
 
-  const { sendMessage: sendWebSocketMessage, isConnected } = useWebSocket({
+  const { sendMessage: sendWebSocketMessage, isConnected: liveIsConnected } = useWebSocket({
     partyId: party.id,
     onMessageReceived: handleMessageReceived,
     onConnectionRestored: handleConnectionRestored,
-    enabled: true,
+    enabled: visualQaStateOverride == null,
   });
+  const isConnected = visualQaStateOverride?.isConnected ?? liveIsConnected;
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -444,7 +488,7 @@ export default function MateChatApprovedRuntime({
 
   const formatMessageDate = (dateString: string) => {
     const date = new Date(dateString);
-    const today = new Date();
+    const today = new Date(visualQaStateOverride?.nowIso ?? Date.now());
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
@@ -473,47 +517,59 @@ export default function MateChatApprovedRuntime({
 
   const canAccessCheckIn = ['MATCHED', 'CHECKED_IN', 'COMPLETED'].includes(party.status);
   const mateChatViewFallback = (
-    <>
-      <Card className={`p-0 ${mateSectionCardClass}`}>
-        <div className="p-5 sm:p-6">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-14 w-14 rounded-3xl" />
-            <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-7 w-40" />
-              <Skeleton className="h-4 w-56" />
-            </div>
-          </div>
-        </div>
-      </Card>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {[0, 1, 2, 3].map((index) => (
-          <Card key={`mate-chat-summary-fallback-${index}`} className={`p-4 ${mateSectionCardClass}`}>
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="mt-3 h-5 w-24" />
-            <Skeleton className="mt-2 h-4 w-full" />
-          </Card>
-        ))}
-      </div>
-      <Card className={`mt-4 flex-1 overflow-hidden p-3 sm:p-4 ${mateSectionCardClass}`}>
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="mt-2 h-4 w-56" />
-        <div className="mt-4 space-y-4">
-          {[0, 1, 2].map((index) => (
-            <div key={`mate-chat-thread-fallback-${index}`} className="flex justify-start">
-              <div className="max-w-[70%] space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-12 w-48 rounded-3xl" />
+    <div
+      data-testid="mate-chat-approved-runtime-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="메이트 채팅 데이터 준비 중"
+      className={`${matePageShellClass} min-h-dvh min-w-0 overflow-x-clip`}
+    >
+      <div className="relative z-10 mx-auto w-full max-w-5xl min-w-0 px-4 py-4 pb-6 sm:px-6 lg:px-8">
+        <Card className={`min-w-0 p-0 ${mateSectionCardClass}`}>
+          <div className="p-5 sm:p-6">
+            <div className="flex min-w-0 items-center gap-3">
+              <Skeleton className="h-14 w-14 shrink-0 rounded-3xl dark:bg-white/10" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-4 w-24 max-w-full dark:bg-white/10" />
+                <Skeleton className="h-7 w-40 max-w-full dark:bg-white/10" />
+                <Skeleton className="h-4 w-56 max-w-full dark:bg-white/10" />
               </div>
             </div>
+          </div>
+        </Card>
+        <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[0, 1, 2, 3].map((index) => (
+            <Card key={`mate-chat-summary-fallback-${index}`} className={`min-w-0 p-4 ${mateSectionCardClass}`}>
+              <Skeleton className="h-4 w-16 max-w-full dark:bg-white/10" />
+              <Skeleton className="mt-3 h-5 w-24 max-w-full dark:bg-white/10" />
+              <Skeleton className="mt-2 h-4 w-full dark:bg-white/10" />
+            </Card>
           ))}
         </div>
-      </Card>
-    </>
+        <Card className={`mt-4 min-w-0 flex-1 overflow-hidden p-3 sm:p-4 ${mateSectionCardClass}`}>
+          <Skeleton className="h-5 w-24 max-w-full dark:bg-white/10" />
+          <Skeleton className="mt-2 h-4 w-56 max-w-full dark:bg-white/10" />
+          <div className="mt-4 space-y-4">
+            {[0, 1, 2].map((index) => (
+              <div key={`mate-chat-thread-fallback-${index}`} className="flex min-w-0 justify-start">
+                <div className="min-w-0 max-w-[70%] space-y-2">
+                  <Skeleton className="h-4 w-20 max-w-full dark:bg-white/10" />
+                  <Skeleton className="h-12 w-48 max-w-full rounded-3xl dark:bg-white/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 
-  if (messagesQuery.isPending && messages.length === 0) {
-    return <div className={`${matePageShellClass} flex-1`}>{mateChatViewFallback}</div>;
+  if ((messagesPending && messages.length === 0) || visualQaStateOverride?.viewPhase === 'messages-loading') {
+    return mateChatViewFallback;
+  }
+
+  if (visualQaStateOverride?.viewPhase === 'view-fallback') {
+    return mateChatViewFallback;
   }
 
   return (
@@ -527,8 +583,8 @@ export default function MateChatApprovedRuntime({
         canAccessCheckIn={canAccessCheckIn}
         groupedMessages={groupedMessages}
         chatLoadError={chatLoadError}
-        hasOlderMessages={hasOlderMessages}
-        isLoadingOlderMessages={isLoadingOlderMessages}
+        hasOlderMessages={visualQaStateOverride?.hasOlderMessages ?? hasOlderMessages}
+        isLoadingOlderMessages={visualQaStateOverride?.isLoadingOlderMessages ?? isLoadingOlderMessages}
         messageText={messageText}
         imagePreviewUrl={imagePreviewUrl}
         isUploadingImage={isUploadingImage}

@@ -1,9 +1,9 @@
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 
 import type { AdminReport } from '../../types/admin';
 import { getTimeAgo } from '../../utils/formatters';
-import { AdminCloseIcon } from './AdminDetailIcons';
 import { Button } from '../ui/button';
+import PlainDialog from '../ui/plain-dialog';
 
 type AdminReportAction = 'TAKE_DOWN' | 'REQUIRE_MODIFICATION' | 'WARNING' | 'DISMISS' | 'RESTORE';
 
@@ -19,7 +19,14 @@ interface AdminReportDetailDrawerProps {
     action: AdminReportAction,
     adminMemo?: string
   ) => Promise<void>;
+  visualQaStateOverride?: AdminReportDetailDrawerVisualQaStateOverride;
 }
+export type AdminReportDetailDrawerVisualQaStateOverride = {
+  interactive: boolean;
+};
+
+const actionClassName = 'min-h-11 w-full whitespace-normal px-3 py-2 leading-tight [overflow-wrap:anywhere] sm:min-h-9';
+const valueClassName = 'mt-1 min-w-0 text-slate-200 [overflow-wrap:anywhere]';
 
 export default function AdminReportDetailDrawer({
   selectedReportId,
@@ -29,100 +36,184 @@ export default function AdminReportDetailDrawer({
   setAdminMemo,
   closeReportDetail,
   handleReportAction,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AdminReportDetailDrawerProps) {
-  const content = (
-    <div className="fixed inset-0 z-50">
-      <button
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const visualQaInteractive = visualQaStateOverride?.interactive === true;
+  const [visualQaAdminMemo, setVisualQaAdminMemo] = useState(adminMemo);
+  const effectiveAdminMemo = visualQaInteractive ? visualQaAdminMemo : adminMemo;
+  const updateAdminMemo = visualQaInteractive ? setVisualQaAdminMemo : setAdminMemo;
+
+  useEffect(() => {
+    if (visualQaInteractive) {
+      setVisualQaAdminMemo(adminMemo);
+    }
+  }, [adminMemo, visualQaInteractive]);
+
+  const actions = selectedReportDetail && !reportDetailLoading ? (
+    <div className="grid w-full grid-cols-2 gap-2">
+      <Button
         type="button"
-        className="absolute inset-0 bg-black/50"
-        onClick={closeReportDetail}
-        aria-label="상세 패널 닫기"
-      />
-      <aside className="absolute right-0 top-0 h-full w-full max-w-xl bg-slate-900 border-l border-slate-700 shadow-2xl overflow-y-auto">
-        <div className="sticky top-0 z-10 px-5 py-4 border-b border-slate-700 bg-slate-900/95 backdrop-blur flex items-center justify-between">
-          <div>
-            <p className="text-caption text-slate-400">신고 케이스 상세</p>
-            <h2 className="text-lg font-bold text-white">Case #{selectedReportId}</h2>
-          </div>
-          <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" onClick={closeReportDetail}>
-            <AdminCloseIcon className="w-5 h-5" />
-          </Button>
-        </div>
-
-        <div className="p-5 space-y-5">
-          {reportDetailLoading || !selectedReportDetail ? (
-            <div className="text-slate-400">상세 정보를 불러오는 중...</div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3 text-caption">
-                <div className="rounded-lg border border-slate-800 p-3">
-                  <p className="text-slate-500">상태</p>
-                  <p className="text-slate-200 mt-1">{selectedReportDetail.status || '-'}</p>
-                </div>
-                <div className="rounded-lg border border-slate-800 p-3">
-                  <p className="text-slate-500">사유</p>
-                  <p className="text-slate-200 mt-1">{selectedReportDetail.reason || '-'}</p>
-                </div>
-                <div className="rounded-lg border border-slate-800 p-3">
-                  <p className="text-slate-500">신고자</p>
-                  <p className="text-slate-200 mt-1">{selectedReportDetail.reporterHandle || '-'}</p>
-                </div>
-                <div className="rounded-lg border border-slate-800 p-3">
-                  <p className="text-slate-500">처리시각</p>
-                  <p className="text-slate-200 mt-1">{selectedReportDetail.handledAt ? getTimeAgo(selectedReportDetail.handledAt) : '-'}</p>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-slate-800 p-3 text-caption">
-                <p className="text-slate-500 mb-1">게시물 미리보기</p>
-                <p className="text-slate-200 whitespace-pre-wrap">{selectedReportDetail.postPreview || '-'}</p>
-              </div>
-
-              <div className="rounded-lg border border-slate-800 p-3 text-caption space-y-2">
-                <p><span className="text-slate-500">요청 조치:</span> <span className="text-slate-200">{selectedReportDetail.requestedAction || '-'}</span></p>
-                <p><span className="text-slate-500">Appeal 상태:</span> <span className="text-slate-200">{selectedReportDetail.appealStatus || '-'}</span></p>
-                <p><span className="text-slate-500">Appeal 사유:</span> <span className="text-slate-200">{selectedReportDetail.appealReason || '-'}</span></p>
-                <p><span className="text-slate-500">Appeal 횟수:</span> <span className="text-slate-200">{selectedReportDetail.appealCount ?? 0}</span></p>
-                <p><span className="text-slate-500">증빙 URL:</span> <span className="text-slate-200 break-all">{selectedReportDetail.evidenceUrl || '-'}</span></p>
-              </div>
-
-              <div className="rounded-lg border border-slate-800 p-3">
-                <p className="text-caption text-slate-500 mb-2">관리자 메모</p>
-                <textarea
-                  value={adminMemo}
-                  onChange={(e) => setAdminMemo(e.target.value)}
-                  className="w-full min-h-24 rounded-md bg-slate-800 border border-slate-700 px-3 py-2 text-caption text-slate-100"
-                  placeholder="조치 근거를 입력하세요."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <Button onClick={() => handleReportAction(selectedReportDetail.id, 'TAKE_DOWN', adminMemo)} className="bg-red-600 hover:bg-red-700 text-white">
-                  TAKE_DOWN
-                </Button>
-                <Button onClick={() => handleReportAction(selectedReportDetail.id, 'DISMISS', adminMemo)} className="bg-slate-700 hover:bg-slate-600 text-white">
-                  DISMISS
-                </Button>
-                <Button onClick={() => handleReportAction(selectedReportDetail.id, 'RESTORE', adminMemo)} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                  RESTORE
-                </Button>
-                <Button onClick={() => handleReportAction(selectedReportDetail.id, 'REQUIRE_MODIFICATION', adminMemo)} className="bg-amber-600 hover:bg-amber-700 text-white">
-                  REQUIRE_MODIFICATION
-                </Button>
-                <Button onClick={() => handleReportAction(selectedReportDetail.id, 'WARNING', adminMemo)} className="col-span-2 bg-sky-600 hover:bg-sky-700 text-white">
-                  WARNING
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </aside>
+        data-testid="admin-report-action-take-down"
+        aria-label="게시물 비공개 처리 (TAKE_DOWN)"
+        onClick={() => handleReportAction(selectedReportDetail.id, 'TAKE_DOWN', effectiveAdminMemo)}
+        className={`${actionClassName} bg-red-600 text-white hover:bg-red-700`}
+      >
+        게시물 비공개
+      </Button>
+      <Button
+        type="button"
+        data-testid="admin-report-action-dismiss"
+        aria-label="신고 기각 처리 (DISMISS)"
+        onClick={() => handleReportAction(selectedReportDetail.id, 'DISMISS', effectiveAdminMemo)}
+        className={`${actionClassName} bg-slate-700 text-white hover:bg-slate-600`}
+      >
+        신고 기각
+      </Button>
+      <Button
+        type="button"
+        data-testid="admin-report-action-restore"
+        aria-label="게시물 복원 처리 (RESTORE)"
+        onClick={() => handleReportAction(selectedReportDetail.id, 'RESTORE', effectiveAdminMemo)}
+        className={`${actionClassName} bg-emerald-600 text-white hover:bg-emerald-700`}
+      >
+        게시물 복원
+      </Button>
+      <Button
+        type="button"
+        data-testid="admin-report-action-require-modification"
+        aria-label="수정 요청 처리 (REQUIRE_MODIFICATION)"
+        onClick={() => handleReportAction(selectedReportDetail.id, 'REQUIRE_MODIFICATION', effectiveAdminMemo)}
+        className={`${actionClassName} bg-amber-600 text-slate-950 hover:bg-amber-400`}
+      >
+        수정 요청
+      </Button>
+      <Button
+        type="button"
+        data-testid="admin-report-action-warning"
+        aria-label="경고 처리 (WARNING)"
+        onClick={() => handleReportAction(selectedReportDetail.id, 'WARNING', effectiveAdminMemo)}
+        className={`${actionClassName} col-span-2 bg-sky-600 text-white hover:bg-sky-400`}
+      >
+        경고
+      </Button>
     </div>
+  ) : undefined;
+
+  return (
+    <PlainDialog
+      open
+      onClose={closeReportDetail}
+      placement="right"
+      initialFocus="container"
+      title={(
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-white [overflow-wrap:anywhere]">
+          <span>신고 케이스 상세</span>
+          <span className="font-mono text-base text-slate-300">Case #{selectedReportId}</span>
+        </span>
+      )}
+      description="신고 내용과 이의 제기 내역을 검토한 뒤 필요한 조치를 선택하세요."
+      contentTestId="admin-report-detail-drawer"
+      className="max-w-xl border-slate-700 bg-slate-900 text-slate-100 focus:outline-none"
+      bodyClassName="p-4 sm:p-5"
+      footer={actions}
+    >
+      <div
+        className="min-w-0 [overflow-wrap:anywhere]"
+        aria-busy={reportDetailLoading}
+      >
+        {reportDetailLoading ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-lg border border-slate-800 bg-slate-800/40 px-4 py-6 text-center text-slate-300"
+          >
+            상세 정보를 불러오는 중...
+          </div>
+        ) : !selectedReportDetail ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-lg border border-slate-800 bg-slate-800/40 px-4 py-6 text-center text-slate-300"
+          >
+            상세 정보를 찾을 수 없습니다.
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <dl className="grid grid-cols-1 gap-3 text-caption sm:grid-cols-2">
+              <div className="min-w-0 rounded-lg border border-slate-800 p-3">
+                <dt className="text-slate-500">상태</dt>
+                <dd className={valueClassName}>{selectedReportDetail.status || '-'}</dd>
+              </div>
+              <div className="min-w-0 rounded-lg border border-slate-800 p-3">
+                <dt className="text-slate-500">사유</dt>
+                <dd className={valueClassName}>{selectedReportDetail.reason || '-'}</dd>
+              </div>
+              <div className="min-w-0 rounded-lg border border-slate-800 p-3">
+                <dt className="text-slate-500">신고자</dt>
+                <dd className={valueClassName}>{selectedReportDetail.reporterHandle || '-'}</dd>
+              </div>
+              <div className="min-w-0 rounded-lg border border-slate-800 p-3">
+                <dt className="text-slate-500">처리 시각</dt>
+                <dd className={valueClassName}>
+                  {selectedReportDetail.handledAt ? getTimeAgo(selectedReportDetail.handledAt) : '-'}
+                </dd>
+              </div>
+            </dl>
+
+            <section className="min-w-0 rounded-lg border border-slate-800 p-3 text-caption">
+              <h3 className="mb-1 text-slate-500">게시물 미리보기</h3>
+              <p className="min-w-0 whitespace-pre-wrap text-slate-200 [overflow-wrap:anywhere]">
+                {selectedReportDetail.postPreview || '-'}
+              </p>
+            </section>
+
+            <section className="min-w-0 rounded-lg border border-slate-800 p-3 text-caption">
+              <h3 className="mb-3 text-slate-500">이의 제기 및 증빙</h3>
+              <dl className="grid min-w-0 gap-3">
+                <div className="min-w-0">
+                  <dt className="text-slate-500">요청 조치</dt>
+                  <dd className={valueClassName}>{selectedReportDetail.requestedAction || '-'}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-slate-500">이의 제기 상태</dt>
+                  <dd className={valueClassName}>{selectedReportDetail.appealStatus || '-'}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-slate-500">이의 제기 사유</dt>
+                  <dd className={valueClassName}>{selectedReportDetail.appealReason || '-'}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-slate-500">이의 제기 횟수</dt>
+                  <dd className={valueClassName}>{selectedReportDetail.appealCount ?? 0}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-slate-500">증빙 URL</dt>
+                  <dd className={valueClassName}>{selectedReportDetail.evidenceUrl || '-'}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <div className="min-w-0 rounded-lg border border-slate-800 p-3">
+              <label
+                htmlFor="admin-report-admin-memo"
+                className="mb-2 block text-caption text-slate-400"
+              >
+                관리자 메모
+              </label>
+              <textarea
+                id="admin-report-admin-memo"
+                value={effectiveAdminMemo}
+                onChange={(event) => updateAdminMemo(event.target.value)}
+                className="min-h-24 w-full min-w-0 resize-none rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-base text-slate-100 [overflow-wrap:anywhere] placeholder:text-slate-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="조치 근거를 입력하세요."
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </PlainDialog>
   );
-
-  if (typeof document === 'undefined') {
-    return content;
-  }
-
-  return createPortal(content, document.body);
 }

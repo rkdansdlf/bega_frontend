@@ -1,3 +1,4 @@
+import baseballLogo from '../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
 import { useNavigate } from 'react-router-dom';
 
 import { cn } from '../lib/utils';
@@ -16,6 +17,8 @@ interface CheerMobileBottomNavProps {
   userProfilePath: string;
   onWriteClick: () => void;
   teamAccent?: string;
+  activeTextAccent?: string;
+  onChatBotClick?: () => void;
 }
 
 const DEFAULT_ACCENT = 'hsl(var(--primary))';
@@ -25,6 +28,8 @@ export default function CheerMobileBottomNav({
   userProfilePath,
   onWriteClick,
   teamAccent = DEFAULT_ACCENT,
+  activeTextAccent = teamAccent,
+  onChatBotClick,
 }: CheerMobileBottomNavProps) {
   const navigate = useNavigate();
   const items = [
@@ -42,10 +47,16 @@ export default function CheerMobileBottomNav({
         bottom: 'calc(var(--mobile-chrome-bottom-offset) + env(safe-area-inset-bottom))',
       }}
       data-testid="cheer-mobile-bottom-nav"
+      data-vqa-content-overlay="allowed"
       aria-label="응원석 모바일 네비게이션"
     >
       {/* Floating glass capsule */}
-      <div className="mx-auto grid h-[var(--mobile-chrome-height)] max-w-sm grid-cols-5 items-stretch gap-0.5 rounded-22 border border-white/80 bg-white/88 p-1.5 shadow-cheer-mobile-chrome backdrop-blur-xl dark:border-white/12 dark:bg-[hsl(var(--surface-raised))] dark:shadow-cheer-mobile-chrome-dark">
+      <div
+        className={cn(
+          'mx-auto grid h-[var(--mobile-chrome-height)] max-w-sm items-stretch gap-0.5 rounded-22 border border-white/80 bg-white/88 p-1.5 shadow-cheer-mobile-chrome backdrop-blur-xl dark:border-white/12 dark:bg-[hsl(var(--surface-raised))] dark:shadow-cheer-mobile-chrome-dark',
+          onChatBotClick ? 'grid-cols-6' : 'grid-cols-5',
+        )}
+      >
         {items.map((item) => {
           const Icon = item.icon;
           const isWrite = item.id === 'write';
@@ -65,10 +76,10 @@ export default function CheerMobileBottomNav({
               className={cn(
                 'flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-18 px-1 text-[10.5px] font-black transition-all duration-200 active:scale-[0.97]',
                 isActive
-                  ? 'bg-primary text-white shadow-mobile-tab-active'
+                  ? 'bg-black/[0.045] font-black dark:bg-white/[0.08]'
                   : 'text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8',
               )}
-              style={isActive && !isWrite ? { backgroundColor: teamAccent } : undefined}
+              style={isActive && !isWrite ? { color: activeTextAccent } : undefined}
               aria-current={isActive ? 'page' : undefined}
               aria-label={item.label}
               data-testid={`cheer-bottom-nav-${item.id}`}
@@ -76,7 +87,10 @@ export default function CheerMobileBottomNav({
               {isWrite ? (
                 <>
                   <span
-                    className="flex h-[42px] w-[42px] items-center justify-center rounded-full text-white shadow-mobile-action"
+                    className={cn(
+                      'flex items-center justify-center rounded-full text-white shadow-mobile-action',
+                      onChatBotClick ? 'h-[38px] w-[38px]' : 'h-[42px] w-[42px]',
+                    )}
                     style={{ backgroundColor: teamAccent }}
                   >
                     <Icon className="h-5 w-5" />
@@ -92,6 +106,18 @@ export default function CheerMobileBottomNav({
             </button>
           );
         })}
+        {onChatBotClick ? (
+          <button
+            type="button"
+            onClick={onChatBotClick}
+            className="flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-18 px-0.5 text-[10.5px] font-black text-gray-500 transition-all duration-200 hover:bg-black/5 hover:text-gray-900 active:scale-[0.97] dark:text-white dark:hover:bg-white/8 dark:hover:text-white"
+            aria-label="BEGA 챗봇 열기"
+            data-testid="cheer-bottom-nav-chatbot"
+          >
+            <img src={baseballLogo} alt="" aria-hidden="true" className="h-[18px] w-[18px] object-contain" />
+            <span className="truncate leading-none">BEGA</span>
+          </button>
+        ) : null}
       </div>
     </nav>
   );

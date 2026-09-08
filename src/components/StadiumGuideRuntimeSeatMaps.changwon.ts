@@ -470,9 +470,10 @@ test('사직 좌석도 release lock 문서는 canonical/runtime 검수 계약만
   });
 
   [
-    'pointer-events-none absolute right-3 top-3',
-    'pointer-events-auto flex h-7 w-7',
-    'pointer-events-auto min-h-7 min-w-10',
+    'pointer-events-auto relative z-10 mb-2 ml-auto grid w-fit',
+    'sm:pointer-events-none sm:absolute sm:right-3 sm:top-3',
+    'pointer-events-auto flex h-11 w-11',
+    'pointer-events-auto min-h-11 min-w-11',
     'data-map-interaction-status',
     "block.sectionKind === 'SEAT_SECTION'",
     'SAJIK_CANONICAL_ACCESSIBILITY_MARKERS',
@@ -481,7 +482,7 @@ test('사직 좌석도 release lock 문서는 canonical/runtime 검수 계약만
     'data-testid="sajik-accessibility-markers-layer"',
     'sajik-accessibility-marker-',
   ].forEach((requiredText) => {
-    assert.ok(svgSource.includes(requiredText), `Sajik SVG should keep zoom control hit-through contract ${requiredText}`);
+    assert.ok(svgSource.includes(requiredText), `Sajik SVG should keep responsive zoom control contract ${requiredText}`);
   });
   assert.doesNotMatch(svgSource, /\?\? block\.imageGeometry\.d/);
 });

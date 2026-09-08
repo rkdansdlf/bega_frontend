@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T19:19:55.389Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 120000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-admin-offseason-results-runtime-mobile"
+  },
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=boundary-maximum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-b-4606e90c0623.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=boundary-minimum|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-b-8b695c9bc48c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=empty|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-e-dd98cf020dfd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=long-korean|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-l-3ce2e9a404f7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-f58387d7698e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-95de86e41a00.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+        "targetId": "delete",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=edit",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-04ecdff8dfa2.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+        "targetId": "edit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=focus-visible|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=source-link",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-6210f6677e6f.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-offseason-source-1\"]",
+        "targetId": "source-link",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-e8f0c5a1d82b.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+        "targetId": "delete",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=edit",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-836d4dda509f.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+        "targetId": "edit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=hover|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=source-link",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-4230dc2e59de.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-offseason-source-1\"]",
+        "targetId": "source-link",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-f2ff242e838a.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-delete-1\"]",
+        "targetId": "delete",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=edit",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-bc6990e7a6f2.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-edit-1\"]",
+        "targetId": "edit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=maximum-supported|permissions=admin|interactions=pressed|system=idle|variant.preset=idle|variant.theme=dark|interactionTarget=source-link",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-m-0d73e78ac08c.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-offseason-source-1\"]",
+        "targetId": "source-link",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=null-optional|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-n-4fae7103d845.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-boundary-maximum|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-1801ad913280.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-many-errors|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-3b63c173be4f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-pressure|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-0adbeda87b2f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-single-error|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-e47a191c7113.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-success-loading|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-caf3e5218b06.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=csv-success|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-7e36481f520c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=filtered-empty|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-60ec2afd56a2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-e3cc0803c912.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=populated|permissions=admin|interactions=default|system=idle|variant.preset=loading|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-p-a6d10cb784b5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime:data=unbroken-token|permissions=admin|interactions=default|system=idle|variant.preset=idle|variant.theme=dark",
+      "componentId": "src/components/admin/OffseasonMovementAdminResultsRuntime.tsx#OffseasonMovementAdminResultsRuntime",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-offseason-results-runtime-mobile/offseasonmovementadminresultsruntime-offseasonmovementadminresultsruntime-data-u-788022f34b51.png",
+      "attempts": 1
+    }
+  ]
+}

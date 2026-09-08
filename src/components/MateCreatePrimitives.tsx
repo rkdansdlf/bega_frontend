@@ -8,7 +8,7 @@ export function FieldLabel({
 }: ComponentPropsWithoutRef<'label'>) {
   return (
     <label
-      className={cn('flex items-center gap-2 text-body font-semibold text-gray-900 dark:text-white', className)}
+      className={cn('block max-w-full min-w-0 break-words text-body font-semibold leading-snug text-gray-900 [overflow-wrap:anywhere] dark:text-white', className)}
       {...props}
     />
   );

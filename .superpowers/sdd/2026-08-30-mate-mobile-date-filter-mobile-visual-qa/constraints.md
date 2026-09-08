@@ -1,0 +1,21 @@
+# Constraints
+
+- Scope: direct `MateMobileDateFilter`, its visible hosted alias, focused actual/adapter/catalog tests, QA-only companion, manifest/generated state report, direct 55 report/PNGs, replacement Mate root 6 evidence, and slice documentation.
+- Exact direct matrix: 36 canonical plus 19 interaction states, total `55`.
+- Exact hosted mapping: four existing Mate results-fallback/runtime light/dark IDs, fully host-owned with zero valid combinations.
+- Final totals: registered `447/1,010`, pending `563`, direct `70,767`, valid `71,770`.
+- DateRail direct remains registered at exactly `106` with its existing report/screenshots unchanged. DateRail hosted remains pending because the production caller is desktop-only.
+- Fixed local Date fixtures only: empty, single, long-korean, boundary-minimum four dates, and maximum-supported fourteen dates. No invented disabled/unbroken/lifecycle/permission states.
+- The stateful QA companion calls the normal public callback once and applies controlled parent-compatible selection. Unknown or mismatched component/module/export/data/selection/target/action inputs fail closed.
+- Actual mounted tests isolate each action, prove intended callback one/unrelated and network zero, make reciprocal target and missing-callback mutations RED, and prove resize/scroll/keyboard/StrictMode do not replay callbacks.
+- Every button is at least 44px. The rail scrolls locally at 320/390, first/middle/last targets remain reachable, gradients do not intercept pointers, focus rings remain visible, and document overflow is absent.
+- Outside-range selection remains visible without an active date button and clears to all/null with exactly one callback.
+- Preserve Mate root six IDs and recapture all six. Preserve MateListControlsRuntime hosted four, Status/Sort hosted four each, and MateTodayCountBadge hosted eleven.
+- Do not edit `MateDateRailFilter.tsx`, `MateListControlsRuntime.tsx`, `useMateListController.ts`, `Mate.tsx`, shared `Button`, DateRail contract/report/screenshots, API/auth/query code, or external baseball data.
+- No new global CSS selectors, Tailwind utilities, or arbitrary values. Starting main CSS is `255,465/255,500` bytes; run all 153 budgets after first product GREEN.
+- Static internal UI fixtures only. No external baseball API/data, crawling, scraping, web-search repair, or guessed facts.
+- Final Mobile55/Root6 reports require failed/recovered zero, attempts one, unique/nonzero/hash-complete artifacts, and complete interaction verification flags.
+- Clean checkout must contain every dependency and reproduce actual tests, exact totals, build, production isolation, and artifact hashes.
+- Preserve staged 99 paths and fingerprints plus concurrent DateRail/Landing hunks. Only an explicitly audited and approved prerequisite may be consumed and documented.
+- Inventory residual may contain only the known concurrent Landing 15 unclassified plus one stale item; this slice adds zero unclassified/stale entries.
+- Separate implementer and read-only reviewer; Critical or Important findings return to the original implementer.

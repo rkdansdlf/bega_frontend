@@ -8,7 +8,7 @@ import { fetchRankingSnapshot } from '../api/rankings';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import type { Ranking } from '../types/home';
 
-interface AwardData {
+export interface AwardData {
   award: string;
   playerName: string;
   team: string;
@@ -19,13 +19,13 @@ interface OffseasonMetadata {
   awards: AwardData[];
 }
 
-interface OffseasonHomeData {
+export interface OffseasonHomeData {
   movements: OffseasonMovement[];
   awards: AwardData[];
   rankings: Ranking[];
 }
 
-interface OffseasonMovement {
+export interface OffseasonMovement {
   id: number;
   date: string;
   section: string;
@@ -46,6 +46,17 @@ const defaultOffseasonHomeData: OffseasonHomeData = {
   rankings: [],
 };
 const OffSeasonHomePrimaryRuntime = lazy(() => import('./OffSeasonHomePrimaryRuntime'));
+
+export type OffSeasonHomeVisualQaStateOverride = {
+  currentTime?: string;
+  data?: OffseasonHomeData;
+  isLargeScreen?: boolean;
+  phase: 'loading' | 'resolved';
+};
+
+interface OffSeasonHomeProps {
+  visualQaStateOverride?: OffSeasonHomeVisualQaStateOverride;
+}
 
 const fetchOffseasonHomeData = async (): Promise<OffseasonHomeData> => {
   const [movementsResponse, metadataResponse, rankingsResponse] = await Promise.allSettled([
@@ -94,16 +105,29 @@ const formatRemarks = (text: string) => {
   );
 };
 
-export default function OffSeasonHome() {
+export default function OffSeasonHome(props: OffSeasonHomeProps = {}) {
   const navigate = useNavigate();
-  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-  const currentTime = useCurrentTime(60_000);
-  const { data, isLoading } = useQuery<OffseasonHomeData>({
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
+  const queriedIsLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const queriedCurrentTime = useCurrentTime(60_000);
+  const { data: queriedData, isLoading: isQueryLoading } = useQuery<OffseasonHomeData>({
     queryKey: ['offseason-home', OFFSEASON_RANKING_YEAR],
     queryFn: fetchOffseasonHomeData,
+    enabled: visualQaStateOverride === undefined,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
+  const data = visualQaStateOverride?.phase === 'resolved'
+    ? visualQaStateOverride.data ?? defaultOffseasonHomeData
+    : queriedData;
+  const isLoading = visualQaStateOverride?.phase === 'loading'
+    || (visualQaStateOverride === undefined && isQueryLoading);
+  const isLargeScreen = visualQaStateOverride?.isLargeScreen ?? queriedIsLargeScreen;
+  const currentTime = visualQaStateOverride?.currentTime
+    ? new Date(visualQaStateOverride.currentTime)
+    : queriedCurrentTime;
   const { movements, awards, rankings } = data ?? defaultOffseasonHomeData;
 
   // 2026 Season Opening Day
@@ -143,21 +167,23 @@ export default function OffSeasonHome() {
   );
 
   return (
-    <Suspense fallback={primaryFallback}>
-      <OffSeasonHomePrimaryRuntime
-        isLoading={isLoading}
-        daysUntilOpening={daysUntilOpening}
-        statusDateLabel={statusDateLabel}
-        movementsCount={movements.length}
-        bigEvents={bigEvents}
-        awards={awards}
-        rankings={rankings}
-        isLargeScreen={isLargeScreen}
-        getTeamName={getTeamName}
-        formatRemarks={formatRemarks}
-        onNavigateHome={() => navigate('/home')}
-        onNavigateList={() => navigate('/offseason/list')}
-      />
-    </Suspense>
+    <div data-testid="offseason-home-runtime">
+      <Suspense fallback={primaryFallback}>
+        <OffSeasonHomePrimaryRuntime
+          isLoading={isLoading}
+          daysUntilOpening={daysUntilOpening}
+          statusDateLabel={statusDateLabel}
+          movementsCount={movements.length}
+          bigEvents={bigEvents}
+          awards={awards}
+          rankings={rankings}
+          isLargeScreen={isLargeScreen}
+          getTeamName={getTeamName}
+          formatRemarks={formatRemarks}
+          onNavigateHome={() => navigate('/home')}
+          onNavigateList={() => navigate('/offseason/list')}
+        />
+      </Suspense>
+    </div>
   );
 }

@@ -76,6 +76,7 @@ type MateChatViewRuntimeProps = {
   onRefetchMessages: () => void;
   onLoadOlderMessages: () => void;
   formatMessageTime: (dateString: string) => string;
+  visualQaConversationPhase?: 'fallback' | 'runtime';
 };
 
 type SummaryItemProps = {
@@ -96,8 +97,8 @@ function SummaryItem({ icon: Icon, label, value, detail }: SummaryItemProps) {
           <p className={mateMetaLabelClass}>
             {label}
           </p>
-          <p className="mt-2 text-base font-bold text-gray-900 dark:text-white">{value}</p>
-          <p className="mt-1 text-body text-gray-500 dark:text-white">{detail}</p>
+          <p className="mt-2 text-base font-bold text-gray-900 dark:text-white [overflow-wrap:anywhere]">{value}</p>
+          <p className="mt-1 text-body text-gray-500 dark:text-white [overflow-wrap:anywhere]">{detail}</p>
         </div>
       </div>
     </div>
@@ -140,6 +141,7 @@ export default function MateChatViewRuntime({
   onRefetchMessages,
   onLoadOlderMessages,
   formatMessageTime,
+  visualQaConversationPhase,
 }: MateChatViewRuntimeProps) {
   const statusMeta = getMateStatusBadgeMeta(party.status);
   const flowLabel = getPartyFlowLabel(party.status);
@@ -152,6 +154,22 @@ export default function MateChatViewRuntime({
   const roleLabel = isHost ? '호스트' : '승인 참여자';
   const approvalLabel = isHost ? '참여자 응답 관리 가능' : '승인 완료로 대화 열림';
   const nextActionLabel = canAccessCheckIn ? '체크인 준비 가능' : '대화 조율 단계';
+  const conversationPhase = import.meta.env?.PROD === true
+    ? 'runtime'
+    : visualQaConversationPhase ?? 'runtime';
+  const conversationFallback = (
+    <Card
+      data-testid="mate-chat-conversation-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="대화 기록 준비 중"
+      className={`mt-4 p-4 ${mateSectionCardClass}`}
+    >
+      <p className="text-center text-body text-gray-500 dark:text-white" aria-hidden="true">
+        대화 기록을 준비하고 있습니다.
+      </p>
+    </Card>
+  );
   const summaryItems = [
     {
       icon: MateMessageSquareIcon,
@@ -180,7 +198,10 @@ export default function MateChatViewRuntime({
   ] satisfies ReadonlyArray<SummaryItemProps>;
 
   return (
-    <div className={`${matePageShellClass} flex flex-col`}>
+    <div
+      data-testid="mate-chat-view"
+      className={`${matePageShellClass} min-h-dvh min-w-0 overflow-x-clip flex flex-col`}
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(circle_at_top,_rgba(22,163,74,0.10),_transparent_55%)] dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_48%)]" />
       <img
         src={grassDecor}
@@ -191,9 +212,11 @@ export default function MateChatViewRuntime({
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-4 pb-6 sm:px-6 lg:px-8">
         <div className="mb-4">
           <Button
+            data-testid="mate-chat-view-back"
             variant="ghost"
+            size="touch"
             onClick={onNavigateBack}
-            className="mb-2 -ml-2"
+            className="mb-2 -ml-2 text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-white"
           >
             <MateChevronLeftIcon className="mr-2 h-4 w-4" />
             뒤로
@@ -240,19 +263,19 @@ export default function MateChatViewRuntime({
                   <div className="grid gap-3 text-body text-gray-600 dark:text-white">
                     <div className="flex items-start gap-3">
                       <MateCalendarIcon className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
+                      <div className="min-w-0">
                         <p className={mateMetaLabelClass}>일정</p>
-                        <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+                        <p className="mt-1 font-semibold text-gray-900 dark:text-white [overflow-wrap:anywhere]">
                           {formatGameDate(party.gameDate)} {party.gameTime}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <MateMapPinIcon className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
+                      <div className="min-w-0">
                         <p className={mateMetaLabelClass}>경기장 / 좌석</p>
-                        <p className="mt-1 font-semibold text-gray-900 dark:text-white">{stadiumDisplayName}</p>
-                        <p className="text-body text-gray-500 dark:text-white">{party.section}</p>
+                        <p className="mt-1 font-semibold text-gray-900 dark:text-white [overflow-wrap:anywhere]">{stadiumDisplayName}</p>
+                        <p className="text-body text-gray-500 dark:text-white [overflow-wrap:anywhere]">{party.section}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -261,12 +284,12 @@ export default function MateChatViewRuntime({
                       ) : (
                         <MateWifiOffIcon className="mt-0.5 h-4 w-4 text-amber-500" />
                       )}
-                      <div>
+                      <div className="min-w-0">
                         <p className={mateMetaLabelClass}>실시간 상태</p>
-                        <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+                        <p className="mt-1 font-semibold text-gray-900 dark:text-white [overflow-wrap:anywhere]">
                           {isConnected ? '실시간 연결됨' : '재연결 중'}
                         </p>
-                        <p className="text-body text-gray-500 dark:text-white">
+                        <p className="text-body text-gray-500 dark:text-white [overflow-wrap:anywhere]">
                           {isConnected ? '읽음 처리와 메시지 수신이 활성화된 상태입니다.' : '전송은 계속 가능하며 연결이 복구되면 동기화됩니다.'}
                         </p>
                       </div>
@@ -275,7 +298,9 @@ export default function MateChatViewRuntime({
 
                   <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
                     <Button
+                      data-testid="mate-chat-view-detail"
                       variant="outline"
+                      size="touch"
                       className="w-full justify-center border-primary text-primary hover:bg-primary/10 sm:w-auto"
                       onClick={onNavigateDetail}
                     >
@@ -283,7 +308,9 @@ export default function MateChatViewRuntime({
                     </Button>
                     {isHost && (
                       <Button
+                        data-testid="mate-chat-view-manage"
                         variant="outline"
+                        size="touch"
                         className="w-full justify-center border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary sm:w-auto"
                         onClick={onNavigateManage}
                       >
@@ -292,7 +319,9 @@ export default function MateChatViewRuntime({
                     )}
                     {canAccessCheckIn && (
                       <Button
+                        data-testid="mate-chat-view-check-in"
                         variant="outline"
+                        size="touch"
                         className="w-full justify-center border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-900 dark:text-violet-300 dark:hover:bg-violet-950/30 sm:w-auto"
                         onClick={onNavigateCheckIn}
                       >
@@ -321,30 +350,32 @@ export default function MateChatViewRuntime({
           </Alert>
         )}
 
-        <Suspense fallback={null}>
-          <MateChatConversationPanel
-            currentUserId={currentUserId}
-            isHost={isHost}
-            isConnected={isConnected}
-            groupedMessages={groupedMessages}
-            chatLoadError={chatLoadError}
-            hasOlderMessages={hasOlderMessages}
-            isLoadingOlderMessages={isLoadingOlderMessages}
-            messageText={messageText}
-            imagePreviewUrl={imagePreviewUrl}
-            isUploadingImage={isUploadingImage}
-            fileInputRef={fileInputRef}
-            scrollAreaRef={scrollAreaRef}
-            onMessageTextChange={onMessageTextChange}
-            onImageSelect={onImageSelect}
-            onOpenImagePicker={onOpenImagePicker}
-            onCancelImageSelection={onCancelImageSelection}
-            onSubmit={onSubmit}
-            onRefetchMessages={onRefetchMessages}
-            onLoadOlderMessages={onLoadOlderMessages}
-            formatMessageTime={formatMessageTime}
-          />
-        </Suspense>
+        {conversationPhase === 'fallback' ? conversationFallback : (
+          <Suspense fallback={conversationFallback}>
+            <MateChatConversationPanel
+              currentUserId={currentUserId}
+              isHost={isHost}
+              isConnected={isConnected}
+              groupedMessages={groupedMessages}
+              chatLoadError={chatLoadError}
+              hasOlderMessages={hasOlderMessages}
+              isLoadingOlderMessages={isLoadingOlderMessages}
+              messageText={messageText}
+              imagePreviewUrl={imagePreviewUrl}
+              isUploadingImage={isUploadingImage}
+              fileInputRef={fileInputRef}
+              scrollAreaRef={scrollAreaRef}
+              onMessageTextChange={onMessageTextChange}
+              onImageSelect={onImageSelect}
+              onOpenImagePicker={onOpenImagePicker}
+              onCancelImageSelection={onCancelImageSelection}
+              onSubmit={onSubmit}
+              onRefetchMessages={onRefetchMessages}
+              onLoadOlderMessages={onLoadOlderMessages}
+              formatMessageTime={formatMessageTime}
+            />
+          </Suspense>
+        )}
       </div>
     </div>
   );

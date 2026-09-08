@@ -38,6 +38,14 @@ const retroLeaderboardStyles = `
     z-index: 30;
   }
 
+  .retro-leaderboard-title {
+    font-size: 52px;
+  }
+
+  .retro-leaderboard-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .retro-leaderboard-character-frame {
     width: 100px;
     height: 100px;
@@ -98,10 +106,16 @@ const retroLeaderboardStyles = `
       flex-direction: column;
       gap: 15px;
       margin-bottom: 30px;
+      width: 100%;
+      padding: 0 16px;
+      box-sizing: border-box;
     }
 
     .retro-leaderboard-title {
-      font-size: 36px;
+      max-width: 100%;
+      font-size: clamp(32px, 5vw, 36px);
+      line-height: 1.25;
+      word-break: keep-all;
     }
 
     .retro-leaderboard-stat-grid {
@@ -128,7 +142,7 @@ const retroLeaderboardStyles = `
 
 type LeaderboardType = 'season' | 'monthly' | 'weekly';
 
-interface RetroLeaderboardProps {
+export interface RetroLeaderboardProps {
   leaderboard?: LeaderboardEntry[];
   userStats?: UserLeaderboardStats | null;
   tickerMessages?: TickerMessage[];
@@ -144,6 +158,8 @@ interface RetroLeaderboardProps {
   onPredict?: () => void;
   onUsePowerup?: (type: string) => Promise<void>;
   totalPages?: number;
+  containerTestId?: string;
+  deferFooter?: boolean;
 }
 
 export default function RetroLeaderboard({
@@ -158,6 +174,8 @@ export default function RetroLeaderboard({
   onUsePowerup,
   isLoading = false,
   currentUserHandle,
+  containerTestId,
+  deferFooter = true,
 }: RetroLeaderboardProps) {
   const [showRules, setShowRules] = useState(false);
   const [showDecorations, setShowDecorations] = useState(false);
@@ -211,6 +229,7 @@ export default function RetroLeaderboard({
 
   return (
     <div
+      data-testid={containerTestId}
       style={{
         minHeight: '100vh',
         position: 'relative',
@@ -248,7 +267,6 @@ export default function RetroLeaderboard({
             className="retro-leaderboard-title"
             style={{
               fontFamily: retroText,
-              fontSize: '52px',
               color: '#fff',
               textAlign: 'center',
               textShadow: '4px 4px 0 #000, -4px -4px 0 #000, 4px -4px 0 #000, -4px 4px 0 #000',
@@ -281,7 +299,7 @@ export default function RetroLeaderboard({
             position: 'relative',
           }}
         >
-          <div className="retro-leaderboard-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px' }}>
+          <div className="retro-leaderboard-stat-grid" style={{ display: 'grid', gap: '10px' }}>
             {[
               ['적중률', predictionAccuracy],
               ['연승', predictionStreak],
@@ -491,28 +509,42 @@ export default function RetroLeaderboard({
           </div>
         </div>
 
-        <ViewportDeferred
-          fallback={(
-            <div
-              aria-hidden="true"
-              style={{
-                width: '90%',
-                maxWidth: '800px',
-                minHeight: '220px',
-                margin: '20px auto 40px',
-              }}
-            />
-          )}
-        >
-          <Suspense fallback={null}>
-            <RetroLeaderboardFooterPanels
-              hotStreaks={hotStreaks}
-              powerups={powerups}
-              activePowerups={activePowerups}
-              onUsePowerup={onUsePowerup}
-            />
-          </Suspense>
-        </ViewportDeferred>
+        {deferFooter ? (
+          <ViewportDeferred
+            className="w-full"
+            fallback={(
+              <div
+                aria-hidden="true"
+                style={{
+                  width: '90%',
+                  maxWidth: '800px',
+                  minHeight: '220px',
+                  margin: '20px auto 40px',
+                }}
+              />
+            )}
+          >
+            <Suspense fallback={null}>
+              <RetroLeaderboardFooterPanels
+                hotStreaks={hotStreaks}
+                powerups={powerups}
+                activePowerups={activePowerups}
+                onUsePowerup={onUsePowerup}
+              />
+            </Suspense>
+          </ViewportDeferred>
+        ) : (
+          <div className="w-full">
+            <Suspense fallback={null}>
+              <RetroLeaderboardFooterPanels
+                hotStreaks={hotStreaks}
+                powerups={powerups}
+                activePowerups={activePowerups}
+                onUsePowerup={onUsePowerup}
+              />
+            </Suspense>
+          </div>
+        )}
       </div>
     </div>
   );

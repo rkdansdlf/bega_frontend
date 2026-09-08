@@ -255,7 +255,7 @@ export default function MateListControlsRuntime({
         <section className="min-w-0">
           {renderDateFilter('scroller')}
 
-          <div className="sticky top-16 z-30 -mx-4 mb-4 border-y border-gray-200/80 bg-gray-50/95 px-4 py-3 backdrop-blur md:mx-0 md:rounded-14 md:border lg:static lg:mb-[14px] lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none dark:border-white/10 dark:bg-[#000000]/95 lg:dark:bg-transparent">
+          <div className="z-30 -mx-4 mb-4 border-y border-gray-200/80 bg-gray-50/95 px-4 py-3 backdrop-blur md:sticky md:top-16 md:mx-0 md:rounded-14 md:border lg:static lg:mb-[14px] lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none dark:border-white/10 dark:bg-[#000000]/95 lg:dark:bg-transparent">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-[10px]">
                 <div className="flex min-w-0 flex-1 gap-2">
@@ -283,6 +283,7 @@ export default function MateListControlsRuntime({
                   <Button
                     variant="outline"
                     size="touch"
+                    data-testid="mate-mobile-filter-open"
                     aria-label={mobileFilterButtonLabel}
                     onClick={openMobileFilter}
                     className="h-[46px] shrink-0 rounded-14 border-gray-200/80 bg-white px-3 text-13 font-bold text-gray-700 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20 lg:hidden"

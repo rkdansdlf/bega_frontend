@@ -24,6 +24,9 @@ const leaderboardRowStyles = `
   }
 
   .retro-leaderboard-row {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
     display: grid;
     grid-template-columns: 60px minmax(0, 1fr) 100px 80px;
     align-items: center;
@@ -101,6 +104,10 @@ const leaderboardRowStyles = `
   }
 
   .retro-leaderboard-score-cell {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     text-align: right;
   }
 
@@ -178,12 +185,14 @@ interface LeaderboardRowProps {
   rank: number;
   entry: LeaderboardEntry;
   isCurrentUser?: boolean;
+  containerTestId?: string;
 }
 
 const LeaderboardRow = forwardRef<HTMLDivElement, LeaderboardRowProps>(({
   rank,
   entry,
   isCurrentUser = false,
+  containerTestId,
 }, ref) => {
   useEffect(() => {
     ensureRetroFontsLoaded();
@@ -200,7 +209,12 @@ const LeaderboardRow = forwardRef<HTMLDivElement, LeaderboardRowProps>(({
   };
 
   return (
-    <div ref={ref} className="retro-leaderboard-row" style={rowStyle}>
+    <div
+      ref={ref}
+      className="retro-leaderboard-row"
+      data-testid={containerTestId}
+      style={rowStyle}
+    >
       <div className="retro-leaderboard-rank-cell">
         {rank === 1 && <span className="retro-leaderboard-crown">👑</span>}
         <span>{rank}.</span>

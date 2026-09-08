@@ -245,13 +245,14 @@ describe('Landing hero and ticker foundation', () => {
     });
   });
 
-  it('omits global navigation and footer chrome', () => {
+  it('omits global navigation chrome but renders its own footer', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
     cy.get('[data-testid^="landing-header-"]').should('not.exist');
     cy.getBySel('landing-home-cta').should('exist');
-    cy.get('footer').should('not.exist');
+    cy.get('footer').should('have.length', 1);
+    cy.getBySel('landing-footer').should('be.visible');
   });
 
   it('renders the app preview as a code-rendered phone', () => {
@@ -260,9 +261,60 @@ describe('Landing hero and ticker foundation', () => {
 
     cy.getBySel('landing-app-preview').scrollIntoView().should('be.visible');
     cy.getBySel('landing-phone').should('be.visible');
-    cy.getBySel('landing-phone').contains('오늘의 승리 확률').should('be.visible');
+    cy.getBySel('landing-phone').contains('오늘의 KBO 경기').should('be.visible');
     cy.getBySel('landing-phone').contains('같이가요').should('be.visible');
+    cy.getBySel('landing-phone').contains('응원게시판').should('exist');
     cy.getBySel('landing-page').find('img[src*="landing-showcase-"]').should('not.exist');
+  });
+
+  it('switches the app preview phone through its three screens on step click and keyboard activation', () => {
+    cy.viewport(1280, 900);
+    visitLanding();
+
+    // A plain `.should(cb)` that returns a value only evaluates once and won't
+    // retry through the 400ms opacity transition, so assert inside the callback
+    // (via expect) instead — that makes Cypress re-read computed style on retry.
+    const assertScreenOpacity = (index: number, expected: string) => {
+      cy.get(`[data-phone-screen="${index}"]`).should(($panel) => {
+        expect(getComputedStyle($panel[0]).opacity, `screen ${index} opacity`).to.equal(expected);
+      });
+    };
+
+    cy.getBySel('landing-app-preview').scrollIntoView();
+    assertScreenOpacity(0, '1');
+    assertScreenOpacity(1, '0');
+
+    cy.get('[data-step-index="1"]').click();
+    cy.get('[data-step-index="1"]').should('have.attr', 'aria-pressed', 'true');
+    cy.get('[data-phone-tab="1"]').should('have.css', 'color', 'rgb(45, 95, 79)');
+    assertScreenOpacity(1, '1');
+    assertScreenOpacity(0, '0');
+
+    cy.get('[data-step-index="2"]').focus().type('{enter}');
+    cy.get('[data-step-index="2"]').should('have.attr', 'aria-pressed', 'true');
+    cy.get('[data-phone-tab="2"]').should('have.css', 'color', 'rgb(45, 95, 79)');
+    assertScreenOpacity(2, '1');
+    assertScreenOpacity(1, '0');
+  });
+
+  it('auto-advances the app preview phone until the visitor interacts', () => {
+    cy.viewport(1280, 900);
+    visitLanding();
+
+    cy.getBySel('landing-app-preview').scrollIntoView();
+    cy.get('[data-step-index="0"]').should('have.attr', 'aria-pressed', 'true');
+    // auto-advance interval is 4.8s; wait past it and confirm it moved on its own
+    cy.get('[data-step-index="1"]', { timeout: 6000 }).should('have.attr', 'aria-pressed', 'true');
+  });
+
+  it('never auto-advances the app preview phone for reduced-motion visitors', () => {
+    cy.viewport(1280, 900);
+    visitLanding({ reducedMotion: true });
+
+    cy.getBySel('landing-app-preview').scrollIntoView();
+    cy.get('[data-step-index="0"]').should('have.attr', 'aria-pressed', 'true');
+    cy.wait(6000);
+    cy.get('[data-step-index="0"]').should('have.attr', 'aria-pressed', 'true');
   });
 
   it('renders all six numbered feature stories and their approved examples', () => {
@@ -306,8 +358,7 @@ describe('Landing hero and ticker foundation', () => {
         .should('have.text', '경기 당일 체크인으로 보증금을 환불받으세요');
     });
     cy.getBySel('landing-feature-05').within(() => {
-      cy.get('.landing-feature-copy .landing-stadium-chips').should('have.length', 1);
-      cy.get('.landing-feature-visual .landing-stadium-chips').should('not.exist');
+      cy.get('.landing-stadium-chips').should('have.length', 1);
       cy.get('[data-testid="landing-stadium-chip"]')
         .then(($chips) => [...$chips].map((chip) => chip.textContent?.trim()))
         .should('deep.equal', [
@@ -321,11 +372,14 @@ describe('Landing hero and ticker foundation', () => {
           '창원',
           '광주',
         ]);
-      cy.get('.landing-stadium-art figcaption')
-        .should('have.text', '잠실야구장 · 서울종합운동장');
-      cy.get('.landing-stadium-stats dd')
+      cy.get('[data-testid="landing-stadium-chip"]').first()
+        .should('have.class', 'landing-stadium-chip-active');
+      cy.get('.landing-stadium-stats dt')
         .then(($stats) => [...$stats].map((stat) => stat.textContent?.trim()))
         .should('deep.equal', ['25,000', '32', '2호선']);
+      cy.get('.landing-stadium-stats dd')
+        .then(($stats) => [...$stats].map((stat) => stat.textContent?.trim()))
+        .should('deep.equal', ['잠실 좌석', '구장 먹거리', '종합운동장역']);
     });
     cy.getBySel('landing-feature-06').contains('승률 0.700').should('be.visible');
     cy.getBySel('landing-feature-06').within(() => {
@@ -366,12 +420,12 @@ describe('Landing hero and ticker foundation', () => {
         win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve()));
       });
     });
-    cy.get('.landing-stadium-art img').should(assertParallaxIsBounded);
-    cy.get('.landing-stadium-art').should(assertArtworkCoversFrame);
+    cy.get('.landing-stadium-hero-image').should(assertParallaxIsBounded);
+    cy.get('.landing-stadium-hero').should(assertArtworkCoversFrame);
     cy.getBySel('landing-feature-05').scrollIntoView();
-    cy.get('.landing-stadium-art img').should(assertParallaxIsBounded);
-    cy.get('.landing-stadium-art').should(assertArtworkCoversFrame);
-    cy.get('.landing-stadium-art').then(($frame) => {
+    cy.get('.landing-stadium-hero-image').should(assertParallaxIsBounded);
+    cy.get('.landing-stadium-hero').should(assertArtworkCoversFrame);
+    cy.get('.landing-stadium-hero').then(($frame) => {
       const win = $frame[0].ownerDocument.defaultView;
       if (!win) throw new Error('Missing stadium artwork window');
 
@@ -383,44 +437,48 @@ describe('Landing hero and ticker foundation', () => {
         win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve()));
       });
     });
-    cy.get('.landing-stadium-art').should(($frame) => {
+    cy.get('.landing-stadium-hero').should(($frame) => {
       expect($frame[0].getBoundingClientRect().top, 'stadium frame top edge').to.be.closeTo(100, 1);
     });
-    cy.get('.landing-stadium-art img').should(assertParallaxIsBounded);
-    cy.get('.landing-stadium-art').should(assertArtworkCoversFrame);
+    cy.get('.landing-stadium-hero-image').should(assertParallaxIsBounded);
+    cy.get('.landing-stadium-hero').should(assertArtworkCoversFrame);
   });
 
   it('keeps feature copy before its visual in the DOM while preserving responsive placement', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.get('[data-testid^="landing-feature-0"]').each(($section, index) => {
+    // landing-feature-05 is now a bespoke full-bleed layout, not the shared
+    // copy/visual shell, so it's excluded from this shell-structure contract.
+    cy.get('[data-testid^="landing-feature-0"]:not([data-testid="landing-feature-05"])').each(($section) => {
+      const number = $section[0].dataset.testid?.slice(-2) ?? '';
       const copy = $section[0].querySelector<HTMLElement>('.landing-feature-copy');
       const visual = $section[0].querySelector<HTMLElement>('.landing-feature-visual');
-      if (!copy || !visual) throw new Error(`Missing feature blocks for section ${index + 1}`);
+      if (!copy || !visual) throw new Error(`Missing feature blocks for section ${number}`);
 
       expect(
         copy.compareDocumentPosition(visual) & Node.DOCUMENT_POSITION_FOLLOWING,
-        `feature ${index + 1} copy precedes visual in document order`,
+        `feature ${number} copy precedes visual in document order`,
       ).not.to.equal(0);
 
       const copyLeft = copy.getBoundingClientRect().left;
       const visualLeft = visual.getBoundingClientRect().left;
-      if (index % 2 === 0) {
-        expect(copyLeft, `feature ${index + 1} desktop copy placement`).to.be.lessThan(visualLeft);
+      if (Number(number) % 2 === 1) {
+        expect(copyLeft, `feature ${number} desktop copy placement`).to.be.lessThan(visualLeft);
       } else {
-        expect(visualLeft, `feature ${index + 1} desktop visual placement`).to.be.lessThan(copyLeft);
+        expect(visualLeft, `feature ${number} desktop visual placement`).to.be.lessThan(copyLeft);
       }
     });
 
     cy.viewport(375, 812);
-    cy.get('[data-testid^="landing-feature-0"]').each(($section, index) => {
+    cy.get('[data-testid^="landing-feature-0"]:not([data-testid="landing-feature-05"])').each(($section) => {
+      const number = $section[0].dataset.testid?.slice(-2) ?? '';
       const copy = $section[0].querySelector<HTMLElement>('.landing-feature-copy');
       const visual = $section[0].querySelector<HTMLElement>('.landing-feature-visual');
-      if (!copy || !visual) throw new Error(`Missing mobile feature blocks for section ${index + 1}`);
+      if (!copy || !visual) throw new Error(`Missing mobile feature blocks for section ${number}`);
       expect(
         copy.getBoundingClientRect().top,
-        `feature ${index + 1} mobile copy-first placement`,
+        `feature ${number} mobile copy-first placement`,
       ).to.be.lessThan(visual.getBoundingClientRect().top);
     });
   });
@@ -445,17 +503,17 @@ describe('Landing hero and ticker foundation', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.get('.landing-phone-score-row img').should('have.length', 2).each(($logo) => {
+    cy.get('.landing-phone-home-matchup img').should('have.length', 2).each(($logo) => {
       expect($logo).to.have.attr('alt', '');
     });
   });
 
-  it('keeps inactive fixed-light phone tabs at readable contrast', () => {
+  it('keeps inactive fixed-light phone nav tabs at readable contrast', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.get('.landing-phone-tabs').should('have.css', 'background-color', 'rgb(255, 255, 255)');
-    cy.get('.landing-phone-tabs span:not(.landing-phone-tab-active)').each(($tab) => {
+    cy.get('.landing-phone-nav-tabs').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+    cy.get('.landing-phone-nav-tabs span:not([data-phone-tab])').each(($tab) => {
       const color = getComputedStyle($tab[0]).color;
       expect(contrastAgainstWhite(color), `${$tab.text()} contrast`).to.be.at.least(4.5);
     });
@@ -473,12 +531,15 @@ describe('Landing hero and ticker foundation', () => {
       expect(getComputedStyle($mascot[0]).animationName).to.equal('none');
     });
     cy.getBySel('landing-closing').find('[data-reveal]').should('have.css', 'opacity', '1');
-    cy.get('.landing-phone-progress [data-bar]').should(($bar) => {
+    cy.get('.landing-prediction-track [data-bar]').should(($bar) => {
       const style = getComputedStyle($bar[0]);
       expect(style.transitionDuration).to.equal('0s');
       expect(style.transitionDelay).to.equal('0s');
       expect($bar[0].style.width).to.equal('64%');
     });
+    cy.get('[data-phone-screen="0"]').should('have.css', 'opacity', '1');
+    cy.get('[data-phone-screen="1"]').should('have.css', 'opacity', '0');
+    cy.get('.landing-app-preview-hint').should('be.visible');
   });
 
   it('finishes landing motion when reduced-motion changes after load', () => {
@@ -513,12 +574,13 @@ describe('Landing hero and ticker foundation', () => {
     visitLanding();
 
     cy.getBySel('landing-page').children('[data-testid]').then(($sections) => (
-      [...$sections].slice(-4).map((section) => section.getAttribute('data-testid'))
+      [...$sections].slice(-5).map((section) => section.getAttribute('data-testid'))
     )).should('deep.equal', [
       'landing-feature-06',
       'landing-offseason',
       'landing-start-guide',
       'landing-closing',
+      'landing-footer',
     ]);
 
     cy.getBySel('landing-offseason').scrollIntoView().within(() => {
@@ -600,20 +662,31 @@ describe('Landing hero and ticker foundation', () => {
 
     cy.getBySel('landing-page').should(($landing) => {
       const interactive = getLandingInteractiveElements($landing[0]);
-      const summary = interactive.map((element) => (
-        `${element.tagName.toLowerCase()}[data-testid="${element.dataset.testid ?? ''}"] "${normalizedText(element)}"`
+      const footer = $landing[0].querySelector('footer');
+      const outsideFooter = interactive.filter((element) => !footer?.contains(element));
+      const insideFooter = interactive.filter((element) => footer?.contains(element));
+
+      // Outside the footer, the page's only deliberate controls are the ticker
+      // toggle, the home CTA, and the three app-preview step buttons.
+      const summary = outsideFooter.map((element) => (
+        `${element.tagName.toLowerCase()}[data-testid="${element.dataset.testid ?? ''}"]`
+        + `[data-step-index="${element.dataset.stepIndex ?? ''}"] "${normalizedText(element)}"`
       )).join(', ');
-      expect(interactive, `landing interactive elements: ${summary}`).to.have.length(2);
-      expect(interactive.map((element) => element.dataset.testid)).to.have.members([
-        'landing-ticker-toggle',
-        'landing-home-cta',
-      ]);
-      const tickerToggle = interactive.find((element) => element.dataset.testid === 'landing-ticker-toggle');
+      expect(outsideFooter, `landing interactive elements outside footer: ${summary}`).to.have.length(5);
+      const tickerToggle = outsideFooter.find((element) => element.dataset.testid === 'landing-ticker-toggle');
       expect(tickerToggle?.tagName).to.equal('BUTTON');
       expect(normalizedText(tickerToggle as HTMLElement)).to.equal('티커 일시정지');
-      const homeCta = interactive.find((element) => element.dataset.testid === 'landing-home-cta');
+      const homeCta = outsideFooter.find((element) => element.dataset.testid === 'landing-home-cta');
       expect(homeCta?.tagName).to.equal('BUTTON');
       expect(normalizedText(homeCta as HTMLElement)).to.equal('홈으로 이동');
+      const stepButtons = outsideFooter.filter((element) => element.dataset.stepIndex !== undefined);
+      expect(stepButtons.map((element) => element.dataset.stepIndex)).to.have.members(['0', '1', '2']);
+      expect(stepButtons.every((element) => element.getAttribute('role') === 'button')).to.equal(true);
+
+      // Inside the footer, every interactive element is a plain nav link
+      // (3 groups of 4 links + 2 bottom-bar links).
+      expect(insideFooter, 'footer interactive links').to.have.length(14);
+      expect(insideFooter.every((element) => element.tagName === 'A')).to.equal(true);
     });
     cy.getBySel('landing-ticker-toggle').should('exist').and('be.visible').focus().should('have.focus');
   });
@@ -689,8 +762,7 @@ describe('Landing hero and ticker foundation', () => {
     visitLanding({ theme: 'light' });
 
     const contrastTargets = [
-      ['phone LIVE', '.landing-phone-live'],
-      ['phone game status', '.landing-phone-card-kicker'],
+      ['phone game status', '.landing-phone-home-game-status'],
       ['feature game status', '[data-testid="landing-feature-01"] .landing-game-live'],
       ['cheer like count', '[data-testid="landing-feature-03"] .landing-cheer-liked'],
       ['prediction 36%', '[data-testid="landing-feature-02"] .landing-prediction-team-away strong'],

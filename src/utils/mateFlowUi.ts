@@ -23,7 +23,7 @@ export const mateSubtlePanelClass =
   'rounded-xl border border-dashed border-gray-200 bg-white/80 dark:border-border/70 dark:bg-card/70';
 
 export const mateMobileBarClass =
-  'fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[60] border-t border-gray-200/90 bg-white px-4 pt-3 shadow-[0_-12px_30px_rgba(15,23,42,0.08)] dark:border-border dark:bg-card min-h-[74px] pb-3 md:bottom-0 md:pb-[calc(env(safe-area-inset-bottom)+0.75rem)]';
+  'relative z-20 mt-4 min-h-[74px] rounded-xl border border-gray-200/90 bg-white px-4 pb-3 pt-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] dark:border-border dark:bg-card';
 
 export const getPartyStatusMeta = (status: PartyStatus): { label: string; className: string } => {
   const meta = getMateStatusBadgeMeta(status);

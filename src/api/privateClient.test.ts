@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { DEV_PROXY_UPSTREAM_UNAVAILABLE } from './httpClientCore';
-import { PrivateApiError, privateDelete, privateGet, privatePost } from './privateClient';
+import { claimAuthSessionExpiry, markAuthSessionEstablished } from './authSessionGeneration';
+import { PrivateApiError, privateDelete, privateGet, privatePost, requestPrivateReissue } from './privateClient';
 
 test('privatePost는 401 후 reissue 성공 시 원 요청을 한 번 재시도한다', async (t) => {
   const urls: string[] = [];
@@ -48,7 +49,22 @@ test('privatePost는 401 후 reissue 성공 시 원 요청을 한 번 재시도�
   assert.ok(urls.some((url) => url.endsWith('/api/auth/reissue')));
 });
 
+test('reissue 성공은 새 인증 세대를 열어 이후 만료를 다시 알릴 수 있게 한다', async (t) => {
+  markAuthSessionEstablished();
+  assert.equal(claimAuthSessionExpiry(), true);
+  assert.equal(claimAuthSessionExpiry(), false);
+
+  t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ success: true }), {
+    headers: { 'content-type': 'application/json' },
+    status: 200,
+  }));
+
+  await requestPrivateReissue();
+  assert.equal(claimAuthSessionExpiry(), true);
+});
+
 test('privatePost는 reissue 실패 시 auth-session-expired를 dispatch하고 에러를 던진다', async (t) => {
+  markAuthSessionEstablished();
   const events: Array<Record<string, unknown> | undefined> = [];
   const originalWindow = globalThis.window;
 
@@ -111,6 +127,51 @@ test('privatePost는 reissue 실패 시 auth-session-expired를 dispatch하고 �
 
   assert.equal(events.length, 1);
   assert.equal(events[0]?.cause, 'reissue_failed');
+});
+
+test('private client는 같은 세션 만료는 한 번만 알리고 새 세션 만료는 다시 알린다', async (t) => {
+  const events: Event[] = [];
+  const originalWindow = globalThis.window;
+
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: {
+      location: {
+        hostname: 'localhost',
+        origin: 'http://localhost',
+      },
+      dispatchEvent: (event: Event) => {
+        events.push(event);
+        return true;
+      },
+    },
+  });
+
+  t.after(() => {
+    if (originalWindow === undefined) {
+      // @ts-expect-error test cleanup
+      delete globalThis.window;
+      return;
+    }
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: originalWindow,
+    });
+  });
+
+  t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ message: 'Unauthorized' }), {
+    headers: { 'content-type': 'application/json' },
+    status: 401,
+  }));
+
+  markAuthSessionEstablished();
+  await assert.rejects(privateGet('/dm/rooms/my'), PrivateApiError);
+  await assert.rejects(privateGet('/dm/rooms/my'), PrivateApiError);
+  assert.equal(events.length, 1);
+
+  markAuthSessionEstablished();
+  await assert.rejects(privateGet('/dm/rooms/my'), PrivateApiError);
+  assert.equal(events.length, 2);
 });
 
 test('privateGet classifies an empty development proxy 500 as upstream unavailable', async (t) => {

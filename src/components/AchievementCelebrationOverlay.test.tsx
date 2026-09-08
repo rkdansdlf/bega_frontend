@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import { createElement } from 'react';
@@ -52,4 +53,20 @@ test('description이 없으면 설명 문단을 생략한다', () => {
 
   assert.match(html, /첫 직관/);
   assert.doesNotMatch(html, /<p[^>]*>처음으로/);
+});
+
+test('업적 오버레이는 작은 화면과 긴 문구를 가두고 결정적으로 렌더링한다', async () => {
+  const source = await readFile(new URL('./AchievementCelebrationOverlay.tsx', import.meta.url), 'utf8');
+
+  assert.match(source, /data-testid="achievement-celebration-overlay"/);
+  assert.match(source, /data-testid="achievement-celebration-card"/);
+  assert.match(source, /data-testid="achievement-celebration-content"/);
+  assert.match(source, /maxHeight: 'calc\(100dvh - 32px\)'/);
+  assert.match(source, /overflowY: 'hidden'/);
+  assert.match(source, /min-h-0 overflow-y-auto/);
+  assert.match(source, /shrink-0/);
+  assert.match(source, /\[overflow-wrap:anywhere\]/);
+  assert.match(source, /min-h-11/);
+  assert.match(source, /focus-visible:outline/);
+  assert.doesNotMatch(source, /Math\.random/);
 });

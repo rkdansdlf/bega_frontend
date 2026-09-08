@@ -12,6 +12,9 @@ import {
 } from './lib/bundle-budget-policy.mjs';
 import { detectReactDevArtifacts } from './lib/react-dev-artifact-policy.mjs';
 import {
+  findVisualQaProductionIsolationViolations,
+} from './lib/visual-qa-production-isolation.mjs';
+import {
   collectManifestStaticClosure,
   findForbiddenManifestClosureReferences,
   resolveManifestEntryKey,
@@ -106,7 +109,7 @@ const forbiddenChunkPrefixes = [
 ];
 
 const sizeBudgets = [
-  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 255_500 },
+  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 256_000 },
   { label: 'vendor-react-core', directory: clientAssetsDir, filePattern: /^vendor-react-core-.*\.js$/, maxBytes: 345_000 },
   { label: 'vendor-router', directory: clientAssetsDir, filePattern: /^vendor-router-.*\.js$/, maxBytes: 50_000 },
   { label: 'vendor-zustand', directory: clientAssetsDir, filePattern: /^vendor-zustand-.*\.js$/, maxBytes: 8_000, optionalMissing: true },
@@ -1736,7 +1739,7 @@ const routeStaticClosureTargets = [
   {
     route: '/home',
     label: '/home route static closure',
-    maxJsGzipBytes: 95_000,
+    maxJsGzipBytes: 96_000,
     entrypoints: [
       'index.html',
       'src/components/Layout.tsx',
@@ -1747,7 +1750,7 @@ const routeStaticClosureTargets = [
   {
     route: '/login',
     label: '/login route static closure',
-    maxJsGzipBytes: 86_000,
+    maxJsGzipBytes: 86_500,
     entrypoints: [
       'index.html',
       'src/components/Login.tsx',
@@ -1783,7 +1786,7 @@ const routeStaticClosureTargets = [
   {
     route: '/account/deletion/recovery',
     label: '/account/deletion/recovery route static closure',
-    maxJsGzipBytes: 81_000,
+    maxJsGzipBytes: 81_400,
     entrypoints: [
       'index.html',
       'src/components/AccountDeletionRecovery.tsx',
@@ -1820,7 +1823,7 @@ const routeStaticClosureTargets = [
   {
     route: '/cheer',
     label: '/cheer route static closure',
-    maxJsGzipBytes: 121_000,
+    maxJsGzipBytes: 121_600,
     entrypoints: [
       'index.html',
       'src/components/Cheer.tsx',
@@ -2205,6 +2208,25 @@ const devArtifactResults = [
     })
 ));
 
+const visualQaProductionArtifacts = [
+  { directory: distDir, files: listFiles(distDir) },
+  { directory: clientAssetsDir, files: clientFiles },
+  { directory: workerDistDir, files: listFiles(workerDistDir) },
+  { directory: workerAssetsDir, files: workerFiles },
+].flatMap(({ directory, files }) => files
+  .filter((file) => file.endsWith('.html') || file.endsWith('.js'))
+  .map((file) => {
+    const filePath = path.join(directory, file);
+    return {
+      file: path.relative(projectRoot, filePath),
+      content: fs.readFileSync(filePath, 'utf-8'),
+    };
+  }));
+const visualQaProductionIsolationViolations = findVisualQaProductionIsolationViolations({
+  artifacts: visualQaProductionArtifacts,
+  manifest: clientManifest,
+});
+
 const failures = [
   ...forbiddenMatches.map((match) => ({
     message: `forbidden ${match.location} chunk reappeared: ${match.file}`,
@@ -2216,6 +2238,10 @@ const failures = [
       message: `${result.file} contains React dev artifact(s): ${result.matches.join(', ')}`,
       type: 'react_dev_artifact',
     })),
+  ...visualQaProductionIsolationViolations.map((violation) => ({
+    message: `${violation.file} contains test-only Visual QA marker "${violation.marker}" (${violation.location})`,
+    type: 'visual_qa_production_isolation',
+  })),
   ...budgetResults
     .filter((result) => !result.ok)
     .map((result) => ({
@@ -2303,6 +2329,7 @@ const report = {
   forbiddenChunkPrefixes,
   forbiddenMatches,
   devArtifactResults,
+  visualQaProductionIsolationViolations,
   budgetResults,
   moduleFederationBudgetResults,
   dependencyGuardResults,

@@ -519,7 +519,7 @@ Assert:
 ```js
 value.scrollWidth <= value.viewport.width + 1
 value.featureCount === 6
-value.ctaCount === 0
+value.ctaCount === 1
 value.phoneWidth <= Math.min(372, value.viewport.width - 28)
 ```
 
@@ -529,7 +529,7 @@ In reduced motion, assert ticker, live dot, rolling score, like heart, and masco
 
 Run: `npm run qa:landing`
 
-Expected: either PASS or a precise layout/motion failure tied to the new landing. No selector may reference the deleted CTA, screenshot grid, feature accordion, or laptop mockup.
+Expected: either PASS or a precise layout/motion failure tied to the new landing. No selector may reference the removed screenshot grid, feature accordion, or laptop mockup.
 
 - [ ] **Step 3: For each QA defect, add a Cypress regression test before fixing production code**
 

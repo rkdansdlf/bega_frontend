@@ -34,6 +34,12 @@ yarn-error.log*
 .dev.vars*
 !.dev.vars.example
 /reports
+/visual-qa
+/.visual-qa.staging-*
+/.visual-qa.backup-*
+/.visual-qa.commit.lock
+/.visual-qa.commit.lock.candidate-*
+/.visual-qa.commit.lock.released-*
 /.claude
 /.playwright-cli
 /.worktrees

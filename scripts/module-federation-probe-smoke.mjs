@@ -28,6 +28,13 @@ export const createModuleFederationProbeSmokePlan = ({
     remote ? '5193' : '5192',
     '--spec',
     PROBE_SPEC,
+    // CI runners don't have a warm local Cypress binary cache, so the plain
+    // (non-docker) attempt always fails at the verify step; test-e2e.mjs's
+    // fallback then retries against the dev server start-server-and-test
+    // already tore down after that failure, so it can never succeed either.
+    // Force Docker mode from the start — the same fix already proven by
+    // mate-smoke, which forces --docker for exactly this reason.
+    '--docker',
   ];
 
   if (remote) {

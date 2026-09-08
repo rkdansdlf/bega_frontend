@@ -101,8 +101,8 @@ const viewports = [
 
 const interactionTargets = {
   '/': [
-    { label: 'landing feature flow CTA', selector: '[data-testid="landing-hero-cta-secondary"]' },
-    { label: 'landing login CTA', selector: '[data-testid="landing-header-login"]' },
+    { label: 'landing ticker toggle', selector: '[data-testid="landing-ticker-toggle"]' },
+    { label: 'landing home CTA', selector: '[data-testid="landing-home-cta"]' },
   ],
   '/home': [
     { label: 'home scheduled tab', role: 'tab', name: '예정경기' },
@@ -163,7 +163,6 @@ const loadPlaywright = async () => {
   const candidates = [
     process.env.PLAYWRIGHT_MODULE_URL,
     'playwright',
-    'file:///Users/mac/.npm/_npx/9833c18b2d85bc59/node_modules/playwright/index.mjs',
   ].filter(Boolean);
   const failures = [];
 
@@ -175,7 +174,7 @@ const loadPlaywright = async () => {
     }
   }
 
-  throw new Error(`Unable to load Playwright. Set PLAYWRIGHT_MODULE_URL or install playwright. Attempts: ${failures.join(' | ')}`);
+  throw new Error(`Playwright is not installed. Run: npm run qa:playwright:install (mirrors CI). Or set PLAYWRIGHT_MODULE_URL to an existing install. Attempts: ${failures.join(' | ')}`);
 };
 
 const launchChromium = async (chromium) => {
@@ -398,6 +397,66 @@ const runSyntheticInteraction = async (page, routePath) => {
   return null;
 };
 
+// This audit builds against the real production API (see cwv-lab CI env), but
+// serves the build from a local, non-whitelisted origin — every request gets
+// blocked by CORS. Left un-mocked, /home's connectionError banner mounts on
+// every run and pushes the page content down, producing a ~0.18 CLS that has
+// nothing to do with real users (who load from the whitelisted production
+// origin and never see this banner). Stub the calls that drive that banner so
+// the audit measures genuine successful-render performance instead.
+const installApiMocks = async (page) => {
+  await page.route('**/api/auth/mypage*', (route) => route.fulfill({
+    status: 401,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: '인증이 필요합니다.',
+      error: 'Unauthorized',
+    }),
+  }));
+
+  await page.route('**/api/home/bootstrap*', (route) => {
+    const requestUrl = new URL(route.request().url());
+    const date = requestUrl.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        selectedDate: date,
+        leagueStartDates: {
+          regularSeasonStart: '2026-03-22',
+          postseasonStart: '2026-10-06',
+          koreanSeriesStart: '2026-10-26',
+        },
+        navigation: {
+          hasPrev: true,
+          hasNext: true,
+          prevGameDate: null,
+          nextGameDate: null,
+        },
+        games: [],
+        scheduledGamesWindow: [],
+      }),
+    });
+  });
+
+  await page.route('**/api/home/widgets*', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      hotCheerPosts: [],
+      featuredMates: [],
+      rankingSnapshot: {
+        rankingSeasonYear: new Date().getFullYear(),
+        rankingSourceMessage: '',
+        isOffSeason: false,
+        rankings: [],
+      },
+    }),
+  }));
+};
+
 const runIteration = async ({ browser, routePath, viewportConfig, iteration }) => {
   const context = await browser.newContext({
     viewport: viewportConfig.viewport,
@@ -407,6 +466,7 @@ const runIteration = async ({ browser, routePath, viewportConfig, iteration }) =
   });
   const page = await context.newPage();
   await installMetricObservers(page);
+  await installApiMocks(page);
   const url = buildRouteUrl(routePath);
   let status = null;
   let error = null;

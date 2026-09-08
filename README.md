@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# ⚾ BEGA (Baseball Guide)
+# ⚾ BEGA (야구 가이드)
 
 <em>야구 팬을 위한 올인원 가이드 애플리케이션</em>
 
@@ -126,34 +126,34 @@ KBO 리그에 대한 모든 궁금증을 해결하세요.
 
 ## 🛠️ 기술 스택
 
-### Frontend
+### 프론트엔드
 
 | 분류 | 기술 |
 |:---|:---|
-| **Framework** | React 18 + TypeScript |
-| **Build Tool** | Vite |
-| **Styling** | Tailwind CSS + shadcn/ui |
-| **State Management** | Zustand |
-| **Server State** | TanStack Query (React Query) |
-| **Form** | React Hook Form + Zod |
-| **Routing** | React Router v6 |
-| **HTTP Client** | Axios |
+| **프레임워크** | React 18 + TypeScript |
+| **빌드 도구** | Vite |
+| **스타일링** | Tailwind CSS + shadcn/ui |
+| **상태 관리** | Zustand |
+| **서버 상태** | TanStack Query (React Query) |
+| **폼** | React Hook Form + Zod |
+| **라우팅** | React Router v6 |
+| **HTTP 클라이언트** | Axios |
 
-### Infrastructure
+### 인프라
 
 | 분류 | 기술 |
 |:---|:---|
-| **Database & Storage** | OCI Autonomous Database + OCI Object Storage |
-| **Container** | Docker |
+| **데이터베이스 및 저장소** | OCI Autonomous Database + OCI Object Storage |
+| **컨테이너** | Docker |
 | **CI/CD** | GitHub Actions |
-| **Hosting** | Cloudflare Workers Static Assets + CDN |
+| **호스팅** | Cloudflare Workers 정적 자산 + CDN |
 
 ---
 
 ## 🏗️ 아키텍처
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Frontend                              │
+│                        프론트엔드                            │
 │                   (React + TypeScript)                       │
 └─────────────────────────┬───────────────────────────────────┘
                           │
@@ -161,7 +161,7 @@ KBO 리그에 대한 모든 궁금증을 해결하세요.
           ▼               ▼               ▼
 ┌─────────────────┐ ┌───────────┐ ┌──────────────────────┐
 │  Spring Boot    │ │  FastAPI  │ │   OCI Object Storage │
-│  Backend API    │ │ AI Server │ │      (Images)        │
+│  백엔드 API     │ │ AI 서버   │ │       (이미지)       │
 └────────┬────────┘ └─────┬─────┘ └──────────────────────┘
          │                │
          ▼                ▼
@@ -231,18 +231,18 @@ docker run -p 5176:3000 bega-frontend
 docker-compose up -d
 ```
 
-### Stadium E2E 표준 실행
+### 구장 E2E 표준 실행
 ```bash
-# 1순위(로컬 서버 기동 상태): self-heal 경로
+# 1순위(로컬 서버 기동 상태): 자동 복구 경로
 npm run cy:run:heal -- --spec cypress/e2e/stadium.cy.ts --config baseUrl=http://127.0.0.1:5176
 
-# 기본 대체 경로(서버 미기동/포트 바인딩 실패 포함): rescue 경로
+# 기본 대체 경로(서버 미기동/포트 바인딩 실패 포함): 복구 실행 경로
 npm run test:e2e:rescue -- --spec cypress/e2e/stadium.cy.ts
 ```
 
-### Diary / Admin / AI E2E 실행
+### 다이어리 / 관리자 / AI E2E 실행
 ```bash
-# 개별 deterministic spec
+# 개별 결정론적 스펙
 npm run test:e2e:diary:dev
 npm run test:e2e:admin:dev
 npm run test:e2e:ai:dev
@@ -251,17 +251,17 @@ npm run test:e2e:ai:dev
 npm run test:e2e:coverage:dev
 ```
 
-### Mate CI / E2E 실행
+### 메이트 CI / E2E 실행
 ```bash
-# 빠른 로컬 smoke
+# 빠른 로컬 스모크
 npm run test:mate:smoke
 VITE_SITE_URL=http://localhost:5176 VITE_API_BASE_URL=http://localhost:8080 npm run build
 npm run test:e2e:mate:smoke
 
-# 전체 mate regression
+# 전체 메이트 회귀 테스트
 npm run test:e2e:mate:full
 
-# 변경 파일 기준 full regression 라벨 적용 여부 로컬 확인
+# 변경 파일 기준 전체 회귀 라벨 적용 여부 로컬 확인
 npm run qa:mate:regression:label -- bega_frontend/src/components/MateDetail.tsx
 ```
 
@@ -273,7 +273,7 @@ npm run qa:mate:regression:label -- bega_frontend/src/components/MateDetail.tsx
 - pull request에서는 이 workflow가 sticky comment를 업데이트해서 stage별 결과와 artifact 이름을 바로 보여줍니다.
 - `npm run qa:mate:regression:label -- <changed-file...>` 로 auto-label 기준을 로컬에서 미리 확인할 수 있습니다.
 
-### Real AI 챗봇 smoke 실행
+### 실제 AI 챗봇 스모크 실행
 ```bash
 # 필수: 실제 백엔드 기준 URL
 BACKEND_BASE_URL=http://localhost:8080 npm run test:e2e:ai:real
@@ -285,7 +285,7 @@ SMOKE_LOGIN_PASSWORD=Test1234! \
 npm run test:e2e:ai:real
 ```
 
-### DM authenticated smoke 실행
+### DM 인증 스모크 실행
 ```bash
 BASE_URL=http://127.0.0.1:18080 \
 CLIENT_ORIGIN=https://www.begabaseball.xyz \
@@ -409,7 +409,7 @@ VITE_SITE_URL=https://www.begabaseball.xyz
 운영 배포 시에는 `.env`/`.env.prod` 파일을 직접 source 하지 않고, 배포 실행기(`process.env`)에서 `VITE_*` 값을 주입해야 합니다.
 즉, `deploy:cloudflare`는 `VITE_*`를 배포기 환경 변수로 전달받을 때만 소유자 메타가 반영됩니다.
 
-### 운영 배포 Env 계약(최소 값)
+### 운영 배포 환경 변수 계약(최소 값)
 
 - 필수: `VITE_SITE_URL`, `VITE_API_BASE_URL`, `VITE_MATE_REQUIRE_SOCIAL_VERIFICATION`
 - 권장: `VITE_GA4_MEASUREMENT_ID`, `VITE_GOOGLE_SITE_VERIFICATION`, `VITE_NAVER_SITE_VERIFICATION`
@@ -426,7 +426,7 @@ VITE_SITE_URL=https://www.begabaseball.xyz
 docker-compose up -d --build
 ```
 
-이 경로는 로컬 확인용입니다. 운영 배포는 Cloudflare `wrangler deploy` 기준이며, worker 번들과 client asset은 `npm run build`에서 함께 생성됩니다.
+이 경로는 로컬 확인용입니다. 운영 배포는 Cloudflare `wrangler deploy` 기준이며, Worker 번들과 클라이언트 정적 자산은 `npm run build`에서 함께 생성됩니다.
 
 ### Cloudflare Worker 배포
 

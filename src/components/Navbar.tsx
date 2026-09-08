@@ -1,7 +1,7 @@
 import baseballLogo from '../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
 import './NavigationMenu.css';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 import {
   NavbarCloseIcon as CloseIcon,
@@ -15,8 +15,9 @@ import {
   NavbarUsersIcon as UsersIcon,
 } from './icons/NavbarIcons';
 import { isAdminRole, useAuthAccessActions, useAuthProfileSnapshot, useAuthSession } from '../store/authStore';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
+import { requestChatbotOpen } from '../utils/chatbotLauncher';
 import { useTheme } from '../hooks/useTheme';
 import ThemeToggleButton from './ThemeToggleButton';
 import NavbarNotificationControls from './NavbarNotificationControls';
@@ -66,26 +67,63 @@ const EMPTY_ACTIVE_PILL_METRICS: ActivePillMetrics = {
 
 type NavbarProps = {
   authenticatedShell?: boolean;
+  visualQaStateOverride?: NavbarVisualQaStateOverride;
 };
 
-export default function Navbar({ authenticatedShell = true }: NavbarProps) {
+type NavbarVisualQaStateOverride = {
+  chatUnreadCount: number;
+  compactProgress: number;
+  dmUnreadCount: number;
+  fastCompactProgress: number;
+  isDesktop: boolean;
+  isLoggedIn: boolean;
+  isMenuOpen: boolean;
+  isMobileMenuMounted: boolean;
+  isMobileMenuVisible: boolean;
+  notificationUnreadCount: number;
+  shrinkProgress: number;
+  userName?: string | null;
+  userProfileImageUrl?: string | null;
+  userRole?: string;
+  viewportFitProgress: number;
+};
+
+export default function Navbar(props: NavbarProps) {
+  const { authenticatedShell = true } = props;
+  const visualQaStateOverride = import.meta.env.DEV ? props.visualQaStateOverride : undefined;
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, resolvedTheme } = useTheme();
   const isDarkMode = (resolvedTheme || theme) === 'dark';
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [liveIsMenuOpen, setLiveIsMenuOpen] = useState(false);
 
-  const { isLoggedIn } = useAuthSession();
-  const { userName, userProfileImageUrl, userRole } = useAuthProfileSnapshot();
+  const liveSession = useAuthSession();
+  const liveProfile = useAuthProfileSnapshot();
   const { logout } = useAuthAccessActions();
+  const isLoggedIn = visualQaStateOverride?.isLoggedIn ?? liveSession.isLoggedIn;
+  const userName = visualQaStateOverride?.userName ?? liveProfile.userName;
+  const userProfileImageUrl = visualQaStateOverride?.userProfileImageUrl
+    ?? liveProfile.userProfileImageUrl;
+  const userRole = visualQaStateOverride?.userRole ?? liveProfile.userRole;
   const isAdmin = isAdminRole(userRole);
   const displayName = userName?.trim() || '회원';
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-  const { isMounted: isMobileMenuMounted, isVisible: isMobileMenuVisible } = useAnimatedPresence(
-    !isDesktop && isMenuOpen,
+  const liveIsDesktop = useMediaQuery('(min-width: 768px)');
+  const liveMobileMenuPresence = useAnimatedPresence(
+    !liveIsDesktop && liveIsMenuOpen,
     MOBILE_MENU_TRANSITION_MS,
   );
+  const isDesktop = visualQaStateOverride?.isDesktop ?? liveIsDesktop;
+  const isMenuOpen = visualQaStateOverride?.isMenuOpen ?? liveIsMenuOpen;
+  const isMobileMenuMounted = visualQaStateOverride?.isMobileMenuMounted
+    ?? liveMobileMenuPresence.isMounted;
+  const isMobileMenuVisible = visualQaStateOverride?.isMobileMenuVisible
+    ?? liveMobileMenuPresence.isVisible;
+  const setIsMenuOpen = (nextOpen: boolean) => {
+    if (visualQaStateOverride === undefined) {
+      setLiveIsMenuOpen(nextOpen);
+    }
+  };
   const shouldShowMobileMenuThemeToggle = !isDesktop && isMobileMenuMounted;
   const shouldShowTopThemeToggle = isDesktop;
   const shouldShowDesktopNotificationButton = authenticatedShell && isDesktop;
@@ -94,12 +132,14 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
     location.pathname === '/cheer'
     || location.pathname === '/cheer/write'
     || location.pathname === '/cheer/bookmarks';
-  const {
-    shrinkProgress,
-    compactProgress,
-    fastCompactProgress,
-  } = useScrollMetrics();
-  const viewportFitProgress = useNavbarViewportCompactProgress();
+  const liveScrollMetrics = useScrollMetrics();
+  const liveViewportFitProgress = useNavbarViewportCompactProgress();
+  const shrinkProgress = visualQaStateOverride?.shrinkProgress ?? liveScrollMetrics.shrinkProgress;
+  const compactProgress = visualQaStateOverride?.compactProgress ?? liveScrollMetrics.compactProgress;
+  const fastCompactProgress = visualQaStateOverride?.fastCompactProgress
+    ?? liveScrollMetrics.fastCompactProgress;
+  const viewportFitProgress = visualQaStateOverride?.viewportFitProgress
+    ?? liveViewportFitProgress;
   const scrollChromeProgress = isLoggedIn ? fastCompactProgress : compactProgress;
   const authControlsCompactProgress = mergeNavbarCompactProgress(scrollChromeProgress, viewportFitProgress);
   const strongestCompactProgress = Math.max(scrollChromeProgress, viewportFitProgress);
@@ -121,26 +161,28 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
 
   // 안 읽은 채팅 메시지 수
   const queryClient = useQueryClient();
-  const shouldFetchChatUnread = authenticatedShell && isLoggedIn;
+  const shouldFetchChatUnread = visualQaStateOverride === undefined && authenticatedShell && isLoggedIn;
   const {
     data: chatUnreadQueryData,
     refetch: refetchChatUnread,
   } = useQuery(getChatUnreadQueryOptions(shouldFetchChatUnread));
-  const chatUnreadCount = shouldFetchChatUnread ? (chatUnreadQueryData ?? 0) : 0;
+  const chatUnreadCount = visualQaStateOverride?.chatUnreadCount
+    ?? (shouldFetchChatUnread ? (chatUnreadQueryData ?? 0) : 0);
 
   const { data: dmRoomsData } = useQuery({
     queryKey: ['dm', 'inbox'],
     queryFn: async () => { const { fetchMyDmRooms } = await import('../api/dm'); return fetchMyDmRooms(); },
     staleTime: 30_000,
-    enabled: authenticatedShell && isLoggedIn,
+    enabled: visualQaStateOverride === undefined && authenticatedShell && isLoggedIn,
   });
-  const dmUnreadCount = dmRoomsData?.filter((r) => r.hasUnread).length ?? 0;
+  const dmUnreadCount = visualQaStateOverride?.dmUnreadCount
+    ?? (dmRoomsData?.filter((r) => r.hasUnread).length ?? 0);
 
   const menuToggleButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuPopupRef = useRef<HTMLDivElement | null>(null);
   const preMenuFocusRef = useRef<HTMLElement | null>(null);
   const navSegmentRef = useRef<HTMLDivElement | null>(null);
-  const navButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const navButtonRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [activePillMetrics, setActivePillMetrics] = useState<ActivePillMetrics>(EMPTY_ACTIVE_PILL_METRICS);
 
   useBodyScrollLock(shouldShowMobileMenuThemeToggle);
@@ -172,7 +214,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
   }, [location.pathname, refetchChatUnread, shouldFetchChatUnread]);
 
   useEffect(() => {
-    if (!authenticatedShell) {
+    if (!authenticatedShell || visualQaStateOverride !== undefined) {
       return;
     }
 
@@ -188,18 +230,20 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
     return () => {
       window.removeEventListener(CHAT_UNREAD_UPDATED_EVENT, handleChatUnreadUpdated as EventListener);
     };
-  }, [authenticatedShell, queryClient]);
+  }, [authenticatedShell, queryClient, visualQaStateOverride]);
   
   // 페이지 이동 시 모바일 메뉴 닫기
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
+    if (visualQaStateOverride === undefined) {
+      setLiveIsMenuOpen(false);
+    }
+  }, [location.pathname, visualQaStateOverride]);
 
   useEffect(() => {
-    if (isDesktop && isMenuOpen) {
-      setIsMenuOpen(false);
+    if (visualQaStateOverride === undefined && isDesktop && liveIsMenuOpen) {
+      setLiveIsMenuOpen(false);
     }
-  }, [isDesktop, isMenuOpen]);
+  }, [isDesktop, liveIsMenuOpen, visualQaStateOverride]);
 
   useEffect(() => {
     if (!shouldShowMobileMenuThemeToggle) {
@@ -384,20 +428,20 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
         style={capsuleStyle}
       >
         {/* 1. 로고 */}
-        <button
-          type="button"
-          onClick={() => navigate('/home')}
+        <Link
+          to="/home"
+          aria-label="BEGA 홈"
           className="flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
         >
           <img
             src={baseballLogo}
-            alt="Baseball"
+            alt=""
             className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
           />
           <div className="flex flex-col items-start leading-none">
-            <h1 className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
+            <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
               BEGA
-            </h1>
+            </span>
             <p
               className="hidden overflow-hidden text-10 font-bold text-muted-foreground dark:text-white tracking-tight transition-all duration-150 ease-out md:block"
               style={logoSubtitleStyle}
@@ -405,7 +449,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
               BASEBALL GUIDE
             </p>
           </div>
-        </button>
+        </Link>
 
         {/* 2. 데스크톱 세그먼트 네비게이션 */}
         {isDesktop && (
@@ -426,15 +470,14 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item.id);
                 return (
-                  <button
-                    type="button"
+                  <Link
                     key={item.id}
+                    to={buildNavbarNavPath(item.id)}
                     ref={(node) => {
                       navButtonRefs.current[item.id] = node;
                     }}
                     data-nav-id={item.id}
                     aria-current={isActive ? 'page' : undefined}
-                    onClick={() => navigate(buildNavbarNavPath(item.id))}
                     onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                     onFocus={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                     onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
@@ -452,7 +495,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                         {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                       </span>
                     )}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -492,7 +535,15 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
 
           {isDesktop && (
             <div data-testid="navbar-auth-controls" className="flex items-center" style={desktopAuthWrapperStyle}>
-              <PublicNavbarDesktopAuthControls compactProgress={authControlsCompactProgress} />
+              <PublicNavbarDesktopAuthControls
+                compactProgress={authControlsCompactProgress}
+                visualQaStateOverride={visualQaStateOverride ? {
+                  isLoggedIn: visualQaStateOverride.isLoggedIn,
+                  userName: visualQaStateOverride.userName,
+                  userProfileImageUrl: visualQaStateOverride.userProfileImageUrl,
+                  userRole: visualQaStateOverride.userRole,
+                } : undefined}
+              />
             </div>
           )}
 
@@ -500,7 +551,13 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
           {!isDesktop && (
             <>
               {shouldShowMobileNotificationButton && (
-                <NavbarNotificationControls buttonClassName={navIconToggleClass} />
+                <NavbarNotificationControls
+                  buttonClassName={navIconToggleClass}
+                  onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
+                  openOverride={visualQaStateOverride ? false : undefined}
+                  panelContentOverride={visualQaStateOverride ? <div /> : undefined}
+                  unreadCountOverride={visualQaStateOverride?.notificationUnreadCount}
+                />
               )}
               {authenticatedShell && isLoggedIn && !shouldShowMobileMenuThemeToggle && (
                 <button
@@ -532,6 +589,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                 aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
                 aria-expanded={isMenuOpen}
                 aria-controls={shouldShowMobileMenuThemeToggle ? 'mobile-menu-popup' : undefined}
+                data-testid={import.meta.env.DEV ? 'navbar-menu-toggle' : undefined}
               >
                 {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" /> : <MenuIcon className="w-6 h-6" />}
               </button>
@@ -567,21 +625,27 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                   >
                     메뉴
                   </p>
-                  <ThemeToggleButton
-                    className={navIconToggleClass}
-                    iconClassName={navIconSizeClass}
-                  />
+                  <span
+                    className="inline-flex"
+                    data-testid={import.meta.env.DEV ? 'navbar-menu-theme-toggle' : undefined}
+                  >
+                    <ThemeToggleButton
+                      className={navIconToggleClass}
+                      iconClassName={navIconSizeClass}
+                    />
+                  </span>
                 </div>
                 <div className="space-y-1">
                   {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === `/${item.id}`;
                     return (
-                        <button
-                        type="button"
+                      <Link
                           key={item.id}
+                          to={buildNavbarNavPath(item.id)}
+                          data-testid={import.meta.env.DEV ? `navbar-menu-${item.id}` : undefined}
                           aria-current={isActive ? 'page' : undefined}
-                          onClick={() => handleMobileNav(buildNavbarNavPath(item.id))}
+                          onClick={() => setIsMenuOpen(false)}
                         onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                         onFocus={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                         onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
@@ -604,7 +668,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                         {isActive && (
                           <span className="ml-auto w-2 h-2 rounded-full bg-current" />
                         )}
-                      </button>
+                      </Link>
                     );
                   })}
                 </div>
@@ -624,11 +688,12 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                         setIsMenuOpen(false);
                         navigate('/mypage');
                       }}
-                      className={`flex items-center gap-4 w-full py-4 px-4 rounded-xl transition-all duration-200 ${isDarkMode
+                      className={`flex min-w-0 items-center gap-4 w-full py-4 px-4 rounded-xl transition-all duration-200 ${isDarkMode
                         ? 'bg-card hover:bg-secondary'
                         : 'bg-gray-50 hover:bg-gray-100'
                         }`}
                       aria-label="마이페이지로 이동"
+                      data-testid={import.meta.env.DEV ? 'navbar-menu-profile' : undefined}
                     >
                       <ProfileAvatar
                         src={userProfileImageUrl}
@@ -639,11 +704,11 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                         showRing
                         ringClassName="bg-primary/15 p-px dark:bg-white/10"
                       />
-                      <div className="flex-1 text-left">
-                        <p className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className={`font-bold text-base [overflow-wrap:anywhere] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {displayName} 님
                         </p>
-                        <p className="text-body text-gray-500 dark:text-white">
+                        <p className="text-body text-gray-500 [overflow-wrap:anywhere] dark:text-white">
                           마이페이지 보기 →
                         </p>
                       </div>
@@ -656,6 +721,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                         onClick={() => handleMobileNav('/admin')}
                         className="flex items-center gap-3 w-full py-4 px-4 rounded-xl transition-all duration-200 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                         aria-label="관리자 페이지로 이동"
+                        data-testid={import.meta.env.DEV ? 'navbar-menu-admin' : undefined}
                       >
                         <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
                           <ShieldAlertIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -676,6 +742,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                       }}
                       className="flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold"
                       aria-label="로그아웃"
+                      data-testid={import.meta.env.DEV ? 'navbar-menu-logout' : undefined}
                     >
                       <LogOutIcon className="w-5 h-5" />
                       <span>로그아웃</span>
@@ -689,6 +756,7 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
                       navigate(buildLoginPath(getCurrentRelativeUrl()));
                     }}
                     className="w-full py-6 text-base font-semibold text-white rounded-xl bg-primary-dark hover:bg-primary"
+                    data-testid={import.meta.env.DEV ? 'navbar-menu-login' : undefined}
                   >
                     로그인
                   </Button>
@@ -703,41 +771,52 @@ export default function Navbar({ authenticatedShell = true }: NavbarProps) {
     {!shouldShowMobileMenuThemeToggle && !shouldDeferMobileBottomTabbar && (
       <nav
         data-testid="auth-mobile-bottom-nav"
+        data-vqa-content-overlay="allowed"
         className="md:hidden fixed inset-x-3.5 z-50"
         style={{
           bottom: 'calc(var(--mobile-chrome-bottom-offset) + env(safe-area-inset-bottom))',
         }}
         aria-label="하단 탭바"
       >
-        <div className="grid h-[var(--mobile-chrome-height)] grid-cols-4 gap-0.5 rounded-3xl border border-border bg-card p-1.5 shadow-sm dark:border-white/10 dark:bg-[hsl(var(--surface-raised))]">
+        <div className="grid h-[var(--mobile-chrome-height)] grid-cols-5 gap-0.5 rounded-3xl border border-border bg-card p-1.5 shadow-sm dark:border-white/10 dark:bg-[hsl(var(--surface-raised))]">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === `/${item.id}`;
             return (
-              <button
+              <Link
                 key={item.id}
-                type="button"
+                to={buildNavbarNavPath(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                onClick={() => navigate(buildNavbarNavPath(item.id))}
                 onMouseEnter={item.id === 'prediction' ? prefetchPredictionPage : undefined}
                 onTouchStart={item.id === 'prediction' ? prefetchPredictionPage : undefined}
+                data-testid={import.meta.env.DEV ? `auth-navbar-bottom-${item.id}` : undefined}
                 className={cn(
-                  'relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-18 transition-colors duration-150',
+                  'relative flex min-w-0 min-h-11 flex-col items-center justify-center gap-0.5 rounded-18 transition-colors duration-150',
                   isActive
                     ? 'bg-primary text-white dark:bg-primary/80'
                     : 'text-muted-foreground hover:text-foreground dark:text-white',
                 )}
               >
                 <Icon className="w-5 h-5 shrink-0" />
-                <span className="text-[10.5px] font-bold leading-none">{item.label}</span>
+                <span className="max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
                 {item.id === 'mate' && chatUnreadCount > 0 && (
                   <span className="absolute top-1 right-2 inline-flex min-w-[14px] h-3.5 items-center justify-center rounded-full bg-red-600 px-1 text-9 font-bold leading-none text-white">
                     {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                   </span>
                 )}
-              </button>
+              </Link>
             );
           })}
+          <button
+            type="button"
+            onClick={() => requestChatbotOpen()}
+            className="flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-18 text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-foreground dark:text-white"
+            aria-label="BEGA 챗봇 열기"
+            data-testid="auth-mobile-chatbot-tab"
+          >
+            <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
+            <span className="text-[10.5px] font-bold leading-none">BEGA</span>
+          </button>
         </div>
       </nav>
     )}

@@ -5,6 +5,19 @@ import mateScreenshot from '../assets/landing-showcase-mate.webp';
 import predictionScreenshot from '../assets/landing-showcase-prediction.webp';
 import stadiumScreenshot from '../assets/landing-showcase-stadium.webp';
 import { Container } from './ui/page-primitives';
+import './LandingCapabilityShowcase.css';
+
+interface LandingCapabilityVisualQaStateOverride {
+  description?: string;
+  heading?: string;
+  imageSrc?: string;
+  storyDescriptionSuffix?: string;
+  storyTitleSuffix?: string;
+}
+
+interface LandingCapabilityShowcaseProps {
+  visualQaStateOverride?: LandingCapabilityVisualQaStateOverride;
+}
 
 const FEATURE_STORIES = [
   {
@@ -45,42 +58,75 @@ const FEATURE_STORIES = [
   },
 ] as const;
 
-export default function LandingCapabilityShowcase() {
-  return (
-    <Container>
-      <div className="landing-capability-layout">
-        <div className="landing-capability-copy">
-          <h2 className="landing-capability-title">
-            경기 전, 현장, 경기 후를 나눠 보여줍니다
-          </h2>
-          <p>
-            예정 경기 확인부터 예측, 동행, 구장 동선, 응원, 다이어리까지 실제 화면으로 이어집니다.
-          </p>
-        </div>
+export default function LandingCapabilityShowcase({
+  visualQaStateOverride: visualQaStateOverrideProp,
+}: LandingCapabilityShowcaseProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : visualQaStateOverrideProp;
+  const heading = visualQaStateOverride?.heading
+    ?? '경기 전, 현장, 경기 후를 나눠 보여줍니다';
+  const description = visualQaStateOverride?.description
+    ?? '예정 경기 확인부터 예측, 동행, 구장 동선, 응원, 다이어리까지 실제 화면으로 이어집니다.';
 
-        <div className="landing-capability-grid" data-testid="landing-capability-grid">
-          {FEATURE_STORIES.map((item, index) => (
-            <article
-              key={item.title}
-              className={`landing-capability-tile landing-capability-tile-${index + 1}`}
-            >
-              <img
-                src={item.image}
-                alt={item.alt}
-                width={1440}
-                height={900}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                className="landing-capability-image"
-              />
-              <div className="landing-capability-tile-copy">
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-            </article>
-          ))}
+  return (
+    <section
+      className="landing-capability-showcase"
+      data-testid="landing-capability-showcase"
+    >
+      <Container>
+        <div className="landing-capability-layout">
+          <div className="landing-capability-copy">
+            <h2 className="landing-capability-title">{heading}</h2>
+            <p>{description}</p>
+          </div>
+
+          <div className="landing-capability-grid" data-testid="landing-capability-grid">
+            {FEATURE_STORIES.map((item, index) => {
+              const title = `${item.title}${visualQaStateOverride?.storyTitleSuffix ?? ''}`;
+              const storyDescription = `${item.description}${visualQaStateOverride?.storyDescriptionSuffix ?? ''}`;
+              const headingId = `landing-capability-tile-${index + 1}-title`;
+
+              return (
+                <article
+                  key={item.title}
+                  aria-labelledby={headingId}
+                  className={`landing-capability-tile landing-capability-tile-${index + 1}`}
+                  data-testid={`landing-capability-tile-${index + 1}`}
+                >
+                  <div className="landing-capability-media">
+                    <img
+                      src={visualQaStateOverride?.imageSrc ?? item.image}
+                      alt={item.alt}
+                      width={1440}
+                      height={900}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      className="landing-capability-image"
+                      onError={(event) => {
+                        event.currentTarget.hidden = true;
+                        event.currentTarget.nextElementSibling?.removeAttribute('hidden');
+                      }}
+                    />
+                    <span
+                      hidden
+                      role="status"
+                      className="landing-capability-image-fallback"
+                      data-testid={`landing-capability-image-fallback-${index + 1}`}
+                    >
+                      {title} 미리보기 이미지를 불러올 수 없습니다.
+                    </span>
+                  </div>
+                  <div className="landing-capability-tile-copy">
+                    <h3 id={headingId}>{title}</h3>
+                    <p>{storyDescription}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </section>
   );
 }

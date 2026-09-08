@@ -4,15 +4,21 @@ const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
 
 export function StatCard({
+  animate = true,
   icon: Icon,
   label,
+  testId,
   value,
   color,
+  visualQaDisplayValueOverride,
 }: {
+  animate?: boolean;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  testId?: string;
   value: number;
   color: 'amber' | 'emerald' | 'sky';
+  visualQaDisplayValueOverride?: number;
 }) {
   const colorClasses = {
     amber: {
@@ -39,6 +45,7 @@ export function StatCard({
 
   return (
     <div
+      data-testid={testId}
       className={`
         relative overflow-hidden rounded-xl border ${classes.border}
         ${classes.surface}
@@ -46,16 +53,18 @@ export function StatCard({
         transition-[border-color,box-shadow] duration-150 hover:shadow-xl
       `}
     >
-      <div className="relative flex items-start justify-between">
-        <div>
-          <p className={`mb-2 ${adminFieldLabelClassName}`}>
+      <div className="relative flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p data-testid="admin-stat-label" title={label} className={`mb-2 min-w-0 line-clamp-3 [overflow-wrap:anywhere] ${adminFieldLabelClassName}`}>
             {label}
           </p>
-          <p className={`text-3xl font-black ${classes.text} tracking-tight`}>
-            <AnimatedNumber value={value} />
+          <p className={`break-all text-lg font-black ${classes.text} tracking-tight sm:text-3xl`}>
+            {animate
+              ? <AnimatedNumber value={value} visualQaDisplayValueOverride={visualQaDisplayValueOverride} />
+              : value.toLocaleString()}
           </p>
         </div>
-        <div className={`p-3 rounded-xl bg-slate-800/50 ${classes.icon}`}>
+        <div className={`shrink-0 rounded-xl bg-slate-800/50 p-3 ${classes.icon}`}>
           <Icon className="w-7 h-7" />
         </div>
       </div>

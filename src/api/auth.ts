@@ -4,6 +4,7 @@ import {
   privatePost,
   requestPrivateReissue,
 } from './privateClient';
+import { getLogoutXsrfToken } from './csrf';
 
 export interface LoginRequest {
   email: string;
@@ -223,7 +224,15 @@ export interface PasswordResetConfirmResponse {
 }
 
 export const logoutUser = async (): Promise<void> => {
+  const xsrfToken = getLogoutXsrfToken();
+  if (!xsrfToken) {
+    throw new Error('로그아웃 CSRF 보호 토큰을 찾을 수 없습니다.');
+  }
+
   await privatePost<void, undefined>('/auth/logout', undefined, {
+    headers: {
+      'X-XSRF-TOKEN': xsrfToken,
+    },
     skipAuthSessionHandling: true,
   });
 };

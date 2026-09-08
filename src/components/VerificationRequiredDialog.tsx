@@ -1,4 +1,4 @@
-import { useEffect, useId, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,6 +7,7 @@ import {
     VerificationDialogShieldIcon as Shield,
 } from './icons/VerificationDialogIcons';
 import { Button } from "./ui/button";
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface VerificationRequiredDialogProps {
     isOpen: boolean;
@@ -46,6 +47,9 @@ export default function VerificationRequiredDialog({
     const navigate = useNavigate();
     const titleId = useId();
     const descriptionId = useId();
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    useFocusTrap(dialogRef, { active: isOpen });
 
     const isSecurityMode = mode === 'security';
     const dialogTitle = title || (isSecurityMode ? SECURITY_DEFAULT_TITLE : '본인인증 필요');
@@ -92,14 +96,18 @@ export default function VerificationRequiredDialog({
     return createPortal(
         <div className="fixed inset-0 z-[80]">
             <div className="absolute inset-0 bg-black/50" aria-hidden="true" onClick={onClose} />
-            <div className="absolute inset-0 flex items-center justify-center p-4" onClick={onClose}>
-                <div
+            <div className="absolute inset-0 overflow-y-auto p-4" onClick={onClose}>
+                <div className="flex min-h-full items-center justify-center">
+                  <div
+                    ref={dialogRef}
+                    data-testid="verification-required-dialog"
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby={titleId}
                     aria-describedby={descriptionId}
+                    tabIndex={-1}
                     onClick={(event) => event.stopPropagation()}
-                    className={`w-full max-w-[calc(100vw-2rem)] rounded-xl border p-6 shadow-dialog ring-1 ring-black/5 sm:max-w-md ${isSecurityMode
+                    className={`w-full max-w-[calc(100vw-2rem)] overflow-x-clip rounded-xl border p-6 shadow-dialog ring-1 ring-black/5 sm:max-w-md ${isSecurityMode
                         ? 'border-slate-700 bg-slate-950/95 text-white'
                         : 'bg-background'
                         }`}
@@ -115,10 +123,10 @@ export default function VerificationRequiredDialog({
                                 <Shield className="h-6 w-6 text-red-600" aria-hidden="true" />
                             )}
                         </div>
-                        <h2 id={titleId} className={`text-xl font-bold ${isSecurityMode ? 'text-white' : 'text-foreground'}`}>
+                        <h2 id={titleId} className={`[overflow-wrap:anywhere] text-xl font-bold ${isSecurityMode ? 'text-white' : 'text-foreground'}`}>
                             {dialogTitle}
                         </h2>
-                        <div id={descriptionId} className={`pt-2 text-body ${isSecurityMode ? 'text-slate-200' : 'text-muted-foreground'}`}>
+                        <div id={descriptionId} className={`[overflow-wrap:anywhere] pt-2 text-body ${isSecurityMode ? 'text-slate-200' : 'text-muted-foreground'}`}>
                             {dialogDescription}
                         </div>
                     </div>
@@ -145,17 +153,18 @@ export default function VerificationRequiredDialog({
                         <Button
                             variant="outline"
                             onClick={onClose}
-                            className={`flex-1 ${isSecurityMode ? 'border-slate-500 text-slate-200 hover:text-white' : ''}`}
+                            className={`h-auto min-h-9 flex-1 !whitespace-normal [overflow-wrap:anywhere] ${isSecurityMode ? 'border-slate-500 text-slate-200 hover:text-white' : ''}`}
                         >
                             나중에 하기
                         </Button>
                         <Button
                             onClick={handleAction}
-                            className={`flex-1 ${isSecurityMode ? 'bg-amber-500 text-black hover:bg-amber-500/90' : 'bg-primary text-white'}`}
+                            className={`h-auto min-h-9 flex-1 !whitespace-normal [overflow-wrap:anywhere] ${isSecurityMode ? 'bg-amber-500 text-black hover:bg-amber-500/90' : 'bg-primary text-white'}`}
                         >
                             {actionLabel}
                         </Button>
                     </div>
+                  </div>
                 </div>
             </div>
         </div>,

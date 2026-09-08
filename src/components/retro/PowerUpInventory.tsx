@@ -49,6 +49,9 @@ const powerupInventoryStyles = `
   }
 
   .retro-powerup-card {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,6 +83,11 @@ const powerupInventoryStyles = `
 
   .retro-powerup-card.is-clickable:hover .retro-powerup-icon {
     animation: retroPowerupFloatHover 0.6s ease-in-out infinite;
+  }
+
+  .retro-powerup-card.is-clickable:focus-visible {
+    outline: 3px solid #00ffff;
+    outline-offset: 3px;
   }
 
   .retro-powerup-card.is-clickable:active {
@@ -174,6 +182,7 @@ interface PowerUpInventoryProps {
   activePowerups?: string[];
   onUsePowerup?: (type: string) => Promise<void>;
   disabled?: boolean;
+  containerTestId?: string;
 }
 
 const getPowerupCardStyle = (
@@ -202,19 +211,33 @@ export default function PowerUpInventory({
   activePowerups = [],
   onUsePowerup,
   disabled = false,
+  containerTestId,
 }: PowerUpInventoryProps) {
   const [selectedPowerup, setSelectedPowerup] = useState<PowerupData | null>(null);
   const [isUsing, setIsUsing] = useState(false);
+  const [useError, setUseError] = useState<string | null>(null);
+
+  const openPowerup = (powerup: PowerupData) => {
+    setUseError(null);
+    setSelectedPowerup(powerup);
+  };
+
+  const closePowerup = () => {
+    if (isUsing) return;
+    setUseError(null);
+    setSelectedPowerup(null);
+  };
 
   const handleUse = async () => {
     if (!selectedPowerup || !onUsePowerup) return;
 
+    setUseError(null);
     setIsUsing(true);
     try {
       await onUsePowerup(selectedPowerup.type);
       setSelectedPowerup(null);
-    } catch (error) {
-      console.error('Failed to use powerup:', error);
+    } catch {
+      setUseError('아이템을 사용하지 못했습니다. 잠시 후 다시 시도해 주세요.');
     } finally {
       setIsUsing(false);
     }
@@ -222,6 +245,7 @@ export default function PowerUpInventory({
 
   return (
     <div
+      data-testid={containerTestId}
       style={{
         background: `
           repeating-linear-gradient(
@@ -306,6 +330,7 @@ export default function PowerUpInventory({
             <button
               key={powerup.type}
               type="button"
+              data-testid={`retro-powerup-card-${powerup.type.toLowerCase()}`}
               className={[
                 'retro-powerup-card',
                 hasItem ? 'has-item' : '',
@@ -313,7 +338,7 @@ export default function PowerUpInventory({
                 actionable ? 'is-clickable' : '',
               ].filter(Boolean).join(' ')}
               style={getPowerupCardStyle(powerup.color, hasItem, isActive, actionable)}
-              onClick={() => actionable && setSelectedPowerup(powerup)}
+              onClick={() => actionable && openPowerup(powerup)}
               disabled={!actionable}
             >
               {hasItem && (
@@ -380,9 +405,11 @@ export default function PowerUpInventory({
                 {powerup.description}
               </span>
               <span
+                className="retro-powerup-count"
                 style={{
+                  boxSizing: 'border-box',
                   fontFamily: retroDisplay,
-                  fontSize: '14px',
+                  fontSize: 'clamp(8px, 3vw, 14px)',
                   color: hasItem ? '#fff' : '#444',
                   background: hasItem
                     ? `linear-gradient(180deg, ${powerup.color}40 0%, ${powerup.color}20 100%)`
@@ -390,6 +417,10 @@ export default function PowerUpInventory({
                   padding: '6px 16px',
                   borderRadius: '4px',
                   border: `2px solid ${hasItem ? powerup.color : '#333'}`,
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                   textShadow: hasItem ? `0 0 8px ${powerup.color}` : undefined,
                   imageRendering: 'pixelated',
                 }}
@@ -404,7 +435,8 @@ export default function PowerUpInventory({
       {selectedPowerup && (
         <div
           className="retro-powerup-modal"
-          onClick={() => !isUsing && setSelectedPowerup(null)}
+          data-testid="retro-powerup-modal"
+          onClick={closePowerup}
           style={{
             position: 'fixed',
             inset: 0,
@@ -418,7 +450,11 @@ export default function PowerUpInventory({
         >
           <div
             className="retro-powerup-modal-content"
+            data-testid="retro-powerup-modal-content"
             onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="retro-powerup-modal-title"
             style={{
               background: 'linear-gradient(180deg, #1a1a2e 0%, #0a0a1e 100%)',
               border: '3px solid #ff00ff',
@@ -431,6 +467,7 @@ export default function PowerUpInventory({
           >
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>{selectedPowerup.icon}</div>
             <h4
+              id="retro-powerup-modal-title"
               style={{
                 fontFamily: retroText,
                 fontSize: '14px',
@@ -460,11 +497,35 @@ export default function PowerUpInventory({
               <br />
               이 아이템을 사용하시겠습니까?
             </p>
+            {useError && (
+              <p
+                data-testid="retro-powerup-modal-error"
+                role="alert"
+                style={{
+                  boxSizing: 'border-box',
+                  width: '100%',
+                  margin: '0 0 16px',
+                  padding: '10px 12px',
+                  border: '2px solid #ff6666',
+                  borderRadius: '4px',
+                  background: 'rgba(120, 0, 0, 0.35)',
+                  color: '#ffd6d6',
+                  fontFamily: retroText,
+                  fontSize: '10px',
+                  lineHeight: 1.6,
+                  overflowWrap: 'anywhere',
+                  textShadow: textOutline,
+                }}
+              >
+                {useError}
+              </p>
+            )}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 type="button"
                 className="retro-powerup-modal-button secondary"
-                onClick={() => setSelectedPowerup(null)}
+                data-testid="retro-powerup-modal-cancel"
+                onClick={closePowerup}
                 disabled={isUsing}
                 style={{
                   fontFamily: retroText,
@@ -483,6 +544,8 @@ export default function PowerUpInventory({
               <button
                 type="button"
                 className="retro-powerup-modal-button primary"
+                data-testid="retro-powerup-modal-use"
+                data-using={isUsing ? 'true' : 'false'}
                 onClick={handleUse}
                 disabled={isUsing}
                 style={{

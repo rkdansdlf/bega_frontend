@@ -49,6 +49,7 @@ export default function LandingHero() {
         <button
           type="button"
           data-testid="landing-home-cta"
+          data-vqa-min-touch="44"
           className="landing-home-cta"
           onClick={() => navigate('/home')}
         >

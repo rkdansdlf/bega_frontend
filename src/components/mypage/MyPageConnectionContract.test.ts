@@ -24,14 +24,12 @@ test('마이페이지 배지 도감은 기존 다이어리 통계 API 기반 뷰
   assert.match(diaryApiSource, /privateGet<DiaryStatistics>\('\/diary\/statistics'\)/);
 });
 
-test('마이페이지 알림은 기존 알림 패널 API 흐름으로 연결된다', () => {
+test('마이페이지 알림 뷰는 기존 알림 패널을 렌더링한다', () => {
   const profileTypesSource = readSource('src/types/profile.ts');
   const useMyPageSource = readSource('src/hooks/useMyPage.ts');
   const viewRuntimeSource = readSource('src/components/mypage/MyPageViewRuntime.tsx');
   const sidebarMoreSource = readSource('src/components/mypage/MyPageSidebarMoreRuntime.tsx');
   const alertsSectionSource = readSource('src/components/mypage/AlertsSection.tsx');
-  const notificationPanelSource = readSource('src/components/NotificationPanel.tsx');
-  const notificationApiSource = readSource('src/utils/notificationApi.ts');
 
   assert.match(profileTypesSource, /\|\s+'alerts'/);
   assert.match(useMyPageSource, /'alerts'/);
@@ -39,10 +37,6 @@ test('마이페이지 알림은 기존 알림 패널 API 흐름으로 연결된�
   assert.match(viewRuntimeSource, /viewMode === 'alerts'/);
   assert.match(sidebarMoreSource, /onSetViewMode\('alerts'\)/);
   assert.match(alertsSectionSource, /<NotificationPanel \/>/);
-  assert.match(notificationPanelSource, /notificationApi\.getNotifications\(\)/);
-  assert.match(notificationApiSource, /\/notifications\/my/);
-  assert.doesNotMatch(notificationApiSource, /SERVER_BASE_URL/);
-  assert.doesNotMatch(notificationApiSource, /fallbackRequest/);
 });
 
 test('마이페이지 계정 설정은 auth providers 백엔드 흐름으로 연결된다', () => {

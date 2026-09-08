@@ -10,6 +10,10 @@ import {
   toRequestBody,
 } from './httpClientCore';
 import type { ApiClientErrorData, ApiParamValue } from './httpClientCore';
+import {
+  claimAuthSessionExpiry,
+  getAuthSessionGeneration,
+} from './authSessionGeneration';
 
 type PrivateApiParamValue = ApiParamValue;
 
@@ -37,26 +41,31 @@ interface PrivateRequestOptions {
   timeoutMs?: number;
 }
 
-let hasSessionExpired = false;
-
 const dispatchAuthSessionExpired = (
   detail: Record<string, unknown>,
   skipAuthSessionHandling?: boolean,
+  sessionGeneration = getAuthSessionGeneration(),
 ) => {
-  if (skipAuthSessionHandling || hasSessionExpired || typeof window === 'undefined') {
+  if (
+    skipAuthSessionHandling
+    || typeof window === 'undefined'
+    || !claimAuthSessionExpiry(sessionGeneration)
+  ) {
     return;
   }
 
-  hasSessionExpired = true;
   window.dispatchEvent(new CustomEvent('auth-session-expired', { detail }));
 };
 
-export const requestPrivateReissue = async (): Promise<boolean> => requestAuthReissue();
+export const requestPrivateReissue = async (): Promise<boolean> => {
+  return requestAuthReissue();
+};
 
 const privateRequest = async <T>(
   endpoint: string,
   options: PrivateRequestOptions = {},
   hasRetried = false,
+  sessionGeneration = getAuthSessionGeneration(),
 ): Promise<T> => {
   const timeout = createTimeoutController(options.timeoutMs ?? DEFAULT_API_TIMEOUT_MS, options.signal);
   const method = options.method ?? 'GET';
@@ -75,9 +84,8 @@ const privateRequest = async <T>(
 
     if (response.status === 401 && !hasRetried && !options.skipAuthSessionHandling) {
       try {
-        await requestAuthReissue();
-        hasSessionExpired = false;
-        return privateRequest<T>(endpoint, options, true);
+        await requestPrivateReissue();
+        return privateRequest<T>(endpoint, options, true, getAuthSessionGeneration());
       } catch (reissueError) {
         dispatchAuthSessionExpired({
           cause: 'reissue_failed',
@@ -88,7 +96,7 @@ const privateRequest = async <T>(
             ? (responseBody as { code?: string }).code
             : undefined,
           reissueError: reissueError instanceof Error ? reissueError.message : String(reissueError),
-        }, options.skipAuthSessionHandling);
+        }, options.skipAuthSessionHandling, sessionGeneration);
       }
     } else if (response.status === 401 && !options.skipAuthSessionHandling) {
       dispatchAuthSessionExpired({
@@ -99,7 +107,7 @@ const privateRequest = async <T>(
         requestCode: typeof (responseBody as { code?: unknown } | null)?.code === 'string'
           ? (responseBody as { code?: string }).code
           : undefined,
-      }, options.skipAuthSessionHandling);
+      }, options.skipAuthSessionHandling, sessionGeneration);
     }
 
     if (!response.ok) {

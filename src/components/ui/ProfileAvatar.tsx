@@ -77,10 +77,14 @@ export function ProfileAvatar({
     return `bg-gradient-to-br ${color}`;
   })();
 
-  const resolvedWidth = width ?? height;
-  const resolvedHeight = height ?? width;
-  const hasFixedSize = resolvedWidth != null && resolvedHeight != null;
-  const resolvedSize = hasFixedSize && resolvedWidth === resolvedHeight ? resolvedWidth : undefined;
+  const requestedWidth = width ?? height;
+  const requestedHeight = height ?? width;
+  const resolvedSize = requestedWidth != null && requestedHeight != null
+    ? Math.min(requestedWidth, requestedHeight)
+    : undefined;
+  const resolvedWidth = resolvedSize;
+  const resolvedHeight = resolvedSize;
+  const hasFixedSize = resolvedSize != null;
   const resolvedSizes = sizes ?? (resolvedSize ? `${resolvedSize}px` : undefined);
   const sizeStyle = hasFixedSize
     ? {
@@ -153,6 +157,9 @@ export function ProfileAvatar({
   const fallbackElement = (
     <div
       data-testid="profile-avatar-fallback"
+      role={alt ? 'img' : undefined}
+      aria-label={alt || undefined}
+      aria-hidden={alt ? undefined : true}
       style={fallbackElementStyle}
       className={fallbackClassName}
     >

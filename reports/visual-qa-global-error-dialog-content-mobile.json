@@ -1,0 +1,486 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T22:16:44.394Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 35,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 120000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-global-error-dialog-content-mobile"
+  },
+  "summary": {
+    "total": 35,
+    "passed": 35,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=boundary-maximum|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-boundary-maximum-interact-e9572fab5d6b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=boundary-minimum|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-boundary-minimum-interact-ba34a2067c2b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=empty|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-empty-interactions-defaul-d5b45a3ebabc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=long-korean|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-long-korean-interactions-85ad6e4f1440.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-6e8ff632eb97.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=focus-visible|system=online|variant.preset=idle|interactionTarget=close",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-d4734a7a5bd4.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=focus-visible|system=online|variant.preset=idle|interactionTarget=confirm",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-32287cfe4648.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=focus-visible|system=online|variant.preset=idle|interactionTarget=feedback-submit",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-f43210c57034.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-submit",
+        "setup": [
+          {
+            "action": "fill",
+            "selector": "[data-testid=\"error-feedback\"] textarea",
+            "value": "MOCK 비생산 포커스 오류 제보"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=focus-visible|system=online|variant.preset=idle|interactionTarget=retry",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-e0e17db32d4f.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"error-feedback\"] button:first-child",
+        "targetId": "retry",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=focus-visible|system=online|variant.preset=idle|interactionTarget=textarea",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-1dd2a804df0d.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"error-feedback\"] textarea",
+        "targetId": "textarea",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=hover|system=online|variant.preset=idle|interactionTarget=close",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-a394751eda96.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=hover|system=online|variant.preset=idle|interactionTarget=confirm",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-a0b30950bb77.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=hover|system=online|variant.preset=idle|interactionTarget=feedback-submit",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-cec5b4fd3b7e.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-submit",
+        "setup": [
+          {
+            "action": "fill",
+            "selector": "[data-testid=\"error-feedback\"] textarea",
+            "value": "MOCK 비생산 hover 오류 제보"
+          }
+        ],
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=hover|system=online|variant.preset=idle|interactionTarget=retry",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-981473b48273.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"error-feedback\"] button:first-child",
+        "targetId": "retry",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=input|system=online|variant.preset=idle|interactionTarget=textarea",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-8456eda0a6c1.png",
+      "interaction": {
+        "action": "fill",
+        "selector": "[data-testid=\"error-feedback\"] textarea",
+        "targetId": "textarea",
+        "value": "MOCK 비생산 모바일 오류 상황 입력",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=keyboard-navigation|system=online|variant.preset=idle|interactionTarget=confirm-to-close",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-127ec18bff01.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+        "targetId": "confirm-to-close",
+        "key": "Tab",
+        "waitForSelector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=pressed|system=online|variant.preset=idle|interactionTarget=close",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-1770f1a44a60.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"global-error-dialog-content\"] button[aria-label=\"닫기\"]",
+        "targetId": "close",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=pressed|system=online|variant.preset=idle|interactionTarget=confirm",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-d146ed9a30e2.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"global-error-dialog-confirm\"]",
+        "targetId": "confirm",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=pressed|system=online|variant.preset=idle|interactionTarget=feedback-submit",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-0e2b8149c831.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-submit",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=pressed|system=online|variant.preset=idle|interactionTarget=retry",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-32b05c6e607c.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"error-feedback\"] button:first-child",
+        "targetId": "retry",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=selected|system=offline|variant.preset=idle|interactionTarget=feedback-failure",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-54f949b114f5.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-failure",
+        "setup": [
+          {
+            "action": "fill",
+            "selector": "[data-testid=\"error-feedback\"] textarea",
+            "value": "MOCK 비생산 오프라인 오류 제보"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"error-feedback\"] [aria-live=\"polite\"].text-red-600",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=selected|system=online|variant.preset=idle|interactionTarget=feedback-success",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-e312211bc479.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-success",
+        "setup": [
+          {
+            "action": "press-key",
+            "selector": "[data-testid=\"error-feedback\"] textarea",
+            "key": "A"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"error-feedback\"] [aria-live=\"polite\"].text-emerald-700",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=submitting|system=timeout|variant.preset=idle|interactionTarget=feedback-timeout",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-a3e458174fd3.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"error-feedback\"] button:last-child",
+        "targetId": "feedback-timeout",
+        "setup": [
+          {
+            "action": "fill",
+            "selector": "[data-testid=\"error-feedback\"] textarea",
+            "value": "MOCK 비생산 지연 오류 제보"
+          }
+        ],
+        "waitForSelector": "[data-testid=\"error-feedback\"] button:last-child[aria-busy=\"true\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=maximum-supported|interactions=submitting|system=timeout|variant.preset=idle|interactionTarget=retry-timeout",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-maximum-supported-interac-6df69eddbb7c.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"error-feedback\"] button:first-child",
+        "targetId": "retry-timeout",
+        "waitForSelector": "[data-testid=\"error-feedback\"] button:first-child:disabled",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=null-optional|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-null-optional-interaction-3c79dd20da5f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=closed",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-210557d5f67a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-b3e4ab992baf.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=retry-missing",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-a14244714031.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=source-runtime",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-a5bcc2acd5b3.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=source-unhandled-rejection",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-aa032a2a9be0.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=status-404",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-07365303ff13.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=status-409",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-5093de564f97.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=status-500",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-3ee877305dc4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=populated|interactions=default|system=online|variant.preset=status-null",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-populated-interactions-de-473727122f71.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent:data=unbroken-token|interactions=default|system=online|variant.preset=idle",
+      "componentId": "src/components/GlobalErrorDialogContent.tsx#GlobalErrorDialogContent",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-global-error-dialog-content-mobile/globalerrordialogcontent-globalerrordialogcontent-data-unbroken-token-interactio-6cb4aaa4d7bd.png",
+      "attempts": 1
+    }
+  ]
+}

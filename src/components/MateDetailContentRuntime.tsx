@@ -417,10 +417,10 @@ export default function MateDetailContentRuntime({
       variant: 'outline',
       className: 'w-full h-12 border-primary text-primary hover:bg-primary/10',
     });
-  } else if (party.status === 'PENDING') {
+  } else if (party.status === 'PENDING' || party.status === 'SELLING') {
     actionButtons.push({
       key: 'apply',
-      label: '참여하기',
+      label: party.status === 'SELLING' ? '직거래 신청하기' : '참여하기',
       onClick: onApply,
       className: 'w-full h-14 text-xl font-bold text-white shadow-xl hover:shadow-2xl hover:bg-primary-hover transition-all bg-primary',
     });
@@ -430,7 +430,7 @@ export default function MateDetailContentRuntime({
 
   return (
     <>
-      <div className="mb-[calc(7rem_+_env(safe-area-inset-bottom))] grid grid-cols-1 gap-3.5 sm:gap-4 md:gap-5 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 xl:gap-7">
+      <div className="mb-6 grid grid-cols-1 gap-3.5 sm:gap-4 md:gap-5 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 xl:gap-7">
         <div className="flex min-w-0 flex-col gap-3.5 sm:gap-4 md:gap-5 lg:gap-4">
           <MateDetailHeroBlock
             party={party}

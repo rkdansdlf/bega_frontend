@@ -46,11 +46,11 @@ const RoomRow = ({ room, onClick }: { room: DmInboxRoom; onClick: () => void }) 
       </div>
 
       <div className="min-w-0 flex-1 text-left">
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1">
           <span className={`truncate text-sm ${hasUnread ? 'font-bold text-gray-900 dark:text-white' : 'font-medium text-gray-800 dark:text-gray-200'}`}>
             {targetUser?.name ?? '알 수 없는 사용자'}
           </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="truncate text-xs text-gray-400 dark:text-gray-500">
             {targetUser?.handle ? `@${targetUser.handle.replace(/^@/, '')}` : ''}
           </span>
         </div>
@@ -119,9 +119,9 @@ export default function DmInboxRuntime() {
             {[0, 1, 2].map((i) => (
               <div key={i} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-border dark:bg-card">
                 <div className="h-12 w-12 flex-shrink-0 rounded-full bg-gray-200 dark:bg-secondary" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-24 rounded bg-gray-200 dark:bg-secondary" />
-                  <div className="h-3 w-40 rounded bg-gray-100 dark:bg-secondary/60" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="h-4 w-24 max-w-full rounded bg-gray-200 dark:bg-secondary" />
+                  <div className="h-3 w-40 max-w-full rounded bg-gray-100 dark:bg-secondary/60" />
                 </div>
               </div>
             ))}

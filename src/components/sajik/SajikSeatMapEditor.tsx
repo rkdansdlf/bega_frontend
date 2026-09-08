@@ -38,6 +38,20 @@ interface ActiveVertex {
   vertexIndex?: number;
 }
 
+export interface SajikSeatMapEditorStateOverride {
+  dataState?: 'clean' | 'dirty-pass' | 'invalid-hitpath';
+  query?: string;
+  selectedSectionId?: string;
+  editingTarget?: EditableTarget;
+  syncHitPath?: boolean;
+  nudgeStep?: number;
+  copyStatus?: 'idle' | 'copied' | 'blocked' | 'failed';
+}
+
+interface SajikSeatMapEditorProps {
+  stateOverride?: SajikSeatMapEditorStateOverride;
+}
+
 function matchesSection(section: SajikSeatMapDatasetSection, query: string) {
   if (!query.trim()) {
     return true;
@@ -268,7 +282,7 @@ function dirtySectionIdsFromDrafts(
     .sort((left, right) => left.localeCompare(right));
 }
 
-function PathValidationStatus({
+export function PathValidationStatus({
   label,
   issues,
 }: {
@@ -280,28 +294,56 @@ function PathValidationStatus({
   return (
     <div
       data-testid={`sajik-editor-${label.toLowerCase()}-validator-${passed ? 'pass' : 'fail'}`}
-      className={`flex items-center justify-between border px-2 py-1 text-xs font-black ${
+      className={`flex min-w-0 items-center justify-between gap-2 border px-2 py-1 text-xs font-black ${
         passed ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'
       }`}
     >
-      <span>{label}</span>
-      <span>{passed ? 'PASS' : `${issues.length} ISSUES`}</span>
+      <span className="min-w-0 break-all">{label}</span>
+      <span className="shrink-0">{passed ? 'PASS' : `${issues.length} ISSUES`}</span>
     </div>
   );
 }
 
-export default function SajikSeatMapEditor() {
+export default function SajikSeatMapEditor({ stateOverride }: SajikSeatMapEditorProps = {}) {
   const dataset = useMemo(() => buildSajikSeatMapDataset(), []);
   const datasetIssues = useMemo(() => validateSajikSeatMapDatasetIssues(dataset), [dataset]);
-  const [query, setQuery] = useState('');
-  const [selectedSectionId, setSelectedSectionId] = useState('112');
-  const [editingTarget, setEditingTarget] = useState<EditableTarget>('visualPath');
-  const [syncHitPath, setSyncHitPath] = useState(true);
-  const [nudgeStep, setNudgeStep] = useState(1);
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'blocked' | 'failed'>('idle');
+  const initialSelectedSectionId = stateOverride?.selectedSectionId ?? '112';
+  const [query, setQuery] = useState(stateOverride?.query ?? '');
+  const [selectedSectionId, setSelectedSectionId] = useState(initialSelectedSectionId);
+  const [editingTarget, setEditingTarget] = useState<EditableTarget>(stateOverride?.editingTarget ?? 'visualPath');
+  const [syncHitPath, setSyncHitPath] = useState(stateOverride?.syncHitPath ?? true);
+  const [nudgeStep, setNudgeStep] = useState(stateOverride?.nudgeStep ?? 1);
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'blocked' | 'failed'>(stateOverride?.copyStatus ?? 'idle');
   const [selectedVertexIndex, setSelectedVertexIndex] = useState(0);
   const [activeVertex, setActiveVertex] = useState<ActiveVertex | null>(null);
-  const [draftGeometries, setDraftGeometries] = useState<Record<string, SajikSeatMapSectionPatchGeometry>>({});
+  const [draftGeometries, setDraftGeometries] = useState<Record<string, SajikSeatMapSectionPatchGeometry>>(() => {
+    const dataState = stateOverride?.dataState ?? 'clean';
+    if (dataState === 'clean') return {};
+
+    const initialSection = dataset.sections.find((section) => section.sectionId === initialSelectedSectionId)
+      ?? dataset.sections[0];
+    const initialGeometry = geometrySnapshotForSection(initialSection);
+    if (dataState === 'invalid-hitpath') {
+      return {
+        [initialSection.sectionId]: invalidHitPathFixture(
+          initialGeometry,
+          dataset.image.width,
+          dataset.image.height,
+        ),
+      };
+    }
+
+    const [initialX, initialY] = initialGeometry.visualPolygon[0];
+    return {
+      [initialSection.sectionId]: updateGeometryVertex({
+        geometry: initialGeometry,
+        target: 'visualPath',
+        vertexIndex: 0,
+        point: [clampCoordinate(initialX + 1, dataset.image.width), initialY],
+        syncHitPath: true,
+      }),
+    };
+  });
   const filteredSections = useMemo(
     () => dataset.sections.filter((section) => matchesSection(section, query)),
     [dataset.sections, query],
@@ -497,16 +539,16 @@ export default function SajikSeatMapEditor() {
       data-summary-enabled-sections={dataset.summary.enabledSections}
       data-summary-alias-only-sections={dataset.summary.aliasOnlySections}
       data-summary-markers={dataset.summary.markers}
-      className="min-h-screen bg-zinc-50 text-zinc-950"
+      className="min-h-screen overflow-x-hidden bg-zinc-50 text-zinc-950"
     >
-      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-4 py-4 lg:px-6">
+      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-3 py-4 sm:px-4 lg:px-6">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3">
-          <div>
+          <div className="min-w-0">
             <div className="text-11 font-black uppercase tracking-[0.18em] text-cyan-700">Internal seatmap editor v1.7</div>
             <h1 className="text-xl font-black text-zinc-950">사직 좌석도 polygon editor</h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-zinc-600">
-            <span className="rounded border border-zinc-200 bg-white px-2 py-1">{dataset.mapVersion}</span>
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-xs font-bold text-zinc-600">
+            <span className="max-w-full break-all rounded border border-zinc-200 bg-white px-2 py-1">{dataset.mapVersion}</span>
             <span className="rounded border border-zinc-200 bg-white px-2 py-1">{dataset.image.viewBox}</span>
             <span className="rounded border border-zinc-200 bg-white px-2 py-1">{dataset.image.width}x{dataset.image.height}</span>
           </div>
@@ -657,7 +699,7 @@ export default function SajikSeatMapEditor() {
                   placeholder="sectionId, category, marker"
                 />
               </div>
-              <div className="mt-3 grid grid-cols-4 gap-2 text-center text-xs font-black">
+              <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs font-black sm:grid-cols-4">
                 <div className="border border-zinc-200 bg-zinc-50 px-2 py-2">
                   <div data-testid="sajik-editor-total-sections">{dataset.summary.totalSections}</div>
                   <div className="text-10 uppercase text-zinc-500">sections</div>
@@ -683,7 +725,7 @@ export default function SajikSeatMapEditor() {
                   key={section.blockId}
                   type="button"
                   onClick={() => handleSelectSection(section.sectionId)}
-                  className={`flex w-full items-center justify-between gap-3 border-b border-zinc-100 px-3 py-2 text-left text-sm ${
+                  className={`flex min-h-11 w-full items-center justify-between gap-2 border-b border-zinc-100 px-3 py-2 text-left text-sm ${
                     section.sectionId === selectedSection?.sectionId ? 'bg-cyan-50 text-cyan-950' : 'bg-white text-zinc-800 hover:bg-zinc-50'
                   }`}
                 >
@@ -761,7 +803,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-reset-draft"
                     onClick={resetSelectedDraft}
-                    className="inline-flex h-9 w-9 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:min-w-9"
                     disabled={!selectedDraftChanged}
                     aria-label="Reset selected section draft"
                   >
@@ -771,7 +813,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-reset-all-drafts"
                     onClick={resetAllDrafts}
-                    className="h-9 border border-zinc-300 bg-white px-2 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="min-h-11 border border-zinc-300 bg-white px-3 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9"
                     disabled={dirtySectionIds.length === 0}
                   >
                     all
@@ -791,7 +833,7 @@ export default function SajikSeatMapEditor() {
                 hitPath {selectedHitPathDiffers ? 'differs from visualPath' : 'matches visualPath'}
               </div>
 
-              <div className="mt-3 grid grid-cols-3 gap-2" data-testid="sajik-editor-path-kind-toggle">
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3" data-testid="sajik-editor-path-kind-toggle">
                 {(['visualPath', 'hitPath', 'labelPoint'] as const).map((target) => (
                   <button
                     key={target}
@@ -801,7 +843,7 @@ export default function SajikSeatMapEditor() {
                       setEditingTarget(target);
                       setSelectedVertexIndex(0);
                     }}
-                    className={`border px-2 py-2 text-xs font-black ${
+                    className={`min-h-11 border px-2 py-2 text-xs font-black ${
                       editingTarget === target
                         ? 'border-cyan-500 bg-cyan-50 text-cyan-900'
                         : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'
@@ -812,13 +854,13 @@ export default function SajikSeatMapEditor() {
                 ))}
               </div>
 
-              <label className="mt-3 flex items-center gap-2 text-xs font-bold text-zinc-700">
+              <label className="mt-3 flex min-h-11 items-center gap-2 text-xs font-bold text-zinc-700">
                 <input
                   data-testid="sajik-editor-sync-hitpath"
                   type="checkbox"
                   checked={syncHitPath}
                   onChange={(event) => setSyncHitPath(event.target.checked)}
-                  className="h-4 w-4 accent-cyan-700"
+                  className="h-5 w-5 shrink-0 accent-cyan-700"
                 />
                 visualPath edit syncs hitPath
               </label>
@@ -839,7 +881,7 @@ export default function SajikSeatMapEditor() {
                         setSelectedVertexIndex(Math.max(0, Math.min(editablePoints.length - 1, Math.round(nextIndex))));
                       }
                     }}
-                    className="mt-1 h-8 w-full border border-zinc-300 px-2 font-mono text-xs disabled:bg-zinc-100"
+                    className="mt-1 h-11 w-full border border-zinc-300 px-2 font-mono text-xs disabled:bg-zinc-100 sm:h-8"
                   />
                 </label>
                 <label className="font-bold text-zinc-700">
@@ -848,7 +890,7 @@ export default function SajikSeatMapEditor() {
                     data-testid="sajik-editor-nudge-step"
                     value={nudgeStep}
                     onChange={(event) => setNudgeStep(Number(event.target.value))}
-                    className="mt-1 h-8 w-full border border-zinc-300 bg-white px-2 font-mono text-xs"
+                    className="mt-1 h-11 w-full border border-zinc-300 bg-white px-2 font-mono text-xs sm:h-8"
                   >
                     <option value={1}>1px</option>
                     <option value={5}>5px</option>
@@ -857,8 +899,8 @@ export default function SajikSeatMapEditor() {
                 </label>
               </div>
 
-              <div className="mt-3 grid grid-cols-[1fr_auto] items-center gap-3">
-                <div className="text-xs font-semibold text-zinc-700" data-testid="sajik-editor-selected-vertex">
+              <div className="mt-3 grid grid-cols-1 items-center gap-3 sm:grid-cols-[1fr_auto]">
+                <div className="min-w-0 break-all text-xs font-semibold text-zinc-700" data-testid="sajik-editor-selected-vertex">
                   {editingTarget === 'labelPoint' ? 'labelPoint' : `vertex ${normalizedVertexIndex}`}: {selectedEditablePoint[0]}, {selectedEditablePoint[1]}
                 </div>
                 <div className="grid grid-cols-3 gap-1">
@@ -867,7 +909,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-nudge-y-minus"
                     onClick={() => nudgeSelectedVertex(0, -1)}
-                    className="inline-flex h-8 w-8 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                    className="inline-flex h-11 w-11 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 sm:h-8 sm:w-8"
                     aria-label="Nudge selected vertex up"
                   >
                     <ArrowUp className="h-4 w-4" aria-hidden="true" />
@@ -877,7 +919,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-nudge-x-minus"
                     onClick={() => nudgeSelectedVertex(-1, 0)}
-                    className="inline-flex h-8 w-8 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                    className="inline-flex h-11 w-11 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 sm:h-8 sm:w-8"
                     aria-label="Nudge selected vertex left"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -886,7 +928,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-nudge-y-plus"
                     onClick={() => nudgeSelectedVertex(0, 1)}
-                    className="inline-flex h-8 w-8 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                    className="inline-flex h-11 w-11 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 sm:h-8 sm:w-8"
                     aria-label="Nudge selected vertex down"
                   >
                     <ChevronDown className="h-4 w-4" aria-hidden="true" />
@@ -895,7 +937,7 @@ export default function SajikSeatMapEditor() {
                     type="button"
                     data-testid="sajik-editor-nudge-x-plus"
                     onClick={() => nudgeSelectedVertex(1, 0)}
-                    className="inline-flex h-8 w-8 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                    className="inline-flex h-11 w-11 items-center justify-center border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 sm:h-8 sm:w-8"
                     aria-label="Nudge selected vertex right"
                   >
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -909,7 +951,7 @@ export default function SajikSeatMapEditor() {
                   data-testid="sajik-editor-add-vertex-after"
                   onClick={addVertexAfterSelected}
                   disabled={editingTarget === 'labelPoint'}
-                  className="inline-flex h-8 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-8"
                 >
                   <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                   add
@@ -919,7 +961,7 @@ export default function SajikSeatMapEditor() {
                   data-testid="sajik-editor-delete-vertex"
                   onClick={deleteSelectedVertex}
                   disabled={editingTarget === 'labelPoint' || editablePoints.length <= 3}
-                  className="inline-flex h-8 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-11 font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-8"
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                   delete
@@ -928,7 +970,7 @@ export default function SajikSeatMapEditor() {
                   type="button"
                   data-testid="sajik-editor-invalid-hitpath-fixture"
                   onClick={applyInvalidHitPathFixture}
-                  className="inline-flex h-8 items-center justify-center gap-1 border border-amber-300 bg-amber-50 px-2 text-11 font-black uppercase text-amber-800 hover:bg-amber-100"
+                  className="inline-flex min-h-11 items-center justify-center gap-1 border border-amber-300 bg-amber-50 px-2 text-11 font-black uppercase text-amber-800 hover:bg-amber-100 sm:min-h-8"
                 >
                   <Bug className="h-3.5 w-3.5" aria-hidden="true" />
                   fail
@@ -962,15 +1004,15 @@ export default function SajikSeatMapEditor() {
               )}
             </section>
 
-            <section className="grid min-h-0 flex-1 grid-rows-[auto_auto_minmax(90px,0.75fr)_minmax(90px,0.75fr)_minmax(110px,1fr)_minmax(110px,1fr)] gap-2 border border-zinc-200 bg-white p-3 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
+            <section className="grid min-h-0 flex-1 gap-2 border border-zinc-200 bg-white p-3 shadow-sm xl:grid-rows-[auto_auto_minmax(90px,0.75fr)_minmax(90px,0.75fr)_minmax(110px,1fr)_minmax(110px,1fr)]">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-11 font-black uppercase text-zinc-500">export preview</div>
                   <div className="text-11 font-bold text-zinc-500" data-testid="sajik-editor-copy-status">
                     copy: {copyStatus}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <div
                     data-testid="sajik-editor-before-after-status"
                     className={`border px-2 py-1 text-11 font-black ${
@@ -997,7 +1039,7 @@ export default function SajikSeatMapEditor() {
                   data-testid="sajik-editor-copy-json"
                   onClick={() => copyExportPreview(selectedPatchJson)}
                   disabled={exportLocked}
-                  className="inline-flex h-8 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-xs font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-xs font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-8"
                 >
                   <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                   JSON
@@ -1007,7 +1049,7 @@ export default function SajikSeatMapEditor() {
                   data-testid="sajik-editor-copy-ts"
                   onClick={() => copyExportPreview(selectedPatchTs)}
                   disabled={exportLocked}
-                  className="inline-flex h-8 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-xs font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center justify-center gap-1 border border-zinc-300 bg-white px-2 text-xs font-black uppercase text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-8"
                 >
                   <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                   TS
@@ -1015,19 +1057,19 @@ export default function SajikSeatMapEditor() {
               </div>
               <pre
                 data-testid="sajik-editor-patch-json"
-                className="overflow-auto bg-slate-950 p-3 text-11 leading-relaxed text-emerald-50"
+                className="h-48 min-w-0 max-w-full overflow-auto bg-slate-950 p-3 text-11 leading-relaxed text-emerald-50 xl:h-auto"
               >
                 {selectedPatchJson}
               </pre>
               <pre
                 data-testid="sajik-editor-ts-patch"
-                className="overflow-auto bg-zinc-900 p-3 text-11 leading-relaxed text-amber-50"
+                className="h-48 min-w-0 max-w-full overflow-auto bg-zinc-900 p-3 text-11 leading-relaxed text-amber-50 xl:h-auto"
               >
                 {selectedPatchTs}
               </pre>
               <pre
                 data-testid="sajik-editor-selected-json"
-                className="overflow-auto bg-zinc-950 p-3 text-11 leading-relaxed text-cyan-50"
+                className="h-48 min-w-0 max-w-full overflow-auto bg-zinc-950 p-3 text-11 leading-relaxed text-cyan-50 xl:h-auto"
               >
                 {selectedSectionJson}
               </pre>
@@ -1035,7 +1077,7 @@ export default function SajikSeatMapEditor() {
                 data-testid="sajik-editor-dataset-json"
                 readOnly
                 value={datasetJson}
-                className="min-h-0 resize-none border border-zinc-300 bg-zinc-50 p-3 font-mono text-11 leading-relaxed text-zinc-900"
+                className="h-48 min-h-0 min-w-0 max-w-full resize-none border border-zinc-300 bg-zinc-50 p-3 font-mono text-11 leading-relaxed text-zinc-900 xl:h-auto"
               />
             </section>
           </aside>

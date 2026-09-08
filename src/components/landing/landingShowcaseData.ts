@@ -124,6 +124,117 @@ export const LANDING_PHONE_PREVIEW = {
   },
 } satisfies LandingPhonePreviewData;
 
+export const LANDING_APP_PREVIEW_STEPS = [
+  '홈 · 오늘의 KBO 경기와 티켓 예매',
+  '같이가요 · 파티 신청부터 승인, 채팅까지',
+  '게시판 · 응원글과 HOT 게시물',
+] as const;
+
+export const LANDING_APP_PREVIEW_HINT = '화면을 눌러 직접 넘겨보세요';
+
+export interface LandingPhoneNavTab {
+  label: string;
+  screen: 0 | 1 | 2 | null;
+}
+
+export const LANDING_PHONE_NAV_TABS: readonly LandingPhoneNavTab[] = [
+  { label: '게시판', screen: 2 },
+  { label: '구장가이드', screen: null },
+  { label: '승리예측', screen: null },
+  { label: '같이가요', screen: 1 },
+];
+
+export const LANDING_PHONE_HOME_SCREEN = {
+  heading: '오늘의 KBO 경기',
+  subheading: '실시간 경기 정보와 티켓 예매를 확인하세요',
+  seasonLabel: '2025 시즌',
+  date: '2025.10.26(일)',
+  seasonTabs: ['정규시즌', '포스트시즌', '한국시리즈'],
+  activeSeasonTabIndex: 2,
+  ticketNote: '*경기별 티켓 예매 날짜는 구단별 판매처에서 확인하실 수 있습니다.',
+  game: {
+    venueChip: '잠실',
+    time: '18:30',
+    statusBadge: '경기 종료',
+    round: '한국시리즈',
+    homeTeam: 'lg' as TeamKey,
+    homeLabel: 'LG',
+    awayTeam: 'hanwha' as TeamKey,
+    awayLabel: '한화',
+  },
+  standingsHeading: '팀 순위',
+  standingsMoreLabel: '더보기',
+  standings: [
+    { rank: 1, team: 'lg' as TeamKey, label: 'LG', rate: '0.618' },
+    { rank: 2, team: 'hanwha' as TeamKey, label: '한화', rate: '0.601' },
+    { rank: 3, team: 'kia' as TeamKey, label: 'KIA', rate: '0.577' },
+  ],
+  cheerHeading: '실시간 인기 응원글',
+  cheerMoreLabel: '더보기',
+  cheerPosts: [
+    { team: 'kia' as TeamKey, title: '9회말 끝내기라니', comments: 2, likes: 2 },
+    { team: 'ssg' as TeamKey, title: '문학 직관 후기', comments: 1, likes: 0 },
+  ],
+};
+
+export const LANDING_PHONE_MATE_SCREEN = {
+  heading: '같이 갈 메이트 찾기',
+  subheading: '함께 야구를 즐길 메이트를 찾아보세요',
+  createLabel: '파티 만들기',
+  guide: {
+    title: "'같이가요' 이용 가이드",
+    hostNote: '내가 호스트인 파티: 신청 관리 → 승인/거절 → 채팅방 소통',
+    depositNote: '경기 당일 체크인으로 보증금을 환불받으세요',
+  },
+  searchPlaceholder: '팀명, 구장으로 검색…',
+  filterTabs: ['전체', '모집 중', '매칭 완료', '티켓 판매'],
+  activeFilterIndex: 0,
+  cards: [
+    {
+      hostAvatarKind: 'mascot' as const,
+      hostName: '박서윤',
+      team: 'hanwha' as TeamKey,
+      trustScore: 5,
+      status: '모집 중',
+      homeTeam: 'lotte' as TeamKey,
+      awayTeam: 'samsung' as TeamKey,
+      datetime: '2025-11-28 20:40:00',
+      venue: '대전한화생명이글스파크 · 202 203',
+      party: '1/2명',
+    },
+    {
+      hostAvatarKind: 'initial' as const,
+      hostInitial: '늪',
+      hostName: '늪하늘',
+      team: 'kiwoom' as TeamKey,
+      trustScore: 5,
+      status: '모집 중',
+      homeTeam: 'kiwoom' as TeamKey,
+      awayTeam: 'kia' as TeamKey,
+      datetime: '2025-11-28 18:30:00',
+      venue: '고척스카이돔 · A 201',
+      party: '1/2명',
+    },
+  ],
+};
+
+export const LANDING_PHONE_BOARD_SCREEN = {
+  heading: '응원게시판',
+  refreshLabel: '새로고침',
+  writeLabel: '글쓰기',
+  filterTabs: ['전체', '마이팀'],
+  activeFilterIndex: 0,
+  posts: [
+    { team: 'kia' as TeamKey, hot: true, title: '9회말 끝내기라니', author: '늪하늘', time: '23시간 전', comments: 2, likes: 2 },
+    { team: 'ssg' as TeamKey, hot: true, title: '문학 직관 후기', author: '랜더스팬', time: '1일 전', comments: 1, likes: 0 },
+    { team: 'nc' as TeamKey, hot: false, title: '창원 원정 같이 갈 사람', author: '공룡사랑', time: '1일 전', comments: 4, likes: 0 },
+    { team: 'hanwha' as TeamKey, hot: true, title: '대전 원정 후기 남깁니다', author: '한화사랑', time: '2일 전', comments: 3, likes: 5 },
+    { team: 'lg' as TeamKey, hot: false, title: '잠실 3루 응원석 시야 어떤가요', author: '트윈스팬', time: '3일 전', comments: 6, likes: 1 },
+    { team: 'doosan' as TeamKey, hot: false, title: '오늘 선발 예상해봅니다', author: '베어스곰', time: '4일 전', comments: 2, likes: 0 },
+    { team: 'samsung' as TeamKey, hot: false, title: '대구 직관 처음인데 팁 좀', author: '라이온즈', time: '4일 전', comments: 8, likes: 3 },
+  ],
+};
+
 export interface LandingFeatureCopy {
   title: string;
   description: string;
@@ -189,9 +300,9 @@ export const LANDING_STADIUM_DATA = {
   imageAlt: '잠실야구장',
   venue: '잠실야구장 · 서울종합운동장',
   stats: [
-    { value: '25,000', label: '좌석' },
-    { value: '32', label: '먹거리' },
-    { value: '2호선', label: '교통' },
+    { value: '25,000', label: '잠실 좌석' },
+    { value: '32', label: '구장 먹거리' },
+    { value: '2호선', label: '종합운동장역' },
   ] satisfies LandingStadiumStat[],
 };
 

@@ -121,12 +121,12 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
                         <span className="font-bold text-body dark:text-white">{post.author}</span>
-                        <span className="text-body text-slate-500 dark:text-white">@{post.authorHandle || post.author}</span>
-                        <span className="text-slate-400">·</span>
-                        <span className="text-body text-slate-500 dark:text-white">{post.timeAgo}</span>
+                        <span className="text-body text-[#536471] dark:text-white">@{post.authorHandle || post.author}</span>
+                        <span className="text-[#536471]">·</span>
+                        <span className="text-body text-[#536471] dark:text-white">{post.timeAgo}</span>
                     </div>
-                    <p className="text-body text-slate-700 dark:text-white line-clamp-3 mb-2">{post.content}</p>
-                    <div className="text-body text-slate-400">
+                    <p className="text-body text-[#0f1419] dark:text-white line-clamp-3 mb-2">{post.content}</p>
+                    <div className="text-body text-[#536471]">
                         <span className="text-indigo-500 font-semibold">@{post.authorHandle || post.author}</span> 님에게 댓글 남기는 중
                     </div>
                 </div>
@@ -180,7 +180,9 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                    className="p-2 text-indigo-500 hover:bg-slate-100 dark:hover:bg-secondary rounded-full transition-colors"
+                                    aria-label="이모지 선택"
+                                    aria-expanded={showEmojiPicker}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:bg-secondary"
                                 >
                                     <SmileIcon className="w-5 h-5" />
                                 </button>

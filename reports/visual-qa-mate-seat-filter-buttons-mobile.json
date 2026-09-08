@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T02:27:23.919Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 8,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 90000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots"
+  },
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=boundary-maximum|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-boundary-maximum-interactions-d-a9828242c442.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=boundary-minimum|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-boundary-minimum-interactions-d-45e3a7bb2a24.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=empty|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-empty-interactions-default-vari-fd60155b357a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=long-korean|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-long-korean-interactions-defaul-64877f6811ff.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=default|variant.layout=rail|variant.theme=dark",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-75fca029acac.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-450f733e565d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=default|variant.layout=toolbar|variant.theme=dark",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-c3db88e60f93.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=default|variant.layout=toolbar|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-6a7eb514e0fd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=focus-visible|variant.layout=toolbar|variant.theme=light|interactionTarget=orange",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-2efd48e9cf5c.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+        "targetId": "orange",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=focus-visible|variant.layout=toolbar|variant.theme=light|interactionTarget=premium",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-17269746a871.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+        "targetId": "premium",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=focus-visible|variant.layout=toolbar|variant.theme=light|interactionTarget=red",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-1083308b6a6a.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-seat-filter-red\"]",
+        "targetId": "red",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=focus-visible|variant.layout=toolbar|variant.theme=light|interactionTarget=table",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-db9b3aa1d262.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mate-seat-filter-table\"]",
+        "targetId": "table",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=hover|variant.layout=toolbar|variant.theme=light|interactionTarget=orange",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-53fefdc5323a.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+        "targetId": "orange",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=hover|variant.layout=toolbar|variant.theme=light|interactionTarget=premium",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-518c784b47fa.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+        "targetId": "premium",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=hover|variant.layout=toolbar|variant.theme=light|interactionTarget=red",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-049dfe769e7f.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-seat-filter-red\"]",
+        "targetId": "red",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=hover|variant.layout=toolbar|variant.theme=light|interactionTarget=table",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-3ca6a834ab6f.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mate-seat-filter-table\"]",
+        "targetId": "table",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=keyboard-navigation|variant.layout=toolbar|variant.theme=light|interactionTarget=orange-to-red",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-adf3cc28640a.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+        "targetId": "orange-to-red",
+        "key": "Tab",
+        "waitForSelector": "[data-testid=\"mate-seat-filter-red\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=pressed|variant.layout=toolbar|variant.theme=light|interactionTarget=orange",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-35906d9fdc6c.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+        "targetId": "orange",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=pressed|variant.layout=toolbar|variant.theme=light|interactionTarget=premium",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-3c237c47016a.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+        "targetId": "premium",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=pressed|variant.layout=toolbar|variant.theme=light|interactionTarget=red",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-fabf48be4f99.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-seat-filter-red\"]",
+        "targetId": "red",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=pressed|variant.layout=toolbar|variant.theme=light|interactionTarget=table",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-488f3c673dc5.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mate-seat-filter-table\"]",
+        "targetId": "table",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=selected|variant.layout=toolbar|variant.theme=light|interactionTarget=orange",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-52815e9dd664.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-seat-filter-orange\"]",
+        "targetId": "orange",
+        "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"오렌지석\"][data-vqa-effective-value=\"lg 레드석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-orange\"][aria-pressed=\"false\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=selected|variant.layout=toolbar|variant.theme=light|interactionTarget=premium",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-f457f7d78d47.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-seat-filter-premium\"]",
+        "targetId": "premium",
+        "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"프리미엄석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 테이블석\"]:has([data-testid=\"mate-seat-filter-premium\"][aria-pressed=\"false\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=selected|variant.layout=toolbar|variant.theme=light|interactionTarget=red",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-cec340ef56d5.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-seat-filter-red\"]",
+        "targetId": "red",
+        "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"레드석\"][data-vqa-effective-value=\"lg 오렌지석 프리미엄석 테이블석\"]:has([data-testid=\"mate-seat-filter-red\"][aria-pressed=\"false\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=maximum-supported|interactions=selected|variant.layout=toolbar|variant.theme=light|interactionTarget=table",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-maximum-supported-interactions-69bddb129213.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mate-seat-filter-table\"]",
+        "targetId": "table",
+        "waitForSelector": "[data-testid=\"mate-seat-filter-buttons-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-callback-value=\"테이블석\"][data-vqa-effective-value=\"lg 오렌지석 레드석 프리미엄석\"]:has([data-testid=\"mate-seat-filter-table\"][aria-pressed=\"false\"])",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=populated|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-populated-interactions-default-d69f28602b8a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=single|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-single-interactions-default-var-53800c31e424.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons:data=unbroken-token|interactions=default|variant.layout=rail|variant.theme=light",
+      "componentId": "src/components/MateSeatFilterButtons.tsx#MateSeatFilterButtons",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-seat-filter-buttons-mobile-screenshots/mateseatfilterbuttons-mateseatfilterbuttons-data-unbroken-token-interactions-def-f19b22254b52.png",
+      "attempts": 1
+    }
+  ]
+}

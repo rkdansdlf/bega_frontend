@@ -26,15 +26,21 @@ export const adminNativeSelectClassName =
 export function AdminBadge({
   className = '',
   children,
+  testId,
 }: {
   className?: string;
   children: ReactNode;
+  testId?: string;
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption font-semibold transition-colors ${className}`}
+      data-testid={testId}
+      title={typeof children === 'string' ? children : undefined}
+      className={`inline-flex min-w-0 max-w-full items-center overflow-hidden whitespace-nowrap rounded-full border px-2.5 py-0.5 text-caption font-semibold transition-colors ${className}`}
     >
-      {children}
+      <span data-testid="admin-badge-content" className="block min-w-0 max-w-full truncate">
+        {children}
+      </span>
     </span>
   );
 }

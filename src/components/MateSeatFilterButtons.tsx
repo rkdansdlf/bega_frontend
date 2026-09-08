@@ -19,7 +19,12 @@ export default function MateSeatFilterButtons({
   const seatOptions = resolveMateSeatFilterOptions(inputValue);
 
   return (
-    <div className={layout === 'rail' ? 'flex flex-wrap gap-1.5' : 'flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide'}>
+    <div
+      role="group"
+      aria-label="좌석 필터"
+      data-testid="mate-seat-filter-buttons"
+      className={layout === 'rail' ? 'flex flex-wrap gap-1.5' : 'flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide'}
+    >
       {seatOptions.map((option) => {
         const isActive = inputValue.includes(option.label);
 
@@ -29,7 +34,8 @@ export default function MateSeatFilterButtons({
             variant="outline"
             size="touch"
             aria-pressed={isActive}
-            className={`${layout === 'rail' ? 'h-auto rounded-full px-3 py-1.5 text-12' : 'rounded-full px-4 text-15'} font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
+            data-testid={`mate-seat-filter-${option.id.toLowerCase()}`}
+            className={`${layout === 'rail' ? 'h-auto rounded-full px-3 py-1.5 text-12' : 'rounded-full px-4 text-15'} shrink-0 font-bold transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 motion-reduce:transform-none dark:focus-visible:ring-offset-[#000000] ${
               isActive ? FILTER_ACTIVE_CLASS : FILTER_IDLE_CLASS
             }`}
             onClick={() => onToggleSeat(option.label)}

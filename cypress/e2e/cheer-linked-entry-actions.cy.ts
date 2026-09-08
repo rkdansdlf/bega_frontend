@@ -286,7 +286,7 @@ describe('Diary and Mate linked cheer entry behavior', () => {
     const mounted = mountMate('45');
 
     cy.get('[data-testid="mate-mobile-action-bar"] button').last().click();
-    cy.get('[data-testid="mate-share-to-cheer"]:visible').should('have.length', 1).click();
+    cy.get('[data-testid="mate-detail-sheet-share-to-cheer"]:visible').should('have.length', 1).click();
     cy.wait('@lookupParty').its('request.query').should('deep.equal', { partyId: '45' });
     cy.get('[data-testid="entry-router-location"]').should(
       'have.text',

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useId, useMemo, type UIEvent } from 'react';
+import { lazy, Suspense, useEffect, useId, useMemo, useRef, type UIEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import {
     UserProfileUserIcon as ProfileUserIcon,
     UserProfileXIcon as ProfileCloseIcon,
 } from './UserProfileIcons';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 const FollowButton = lazy(() => import('./FollowButton'));
 
@@ -29,6 +30,9 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
     const navigate = useNavigate();
     const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
     const titleId = useId();
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    useFocusTrap(dialogRef, { active: isOpen });
 
     const {
         data,
@@ -108,9 +112,11 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
             <div className="absolute inset-0 bg-black/50" aria-hidden="true" onClick={onClose} />
             <div className="absolute inset-0 flex items-center justify-center p-4" onClick={onClose}>
                 <div
+                    ref={dialogRef}
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby={titleId}
+                    tabIndex={-1}
                     onClick={(event) => event.stopPropagation()}
                     className="flex max-h-[80vh] w-full flex-col gap-0 rounded-xl border border-gray-200 bg-white p-0 shadow-dialog ring-1 ring-black/5 dark:border-border dark:bg-card sm:max-w-md"
                 >
@@ -123,6 +129,7 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
                             size="icon"
                             className="h-11 w-11 min-h-11 p-0 text-gray-400 hover:text-gray-500"
                             onClick={onClose}
+                            aria-label="닫기"
                         >
                             <ProfileCloseIcon className="h-5 w-5" />
                         </Button>
@@ -150,9 +157,11 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
                                         key={user.handle}
                                         className="flex items-center justify-between p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/30"
                                     >
-                                        <div
+                                        <button
+                                            type="button"
                                             className="mr-4 flex min-w-0 flex-1 cursor-pointer items-center gap-3"
                                             onClick={() => handleUserClick(user.handle)}
+                                            aria-label={`${user.name} 프로필 보기`}
                                         >
                                             <ProfileAvatar
                                                 src={user.profileImageUrl ?? undefined}
@@ -171,7 +180,7 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
                                                     {user.handle}
                                                 </span>
                                             </div>
-                                        </div>
+                                        </button>
 
                                         {currentUserHandle !== user.handle && (
                                             <Suspense

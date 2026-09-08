@@ -48,14 +48,14 @@ export function OffseasonMovementDetailPanel({
     const hasSourceFacts = sourceFacts.length > 0 || Boolean(sourceUrl);
     const showRawRemarks = remarks && remarks !== summary;
     const body = (
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5 [overflow-wrap:anywhere]">
             <div className="rounded-28 border border-emerald-200/80 bg-[#173b34] p-5 text-white shadow-[0_24px_60px_-36px_rgba(16,37,32,0.95)] dark:border-emerald-950/40 dark:bg-[#173b34]">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-4">
+                <div className="flex min-w-0 flex-col items-stretch gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                         <div className="rounded-3xl border border-white/10 bg-white/[0.08] p-3 shadow-sm backdrop-blur-sm">
                             <TeamLogo team={teamName} size={40} />
                         </div>
-                        <div className="space-y-2">
+                        <div className="min-w-0 space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
                                 <OffseasonSectionPill section={movement.section} />
                                 <OffseasonPill className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-caption font-bold text-emerald-50">
@@ -63,8 +63,8 @@ export function OffseasonMovementDetailPanel({
                                 </OffseasonPill>
                             </div>
                             <div>
-                                <p className="text-caption font-bold uppercase tracking-[0.2em] text-emerald-100/65">{teamName}</p>
-                                <h3 className="mt-1 text-2xl font-black tracking-tight text-white">{movement.player}</h3>
+                                <p className="break-words text-caption font-bold uppercase tracking-[0.2em] text-emerald-100/65 [overflow-wrap:anywhere]">{teamName}</p>
+                                <h3 className="mt-1 break-words text-2xl font-black tracking-tight text-white [overflow-wrap:anywhere]">{movement.player}</h3>
                             </div>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ export function OffseasonMovementDetailPanel({
                         className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/70"
                     >
                         <p className="text-caption font-black uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-                        <p className="mt-2 text-15 font-bold leading-relaxed text-zinc-900 dark:text-white">{item.value}</p>
+                        <p className="mt-2 break-words text-15 font-bold leading-relaxed text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{item.value}</p>
                     </div>
                 ))}
             </div>
@@ -120,7 +120,7 @@ export function OffseasonMovementDetailPanel({
                                 className="rounded-3xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950/80"
                             >
                                 <p className="text-caption font-black uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-                                <p className="mt-2 text-15 font-bold leading-relaxed text-zinc-900 dark:text-white">{item.value}</p>
+                                <p className="mt-2 break-words text-15 font-bold leading-relaxed text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{item.value}</p>
                             </div>
                         ))}
                     </div>
@@ -157,7 +157,7 @@ export function OffseasonMovementDetailPanel({
                         {sourceFacts.map((item) => (
                             <div key={item.label} className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/70">
                                 <p className="text-caption font-black uppercase tracking-[0.18em] text-zinc-400">{item.label}</p>
-                                <p className="mt-2 text-15 font-bold leading-relaxed text-zinc-900 dark:text-white">{item.value}</p>
+                                <p className="mt-2 break-words text-15 font-bold leading-relaxed text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{item.value}</p>
                             </div>
                         ))}
                         {sourceUrl && (
@@ -165,7 +165,7 @@ export function OffseasonMovementDetailPanel({
                                 href={sourceUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex rounded-full border border-zinc-200 bg-white px-4 py-2 text-15 font-bold text-zinc-700 transition-colors hover:border-emerald-300 hover:text-emerald-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:border-emerald-900/60 dark:hover:text-emerald-200"
+                                className="inline-flex min-h-11 max-w-full break-words rounded-full border border-zinc-200 bg-white px-4 py-2 text-15 font-bold text-zinc-700 [overflow-wrap:anywhere] transition-colors hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:border-emerald-900/60 dark:hover:text-emerald-200"
                             >
                                 원문 출처 열기
                             </a>
@@ -193,7 +193,7 @@ export function OffseasonMovementDetailPanel({
             </div>
 
             <div className="flex justify-end">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-5">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="min-h-11 rounded-full px-5">
                     닫기
                 </Button>
             </div>
@@ -205,6 +205,7 @@ export function OffseasonMovementDetailPanel({
             open={open}
             onClose={() => onOpenChange(false)}
             title="이적 상세 정보"
+            contentTestId="offseason-movement-detail"
             placement={isMobile ? 'bottom' : 'center'}
             className={isMobile
                 ? 'max-h-[90vh] max-w-none !rounded-b-none !rounded-t-32 border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950'

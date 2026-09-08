@@ -7,9 +7,15 @@ interface SeatMapTemplateShellState {
   closeFullscreen: () => void;
 }
 
-export function useSeatMapTemplateShellState(): SeatMapTemplateShellState {
+interface UseSeatMapTemplateShellStateOptions {
+  initialFullscreenOpen?: boolean;
+}
+
+export function useSeatMapTemplateShellState({
+  initialFullscreenOpen = false,
+}: UseSeatMapTemplateShellStateOptions = {}): SeatMapTemplateShellState {
   const [isMobile, setIsMobile] = useState(false);
-  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(initialFullscreenOpen);
 
   const openFullscreen = useCallback(() => {
     setIsFullscreenOpen(true);

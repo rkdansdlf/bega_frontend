@@ -41,7 +41,7 @@ export function OffseasonInsightsPanel({
     const sectionMax = sectionSummary[0]?.[1] ?? 1;
 
     return (
-        <section className="space-y-4">
+        <section className="min-w-0 space-y-4" data-testid="offseason-insights-panel">
             <div className="px-1">
                 <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">현재 필터 요약</h2>
                 <p className="mt-1 text-15 font-semibold text-zinc-500 dark:text-white">
@@ -65,14 +65,14 @@ export function OffseasonInsightsPanel({
                             {teamSummary.map(([teamName, count], index) => (
                                 <div
                                     key={teamName}
-                                    className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/70"
+                                    className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/70"
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex min-w-0 items-center gap-3">
                                         <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-caption font-black text-white dark:bg-white dark:text-white">
                                             {index + 1}
                                         </span>
-                                        <div>
-                                            <p className="text-15 font-black tracking-tight text-zinc-900 dark:text-white">{teamName}</p>
+                                        <div className="min-w-0">
+                                            <p className="break-words text-15 font-black tracking-tight text-zinc-900 [overflow-wrap:anywhere] dark:text-white">{teamName}</p>
                                             <p className="text-caption font-semibold text-zinc-400 dark:text-white">현재 조건 기준 이동 건수</p>
                                         </div>
                                     </div>
@@ -127,14 +127,15 @@ export function OffseasonInsightsPanel({
                                     key={movement.id}
                                     type="button"
                                     onClick={() => onSelect(movement)}
-                                    className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4 text-left transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:border-emerald-900/60 dark:hover:bg-emerald-950/20"
+                                    className="min-h-11 w-full min-w-0 rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4 text-left transition-colors hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.99] dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:border-emerald-900/60 dark:hover:bg-emerald-950/20"
+                                    data-testid={`offseason-insight-headline-${movement.id}`}
                                 >
                                     <div className="flex items-center justify-between gap-3">
-                                        <div>
+                                        <div className="min-w-0">
                                             <p className="text-caption font-black uppercase tracking-[0.18em] text-zinc-400">
                                                 {formatDateLabel(movement.date)}
                                             </p>
-                                            <p className="mt-1 text-15 font-black tracking-tight text-zinc-900 dark:text-white">
+                                            <p className="mt-1 break-words text-15 font-black tracking-tight text-zinc-900 [overflow-wrap:anywhere] dark:text-white">
                                                 {movement.player} · {getTeamKoreanName(movement.team)}
                                             </p>
                                         </div>
@@ -142,7 +143,7 @@ export function OffseasonInsightsPanel({
                                             주요
                                         </OffseasonPill>
                                     </div>
-                                    <p className="mt-2 line-clamp-2 text-15 font-semibold leading-relaxed text-zinc-600 dark:text-white">
+                                    <p className="mt-2 line-clamp-2 break-words text-15 font-semibold leading-relaxed text-zinc-600 [overflow-wrap:anywhere] dark:text-white">
                                         {getMovementSummary(movement)}
                                     </p>
                                 </button>

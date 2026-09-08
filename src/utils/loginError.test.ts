@@ -36,3 +36,14 @@ test('oauth2_state_store_unavailable를 사용자 안내 문구로 매핑한다'
     '로그인 상태를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.',
   );
 });
+
+test('challengeId가 누락된 OAuth 이메일 오류에도 재시도 안내를 제공한다', () => {
+  assert.equal(
+    getLoginQueryErrorMessage('?error=oauth2_email_required'),
+    '이메일 확인 요청 정보를 찾지 못했습니다. 소셜 로그인을 다시 시도해주세요.',
+  );
+  assert.equal(
+    getLoginQueryErrorMessage('?error=oauth2_email_verification_required'),
+    '이메일 확인 요청 정보를 찾지 못했습니다. 소셜 로그인을 다시 시도해주세요.',
+  );
+});

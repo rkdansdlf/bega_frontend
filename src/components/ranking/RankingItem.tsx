@@ -137,7 +137,7 @@ const RankingItem = React.memo(function RankingItem({
             : 'border-dashed border-slate-200 bg-slate-50 dark:border-border dark:bg-secondary/40'
         } ${movementStateClassName} focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
       >
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <div
             className={`w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 font-black text-lg ${badgeClassName}`}
           >
@@ -146,7 +146,7 @@ const RankingItem = React.memo(function RankingItem({
 
           {team ? (
             <>
-              <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
+              <div className="flex min-w-24 flex-1 items-center gap-2.5 sm:min-w-0 sm:gap-3">
                 {!alreadySaved && <RankingGripVerticalIcon className="hidden w-4 h-4 text-gray-400 dark:text-white flex-shrink-0 sm:block" />}
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-100 bg-slate-50 dark:border-border dark:bg-secondary/40">
                   <TeamLogo team={team.shortName} size={32} />
@@ -154,7 +154,7 @@ const RankingItem = React.memo(function RankingItem({
                 <span style={{ fontWeight: 800 }} className={`min-w-0 flex-1 truncate ${isPlayoffTeam ? 'text-slate-950 dark:text-white' : 'text-slate-700 dark:text-white'}`}>{team.name}</span>
               </div>
               {!alreadySaved && (
-                <div className="flex shrink-0 items-center gap-1">
+                <div className="ml-auto flex shrink-0 items-center gap-1">
                   <Button
                     onClick={handleMoveButtonClick(-1)}
                     variant="ghost"

@@ -1,0 +1,833 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T12:50:06.378Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 30000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots"
+  },
+  "summary": {
+    "total": 67,
+    "passed": 67,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=boundary-maximum|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-boundary-maximum-interactions-default-varia-ff6b29b0a686.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=boundary-minimum|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-boundary-minimum-interactions-default-varia-813e733ee588.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=empty|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-empty-interactions-default-variant-theme-da-a3423715b085.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=long-korean|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-long-korean-interactions-default-variant-th-52f9fa29e9dc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-default-vari-bb0af5c0d9e2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-focus-visibl-2ca34b444044.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-mate-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-focus-visibl-f2474f2e59a5.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-focus-visibl-4fddf5eb0ab9.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-hover-varian-d5d36ca3f353.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-mate-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-hover-varian-84ffb8660182.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-hover-varian-958d1d04ad24.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=open|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-open-variant-f24dbb4c8e32.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"admin-mate-delete-1\"]",
+        "targetId": "delete",
+        "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-pressed-vari-a23518fd230d.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-mate-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-pressed-vari-82e44f96b0b4.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-mate-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-maximum-supported-interactions-pressed-vari-1a82cb04b686.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-mate-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-mate-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-mate-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=populated|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-populated-interactions-default-variant-them-db5def8e4d24.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=single|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-single-interactions-default-variant-theme-d-96a005032b39.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel:data=unbroken-token|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/MatesAdminPanel.tsx#MatesAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/matesadminpanel-matesadminpanel-data-unbroken-token-interactions-default-variant-993c399dd984.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=boundary-maximum|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-boundary-maximum-interactions-default-varia-a97884b7840e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=boundary-minimum|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-boundary-minimum-interactions-default-varia-5c14902fe758.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=empty|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-empty-interactions-default-variant-theme-da-d8107a0c04f4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=long-korean|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-long-korean-interactions-default-variant-th-d27bfc95d656.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-default-vari-bb1835ae68af.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-focus-visibl-570066836f68.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-post-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-focus-visibl-c0ed3a17675c.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=focus-visible|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-focus-visibl-f63a4b774cf8.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-hover-varian-57c7944caf9b.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-post-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-hover-varian-83c492167e5a.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=hover|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-hover-varian-b64bc99d3f4a.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=open|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-open-variant-f97dbd4e78bb.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"admin-post-delete-1\"]",
+        "targetId": "delete",
+        "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-pressed-vari-b322a6a7c32a.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-post-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-pressed-vari-512a03a28601.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-post-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=maximum-supported|interactions=pressed|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-maximum-supported-interactions-pressed-vari-468301ceaa79.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-post-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-post-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-post-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=null-optional|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-null-optional-interactions-default-variant-9e4add5d47ae.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=single|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-single-interactions-default-variant-theme-d-3494d7ce3aa6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel:data=unbroken-token|interactions=default|variant.theme=dark",
+      "componentId": "src/components/admin/PostsAdminPanel.tsx#PostsAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/postsadminpanel-postsadminpanel-data-unbroken-token-interactions-default-variant-54ca7ab4daab.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=boundary-maximum|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-boundary-maximum-permissions-admin-interact-30b084702e79.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=boundary-maximum|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-boundary-maximum-permissions-super-admin-in-4353044fc19f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=boundary-minimum|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-boundary-minimum-permissions-admin-interact-188c3499222f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=boundary-minimum|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-boundary-minimum-permissions-super-admin-in-81ee829db85d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=empty|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-empty-permissions-admin-interactions-defaul-857620064630.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=empty|permissions=admin|interactions=default|system=loading|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-empty-permissions-admin-interactions-defaul-21d90ff89604.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=empty|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-empty-permissions-super-admin-interactions-19201ab0d482.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=long-korean|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-long-korean-permissions-admin-interactions-46ce23c93971.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=long-korean|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-long-korean-permissions-super-admin-interac-b474ee81e656.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-admin-interac-2a9e13d45ec7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=change|system=idle|variant.theme=dark|interactionTarget=role-select",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-5aaa3fa29306.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"admin-user-role-trigger-1\"]",
+        "targetId": "role-select",
+        "key": "ArrowDown",
+        "waitForSelector": "[data-testid=\"admin-user-role-trigger-1\"]:has(option[value=\"ROLE_ADMIN\"]:checked)",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-f6d804c70b07.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-f81b533b3c95.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-user-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-b56dad7da7ab.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-31721e5c4b7b.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=role-select",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-6afa0adac95f.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-user-role-trigger-1\"]",
+        "targetId": "role-select",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=focus-visible|system=idle|variant.theme=dark|interactionTarget=search",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-df3e4610430a.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"admin-users-search\"]",
+        "targetId": "search",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=hover|system=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-24e07a640b2d.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-user-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=hover|system=idle|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-a5482b7a751c.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=hover|system=idle|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-4b00870ff62c.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=input|system=idle|variant.theme=dark|interactionTarget=search",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-fbbade849aab.png",
+      "interaction": {
+        "action": "fill",
+        "selector": "[data-testid=\"admin-users-search\"]",
+        "targetId": "search",
+        "value": "가장 좁은 관리자 모바일 화면에서도 사용자 검색 입력값이 경계를 벗어나지 않고 자연스럽게 표시되는지 확인합니다.",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=open|system=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-917ad4eb2956.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"admin-user-delete-1\"]",
+        "targetId": "delete",
+        "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=pressed|system=idle|variant.theme=dark|interactionTarget=delete",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-b6701e5b845f.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-user-delete-1\"]",
+        "targetId": "delete",
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=pressed|system=idle|variant.theme=dark|interactionTarget=dialog-cancel",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-73221b5fe3a6.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-user-delete-cancel\"]",
+        "targetId": "dialog-cancel",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=maximum-supported|permissions=super-admin|interactions=pressed|system=idle|variant.theme=dark|interactionTarget=dialog-confirm",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-maximum-supported-permissions-super-admin-i-923b24cc8551.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"admin-user-delete-confirm\"]",
+        "targetId": "dialog-confirm",
+        "setup": [
+          {
+            "action": "click",
+            "selector": "[data-testid=\"admin-user-delete-1\"]",
+            "waitForSelector": "[data-testid=\"admin-user-delete-dialog\"]"
+          }
+        ],
+        "verified": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=null-optional|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-null-optional-permissions-admin-interaction-92c5a5b57b58.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=null-optional|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-null-optional-permissions-super-admin-inter-1e305fad45f2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=single|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-single-permissions-admin-interactions-defau-a6348d48fe46.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=single|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-single-permissions-super-admin-interactions-ca60ea932fc2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=unbroken-token|permissions=admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-unbroken-token-permissions-admin-interactio-41f8b29f3660.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel:data=unbroken-token|permissions=super-admin|interactions=default|system=idle|variant.theme=dark",
+      "componentId": "src/components/admin/UsersAdminPanel.tsx#UsersAdminPanel",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-admin-community-leaf-panels-mobile-screenshots/usersadminpanel-usersadminpanel-data-unbroken-token-permissions-super-admin-inte-8ea5b2c04f5e.png",
+      "attempts": 1
+    }
+  ]
+}

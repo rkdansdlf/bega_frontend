@@ -13,10 +13,24 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-export default function PasswordReset() {
+export type PasswordResetVisualQaStateOverride = Pick<
+  ReturnType<typeof usePasswordReset>,
+  'email' | 'emailError' | 'isSubmitted' | 'isLoading' | 'error' | 'successMessage'
+>;
+
+interface PasswordResetProps {
+  visualQaStateOverride?: PasswordResetVisualQaStateOverride;
+}
+
+export default function PasswordReset(props: PasswordResetProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectPath = new URLSearchParams(location.search).get('redirect') || getStoredLoginRedirect();
+
+  const liveState = usePasswordReset(redirectPath);
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : props.visualQaStateOverride;
 
   const {
     email,
@@ -25,10 +39,12 @@ export default function PasswordReset() {
     isLoading,
     error,
     successMessage,
+  } = visualQaStateOverride ?? liveState;
+  const {
     handleEmailChange,
     handleEmailBlur,
     handleSubmit,
-  } = usePasswordReset(redirectPath);
+  } = liveState;
 
   const loginPath = buildLoginPath(redirectPath);
 

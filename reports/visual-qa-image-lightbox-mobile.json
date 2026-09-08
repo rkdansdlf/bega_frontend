@@ -1,0 +1,646 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T16:13:11.079Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-image-lightbox-mobile-screenshots"
+  },
+  "summary": {
+    "total": 42,
+    "passed": 42,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=broken-image|interactions=default|variant.index=only|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-broken-image-interactions-default-variant-index-581f3f586484.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=broken-image|interactions=default|variant.index=only|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-broken-image-interactions-default-variant-index-68318c9acb88.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=maximum-supported|interactions=default|variant.index=last|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-maximum-supported-interactions-default-variant-579733f5edb5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=maximum-supported|interactions=default|variant.index=last|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-maximum-supported-interactions-default-variant-19de20e9b780.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=first|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-fi-15848aba90fc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=first|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-fi-7c679d47eae9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=last|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-la-9ceb49fda089.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=last|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-la-f7c23d0671aa.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=middle|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-mi-78682ba547df.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=default|variant.index=middle|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-default-variant-index-mi-a1ad85a98b95.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=focus-visible|variant.index=middle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-focus-visible-variant-in-2a138a691a02.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "close",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=focus-visible|variant.index=middle|variant.theme=light|interactionTarget=next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-focus-visible-variant-in-1a139cefb3e1.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "next",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=focus-visible|variant.index=middle|variant.theme=light|interactionTarget=prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-focus-visible-variant-in-57e24109b88e.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "prev",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=hover|variant.index=middle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-hover-variant-index-midd-6f936eaf4d69.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "close",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=hover|variant.index=middle|variant.theme=light|interactionTarget=next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-hover-variant-index-midd-5425b5cb42a5.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "next",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=hover|variant.index=middle|variant.theme=light|interactionTarget=prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-hover-variant-index-midd-cc3a184cbd79.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "prev",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=first|variant.theme=light|interactionTarget=arrow-left-first-to-last",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-8736c5cedc79.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "arrow-left-first-to-last",
+        "key": "ArrowLeft",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=last|variant.theme=light|interactionTarget=arrow-right-last-to-first",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-ac58a9b18b75.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "arrow-right-last-to-first",
+        "key": "ArrowRight",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=arrow-left-middle-to-first",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-086dd13fbb3c.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "arrow-left-middle-to-first",
+        "key": "ArrowLeft",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=arrow-right-middle-to-last",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-a67e89b82bba.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "arrow-right-middle-to-last",
+        "key": "ArrowRight",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=enter-close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-561d7aeb85b5.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "enter-close",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=enter-next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-9ff8296f4878.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "enter-next",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=enter-prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-5a5013a1059b.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "enter-prev",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=escape",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-84f2f7930d37.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "escape",
+        "key": "Escape",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=shift-tab-close-to-next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-f300ca984e9d.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "shift-tab-close-to-next",
+        "key": "Shift+Tab",
+        "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=space-close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-4cea8124cc9f.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "space-close",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=space-next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-6385183e86a9.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "space-next",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=space-prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-53d7cb21b1fb.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "space-prev",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=tab-close-to-prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-0d6f2639421f.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "tab-close-to-prev",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-prev\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=tab-next-to-close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-db0e0d0f20c7.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "tab-next-to-close",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-close\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=keyboard-navigation|variant.index=middle|variant.theme=light|interactionTarget=tab-prev-to-next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-keyboard-navigation-vari-2d615e31c551.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "tab-prev-to-next",
+        "key": "Tab",
+        "waitForSelector": "body:has([data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]) [data-testid=\"image-lightbox-next\"]:focus-visible",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=pressed|variant.index=middle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-pressed-variant-index-mi-e3ff6cbb62f2.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "close",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=pressed|variant.index=middle|variant.theme=light|interactionTarget=next",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-pressed-variant-index-mi-01bc534f65e7.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "next",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=pressed|variant.index=middle|variant.theme=light|interactionTarget=prev",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-pressed-variant-index-mi-bbc4b31faa31.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "prev",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=first|variant.theme=light|interactionTarget=prev-first-to-last",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-f-d428b7e338d4.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "prev-first-to-last",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=last|variant.theme=light|interactionTarget=next-last-to-first",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-l-b783195b69b8.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "next-last-to-first",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=middle|variant.theme=light|interactionTarget=backdrop",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-m-f55034e419d4.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox\"]",
+        "targetId": "backdrop",
+        "clickPosition": {
+          "x": 1,
+          "y": 1
+        },
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=middle|variant.theme=light|interactionTarget=close",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-m-1d06ae27f9c0.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox-close\"]",
+        "targetId": "close",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"1\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"0\"][data-vqa-effective-open=\"false\"]",
+        "waitForHiddenSelector": "[data-testid=\"image-lightbox\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=middle|variant.theme=light|interactionTarget=next-middle-to-last",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-m-8b22765a9d6c.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox-next\"]",
+        "targetId": "next-middle-to-last",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"0\"][data-vqa-next-count=\"1\"][data-vqa-current-index=\"2\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=populated|interactions=selected|variant.index=middle|variant.theme=light|interactionTarget=prev-middle-to-first",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-populated-interactions-selected-variant-index-m-37b3c23e98ce.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"image-lightbox-prev\"]",
+        "targetId": "prev-middle-to-first",
+        "waitForSelector": "[data-testid=\"image-lightbox-stateful-host\"][data-vqa-close-count=\"0\"][data-vqa-prev-count=\"1\"][data-vqa-next-count=\"0\"][data-vqa-current-index=\"0\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=single|interactions=default|variant.index=only|variant.theme=dark",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-single-interactions-default-variant-index-only-f69c76ddd3b4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/ImageLightbox.tsx#ImageLightbox:data=single|interactions=default|variant.index=only|variant.theme=light",
+      "componentId": "src/components/ImageLightbox.tsx#ImageLightbox",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-image-lightbox-mobile-screenshots/imagelightbox-imagelightbox-data-single-interactions-default-variant-index-only-eca5c33078c8.png",
+      "attempts": 1
+    }
+  ]
+}

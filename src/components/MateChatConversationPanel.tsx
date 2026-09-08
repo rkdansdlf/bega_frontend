@@ -45,6 +45,7 @@ type MateChatConversationPanelProps = {
   onRefetchMessages: () => void;
   onLoadOlderMessages: () => void;
   formatMessageTime: (dateString: string) => string;
+  visualQaComposerPhase?: 'fallback' | 'runtime';
 };
 
 function ChatEmptyState({
@@ -90,19 +91,49 @@ export default function MateChatConversationPanel({
   onRefetchMessages,
   onLoadOlderMessages,
   formatMessageTime,
+  visualQaComposerPhase,
 }: MateChatConversationPanelProps) {
+  const composerPhase = import.meta.env?.PROD === true
+    ? 'runtime'
+    : visualQaComposerPhase ?? 'runtime';
+  const composerFallback = (
+    <div
+      data-testid="mate-chat-composer-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="메시지 작성 도구 준비 중"
+    >
+      <Card className={`p-3 sm:p-4 ${mateSectionCardClass}`}>
+        <div className="flex items-end gap-2">
+          <Skeleton className="h-10 w-10 shrink-0 rounded-md" />
+          <Skeleton className="h-10 min-w-0 flex-1 rounded-md" />
+          <Skeleton className="h-10 w-16 shrink-0 rounded-md" />
+        </div>
+      </Card>
+      <Card className={`mt-4 p-4 ${mateSectionCardClass}`}>
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="mt-2 h-4 w-5/6" />
+        <Skeleton className="mt-2 h-4 w-4/6" />
+      </Card>
+    </div>
+  );
+
   return (
-    <>
+    <div
+      className="min-w-0 overflow-x-clip"
+      data-testid="mate-chat-conversation-panel"
+    >
       {chatLoadError && (
         <Alert className="mt-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20">
           <MateAlertCircleIcon className="h-4 w-4 text-amber-700 dark:text-amber-300" />
           <AlertDescription className="flex flex-wrap items-center justify-between gap-2 text-amber-800 dark:text-amber-200">
-            <span>{chatLoadError}</span>
+            <span className="min-w-0 [overflow-wrap:anywhere]">{chatLoadError}</span>
             <Button
               variant="outline"
               size="sm"
               className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:text-amber-200 dark:hover:bg-amber-950/40"
               onClick={onRefetchMessages}
+              data-testid="mate-chat-retry"
             >
               다시 시도
             </Button>
@@ -152,6 +183,7 @@ export default function MateChatConversationPanel({
                 disabled={isLoadingOlderMessages}
                 onClick={onLoadOlderMessages}
                 className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                data-testid="mate-chat-load-older"
               >
                 {isLoadingOlderMessages ? '이전 메시지 불러오는 중…' : '이전 메시지 불러오기'}
               </Button>
@@ -184,11 +216,11 @@ export default function MateChatConversationPanel({
                       return (
                         <div
                           key={message.id}
-                          className={cn('flex', isMyMessage ? 'justify-end' : 'justify-start')}
+                          className={cn('flex min-w-0 w-full', isMyMessage ? 'justify-end' : 'justify-start')}
                         >
                           <div
                             className={cn(
-                              'flex max-w-[84%] flex-col sm:max-w-[78%]',
+                              'flex min-w-0 max-w-[84%] flex-col sm:max-w-[78%]',
                               isMyMessage ? 'items-end' : 'items-start',
                             )}
                           >
@@ -199,7 +231,7 @@ export default function MateChatConversationPanel({
                             )}
                             <div
                               className={cn(
-                                'rounded-3xl px-4 py-3 shadow-sm',
+                                'min-w-0 max-w-full rounded-3xl px-4 py-3 shadow-sm',
                                 isMyMessage
                                   ? 'bg-primary text-white'
                                   : 'border border-gray-200/80 bg-gray-100 text-gray-900 dark:border-border/70 dark:bg-secondary/80 dark:text-white',
@@ -209,13 +241,24 @@ export default function MateChatConversationPanel({
                                 <div className="mb-2 -mx-1 -mt-1 overflow-hidden rounded-2xl border border-black/5 bg-white/20 dark:border-white/10">
                                   <img
                                     src={message.imageUrl}
-                                    alt="Attachment"
+                                    alt="채팅 첨부 이미지"
                                     className="h-auto w-full max-w-[240px] rounded-xl object-cover"
                                     loading="lazy"
+                                    onError={(event) => {
+                                      event.currentTarget.hidden = true;
+                                      event.currentTarget.nextElementSibling?.removeAttribute('hidden');
+                                    }}
                                   />
+                                  <span
+                                    hidden
+                                    className="flex w-full max-w-[240px] items-center justify-center rounded-xl p-4 text-center text-body [overflow-wrap:anywhere]"
+                                    data-testid="mate-chat-attachment-fallback"
+                                  >
+                                    첨부 이미지를 불러올 수 없습니다.
+                                  </span>
                                 </div>
                               )}
-                              <p className="whitespace-pre-wrap break-words">
+                              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                                 {message.message}
                               </p>
                             </div>
@@ -235,37 +278,24 @@ export default function MateChatConversationPanel({
       </Card>
 
       <div className="mt-4">
-        <Suspense fallback={(
-          <>
-            <Card className={`p-3 sm:p-4 ${mateSectionCardClass}`}>
-              <div className="flex items-end gap-2">
-                <Skeleton className="h-10 w-10 shrink-0 rounded-md" />
-                <Skeleton className="h-10 min-w-0 flex-1 rounded-md" />
-                <Skeleton className="h-10 w-16 shrink-0 rounded-md" />
-              </div>
-            </Card>
-            <Card className={`mt-4 p-4 ${mateSectionCardClass}`}>
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="mt-2 h-4 w-5/6" />
-              <Skeleton className="mt-2 h-4 w-4/6" />
-            </Card>
-          </>
-        )}>
-          <MateChatComposerPanel
-            chatImageInputId="mate-chat-image-upload"
-            fileInputRef={fileInputRef}
-            messageText={messageText}
-            imagePreviewUrl={imagePreviewUrl}
-            isUploadingImage={isUploadingImage}
-            isConnected={isConnected}
-            onMessageTextChange={onMessageTextChange}
-            onImageSelect={onImageSelect}
-            onOpenImagePicker={onOpenImagePicker}
-            onCancelImageSelection={onCancelImageSelection}
-            onSubmit={onSubmit}
-          />
-        </Suspense>
+        {composerPhase === 'fallback' ? composerFallback : (
+          <Suspense fallback={composerFallback}>
+            <MateChatComposerPanel
+              chatImageInputId="mate-chat-image-upload"
+              fileInputRef={fileInputRef}
+              messageText={messageText}
+              imagePreviewUrl={imagePreviewUrl}
+              isUploadingImage={isUploadingImage}
+              isConnected={isConnected}
+              onMessageTextChange={onMessageTextChange}
+              onImageSelect={onImageSelect}
+              onOpenImagePicker={onOpenImagePicker}
+              onCancelImageSelection={onCancelImageSelection}
+              onSubmit={onSubmit}
+            />
+          </Suspense>
+        )}
       </div>
-    </>
+    </div>
   );
 }

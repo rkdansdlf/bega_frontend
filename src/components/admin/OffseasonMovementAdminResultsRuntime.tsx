@@ -29,6 +29,26 @@ type QualityOption = {
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
 
+const adminOffseasonResultsInteractionStyle = `
+[data-testid^="admin-offseason-source-"],
+[data-testid^="admin-offseason-edit-"],
+[data-testid^="admin-offseason-delete-"] {
+  transition: color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+[data-testid^="admin-offseason-source-"]:active {
+  color: rgb(224 242 254);
+  transform: scale(0.98);
+}
+[data-testid^="admin-offseason-edit-"]:active {
+  background-color: rgb(16 185 129 / 0.2);
+  transform: scale(0.98);
+}
+[data-testid^="admin-offseason-delete-"]:active {
+  background-color: rgb(239 68 68 / 0.2);
+  transform: scale(0.98);
+}
+`;
+
 const getSectionBadgeClass = (section: string) => {
   if (section.includes('FA')) {
     return 'bg-sky-500/20 text-sky-300 border-0';
@@ -78,7 +98,7 @@ const formatDateTimeLabel = (value?: string | null) => {
   return `${formatDate(datePart)} ${timePart.slice(0, 5)}`;
 };
 
-interface OffseasonMovementAdminResultsRuntimeProps {
+export interface OffseasonMovementAdminResultsRuntimeProps {
   csvReport: CsvImportReport | null;
   movements: AdminOffseasonMovement[];
   filteredMovements: AdminOffseasonMovement[];
@@ -98,12 +118,16 @@ export default function OffseasonMovementAdminResultsRuntime({
   onDeleteTargetChange,
 }: OffseasonMovementAdminResultsRuntimeProps) {
   return (
-    <>
+    <div
+      data-testid="admin-offseason-results-runtime"
+      className="min-w-0 max-w-full space-y-4"
+    >
+      <style>{adminOffseasonResultsInteractionStyle}</style>
       {csvReport && (
         <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-caption font-semibold text-sky-200">{csvReport.fileName} 업로드 결과</p>
+              <p title={csvReport.fileName} className="max-w-full truncate text-caption font-semibold text-sky-200">{csvReport.fileName} 업로드 결과</p>
               <p className="mt-1 text-caption text-slate-300">
                 총 {csvReport.totalRows}행 중 등록 {csvReport.createdCount}건, 수정 {csvReport.updatedCount}건,
                 실패 {csvReport.failedCount}건
@@ -116,7 +140,7 @@ export default function OffseasonMovementAdminResultsRuntime({
               <p className={adminFieldLabelClassName}>실패 행</p>
               <div className="mt-2 space-y-1 text-caption text-slate-300">
                 {csvReport.errors.slice(0, 5).map((message) => (
-                  <p key={message}>{message}</p>
+                  <p key={message} title={message} className="line-clamp-2 [overflow-wrap:anywhere]">{message}</p>
                 ))}
                 {csvReport.errors.length > 5 && (
                 <p className="text-caption text-slate-500">추가 실패 {csvReport.errors.length - 5}건은 같은 파일을 수정한 뒤 다시 업로드하면 됩니다.</p>
@@ -128,12 +152,24 @@ export default function OffseasonMovementAdminResultsRuntime({
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center py-16">
+        <div role="status" aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-3 py-16 text-slate-400">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent motion-reduce:animate-none" />
+          <span>스토브리그 이동 목록을 불러오는 중...</span>
+        </div>
+      ) : filteredMovements.length === 0 ? (
+        <div
+          data-testid="admin-offseason-empty-results"
+          role="status"
+          className="max-w-full rounded-2xl border border-slate-800 px-4 py-16 text-center text-slate-500 [overflow-wrap:anywhere]"
+        >
+          <AdminCalendarIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
+          {movements.length === 0
+            ? '조건에 맞는 스토브리그 이동이 없습니다.'
+            : `${activeQualityOption.label} 조건에 맞는 누락 건이 없습니다.`}
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-800 overflow-hidden">
-          <Table>
+        <div data-testid="admin-offseason-results-scroll" className="max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-800">
+          <Table aria-label="스토브리그 이동 관리 결과" className="min-w-[1120px]">
             <TableHeader>
               <TableRow className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/50">
                 <TableHead className="text-slate-400 font-semibold">날짜</TableHead>
@@ -148,40 +184,36 @@ export default function OffseasonMovementAdminResultsRuntime({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMovements.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9} className="py-16 text-center text-slate-500">
-                    <AdminCalendarIcon className="mx-auto mb-3 h-12 w-12 opacity-30" />
-                    {movements.length === 0
-                      ? '조건에 맞는 스토브리그 이동이 없습니다.'
-                      : `${activeQualityOption.label} 조건에 맞는 누락 건이 없습니다.`}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredMovements.map((movement) => (
+              {filteredMovements.map((movement) => (
                   <TableRow
                     key={movement.id}
+                    data-testid={`admin-offseason-row-${movement.id}`}
+                    data-vqa-max-height="160"
                     className="border-slate-800 transition-colors duration-150 hover:bg-slate-800/30"
                   >
-                    <TableCell className="text-slate-300 text-caption font-semibold">{formatDate(movement.movementDate)}</TableCell>
-                    <TableCell>
-                      <AdminBadge className={getSectionBadgeClass(movement.section)}>
+                    <TableCell className="whitespace-nowrap text-slate-300 text-caption font-semibold">{formatDate(movement.movementDate)}</TableCell>
+                    <TableCell title={movement.section} className="w-[140px] max-w-[140px]">
+                      <AdminBadge className={`${getSectionBadgeClass(movement.section)} max-w-full truncate`}>
                         {movement.section}
                       </AdminBadge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="w-[140px] max-w-[140px]">
+                      <div className="flex min-w-0 items-center gap-2">
                         <TeamLogo team={TEAM_DATA[movement.teamCode]?.name || movement.teamCode} size={24} />
-                        <div>
-                          <p className="text-caption font-semibold text-slate-100">{TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode}</p>
-                          <p className="text-caption text-slate-500">{movement.teamCode}</p>
+                        <div className="min-w-0">
+                          <p title={TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode} className="truncate text-caption font-semibold text-slate-100">{TEAM_DATA[movement.teamCode]?.fullName || movement.teamCode}</p>
+                          <p title={movement.teamCode} className="truncate text-caption text-slate-500">{movement.teamCode}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-caption text-slate-200 font-semibold">{movement.playerName}</TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
+                      <p title={movement.playerName} className="truncate text-caption font-semibold text-slate-200">
+                        {movement.playerName}
+                      </p>
+                    </TableCell>
                     <TableCell className="max-w-[280px]">
                       <div className="space-y-1">
-                        <p className="line-clamp-2 text-caption text-slate-300">
+                        <p title={movement.summary?.trim() || movement.details?.trim() || '요약 없음'} className="line-clamp-2 text-caption text-slate-300 [overflow-wrap:anywhere]">
                           {movement.summary?.trim() || movement.details?.trim() || '요약 없음'}
                         </p>
                         <div className="flex flex-wrap gap-1">
@@ -199,25 +231,28 @@ export default function OffseasonMovementAdminResultsRuntime({
                           )}
                         </div>
                         {movement.details?.trim() && movement.summary?.trim() && movement.details !== movement.summary && (
-                        <p className="line-clamp-1 text-caption text-slate-500">{movement.details}</p>
+                        <p title={movement.details} className="line-clamp-1 text-caption text-slate-500 [overflow-wrap:anywhere]">{movement.details}</p>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
                       <div className="space-y-1 text-caption">
-                        <p className="font-semibold text-emerald-300">{movement.contractValue || '-'}</p>
-                        <p className="text-slate-500">{movement.contractTerm || movement.optionDetails || '-'}</p>
+                        <p title={movement.contractValue || '-'} className="truncate font-semibold text-emerald-300">{movement.contractValue || '-'}</p>
+                        <p title={movement.contractTerm || movement.optionDetails || '-'} className="truncate text-slate-500">{movement.contractTerm || movement.optionDetails || '-'}</p>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px] max-w-[140px]">
                       <div className="space-y-1 text-caption">
-                        <p className="text-slate-200">{movement.sourceLabel || '-'}</p>
+                        <p title={movement.sourceLabel || '-'} className="truncate text-slate-200">{movement.sourceLabel || '-'}</p>
                         {movement.sourceUrl ? (
                           <a
                             href={movement.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-caption text-sky-300 hover:text-sky-200"
+                            data-testid={`admin-offseason-source-${movement.id}`}
+                            data-vqa-min-touch="44"
+                            aria-label={`${movement.playerName} 이동 원문 열기`}
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-caption text-sky-300 hover:text-sky-200"
                           >
                             <AdminLinkIcon className="h-3 w-3" />
                             원문
@@ -227,15 +262,17 @@ export default function OffseasonMovementAdminResultsRuntime({
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-caption text-slate-400">{formatDateTimeLabel(movement.announcedAt)}</TableCell>
+                    <TableCell className="whitespace-nowrap text-caption text-slate-400">{formatDateTimeLabel(movement.announcedAt)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-edit-${movement.id}`}
+                          data-vqa-min-touch="44"
+                          aria-label={`${movement.playerName} 이동 수정`}
                           onClick={() => onOpenEditDialog(movement)}
-                          className="text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
+                          className="min-h-11 min-w-11 text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300"
                         >
                           <AdminEditIcon className="h-4 w-4" />
                         </Button>
@@ -243,20 +280,21 @@ export default function OffseasonMovementAdminResultsRuntime({
                           variant="ghost"
                           size="sm"
                           data-testid={`admin-offseason-delete-${movement.id}`}
+                          data-vqa-min-touch="44"
+                          aria-label={`${movement.playerName} 이동 삭제`}
                           onClick={() => onDeleteTargetChange(movement)}
-                          className="text-slate-400 hover:bg-red-500/10 hover:text-red-300"
+                          className="min-h-11 min-w-11 text-slate-400 hover:bg-red-500/10 hover:text-red-300"
                         >
                           <AdminTrashIcon className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              ))}
             </TableBody>
           </Table>
         </div>
       )}
-    </>
+    </div>
   );
 }

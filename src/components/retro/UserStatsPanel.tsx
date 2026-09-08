@@ -29,6 +29,77 @@ const userStatsPanelStyles = `
     gap: 16px;
   }
 
+  .retro-user-stats-panel,
+  .retro-user-stats-header,
+  .retro-user-stats-identity,
+  .retro-user-stats-identity-copy,
+  .retro-user-stats-rank-section {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .retro-user-stats-identity {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .retro-user-stats-avatar {
+    box-sizing: border-box;
+    flex: 0 0 64px;
+  }
+
+  .retro-user-stats-identity-copy {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .retro-user-stats-name {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
+  .retro-user-stats-rank-display {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .retro-user-stats-rank-number {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .retro-user-stats-card {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .retro-user-stats-value {
+    min-width: 0;
+    max-width: 100%;
+    font-size: clamp(12px, 4vw, 20px);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .retro-user-stats-suffix {
+    font-size: clamp(8px, 3vw, 11px);
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+
+  .retro-user-stats-exp-value {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
   @media (max-width: 768px) {
     .retro-user-stats-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -137,7 +208,10 @@ const getStreakStyle = (streak: number) => {
   };
 };
 
-const formatCompactNumber = (value: number): string => {
+export const formatCompactNumber = (value: number): string => {
+  if (value >= 1000000000000000) return `${(value / 1000000000000000).toFixed(1)}Q`;
+  if (value >= 1000000000000) return `${(value / 1000000000000).toFixed(1)}T`;
+  if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}B`;
   if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
   if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
   return value.toLocaleString();
@@ -160,6 +234,7 @@ export interface UserStats {
 
 interface UserStatsPanelProps {
   stats: UserStats;
+  containerTestId?: string;
 }
 
 function calculateNextLevelXP(level: number): number {
@@ -170,7 +245,7 @@ function calculateCurrentLevelXP(level: number): number {
   return Math.pow(level - 1, 2) * 100;
 }
 
-export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
+export default function UserStatsPanel({ stats, containerTestId }: UserStatsPanelProps) {
   const currentLevelXP = calculateCurrentLevelXP(stats.level);
   const nextLevelXP = calculateNextLevelXP(stats.level);
   const xpProgress = stats.experiencePoints - currentLevelXP;
@@ -181,7 +256,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
   const statCards = [
     { label: '시즌 점수', value: formatCompactNumber(stats.seasonScore), suffix: 'PTS', highlight: true },
     { label: '총점', value: formatCompactNumber(stats.totalScore), suffix: 'PTS', highlight: false },
-    { label: '최고 연승', value: stats.maxStreak.toString(), suffix: '연승', highlight: false },
+    { label: '최고 연승', value: formatCompactNumber(stats.maxStreak), suffix: '연승', highlight: false },
     {
       label: '적중률',
       value: stats.accuracy !== undefined ? stats.accuracy.toFixed(1) : '-',
@@ -192,6 +267,8 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
 
   return (
     <div
+      className="retro-user-stats-panel"
+      data-testid={containerTestId}
       style={{
         background: 'linear-gradient(180deg, #1a0a2a 0%, #0a0a1a 100%)',
         border: '3px solid #ff00ff',
@@ -200,6 +277,8 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
         margin: '16px',
         position: 'relative',
         overflow: 'hidden',
+        boxSizing: 'border-box',
+        minWidth: 0,
       }}
     >
       <style>{userStatsPanelStyles}</style>
@@ -238,8 +317,12 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
           marginBottom: '16px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div
+          className="retro-user-stats-identity"
+          style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}
+        >
           <div
+            className="retro-user-stats-avatar"
             style={{
               width: '64px',
               height: '64px',
@@ -268,7 +351,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
             )}
           </div>
 
-          <div>
+          <div className="retro-user-stats-identity-copy">
             <div
               style={{
                 fontFamily: retroDisplay,
@@ -281,6 +364,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
               YOUR STATUS
             </div>
             <div
+              className="retro-user-stats-name"
               style={{
                 fontFamily: retroText,
                 fontSize: '16px',
@@ -315,6 +399,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
           >
             <span>현재 순위</span>
             <div
+              className="retro-user-stats-rank-number"
               style={{
                 ...rankNumberStyle,
                 fontFamily: retroDisplay,
@@ -330,7 +415,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
                   👑
                 </span>
               )}
-              #{stats.rank}
+              #{formatCompactNumber(stats.rank)}
             </div>
           </div>
 
@@ -351,7 +436,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
               }}
             >
               {stats.currentStreak >= 5 && '🔥 '}
-              {stats.currentStreak}연승 중!
+              {formatCompactNumber(stats.currentStreak)} 연승 중!
             </div>
           )}
         </div>
@@ -369,6 +454,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
         {statCards.map(({ label, value, suffix, highlight }) => (
           <div
             key={label}
+            className="retro-user-stats-card"
             style={{
               background: highlight ? 'linear-gradient(180deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%)' : 'rgba(0, 0, 0, 0.4)',
               border: `2px solid ${highlight ? '#00ff00' : '#3a3a5a'}`,
@@ -407,9 +493,9 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
               {label}
             </div>
             <div
+              className="retro-user-stats-value"
               style={{
                 fontFamily: retroDisplay,
-                fontSize: '20px',
                 color: highlight ? '#00ff00' : '#fff',
                 textShadow: highlight ? '0 0 15px rgba(0, 255, 0, 0.8)' : '0 0 4px rgba(255, 255, 255, 0.3)',
                 animation: highlight ? 'retroUserStatsScoreGlow 2s infinite' : undefined,
@@ -420,11 +506,10 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
             >
               {value}
               <span
+                className="retro-user-stats-suffix"
                 style={{
                   fontFamily: retroText,
-                  fontSize: '11px',
                   color: highlight ? '#66ff66' : '#888',
-                  marginLeft: '4px',
                 }}
               >
                 {suffix}
@@ -446,6 +531,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
           }}
         >
           <span
+            className="retro-user-stats-exp-value"
             style={{
               fontFamily: retroDisplay,
               fontSize: '9px',
@@ -456,6 +542,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
             EXP: {formatCompactNumber(stats.experiencePoints)}
           </span>
           <span
+            className="retro-user-stats-exp-value"
             style={{
               fontFamily: retroDisplay,
               fontSize: '9px',
@@ -472,6 +559,7 @@ export default function UserStatsPanel({ stats }: UserStatsPanelProps) {
           value={xpProgress}
           max={xpNeeded}
           color={hallOfFame ? '#ffd700' : '#00ffff'}
+          label={`${formatCompactNumber(xpProgress)}/${formatCompactNumber(xpNeeded)}`}
           size="lg"
         />
       </div>

@@ -396,7 +396,12 @@ export default function MyPageSeasonLogRuntime({
             {scopeLabel} 직관 기록 <b>{totalCount}</b>회 · <b>{winCount}</b>승 <b>{drawCount}</b>무 <b>{lossCount}</b>패 · 승률 <b>{winRate.toFixed(0)}%</b>
           </p>
         </div>
-        <button type="button" className="mypage-season-cta" onClick={onOpenTicketUploadModal}>
+        <button
+          type="button"
+          className="mypage-season-cta"
+          data-testid="mypage-ticket-upload-open"
+          onClick={onOpenTicketUploadModal}
+        >
           <MyPageTicketIcon />
           티켓 등록
         </button>
@@ -428,7 +433,7 @@ export default function MyPageSeasonLogRuntime({
         <div className="mypage-season-heat-scroll">
           <div
             className="mypage-season-heat-months"
-            style={{ gridTemplateColumns: `repeat(${heatmap.totalColumns}, minmax(13px, 1fr))` }}
+            style={{ gridTemplateColumns: `repeat(${heatmap.totalColumns}, minmax(24px, 1fr))` }}
             aria-hidden="true"
           >
             {heatmap.monthLabels.map((month) => (
@@ -452,7 +457,8 @@ export default function MyPageSeasonLogRuntime({
             </div>
             <div
               className="mypage-season-heat-grid"
-              style={{ gridTemplateColumns: `repeat(${heatmap.totalColumns}, minmax(13px, 1fr))` }}
+              data-vqa-touch-target="compact"
+              style={{ gridTemplateColumns: `repeat(${heatmap.totalColumns}, minmax(24px, 1fr))` }}
             >
               {heatmap.cells.map((cell) => {
                 const className = `mypage-season-cell ${getHeatLevelClass(cell.entry)}`.trim();

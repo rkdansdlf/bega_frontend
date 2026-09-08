@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "bega-visual-qa-skeleton-usages-v1",
+  "componentId": "src/components/ui/skeleton.tsx#Skeleton",
+  "variants": [
+    {
+      "id": "usage-e1eff975e941",
+      "className": "h-[150px] w-full"
+    },
+    {
+      "id": "usage-73a1199e3286",
+      "className": "h-10 min-w-0 flex-1 rounded-md"
+    },
+    {
+      "id": "usage-c61488b04a3d",
+      "className": "h-10 min-w-0 flex-1 rounded-md dark:bg-white/10"
+    },
+    {
+      "id": "usage-49113d137099",
+      "className": "h-10 w-10 rounded-full"
+    },
+    {
+      "id": "usage-6d24308d2db1",
+      "className": "h-10 w-10 shrink-0 rounded-md"
+    },
+    {
+      "id": "usage-6fe51c0add5e",
+      "className": "h-10 w-16 shrink-0 rounded-md"
+    },
+    {
+      "id": "usage-c83f3c87201e",
+      "className": "h-10 w-16 shrink-0 rounded-md dark:bg-white/10"
+    },
+    {
+      "id": "usage-ad944d71616a",
+      "className": "h-10 w-40 max-w-full rounded-2xl dark:bg-white/10"
+    },
+    {
+      "id": "usage-c219f68fddb3",
+      "className": "h-10 w-48 max-w-full rounded-2xl dark:bg-white/10"
+    },
+    {
+      "id": "usage-b06ef716d9b7",
+      "className": "h-12 w-12 rounded-2xl dark:bg-white/10"
+    },
+    {
+      "id": "usage-b673f5344667",
+      "className": "h-12 w-12 rounded-full"
+    },
+    {
+      "id": "usage-d17ffaa68e8b",
+      "className": "h-12 w-48 max-w-full rounded-3xl dark:bg-white/10"
+    },
+    {
+      "id": "usage-564c5af8359b",
+      "className": "h-12 w-full"
+    },
+    {
+      "id": "usage-f413822a7ffe",
+      "className": "h-14 w-14 shrink-0 rounded-3xl dark:bg-white/10"
+    },
+    {
+      "id": "usage-ec033ca6eeab",
+      "className": "h-14 w-2/3 rounded-2xl"
+    },
+    {
+      "id": "usage-217c597045a5",
+      "className": "h-14 w-3/4 rounded-2xl"
+    },
+    {
+      "id": "usage-9cb3b520b690",
+      "className": "h-14 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50"
+    },
+    {
+      "id": "usage-d5b158857e0a",
+      "className": "h-16 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50"
+    },
+    {
+      "id": "usage-64f3144ae61e",
+      "className": "h-20 rounded-2xl bg-zinc-200/80 dark:bg-zinc-800/70"
+    },
+    {
+      "id": "usage-c52d47c8b25e",
+      "className": "h-20 w-20 flex-shrink-0 rounded-full md:h-24 md:w-24"
+    },
+    {
+      "id": "usage-24f348a35b35",
+      "className": "h-20 w-full rounded-xl"
+    },
+    {
+      "id": "usage-ad855be5869b",
+      "className": "h-24 rounded-3xl bg-zinc-200/80 dark:bg-zinc-800/70"
+    },
+    {
+      "id": "usage-d8f5987d163c",
+      "className": "h-3 w-10 dark:bg-white/10"
+    },
+    {
+      "id": "usage-21e96919c457",
+      "className": "h-3 w-12 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-3123b333a369",
+      "className": "h-3 w-16"
+    },
+    {
+      "id": "usage-2d61418175c8",
+      "className": "h-3 w-16 dark:bg-white/10"
+    },
+    {
+      "id": "usage-3daf5ff82456",
+      "className": "h-3 w-16 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-400600f40a34",
+      "className": "h-3 w-20"
+    },
+    {
+      "id": "usage-f4c31f7a82b8",
+      "className": "h-3 w-20 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-f5d1ba2bdb58",
+      "className": "h-4 w-14 mx-auto"
+    },
+    {
+      "id": "usage-914051ca0918",
+      "className": "h-4 w-16 dark:bg-white/10"
+    },
+    {
+      "id": "usage-2315f91d8dce",
+      "className": "h-4 w-16 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-a39819056c31",
+      "className": "h-4 w-20 dark:bg-white/10"
+    },
+    {
+      "id": "usage-0b4ccba278b2",
+      "className": "h-4 w-20 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-551791be589b",
+      "className": "h-4 w-24"
+    },
+    {
+      "id": "usage-e77881a47d18",
+      "className": "h-4 w-24 max-w-full"
+    },
+    {
+      "id": "usage-027d5949c9dc",
+      "className": "h-4 w-24 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-69bb51d9ecba",
+      "className": "h-4 w-28"
+    },
+    {
+      "id": "usage-fb3b7ee469d9",
+      "className": "h-4 w-3/4"
+    },
+    {
+      "id": "usage-f1ffbc760039",
+      "className": "h-4 w-36 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-3fa7c0519a3b",
+      "className": "h-4 w-4/5"
+    },
+    {
+      "id": "usage-19489e032c3a",
+      "className": "h-4 w-48 max-w-full"
+    },
+    {
+      "id": "usage-c9e61b777f86",
+      "className": "h-4 w-56 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-dd35f2537786",
+      "className": "h-4 w-full"
+    },
+    {
+      "id": "usage-072574e6197b",
+      "className": "h-4 w-full rounded"
+    },
+    {
+      "id": "usage-0de7eb39d5ad",
+      "className": "h-40 rounded-2xl"
+    },
+    {
+      "id": "usage-1b1c367b8b09",
+      "className": "h-44 rounded-2xl"
+    },
+    {
+      "id": "usage-82704fd24344",
+      "className": "h-48 rounded-18"
+    },
+    {
+      "id": "usage-ff4977525d50",
+      "className": "h-5 w-16"
+    },
+    {
+      "id": "usage-6c340f9ac2fe",
+      "className": "h-5 w-24 dark:bg-white/10"
+    },
+    {
+      "id": "usage-249b89bfc81b",
+      "className": "h-5 w-24 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-1bb163821214",
+      "className": "h-6 w-12 mx-auto"
+    },
+    {
+      "id": "usage-c09caf638390",
+      "className": "h-6 w-20"
+    },
+    {
+      "id": "usage-0e67ddd00f48",
+      "className": "h-6 w-20 rounded-full"
+    },
+    {
+      "id": "usage-359f4bda7286",
+      "className": "h-6 w-24 rounded-full"
+    },
+    {
+      "id": "usage-f054a7fc49f2",
+      "className": "h-7 w-24 rounded-full"
+    },
+    {
+      "id": "usage-049e998deae2",
+      "className": "h-7 w-36"
+    },
+    {
+      "id": "usage-fd8c33f4cd60",
+      "className": "h-7 w-36 max-w-full"
+    },
+    {
+      "id": "usage-53b33bda2a5e",
+      "className": "h-7 w-40 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-60a316edff78",
+      "className": "h-8 w-40"
+    },
+    {
+      "id": "usage-9ac4b464e167",
+      "className": "h-8 w-full rounded-md"
+    },
+    {
+      "id": "usage-cd9d6c0d0cc4",
+      "className": "h-full w-full rounded-full"
+    },
+    {
+      "id": "usage-dbbc193af68e",
+      "className": "mb-2 h-4 w-full"
+    },
+    {
+      "id": "usage-8d4a30487f24",
+      "className": "mb-2 h-9 w-16 dark:bg-white/10"
+    },
+    {
+      "id": "usage-75d4d4113c78",
+      "className": "mb-3 h-20 w-full"
+    },
+    {
+      "id": "usage-a9382638dfd2",
+      "className": "mb-3 h-24 w-full"
+    },
+    {
+      "id": "usage-b2cfa23ca2ae",
+      "className": "mb-4 h-6 w-28"
+    },
+    {
+      "id": "usage-7c9b531ba481",
+      "className": "mb-4 h-8 w-24"
+    },
+    {
+      "id": "usage-fde86f46e19f",
+      "className": "ml-auto h-14 w-1/2 rounded-2xl"
+    },
+    {
+      "id": "usage-c2051e35ba8f",
+      "className": "mt-2 h-4 w-4/6"
+    },
+    {
+      "id": "usage-3fad23de7f2b",
+      "className": "mt-2 h-4 w-5/6"
+    },
+    {
+      "id": "usage-1d9d0f46f4a1",
+      "className": "mt-2 h-4 w-56 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-86acc728b4bd",
+      "className": "mt-2 h-4 w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-c52c31c7bb3f",
+      "className": "mt-3 h-5 w-24 max-w-full dark:bg-white/10"
+    },
+    {
+      "id": "usage-e84820b7b5cc",
+      "className": "mx-auto h-4 w-16"
+    },
+    {
+      "id": "usage-358e9cecd41a",
+      "className": "mx-auto h-6 w-10"
+    },
+    {
+      "id": "usage-56546e2d7373",
+      "className": "order-1 col-span-2 h-10 rounded-md lg:order-4 lg:col-span-1 lg:w-28"
+    },
+    {
+      "id": "usage-d4c80f918b82",
+      "className": "order-2 h-10 rounded-md lg:order-1 lg:w-28"
+    },
+    {
+      "id": "usage-5c117d4355f5",
+      "className": "order-3 h-10 rounded-md lg:order-2 lg:w-32"
+    },
+    {
+      "id": "usage-0a2daf45e624",
+      "className": "order-4 col-span-2 h-10 rounded-md lg:order-3 lg:col-span-1 lg:w-28"
+    },
+    {
+      "id": "usage-696e8b2bf143",
+      "className": "stadium-guide-loading-block h-4 w-36"
+    },
+    {
+      "id": "usage-c7a3543c30ff",
+      "className": "stadium-guide-loading-block h-4 w-48"
+    },
+    {
+      "id": "usage-0df24e5a5bcf",
+      "className": "stadium-guide-loading-block h-5 w-32"
+    },
+    {
+      "id": "usage-ea942bc2c891",
+      "className": "stadium-guide-loading-block h-5 w-8"
+    },
+    {
+      "id": "usage-8d708306fea5",
+      "className": "stadium-guide-loading-block h-9 w-16 rounded-lg"
+    },
+    {
+      "id": "usage-90f570e3be0b",
+      "className": "stadium-guide-loading-block w-5 h-5 rounded"
+    }
+  ]
+}

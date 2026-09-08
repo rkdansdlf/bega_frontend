@@ -36,6 +36,7 @@ import { resolveLeagueBadge } from '../utils/homeLeagueBadge';
 import { buildHomeRequestErrorContext, buildHomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeAuthSnapshot } from './home/HomeAuthBridge';
+import HomePullToRefresh from './home/HomePullToRefresh';
 import {
     MANUAL_BASEBALL_DATA_REQUIRED_CODE,
 } from '../utils/manualBaseballDataContract';
@@ -86,15 +87,17 @@ function HomeMatchPanelFallbackCard() {
     return (
         <div className="min-h-[168px] animate-pulse rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-card">
             <div className="flex items-center justify-between gap-4">
-                <div className="h-5 w-20 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-5 w-20 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-6 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
             </div>
-            <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                <div className="h-5 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-10 rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="ml-auto h-5 w-24 rounded-full bg-gray-200 dark:bg-white/10" />
+            {/* minmax(0,…) because a bare `1fr` is `minmax(auto,1fr)`, which floors the
+                track at the item's own width and overflows once text is scaled up. */}
+            <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
+                <div className="h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="h-6 w-10 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="ml-auto h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
             </div>
-            <div className="mt-6 h-4 w-32 rounded-full bg-gray-200 dark:bg-white/10" />
+            <div className="mt-6 h-4 w-32 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
         </div>
     );
 }
@@ -426,6 +429,7 @@ export default function HomeRuntime() {
     });
 
     const [isLoading, setIsLoading] = useState(true);
+    const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
     const [isGamesError, setIsGamesError] = useState(false);
     const [connectionError, setConnectionError] = useState(false);
     const [loadFailureReason, setLoadFailureReason] = useState<HomeLoadFailureReason | null>(null);
@@ -653,6 +657,9 @@ export default function HomeRuntime() {
 
         setScheduledGames(normalizedScheduledGames);
         const showConnectionError = shouldShowHomeConnectionError(snapshot.success);
+        if (!showConnectionError) {
+            setLastRefreshedAt(new Date());
+        }
 
         setIsLoading(false);
         setIsGamesError(!snapshot.success.games && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'games'));
@@ -814,6 +821,26 @@ export default function HomeRuntime() {
             }
         }
     }, [applyHomeSnapshot, buildLegacyFailureSnapshot, leagueStartDates]);
+
+    /**
+     * 풀투리프레시 전용 — loadHomeBootstrap과 달리 로딩 스켈레톤으로
+     * 되돌리지 않고 조용히 최신 데이터로 교체합니다.
+     */
+    const refreshHomeSilently = useCallback(async (date: Date) => {
+        const requestId = ++bootstrapRequestIdRef.current;
+        try {
+            const data = await fetchHomeBootstrapWithRetry(date);
+            if (requestId !== bootstrapRequestIdRef.current) {
+                return;
+            }
+            applyHomeSnapshot(date, buildBootstrapHomeSnapshot(date, false, data));
+        } catch (error) {
+            if (requestId !== bootstrapRequestIdRef.current) {
+                return;
+            }
+            console.warn('[HomePullToRefresh] Failed to refresh:', error);
+        }
+    }, [applyHomeSnapshot]);
 
     const handleTabChange = (tabValue: LeagueTab) => {
         if (!isVisibleLeagueTab(tabValue, visibleLeagueTabs)) {
@@ -1209,21 +1236,25 @@ export default function HomeRuntime() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
-            {showConnectionRecoveryBanner && (
-                <Suspense fallback={null}>
-                    <LazyHomeRecoveryBanner
-                        loadFailureReason={loadFailureReason}
-                        manualDataRequest={manualDataRequest}
-                        onRetry={() => {
-                            setConnectionError(false);
-                            setManualDataRequest(null);
-                            void loadHomeBootstrap(selectedDate);
-                        }}
-                    />
-                </Suspense>
-            )}
-
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <HomePullToRefresh
+                contentClassName="space-y-5"
+                lastRefreshedLabel={lastRefreshedAt ? lastRefreshedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : null}
+                onRefresh={() => refreshHomeSilently(selectedDate)}
+              >
+                {showConnectionRecoveryBanner && (
+                    <Suspense fallback={null}>
+                        <LazyHomeRecoveryBanner
+                            loadFailureReason={loadFailureReason}
+                            manualDataRequest={manualDataRequest}
+                            onRetry={() => {
+                                setConnectionError(false);
+                                setManualDataRequest(null);
+                                void loadHomeBootstrap(selectedDate);
+                            }}
+                        />
+                    </Suspense>
+                )}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border/70 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
                     <div>
                         <div className="flex items-center gap-3">
@@ -1382,6 +1413,7 @@ export default function HomeRuntime() {
                         </div>
                     </div>
                 </div>
+              </HomePullToRefresh>
 
                 {shouldMountDeferredSurfaces || showCalendar ? (
                     <Suspense fallback={null}>
@@ -1408,7 +1440,7 @@ export default function HomeRuntime() {
                     aria-hidden="true"
                     data-testid="home-mobile-bottom-spacer"
                 />
-            </main>
+            </div>
         </div>
     );
 }

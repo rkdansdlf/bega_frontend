@@ -6,6 +6,11 @@ interface ErrorFeedbackPanelProps {
   source: ErrorSource;
   onRetry?: ErrorRetryHandler;
   onReload?: (() => void) | null;
+  submitFeedback?: (input: {
+    eventId: string;
+    comment: string;
+    actionTaken: string;
+  }) => Promise<boolean>;
 }
 
 const FEEDBACK_ACTION_BY_SOURCE: Record<ErrorSource, string> = {
@@ -19,6 +24,7 @@ export default function ErrorFeedbackPanel({
   source,
   onRetry = null,
   onReload = null,
+  submitFeedback,
 }: ErrorFeedbackPanelProps) {
   const [comment, setComment] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -48,7 +54,8 @@ export default function ErrorFeedbackPanel({
 
     try {
       const { submitClientErrorFeedback } = await import('../../utils/clientErrorReporter');
-      const submitted = await submitClientErrorFeedback({
+      const submit = submitFeedback ?? submitClientErrorFeedback;
+      const submitted = await submit({
         eventId: errorId,
         comment: trimmedComment,
         actionTaken: FEEDBACK_ACTION_BY_SOURCE[source],
@@ -84,7 +91,10 @@ export default function ErrorFeedbackPanel({
   };
 
   return (
-    <div className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left">
+    <div
+      data-testid="error-feedback"
+      className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left"
+    >
       <div className="space-y-1">
         <p className="text-body font-semibold uppercase tracking-[0.2em] text-gray-500">
           Error ID
@@ -114,7 +124,10 @@ export default function ErrorFeedbackPanel({
       </div>
 
       {statusMessage ? (
-        <p className={`text-body ${status === 'success' ? 'text-emerald-700' : 'text-red-600'}`}>
+        <p
+          aria-live="polite"
+          className={`text-body ${status === 'success' ? 'text-emerald-700' : 'text-red-600'}`}
+        >
           {statusMessage}
         </p>
       ) : null}
@@ -125,7 +138,7 @@ export default function ErrorFeedbackPanel({
             type="button"
             onClick={() => void handleRetry()}
             disabled={isRetrying}
-            className="rounded-xl bg-emerald-600 px-4 py-2 text-body font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
+            className="min-h-11 rounded-xl bg-emerald-600 px-4 py-2 text-body font-semibold text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-emerald-300"
           >
             {isRetrying ? '다시 시도 중...' : '다시 시도'}
           </button>
@@ -135,7 +148,7 @@ export default function ErrorFeedbackPanel({
           <button
             type="button"
             onClick={onReload}
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-body font-semibold text-gray-700 transition hover:bg-gray-100"
+            className="min-h-11 rounded-xl border border-gray-300 bg-white px-4 py-2 text-body font-semibold text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
           >
             페이지 새로고침
           </button>
@@ -145,7 +158,8 @@ export default function ErrorFeedbackPanel({
           type="button"
           onClick={() => void handleSubmitFeedback()}
           disabled={!errorId || !trimmedComment || isSubmitting}
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-body font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:border-red-100 disabled:bg-red-50 disabled:text-red-300"
+          aria-busy={isSubmitting}
+          className="min-h-11 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-body font-semibold text-red-700 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border-red-100 disabled:bg-red-50 disabled:text-red-300"
         >
           {isSubmitting ? '제보 전송 중...' : '문제 제보'}
         </button>

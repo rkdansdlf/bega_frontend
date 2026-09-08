@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T05:37:28.802Z",
+  "baseUrl": "http://127.0.0.1:5194",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mate-page-mobile-screenshots"
+  },
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=controls-fallback|variant.theme=dark",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-controls-fallback-variant-theme-dark-8149d1e590c5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=controls-fallback|variant.theme=light",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-controls-fallback-variant-theme-light-fb6db2a6df2c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=dark",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-results-fallback-variant-theme-dark-fd1cf35c2b1c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=results-fallback|variant.theme=light",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-results-fallback-variant-theme-light-caeafb772325.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=dark",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-runtime-variant-theme-dark-3b20ed5f2a27.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/Mate.tsx#Mate:data=single|variant.phase=runtime|variant.theme=light",
+      "componentId": "src/components/Mate.tsx#Mate",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-page-mobile-screenshots/mate-mate-data-single-variant-phase-runtime-variant-theme-light-981a6ed34a37.png",
+      "attempts": 1
+    }
+  ]
+}

@@ -5,7 +5,7 @@ const footerLinkClass = 'inline-flex min-h-11 min-w-11 items-center py-2 hover:t
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 dark:bg-gray-900 text-zinc-900 dark:text-white border-t border-zinc-200 dark:border-gray-800 pt-8 pb-[var(--mobile-footer-safe-bottom)] lg:py-8">
+    <footer data-testid="site-footer" className="bg-gray-100 dark:bg-gray-900 text-zinc-900 dark:text-white border-t border-zinc-200 dark:border-gray-800 pt-8 pb-[var(--mobile-footer-safe-bottom)] lg:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row items-center gap-3 mb-4">
           <img
@@ -13,7 +13,7 @@ export default function Footer() {
             alt="baseball"
             className="w-8 h-8"
           />
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-2">
             <h3 className="tracking-wider text-lg" style={{ fontWeight: 900 }}>
               BEGA
             </h3>
@@ -26,7 +26,7 @@ export default function Footer() {
             <h4 className="mb-2 text-base font-bold">서비스</h4>
             <ul className="space-y-1 text-body text-zinc-600 dark:text-white">
               <li>
-                <Link to="/home" className={footerLinkClass}>
+                <Link to="/home" data-testid="site-footer-home" className={footerLinkClass}>
                   홈
                 </Link>
               </li>
@@ -84,7 +84,8 @@ export default function Footer() {
                 이메일:{' '}
                 <a
                   href="mailto:baseballguide251021@gmail.com"
-                  className="inline-flex min-h-11 items-center py-2 hover:text-primary dark:hover:text-white underline-offset-2 hover:underline"
+                  data-testid="site-footer-email"
+                  className="inline-flex min-h-11 min-w-0 items-center py-2 text-sm sm:text-body [overflow-wrap:anywhere] hover:text-primary dark:hover:text-white underline-offset-2 hover:underline"
                 >
                   baseballguide251021@gmail.com
                 </a>

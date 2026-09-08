@@ -1,0 +1,495 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T08:03:42.479Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/visual-qa-mf-fallback-button-mobile-screenshots"
+  },
+  "summary": {
+    "total": 48,
+    "passed": 48,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=long-korean|interactions=default|variant.presentation=default-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-long-korean-interactions-default-variant-8174c82873b6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=long-korean|interactions=default|variant.presentation=default-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-long-korean-interactions-default-variant-59e317be67e1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-cb57469b1998.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-b1b992a7c26c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-icon|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-addee89bd0ea.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-icon|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-7e0a6ef8103d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-iconTouch|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-05d39ae04b24.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-iconTouch|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-f7130d74e99e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-lg|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-a9cfa7b98349.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-lg|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-1a992a606034.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-sm|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-7bcd33ae7cb4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-sm|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-74d165693b26.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-touch|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-7500b5235410.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-touch|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-23b951386974.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-touchLg|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-697ab8f8030f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brand-touchLg|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-9240e49f570a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brandOutline-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-84138a9e6f4d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=brandOutline-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-66d281aa6837.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=default-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-626e501939af.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=default-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-f3935afa8587.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=destructive-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-8260115ab1f5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=destructive-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-ea534ebd787d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=disabled-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-9690ecad5d0f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=disabled-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-53a10a52305e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=ghost-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-3118eed14686.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=ghost-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-eea67a7572c8.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=link-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-f7b0aa140682.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=link-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-ce36c77d7e1f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=outline-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-8b30f99c5f6d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=outline-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-32f1b8430a37.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=secondary-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-454c2d6edfe6.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=default|variant.presentation=secondary-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-default-variant-prese-0d2637d63a67.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=focus-visible|variant.presentation=default-default|variant.theme=light|interactionTarget=default",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-focus-visible-variant-f8a23e70e87d.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "default",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=focus-visible|variant.presentation=destructive-default|variant.theme=light|interactionTarget=destructive",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-focus-visible-variant-9243b7c4cbbb.png",
+      "interaction": {
+        "action": "focus-visible",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "destructive",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=brand-default|variant.theme=light|interactionTarget=brand",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-2aca80399228.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "brand",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=brandOutline-default|variant.theme=light|interactionTarget=brandOutline",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-99957906c4c4.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "brandOutline",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=default-default|variant.theme=light|interactionTarget=default",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-94b99cc952b5.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "default",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=destructive-default|variant.theme=light|interactionTarget=destructive",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-13e7e807fc30.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "destructive",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=ghost-default|variant.theme=light|interactionTarget=ghost",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-aceba916b72b.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "ghost",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=link-default|variant.theme=light|interactionTarget=link",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-23d1b389af21.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "link",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=outline-default|variant.theme=light|interactionTarget=outline",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-bb4fad503ac9.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "outline",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=hover|variant.presentation=secondary-default|variant.theme=light|interactionTarget=secondary",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-hover-variant-present-1a545aa9934c.png",
+      "interaction": {
+        "action": "hover",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "secondary",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=keyboard-navigation|variant.presentation=default-default|variant.theme=light|interactionTarget=enter",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-keyboard-navigation-v-d94aea506d18.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "enter",
+        "key": "Enter",
+        "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"keyboard\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=keyboard-navigation|variant.presentation=default-default|variant.theme=light|interactionTarget=space",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-keyboard-navigation-v-eeb0daa795a3.png",
+      "interaction": {
+        "action": "press-key",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "space",
+        "key": "Space",
+        "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"keyboard\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=pressed|variant.presentation=brand-touch|variant.theme=light|interactionTarget=brand-touch",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-pressed-variant-prese-d4b6acae471a.png",
+      "interaction": {
+        "action": "pressed",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "brand-touch",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=single|interactions=selected|variant.presentation=default-default|variant.theme=light|interactionTarget=pointer",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-single-interactions-selected-variant-pres-a1557c43aae7.png",
+      "interaction": {
+        "action": "click",
+        "selector": "[data-testid=\"mf-fallback-button\"]",
+        "targetId": "pointer",
+        "waitForSelector": "[data-testid=\"mf-fallback-button-stateful-host\"][data-vqa-callback-count=\"1\"][data-vqa-last-event=\"pointer\"]",
+        "verified": true,
+        "captureVerified": true,
+        "revalidatedAfterViewportExpansion": true,
+        "viewportExpanded": true
+      },
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=unbroken-token|interactions=default|variant.presentation=default-default|variant.theme=dark",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-unbroken-token-interactions-default-varia-05d09b57fa44.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton:data=unbroken-token|interactions=default|variant.presentation=default-default|variant.theme=light",
+      "componentId": "src/components/moduleFederation/fallback/Button.tsx#FallbackDesignSystemButton",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mf-fallback-button-mobile-screenshots/button-fallbackdesignsystembutton-data-unbroken-token-interactions-default-varia-4bdb6039a553.png",
+      "attempts": 1
+    }
+  ]
+}

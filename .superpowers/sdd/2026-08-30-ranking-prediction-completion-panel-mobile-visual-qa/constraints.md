@@ -1,0 +1,21 @@
+# Constraints
+
+- Scope: direct `RankingPredictionCompletionPanel`, one focused actual test, exact adapter/catalog tests, one lower-camel QA companion, manifest/state arithmetic, one 44-row report and PNGs, package inclusion, and slice docs.
+- Legal phases: complete=`false,false`; ready-to-save=`true,false`; saved=`true,true`; exclude illegal `false,true`.
+- Exact matrix: `44 = 24 canonical (4 data × 3 phase × 2 theme) + 20 interactions`.
+- Interactions at internal-static/light: hover3, focus3, pressed3, click3, keyboard8. Use complete for complete action, ready for save/focus loop, saved for share activation.
+- Final totals: registered `451/1,010`, pending `559`, direct `70,905`, valid `71,908`.
+- Hosted caller remains pending and root recapture is zero.
+- Pointer/Enter/Space invokes only the matching callback once. Complete transitions immediately so fast double-complete totals one. Save/share do not gain new cross-click single-flight semantics.
+- Hover/focus/pressed/Tab/ShiftTab/resize/theme/StrictMode mount/keyed remount invoke all callbacks zero; assert before reset.
+- Mutations must cover callback swap/duplicate, complete transition removal, phase mapping and alreadySaved precedence, selector removal, overflow containment, reduced motion, and package missing/duplicate.
+- Actual checks cover 320x844 and 390x1000, viewport/child containment, no x-overflow, 140px logo and long/unbroken fallback pressure, full-width >=44px actions, focus/dark contrast, local asset load, and reduced motion.
+- Product changes require actual RED and are limited to `src/components/RankingPredictionCompletionPanel.tsx`. Shared TeamLogo/Button, caller/hooks/store/API/share logic, global CSS, new utilities/arbitrary values, and new tooling are forbidden.
+- Known team data comes only from an existing internal static project value; other fixtures are non-factual UI pressure strings.
+- QA companion is lower-camel, exact-mapped, fail-closed, and absent from production chunks.
+- Add focused actual test exactly once to ranking and pre-harness scripts. Incoming dirty-main pre/full are `165/165` and `408/408`; record post counts. Do not repair global clean-package residual.
+- Evidence is exact44, failed/recovered0, attempt1, unique scenarios/paths, complete20 interaction flags, loaded assets, nonzero/hash-complete artifacts, report SHA, reproducible PNG aggregate, and documented legal equal-image groups.
+- Incoming CSS is `255,429/255,500`; CSS must not grow. Do not intentionally regenerate, stage, restore, or own bundle/dist reports.
+- Preserve caller, prediction runtime/coach, Mate, Landing, shared UI, package-lock, prior reports/PNGs, and all unrelated changes. Re-check scoped ownership before commits.
+- Static internal/manual fixtures only. No external baseball API/data, crawling, scraping, web-search repair, or guessed facts.
+- Separate implementer and read-only reviewer; Critical or Important findings return to the original implementer.

@@ -32,8 +32,8 @@ interface ChatBotConversationRuntimeProps {
   pendingMessage: string;
   inputMessage: string;
   setInputMessage: (next: string) => void;
-  messagesEndRef: RefObject<HTMLDivElement | null>;
-  messagesContainerRef: RefObject<HTMLDivElement | null>;
+  messagesEndRef: RefObject<HTMLDivElement>;
+  messagesContainerRef: RefObject<HTMLDivElement>;
   handleSendMessage: (event: FormEvent) => Promise<void>;
   handleRetrySend: () => Promise<void>;
   handleRestorePendingMessage: () => void;

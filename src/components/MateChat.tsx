@@ -14,31 +14,64 @@ import {
   mateSectionCardClass,
 } from '../utils/mateFlowUi';
 import { isPartyHostedByUser } from '../utils/mate';
+import type { Party } from '../types/mate';
 
 const LazyMateChatApprovedRuntime = lazy(() => import('./MateChatApprovedRuntime'));
 const LazyMateChatAccessStateRuntime = lazy(() => import('./MateChatAccessStateRuntime'));
 
-export default function MateChat() {
+export type MateChatVisualQaStateOverride = {
+  approvalLoadError: string | null;
+  approvedPhase: 'fallback';
+  currentUser: {
+    id: number;
+    name: string;
+    handle: string | null;
+  } | null;
+  isAuthLoading: boolean;
+  isCheckingApproval: boolean;
+  isPartyLoading: boolean;
+  isPartyRevalidating: boolean;
+  myApplication: { isApproved: boolean } | null;
+  party: Party | null;
+  partyError: string | null;
+};
+
+type MateChatProps = {
+  visualQaStateOverride?: MateChatVisualQaStateOverride;
+};
+
+export default function MateChat({ visualQaStateOverride: visualQaStateOverrideProp }: MateChatProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : visualQaStateOverrideProp;
   const { id } = useParams<{ id: string }>();
   const {
-    party,
-    isLoading: isPartyLoading,
-    isRevalidating: isPartyRevalidating,
-    error: partyError,
+    party: liveParty,
+    isLoading: livePartyLoading,
+    isRevalidating: livePartyRevalidating,
+    error: livePartyError,
   } = useMatePartyFromRoute(id);
   const {
     userName: authUserName,
     userHandle: authUserHandle,
   } = useAuthProfileSnapshot();
-  const { isAuthLoading, userId: currentUserId } = useAuthSession();
+  const { isAuthLoading: liveAuthLoading, userId: currentUserId } = useAuthSession();
 
-  const currentUser = currentUserId
+  const liveCurrentUser = currentUserId
     ? {
       id: currentUserId,
       name: authUserName ?? '',
       handle: authUserHandle ?? null,
     }
     : null;
+  const currentUser = visualQaStateOverride
+    ? visualQaStateOverride.currentUser
+    : liveCurrentUser;
+  const isAuthLoading = visualQaStateOverride?.isAuthLoading ?? liveAuthLoading;
+  const party = visualQaStateOverride ? visualQaStateOverride.party : liveParty;
+  const isPartyLoading = visualQaStateOverride?.isPartyLoading ?? livePartyLoading;
+  const isPartyRevalidating = visualQaStateOverride?.isPartyRevalidating ?? livePartyRevalidating;
+  const partyError = visualQaStateOverride ? visualQaStateOverride.partyError : livePartyError;
 
   const isHost = currentUser && party
     ? isPartyHostedByUser(party, { id: currentUser.id, handle: currentUser.handle ?? null })
@@ -47,29 +80,40 @@ export default function MateChat() {
     ...(party?.id != null
       ? getMatePartyMyApplicationQueryOptions(party.id, currentUserId)
       : getMatePartyMyApplicationQueryOptions('unknown', currentUserId)),
-    enabled: Boolean(party?.id && currentUser && !isHost),
+    enabled: visualQaStateOverride == null && Boolean(party?.id && currentUser && !isHost),
   });
-  const myApplication = myApplicationQuery.data ?? null;
-  const isCheckingApproval = Boolean(party && currentUser && !isHost && myApplicationQuery.isPending);
-  const approvalLoadError = myApplicationQuery.error
-    ? '신청 정보를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.'
-    : null;
+  const myApplication = visualQaStateOverride
+    ? visualQaStateOverride.myApplication
+    : myApplicationQuery.data ?? null;
+  const isCheckingApproval = visualQaStateOverride?.isCheckingApproval
+    ?? Boolean(party && currentUser && !isHost && myApplicationQuery.isPending);
+  const approvalLoadError = visualQaStateOverride
+    ? visualQaStateOverride.approvalLoadError
+    : myApplicationQuery.error
+      ? '신청 정보를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.'
+      : null;
 
   if (isAuthLoading || (isPartyLoading && !party)) {
     return (
-      <div className={`${matePageShellClass} flex flex-col`}>
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-4 sm:px-6 lg:px-8">
+      <div
+        className={`${matePageShellClass} flex min-h-dvh min-w-0 flex-col overflow-x-clip`}
+        data-testid="mate-chat-loading"
+        role="status"
+        aria-busy="true"
+        aria-label={isAuthLoading ? '사용자 정보 확인 중' : '메이트 채팅 정보 준비 중'}
+      >
+        <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-1 flex-col px-4 py-4 sm:px-6 lg:px-8" aria-hidden="true">
           <div className="mb-4">
-            <Skeleton className="mb-2 h-9 w-16" />
+            <Skeleton className="mb-2 h-9 w-16 dark:bg-white/10" />
             <Card className={`p-4 ${mateSectionCardClass}`}>
               <div className="flex items-center gap-3">
-                <Skeleton className="h-12 w-12 rounded-2xl" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-12 w-12 rounded-2xl dark:bg-white/10" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-36 max-w-full dark:bg-white/10" />
                   <div className="flex gap-3">
-                    <Skeleton className="h-3 w-20" />
-                    <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-20 max-w-full dark:bg-white/10" />
+                    <Skeleton className="h-3 w-16 max-w-full dark:bg-white/10" />
+                    <Skeleton className="h-3 w-12 max-w-full dark:bg-white/10" />
                   </div>
                 </div>
               </div>
@@ -80,17 +124,17 @@ export default function MateChat() {
               {[1, 2, 3].map((item) => (
                 <div key={`recv-${item}`} className="flex justify-start">
                   <div className="flex max-w-[60%] flex-col items-start space-y-1">
-                    <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-10 w-40 rounded-2xl" />
-                    <Skeleton className="h-3 w-10" />
+                    <Skeleton className="h-3 w-16 dark:bg-white/10" />
+                    <Skeleton className="h-10 w-40 max-w-full rounded-2xl dark:bg-white/10" />
+                    <Skeleton className="h-3 w-10 dark:bg-white/10" />
                   </div>
                 </div>
               ))}
               {[1, 2].map((item) => (
                 <div key={`send-${item}`} className="flex justify-end">
                   <div className="flex max-w-[60%] flex-col items-end space-y-1">
-                    <Skeleton className="h-10 w-48 rounded-2xl" />
-                    <Skeleton className="h-3 w-10" />
+                    <Skeleton className="h-10 w-48 max-w-full rounded-2xl dark:bg-white/10" />
+                    <Skeleton className="h-3 w-10 dark:bg-white/10" />
                   </div>
                 </div>
               ))}
@@ -98,8 +142,8 @@ export default function MateChat() {
           </Card>
           <Card className={`p-4 ${mateSectionCardClass}`}>
             <div className="flex gap-2">
-              <Skeleton className="h-10 flex-1 rounded-md" />
-              <Skeleton className="h-10 w-16 rounded-md" />
+              <Skeleton className="h-10 min-w-0 flex-1 rounded-md dark:bg-white/10" />
+              <Skeleton className="h-10 w-16 shrink-0 rounded-md dark:bg-white/10" />
             </div>
           </Card>
         </div>
@@ -129,9 +173,15 @@ export default function MateChat() {
 
   if (isCheckingApproval) {
     return (
-      <div className={`${matePageShellClass} flex items-center justify-center`}>
-        <div className="text-center">
-          <div className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+      <div
+        className={`${matePageShellClass} flex min-h-dvh min-w-0 items-center justify-center overflow-x-clip px-4`}
+        data-testid="mate-chat-approval-loading"
+        role="status"
+        aria-busy="true"
+        aria-label="채팅 접근 상태 확인 중"
+      >
+        <div className="min-w-0 text-center">
+          <div className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-primary" aria-hidden="true" />
           <p className="text-body text-gray-500 dark:text-white">채팅 접근 상태를 확인하는 중...</p>
         </div>
       </div>
@@ -160,44 +210,56 @@ export default function MateChat() {
   }
 
   const mateChatViewFallback = (
-    <>
-      <Card className={`p-0 ${mateSectionCardClass}`}>
-        <div className="p-5 sm:p-6">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-14 w-14 rounded-3xl" />
-            <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-7 w-40" />
-              <Skeleton className="h-4 w-56" />
-            </div>
-          </div>
-        </div>
-      </Card>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {[0, 1, 2, 3].map((index) => (
-          <Card key={`mate-chat-summary-fallback-${index}`} className={`p-4 ${mateSectionCardClass}`}>
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="mt-3 h-5 w-24" />
-            <Skeleton className="mt-2 h-4 w-full" />
-          </Card>
-        ))}
-      </div>
-      <Card className={`mt-4 flex-1 overflow-hidden p-3 sm:p-4 ${mateSectionCardClass}`}>
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="mt-2 h-4 w-56" />
-        <div className="mt-4 space-y-4">
-          {[0, 1, 2].map((index) => (
-            <div key={`mate-chat-thread-fallback-${index}`} className="flex justify-start">
-              <div className="max-w-[70%] space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-12 w-48 rounded-3xl" />
+    <div
+      className={`${matePageShellClass} flex min-h-dvh min-w-0 flex-col overflow-x-clip`}
+      data-testid="mate-chat-approved-fallback"
+      role="status"
+      aria-busy="true"
+      aria-label="승인된 메이트 채팅 화면 준비 중"
+    >
+      <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-1 flex-col px-4 py-4 pb-6 sm:px-6 lg:px-8" aria-hidden="true">
+        <Card className={`min-w-0 p-0 ${mateSectionCardClass}`}>
+          <div className="p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-14 w-14 shrink-0 rounded-3xl dark:bg-white/10" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-4 w-24 max-w-full dark:bg-white/10" />
+                <Skeleton className="h-7 w-40 max-w-full dark:bg-white/10" />
+                <Skeleton className="h-4 w-56 max-w-full dark:bg-white/10" />
               </div>
             </div>
+          </div>
+        </Card>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[0, 1, 2, 3].map((index) => (
+            <Card key={`mate-chat-summary-fallback-${index}`} className={`p-4 ${mateSectionCardClass}`}>
+              <Skeleton className="h-4 w-16 dark:bg-white/10" />
+              <Skeleton className="mt-3 h-5 w-24 max-w-full dark:bg-white/10" />
+              <Skeleton className="mt-2 h-4 w-full dark:bg-white/10" />
+            </Card>
           ))}
         </div>
-      </Card>
-    </>
+        <Card className={`mt-4 flex-1 overflow-hidden p-3 sm:p-4 ${mateSectionCardClass}`}>
+          <Skeleton className="h-5 w-24 dark:bg-white/10" />
+          <Skeleton className="mt-2 h-4 w-56 max-w-full dark:bg-white/10" />
+          <div className="mt-4 space-y-4">
+            {[0, 1, 2].map((index) => (
+              <div key={`mate-chat-thread-fallback-${index}`} className="flex justify-start">
+                <div className="max-w-[70%] space-y-2">
+                  <Skeleton className="h-4 w-20 dark:bg-white/10" />
+                  <Skeleton className="h-12 w-48 max-w-full rounded-3xl dark:bg-white/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
   );
+
+  if (visualQaStateOverride?.approvedPhase === 'fallback') {
+    return mateChatViewFallback;
+  }
 
   return (
     <Suspense fallback={mateChatViewFallback}>

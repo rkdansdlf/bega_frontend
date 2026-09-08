@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 border-b border-zinc-200/80 dark:border-border pb-4">
             개인정보처리방침
           </h1>
-          <SimpleMarkdownContent content={privacyContent} />
+          <SimpleMarkdownContent content={privacyContent} omitFirstHeading />
         </div>
       </div>
     </div>

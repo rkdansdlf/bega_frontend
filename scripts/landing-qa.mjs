@@ -569,8 +569,8 @@ const assertLandingMetrics = (metrics) => {
       failures.push(`${testCase.label}: expected 6 numbered features, received ${value.featureCount}.`);
     }
 
-    if (value.ctaCount !== 0) {
-      failures.push(`${testCase.label}: expected 0 CTA/link elements, received ${value.ctaCount}.`);
+    if (value.ctaCount !== 1) {
+      failures.push(`${testCase.label}: expected 1 CTA/link element, received ${value.ctaCount}.`);
     }
 
     const phoneWidthFailure = getPhoneWidthFailure({
@@ -835,7 +835,7 @@ const main = async () => {
             heroFontSize: heroHeading ? getComputedStyle(heroHeading).fontSize : null,
             phoneWidth: phone ? Number(phone.getBoundingClientRect().width.toFixed(2)) : null,
             featureCount: document.querySelectorAll('[data-testid^="landing-feature-0"]').length,
-            ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"], a').length : null,
+            ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"]').length : null,
           });
         })()
       `);
@@ -903,6 +903,9 @@ const main = async () => {
                 tagName,
                 testId,
                 label,
+                role: element.getAttribute('role'),
+                stepIndex: element.getAttribute('data-step-index'),
+                isInsideFooter: !!element.closest('footer'),
                 descriptor: tagName + attributes + ' "' + label + '"',
               };
             })
@@ -920,7 +923,7 @@ const main = async () => {
             .map((element) => element.getAttribute('data-testid')),
           stadiumChipCount: document.querySelectorAll('[data-testid="landing-stadium-chip"]').length,
           diaryResultCount: document.querySelectorAll('[data-testid="landing-diary-result"]').length,
-          ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"], a').length : null,
+          ctaCount: landing ? landing.querySelectorAll('[data-testid*="cta"]').length : null,
           interactiveElements,
           footerCount: landing ? landing.querySelectorAll('footer').length : null,
         });
@@ -1013,16 +1016,16 @@ const main = async () => {
       failures.push(`Structure: expected 10 diary results, received ${structure.diaryResultCount}.`);
     }
 
-    if (structure.ctaCount !== 0) {
-      failures.push(`Structure: expected 0 CTA/link elements, received ${structure.ctaCount}.`);
+    if (structure.ctaCount !== 1) {
+      failures.push(`Structure: expected 1 CTA/link element, received ${structure.ctaCount}.`);
     }
 
     failures.push(...getLandingInteractiveSetFailures(structure.interactiveElements).map(
       (failure) => `Structure: ${failure}.`,
     ));
 
-    if (structure.footerCount !== 0) {
-      failures.push(`Structure: expected no footer, received ${structure.footerCount}.`);
+    if (structure.footerCount !== 1) {
+      failures.push(`Structure: expected exactly 1 footer, received ${structure.footerCount}.`);
     }
 
     if (!theme.darkClass) {

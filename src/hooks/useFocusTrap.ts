@@ -18,6 +18,8 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
 interface UseFocusTrapOptions {
     /** true 일 때만 트랩 활성화 (예: 다이얼로그 open) */
     active: boolean;
+    /** 긴 스크롤 다이얼로그는 컨테이너를 먼저 포커스해 상단 위치를 보존합니다. */
+    initialFocus?: 'container' | 'first';
 }
 
 /**
@@ -26,7 +28,10 @@ interface UseFocusTrapOptions {
  * - Tab/Shift+Tab 으로 첫↔마지막 focusable 순환(wrap).
  * 공유 다이얼로그 프리미티브(PlainDialog)에서 사용. portal DOM 기준으로 동작.
  */
-export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, { active }: UseFocusTrapOptions): void {
+export function useFocusTrap(
+    containerRef: RefObject<HTMLElement | null>,
+    { active, initialFocus = 'first' }: UseFocusTrapOptions,
+): void {
     useEffect(() => {
         if (!active) return;
         const container = containerRef.current;
@@ -36,7 +41,9 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, { acti
 
         // 초기 포커스: 첫 focusable, 없으면 컨테이너 자체.
         const initial = getFocusable(container);
-        if (initial.length > 0) {
+        if (initialFocus === 'container') {
+            container.focus({ preventScroll: true });
+        } else if (initial.length > 0) {
             initial[0].focus();
         } else {
             container.focus();
@@ -75,5 +82,5 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, { acti
                 previouslyFocused.focus();
             }
         };
-    }, [active, containerRef]);
+    }, [active, containerRef, initialFocus]);
 }

@@ -30,6 +30,7 @@ const createLocator = () => ({
 
 const createPage = () => ({
   addInitScript: async () => undefined,
+  route: async () => undefined,
   getByRole: () => createLocator(),
   locator: () => createLocator(),
   goto: async () => ({

@@ -22,6 +22,10 @@ test('getMateDDayLabel caps far future dates as scheduled', () => {
   assert.equal(getMateDDayLabel('2029-03-10', baseNow), '예정');
 });
 
+test('getMateDDayLabel hides invalid dates instead of exposing NaN', () => {
+  assert.equal(getMateDDayLabel('not.a.date', baseNow), '');
+});
+
 test('getMateMinGameDate formats the current local date for date input min', () => {
   assert.equal(getMateMinGameDate(baseNow), '2026-06-14');
 });

@@ -1001,7 +1001,7 @@ export default function CoachAnalysisResultView({
                                 }}
                             >
                                 <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-4 text-15 font-extrabold text-slate-950 dark:text-white">
-                                    <PredictionBarChartIcon aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500 dark:text-blue-300" />
+                                    <PredictionBarChartIcon aria-hidden="true" className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
                                     <span className="flex-1">상세 리포트</span>
                                     <span className="text-[12.5px] font-bold text-slate-500 dark:text-white group-open:hidden">원문 분석 보기</span>
                                     <span className="hidden text-[12.5px] font-bold text-slate-500 dark:text-white group-open:inline">접기</span>

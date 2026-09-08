@@ -84,7 +84,7 @@ export function StadiumSeatMapErrorFallback({
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
         <WarningTriangleIcon className="h-6 w-6" />
       </div>
-      <h4 className="text-lg font-black text-slate-900 dark:text-white">
+      <h4 className="max-w-full break-words text-lg font-black text-slate-900 [overflow-wrap:anywhere] dark:text-white">
         {stadiumName || '선택한 구장'} 좌석도를 불러오지 못했습니다
       </h4>
       <p className="mt-2 max-w-md text-sm font-semibold leading-relaxed text-slate-600 dark:text-white">

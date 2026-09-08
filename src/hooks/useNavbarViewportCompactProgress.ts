@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const NAVBAR_COMPACT_FULL_WIDTH = 920;
-const NAVBAR_COMPACT_REST_WIDTH = 1024;
+const NAVBAR_COMPACT_FULL_WIDTH = 1040;
+const NAVBAR_COMPACT_REST_WIDTH = 1280;
 
 const clampProgress = (value: number) => Math.min(1, Math.max(0, value));
 const roundProgress = (value: number) => Math.round(value * 1000) / 1000;

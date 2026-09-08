@@ -5,7 +5,9 @@ export const getPhoneWidthFailure = ({ label, phoneWidth, viewportWidth }) => {
     return `${label}: missing phone width metric (received ${String(phoneWidth)}).`;
   }
 
-  const maxPhoneWidth = Math.min(372, viewportWidth - 28);
+  // .landing-phone-scale caps at 380px (src/components/Landing.css) since the
+  // 2026-08-30 landing redesign; below that it scales to fit the viewport.
+  const maxPhoneWidth = Math.min(380, viewportWidth - 28);
   return phoneWidth > maxPhoneWidth
     ? `${label}: phone width ${phoneWidth}px exceeds ${maxPhoneWidth}px.`
     : null;
@@ -75,23 +77,59 @@ export const partitionSuccessfulDeferredRequestsByStart = (requests, boundaryAt)
 
 export const getLandingInteractiveSetFailures = (interactiveElements) => {
   const elements = Array.isArray(interactiveElements) ? interactiveElements : [];
+  const outsideFooter = elements.filter((element) => !element?.isInsideFooter);
+  const insideFooter = elements.filter((element) => element?.isInsideFooter);
   const failures = [];
-  const tickerToggles = elements.filter((element) => (
+
+  const tickerToggles = outsideFooter.filter((element) => (
     element?.tagName?.toLowerCase() === 'button'
     && element?.testId === 'landing-ticker-toggle'
   ));
-  const unexpected = elements.filter((element) => !tickerToggles.includes(element));
+  const homeCtas = outsideFooter.filter((element) => (
+    element?.tagName?.toLowerCase() === 'button'
+    && element?.testId === 'landing-home-cta'
+  ));
+  const stepButtons = outsideFooter.filter((element) => element?.stepIndex != null);
+  const expectedOutsideFooter = [...tickerToggles, ...homeCtas, ...stepButtons];
+  const unexpectedOutsideFooter = outsideFooter.filter((element) => !expectedOutsideFooter.includes(element));
 
-  if (elements.length !== 1) {
-    failures.push(`expected exactly 1 interactive element, received ${elements.length}`);
+  // Outside the footer, the page's only deliberate controls are the ticker
+  // toggle, the home CTA, and the three app-preview step buttons — matching
+  // the contract already locked by cypress/e2e/landing-visual.cy.ts.
+  if (outsideFooter.length !== 5) {
+    failures.push(`expected exactly 5 interactive elements outside the footer, received ${outsideFooter.length}`);
   }
   if (tickerToggles.length !== 1) {
     failures.push(`expected exactly 1 landing-ticker-toggle button, received ${tickerToggles.length}`);
   } else if (!String(tickerToggles[0].label || '').trim()) {
     failures.push('landing-ticker-toggle button is missing an accessible label');
   }
-  if (unexpected.length > 0) {
-    failures.push(`unexpected interactive elements: ${unexpected.map((element) => element.descriptor).join(', ')}`);
+  if (homeCtas.length !== 1) {
+    failures.push(`expected exactly 1 landing-home-cta button, received ${homeCtas.length}`);
+  } else if (!String(homeCtas[0].label || '').trim()) {
+    failures.push('landing-home-cta button is missing an accessible label');
+  }
+  if (stepButtons.length !== 3) {
+    failures.push(`expected exactly 3 app-preview step buttons, received ${stepButtons.length}`);
+  } else {
+    const stepIndexes = stepButtons.map((element) => element.stepIndex).sort();
+    if (stepIndexes.join(',') !== '0,1,2') {
+      failures.push(`expected app-preview step buttons with data-step-index 0, 1, 2, received ${stepIndexes.join(', ')}`);
+    }
+    if (!stepButtons.every((element) => element.role === 'button')) {
+      failures.push('expected every app-preview step button to carry role="button"');
+    }
+  }
+  if (unexpectedOutsideFooter.length > 0) {
+    failures.push(`unexpected interactive elements outside the footer: ${unexpectedOutsideFooter.map((element) => element.descriptor).join(', ')}`);
+  }
+
+  // Inside the footer, every interactive element is a plain nav link
+  // (3 groups of 4 links + 2 bottom-bar links).
+  if (insideFooter.length !== 14) {
+    failures.push(`expected exactly 14 interactive elements inside the footer, received ${insideFooter.length}`);
+  } else if (!insideFooter.every((element) => element.tagName?.toLowerCase() === 'a')) {
+    failures.push(`expected every footer interactive element to be a plain link: ${insideFooter.filter((element) => element.tagName?.toLowerCase() !== 'a').map((element) => element.descriptor).join(', ')}`);
   }
 
   return failures;

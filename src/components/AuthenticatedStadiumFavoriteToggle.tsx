@@ -8,25 +8,39 @@ import {
 import { HeartIcon } from './icons/StadiumGuideIcons';
 
 type AuthenticatedStadiumFavoriteToggleProps = {
+  favoriteIdsOverride?: readonly string[];
+  isPendingOverride?: boolean;
+  onToggleOverride?: () => Promise<unknown> | unknown;
+  stateOverride?: 'error' | 'loading';
   stadiumId: string;
+  testId?: string;
 };
 
 export default function AuthenticatedStadiumFavoriteToggle({
+  favoriteIdsOverride,
+  isPendingOverride,
+  onToggleOverride,
+  stateOverride,
   stadiumId,
+  testId = 'stadium-favorite-toggle',
 }: AuthenticatedStadiumFavoriteToggleProps) {
   const queryClient = useQueryClient();
 
-  const { data: favoriteIds = [] } = useQuery({
+  const { data: queriedFavoriteIds = [] } = useQuery({
     queryKey: ['stadium-favorites'],
     queryFn: getMyFavoriteStadiumIds,
     staleTime: 5 * 60 * 1000,
+    enabled: favoriteIdsOverride === undefined && stateOverride === undefined,
   });
 
+  const favoriteIds = favoriteIdsOverride ?? (stateOverride === undefined ? queriedFavoriteIds : []);
   const isFavorite = favoriteIds.includes(stadiumId);
 
   const favoriteMutation = useMutation({
     mutationFn: ({ id, currentlyFavorite }: { id: string; currentlyFavorite: boolean }) => (
-      currentlyFavorite ? removeStadiumFavorite(id) : addStadiumFavorite(id)
+      onToggleOverride
+        ? Promise.resolve(onToggleOverride())
+        : currentlyFavorite ? removeStadiumFavorite(id) : addStadiumFavorite(id)
     ),
     onMutate: async ({ id, currentlyFavorite }) => {
       await queryClient.cancelQueries({ queryKey: ['stadium-favorites'] });
@@ -43,14 +57,18 @@ export default function AuthenticatedStadiumFavoriteToggle({
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['stadium-favorites'] }),
   });
+  const isPending = isPendingOverride ?? favoriteMutation.isPending;
 
   return (
     <button
       type="button"
       onClick={() => favoriteMutation.mutate({ id: stadiumId, currentlyFavorite: isFavorite })}
-      disabled={favoriteMutation.isPending}
-      className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
+      disabled={isPending}
+      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full p-1 transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 dark:hover:bg-white/10"
+      data-testid={testId}
       aria-label={isFavorite ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+      aria-busy={isPending}
+      aria-pressed={isFavorite}
     >
       <HeartIcon
         className={isFavorite ? 'fill-red-400 text-red-400' : 'text-gray-400 dark:text-white/60'}

@@ -68,7 +68,14 @@ export default function MateDetailRuntime({
 
   if (isPartyLoading && !party) {
     return (
-      <div className={isPanel ? 'bg-gray-50 pb-10 dark:bg-background' : 'min-h-screen bg-gray-50 pb-[calc(7rem_+_env(safe-area-inset-bottom))] dark:bg-background lg:pb-16'}>
+      <div
+        data-testid="mate-detail-runtime"
+        data-phase="loading"
+        role="status"
+        aria-busy="true"
+        aria-label="메이트 상세 정보를 불러오는 중"
+        className={isPanel ? 'min-w-0 overflow-x-clip bg-gray-50 pb-10 dark:bg-background' : 'min-h-screen min-w-0 overflow-x-clip bg-gray-50 pb-16 dark:bg-background'}
+      >
         <div className={isPanel ? 'w-full px-4 py-5' : 'mx-auto w-full max-w-full px-3 py-4 sm:max-w-[720px] sm:px-5 sm:py-5 lg:max-w-[1080px] lg:px-6 xl:max-w-[1120px]'}>
           <Skeleton className="mb-4 h-8 w-24" />
           <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
@@ -91,8 +98,13 @@ export default function MateDetailRuntime({
 
   if (partyError || !party) {
     return (
-      <div className={isPanel ? 'flex items-center justify-center bg-gray-50 py-20 dark:bg-background' : 'flex min-h-screen items-center justify-center bg-gray-50 dark:bg-background'}>
-        <div className="max-w-md px-4 text-center">
+      <div
+        data-testid="mate-detail-runtime"
+        data-phase="error"
+        role="alert"
+        className={isPanel ? 'flex min-w-0 items-center justify-center overflow-x-clip bg-gray-50 py-20 dark:bg-background' : 'flex min-h-screen min-w-0 items-center justify-center overflow-x-clip bg-gray-50 dark:bg-background'}
+      >
+        <div className="w-full max-w-md px-4 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
             <MateAlertTriangleIcon className="h-8 w-8 text-red-500" />
           </div>
@@ -100,11 +112,11 @@ export default function MateDetailRuntime({
           <p className="mb-4 text-body text-gray-500 dark:text-white/60">
             {partyError || '파티 정보를 찾을 수 없습니다.'}
           </p>
-          <div className="flex justify-center gap-3">
-            <Button variant="outline" onClick={handleClose}>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button variant="outline" size="touch" className="min-h-11" onClick={handleClose}>
               <MateChevronLeftIcon className="mr-1 h-4 w-4" /> {isPanel ? '닫기' : '목록으로'}
             </Button>
-            <Button className="bg-primary text-white" onClick={() => window.location.reload()}>
+            <Button size="touch" className="min-h-11 bg-primary text-white" onClick={() => window.location.reload()}>
               <MateRefreshIcon className="mr-1 h-4 w-4" /> 다시 시도
             </Button>
           </div>
@@ -153,16 +165,20 @@ export default function MateDetailRuntime({
   const statusMeta = getMateStatusBadgeMeta(party.status);
 
   return (
-    <div className={isPanel ? 'relative bg-gray-50 pb-10 dark:bg-background' : 'relative min-h-screen bg-gray-50 pb-[calc(7.5rem_+_env(safe-area-inset-bottom))] dark:bg-background lg:pb-16'}>
+    <div
+      data-testid="mate-detail-runtime"
+      data-phase="populated"
+      className={isPanel ? 'relative min-w-0 overflow-x-clip bg-gray-50 pb-10 dark:bg-background' : 'relative min-w-0 overflow-x-clip min-h-screen bg-gray-50 pb-0 dark:bg-background lg:pb-16'}
+    >
       <div className={isPanel ? 'w-full px-4 py-5' : 'mx-auto w-full max-w-full px-3 py-4 sm:max-w-[720px] sm:px-5 sm:py-5 lg:max-w-[1080px] lg:px-6 xl:max-w-[1120px]'}>
         <div className="mb-[18px] flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <Button variant="ghost" className="h-auto px-0 py-2 text-15 font-bold text-gray-700 hover:bg-transparent dark:text-white dark:hover:text-white" onClick={handleClose}>
+            <Button data-testid="mate-detail-back" variant="ghost" className="h-auto min-h-11 px-0 py-2 text-15 font-bold text-gray-700 hover:bg-transparent dark:text-white dark:hover:text-white" onClick={handleClose}>
               <MateChevronLeftIcon className="mr-1 h-[18px] w-[18px]" /> {isPanel ? '닫기' : '목록으로'}
             </Button>
             <StatusBadge {...statusMeta} size="xs" />
           </div>
-          <Button variant="outline" size="sm" className="h-auto shrink-0 rounded-10 border-gray-200 bg-white px-3.5 py-2 text-caption font-bold text-gray-700 dark:border-white/10 dark:bg-[#000000] dark:text-white dark:hover:bg-white/10" onClick={handleShare}>
+          <Button data-testid="mate-detail-share" variant="outline" size="sm" className="h-auto min-h-11 shrink-0 rounded-10 border-gray-200 bg-white px-3.5 py-2 text-caption font-bold text-gray-700 dark:border-white/10 dark:bg-[#000000] dark:text-white dark:hover:bg-white/10" onClick={handleShare}>
             <MateShareIcon className="mr-1.5 h-4 w-4" />
             공유
           </Button>

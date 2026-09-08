@@ -345,8 +345,8 @@ describe('mobile layout and touch target regression', () => {
     assertNoBottomNavOverlap('public-mobile-bottom-nav');
   });
 
-  it('keeps cheer tablet content above its bottom nav', () => {
-    cy.viewport(768, 1024);
+  it('keeps cheer mobile content above its bottom nav at the md boundary', () => {
+    cy.viewport(767, 1024);
     visitAsGuest('/cheer');
     cy.tick(1500);
     cy.get('[data-testid="cheer-mobile-bottom-nav"]', { timeout: 10000 }).should('be.visible');
@@ -355,11 +355,8 @@ describe('mobile layout and touch target regression', () => {
 
   it('keeps route-specific mobile controls at 44px touch targets', () => {
     visitAsGuest('/');
-    assertMinTarget('button[aria-label*="모드로 변경"]', 'landing theme toggle');
-    cy.window().then((win) => {
-      win.scrollTo(0, win.document.documentElement.scrollHeight);
-    });
-    assertMinTarget('footer button:contains("주요 기능")', 'landing footer link');
+    assertMinTarget('[data-testid="landing-home-cta"]', 'landing home CTA');
+    assertMinTarget('[data-testid="landing-ticker-toggle"]', 'landing ticker toggle');
 
     visitAsGuest('/login');
     assertMinTarget('label[for="remember-email"]', 'login remember-email checkbox');
@@ -371,9 +368,8 @@ describe('mobile layout and touch target regression', () => {
     cy.wait('@getPredictionMatchDay');
     cy.tick(1500);
     assertMinTarget('[data-testid="prediction-tab-match"]', 'prediction match tab');
-    assertMinTarget('[data-testid="prediction-schedule-today-btn"]', 'prediction today button');
-    assertMinTarget('[data-testid="prediction-schedule-month-prev"]', 'prediction previous month button');
-    assertMinTarget('[data-testid="prediction-schedule-month-next"]', 'prediction next month button');
+    assertMinTarget('[data-testid="prediction-schedule-mobile-today-btn"]', 'prediction mobile today button');
+    assertMinTarget('[data-testid="prediction-schedule-mobile-date-trigger"]', 'prediction mobile date trigger');
 
     mockStadiumGuide();
     visitAsGuest('/stadium');

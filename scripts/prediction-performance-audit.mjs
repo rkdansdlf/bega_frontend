@@ -111,7 +111,6 @@ const loadPlaywright = async () => {
   const candidates = [
     process.env.PLAYWRIGHT_MODULE_URL,
     'playwright',
-    'file:///Users/mac/.npm/_npx/9833c18b2d85bc59/node_modules/playwright/index.mjs',
   ].filter(Boolean);
   const failures = [];
 
@@ -123,7 +122,7 @@ const loadPlaywright = async () => {
     }
   }
 
-  throw new Error(`Unable to load Playwright. Set PLAYWRIGHT_MODULE_URL or install playwright. Attempts: ${failures.join(' | ')}`);
+  throw new Error(`Playwright is not installed. Run: npm run qa:playwright:install (mirrors CI). Or set PLAYWRIGHT_MODULE_URL to an existing install. Attempts: ${failures.join(' | ')}`);
 };
 
 const launchChromium = async (chromium) => {

@@ -96,7 +96,7 @@ export default function CheerLivePanel({
           {gamesErrorPresentation.message}
         </h2>
         {gamesErrorPresentation.codeToken ? (
-          <code className="mt-2 inline-flex rounded border border-red-300/70 bg-red-100/70 px-2 py-0.5 text-[11px] text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
+          <code className="mt-2 inline-flex rounded border border-red-300/70 bg-red-100/70 px-2 py-0.5 text-11 text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
             {gamesErrorPresentation.codeToken}
           </code>
         ) : null}
@@ -152,7 +152,7 @@ export default function CheerLivePanel({
           </span>
         )}
       </div>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-7">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 py-7">
         <div className="flex min-w-0 flex-col items-center gap-2 text-center">
           <TeamLogo team={featuredGame.awayTeam} size={48} />
           <span className="truncate text-body font-black text-slate-900 dark:text-white">{featuredGame.awayTeamFull || featuredGame.awayTeam}</span>

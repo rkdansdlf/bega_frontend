@@ -33,7 +33,7 @@ import { useSeatViewPhotos } from '../hooks/useSeatViewPhotos';
 
 const joinClassNames = (...classes: Array<string | false | null | undefined>) => classes.filter(Boolean).join(' ');
 
-const referenceCardClass = 'rounded-xl border border-gray-200/90 bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.04)] dark:border-white/10 dark:bg-card dark:shadow-[0_12px_32px_rgba(0,0,0,0.28)] sm:p-5';
+const referenceCardClass = 'min-w-0 rounded-xl border border-gray-200/90 bg-white p-4 text-foreground [overflow-wrap:anywhere] shadow-[0_2px_8px_rgba(15,23,42,0.04)] dark:border-white/10 dark:bg-card dark:shadow-[0_12px_32px_rgba(0,0,0,0.28)] sm:p-5';
 
 const badgeToneClasses = {
   neutral: 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/10 dark:text-white',
@@ -54,6 +54,11 @@ const statusToneBadgeClass: Record<string, string> = {
 };
 
 const formatAmount = (value: number) => `${value.toLocaleString()}원`;
+
+const formatCompactCount = (value: number) => new Intl.NumberFormat('ko-KR', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+}).format(Math.max(0, Math.trunc(Number.isFinite(value) ? value : 0)));
 
 const formatRelativeActivity = (lastActiveAt?: string | null) => {
   if (!lastActiveAt) return '최근 활동 확인 중';
@@ -127,18 +132,21 @@ export const buildMateDetailViewModel = (
   const homeTeamLabel = resolveTeamDisplayName(party.homeTeam) || party.homeTeam;
   const awayTeamLabel = resolveTeamDisplayName(party.awayTeam) || party.awayTeam;
   const gameDate = new Date(party.gameDate);
-  const gameDayLabel = Number.isNaN(gameDate.getTime())
+  const hasValidGameDate = !Number.isNaN(gameDate.getTime());
+  const gameDayLabel = !hasValidGameDate
     ? ''
     : gameDate.toLocaleDateString('ko-KR', { weekday: 'short' }).replace('요일', '');
-  const remainingSeats = Math.max(0, party.maxParticipants - party.currentParticipants);
+  const normalizedMaxParticipants = Math.max(0, Math.trunc(Number.isFinite(party.maxParticipants) ? party.maxParticipants : 0));
+  const normalizedCurrentParticipants = Math.max(0, Math.trunc(Number.isFinite(party.currentParticipants) ? party.currentParticipants : 0));
+  const remainingSeats = Math.max(0, normalizedMaxParticipants - normalizedCurrentParticipants);
   const reservationDepositAmount = party.reservationDepositAmount || 0;
   const ticketAmount = party.status === 'SELLING' ? (party.price || 0) : (party.ticketPrice || 0);
 
   return {
     homeColor: getTeamColorByAnyKey(party.homeTeam),
-    gameDateLabel: formatGameDate(party.gameDate),
+    gameDateLabel: hasValidGameDate ? formatGameDate(party.gameDate) : '경기 일정 확인 중',
     gameDayLabel,
-    gameDdayLabel: getMateDDayLabel(party.gameDate),
+    gameDdayLabel: hasValidGameDate ? getMateDDayLabel(party.gameDate) : '',
     gameTimeLabel: party.gameTime.substring(0, 5),
     stadiumLabel: formatStadiumDisplayName(party.stadium),
     homeTeamLabel: homeTeamLabel.split(' ')[0],
@@ -163,7 +171,9 @@ export const buildMateDetailViewModel = (
     reviewSummary: trustMetrics?.reviewKeywordSummary || [],
     recentReviews: trustMetrics?.recentHostReviews || [],
     remainingSeats,
-    participationPercent: Math.min(100, Math.round((party.currentParticipants / party.maxParticipants) * 100)),
+    participationPercent: normalizedMaxParticipants === 0
+      ? 0
+      : Math.min(100, Math.round((normalizedCurrentParticipants / normalizedMaxParticipants) * 100)),
     reservationDepositAmount,
     ticketAmount,
   };
@@ -171,7 +181,7 @@ export const buildMateDetailViewModel = (
 
 export function MateDetailReferenceCard({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <div className={joinClassNames(referenceCardClass, className)}>
+    <div data-testid="mate-detail-reference-card" className={joinClassNames(referenceCardClass, className)}>
       {children}
     </div>
   );
@@ -179,20 +189,33 @@ export function MateDetailReferenceCard({ className, children }: { className?: s
 
 function ReferenceBadge({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <span className={joinClassNames('inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-12 font-bold', className)}>
-      {children}
+    <span
+      data-testid="mate-detail-reference-badge"
+      title={typeof children === 'string' ? children : undefined}
+      style={{ maxWidth: 'min(14rem, 45vw)' }}
+      className={joinClassNames(
+        'inline-flex items-center rounded-full border px-2.5 py-1 text-12 font-bold',
+        className,
+      )}
+    >
+      <span
+        data-testid="mate-detail-reference-badge-content"
+        className="block min-w-0 truncate"
+      >
+        {children}
+      </span>
     </span>
   );
 }
 
 function SectionTitle({ icon, extra, children }: { icon: ReactNode; extra?: ReactNode; children: ReactNode }) {
   return (
-    <div className="mb-3.5 flex items-center justify-between gap-3 sm:mb-4">
-      <h3 className="flex items-center gap-2 text-body font-black text-gray-900 dark:text-white sm:text-17">
-        <span className="text-primary">{icon}</span>
+    <div data-testid="mate-detail-section-title" className="mb-3.5 flex min-w-0 flex-wrap items-center justify-between gap-3 sm:mb-4">
+      <h3 className="flex min-w-0 flex-1 items-center gap-2 text-body font-black text-gray-900 [overflow-wrap:anywhere] dark:text-white sm:text-17">
+        <span className="shrink-0 text-primary">{icon}</span>
         {children}
       </h3>
-      {extra}
+      {extra ? <div className="max-w-full shrink-0">{extra}</div> : null}
     </div>
   );
 }
@@ -202,45 +225,47 @@ export function MateDetailHeroBlock({ party, compact = false, favorited = false,
   const logoSize = compact ? 44 : 50;
 
   return (
-    <div className="overflow-hidden rounded-18 border border-gray-200/90 shadow-[0_8px_24px_rgba(15,23,42,0.06)] dark:border-white/10 dark:shadow-[0_12px_32px_rgba(0,0,0,0.30)]">
+    <div data-testid="mate-detail-hero-block" className="min-w-0 overflow-hidden rounded-18 border border-gray-200/90 shadow-[0_8px_24px_rgba(15,23,42,0.06)] dark:border-white/10 dark:shadow-[0_12px_32px_rgba(0,0,0,0.30)]">
       <div
         className={joinClassNames('relative text-white', compact ? 'p-[18px]' : 'px-5 py-5 sm:px-6 sm:py-[22px]')}
         style={{ background: `linear-gradient(120deg, ${view.homeColor} 0%, ${view.homeColor}d9 50%, #1f2937 100%)` }}
       >
         <button
+          data-testid="mate-detail-hero-favorite"
           type="button"
           aria-label={favorited ? '찜 해제' : '찜하기'}
           aria-pressed={favorited}
           onClick={onToggleFavorite}
-          className="absolute right-3.5 top-3.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-md transition-colors"
+          className="absolute right-3.5 top-3.5 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-md transition-colors"
         >
           <MateHeartIcon className={joinClassNames('h-[17px] w-[17px]', favorited && 'fill-current text-rose-400')} />
         </button>
-        <div className={joinClassNames('mb-4 flex flex-wrap items-center gap-2 sm:gap-2.5', compact && 'pr-10')}>
+        <div data-testid="mate-detail-hero-meta" className="mb-4 flex min-w-0 flex-wrap items-center gap-2 pr-12 sm:gap-2.5">
           <ReferenceBadge className="border-white/25 bg-black/30 text-white backdrop-blur-md">
             <MateClockIcon className="h-3 w-3" /> {view.gameDdayLabel || '경기 예정'}
           </ReferenceBadge>
-          <span className="font-mono text-12 font-bold tracking-[0.03em] text-white/90 sm:text-13">
-            {view.gameDateLabel}{view.gameDayLabel ? ` (${view.gameDayLabel})` : ''} · {view.gameTimeLabel}
+          <span className="min-w-0 font-mono text-12 font-bold tracking-[0.03em] text-white/90 [overflow-wrap:anywhere] sm:text-13">
+            {view.gameDateLabel} · {view.gameTimeLabel}
           </span>
           <span className="h-[3px] w-[3px] shrink-0 rounded-full bg-white/50" />
-          <span className="inline-flex items-center gap-1 text-12 font-bold text-white/90 sm:text-13">
-            <MateMapPinIcon className="h-3 w-3" /> {view.stadiumLabel}
+          <span data-testid="mate-detail-hero-stadium" className="flex min-w-0 max-w-full items-start gap-1 text-12 font-bold text-white/90 [overflow-wrap:anywhere] sm:text-13">
+            <MateMapPinIcon className="mt-0.5 h-3 w-3 shrink-0" />
+            <span className="min-w-0 [overflow-wrap:anywhere]">{view.stadiumLabel}</span>
           </span>
         </div>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 sm:gap-3.5">
-          <div className="flex flex-col items-center gap-2 text-center">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2.5 sm:gap-3.5">
+          <div className="flex min-w-0 flex-col items-center gap-2 text-center">
             <div className="rounded-full bg-white p-[9px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] dark:bg-white">
               <TeamLogo teamId={party.homeTeam} size={logoSize} />
             </div>
-            <span className="text-caption font-black drop-shadow sm:text-body">{view.homeTeamLabel}</span>
+            <span data-testid="mate-detail-hero-team" title={view.homeTeamLabel} className="min-w-0 max-w-full line-clamp-2 text-caption font-black [overflow-wrap:anywhere] drop-shadow sm:text-body">{view.homeTeamLabel}</span>
           </div>
           <span className="text-18 font-black italic text-white/85 sm:text-22">VS</span>
-          <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex min-w-0 flex-col items-center gap-2 text-center">
             <div className="rounded-full bg-white p-[9px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] dark:bg-white">
               <TeamLogo teamId={party.awayTeam} size={logoSize} />
             </div>
-            <span className="text-caption font-black drop-shadow sm:text-body">{view.awayTeamLabel}</span>
+            <span data-testid="mate-detail-hero-team" title={view.awayTeamLabel} className="min-w-0 max-w-full line-clamp-2 text-caption font-black [overflow-wrap:anywhere] drop-shadow sm:text-body">{view.awayTeamLabel}</span>
           </div>
         </div>
       </div>
@@ -248,36 +273,70 @@ export function MateDetailHeroBlock({ party, compact = false, favorited = false,
   );
 }
 
-export function MateDetailSeatViewBlock({ party, onOpenSeatViewGuide }: { party: Party; onOpenSeatViewGuide: () => void }) {
+export function MateDetailSeatViewBlock({
+  party,
+  onOpenSeatViewGuide,
+  visualQaPhotoCountOverride: requestedVisualQaPhotoCountOverride,
+}: {
+  party: Party;
+  onOpenSeatViewGuide: () => void;
+  visualQaPhotoCountOverride?: number;
+}) {
   const view = buildMateDetailViewModel(party);
   const seatDetail = party.seatDetail?.trim();
-  const { photos } = useSeatViewPhotos(party.stadium, party.section, seatDetail ? [seatDetail] : []);
+  const visualQaPhotoCountOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaPhotoCountOverride;
+  const hasVisualQaPhotoCount = Number.isFinite(visualQaPhotoCountOverride);
+  const { photos } = useSeatViewPhotos(
+    hasVisualQaPhotoCount ? '' : party.stadium,
+    party.section,
+    seatDetail ? [seatDetail] : [],
+  );
+  const photoCount = hasVisualQaPhotoCount
+    ? Math.min(9, Math.max(0, Math.trunc(visualQaPhotoCountOverride ?? 0)))
+    : photos.length;
 
   return (
     <MateDetailReferenceCard>
-      <SectionTitle
-        icon={<MateMapPinIcon className="h-4 w-4" />}
-        extra={<ReferenceBadge className={badgeToneClasses.red}>{view.sectionBadge}</ReferenceBadge>}
-      >
-        좌석 · 시야
-      </SectionTitle>
-      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-stretch">
-        <div className="relative flex min-h-[104px] w-full shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 dark:border-blue-900/50 dark:from-blue-950/40 dark:to-blue-900/30 dark:text-blue-200 sm:w-[104px]">
-          <MateMapIcon className="h-12 w-12" aria-hidden="true" />
-          <span className="text-11 font-bold">구장 배치도</span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="mb-1 text-15 font-black text-gray-900 dark:text-white">{view.sectionLabel}</p>
-          <p className="mb-2.5 text-13 text-gray-500 dark:text-white/60">{view.seatDetailLabel}</p>
-          <p className="mb-3 text-13 leading-[1.55] text-gray-600 dark:text-white/70">{view.seatDescription}</p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <Button data-testid="mate-open-seat-panel" className="inline-flex h-auto items-center gap-1.5 rounded-9 bg-primary px-[13px] py-2 text-13 font-bold text-white hover:bg-primary-hover" onClick={onOpenSeatViewGuide}>
-              <MateCameraIcon className="h-3.5 w-3.5" />
-              {photos.length > 0 ? `실제 시야 사진 ${photos.length}장` : '실제 시야 사진 보기'}
-            </Button>
-            <Button variant="outline" className="h-auto rounded-9 border-gray-300 px-[13px] py-2 text-13 font-bold text-gray-700 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10" onClick={onOpenSeatViewGuide}>
-              공식 배치도
-            </Button>
+      <div data-testid="mate-detail-seat-view-block" className="min-w-0">
+        <SectionTitle
+          icon={<MateMapPinIcon className="h-4 w-4" />}
+          extra={<ReferenceBadge className={badgeToneClasses.red}>{view.sectionBadge}</ReferenceBadge>}
+        >
+          좌석 · 시야
+        </SectionTitle>
+        <div className="flex min-w-0 flex-col gap-3.5 sm:flex-row sm:items-stretch">
+          <div className="relative flex min-h-[104px] w-full shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 dark:border-blue-900/50 dark:from-blue-950/40 dark:to-blue-900/30 dark:text-blue-200 sm:w-[104px]">
+            <MateMapIcon className="h-12 w-12" aria-hidden="true" />
+            <span className="text-11 font-bold">구장 배치도</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="mb-1 min-w-0 text-15 font-black text-gray-900 [overflow-wrap:anywhere] dark:text-white">{view.sectionLabel}</p>
+            <p className="mb-2.5 min-w-0 text-13 text-gray-500 [overflow-wrap:anywhere] dark:text-white/60">{view.seatDetailLabel}</p>
+            <p className="mb-3 min-w-0 text-13 leading-[1.55] text-gray-600 [overflow-wrap:anywhere] dark:text-white/70">{view.seatDescription}</p>
+            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Button
+                data-testid="mate-open-seat-panel"
+                type="button"
+                size="touch"
+                className="inline-flex h-auto min-h-11 w-full items-center gap-1.5 whitespace-normal rounded-9 bg-primary px-[13px] py-2 text-13 font-bold text-white [overflow-wrap:anywhere] hover:bg-primary-hover sm:w-auto"
+                onClick={onOpenSeatViewGuide}
+              >
+                <MateCameraIcon className="h-3.5 w-3.5 shrink-0" />
+                {photoCount > 0 ? `실제 시야 사진 ${photoCount}장` : '실제 시야 사진 보기'}
+              </Button>
+              <Button
+                data-testid="mate-open-official-seat-map"
+                type="button"
+                variant="outline"
+                size="touch"
+                className="h-auto min-h-11 w-full whitespace-normal rounded-9 border-gray-300 px-[13px] py-2 text-13 font-bold text-gray-700 [overflow-wrap:anywhere] dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:w-auto"
+                onClick={onOpenSeatViewGuide}
+              >
+                공식 배치도
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -291,7 +350,8 @@ export function MateDetailHostBlock({ party, onOpenHostProfile, onOpenChat }: { 
 
   return (
     <MateDetailReferenceCard>
-      <div className="mb-3.5 flex items-start gap-3.5">
+      <div data-testid="mate-detail-host-block" className="min-w-0">
+      <div className="mb-3.5 flex min-w-0 items-start gap-3.5">
         <div className="relative shrink-0">
           <ProfileAvatar
             src={party.hostProfileImageUrl ?? undefined}
@@ -308,11 +368,11 @@ export function MateDetailHostBlock({ party, onOpenHostProfile, onOpenChat }: { 
         </div>
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex flex-wrap items-center gap-2">
-            <span className="text-17 font-black text-gray-900 dark:text-white">{party.hostName}</span>
+            <span data-testid="mate-detail-host-name" title={party.hostName} className="min-w-0 max-w-full line-clamp-3 text-17 font-black text-gray-900 [overflow-wrap:anywhere] dark:text-white sm:line-clamp-none">{party.hostName}</span>
             <span className="inline-flex items-center gap-1 text-caption font-black text-gray-900 dark:text-white">
               <MateStarIcon className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" /> {rating === null ? '신규' : view.hostRatingLabel}
             </span>
-            <span className="text-13 font-semibold text-gray-400 dark:text-white/55">· 후기 {view.hostReviewCount} · 성사 {view.hostCompletedCount}회</span>
+            <span data-testid="mate-detail-host-metrics" className="min-w-0 text-13 font-semibold text-gray-400 [overflow-wrap:anywhere] dark:text-white/55">· 후기 {view.hostReviewCount} · 성사 {view.hostCompletedCount}회</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             <ReferenceBadge className={badgeToneClasses.emerald}><MateShieldIcon className="h-3 w-3" /> {party.ticketVerified ? '티켓 인증' : '인증 확인 전'}</ReferenceBadge>
@@ -322,17 +382,18 @@ export function MateDetailHostBlock({ party, onOpenHostProfile, onOpenChat }: { 
         </div>
       </div>
       <div className="mb-3.5 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <div className="flex flex-col items-start gap-1 rounded-11 border border-amber-100 bg-amber-50 p-2.5 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/35 dark:text-amber-200"><MateZapIcon className="h-3.5 w-3.5" /><p className="text-[11.5px] font-bold leading-[1.3]">{view.hostResponseLabel}</p></div>
-        <div className="flex flex-col items-start gap-1 rounded-11 border border-emerald-100 bg-emerald-50 p-2.5 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200"><MatePulseIcon className="h-3.5 w-3.5" /><p className="text-[11.5px] font-bold leading-[1.3]">{view.hostActivityLabel}</p></div>
-        <div className="flex flex-col items-start gap-1 rounded-11 border border-blue-100 bg-blue-50 p-2.5 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/35 dark:text-blue-200"><MateShieldIcon className="h-3.5 w-3.5" /><p className="text-[11.5px] font-bold leading-[1.3]">{view.hostNoShowLabel}</p></div>
+        <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-amber-100 bg-amber-50 p-2.5 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/35 dark:text-amber-200"><MateZapIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostResponseLabel}</p></div>
+        <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-emerald-100 bg-emerald-50 p-2.5 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200"><MatePulseIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostActivityLabel}</p></div>
+        <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-blue-100 bg-blue-50 p-2.5 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/35 dark:text-blue-200"><MateShieldIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostNoShowLabel}</p></div>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button className="h-auto flex-1 rounded-9 border border-[#cce8dd] bg-[#f0f9f6] px-3 py-2.5 text-13 font-bold text-primary hover:bg-[#e7f5ef] dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200 dark:hover:bg-emerald-900/40" onClick={onOpenChat}>
+        <Button data-testid="mate-open-host-chat" type="button" size="touch" className="h-auto min-h-11 w-full flex-1 whitespace-normal rounded-9 border border-[#cce8dd] bg-[#f0f9f6] px-3 py-2.5 text-13 font-bold text-primary [overflow-wrap:anywhere] hover:bg-[#e7f5ef] dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200 dark:hover:bg-emerald-900/40 sm:w-auto" onClick={onOpenChat}>
           <MateMessageSquareIcon className="h-3.5 w-3.5" /> 호스트에게 문의
         </Button>
-        <Button variant="outline" className="h-auto rounded-9 border-gray-200 px-4 py-2.5 text-13 font-bold text-gray-700 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10" onClick={onOpenHostProfile}>
+        <Button data-testid="mate-open-host-profile" type="button" variant="outline" size="touch" className="h-auto min-h-11 w-full whitespace-normal rounded-9 border-gray-200 px-4 py-2.5 text-13 font-bold text-gray-700 [overflow-wrap:anywhere] dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:w-auto" onClick={onOpenHostProfile}>
           프로필
         </Button>
+      </div>
       </div>
     </MateDetailReferenceCard>
   );
@@ -349,21 +410,23 @@ export function MateDetailIntroBlock({ party, summaryPolicyText }: { party: Part
 
   return (
     <MateDetailReferenceCard>
+      <div data-testid="mate-detail-intro-block" className="min-w-0">
       <SectionTitle icon={<MateInfoIcon className="h-4 w-4" />}>파티 소개</SectionTitle>
-      {introText ? <p className="mb-4 text-caption leading-[1.65] text-gray-600 dark:text-white/70">{introText}</p> : null}
-      <div className="flex flex-col gap-3">
+      {introText ? <p data-testid="mate-detail-intro-text" className="mb-4 min-w-0 text-caption leading-[1.65] text-gray-600 [overflow-wrap:anywhere] dark:text-white/70">{introText}</p> : null}
+      <div className="flex min-w-0 flex-col gap-3">
         {groups.map((group) => (
-          <div key={group.title}>
+          <div key={group.title} className="min-w-0">
             <div className="mb-2 flex items-center gap-1.5">
               <span className={joinClassNames('flex h-[22px] w-[22px] items-center justify-center rounded-7', group.bg, group.tone)}>
                 {group.icon}
               </span>
               <span className="text-[13.5px] font-black text-gray-900 dark:text-white">{group.title}</span>
             </div>
-            <div className="flex flex-wrap gap-2 pl-7">
+            <div className="flex min-w-0 flex-wrap gap-2 pl-7">
               {group.items.map((item) => (
-                <span key={item} className="inline-flex items-center gap-1.5 text-13 font-semibold text-gray-700 dark:text-white/80">
-                  <MateCheckCircleIcon className={joinClassNames('h-3.5 w-3.5', group.iconTone)} /> {item}
+                <span key={item} data-testid="mate-detail-intro-item" className="flex min-w-0 max-w-full items-start gap-1.5 text-13 font-semibold text-gray-700 [overflow-wrap:anywhere] dark:text-white/80">
+                  <MateCheckCircleIcon className={joinClassNames('mt-0.5 h-3.5 w-3.5 shrink-0', group.iconTone)} />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{item}</span>
                 </span>
               ))}
             </div>
@@ -371,12 +434,13 @@ export function MateDetailIntroBlock({ party, summaryPolicyText }: { party: Part
         ))}
       </div>
       {view.vibeTags.length > 0 ? (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-white/10">
+        <div className="mt-4 flex min-w-0 flex-wrap gap-2 border-t border-gray-100 pt-4 dark:border-white/10">
           {view.vibeTags.map((tag) => (
             <ReferenceBadge key={tag} className={badgeToneClasses.indigo}>#{tag}</ReferenceBadge>
           ))}
         </div>
       ) : null}
+      </div>
     </MateDetailReferenceCard>
   );
 }
@@ -386,44 +450,47 @@ export function MateDetailReviewBlock({ party, onOpenHostReviews }: { party: Par
 
   return (
     <MateDetailReferenceCard>
+      <div data-testid="mate-detail-review-block" className="min-w-0">
       <SectionTitle
         icon={<MateQuoteIcon className="h-4 w-4" />}
         extra={onOpenHostReviews ? (
-          <button type="button" className="text-13 font-bold text-primary" onClick={onOpenHostReviews}>
-            전체 {view.hostReviewCount} →
+          <button data-testid="mate-open-host-reviews" type="button" title={`전체 후기 ${view.hostReviewCount}개`} style={{ maxWidth: 'min(12rem, 55vw)' }} className="min-h-11 rounded-lg px-2 text-13 font-bold text-primary [overflow-wrap:anywhere] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50" onClick={onOpenHostReviews}>
+            전체 {formatCompactCount(view.hostReviewCount)} →
           </button>
         ) : null}
       >
         호스트 후기
       </SectionTitle>
-      <div className="mb-3.5 flex flex-wrap gap-2">
+      <div data-testid="mate-detail-review-summary" style={{ maxHeight: '8rem' }} className="mb-3.5 flex min-w-0 flex-wrap gap-2 overflow-y-auto overscroll-contain">
         {view.reviewSummary.length > 0 ? view.reviewSummary.map((summary) => (
-          <span key={summary.label} className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-13 font-semibold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-white">
-            {summary.label} <b className="font-black text-primary">{summary.count}</b>
+          <span key={summary.label} style={{ maxWidth: 'min(10rem, 45vw)' }} className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-13 font-semibold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-white">
+            <span data-testid="mate-detail-review-summary-label" title={summary.label} className="min-w-0 truncate">{summary.label}</span>
+            <b title={String(summary.count)} className="shrink-0 font-black text-primary">{formatCompactCount(summary.count)}</b>
           </span>
         )) : (
           <span className="text-13 font-semibold text-gray-400 dark:text-white/55">후기 키워드가 쌓이면 먼저 보여줍니다.</span>
         )}
       </div>
-      <div className="flex flex-col gap-2.5">
+      <div data-testid="mate-detail-review-list" className="flex max-h-[60dvh] min-w-0 flex-col gap-2.5 overflow-y-auto overscroll-contain">
         {view.recentReviews.length > 0 ? view.recentReviews.map((review) => (
-          <div key={`${review.reviewerHandle ?? 'review'}-${review.createdAt}`} className="rounded-13 border border-gray-200/80 bg-gray-50 px-4 py-3 dark:border-white/10 dark:bg-white/5">
-            <div className="mb-1 flex items-center gap-2">
-              <span className="text-caption font-bold text-gray-900 dark:text-white">{review.reviewerHandle ? `@${review.reviewerHandle}` : '익명 메이트'}</span>
-              <span className="inline-flex items-center gap-0.5 text-yellow-500" aria-label={`별점 ${Math.max(1, Math.min(5, review.rating || 0))}점`}>
+          <div data-testid="mate-detail-review-row" key={`${review.reviewerHandle ?? 'review'}-${review.createdAt}`} className="min-w-0 rounded-13 border border-gray-200/80 bg-gray-50 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+            <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2">
+              <span data-testid="mate-detail-reviewer" title={review.reviewerHandle ?? undefined} className="min-w-0 max-w-full line-clamp-2 text-caption font-bold text-gray-900 [overflow-wrap:anywhere] dark:text-white sm:line-clamp-none">{review.reviewerHandle ? `@${review.reviewerHandle}` : '익명 메이트'}</span>
+              <span className="inline-flex shrink-0 items-center gap-0.5 text-yellow-500" aria-label={`별점 ${Math.max(1, Math.min(5, review.rating || 0))}점`}>
                 {Array.from({ length: Math.max(1, Math.min(5, review.rating || 0)) }).map((_, starIndex) => (
                   <MateStarIcon key={starIndex} className="h-3 w-3 fill-yellow-500" />
                 ))}
               </span>
-              <span className="ml-auto text-12 text-gray-400 dark:text-white/55">{formatReviewDate(review.createdAt)}</span>
+              <span className="ml-auto shrink-0 text-12 text-gray-400 dark:text-white/55">{formatReviewDate(review.createdAt)}</span>
             </div>
-            {review.comment ? <p className="m-0 text-caption leading-[1.6] text-gray-600 dark:text-white/70">{review.comment}</p> : null}
+            {review.comment ? <p data-testid="mate-detail-review-comment" className="m-0 min-w-0 text-caption leading-[1.6] text-gray-600 [overflow-wrap:anywhere] dark:text-white/70">{review.comment}</p> : null}
           </div>
         )) : (
           <div className="rounded-13 border border-gray-200/80 bg-gray-50 px-4 py-3 text-caption text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-white">
             대표 후기가 쌓이면 이곳에 노출됩니다.
           </div>
         )}
+      </div>
       </div>
     </MateDetailReferenceCard>
   );
@@ -434,26 +501,31 @@ export function MateDetailParticipationBlock({ party }: { party: Party }) {
   const statusMeta = MATE_STATUS_BADGE_META[party.status];
   const statusBadgeClass = statusToneBadgeClass[statusMeta.tone] ?? badgeToneClasses.neutral;
   const roster = party.members ?? [];
-  const filledCount = roster.length > 0 ? roster.length : party.currentParticipants;
-  const members = Array.from({ length: party.maxParticipants }).map((_, index) => {
+  const capacity = Math.max(0, Math.trunc(Number.isFinite(party.maxParticipants) ? party.maxParticipants : 0));
+  const currentParticipants = Math.max(0, Math.trunc(Number.isFinite(party.currentParticipants) ? party.currentParticipants : 0));
+  const visibleCapacity = Math.min(capacity, 50);
+  const filledCount = Math.min(capacity, roster.length > 0 ? roster.length : currentParticipants);
+  const members = Array.from({ length: visibleCapacity }).map((_, index) => {
     const member = roster[index];
     return {
       filled: index < filledCount,
       initial: member?.initial ?? (index === 0 ? view.hostInitial : 'M'),
-      role: member?.role ?? (index === 0 ? '호스트' : index < party.currentParticipants ? '메이트' : '빈자리'),
+      role: member?.role ?? (index === 0 ? '호스트' : index < currentParticipants ? '메이트' : '빈자리'),
       profileImageUrl: member?.profileImageUrl ?? null,
     };
   });
+  const exactParticipantCount = `${currentParticipants.toLocaleString('ko-KR')}/${capacity.toLocaleString('ko-KR')}명`;
 
   return (
-    <div>
-      <div className="mb-2.5 flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 text-caption font-black text-gray-900 dark:text-white"><MateUsersIcon className="h-4 w-4 text-primary" /> 참여 현황</span>
-        <ReferenceBadge className={statusBadgeClass}>{statusMeta.tone === 'success' ? <MateCheckCircleIcon className="h-3 w-3" /> : null}{statusMeta.label}</ReferenceBadge>
+    <div data-testid="mate-detail-participation-block" className="min-w-0">
+      <div className="mb-2.5 flex min-w-0 flex-wrap items-center justify-between gap-2">
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-caption font-black text-gray-900 dark:text-white"><MateUsersIcon className="h-4 w-4 shrink-0 text-primary" /> 참여 현황</span>
+        <ReferenceBadge className={statusBadgeClass}>{statusMeta.tone === 'success' ? <MateCheckCircleIcon className="h-3 w-3" /> : null}{statusMeta.tone === 'success' ? ' ' : ''}{statusMeta.label}</ReferenceBadge>
       </div>
-      <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-        {members.map((member, index) => (
-          <div key={index} className={joinClassNames('flex min-w-0 flex-col items-center gap-1.5 rounded-xl px-1 py-3', member.filled ? 'border border-gray-200/90 bg-white dark:border-white/10 dark:bg-white/5' : 'border border-dashed border-gray-300 bg-gray-50 dark:border-white/15 dark:bg-white/[0.03]')}>
+      {members.length > 0 ? (
+        <div data-testid="mate-detail-participation-grid" style={{ maxHeight: 'min(50dvh, 30rem)' }} className="mb-3 grid min-w-0 grid-cols-2 gap-2 overflow-y-auto overscroll-contain pr-1 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+          {members.map((member, index) => (
+          <div data-testid="mate-detail-participation-member" key={index} className={joinClassNames('flex min-w-0 flex-col items-center gap-1.5 rounded-xl px-1 py-3', member.filled ? 'border border-gray-200/90 bg-white dark:border-white/10 dark:bg-white/5' : 'border border-dashed border-gray-300 bg-gray-50 dark:border-white/15 dark:bg-white/[0.03]')}>
             <div className={joinClassNames('flex h-[38px] w-[38px] items-center justify-center overflow-hidden rounded-full text-15 font-black', member.filled ? 'bg-[#e8f5f0] text-primary shadow-sm dark:bg-emerald-950/45 dark:text-emerald-200' : 'bg-gray-100 text-gray-400 dark:bg-white/10 dark:text-white')}>
               {member.filled
                 ? (member.profileImageUrl
@@ -461,14 +533,30 @@ export function MateDetailParticipationBlock({ party }: { party: Party }) {
                     : member.initial)
                 : '+'}
             </div>
-            <span className={joinClassNames('max-w-full truncate text-11 font-bold', member.filled ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-white/55')}>{member.role}</span>
+            <span data-testid="mate-detail-participation-role" title={member.role} className={joinClassNames('min-w-0 max-w-full truncate text-11 font-bold', member.filled ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-white/55')}>{member.role}</span>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div data-testid="mate-detail-participation-empty" className="mb-3 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-3 py-5 text-center text-12 font-bold text-gray-500 dark:border-white/15 dark:bg-white/[0.03] dark:text-white/60">
+          정원 정보 확인 중
+        </div>
+      )}
+      {capacity > visibleCapacity ? (
+        <p style={{ marginTop: '-0.25rem' }} className="mb-2 text-center text-11 text-gray-500 dark:text-white/55">전체 {formatCompactCount(capacity)}자리 중 앞 {visibleCapacity}자리만 표시</p>
+      ) : null}
       <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-        <div className="h-full rounded-full bg-gradient-to-r from-primary to-[#3d7d68]" style={{ width: `${view.participationPercent}%` }} />
+        <div
+          data-testid="mate-detail-participation-progress"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={view.participationPercent}
+          className="h-full rounded-full bg-gradient-to-r from-primary to-[#3d7d68]"
+          style={{ width: `${view.participationPercent}%` }}
+        />
       </div>
-      <p className="m-0 text-center text-12 text-gray-500 dark:text-white/60"><b className="text-red-600 dark:text-red-400">{view.remainingSeats}자리</b> 남았어요 · {party.currentParticipants}/{party.maxParticipants}명</p>
+      <p title={exactParticipantCount} className="m-0 min-w-0 text-center text-12 text-gray-500 [overflow-wrap:anywhere] dark:text-white/60"><b className="text-red-600 dark:text-red-400">{formatCompactCount(view.remainingSeats)}자리</b> 남았어요 · {formatCompactCount(currentParticipants)}/{formatCompactCount(capacity)}명</p>
     </div>
   );
 }
@@ -477,22 +565,28 @@ export function MateDetailPriceBox({ party }: { party: Party }) {
   const view = buildMateDetailViewModel(party);
 
   return (
-    <div className="min-w-0 overflow-hidden rounded-13 border border-gray-200 dark:border-white/10">
+    <div data-testid="mate-detail-price-box" className="min-w-0 overflow-hidden rounded-13 border border-gray-200 dark:border-white/10">
       {view.reservationDepositAmount > 0 ? (
-        <div className="flex items-center justify-between gap-2.5 bg-[#f0f9f6] px-3.5 py-3 dark:bg-emerald-950/35">
-          <div className="min-w-0">
-            <p className="m-0 truncate whitespace-nowrap text-[11.5px] font-bold tracking-[0.02em] text-primary dark:text-emerald-200">지금 필요한 금액 · 예약금</p>
-            <p className="m-0 mt-0.5 truncate whitespace-nowrap text-11 text-[#5e8378] dark:text-emerald-300/80">승인 후 결제 · 노쇼 방지용</p>
+        <div
+          className="flex min-w-0 flex-col items-stretch gap-2.5 bg-[#f0f9f6] px-3.5 py-3 dark:bg-emerald-950/35 sm:flex-row sm:items-center sm:justify-between"
+          data-testid="mate-detail-deposit-row"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="m-0 whitespace-normal text-[11.5px] font-bold tracking-[0.02em] text-primary [overflow-wrap:anywhere] dark:text-emerald-200">지금 필요한 금액 · 예약금</p>
+            <p className="m-0 mt-0.5 whitespace-normal text-11 text-[#5e8378] [overflow-wrap:anywhere] dark:text-emerald-300/80">승인 후 결제 · 노쇼 방지용</p>
           </div>
-          <span className="shrink-0 whitespace-nowrap text-18 font-black text-primary dark:text-emerald-200">{formatAmount(view.reservationDepositAmount)}</span>
+          <span data-testid="mate-detail-deposit-amount" className="max-w-full self-end whitespace-normal text-right text-18 font-black text-primary [overflow-wrap:anywhere] dark:text-emerald-200 sm:shrink-0">{formatAmount(view.reservationDepositAmount)}</span>
         </div>
       ) : null}
-      <div className="flex items-center justify-between gap-2.5 bg-white px-3.5 py-3 dark:bg-white/5">
-        <div className="min-w-0">
-          <p className="m-0 truncate whitespace-nowrap text-[11.5px] font-bold text-gray-500 dark:text-white/60">{party.status === 'SELLING' ? '티켓 판매가' : '현장 정산 예정 · 티켓'}</p>
-          <p className="m-0 mt-0.5 truncate whitespace-nowrap text-11 text-gray-400 dark:text-white/55">거래 완료 후 정산</p>
+      <div
+        className="flex min-w-0 flex-col items-stretch gap-2.5 bg-white px-3.5 py-3 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="mate-detail-ticket-row"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="m-0 whitespace-normal text-[11.5px] font-bold text-gray-500 [overflow-wrap:anywhere] dark:text-white/60">{party.status === 'SELLING' ? '티켓 판매가' : '현장 정산 예정 · 티켓'}</p>
+          <p className="m-0 mt-0.5 whitespace-normal text-11 text-gray-400 [overflow-wrap:anywhere] dark:text-white/55">거래 완료 후 정산</p>
         </div>
-        <span className="shrink-0 whitespace-nowrap text-body font-black text-gray-700 dark:text-white/80">{formatAmount(view.ticketAmount)}</span>
+        <span data-testid="mate-detail-ticket-amount" className="max-w-full self-end whitespace-normal text-right text-body font-black text-gray-700 [overflow-wrap:anywhere] dark:text-white/80 sm:shrink-0">{formatAmount(view.ticketAmount)}</span>
       </div>
     </div>
   );
@@ -503,13 +597,15 @@ export function MateDetailQrHint({ canAccessCheckIn, onOpenQrPanel }: { canAcces
     <button
       type="button"
       onClick={canAccessCheckIn ? onOpenQrPanel : undefined}
+      disabled={!canAccessCheckIn}
+      aria-disabled={!canAccessCheckIn}
       data-testid="mate-open-qr-panel"
-      className="flex w-full items-center gap-3 rounded-14 border border-dashed border-purple-200 bg-purple-50 px-3.5 py-3 text-left dark:border-purple-900/50 dark:bg-purple-950/20"
+      className="flex min-h-11 min-w-0 w-full items-center gap-3 rounded-14 border border-dashed border-purple-200 bg-purple-50 px-3.5 py-3 text-left [overflow-wrap:anywhere] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-default motion-reduce:transform-none dark:border-purple-900/50 dark:bg-purple-950/20 dark:focus-visible:ring-offset-[#000000]"
     >
       <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-10 bg-white text-purple-700 shadow-sm dark:bg-card dark:text-purple-200">
         <MateQrCodeIcon className="h-5 w-5" />
       </span>
-      <span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">
         <span className="block text-[12.5px] font-black text-purple-800 dark:text-purple-200">체크인 QR</span>
         <span className="block text-[11.5px] leading-[1.4] text-purple-700 dark:text-purple-300">
           {canAccessCheckIn ? '참여 확정 후 바로 열 수 있어요' : '참여 확정 후 채팅·예약 상세에서 열려요'}
