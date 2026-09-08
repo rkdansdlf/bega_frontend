@@ -1,5 +1,5 @@
 import { LandingBellIcon } from '../icons/LandingIcons';
-import { BEGA_MASCOT_ASSET } from './landingAssets';
+import { BEGA_LOGO_ASSET } from './landingAssets';
 import { LANDING_PHONE_NAV_TABS } from './landingShowcaseData';
 import LandingPhoneBoardScreen from './phone/LandingPhoneBoardScreen';
 import LandingPhoneHomeScreen from './phone/LandingPhoneHomeScreen';
@@ -14,7 +14,7 @@ export default function LandingPhonePreview({ activeScreen }: LandingPhonePrevie
     <div className="landing-phone-app">
       <header className="landing-phone-app-header">
         <div className="landing-phone-app-brand">
-          <img src={BEGA_MASCOT_ASSET} alt="" width={26} height={26} />
+          <img src={BEGA_LOGO_ASSET} alt="" width={26} height={26} />
           <div>
             <p>BEGA</p>
             <p>BASEBALL GUIDE</p>

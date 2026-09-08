@@ -14,11 +14,10 @@ export default function LandingClosing() {
           className="landing-closing-mascot"
           data-anim
           data-testid="landing-closing-mascot"
-          src={BEGA_MASCOT_ASSET}
+          data-lazy-src={BEGA_MASCOT_ASSET}
           alt="BEGA 마스코트"
           width={104}
           height={109}
-          loading="lazy"
           decoding="async"
         />
         <h2>{LANDING_CLOSING_COPY.title}</h2>

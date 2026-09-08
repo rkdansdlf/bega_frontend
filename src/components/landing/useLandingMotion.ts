@@ -2,7 +2,23 @@ import { useEffect } from 'react';
 
 const COUNT_DURATION_MS = 1_200;
 
+// Native loading="lazy" only hints the browser's own viewport-distance
+// heuristic, which can still fetch an image well before the user scrolls to
+// it — measurably so on the (comparatively short) landing page. Deferring the
+// actual src assignment to the same IntersectionObserver-driven reveal used
+// for the fade-in animation guarantees the fetch never starts before scroll.
+const revealLazyImages = (node: HTMLElement) => {
+  node.querySelectorAll<HTMLImageElement>('img[data-lazy-src]').forEach((img) => {
+    const lazySrc = img.dataset.lazySrc;
+    if (!lazySrc) return;
+    img.src = lazySrc;
+    delete img.dataset.lazySrc;
+  });
+};
+
 const finishMotionContent = (node: HTMLElement) => {
+  revealLazyImages(node);
+
   node.querySelectorAll<HTMLElement>('[data-bar]').forEach((bar) => {
     bar.style.width = bar.dataset.bar ?? '';
   });
@@ -96,6 +112,7 @@ export default function useLandingMotion(): void {
     const reveal = (node: HTMLElement) => {
       node.dataset.revealed = 'true';
       node.style.transitionDelay = `${node.dataset.reveal ?? 0}ms`;
+      revealLazyImages(node);
       node.querySelectorAll<HTMLElement>('[data-bar]').forEach((bar) => {
         bar.style.width = bar.dataset.bar ?? '';
       });
