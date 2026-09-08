@@ -1990,6 +1990,20 @@ describe('Game Prediction', () => {
         cy.wait(700);
         cy.wait('@coachAnalyzeAuthExpired');
         cy.wait('@coachAnalyzeReissueFailed');
+        // The coach-level 401 + failed reissue only clears the client-side auth
+        // store. The test's own __BEGA_TEST_AUTH_PROFILE__ injection (seeded by
+        // openPredictionPage) and the shared mypage mock from beforeEach both
+        // still describe a logged-in session, so /login's re-bootstrap on
+        // mount silently re-authenticates and PublicOnlyAuthRoute immediately
+        // bounces back to /prediction. Clear both so the bootstrap genuinely
+        // sees the session as gone.
+        cy.window().then((win) => {
+            delete (win as Window & { __BEGA_TEST_AUTH_PROFILE__?: unknown }).__BEGA_TEST_AUTH_PROFILE__;
+        });
+        cy.intercept('GET', /\/api\/auth\/mypage(?:\?.*)?$/, {
+            statusCode: 401,
+            body: { message: 'Unauthorized' },
+        }).as('getMeExpiredAfterCoach');
         cy.contains('[data-testid="coach-briefing-card"] button', '다시 로그인하기', { timeout: 10000 })
             .scrollIntoView()
             .click({ force: true });
