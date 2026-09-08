@@ -37,12 +37,12 @@ import { buildHomeRequestErrorContext, buildHomeNavigationState } from '../utils
 import type { HomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeAuthSnapshot } from './home/HomeAuthBridge';
 import HomePullToRefresh from './home/HomePullToRefresh';
+import HomeRecoveryBanner from './home/HomeRecoveryBanner';
 import {
     MANUAL_BASEBALL_DATA_REQUIRED_CODE,
 } from '../utils/manualBaseballDataContract';
 
 const homeMatchPanelModulePromise = import('./home/HomeMatchPanel');
-const LazyHomeRecoveryBanner = lazy(() => import('./home/HomeRecoveryBanner'));
 const LazyHomeDeferredSurfaces = lazy(() => import('./home/HomeDeferredSurfaces'));
 const LazyHomeMatchPanel = lazy(() => homeMatchPanelModulePromise);
 
@@ -1243,17 +1243,15 @@ export default function HomeRuntime() {
                 onRefresh={() => refreshHomeSilently(selectedDate)}
               >
                 {showConnectionRecoveryBanner && (
-                    <Suspense fallback={null}>
-                        <LazyHomeRecoveryBanner
-                            loadFailureReason={loadFailureReason}
-                            manualDataRequest={manualDataRequest}
-                            onRetry={() => {
-                                setConnectionError(false);
-                                setManualDataRequest(null);
-                                void loadHomeBootstrap(selectedDate);
-                            }}
-                        />
-                    </Suspense>
+                    <HomeRecoveryBanner
+                        loadFailureReason={loadFailureReason}
+                        manualDataRequest={manualDataRequest}
+                        onRetry={() => {
+                            setConnectionError(false);
+                            setManualDataRequest(null);
+                            void loadHomeBootstrap(selectedDate);
+                        }}
+                    />
                 )}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border/70 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
                     <div>

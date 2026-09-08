@@ -180,7 +180,7 @@ describe('Home error UX', () => {
       resetStorage: true,
     });
 
-    cy.contains('야구를 더 스마트하게', { timeout: 15000 }).should('be.visible');
+    cy.contains('10개 구단', { timeout: 15000 }).should('be.visible');
     cy.get('@getMeAnonymous.all').should('have.length', 0);
     getHomeAuthRequestTraces().should('deep.equal', []);
   });
@@ -335,7 +335,7 @@ describe('Home error UX', () => {
     cy.wait('@getMeUnauthorized');
 
     cy.contains('button', '로그인 확인 중...').should('not.exist');
-    cy.contains('button', '로그인').should('be.visible');
+    cy.get('button[aria-label="로그인"]').should('be.visible');
     getHomeAuthRequestTraces().should((traces) => {
       expect(traces).to.have.length(1);
       expect(traces[0]?.url).to.include('/api/auth/mypage');
@@ -379,7 +379,7 @@ describe('Home error UX', () => {
     cy.wait('@getMeServerError');
 
     cy.contains('button', '로그인 확인 중...').should('not.exist');
-    cy.contains('button', '로그인').should('be.visible');
+    cy.get('button[aria-label="로그인"]').should('be.visible');
     getHomeAuthRequestTraces().should((traces) => {
       expect(traces).to.have.length(1);
       expect(traces[0]?.url).to.include('/api/auth/mypage');
