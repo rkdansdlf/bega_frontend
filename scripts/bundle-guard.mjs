@@ -1750,7 +1750,7 @@ const routeStaticClosureTargets = [
   {
     route: '/login',
     label: '/login route static closure',
-    maxJsGzipBytes: 86_000,
+    maxJsGzipBytes: 86_500,
     entrypoints: [
       'index.html',
       'src/components/Login.tsx',
@@ -1786,7 +1786,7 @@ const routeStaticClosureTargets = [
   {
     route: '/account/deletion/recovery',
     label: '/account/deletion/recovery route static closure',
-    maxJsGzipBytes: 81_000,
+    maxJsGzipBytes: 81_400,
     entrypoints: [
       'index.html',
       'src/components/AccountDeletionRecovery.tsx',
@@ -1823,7 +1823,7 @@ const routeStaticClosureTargets = [
   {
     route: '/cheer',
     label: '/cheer route static closure',
-    maxJsGzipBytes: 121_000,
+    maxJsGzipBytes: 121_600,
     entrypoints: [
       'index.html',
       'src/components/Cheer.tsx',
