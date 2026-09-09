@@ -129,7 +129,11 @@ describe('MateDetail auxiliary panel lazy load', () => {
     cy.wait('@getMyApplicationByParty');
     cy.contains('lazy auxiliary panel 검증용 파티').should('be.visible');
     cy.get('@createCheckinQrSession.all').should('have.length', 0);
-    cy.get('@getSeatViews.all').should('have.length', 0);
+    // MateDetailSeatViewBlock(정보 섹션에 항상 즉시 렌더되는 좌석 시야 참고
+    // 카드)이 이 API를 이미 한 번 소비한다 — 이 테스트가 실제로 검증하려는
+    // "지연 로드"는 seat 패널/갤러리 JS 청크(아래 chunkCounts)이지 이 API
+    // 호출 자체가 아니다.
+    cy.get('@getSeatViews.all').should('have.length', 1);
 
     cy.window().then((win) => {
       const chunkCounts = getAuxChunkResourceCounts(win);
