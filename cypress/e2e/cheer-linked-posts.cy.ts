@@ -219,6 +219,18 @@ const installNetworkIsolation = () => {
     }
     request.continue();
   });
+
+  // index.html은 Pretendard 웹폰트를 사용자의 첫 스크롤/클릭/키다운/터치까지
+  // 지연 로드한다(랜딩 첫 로드 지표에 안 걸리도록 하는 의도적 최적화,
+  // 429a87ce). 이 스펙은 실제 클릭 상호작용을 여러 번 수행하므로 그
+  // 지연 로드가 트리거되는 게 정상 동작이다 — 실제 CDN으로 나가지 않게
+  // 빈 스텁으로 응답하고(위 catch-all보다 나중에 등록해 우선 적용) 격리
+  // 위반으로 잡지 않는다.
+  cy.intercept('GET', 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@*/**', {
+    statusCode: 200,
+    headers: { 'content-type': 'text/css' },
+    body: '',
+  });
   cy.intercept({ pathname: '/api/**' }, (request) => {
     unexpectedNetworkRequests.push(`${request.method} ${request.url}`);
     request.reply({ statusCode: 599, body: { code: 'UNEXPECTED_TASK10_API_REQUEST' } });
@@ -331,7 +343,20 @@ describe('linked cheer posts in the production application', () => {
       const appUrl = new URL(Cypress.config('baseUrl') ?? 'http://127.0.0.1:4173');
       const unexpectedSockets = isolatedWebSocketUrls.filter((value) => {
         const socketUrl = new URL(value, appUrl);
-        return socketUrl.host !== appUrl.host || socketUrl.pathname !== '/ws';
+        if (socketUrl.host !== appUrl.host) {
+          return true;
+        }
+        if (socketUrl.pathname === '/ws') {
+          return false;
+        }
+        // Vite dev 서버가 자체 주입하는 HMR 클라이언트도 window.WebSocket을
+        // 통해 연결한다(pathname '/', token 쿼리) — 이 스펙은 로컬 dev
+        // 서버로 실행되고, 실제 프로덕션 빌드에는 존재하지 않는 dev 전용
+        // 아티팩트라 앱 격리 위반으로 보지 않는다.
+        if (socketUrl.pathname === '/' && socketUrl.searchParams.has('token')) {
+          return false;
+        }
+        return true;
       });
       expect(unexpectedSockets, 'unexpected WebSocket requests').to.deep.equal([]);
     });
