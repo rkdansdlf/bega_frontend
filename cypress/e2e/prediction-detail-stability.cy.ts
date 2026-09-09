@@ -32,39 +32,56 @@ describe('Prediction detail stability', () => {
     (cy as any).login('user');
     (cy as any).mockAPI({ skipRankings: true });
 
+    // 응답이 flat 객체가 아니라 { success, data } 엔벨로프여야 한다 — 아니면
+    // 인증 파싱이 조용히(콘솔 에러 없이) 실패해 isAuthLoading이 계속 true로
+    // 남고, 이후 모든 인증 의존 데이터 fetch(예측 bootstrap 포함)가 아예
+    // 시작되지 않는다.
     cy.intercept('GET', '**/api/auth/mypage*', {
       statusCode: 200,
       body: {
-        id: 123,
-        email: 'test@example.com',
-        name: 'TestUser',
-        handle: 'testuser',
-        favoriteTeam: 'LG',
-        role: 'ROLE_USER',
-        profileImageUrl: null,
-        hasPassword: true,
+        success: true,
+        data: {
+          id: 123,
+          email: 'test@example.com',
+          name: 'TestUser',
+          handle: 'testuser',
+          favoriteTeam: 'LG',
+          role: 'ROLE_USER',
+          profileImageUrl: null,
+          hasPassword: true,
+        },
       },
     }).as('getMe');
 
-    cy.intercept('GET', '**/api/matches/day*', {
+    // 예측 페이지 초기 진입은 /api/matches/day가 아니라 스케줄+상세를 한 번에
+    // 묶어 내려주는 /api/predictions/bootstrap을 사용한다. 여기서는 detail을
+    // 비워(null) 둬서, 아래 getGameDetailFailure(500)로 목업한 별도 상세
+    // 조회로 앱이 폴백하도록 한다.
+    cy.intercept('GET', '**/api/predictions/bootstrap*', {
       statusCode: 200,
       body: {
-        date: targetDate,
-        games: [
-          {
-            gameId: targetGameId,
-            gameDate: targetDate,
-            time: '18:30',
-            stadium: '잠실',
-            gameStatus: 'SCHEDULED',
-            homeTeam: 'LG',
-            awayTeam: 'KT',
-          },
-        ],
-        prevDate: null,
-        nextDate: null,
-        hasPrev: false,
-        hasNext: false,
+        schedule: {
+          date: targetDate,
+          games: [
+            {
+              gameId: targetGameId,
+              gameDate: targetDate,
+              time: '18:30',
+              stadium: '잠실',
+              gameStatus: 'SCHEDULED',
+              homeTeam: 'LG',
+              awayTeam: 'KT',
+            },
+          ],
+          prevDate: null,
+          nextDate: null,
+          hasPrev: false,
+          hasNext: false,
+        },
+        selectedGameId: targetGameId,
+        selectedGameFound: true,
+        detail: null,
+        voteStatus: null,
       },
     }).as('getScheduleDay');
 
