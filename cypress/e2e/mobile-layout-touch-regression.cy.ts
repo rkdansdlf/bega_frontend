@@ -316,7 +316,7 @@ describe('mobile layout and touch target regression', () => {
     cy.tick(1500);
 
     assertMinTarget('header button[aria-label="메뉴 열기"]', 'common mobile menu button');
-    assertMinTarget('header button:contains("BEGA")', 'common brand button');
+    assertMinTarget('header a:contains("BEGA")', 'common brand button');
     assertMinTarget('[data-testid="public-mobile-bottom-nav"] button', 'public mobile bottom nav item');
     assertSafeBottomPadding('main', 'common layout');
     cy.get('[data-testid="home-mobile-bottom-spacer"]')

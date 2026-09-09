@@ -65,7 +65,7 @@ const assertNavbarReadableAtSpaciousWidth = (label: string) => {
         .to.be.at.most(element.clientHeight + 1);
     });
 
-  cy.get('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"] button')
+  cy.get('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"] a')
     .should('have.length.at.least', 4)
     .each(($button) => {
       const fontSize = parseFloat(getComputedStyle($button[0]).fontSize);
@@ -143,7 +143,7 @@ const waitForNavbarReady = ({ authenticated }: { authenticated: boolean }) => {
     return;
   }
 
-  cy.contains('[data-testid="navbar-auth-controls"] button', '로그인', { timeout: NAVBAR_READY_TIMEOUT_MS })
+  cy.get('[data-testid="navbar-auth-controls"] button[aria-label="로그인"]', { timeout: NAVBAR_READY_TIMEOUT_MS })
     .should('be.visible');
 };
 
@@ -229,8 +229,10 @@ const assertCapsuleShrinksOnScroll = (label: string) => {
       cy.get('[data-testid="navbar-capsule"]').then(($scrolledCapsule) => {
         const scrolledWidth = $scrolledCapsule[0].getBoundingClientRect().width;
 
+        // 44px 터치타겟 하드닝으로 컴팩트 상태 최소 폭이 커져 축소폭이 줄었다
+        // (약 108px). 서브픽셀 편차를 감안해 100px로 여유를 둔다.
         expect(initialWidth - scrolledWidth, `${label} capsule width reduction`)
-          .to.be.at.least(120);
+          .to.be.at.least(100);
       });
     });
 };
@@ -302,7 +304,7 @@ const assertAuthenticatedNavbarAnimationHooks = (label: string) => {
         .to.be.at.least(220);
     });
 
-  cy.contains('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"] button', '같이가요')
+  cy.contains('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"] a', '같이가요')
     .should('have.attr', 'aria-current', 'page')
     .then(($activeButton) => {
       cy.get('[data-testid="navbar-active-pill"]')

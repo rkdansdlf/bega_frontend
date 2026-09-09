@@ -1484,13 +1484,13 @@ describe('Admin page coverage', () => {
         cy.wait('@getAdminReportDetail');
         cy.contains('Case #501').should('exist');
         cy.get('textarea[placeholder="조치 근거를 입력하세요."]').type('정책 위반으로 비공개 처리');
-        cy.contains('button', 'TAKE_DOWN').click({ force: true });
+        cy.getBySel('admin-report-action-take-down').click({ force: true });
 
         cy.wait('@patchAdminReport');
         cy.wait('@getAdminReports');
         cy.wait('@getAdminReportDetail');
         cy.contains('신고 케이스가 처리되었습니다.').should('be.visible');
-        cy.contains('정책 위반으로 비공개 처리').should('be.visible');
+        cy.contains('정책 위반으로 비공개 처리').scrollIntoView().should('be.visible');
 
         cy.getBySel('admin-tab-client-errors').click({ force: true });
         cy.wait('@getClientErrorDashboard');

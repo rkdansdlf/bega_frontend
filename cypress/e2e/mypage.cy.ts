@@ -583,14 +583,14 @@ describe('My Page (User Profile)', () => {
             cy.get('[aria-label="빠른 작업"]').should('not.exist');
             cy.get('.mypage-season-heat-months').should(($months) => {
                 const style = getComputedStyle($months[0]);
-                expect(style.columnGap).to.eq('3px');
-                expect(style.marginLeft).to.eq('26px');
+                expect(style.columnGap).to.eq('4px');
+                expect(style.marginLeft).to.eq('28px');
             });
             cy.get('.mypage-season-heat-grid').should(($grid) => {
                 const style = getComputedStyle($grid[0]);
-                expect(style.columnGap).to.eq('3px');
-                expect(style.rowGap).to.eq('3px');
-                expect(style.gridTemplateRows).to.match(/^13px /);
+                expect(style.columnGap).to.eq('4px');
+                expect(style.rowGap).to.eq('4px');
+                expect(style.gridTemplateRows).to.match(/^24px /);
             });
         });
 
