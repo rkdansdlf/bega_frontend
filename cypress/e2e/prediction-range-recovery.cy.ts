@@ -216,7 +216,11 @@ describe('Prediction Range Recovery', () => {
                 const url = interception.request?.url || '';
                 return !url.includes('/api/matches/day')
                     && !url.includes('/api/matches/range')
-                    && !url.includes('/api/matches/bounds');
+                    && !url.includes('/api/matches/bounds')
+                    // 스케줄 목록 행의 라이브 점수 배지는 선택된(찾지 못한) 경기와
+                    // 무관하게 목록에 보이는 모든 경기에 대해 항상 폴링된다
+                    // (usePredictionSchedule.ts의 fetchGameLiveSummaries 배치 조회).
+                    && !url.includes('/api/matches/live');
             });
             expect(detailCalls).to.have.length(0);
         });
@@ -280,7 +284,7 @@ describe('Prediction Range Recovery', () => {
         }).as('getMatchDay');
 
         openPredictionPage();
-        cy.contains('예측 경기 데이터를 불러오지 못했습니다.').should('be.visible');
+        cy.contains('잠시 우천 중단이에요').should('be.visible');
         cy.contains('서비스 연결이 불안정합니다. 잠시 후 다시 시도해주세요.').should('be.visible');
         cy.get('[data-slot="alert-dialog-overlay"]').should('not.exist');
     });
