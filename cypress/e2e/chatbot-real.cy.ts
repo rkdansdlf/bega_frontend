@@ -160,12 +160,19 @@ describe('AI chatbot real integration smoke', () => {
     };
 
     const isAiStreamUnavailableResponse = (response: Cypress.Response<unknown>) => {
-        if ([401, 503].includes(response.status)) {
+        if ([401, 502, 503, 504].includes(response.status)) {
             return true;
         }
 
         const body = response.body as ApiErrorResponse | undefined;
-        return body?.code === 'AI_UPSTREAM_UNAUTHORIZED' || body?.code === 'AI_UPSTREAM_UNAVAILABLE';
+        // AiProxyService.java: 이 코드들은 AI 서비스가 응답한 에러가 아니라
+        // 백엔드가 AI 서비스에 아예 연결/응답을 받지 못했을 때 나오는 코드다
+        // (AI_UPSTREAM_CONNECTION_FAILED=502, AI_UPSTREAM_TIMEOUT=504,
+        // AI_UPSTREAM_UNAVAILABLE=503) — 인프라 미준비이지 제품 버그가 아니다.
+        return body?.code === 'AI_UPSTREAM_UNAUTHORIZED'
+            || body?.code === 'AI_UPSTREAM_UNAVAILABLE'
+            || body?.code === 'AI_UPSTREAM_CONNECTION_FAILED'
+            || body?.code === 'AI_UPSTREAM_TIMEOUT';
     };
 
     const resolveRequiredPolicyConsents = () => (
@@ -291,7 +298,10 @@ describe('AI chatbot real integration smoke', () => {
 
             return cy.request({
                 method: 'GET',
-                url: buildBackendUrl(backendBaseUrl, '/actuator/health'),
+                // SecurityConfig가 "인증 보강" 커밋(f95aeee0)에서 무인증 actuator
+                // 노출면을 좁혀 bare /actuator/health는 ADMIN 권한이 필요해졌고,
+                // /actuator/health/readiness만 공개로 남겼다.
+                url: buildBackendUrl(backendBaseUrl, '/actuator/health/readiness'),
                 failOnStatusCode: false,
             }).then((response: Cypress.Response<unknown>) => {
                 expect(isBackendHealthResponse(response), 'backend health response').to.eq(true);
@@ -303,10 +313,16 @@ describe('AI chatbot real integration smoke', () => {
                         return;
                     }
 
+                    // 이 시점엔 아직 cy.visit()로 페이지를 방문하지 않아 cy.request()가
+                    // Referer를 자동으로 붙이지 않는다. JWTFilter의 CSRF Referer/Origin
+                    // 검사(인증 토큰이 있는 상태변경 요청에 적용)가 이를 차단하므로
+                    // 명시적으로 Origin/Referer를 지정해야 한다.
+                    const baseOrigin = resolveBaseOrigin();
                     return cy.request({
                         method: 'POST',
                         url: buildAppUrl('/api/ai/chat/stream'),
                         failOnStatusCode: false,
+                        headers: baseOrigin ? { Origin: baseOrigin, Referer: `${baseOrigin}/` } : undefined,
                         body: {
                             question: 'KBO를 한 문장으로 소개해줘.',
                             history: null,
