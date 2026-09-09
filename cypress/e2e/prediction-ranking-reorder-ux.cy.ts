@@ -7,15 +7,13 @@ const selectedTeamIds = ['samsung', 'lg', 'doosan'] as const;
 const installRankingPredictionMocks = () => {
     cy.mockAPI({ skipRankings: true });
 
-    cy.intercept('GET', /\/api\/predictions\/ranking\/current-season(?:\?.*)?$/, {
+    // RankingPrediction.tsx는 시즌+저장된 예측을 이 단일 엔드포인트로 조회한다
+    // (api/ranking.ts의 fetchRankingPredictionInit) — 예전의 개별
+    // current-season/ranking 두 호출을 대체했다.
+    cy.intercept('GET', '**/api/predictions/ranking/init*', {
         statusCode: 200,
-        body: { seasonYear: 2026 },
-    }).as('getRankingPredictionSeason');
-
-    cy.intercept('GET', /\/api\/predictions\/ranking(?:\?.*)?$/, {
-        statusCode: 404,
-        body: { message: '저장된 순위 예측이 없습니다.' },
-    }).as('getSavedRankingPrediction');
+        body: { seasonYear: 2026, saved: null },
+    }).as('getRankingPredictionInit');
 };
 
 const openRankingPrediction = () => {
@@ -26,8 +24,7 @@ const openRankingPrediction = () => {
     });
 
     cy.contains('button', '순위예측', { timeout: 20000 }).click({ force: true });
-    cy.wait('@getRankingPredictionSeason');
-    cy.wait('@getSavedRankingPrediction');
+    cy.wait('@getRankingPredictionInit');
     cy.get('[data-testid="ranking-root"]').within(() => {
         cy.contains('예상 순위').should('be.visible');
     });
