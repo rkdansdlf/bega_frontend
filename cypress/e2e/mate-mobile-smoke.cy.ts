@@ -154,7 +154,10 @@ describe('Mate mobile smoke', () => {
       cy.contains('메이트 필터').should('be.visible');
       cy.contains('팀').should('be.visible');
       cy.contains('좌석').should('be.visible');
-      cy.contains('인기 검색어').should('be.visible');
+      // 인기 검색어 섹션은 바텀시트 본문의 맨 아래쪽에 있어 초기 렌더에서
+      // 바디 스크롤 영역의 클리핑 경계와 겹쳐 footer 버튼 행에 가려진
+      // 것으로 판정된다 — 명시적으로 스크롤해 넣어준다.
+      cy.contains('인기 검색어').scrollIntoView().should('be.visible');
       cy.contains('button', '잠실 블루존').click();
     });
 
