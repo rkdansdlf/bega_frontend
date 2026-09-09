@@ -74,7 +74,7 @@ describe('Home navigation auth persistence', () => {
   });
 
   const navigateHomeFromMyPage = () => {
-    cy.contains('[data-testid="navbar-capsule"] button', 'BEGA').click();
+    cy.get('[data-testid="navbar-capsule"] a[aria-label="BEGA 홈"]').click();
     cy.location('pathname').should('eq', '/home');
   };
 
