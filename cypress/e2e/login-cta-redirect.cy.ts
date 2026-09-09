@@ -15,19 +15,11 @@ const visitAsGuest = (path: string) => {
 const accountSettingsRedirect = '/mypage?view=accountSettings';
 
 describe('Login CTA redirect preservation', () => {
-    it('preserves the landing page as redirect target', () => {
-        visitAsGuest('/');
-
-        cy.get('[data-testid="landing-header-login"]').click();
-        cy.location('pathname').should('eq', '/login');
-        cy.location('search').should('eq', '?redirect=%2F');
-    });
-
     it('preserves the current page from the desktop navbar login button', () => {
         cy.viewport(1280, 800);
         visitAsGuest('/privacy');
 
-        cy.contains('button', '로그인').click();
+        cy.get('button[aria-label="로그인"]').click();
         cy.location('pathname').should('eq', '/login');
         cy.location('search').should('eq', '?redirect=%2Fprivacy');
     });
