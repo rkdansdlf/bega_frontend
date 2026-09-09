@@ -128,6 +128,17 @@ describe('Prediction Ranking Deferred', () => {
             },
         }).as('getDeferredPredictionStats');
 
+        // RankingPrediction.tsx는 시즌+저장된 예측을 이 단일 엔드포인트로 조회한다
+        // (api/ranking.ts의 fetchRankingPredictionInit) — 목업이 없으면 실제
+        // 네트워크 요청이 실패해 "순위 예측을 불러오지 못했습니다" 에러 배너가 뜬다.
+        cy.intercept('GET', '**/api/predictions/ranking/init*', {
+            statusCode: 200,
+            body: {
+                seasonYear: 2026,
+                saved: null,
+            },
+        }).as('getDeferredRankingPredictionInit');
+
         cy.intercept('GET', '**/api/matches/*', (req) => {
             if (
                 req.url.includes('/api/matches/day')
@@ -174,7 +185,7 @@ describe('Prediction Ranking Deferred', () => {
         cy.contains('나의 예측 퍼포먼스').should('not.exist');
 
         cy.contains('button', '순위예측').click({ force: true });
-        cy.contains('나만의 드림팀 순위를 완성하고 친구들과 공유해보세요!').should('be.visible');
+        cy.contains('나만의 순위를 완성하고 저장한 뒤 친구들과 공유해보세요.').should('be.visible');
         assertChunkCounts((counts) => {
             expect(counts.rankingTab).to.be.greaterThan(0);
             expect(counts.rankingPrediction).to.be.greaterThan(0);
