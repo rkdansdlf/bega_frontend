@@ -695,9 +695,21 @@ describe('Landing hero and ticker foundation', () => {
     cy.viewport(1280, 900);
     visitLanding();
 
-    cy.getBySel('landing-closing-mascot')
-      .should('have.attr', 'loading', 'lazy')
-      .and('have.attr', 'decoding', 'async');
+    // Native loading="lazy" was replaced by an IntersectionObserver-driven
+    // reveal (see useLandingMotion.ts) so the fetch never starts before the
+    // visitor actually scrolls near the closing section.
+    cy.getBySel('landing-closing-mascot').should(($mascot) => {
+      expect($mascot.attr('decoding')).to.equal('async');
+      expect($mascot.attr('data-lazy-src')).to.be.a('string').and.not.be.empty;
+      expect($mascot.attr('src')).to.be.undefined;
+    });
+
+    cy.getBySel('landing-closing').scrollIntoView();
+
+    cy.getBySel('landing-closing-mascot').should(($mascot) => {
+      expect($mascot.attr('data-lazy-src')).to.be.undefined;
+      expect($mascot.attr('src')).to.be.a('string').and.not.be.empty;
+    });
   });
 
   it('maps light sections to dark surfaces without changing fixed palettes', () => {
