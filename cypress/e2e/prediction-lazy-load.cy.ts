@@ -613,7 +613,7 @@ describe('Prediction Lazy Load', () => {
         cy.wait('@getMatchDay');
 
         cy.get('[data-testid="prediction-empty-nearest-date-btn"]')
-            .should('contain', '가장 가까운 이전 경기 보기')
+            .should('contain', '이전 경기 결과 보기')
             .click({ force: true });
 
         cy.location('search').should('include', `date=${nearestPreviousDate}`);
@@ -994,7 +994,9 @@ describe('Prediction Lazy Load', () => {
             (win as PredictionDeferredIdleWindow).__flushPredictionDeferredWork?.();
         });
         cy.wait(100);
-        cy.get('@getManualRelayLiveSnapshotLazy.all').should('have.length', 1);
+        // Only /live-relay polling is suppressed by manual-data-required — the
+        // /live score snapshot is independent and keeps polling normally on
+        // every tick (including this focus-triggered one).
         cy.get('@getManualRelayLiveRelayLazy.all').should('have.length', 1);
     });
 
@@ -1041,7 +1043,13 @@ describe('Prediction Lazy Load', () => {
         }).as('getVoteStatusComboLazy');
 
         installMatchDayResponse(today, nextDate);
-        openPredictionPage('/prediction', 'getMatchDayForLazyEntry');
+        openPredictionPage('/prediction', 'getMatchDayForLazyEntry', (win) => {
+            // 이 테스트는 코치 브리핑/랭킹/AI 스트림 등 이전 단계에서 이미 200개 이상의
+            // 리소스를 로드해, 브라우저 기본 Resource Timing 버퍼(250)를 투표 시점에
+            // 거의 다 채운다. 버퍼가 가득 차면 이후 요청(ComboAnimation lazy chunk)이
+            // performance 엔트리에서 조용히 누락돼 카운트가 0으로 보인다.
+            win.performance.setResourceTimingBufferSize(2000);
+        });
 
         cy.get('[data-testid="prediction-match-preview-root"]').should('be.visible');
         cy.get('[data-testid="prediction-match-enter-detail-btn"]').first().click({ force: true });
@@ -1161,7 +1169,8 @@ describe('Prediction Lazy Load', () => {
         cy.get('[data-testid="prediction-date-game-item"]').should('not.exist');
         cy.get('[data-testid="prediction-schedule-match-row"]').should('have.length', 2);
         cy.get('[data-testid="prediction-match-enter-detail-btn"]').first().click({ force: true });
-        cy.location('search').should('include', 'gameId=20260203HHSS0').and('include', `date=${today}`);
+        cy.location('pathname').should('eq', '/prediction/matches/20260203HHSS0');
+        cy.location('search').should('include', `date=${today}`);
         cy.get('[data-testid="prediction-match-detail-root"]')
             .contains('삼성 라이온즈', { timeout: 15000 })
             .should('be.visible');
