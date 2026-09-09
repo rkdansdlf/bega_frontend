@@ -62,28 +62,6 @@ describe('Prediction status recovery', () => {
     (cy as any).mockAPI({ skipRankings: true });
     installPredictionAuthenticatedSessionIntercept('getPredictionSessionStatusRecovery');
 
-    cy.intercept('GET', '**/api/matches/day*', (req) => {
-      replyJson(req, {
-        date: targetDate,
-        games: [
-          {
-            gameId: targetGameId,
-            gameDate: targetDate,
-            homeTeam: 'SSG',
-            awayTeam: 'KIA',
-            stadium: '문학',
-            homeScore: null,
-            awayScore: null,
-            winner: null,
-          },
-        ],
-        prevDate: null,
-        nextDate: null,
-        hasPrev: false,
-        hasNext: false,
-      });
-    }).as('getScheduleDay');
-
     cy.intercept('GET', '**/api/matches/bounds*', (req) => {
       replyJson(req, {
         hasData: true,
@@ -91,6 +69,55 @@ describe('Prediction status recovery', () => {
         latestGameDate: targetDate,
       });
     }).as('getMatchBounds');
+
+    // 예측 페이지가 특정 gameId로 딥링크 진입할 때는 /api/matches/day가 아니라
+    // 스케줄+상세를 한 번에 내려주는 /api/predictions/bootstrap을 쓴다.
+    // 이 테스트는 초기 로드부터 이닝 스코어 데이터가 있어야 하므로 detail을
+    // bootstrap 응답에 바로 포함시킨다.
+    cy.intercept('GET', '**/api/predictions/bootstrap*', (req) => {
+      replyJson(req, {
+        schedule: {
+          date: targetDate,
+          games: [
+            {
+              gameId: targetGameId,
+              gameDate: targetDate,
+              homeTeam: 'SSG',
+              awayTeam: 'KIA',
+              stadium: '문학',
+              homeScore: null,
+              awayScore: null,
+              winner: null,
+            },
+          ],
+          prevDate: null,
+          nextDate: null,
+          hasPrev: false,
+          hasNext: false,
+        },
+        selectedGameId: targetGameId,
+        selectedGameFound: true,
+        detail: {
+          ok: true,
+          error: null,
+          data: {
+            gameId: targetGameId,
+            gameDate: targetDate,
+            homeTeam: 'SSG',
+            awayTeam: 'KIA',
+            stadium: '문학',
+            startTime: '14:00:00',
+            gameStatus: 'SCHEDULED',
+            gameStatusKr: '경기 시작 예정',
+            homeScore: null,
+            awayScore: null,
+            inningScores,
+            summary: [],
+          },
+        },
+        voteStatus: null,
+      });
+    }).as('getScheduleDay');
 
     cy.intercept('GET', '**/api/matches/*', (req) => {
       if (
@@ -164,8 +191,9 @@ describe('Prediction status recovery', () => {
     });
 
     cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
+    // detail이 bootstrap 응답에 이미 포함되어 있어 별도 /api/matches/{id}
+    // 조회(getGameDetail)는 일어나지 않는다.
     cy.wait('@getScheduleDay');
-    cy.wait('@getGameDetail');
 
     cy.get('body').then(($body) => {
       const detailButton = [...$body.find('button')].find((button) => (
