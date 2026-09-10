@@ -1798,7 +1798,12 @@ describe('Cheer 커뮤니티 결함 해결 검증', () => {
     });
 
     it('11) 추가 로딩 중 새 글 polling 배너가 떠도 하단 로더를 remount하지 않는다', () => {
-        cy.clock(Date.now());
+        // 세 번째 인자(오버라이드 범위) 없이 cy.clock()을 걸면 기본으로
+        // requestAnimationFrame까지 가짜로 교체된다. main.tsx의 초기 부트
+        // 경로(waitForPerformanceStyles 안의 중첩 requestAnimationFrame 체인)가
+        // 여기 걸려 React 마운트 자체가 멈추는 것을 직접 재현 확인했다 — 이
+        // 파일의 다른 통과하는 테스트들처럼 Date/setTimeout으로 범위를 좁힌다.
+        cy.clock(Date.now(), ['Date', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval']);
         cy.mockAPI();
         stubAuthProfile('ROLE_USER');
 
@@ -1842,7 +1847,11 @@ describe('Cheer 커뮤니티 결함 해결 검증', () => {
             number: pageNumber,
         });
 
-        cy.intercept('GET', /\/api\/cheer\/posts(?:\?|$)/, (req) => {
+        // 이 파일의 다른 요청 인터셉트와 동일하게 glob 패턴을 쓴다(원래는
+        // 정규식이었는데, 아래 cy.clock() 범위 문제를 디버깅하며 함께
+        // 바꿨다 — 정규식 자체가 매치 실패의 원인이었는지는 확정하지 못했지만
+        // glob이 이 파일의 다른 20개 테스트와 스타일이 일관되고 검증도 됐다).
+        cy.intercept('GET', '**/api/cheer/posts?*', (req) => {
             const url = new URL(req.url);
             const pageNumber = Number(url.searchParams.get('page') || '0');
             req.alias = `getCheerPostsPage${pageNumber}`;
@@ -1861,7 +1870,12 @@ describe('Cheer 커뮤니티 결함 해결 검증', () => {
                 statusCode: 200,
                 body: {
                     newCount: postChangesCalls === 1 ? 0 : 3,
-                    latestId: 99,
+                    // 두 번째(polling) 응답의 latestId가 첫 번째와 같은 고정값(99)이면
+                    // CheerFeedRuntimeContent.tsx의 커서 역행 방지 로직
+                    // (appliedCursor <= lastAppliedCursor면 무시)이 이를 "새 글 없음"
+                    // 으로 판단해 새 글 배너를 절대 띄우지 않는다 — mock 데이터가
+                    // 실제로 진행되는 폴링을 표현하려면 값이 증가해야 한다.
+                    latestId: postChangesCalls === 1 ? 99 : 102,
                 },
             });
         });
@@ -1877,6 +1891,9 @@ describe('Cheer 커뮤니티 결함 해결 검증', () => {
         // ticked. Nudge the frozen clock before waiting for the page-0 request.
         cy.tick(100);
         cy.wait('@getCheerPostsPage0');
+        // 응답을 받은 뒤 React가 실제로 state를 커밋(리렌더링)하는 것도
+        // setTimeout 기반 스케줄링에 걸려 있어 한 번 더 틱해야 반영된다.
+        cy.tick(0);
         cy.contains('무한스크롤 피드 1').should('be.visible');
         // Second tick: React state has now committed (latestVisiblePostId set), fires poll with enabled=true.
         cy.tick(100);
