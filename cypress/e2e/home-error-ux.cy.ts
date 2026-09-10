@@ -765,10 +765,29 @@ describe('Home error UX', () => {
   });
 
   it('shows soft timeout fallback before slower delayed bootstrap recovers', () => {
-    cy.intercept('GET', '**/api/home/bootstrap*', {
-      delay: 7000,
-      statusCode: 200,
-      body: buildBootstrapResponse('2026-03-16', '2026-03-15', '2026-03-17'),
+    // 앱의 소프트타임아웃(HOME_BOOTSTRAP_SOFT_FALLBACK_DELAY_MS=6000, HomeRuntime.tsx)과
+    // 요청 타임아웃(HOME_BOOTSTRAP_REQUEST_TIMEOUT_MS=8000, httpClientCore.ts) 사이
+    // 실제 여유는 2000ms뿐이다 — 후자는 AbortSignal.timeout() 기반이라 cy.clock()으로도
+    // 못 늦춘다(httpClientCore.ts의 주석 참고). 고정 delay로 응답을 늦추면, 이 파일 20개
+    // 테스트를 순차 실행한 뒤 dev 서버/네트워크 자체가 느려지는 상황(getHomeWidgets조차
+    // 인위적 지연이 없는데 실측 8000ms 가까이 걸리는 걸 트레이싱으로 직접 확인했다)에서
+    // 이 마진이 쉽게 잡아먹혀 배너가 뜨기도 전에 cy.wait가 그 시점을 지나쳐버린다.
+    // 그래서 고정 delay 대신 응답을 게이트로 잡아뒀다가, 소프트타임아웃 배너가 뜬 걸
+    // 직접 확인한 직후에만 풀어준다 — 레이스 자체를 없애고, 배너가 자연히 뜨는 시점
+    // (~6000ms, 페이지 자체의 setTimeout이라 dev 서버 혼잡과 무관하게 안정적)과 거의
+    // 동시에 응답을 보내 8000ms 타임아웃 안에 항상 여유 있게 들어오게 한다.
+    let releaseBootstrapResponse: (() => void) | undefined;
+    const bootstrapResponseGate = new Promise<void>((resolve) => {
+      releaseBootstrapResponse = resolve;
+    });
+    cy.intercept('GET', '**/api/home/bootstrap*', (req) => {
+      req.reply(async (res) => {
+        await bootstrapResponseGate;
+        res.send({
+          statusCode: 200,
+          body: buildBootstrapResponse('2026-03-16', '2026-03-15', '2026-03-17'),
+        });
+      });
     }).as('getHomeBootstrapDelayedSoftFallback');
 
     cy.intercept('GET', '**/api/home/widgets*', {
@@ -812,13 +831,14 @@ describe('Home error UX', () => {
     });
 
     cy.wait('@getHomeWidgets');
-    cy.get('[data-testid="home-global-recovery"]', { timeout: 6500 }).should('be.visible');
+    cy.get('[data-testid="home-global-recovery"]', { timeout: 15000 }).should('be.visible');
     cy.contains('서비스 연결을 확인하지 못했습니다').should('be.visible');
     cy.contains('경기가 없는 날입니다.').should('be.visible');
     cy.get('@getLegacyLeagueDates.all').should('have.length', 0);
     cy.get('@getLegacyNavigation.all').should('have.length', 0);
     cy.get('@getLegacyScheduleDelayed.all').should('have.length', 0);
     cy.get('@legacyRankingsShouldNotRun.all').should('have.length', 0);
+    cy.then(() => releaseBootstrapResponse?.());
     cy.wait('@getHomeBootstrapDelayedSoftFallback');
     cy.get('[data-testid="home-global-recovery"]').should('not.exist');
     cy.get('@getHomeBootstrapDelayedSoftFallback.all').should('have.length', 1);
