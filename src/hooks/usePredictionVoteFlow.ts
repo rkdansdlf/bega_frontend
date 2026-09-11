@@ -18,6 +18,7 @@ import {
   getPredictionRetryDelayMs,
   increasePredictionRetryAttempt,
   isPredictionRunSessionStale,
+  isPredictionRunSessionTooFreshToRestore,
   parsePredictionRunSession,
   readPredictionRunSession,
   resetPredictionRetryAttempt,
@@ -1046,6 +1047,16 @@ export const usePredictionVoteFlow = ({
           goToPredictionRecovery({ currentGameId: parsedSession.gameId });
         },
       });
+      return;
+    }
+
+    // 방금(같은 렌더 사이클의 executeVote/executeCancelVote 호출)이 쓴 세션이라면
+    // 복원 대상이 아니라 지금 막 시작된 자기 자신의 실행이다. runInProgressRef를
+    // 갱신하는 별도 effect가 React 18 배치 렌더링에서 이 mount effect와 함께
+    // 재실행될 때, stale 클로저가 그 ref를 일시적으로 false로 되돌리는 순간과 겹치면
+    // 위 가드(runInProgressRef.current)를 우회해 여기까지 들어올 수 있다 — 그 레이스가
+    // 실제로 executeVote 시작 직후 재현됨을 확인했다. startedAt 신선도로 한 번 더 막는다.
+    if (isPredictionRunSessionTooFreshToRestore(parsedSession.startedAt)) {
       return;
     }
 

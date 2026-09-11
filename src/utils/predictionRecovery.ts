@@ -1,6 +1,7 @@
 export const PREDICTION_NETWORK_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
 export const PREDICTION_NETWORK_RETRY_MAX_ATTEMPTS = PREDICTION_NETWORK_RETRY_DELAYS_MS.length;
 export const PREDICTION_RUN_SESSION_TTL_MS = 120_000;
+export const PREDICTION_RUN_SESSION_MIN_RESTORE_AGE_MS = 1_500;
 export const PREDICTION_RUN_SESSION_STORAGE_KEY = 'prediction:run-session:v1';
 export const LEGACY_PREDICTION_RUN_SESSION_STORAGE_KEY = 'prediction:run-session';
 export const PREDICTION_RUN_SESSION_EVENT = 'prediction:run-session-updated';
@@ -96,6 +97,27 @@ export const isPredictionRunSessionStale = (
     return true;
   }
   return elapsed > ttlMs;
+};
+
+// 세션이 방금(같은 렌더 사이클의 executeVote/executeCancelVote 호출) 쓰여진 것인지
+// 구분한다. 복원은 페이지가 실제로 새로고침/탭 전환된 뒤 남겨진 세션을 대상으로 하는
+// 기능이라, 그런 경우 startedAt은 항상 "지금"보다 최소 수백ms~수초 이전이다. 반면
+// runInProgressRef를 갱신하는 effect가 React 18 배치 렌더링에서 mount effect와 함께
+// 재실행되며 restoreRunSession이 곧바로 호출되면 startedAt이 거의 "지금"과 같다 —
+// 이 경우는 복원 대상이 아니라 지금 막 시작된 자기 자신의 실행이므로 건드리면 안 된다.
+export const isPredictionRunSessionTooFreshToRestore = (
+  startedAt: number,
+  nowMs: number = Date.now(),
+  minAgeMs: number = PREDICTION_RUN_SESSION_MIN_RESTORE_AGE_MS
+): boolean => {
+  if (!Number.isFinite(startedAt) || startedAt <= 0) {
+    return false;
+  }
+  const elapsed = nowMs - startedAt;
+  if (!Number.isFinite(elapsed)) {
+    return false;
+  }
+  return elapsed < minAgeMs;
 };
 
 export const parsePredictionRunSession = (rawValue: string | null): PredictionRunSessionV1 | null => {
