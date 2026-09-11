@@ -51,6 +51,7 @@ const EXPECTED_INTERACTION_ACTIONS = {
   'focus-visible': 'focus-visible',
   pressed: 'pressed',
   open: 'click',
+  retry: 'click',
   selected: 'click',
   input: 'fill',
   change: ['press-key', 'select-option'],

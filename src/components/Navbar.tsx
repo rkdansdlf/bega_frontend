@@ -150,6 +150,9 @@ export default function Navbar(props: NavbarProps) {
   const menuToggleButtonClass = 'relative inline-flex h-11 w-11 shrink-0 transform-gpu items-center justify-center rounded-full p-0 transition-all duration-[220ms] ease-out motion-safe:hover:-translate-y-0.5 motion-safe:focus-visible:-translate-y-0.5 motion-reduce:transform-none focus:outline-none';
   const navIconToggleClass = `${navIconButtonClass} focus-visible:ring-2 focus-visible:ring-primary/50 text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8`;
   const navIconSizeClass = 'h-5 w-5';
+  const navIconButtonStyle: CSSProperties = { height: 44, width: 44, minHeight: 44, minWidth: 44, padding: 10, flexShrink: 0 };
+  const menuToggleButtonStyle: CSSProperties = { height: 44, width: 44, minHeight: 44, minWidth: 44, flexShrink: 0 };
+  const navIconSizeStyle: CSSProperties = { height: 24, width: 24 };
   const navItems = NAVBAR_NAV_ITEMS;
   const isNavItemActive = (id: NavbarNavItemId) => {
     return isNavbarNavItemActive(id, location.pathname);
@@ -422,7 +425,7 @@ export default function Navbar(props: NavbarProps) {
       <div
         data-testid="navbar-capsule"
         className={cn(
-          'relative flex h-12 items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] md:left-1/2 md:grid md:h-[var(--navbar-capsule-height)] md:w-[var(--navbar-capsule-width)] md:max-w-[calc(100vw-1rem)] md:grid-cols-navbar-capsule md:items-center md:gap-[var(--navbar-capsule-gap)] md:-translate-x-1/2 md:px-[var(--navbar-capsule-px)]',
+          'navbar-capsule-mobile relative flex h-12 flex-wrap items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] md:left-1/2 md:grid md:h-[var(--navbar-capsule-height)] md:w-[var(--navbar-capsule-width)] md:max-w-[calc(100vw-1rem)] md:grid-cols-navbar-capsule md:items-center md:gap-[var(--navbar-capsule-gap)] md:-translate-x-1/2 md:px-[var(--navbar-capsule-px)]',
           capsuleGlass,
         )}
         style={capsuleStyle}
@@ -431,12 +434,12 @@ export default function Navbar(props: NavbarProps) {
         <Link
           to="/home"
           aria-label="BEGA 홈"
-          className="flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
+          className="navbar-home-link flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
         >
           <img
             src={baseballLogo}
             alt=""
-            className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
+            className="navbar-logo-image w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
           />
           <div className="flex flex-col items-start leading-none">
             <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
@@ -505,7 +508,7 @@ export default function Navbar(props: NavbarProps) {
         {/* 3. 우측 컨트롤 */}
         <div
           data-testid="navbar-right-controls"
-          className="flex min-w-0 items-center justify-self-end"
+          className="flex min-w-0 flex-wrap items-center justify-self-end"
           style={rightControlsStyle}
         >
           {shouldShowTopThemeToggle && (
@@ -513,7 +516,7 @@ export default function Navbar(props: NavbarProps) {
           )}
 
           {shouldShowDesktopNotificationButton && (
-            <NavbarNotificationControls buttonClassName={navIconToggleClass} />
+              <NavbarNotificationControls buttonClassName={navIconToggleClass} buttonStyle={navIconButtonStyle} iconStyle={navIconSizeStyle} />
           )}
 
           {authenticatedShell && isLoggedIn && isDesktop && (
@@ -522,9 +525,10 @@ export default function Navbar(props: NavbarProps) {
               aria-label="메시지 함"
               onClick={() => navigate('/messages')}
               className={`${navIconToggleClass} relative`}
+              style={navIconButtonStyle}
               data-testid="navbar-dm-icon"
             >
-              <MessageSquareIcon className={navIconSizeClass} />
+              <MessageSquareIcon className={navIconSizeClass} style={navIconSizeStyle} />
               {dmUnreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 inline-flex min-w-[16px] h-4 items-center justify-center rounded-full bg-red-600 px-1 text-10 font-bold leading-none text-white">
                   {dmUnreadCount > 99 ? '99+' : dmUnreadCount}
@@ -553,6 +557,8 @@ export default function Navbar(props: NavbarProps) {
               {shouldShowMobileNotificationButton && (
                 <NavbarNotificationControls
                   buttonClassName={navIconToggleClass}
+                  buttonStyle={navIconButtonStyle}
+                  iconStyle={navIconSizeStyle}
                   onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
                   openOverride={visualQaStateOverride ? false : undefined}
                   panelContentOverride={visualQaStateOverride ? <div /> : undefined}
@@ -565,9 +571,10 @@ export default function Navbar(props: NavbarProps) {
                   aria-label="메시지 함"
                   onClick={() => navigate('/messages')}
                   className={`${navIconToggleClass} relative`}
+                  style={navIconButtonStyle}
                   data-testid="navbar-dm-icon"
                 >
-                  <MessageSquareIcon className={navIconSizeClass} />
+                  <MessageSquareIcon className={navIconSizeClass} style={navIconSizeStyle} />
                   {dmUnreadCount > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 inline-flex min-w-[16px] h-4 items-center justify-center rounded-full bg-red-600 px-1 text-10 font-bold leading-none text-white">
                       {dmUnreadCount > 99 ? '99+' : dmUnreadCount}
@@ -585,13 +592,14 @@ export default function Navbar(props: NavbarProps) {
                     ? 'text-gray-900 dark:text-white'
                     : 'text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white',
                 )}
+                style={menuToggleButtonStyle}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
                 aria-expanded={isMenuOpen}
                 aria-controls={shouldShowMobileMenuThemeToggle ? 'mobile-menu-popup' : undefined}
                 data-testid={import.meta.env.DEV ? 'navbar-menu-toggle' : undefined}
               >
-                {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" /> : <MenuIcon className="w-6 h-6" />}
+                {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" style={navIconSizeStyle} /> : <MenuIcon className="w-6 h-6" style={navIconSizeStyle} />}
               </button>
             </>
           )}

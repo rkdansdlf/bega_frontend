@@ -41,6 +41,20 @@ const ISSUE_META = {
     likelyCause: '모바일에서 데스크톱 크기의 fixed/sticky 요소를 그대로 사용',
     suggestedFix: '모바일 크기를 축소하고 가장자리 위치, safe-area, 닫기 동작을 확인하세요.',
   },
+  'focus-obscured': {
+    severity: 'major',
+    confidence: 0.97,
+    description: '키보드 포커스가 고정 요소에 완전히 가려져 현재 위치를 확인하거나 사용할 수 없습니다.',
+    likelyCause: '고정 헤더·하단 내비게이션과 포커스 이동 시 여백 또는 scroll-padding 부족',
+    suggestedFix: '포커스 위치를 고정 요소 밖으로 스크롤하고 scroll-padding 또는 safe-area 여백을 확보하세요.',
+  },
+  'focus-partially-obscured': {
+    severity: 'minor',
+    confidence: 0.82,
+    description: '키보드 포커스 영역의 일부가 고정 요소에 가려질 가능성이 있습니다.',
+    likelyCause: '고정 헤더·하단 내비게이션과 포커스 이동 시 여백 부족',
+    suggestedFix: '부분 가림을 허용할지 확인하고 scroll-padding 또는 safe-area 여백을 조정하세요.',
+  },
 };
 
 const round = (value, digits = 2) => Number(Number(value).toFixed(digits));
@@ -61,6 +75,10 @@ const evidenceFor = (type, entry) => {
       return `${entry.relatedSelector}와의 간격이 ${round(entry.gapPx)}px입니다.`;
     case 'viewport-obstruction':
       return `뷰포트 면적의 ${Math.round(entry.viewportAreaRatio * 100)}%를 차지합니다.`;
+    case 'focus-obscured':
+      return `${entry.selector}가 ${entry.relatedSelector}(${entry.obstructionPosition ?? 'fixed'})에 완전히 가려졌습니다. 포커스 영역 ${Math.round(entry.coveredRatio * 100)}%; 판정 방식 ${entry.coverageMethod ?? 'sample-points'}입니다. 대상 ${Math.round(entry.focusRect.width)}×${Math.round(entry.focusRect.height)}px, 가림 요소 ${Math.round(entry.obstructionRect.width)}×${Math.round(entry.obstructionRect.height)}px입니다.`;
+    case 'focus-partially-obscured':
+      return `${entry.selector}의 포커스 영역 일부가 ${entry.relatedSelector}(${entry.obstructionPosition ?? 'fixed'})에 가려졌습니다. 사각형 합집합 기준 ${Math.round(entry.coveredRatio * 100)}%, 표본 기준 ${Math.round((entry.sampleCoverageRatio ?? 0) * 100)}%입니다.`;
     default:
       return '';
   }
@@ -79,6 +97,8 @@ const entriesFor = (measurement, type) => {
   if (type === 'small-touch-target') return measurement.smallTargets ?? [];
   if (type === 'crowded-controls') return measurement.crowdedControls ?? [];
   if (type === 'viewport-obstruction') return measurement.fixedObstructions ?? [];
+  if (type === 'focus-obscured') return measurement.focusObscured ?? [];
+  if (type === 'focus-partially-obscured') return measurement.focusPartiallyObscured ?? [];
   return [];
 };
 

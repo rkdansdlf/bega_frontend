@@ -20,9 +20,9 @@ test('plain dialog bounds every placement to the dynamic mobile viewport', async
 test('plain dialog keeps long header copy and the close control in separate bounds', async () => {
   const source = await readSource();
 
-  assert.match(source, /\[overflow-wrap:anywhere\]/);
-  assert.match(source, /min-h-0 max-h-\[calc\(35dvh-2rem\)\] min-w-0 overflow-y-auto/);
-  assert.match(source, /shrink-0 p-0/);
+  assert.match(source, /overflowWrap: 'break-word'/);
+  assert.match(source, /min-h-0 max-h-\[calc\(35dvh-2rem\)\] min-w-0 flex-1 overflow-y-auto/);
+  assert.match(source, /absolute right-5 top-4 shrink-0 p-0/);
   assert.match(source, /aria-label="닫기"/);
   assert.match(source, /initialFocus\?: 'container' \| 'first'/);
   assert.match(source, /useFocusTrap\(dialogRef, \{ active: open, initialFocus \}\)/);
@@ -41,5 +41,5 @@ test('plain dialog accepts inline scroll padding for fixed-footer forms', async 
 
   assert.match(source, /bodyStyle\?: CSSProperties/);
   assert.match(source, /^  bodyStyle,$/m);
-  assert.match(source, /style=\{bodyStyle\}/);
+  assert.match(source, /style=\{\{ \...\(placement === 'right' \? \{\} : \{ padding: 20 \}\), \...bodyStyle \}\}/);
 });

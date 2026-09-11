@@ -47,8 +47,119 @@ try {
     new Set([entry.selector, entry.relatedSelector]).has('#crowd-a')
     && new Set([entry.selector, entry.relatedSelector]).has('#crowd-b')
   )));
-  assert.ok(measurement.fixedObstructions.some((entry) => entry.selector === '#sticky'));
+  // A sticky element that remains in normal flow is intentional reflow, not
+  // a viewport obstruction. Fixed layers are covered by the assertions below.
+  assert.equal(measurement.fixedObstructions.some((entry) => entry.selector === '#sticky'), false);
   assert.equal(measurement.smallTargets.some((entry) => entry.selector === '#remember'), false);
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+    </style>
+    <button id="focus-target">포커스 대상</button>
+  `);
+  await page.locator('#focus-target').focus();
+  const unobscuredFocusMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(unobscuredFocusMeasurement.focusObscured.length, 0);
+
+  await page.evaluate(() => {
+    const header = document.createElement('header');
+    header.id = 'focus-header';
+    header.textContent = '고정 헤더';
+    header.style.cssText = 'position:fixed;z-index:10;inset:0 0 auto;height:64px;background:white;';
+    document.body.append(header);
+  });
+  const obscuredFocusMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(obscuredFocusMeasurement.focusObscured.length, 1);
+  assert.equal(obscuredFocusMeasurement.focusObscured[0].selector, '#focus-target');
+  assert.equal(obscuredFocusMeasurement.focusObscured[0].relatedSelector, '#focus-header');
+  assert.equal(obscuredFocusMeasurement.focusObscured[0].coveredRatio, 1);
+
+  await page.locator('#focus-header').evaluate((element) => element.remove());
+  const restoredFocusMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(restoredFocusMeasurement.focusObscured.length, 0);
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+      #focus-pointer-none { position: fixed; z-index: 10; inset: 0 0 auto; height: 64px; background: white; pointer-events: none; }
+    </style>
+    <button id="focus-target">포인터 이벤트가 없어도 가려진 버튼</button>
+    <header id="focus-pointer-none">시각적으로 불투명한 고정 헤더</header>
+  `);
+  await page.locator('#focus-target').focus();
+  const pointerEventsNoneMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(pointerEventsNoneMeasurement.focusObscured.length, 1);
+  assert.equal(pointerEventsNoneMeasurement.focusObscured[0].relatedSelector, '#focus-pointer-none');
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+      #focus-transparent { position: fixed; z-index: 10; inset: 0 0 auto; height: 64px; background: white; opacity: 0; }
+    </style>
+    <button id="focus-target">투명 레이어 아래 버튼</button>
+    <header id="focus-transparent">투명 고정 헤더</header>
+  `);
+  await page.locator('#focus-target').focus();
+  const transparentMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(transparentMeasurement.focusObscured.length, 0);
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+      #focus-partial { position: fixed; z-index: 10; left: 16px; top: 8px; width: 40px; height: 44px; background: white; }
+    </style>
+    <button id="focus-target">일부만 가려진 버튼</button>
+    <div id="focus-partial"></div>
+  `);
+  await page.locator('#focus-target').focus();
+  const partialMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(partialMeasurement.focusObscured.length, 0);
+  assert.equal(partialMeasurement.focusPartiallyObscured.length, 1);
+  assert.ok(partialMeasurement.focusPartiallyObscured[0].coveredRatio > 0);
+  assert.ok(partialMeasurement.focusPartiallyObscured[0].coveredRatio < 1);
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+      #focus-sample-a, #focus-sample-b, #focus-sample-c, #focus-sample-d, #focus-sample-e {
+        position: fixed; z-index: 10; width: 8px; height: 8px; background: white;
+      }
+      #focus-sample-a { left: 72px; top: 26px; }
+      #focus-sample-b { left: 20px; top: 12px; }
+      #focus-sample-c { left: 124px; top: 12px; }
+      #focus-sample-d { left: 20px; top: 40px; }
+      #focus-sample-e { left: 124px; top: 40px; }
+    </style>
+    <button id="focus-target">표본 지점만 가려진 버튼</button>
+    <div id="focus-sample-a"></div><div id="focus-sample-b"></div><div id="focus-sample-c"></div>
+    <div id="focus-sample-d"></div><div id="focus-sample-e"></div>
+  `);
+  await page.locator('#focus-target').focus();
+  const sampleOnlyMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(sampleOnlyMeasurement.focusObscured.length, 0);
+  assert.equal(sampleOnlyMeasurement.focusPartiallyObscured.length, 1);
+
+  await page.setContent(`
+    <style>
+      body { margin: 0; }
+      #focus-target { position: absolute; top: 8px; left: 16px; width: 120px; height: 44px; }
+      #focus-union-a, #focus-union-b { position: fixed; z-index: 10; top: 8px; height: 44px; background: white; }
+      #focus-union-a { left: 16px; width: 64px; }
+      #focus-union-b { left: 80px; width: 56px; }
+    </style>
+    <button id="focus-target">여러 덮개가 합쳐진 버튼</button>
+    <div id="focus-union-a"></div><div id="focus-union-b"></div>
+  `);
+  await page.locator('#focus-target').focus();
+  const unionMeasurement = await page.evaluate(VISUAL_QA_PROBE);
+  assert.equal(unionMeasurement.focusObscured.length, 1);
+  assert.equal(unionMeasurement.focusObscured[0].coveredRatio, 1);
 
   await page.setContent(`
     <style>

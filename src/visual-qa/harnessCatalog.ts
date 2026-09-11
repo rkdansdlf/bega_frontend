@@ -93,7 +93,7 @@ type StateManifestEntry = {
     targets?: Array<InteractionTarget>;
   }>;
   constraints?: Array<{
-    excludeWhen: Record<string, string>;
+    excludeWhen: Record<string, string | string[]>;
   }>;
 };
 
@@ -341,11 +341,12 @@ const expandStateCombinations = (entry: StateManifestEntry) => {
     })));
   }
   return combinations.filter(({ states, variants }) => !(entry.constraints ?? [])
-    .some(({ excludeWhen }) => Object.entries(excludeWhen).every(([key, value]) => (
-      key.startsWith('variant.')
-        ? variants[key.slice('variant.'.length)] === value
-        : states[key as keyof ComponentStateValues] === value
-    )))).flatMap((combination) => expandInteractionTargets(entry, combination));
+    .some(({ excludeWhen }) => Object.entries(excludeWhen).every(([key, value]) => {
+      const actual = key.startsWith('variant.')
+        ? variants[key.slice('variant.'.length)]
+        : states[key as keyof ComponentStateValues];
+      return (Array.isArray(value) ? value : [value]).includes(actual ?? '');
+    }))).flatMap((combination) => expandInteractionTargets(entry, combination));
 };
 
 const classificationsById = new Map(

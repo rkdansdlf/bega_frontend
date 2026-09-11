@@ -64,6 +64,17 @@ export const AUTHED_ROUTES = [
 
 export const DEFAULT_ROUTES = [...PUBLIC_ROUTES, ...AUTHED_ROUTES];
 
+// Match API pathnames only. A broad `**/api/**` matcher also catches Vite
+// source modules such as `/src/api/homeCore.ts`, which turns a logged-out
+// route into the generic error boundary before its form can be measured.
+export const isApiRequestUrl = (requestUrl, allowedOrigin) => {
+  const url = requestUrl instanceof URL ? requestUrl : new URL(requestUrl);
+  if (allowedOrigin !== undefined && url.origin !== (allowedOrigin instanceof URL
+    ? allowedOrigin.origin
+    : new URL(allowedOrigin).origin)) return false;
+  return /^\/api(?:\/|$)/.test(url.pathname);
+};
+
 /**
  * The synthetic profile the stubbed `/auth/mypage` returns. Mirrors the fixture
  * cypress/support/commands.ts uses, so both harnesses drive the same shape.
@@ -332,11 +343,11 @@ export const settle = async (page) => {
  *
  * Set REFLOW_ALLOW_API=1 to run against a real backend instead.
  */
-export const stubApi = async (context) => {
+export const stubApi = async (context, { allowedOrigin } = {}) => {
   // Order matters: Playwright gives precedence to the most recently registered
   // matching handler, so the catch-all has to be registered *before* the
   // specific one or it swallows it.
-  await context.route('**/api/**', (route) => route.fulfill({
+  await context.route((requestUrl) => isApiRequestUrl(requestUrl, allowedOrigin), (route) => route.fulfill({
     status: 503,
     contentType: 'application/json',
     body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
@@ -345,7 +356,7 @@ export const stubApi = async (context) => {
   // after the catch-all so it wins, and before the profile stub so that one
   // still wins over this. Anything without a fixture keeps its 503, so empty
   // states stay covered too.
-  await context.route('**/api/**', (route) => {
+  await context.route((requestUrl) => isApiRequestUrl(requestUrl, allowedOrigin), (route) => {
     const fixture = findFixture(route.request().url());
     if (!fixture) return route.fallback();
     let pagePathname = '';
@@ -363,7 +374,11 @@ export const stubApi = async (context) => {
   // authStore bootstraps the session from this call; a 503 here bounces every
   // protected route to /login. This is a synthetic client-side session — no
   // account and no credentials — the same thing cy.login() does for Cypress.
-  await context.route('**/api/auth/mypage*', (route) => route.fulfill({
+  await context.route((requestUrl) => {
+    const url = requestUrl instanceof URL ? requestUrl : new URL(requestUrl);
+    return isApiRequestUrl(requestUrl, allowedOrigin)
+      && /^\/api\/auth\/mypage(?:\/|\?|$)/.test(url.pathname + url.search);
+  }, (route) => route.fulfill({
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify({ success: true, data: AUDIT_USER }),
@@ -387,7 +402,7 @@ export const runReflowAudit = async ({
   const results = [];
   try {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
-    if (!allowApi) await stubApi(context);
+    if (!allowApi) await stubApi(context, { allowedOrigin: new URL(baseUrl).origin });
     // ProtectedRoute only attempts the profile bootstrap when this hint is set;
     // without it the guard redirects to /login before rendering anything.
     await context.addInitScript(() => {
@@ -401,7 +416,7 @@ export const runReflowAudit = async ({
     // Visited without the stubbed session, or PublicOnlyAuthRoute bounces them.
     const loggedOutContext = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
     if (!allowApi) {
-      await loggedOutContext.route('**/api/**', (route) => route.fulfill({
+      await loggedOutContext.route((requestUrl) => isApiRequestUrl(requestUrl, new URL(baseUrl).origin), (route) => route.fulfill({
         status: 503,
         contentType: 'application/json',
         body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),

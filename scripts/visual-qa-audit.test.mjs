@@ -43,6 +43,8 @@ test('default state coverage opens non-route UI surfaces at their responsive wid
       { id: 'mate-filter-sheet', route: '/mate', minWidth: 320, maxWidth: 1023 },
       { id: 'mypage-ticket-upload', route: '/mypage', minWidth: 320, maxWidth: 1440 },
       { id: 'authenticated-chatbot', route: '/mypage', minWidth: 320, maxWidth: 1440 },
+      { id: 'stadium-seat-map-route', route: '/stadium', minWidth: 320, maxWidth: 390 },
+      { id: 'mypage-stats-tab-route', route: '/mypage', minWidth: 320, maxWidth: 390 },
     ],
   );
   for (const state of DEFAULT_STATE_SCENARIOS) {
@@ -60,8 +62,8 @@ test('scenario expansion combines every route-width pair with applicable interac
   const stateRuns = runs.filter((run) => run.state !== null);
 
   assert.equal(routeRuns.length, 33 * 14);
-  assert.equal(stateRuns.length, 51);
-  assert.equal(runs.length, 513);
+  assert.equal(stateRuns.length, 57);
+  assert.equal(runs.length, 519);
   assert.ok(stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 834));
   assert.ok(!stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 1024));
   assert.ok(!stateRuns.some((run) => run.state.id === 'public-mobile-menu' && run.width === 768));
@@ -83,6 +85,8 @@ test('parameterized detail routes render populated UI instead of only error fall
     ['http://audit.local/api/chat/party/1?limit=50', 'mate chat messages'],
     ['http://audit.local/api/cheer/posts/1', 'cheer post detail'],
     ['http://audit.local/api/users/profile/testuser', 'public profile'],
+    ['http://audit.local/api/stadiums', 'stadium guide list'],
+    ['http://audit.local/api/diary/statistics', 'my page diary statistics'],
   ];
 
   for (const [url, expectedName] of cases) {
@@ -386,6 +390,12 @@ test('probe keeps late DOM controls and fixed-to-content overlap in scope', () =
   assert.doesNotMatch(source, /\.slice\(0,\s*140\)/);
   assert.doesNotMatch(source, /Boolean\(firstFixedLayer\)\s*!==\s*Boolean\(secondFixedLayer\)/);
   assert.match(source, /rect\.width < 40 \|\| rect\.height < 40/);
+  assert.match(source, /focusObscured/);
+  assert.match(source, /focusPartiallyObscured/);
+  assert.match(source, /elementFromPoint/);
+  assert.match(source, /rectUnionRatio/);
+  assert.match(source, /pointerEvents/);
+  assert.match(source, /Sticky headers remain in normal document flow/);
 });
 
 test('report failure policy keeps human-review mode non-blocking but never hides scan errors', () => {

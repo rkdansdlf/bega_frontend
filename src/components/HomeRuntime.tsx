@@ -41,6 +41,7 @@ import HomeRecoveryBanner from './home/HomeRecoveryBanner';
 import {
     MANUAL_BASEBALL_DATA_REQUIRED_CODE,
 } from '../utils/manualBaseballDataContract';
+import './HomeRuntime.css';
 
 const homeMatchPanelModulePromise = import('./home/HomeMatchPanel');
 const LazyHomeDeferredSurfaces = lazy(() => import('./home/HomeDeferredSurfaces'));
@@ -48,6 +49,9 @@ const LazyHomeMatchPanel = lazy(() => homeMatchPanelModulePromise);
 
 const HOME_FIRST_CARD_READY_EVENT = 'bega:home-first-card-ready';
 const HOME_BUTTON_BASE_CLASS = 'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap text-15 font-semibold transition-all outline-none focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0';
+// Keep touch targets in CSS pixels at text zoom. Rem-based h-11/size-11
+// becomes 88px at 200%, which pushes the date controls outside 320px and
+// makes the header feel like it is colliding with the first content row.
 const HOME_BUTTON_OUTLINE_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-11 rounded-xl border bg-background px-4 text-15 text-foreground hover:bg-accent hover:text-accent-foreground has-[>svg]:px-3 dark:border-input dark:bg-input/30 dark:hover:bg-input/50`;
 const HOME_BUTTON_GHOST_ICON_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} size-11 rounded-xl p-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50`;
 const HOME_BUTTON_LINK_SM_CLASS = `${HOME_BUTTON_BASE_CLASS} h-8 rounded-md px-3 text-primary underline-offset-4 hover:underline has-[>svg]:px-2.5`;
@@ -1235,7 +1239,7 @@ export default function HomeRuntime() {
     ]);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
+        <div className="min-h-screen overflow-x-clip bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <HomePullToRefresh
                 contentClassName="space-y-5"
@@ -1276,7 +1280,7 @@ export default function HomeRuntime() {
                                 type="button"
                                 data-testid="home-offseason-cta"
                                 onClick={() => navigate('/offseason')}
-                                className={`${HOME_BUTTON_OUTLINE_TOUCH_CLASS} border-emerald-600/20 text-emerald-800 hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-900/20`}
+                                className={`${HOME_BUTTON_OUTLINE_TOUCH_CLASS} home-runtime-touch-outline border-emerald-600/20 text-emerald-800 hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-900/20`}
                             >
                                 <span className={HOME_CSS_FLAME_CLASS} aria-hidden="true" />
                                 스토브리그
@@ -1287,7 +1291,7 @@ export default function HomeRuntime() {
                                 data-priority="secondary"
                                 data-testid="home-secondary-prediction-cta"
                                 onClick={handleNavigateToTodayPrediction}
-                                className={`${HOME_BUTTON_OUTLINE_TOUCH_CLASS} border-primary/25 bg-white font-black text-primary hover:bg-primary/5 dark:border-primary/40 dark:bg-card dark:text-emerald-300 dark:hover:bg-primary/10`}
+                                className={`${HOME_BUTTON_OUTLINE_TOUCH_CLASS} home-runtime-touch-outline border-primary/25 bg-white font-black text-primary hover:bg-primary/5 dark:border-primary/40 dark:bg-card dark:text-emerald-300 dark:hover:bg-primary/10`}
                             >
                                 전력분석실 보기
                             </button>
@@ -1303,7 +1307,7 @@ export default function HomeRuntime() {
                       onClick={() => changeDate('prev')}
                       disabled={isLoading || isScopedNavigationLoading || !dateNavigation.hasPrev}
                       aria-label="이전 날짜"
-                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
+                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
                     >
                         <span className={HOME_CSS_CHEVRON_LEFT_CLASS} aria-hidden="true" />
                     </button>
@@ -1318,7 +1322,7 @@ export default function HomeRuntime() {
                                 setShouldMountDeferredSurfaces(true);
                                 setShowCalendar(true);
                             }}
-                            className={`${HOME_BUTTON_LINK_SM_CLASS} min-h-11 px-2 py-0 text-body font-bold text-primary opacity-80 transition-opacity hover:opacity-100 dark:text-emerald-400`}
+                            className={`${HOME_BUTTON_LINK_SM_CLASS} home-runtime-date-link min-h-11 px-2 py-0 text-body font-bold text-primary opacity-80 transition-opacity hover:opacity-100 dark:text-emerald-400`}
                         >
                             날짜 변경
                         </button>
@@ -1330,7 +1334,7 @@ export default function HomeRuntime() {
                       onClick={() => changeDate('next')}
                       disabled={isLoading || isScopedNavigationLoading || !dateNavigation.hasNext}
                       aria-label="다음 날짜"
-                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
+                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
                     >
                         <span className={HOME_CSS_CHEVRON_RIGHT_CLASS} aria-hidden="true" />
                     </button>

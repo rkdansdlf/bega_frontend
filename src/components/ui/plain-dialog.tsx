@@ -88,6 +88,7 @@ export default function PlainDialog({
               ? 'absolute inset-0 flex items-stretch justify-end'
               : 'absolute inset-0 flex items-center justify-center p-4'
         }
+        style={placement === 'center' ? { padding: 16 } : undefined}
         onClick={onClose}
       >
         <div
@@ -108,17 +109,24 @@ export default function PlainDialog({
                 : 'flex max-h-[calc(100dvh-2rem)] w-full min-w-0 flex-col overflow-hidden rounded-xl border bg-white shadow-dialog ring-1 ring-black/5 dark:border-border dark:bg-card',
             className,
           )}
+          style={placement === 'center' ? { maxHeight: 'calc(100dvh - 32px)' } : undefined}
         >
           {!hideHeader && (title || !hideCloseButton) && (
-            <div className="flex max-h-[35dvh] shrink-0 items-start justify-between gap-3 overflow-hidden border-b border-gray-100 px-5 py-4 dark:border-border">
-              <div className="min-h-0 max-h-[calc(35dvh-2rem)] min-w-0 overflow-y-auto overscroll-contain">
+            <div
+              className="relative flex max-h-[35dvh] shrink-0 items-start justify-between gap-3 overflow-hidden border-b border-gray-100 px-5 py-4 dark:border-border"
+              style={{ gap: 12, paddingLeft: 20, paddingRight: 20, paddingTop: 16, paddingBottom: 16 }}
+            >
+              <div
+                className="min-h-0 max-h-[calc(35dvh-2rem)] min-w-0 flex-1 overflow-y-auto overscroll-contain"
+                style={{ maxHeight: 'calc(35dvh - 32px)', paddingRight: 44 }}
+              >
                 {title ? (
-                  <h2 id={titleId} className="text-lg font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">
+                  <h2 id={titleId} className="break-keep text-lg font-semibold text-gray-900 dark:text-white" style={{ overflowWrap: 'break-word' }}>
                     {title}
                   </h2>
                 ) : null}
                 {description ? (
-                  <p id={descriptionId} className="mt-1 text-15 text-gray-600 [overflow-wrap:anywhere] dark:text-white">
+                  <p id={descriptionId} className="mt-1 break-keep text-15 text-gray-600 dark:text-white" style={{ overflowWrap: 'break-word' }}>
                     {description}
                   </p>
                 ) : null}
@@ -129,7 +137,7 @@ export default function PlainDialog({
                   aria-label="닫기"
                   variant="ghost"
                   size="iconTouch"
-                  className="shrink-0 p-0 text-gray-400 hover:text-gray-500"
+                  className="absolute right-5 top-4 shrink-0 p-0 text-gray-400 hover:text-gray-500"
                   onClick={onClose}
                 >
                   <span className="text-xl font-semibold leading-none" aria-hidden="true">×</span>
@@ -143,7 +151,7 @@ export default function PlainDialog({
               placement === 'right' ? '' : 'p-5',
               bodyClassName,
             )}
-            style={bodyStyle}
+            style={{ ...(placement === 'right' ? {} : { padding: 20 }), ...bodyStyle }}
           >
             {children}
           </div>
@@ -153,7 +161,23 @@ export default function PlainDialog({
               placement === 'bottom'
                 ? 'pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]'
                 : 'py-4',
-            )}>
+            )}
+            style={placement === 'bottom'
+              ? {
+                gap: 8,
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 16,
+                paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
+              }
+              : {
+                gap: 8,
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 16,
+                paddingBottom: 16,
+              }}
+            >
               {footer}
             </div>
           ) : null}

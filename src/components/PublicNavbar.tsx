@@ -127,10 +127,13 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
   const isLogoSubtitleCollapsed = logoSubtitleProgress >= 0.98 || viewportFitProgress >= 0.98;
   const { theme, resolvedTheme } = useTheme();
   const isDarkMode = (resolvedTheme || theme) === 'dark';
-  const navIconButtonClass = 'relative inline-flex h-10 w-10 items-center justify-center rounded-full p-2 transition-all duration-200 focus:outline-none';
-  const menuToggleButtonClass = 'relative inline-flex h-11 w-11 items-center justify-center rounded-full p-0 transition-all duration-200 focus:outline-none';
+  const navIconButtonClass = 'relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2 transition-all duration-200 focus:outline-none';
+  const menuToggleButtonClass = 'relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-0 transition-all duration-200 focus:outline-none';
   const navIconToggleClass = `${navIconButtonClass} focus:ring-2 focus:ring-primary/50 text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8`;
   const navIconSizeClass = 'h-5 w-5';
+  const navIconButtonStyle: CSSProperties = { height: 44, width: 44, minHeight: 44, minWidth: 44, padding: 10, flexShrink: 0 };
+  const menuToggleButtonStyle: CSSProperties = { height: 44, width: 44, minHeight: 44, minWidth: 44, flexShrink: 0 };
+  const navIconSizeStyle: CSSProperties = { height: 24, width: 24 };
 
   const menuToggleButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuPopupRef = useRef<HTMLDivElement | null>(null);
@@ -353,7 +356,7 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
       <div
         data-testid="navbar-capsule"
         className={cn(
-          'relative flex h-12 items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] md:left-1/2 md:grid md:h-[var(--navbar-capsule-height)] md:w-[var(--navbar-capsule-width)] md:max-w-[calc(100vw-1rem)] md:grid-cols-navbar-capsule md:items-center md:gap-[var(--navbar-capsule-gap)] md:-translate-x-1/2 md:px-[var(--navbar-capsule-px)]',
+          'navbar-capsule-mobile relative flex h-12 flex-wrap items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] md:left-1/2 md:grid md:h-[var(--navbar-capsule-height)] md:w-[var(--navbar-capsule-width)] md:max-w-[calc(100vw-1rem)] md:grid-cols-navbar-capsule md:items-center md:gap-[var(--navbar-capsule-gap)] md:-translate-x-1/2 md:px-[var(--navbar-capsule-px)]',
           capsuleGlass,
         )}
         style={capsuleStyle}
@@ -362,12 +365,12 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
         <Link
           to="/home"
           aria-label="BEGA 홈"
-          className="flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
+          className="navbar-home-link flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
         >
           <img
             src={baseballLogo}
             alt=""
-            className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
+            className="navbar-logo-image w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
           />
           <div className="flex flex-col items-start leading-none">
             <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
@@ -431,7 +434,7 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
         {/* Right controls */}
         <div
           data-testid="navbar-right-controls"
-          className="flex min-w-0 items-center justify-self-end"
+          className="flex min-w-0 flex-wrap items-center justify-self-end"
           style={rightControlsStyle}
         >
           {shouldShowTopThemeToggle && (
@@ -441,6 +444,8 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
           {shouldShowDesktopNotificationButton && (
             <NavbarNotificationControls
               buttonClassName={navIconToggleClass}
+              buttonStyle={navIconButtonStyle}
+              iconStyle={navIconSizeStyle}
               onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
               openOverride={visualQaStateOverride ? false : undefined}
               panelContentOverride={visualQaStateOverride ? <div /> : undefined}
@@ -454,9 +459,10 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
               aria-label="메시지 함"
               onClick={() => navigate('/messages')}
               className={`${navIconToggleClass} relative`}
+              style={navIconButtonStyle}
               data-testid="navbar-dm-icon"
             >
-              <MessageSquareIcon className={navIconSizeClass} />
+              <MessageSquareIcon className={navIconSizeClass} style={navIconSizeStyle} />
               <Suspense fallback={null}>
                 <PublicNavbarDmUnreadBadge unreadCountOverride={visualQaStateOverride?.dmUnreadCount} />
               </Suspense>
@@ -485,6 +491,8 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
               {shouldShowMobileNotificationButton && (
                 <NavbarNotificationControls
                   buttonClassName={navIconToggleClass}
+                  buttonStyle={navIconButtonStyle}
+                  iconStyle={navIconSizeStyle}
                   onOpenChangeOverride={visualQaStateOverride ? () => undefined : undefined}
                   openOverride={visualQaStateOverride ? false : undefined}
                   panelContentOverride={visualQaStateOverride ? <div /> : undefined}
@@ -497,9 +505,10 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
                   aria-label="메시지 함"
                   onClick={() => navigate('/messages')}
                   className={`${navIconToggleClass} relative`}
+                  style={navIconButtonStyle}
                   data-testid="navbar-dm-icon"
                 >
-                  <MessageSquareIcon className={navIconSizeClass} />
+                  <MessageSquareIcon className={navIconSizeClass} style={navIconSizeStyle} />
                   <Suspense fallback={null}>
                     <PublicNavbarDmUnreadBadge unreadCountOverride={visualQaStateOverride?.dmUnreadCount} />
                   </Suspense>
@@ -515,13 +524,14 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
                     ? 'text-gray-900 dark:text-white'
                     : 'text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8',
                 )}
+                style={menuToggleButtonStyle}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
                 aria-expanded={isMenuOpen}
                 aria-controls={shouldRenderMobileMenu ? 'mobile-menu-popup' : undefined}
                 data-testid={import.meta.env.DEV ? 'public-navbar-menu-toggle' : undefined}
               >
-                {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" /> : <MenuIcon className="w-6 h-6" />}
+                {isMenuOpen ? <CloseIcon className="w-6 h-6 stroke-[2.5]" style={navIconSizeStyle} /> : <MenuIcon className="w-6 h-6" style={navIconSizeStyle} />}
               </button>
             </>
           )}

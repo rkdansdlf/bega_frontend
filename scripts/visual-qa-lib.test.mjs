@@ -26,6 +26,21 @@ test('turns detector evidence into stable AI-review issue records', () => {
       smallTargets: [{ selector: 'button.icon-only', width: 20, height: 20, text: '메뉴' }],
       crowdedControls: [{ selector: 'button.previous', relatedSelector: 'button.next', gapPx: 2 }],
       fixedObstructions: [{ selector: 'div.promo-badge', viewportAreaRatio: 0.24 }],
+      focusObscured: [{
+        selector: 'button.focus-target',
+        relatedSelector: 'header.mobile-header',
+        coveredRatio: 1,
+        obstructionPosition: 'fixed',
+        focusRect: { width: 120, height: 44 },
+        obstructionRect: { width: 390, height: 64 },
+      }],
+      focusPartiallyObscured: [{
+        selector: 'button.focus-target',
+        relatedSelector: 'header.mobile-header',
+        coveredRatio: 0.4,
+        sampleCoverageRatio: 0.6,
+        obstructionPosition: 'fixed',
+      }],
     },
   });
 
@@ -36,12 +51,16 @@ test('turns detector evidence into stable AI-review issue records', () => {
     'small-touch-target',
     'crowded-controls',
     'viewport-obstruction',
+    'focus-obscured',
+    'focus-partially-obscured',
   ]);
   assert.equal(issues[0].severity, 'major');
   assert.deepEqual(issues[0].viewport, { width: 390, height: 844 });
   assert.equal(issues[2].selector, 'button.chatbot');
   assert.match(issues[2].evidence, /nav\.mobile-dock/);
   assert.match(issues[2].suggestedFix, /safe-area|간격|위치/);
+  assert.match(issues[6].evidence, /mobile-header.*완전히 가려졌습니다/);
+  assert.match(issues[7].evidence, /일부가.*mobile-header/);
   assert.equal(typeof issues[0].confidence, 'number');
 });
 

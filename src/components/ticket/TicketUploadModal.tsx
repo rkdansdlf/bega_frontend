@@ -28,7 +28,7 @@ interface TicketUploadModalProps {
     initialState?: TicketUploadInitialState;
 }
 
-const mobileBodyScrollStyle = { scrollPaddingBlock: '6rem' } as const;
+const mobileBodyScrollStyle = { scrollPaddingBlock: '96px' } as const;
 
 export function TicketUploadModal({
     onTicketAnalyzed,
@@ -197,19 +197,20 @@ export function TicketUploadModal({
                     </>
                 )}
             >
-                <div className="flex flex-col gap-6 pb-20 pt-1 sm:pb-1">
+                <div className="flex flex-col gap-6 pb-1 pt-1">
                     {/* Upload Area */}
                     <div className="grid w-full items-center gap-1.5">
                         {!previewUrl ? (
                             <button
                                 type="button"
-                                className="flex min-h-44 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center text-muted-foreground transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-12"
+                                className="flex min-h-44 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center text-muted-foreground transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 onClick={() => fileInputRef.current?.click()}
                                 data-testid="ticket-upload-dropzone"
+                                style={{ minHeight: 176, padding: 24 }}
                             >
-                                <SharedUploadIcon className="w-10 h-10 mb-4 opacity-50" />
-                                <p className="text-body font-semibold">티켓 이미지를 업로드하세요</p>
-                                <p className="text-body text-muted-foreground mt-1">또는 클릭하여 촬영</p>
+                                <SharedUploadIcon className="w-10 h-10 mb-4 opacity-50" style={{ width: 40, height: 40, marginBottom: 16 }} />
+                                <p className="break-keep text-body font-semibold" style={{ overflowWrap: 'break-word' }}>티켓 이미지를 업로드하세요</p>
+                                <p className="mt-1 break-keep text-body text-muted-foreground" style={{ overflowWrap: 'break-word' }}>또는 클릭하여 촬영</p>
                             </button>
                         ) : (
                             <div className="relative rounded-lg overflow-hidden border border-border aspect-video bg-black/5">

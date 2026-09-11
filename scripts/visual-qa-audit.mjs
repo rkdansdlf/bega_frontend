@@ -62,6 +62,7 @@ export const DEFAULT_STATE_SCENARIOS = [
     maxWidth: 1440,
     trigger: '[data-testid="mypage-ticket-upload-open"]',
     ready: '[data-testid="ticket-upload-dialog"]',
+    focusSelector: '[data-testid="ticket-upload-dialog"] [data-testid="ticket-upload-cancel"]',
   },
   {
     id: 'authenticated-chatbot',
@@ -71,6 +72,26 @@ export const DEFAULT_STATE_SCENARIOS = [
     maxWidth: 1440,
     trigger: '[data-testid="auth-mobile-chatbot-tab"]:visible, [data-testid="chatbot-request-launcher"]:visible',
     ready: '[data-testid="chatbot-panel"]',
+  },
+  {
+    id: 'stadium-seat-map-route',
+    name: '실제 경기장 좌석도 라우트',
+    route: '/stadium',
+    minWidth: 320,
+    maxWidth: 390,
+    trigger: '[data-testid="stadium-seat-map"]',
+    ready: '[data-testid="stadium-seat-map"]',
+    focusSelector: '#stadium-guide-select',
+  },
+  {
+    id: 'mypage-stats-tab-route',
+    name: '마이페이지 기록 탭',
+    route: '/mypage',
+    minWidth: 320,
+    maxWidth: 390,
+    trigger: '[data-testid="mypage-toggle-stats"]',
+    ready: '[data-testid="mypage-monthly-visit-bars"]',
+    focusSelector: '[data-testid="mypage-toggle-stats"]',
   },
 ];
 
@@ -185,6 +206,8 @@ export const VISUAL_QA_PROBE = () => {
     smallTargets: [],
     crowdedControls: [],
     fixedObstructions: [],
+    focusObscured: [],
+    focusPartiallyObscured: [],
     diagnostics: {
       interactiveCandidates: 0,
       interactiveCount: 0,
@@ -261,6 +284,77 @@ export const VISUAL_QA_PROBE = () => {
     }
     return null;
   };
+  const colorAlpha = (value) => {
+    if (!value || value === 'transparent') return 0;
+    const match = value.match(/rgba?\(([^)]+)\)/);
+    if (!match) return 1;
+    const channels = match[1].split(',').map((channel) => channel.trim());
+    if (channels.length < 4) return 1;
+    const alpha = Number(channels[3]);
+    return Number.isFinite(alpha) ? alpha : 1;
+  };
+  const hasVisiblePaint = (element, style) => {
+    if (colorAlpha(style.backgroundColor) > 0 || style.backgroundImage !== 'none' || style.boxShadow !== 'none') return true;
+    return ['Top', 'Right', 'Bottom', 'Left'].some((side) => (
+      Number.parseFloat(style[`border${side}Width`]) > 0
+      && colorAlpha(style[`border${side}Color`]) > 0
+    )) || (element.children.length === 0 && Boolean((element.textContent || '').trim()));
+  };
+  const renderedFixedLayers = () => [...document.querySelectorAll('body *')].filter((element) => {
+    if (!(element instanceof HTMLElement)) return false;
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return ['fixed', 'sticky'].includes(style.position)
+      && rect.width > 0
+      && rect.height > 0
+      && style.display !== 'none'
+      && style.visibility !== 'hidden'
+      && Number(style.opacity) > 0.01
+      && hasVisiblePaint(element, style);
+  });
+  const intersectingRect = (source, target) => {
+    const left = Math.max(source.left, target.left);
+    const top = Math.max(source.top, target.top);
+    const right = Math.min(source.right, target.right);
+    const bottom = Math.min(source.bottom, target.bottom);
+    return right > left && bottom > top
+      ? { left, top, right, bottom, width: right - left, height: bottom - top }
+      : null;
+  };
+  const rectUnionRatio = (rects, target) => {
+    const clippedRects = rects.map((rect) => intersectingRect(rect, target)).filter(Boolean);
+    const targetArea = target.width * target.height;
+    if (clippedRects.length === 0 || targetArea <= 0) return 0;
+    const xCoordinates = [...new Set(clippedRects.flatMap((rect) => [rect.left, rect.right]))].sort((a, b) => a - b);
+    let coveredArea = 0;
+    for (let index = 0; index < xCoordinates.length - 1; index += 1) {
+      const left = xCoordinates[index];
+      const right = xCoordinates[index + 1];
+      if (right <= left) continue;
+      const yIntervals = clippedRects
+        .filter((rect) => rect.left <= left && rect.right >= right)
+        .map((rect) => [rect.top, rect.bottom])
+        .sort((a, b) => a[0] - b[0]);
+      let coveredHeight = 0;
+      let intervalStart = null;
+      let intervalEnd = null;
+      for (const [top, bottom] of yIntervals) {
+        if (intervalStart === null) {
+          intervalStart = top;
+          intervalEnd = bottom;
+        } else if (top <= intervalEnd) {
+          intervalEnd = Math.max(intervalEnd, bottom);
+        } else {
+          coveredHeight += intervalEnd - intervalStart;
+          intervalStart = top;
+          intervalEnd = bottom;
+        }
+      }
+      if (intervalStart !== null) coveredHeight += intervalEnd - intervalStart;
+      coveredArea += (right - left) * coveredHeight;
+    }
+    return Math.min(1, coveredArea / targetArea);
+  };
   const isClippedByAncestor = (element, stopAt = null) => {
     let parent = element.parentElement;
     while (parent && parent !== document.documentElement) {
@@ -273,6 +367,64 @@ export const VISUAL_QA_PROBE = () => {
     }
     return false;
   };
+
+  // Check the element that is actually focused. Interaction-driven probes can
+  // therefore prove both the passing state and a real fixed/sticky obstruction
+  // without scanning every focusable node on every route.
+  if (viewportWidth < 768) {
+    const focusedElement = document.activeElement;
+    if (focusedElement instanceof HTMLElement
+      && focusedElement !== document.body
+      && focusedElement !== document.documentElement
+      && inActiveSurface(focusedElement)
+      && !ignored(focusedElement)
+      && visible(focusedElement)) {
+      const focusRect = focusedElement.getBoundingClientRect();
+      const inset = Math.min(4, focusRect.width / 4, focusRect.height / 4);
+      const samplePoints = [
+        [focusRect.left + focusRect.width / 2, focusRect.top + focusRect.height / 2],
+        [focusRect.left + inset, focusRect.top + inset],
+        [focusRect.right - inset, focusRect.top + inset],
+        [focusRect.left + inset, focusRect.bottom - inset],
+        [focusRect.right - inset, focusRect.bottom - inset],
+      ].filter(([x, y]) => x >= 0 && x <= viewportWidth && y >= 0 && y <= viewportHeight);
+      const coveredSamples = samplePoints
+        .map(([x, y]) => {
+          const topElement = document.elementFromPoint(x, y);
+          const belongsToFocus = topElement === focusedElement || focusedElement.contains(topElement);
+          return { layer: belongsToFocus ? null : fixedLayer(topElement) };
+        })
+        .filter(({ layer }) => layer !== null);
+      const obstructionLayers = renderedFixedLayers().filter((layer) => (
+        layer !== focusedElement
+        && !layer.contains(focusedElement)
+        && intersectingRect(layer.getBoundingClientRect(), focusRect)
+      ));
+      const obstructionRects = obstructionLayers.map((layer) => layer.getBoundingClientRect());
+      const sampleCoverageRatio = samplePoints.length > 0
+        ? coveredSamples.length / samplePoints.length
+        : 0;
+      const coveredRatio = rectUnionRatio(obstructionRects, focusRect);
+      const obstruction = obstructionLayers
+        .map((layer) => ({ layer, area: intersectingRect(layer.getBoundingClientRect(), focusRect) }))
+        .filter(({ area }) => area !== null)
+        .sort((a, b) => (b.area.width * b.area.height) - (a.area.width * a.area.height))[0]?.layer;
+      if (obstruction && coveredRatio > 0) {
+        const entry = {
+          selector: selector(focusedElement),
+          relatedSelector: selector(obstruction),
+          coveredRatio,
+          sampleCoverageRatio,
+          coverageMethod: 'rect-union',
+          focusRect: rectData(focusedElement),
+          obstructionRect: rectData(obstruction),
+          obstructionPosition: getComputedStyle(obstruction).position,
+        };
+        if (coveredRatio >= 0.999) result.focusObscured.push(entry);
+        else result.focusPartiallyObscured.push(entry);
+      }
+    }
+  }
 
   const overflowCandidates = activeSurface
     ? [activeSurface, ...activeSurface.querySelectorAll('*')]
@@ -486,7 +638,11 @@ export const VISUAL_QA_PROBE = () => {
       if (activeSurface && (element === activeSurface || element.contains(activeSurface))) continue;
       if (ignored(element) || !visible(element) || element.getAttribute('aria-hidden') === 'true') continue;
       const style = getComputedStyle(element);
-      if (!['fixed', 'sticky'].includes(style.position) || style.pointerEvents === 'none') continue;
+      // Sticky headers remain in normal document flow while they re-wrap for
+      // text zoom. Their occupied height is intentional; interactive overlap
+      // and focus-obscured probes still detect a sticky layer that actually
+      // covers another control.
+      if (style.position !== 'fixed' || style.pointerEvents === 'none') continue;
       const rect = element.getBoundingClientRect();
       const viewportAreaRatio = (rect.width * rect.height) / (viewportWidth * viewportHeight);
       if (viewportAreaRatio < 0.18) continue;
@@ -929,6 +1085,11 @@ export const openVisualQaState = async (page, state, timeout = 5000) => {
   const ready = page.locator(state.ready).first();
   await ready.waitFor({ state: 'visible', timeout });
   await ready.evaluate((element) => element.setAttribute('data-vqa-active-surface', 'true'));
+  if (state.focusSelector) {
+    const focusTarget = page.locator(state.focusSelector).first();
+    await focusTarget.waitFor({ state: 'visible', timeout });
+    await focusTarget.focus();
+  }
   await page.waitForTimeout(300);
 };
 

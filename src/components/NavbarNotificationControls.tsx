@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ReactNode } from 'react';
+import { Suspense, lazy, type CSSProperties, type ReactNode } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { cn } from '../lib/utils';
 import { useNotificationStore } from '../store/notificationStore';
@@ -16,6 +16,8 @@ type NavbarNotificationControlsProps = {
   openOverride?: boolean;
   panelContentOverride?: ReactNode;
   unreadCountOverride?: number;
+  buttonStyle?: CSSProperties;
+  iconStyle?: CSSProperties;
 };
 
 const normalizeUnreadCount = (count: number) => (
@@ -29,6 +31,8 @@ export default function NavbarNotificationControls({
   openOverride,
   panelContentOverride,
   unreadCountOverride,
+  buttonStyle,
+  iconStyle,
 }: NavbarNotificationControlsProps) {
   const { isNotificationOpen: liveIsNotificationOpen, setIsNotificationOpen } = useUIStore(
     useShallow((state) => ({
@@ -62,6 +66,7 @@ export default function NavbarNotificationControls({
             'relative inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
             buttonClassName,
           )}
+          style={buttonStyle}
           data-testid="navbar-notification-trigger"
           aria-label={`알림${unreadCount > 0 ? ` (읽지 않은 알림 ${unreadCount}개)` : ''}`}
           aria-expanded={isNotificationOpen}
@@ -72,7 +77,10 @@ export default function NavbarNotificationControls({
             className={unreadCount > 0 ? 'inline-flex animate-pulse' : 'inline-flex'}
             aria-hidden="true"
           >
-            <BellIcon className={`h-6 w-6 ${unreadCount > 0 ? 'text-primary dark:text-primary-light' : ''}`} />
+            <BellIcon
+              className={`h-6 w-6 ${unreadCount > 0 ? 'text-primary dark:text-primary-light' : ''}`}
+              style={iconStyle}
+            />
           </span>
 
           {unreadCount > 0 && (

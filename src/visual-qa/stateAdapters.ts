@@ -4,6 +4,7 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useState,
   type ComponentProps,
   type ReactNode,
 } from 'react';
@@ -26,6 +27,11 @@ import type { MatesAdminPanel as MatesAdminPanelComponent } from '../components/
 import type { PostsAdminPanel as PostsAdminPanelComponent } from '../components/admin/PostsAdminPanel';
 import type { UsersAdminPanel as UsersAdminPanelComponent } from '../components/admin/UsersAdminPanel';
 import type GlobalErrorDialogContentComponent from '../components/GlobalErrorDialogContent';
+import { GameCardSkeleton } from '../components/home/GameCardSkeleton';
+import {
+  StadiumSeatMapErrorBoundary,
+  StadiumSeatMapErrorFallback,
+} from '../components/StadiumSeatMapStates';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
 import type { SeatViewDirectUploadVisualQaStateOverride } from '../components/stadiumSeatMap/SeatViewDirectUploadModal';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
@@ -73,6 +79,7 @@ import type {
   AdminUser,
 } from '../types/admin';
 import type { NotificationData, NotificationType } from '../types/notification';
+import type { Game } from '../types/home';
 import { MANUAL_BASEBALL_DATA_REQUIRED_CODE } from '../utils/manualBaseballDataContract';
 import skeletonUsageContract from '../../contracts/visual-qa-skeleton-usages-v1.json';
 import type { VisualQaSemanticHost } from './semanticHost';
@@ -210,6 +217,35 @@ const renderVisualQaOffseasonAdminLazyChild = (child: ReactNode, label: string) 
   child,
 );
 
+const emitVisualQaInteraction = (eventName: string, detail: Record<string, unknown>) => {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(eventName, { detail }));
+};
+
+function VisualQaInteractionMarker({ eventName, testId }: { eventName: string; testId: string }) {
+  const [value, setValue] = useState('대기 중');
+
+  useEffect(() => {
+    const handleInteraction = (event: Event) => {
+      const detail = (event as CustomEvent<Record<string, unknown>>).detail;
+      const detailValue = typeof detail?.value === 'string' ? detail.value : '완료';
+      setValue(detailValue);
+    };
+    window.addEventListener(eventName, handleInteraction);
+    return () => window.removeEventListener(eventName, handleInteraction);
+  }, [eventName]);
+
+  return createElement(
+    'output',
+    {
+      'aria-live': 'polite',
+      'data-testid': testId,
+      className: 'sr-only',
+    },
+    value,
+  );
+}
+
 export type ComponentStateValues = Partial<Record<
   'data' | 'permissions' | 'interactions' | 'system',
   string
@@ -231,6 +267,22 @@ export type ComponentStateAdapterResult = {
   expectedHash?: string;
   expectedPathname?: string;
   expectedSearch?: string;
+  harnessAuthState?: {
+    user: {
+      id: number;
+      email: string;
+      name: string;
+      handle?: string;
+      favoriteTeam?: string;
+      favoriteTeamColor?: string;
+      role?: string;
+      profileImageUrl?: string | null;
+      provider?: string;
+      bio?: string | null;
+      cheerPoints?: number;
+      hasPassword?: boolean;
+    };
+  };
   initialPathname?: string;
   semanticHost?: VisualQaSemanticHost;
   surfaceClassName?: string;
@@ -381,6 +433,40 @@ const seatMapRuntimeShellCopy = {
     child: seatMapRuntimeShellMaximum,
   },
 } as const;
+
+type VisualQaSeatMapErrorBoundaryData = keyof typeof seatMapRuntimeShellCopy;
+type VisualQaSeatMapErrorBoundarySystem = 'idle' | 'error-recoverable' | 'error-503';
+
+function VisualQaSeatMapBoundaryResolvedState({ children }: { children: string }) {
+  return createElement(
+    'div',
+    {
+      className: 'min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-900 [overflow-wrap:anywhere] dark:border-slate-700 dark:bg-slate-900 dark:text-white',
+      'data-testid': 'stadium-seatmap-boundary-resolved',
+    },
+    children,
+  );
+}
+
+function VisualQaSeatMapBoundaryThrowingState({
+  shouldThrow,
+  message,
+  children,
+}: {
+  shouldThrow: () => boolean;
+  message: string;
+  children: string;
+}): never | ReactNode {
+  if (shouldThrow()) throw new Error(message);
+  return createElement(
+    'div',
+    {
+      className: 'min-w-0 max-w-full rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 [overflow-wrap:anywhere] dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100',
+      'data-testid': 'stadium-seatmap-boundary-recovered',
+    },
+    children,
+  );
+}
 
 type VisualQaSeatMapSectionFinderData =
   | 'empty'
@@ -4701,7 +4787,242 @@ const buildVisualQaGlobalErrorProps = (
   };
 };
 
+const HOME_GAME_CARD_COMPONENT_ID = 'src/components/home/HomeGameCard.tsx#HomeGameCard';
+const HOME_MATCH_PANEL_COMPONENT_ID = 'src/components/home/HomeMatchPanel.tsx#HomeMatchPanel';
+const HOME_RUNTIME_COMPONENT_ID = 'src/components/HomeRuntime.tsx#HomeRuntime';
+const HOME_GAME_CARD_INTERACTION_EVENT = 'visual-qa:home-game-card-interaction';
+const HOME_MATCH_PANEL_INTERACTION_EVENT = 'visual-qa:home-match-panel-interaction';
+
+const HOME_RUNTIME_DATA_DATES = {
+  normal: '2026-09-10',
+  empty: '2026-09-12',
+  'date-a': '2026-09-10',
+  'date-b': '2026-09-11',
+  'long-korean': '2026-09-13',
+  manual: '2026-09-14',
+} as const;
+
+const createHomeGameFixture = (data: string): Game => {
+  const base: Game = {
+    gameId: `visual-home-${data}`,
+    gameDate: '2026-09-09',
+    sourceDate: '2026-09-09',
+    time: '18:30',
+    stadium: '잠실야구장',
+    gameStatus: 'SCHEDULED',
+    gameStatusKr: '경기 예정',
+    gameInfo: '시각·구장·상태를 확인하세요.',
+    leagueType: 'REGULAR',
+    homeTeam: 'LG',
+    homeTeamFull: 'LG 트윈스',
+    awayTeam: 'LT',
+    awayTeamFull: '롯데 자이언츠',
+  };
+
+  switch (data) {
+    case 'populated':
+      return {
+        ...base,
+        gameStatus: 'FINAL',
+        gameStatusKr: '경기 종료',
+        gameInfo: '최종 스코어',
+        homeScore: 4,
+        awayScore: 2,
+        winner: 'LG 트윈스',
+      };
+    case 'long-korean':
+      return {
+        ...base,
+        gameStatus: 'LIVE',
+        gameStatusKr: '실시간 진행 중',
+        stadium: '서울특별시 종합운동장 야구장 공식 좌석 안내 구역',
+        gameInfo: '모바일 화면에서도 경기 시간과 구장 정보가 자연스럽게 줄바꿈되어 표시되는 긴 경기 안내 문구입니다.',
+        homeTeamFull: '모바일 화면에서 여러 줄로 표시되는 매우 긴 홈 팀 이름 LG 트윈스',
+        awayTeamFull: '모바일 화면에서 여러 줄로 표시되는 매우 긴 원정 팀 이름 롯데 자이언츠',
+      };
+    case 'unbroken-token':
+      return {
+        ...base,
+        gameId: `HOME-GAME-${'UNBROKEN'.repeat(14)}`,
+        gameStatusKr: `STATUS-${'UNBROKEN'.repeat(12)}`,
+        stadium: `STADIUM-${'UNBROKEN'.repeat(16)}`,
+        gameInfo: `GAMEINFO-${'UNBROKEN'.repeat(18)}`,
+        homeTeam: 'ZZ',
+        homeTeamFull: `HOME-${'UNBROKEN'.repeat(12)}`,
+        awayTeam: 'YY',
+        awayTeamFull: `AWAY-${'UNBROKEN'.repeat(12)}`,
+      };
+    case 'missing-image':
+      return {
+        ...base,
+        gameStatus: 'POSTPONED',
+        gameStatusKr: '경기 연기',
+        gameInfo: '로고 주소가 없는 지연 마운트 상태',
+      };
+    case 'unknown-team':
+      return {
+        ...base,
+        homeTeam: 'ZZ',
+        homeTeamFull: '미등록 홈 팀',
+        awayTeam: 'YY',
+        awayTeamFull: '미등록 원정 팀',
+        gameStatusKr: '상태 미정',
+      };
+    case 'single':
+    default:
+      return base;
+  }
+};
+
+const createHomeMatchPanelFixtures = (data: string) => {
+  const primaryGame = createHomeGameFixture(data === 'empty' ? 'single' : data);
+  const secondaryGame: Game = {
+    ...createHomeGameFixture('missing-image'),
+    gameId: `visual-home-secondary-${data}`,
+    sourceDate: '2026-09-10',
+    gameDate: '2026-09-10',
+  };
+  const standardGames = data === 'empty' ? [] : [primaryGame];
+  const scheduledPrimaryGames = data === 'empty' ? [] : [primaryGame];
+  const scheduledSecondaryGames = data === 'populated' || data === 'long-korean'
+    ? [secondaryGame]
+    : [];
+  const groupBySourceDate = (games: Game[]): Array<[string, Game[]]> => {
+    const grouped = new Map<string, Game[]>();
+    games.forEach((game) => {
+      const sourceDate = game.sourceDate || game.gameDate || '2026-09-09';
+      const existing = grouped.get(sourceDate);
+      if (existing) existing.push(game);
+      else grouped.set(sourceDate, [game]);
+    });
+    return [...grouped.entries()];
+  };
+
+  return {
+    activeStandardGames: standardGames,
+    liveOrFinishedScheduledGames: [],
+    scheduledPrimaryGames,
+    scheduledPrimaryGamesBySourceDate: groupBySourceDate(scheduledPrimaryGames),
+    scheduledSecondaryGames,
+    scheduledSecondaryGamesBySourceDate: groupBySourceDate(scheduledSecondaryGames),
+  };
+};
+
 const adapters: Record<string, ComponentStateAdapter> = {
+  'stadium-seat-map-error-boundary': (context) => {
+    if (context.componentId !== 'src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary') {
+      throw new Error('stadium-seat-map-error-boundary only supports StadiumSeatMapErrorBoundary');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'system', 'interactions'].includes(key))) {
+      throw new Error('stadium-seat-map-error-boundary only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('stadium-seat-map-error-boundary only supports theme variants');
+    }
+    const data = requireStateValueFromMap<VisualQaSeatMapErrorBoundaryData>(context, 'data', {
+      empty: 'empty',
+      populated: 'populated',
+      'null-optional': 'null-optional',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    const system = requireStateValueFromMap<VisualQaSeatMapErrorBoundarySystem>(context, 'system', {
+      idle: 'idle',
+      'error-recoverable': 'error-recoverable',
+      'error-503': 'error-503',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'retry'>(context, 'interactions', {
+      default: 'default',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const copy = seatMapRuntimeShellCopy[data];
+    const recoveryReady = { value: false };
+    const shouldThrow = () => system !== 'idle' && !recoveryReady.value;
+    const children = system === 'idle'
+      ? createElement(VisualQaSeatMapBoundaryResolvedState, { children: copy.child })
+      : createElement(VisualQaSeatMapBoundaryThrowingState, {
+        shouldThrow,
+        message: `Synthetic StadiumSeatMapErrorBoundary ${system} render failure`,
+        children: copy.child,
+      });
+    const fallback = (onRetry: () => void) => createElement(StadiumSeatMapErrorFallback, {
+      stadiumName: copy.stadiumName,
+      onRetry: () => {
+        if (system === 'error-recoverable') recoveryReady.value = true;
+        onRetry();
+      },
+    });
+    const expectedRetryTarget = system === 'error-recoverable' ? 'retry-recoverable' : 'retry-persistent';
+    if (interaction === 'retry' && context.interactionTargetId !== expectedRetryTarget) {
+      throw new Error(`stadium-seat-map-error-boundary expected ${expectedRetryTarget} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('stadium-seat-map-error-boundary default state does not accept interaction targets');
+    }
+    return {
+      props: {
+        children,
+        fallback,
+        resetKey: `visual-qa:stadium-seat-map-boundary:${data}:${system}`,
+      },
+      captureSelector: system === 'idle'
+        ? '[data-testid="stadium-seatmap-boundary-resolved"]'
+        : '[data-testid="stadium-seatmap-error"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none',
+      theme,
+    };
+  },
+  'stadium.guide': (context) => {
+    if (context.componentId !== 'src/components/StadiumGuide.tsx#StadiumGuide') {
+      throw new Error('stadium.guide only supports StadiumGuide');
+    }
+    if (Object.keys(context.states).length > 0) {
+      throw new Error('stadium.guide does not support state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('stadium.guide only supports phase and theme variants');
+    }
+    if (context.interactionTargetId !== undefined) {
+      throw new Error('stadium.guide does not support interaction targets');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      runtime: 'runtime',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    return {
+      props: {
+        visualQaPhase: phase,
+        visualQaRuntimeOverride: phase === 'runtime'
+          ? createElement(
+            'main',
+            {
+              className: 'min-h-screen min-w-0 bg-background p-4 text-foreground',
+              'data-testid': 'stadium-guide-runtime-resolved',
+            },
+            createElement(
+              'div',
+              { className: 'mx-auto min-w-0 max-w-3xl break-words rounded-2xl border border-border bg-card p-5 text-center [overflow-wrap:anywhere]' },
+              '잠실 야구장 구장 가이드',
+            ),
+          )
+          : undefined,
+      },
+      captureSelector: phase === 'fallback'
+        ? '[data-testid="stadium-guide-route-fallback"]'
+        : '[data-testid="stadium-guide-runtime-resolved"]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'seat-map-runtime-shell': (context) => {
     if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell') {
       throw new Error('seat-map-runtime-shell only supports SeatMapRuntimeShell');
@@ -9770,6 +10091,232 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme: resolvedTheme,
     };
   },
+  'home.game-card': (context) => {
+    if (context.componentId !== HOME_GAME_CARD_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))
+      || Object.keys(context.variants).some((key) => !['logo', 'theme'].includes(key))) {
+      throw new Error('home.game-card only supports its declared data, interaction, logo, and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'missing-image': 'missing-image',
+      'populated': 'populated',
+      'single': 'single',
+      'unknown-team': 'unknown-team',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'keyboard-navigation': 'keyboard-navigation',
+      selected: 'selected',
+    });
+    const logo = resolveDeclaredVariant(context, 'logo', {
+      'address-missing': 'address-missing',
+      'load-fallback': 'load-fallback',
+      normal: 'normal',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.game-card default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && target !== 'prediction-card') {
+      throw new Error(`home.game-card expected prediction-card target, received ${target ?? '<missing>'}`);
+    }
+    const game = createHomeGameFixture(data);
+    const resolvedGame = logo === 'load-fallback'
+      ? { ...game, homeTeam: 'ZZ', homeTeamFull: '미등록 홈 팀', awayTeam: 'YY', awayTeamFull: '미등록 원정 팀' }
+      : game;
+    const isInteractive = interaction !== 'default';
+    return {
+      props: {
+        game: resolvedGame,
+        onSelectPrediction: isInteractive
+          ? () => emitVisualQaInteraction(HOME_GAME_CARD_INTERACTION_EVENT, {
+            gameId: resolvedGame.gameId,
+            value: `선택됨: ${resolvedGame.gameId}`,
+          })
+          : undefined,
+        shouldMountTeamLogo: logo !== 'address-missing',
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: HOME_GAME_CARD_INTERACTION_EVENT,
+        testId: 'visual-qa-home-game-selection',
+      }),
+      captureSelector: '[data-vqa-harness-surface] > .group',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.match-panel': (context) => {
+    if (context.componentId !== HOME_MATCH_PANEL_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['tab', 'theme'].includes(key))) {
+      throw new Error('home.match-panel only supports its declared data, interaction, system, tab, and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'open' | 'retry' | 'selected'>(context, 'interactions', {
+      default: 'default',
+      open: 'open',
+      retry: 'retry',
+      selected: 'selected',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+      'manual-required': 'manual-required',
+    });
+    const activeLeagueTab = resolveDeclaredVariant<'regular' | 'scheduled'>(context, 'tab', {
+      regular: 'regular',
+      scheduled: 'scheduled',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const isError = system === 'error-503' || system === 'manual-required';
+    const isLoading = system === 'loading';
+    const fixtures = createHomeMatchPanelFixtures(data);
+    const selectedGame = fixtures.activeStandardGames[0] ?? fixtures.scheduledPrimaryGames[0];
+    const targetByInteraction = {
+      open: 'secondary-toggle',
+      retry: 'retry',
+      selected: 'game-card',
+    } as const;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.match-panel default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && target !== targetByInteraction[interaction]) {
+      throw new Error(`home.match-panel expected ${targetByInteraction[interaction]} target, received ${target ?? '<missing>'}`);
+    }
+    if (interaction === 'selected' && (isError || isLoading || selectedGame === undefined)) {
+      throw new Error('home.match-panel selected state requires an idle game card');
+    }
+    if (interaction === 'retry' && !isError) {
+      throw new Error('home.match-panel retry state requires an error state');
+    }
+    if (interaction === 'open' && (activeLeagueTab !== 'scheduled' || fixtures.scheduledSecondaryGames.length === 0 || system !== 'idle')) {
+      throw new Error('home.match-panel open state requires idle scheduled secondary games');
+    }
+    const isScheduledTab = activeLeagueTab === 'scheduled';
+    return {
+      props: {
+        activeLeagueTab,
+        isLoading: isLoading && !isScheduledTab,
+        isGamesError: isError && !isScheduledTab,
+        loadFailureReason: system === 'manual-required' ? 'manual-data-required' : isError ? 'request-failed' : null,
+        isScheduledLoading: isLoading && isScheduledTab,
+        isScheduledError: isError && isScheduledTab,
+        suppressRecoveryActions: false,
+        isSecondarySectionExpanded: interaction === 'open',
+        loadingMatchCardCount: 2,
+        matchSectionMinHeightStyle: { minHeight: '360px' },
+        ...fixtures,
+        shouldMountTeamLogos: true,
+        LoadingCardComponent: GameCardSkeleton,
+        onRetry: () => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          value: '다시 시도됨',
+        }),
+        onSelectPrediction: (game: Game) => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          gameId: game.gameId,
+          value: `선택됨: ${game.gameId}`,
+        }),
+        onToggleSecondarySection: () => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          value: '보조 일정 토글됨',
+        }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: HOME_MATCH_PANEL_INTERACTION_EVENT,
+        testId: 'visual-qa-home-match-panel-interaction',
+      }),
+      captureSelector: '[data-testid="home-match-priority-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.runtime': (context) => {
+    if (context.componentId !== HOME_RUNTIME_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('home.runtime only supports its declared data, system, interaction, and theme axes');
+    }
+    const data = requireStateValueFromMap<'normal' | 'empty' | 'date-a' | 'date-b' | 'long-korean' | 'manual'>(context, 'data', {
+      normal: 'normal',
+      empty: 'empty',
+      'date-a': 'date-a',
+      'date-b': 'date-b',
+      'long-korean': 'long-korean',
+      manual: 'manual',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      loading: 'loading',
+      ready: 'ready',
+      empty: 'empty',
+      'request-failed': 'request-failed',
+      'manual-data-required': 'manual-data-required',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'retry' | 'next-date' | 'cta'>(context, 'interactions', {
+      default: 'default',
+      retry: 'retry',
+      'next-date': 'next-date',
+      cta: 'cta',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (system === 'empty' && data !== 'empty') {
+      throw new Error(`home.runtime empty system requires the empty data fixture, received data=${data}`);
+    }
+    if (system === 'manual-data-required' && data !== 'manual') {
+      throw new Error(`home.runtime manual-data-required requires the manual fixture, received data=${data}`);
+    }
+    if (system === 'request-failed' && data !== 'manual' && data !== 'empty') {
+      throw new Error(`home.runtime request-failed requires an error-capable fixture, received data=${data}`);
+    }
+    if (system === 'loading' && interaction !== 'default') {
+      throw new Error(`home.runtime loading does not expose ${interaction} interaction`);
+    }
+    const targetByInteraction = {
+      retry: 'recovery-retry',
+      'next-date': 'date-next',
+      cta: 'primary-cta',
+    } as const;
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.runtime default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && target !== targetByInteraction[interaction]) {
+      throw new Error(`home.runtime expected ${targetByInteraction[interaction]} target, received ${target ?? '<missing>'}`);
+    }
+    if (interaction === 'retry' && !['request-failed', 'manual-data-required'].includes(system)) {
+      throw new Error(`home.runtime retry requires a recoverable failure, received system=${system}`);
+    }
+    if (interaction === 'next-date' && (data !== 'date-a' || system !== 'ready')) {
+      throw new Error('home.runtime next-date requires the ready date-a fixture');
+    }
+    if (interaction === 'cta' && system !== 'ready') {
+      throw new Error(`home.runtime cta requires ready content, received system=${system}`);
+    }
+    return {
+      props: {},
+      captureSelector: '[data-vqa-harness-surface]',
+      initialPathname: `/home?date=${HOME_RUNTIME_DATA_DATES[data]}`,
+      surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
   'app.browser-shell': (context) => {
     requireStateValue(context, 'data', 'single');
     const theme = resolveDeclaredVariant(context, 'theme', {
@@ -9962,18 +10509,44 @@ const adapters: Record<string, ComponentStateAdapter> = {
     requireStateValue(context, 'data', 'single');
     const pathname = resolveDeclaredVariant(context, 'route', {
       'not-found': '/__visual-qa__/missing-route',
+      mypage: '/mypage',
+      home: '/home',
     });
     const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
       dark: 'dark',
       light: 'light',
     });
+    const isMyPageRoute = context.variants.route === 'mypage';
+    const isHomeRoute = context.variants.route === 'home';
     return {
       props: {},
-      captureSelector: '[data-testid="not-found-page"]',
+      captureSelector: isMyPageRoute
+        ? '[data-testid="mypage-prototype-shell"]'
+        : isHomeRoute
+          ? '[data-vqa-harness-surface]'
+          : '[data-testid="not-found-page"]',
       expectedHash: '',
       expectedPathname: pathname,
       expectedSearch: '',
       initialPathname: pathname,
+      ...(isMyPageRoute ? {
+        harnessAuthState: {
+          user: {
+            id: 900001,
+            email: 'visual-qa-mypage@example.com',
+            name: '비주얼 QA 사용자',
+            handle: 'visual-qa-mypage',
+            favoriteTeam: '한화',
+            favoriteTeamColor: '#f15a24',
+            role: 'ROLE_USER',
+            profileImageUrl: null,
+            provider: 'LOCAL',
+            bio: 'Visual QA deterministic route fixture',
+            cheerPoints: 120,
+            hasPassword: true,
+          },
+        },
+      } : {}),
       semanticHost: 'suspense',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
       theme,

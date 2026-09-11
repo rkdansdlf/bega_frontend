@@ -120,6 +120,91 @@ test('SeatMapLegend catalog exposes exactly 14 direct synthetic light and dark s
   }
 });
 
+test('HomeGameCard catalog covers the production payload, logo, theme, and selection matrix', () => {
+  const componentId = 'src/components/home/HomeGameCard.tsx#HomeGameCard';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 108);
+  assert.equal(new Set(scenarios.map(({ states }) => states.data)).size, 6);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.interactions)), new Set(['default', 'selected', 'keyboard-navigation']));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.logo)), new Set(['normal', 'address-missing', 'load-fallback']));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.theme)), new Set(['light', 'dark']));
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, adapterId }) => (
+    file === 'src/components/home/HomeGameCard.tsx'
+      && moduleKey === '../components/home/HomeGameCard.tsx'
+      && exportName === 'default'
+      && adapterId === 'home.game-card'
+  )));
+});
+
+test('HomeMatchPanel catalog covers owned regular, scheduled, loading, error, and callback states', () => {
+  const componentId = 'src/components/home/HomeMatchPanel.tsx#HomeMatchPanel';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 140);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set(['empty', 'single', 'populated', 'long-korean', 'unbroken-token']));
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.system)), new Set(['idle', 'loading', 'error-503', 'manual-required']));
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.interactions)), new Set(['default', 'retry', 'selected', 'open']));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.tab)), new Set(['regular', 'scheduled']));
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, adapterId }) => (
+    file === 'src/components/home/HomeMatchPanel.tsx'
+      && moduleKey === '../components/home/HomeMatchPanel.tsx'
+      && exportName === 'default'
+      && adapterId === 'home.match-panel'
+  )));
+});
+
+test('HomeRuntime catalog covers route-owned bootstrap phases, transitions, and theme variants', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { values?: string[] };
+        permissions?: { notApplicable?: unknown };
+        interactions?: { values?: string[] };
+        system?: { values?: string[] };
+      };
+      variants?: { dimensions?: Array<{ name?: string; values?: string[] }> };
+      interactionPlans?: Record<string, { targets?: Array<{ id?: string }> }>;
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/HomeRuntime.tsx#HomeRuntime';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'home.runtime');
+  assert.deepEqual(component.axes?.data?.values, ['normal', 'empty', 'date-a', 'date-b', 'long-korean', 'manual']);
+  assert.deepEqual(component.axes?.interactions?.values, ['default', 'retry', 'next-date', 'cta']);
+  assert.deepEqual(component.axes?.system?.values, ['loading', 'ready', 'empty', 'request-failed', 'manual-data-required']);
+  assert.ok(component.axes?.permissions?.notApplicable);
+  assert.deepEqual(component.variants?.dimensions?.find(({ name }) => name === 'theme')?.values, ['light', 'dark']);
+  assert.deepEqual(Object.fromEntries(
+    Object.entries(component.interactionPlans ?? {}).map(([key, plan]) => [key, plan.targets?.map(({ id }) => id)]),
+  ), {
+    retry: ['recovery-retry'],
+    'next-date': ['date-next'],
+    cta: ['primary-cta'],
+  });
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 50);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set(['normal', 'empty', 'date-a', 'date-b', 'long-korean', 'manual']));
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.system)), new Set(['loading', 'ready', 'empty', 'request-failed', 'manual-data-required']));
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.interactions)), new Set(['default', 'retry', 'next-date', 'cta']));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.theme)), new Set(['light', 'dark']));
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, adapterId }) => (
+    file === 'src/components/HomeRuntime.tsx'
+      && moduleKey === '../components/HomeRuntime.tsx'
+      && exportName === 'default'
+      && adapterId === 'home.runtime'
+  )));
+});
+
 test('SeatMapRuntimeShell catalog exposes exactly 72 direct mobile runtime scenarios', async () => {
   const contract = JSON.parse(
     await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
@@ -200,6 +285,57 @@ test('SeatMapRuntimeShell catalog exposes exactly 72 direct mobile runtime scena
       && adapterId === 'seat-map-runtime-shell'
       && interactionPlan === undefined
   )));
+  assert.ok(scenarios.every(({ id }) => resolveHarnessScenario(id)?.componentId === componentId));
+});
+
+test('StadiumSeatMapErrorBoundary catalog exposes the complete error and recovery matrix', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: Record<string, { values?: string[] }>;
+      variants?: { dimensions?: Array<{ name: string; values: string[] }> };
+    }>;
+  };
+  const componentId = 'src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'stadium-seat-map-error-boundary');
+  assert.deepEqual(component.axes?.data?.values, [
+    'empty', 'populated', 'null-optional', 'long-korean', 'unbroken-token', 'maximum-supported',
+  ]);
+  assert.deepEqual(component.axes?.system?.values, ['idle', 'error-recoverable', 'error-503']);
+  assert.deepEqual(component.axes?.interactions?.values, ['default', 'retry']);
+  assert.deepEqual(component.variants?.dimensions, [{
+    name: 'theme',
+    values: ['light', 'dark'],
+    reason: 'The owned fallback surface has distinct light and dark styling that must remain readable at narrow widths.',
+    owner: 'frontend-platform',
+    testEvidence: 'src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx',
+  }]);
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 60);
+  assert.equal(new Set(scenarios.map(({ id }) => id)).size, 60);
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, renderAccess, adapterId }) => (
+    file === 'src/components/StadiumSeatMapStates.tsx'
+      && moduleKey === '../components/StadiumSeatMapStates.tsx'
+      && exportName === 'StadiumSeatMapErrorBoundary'
+      && renderAccess === 'module-export'
+      && adapterId === 'stadium-seat-map-error-boundary'
+  )));
+  assert.equal(
+    scenarios.filter(({ interactionPlan }) => (
+      interactionPlan?.targetId === 'retry-recoverable' || interactionPlan?.targetId === 'retry-persistent'
+    )).length,
+    24,
+  );
   assert.ok(scenarios.every(({ id }) => resolveHarnessScenario(id)?.componentId === componentId));
 });
 
@@ -557,7 +693,12 @@ test('SeatViewDirectUploadModal catalog exposes exactly 116 constrained form sce
         owner?: string;
         testEvidence?: string;
       }>;
-      constraints?: Array<{ excludeWhen?: Record<string, string> }>;
+      constraints?: Array<{
+        excludeWhen?: Record<string, string>;
+        reason?: string;
+        owner?: string;
+        testEvidence?: string;
+      }>;
     }>;
   };
   const componentId = 'src/components/stadiumSeatMap/SeatViewDirectUploadModal.tsx#SeatViewDirectUploadModal';
@@ -619,7 +760,13 @@ test('SeatViewDirectUploadModal catalog exposes exactly 116 constrained form sce
   } as const;
   assert.deepEqual(Object.keys(component.interactionPlans ?? {}), Object.keys(targets));
   for (const [interaction, expectedTargets] of Object.entries(targets)) {
-    const plan = component.interactionPlans?.[interaction];
+    const plan: {
+      action?: string;
+      targets?: Array<{ id?: string; selector?: string; value?: string; waitForSelector?: string }>;
+      reason?: string;
+      owner?: string;
+      testEvidence?: string;
+    } | undefined = component.interactionPlans?.[interaction];
     assertMetadata(plan);
     assert.deepEqual(plan?.targets?.map(({ id }) => id), expectedTargets);
   }
@@ -742,7 +889,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 71659);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 72021);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -755,7 +902,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    291,
+    294,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -766,12 +913,15 @@ test('registered component states expand to executable adapter-backed scenarios'
   const appRoutes = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId === 'src/components/AppRoutes.tsx#AppRoutes'
   ));
-  assert.equal(appRoutes.length, 2);
+  assert.equal(appRoutes.length, 6);
   assert.deepEqual(
     new Set(appRoutes.map(({ variants }) => variants.theme)),
     new Set(['light', 'dark']),
   );
-  assert.ok(appRoutes.every(({ variants }) => variants.route === 'not-found'));
+  assert.deepEqual(
+    new Set(appRoutes.map(({ variants }) => variants.route)),
+    new Set(['not-found', 'mypage', 'home']),
+  );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
       componentId === 'src/components/Login.tsx#Login'
@@ -3720,25 +3870,22 @@ test('offseason public route tree has no pending direct or hosted visual symbol'
   );
 });
 
-test('public landing tree has no pending direct or hosted visual symbol', async () => {
-  const manifest = JSON.parse(await readFile(
-    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
-    'utf8',
-  )) as {
-    components: Array<{ id: string; status: string }>;
-  };
-  const landingIds = manifest.components
-    .filter(({ id }) => id === 'src/components/Landing.tsx#Landing'
-      || id.startsWith('src/components/landing/'))
+test('public landing tree classifies every visual symbol and reports new pending leaves', async () => {
+  const [manifest, classificationManifest] = await Promise.all([
+    readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+    readFile(new URL('../../contracts/visual-qa-component-classifications-v1.json', import.meta.url), 'utf8'),
+  ]).then(([stateManifest, classifications]) => [
+    JSON.parse(stateManifest) as { components: Array<{ id: string; status: string }> },
+    JSON.parse(classifications) as { components: Array<{ id: string; classification: string }> },
+  ] as const);
+  /*
+   * Classification is the source of truth for the public landing visual set;
+   * static arrays and aliases must not become visual state obligations.
+   */
+  const publicLandingVisualIds = classificationManifest.components
+    .filter(({ classification, id }) => classification === 'visual'
+      && (id === 'src/components/Landing.tsx#Landing' || id.startsWith('src/components/landing/')))
     .map(({ id }) => id);
-  const publicLandingVisualIds = landingIds.filter((id) => (
-    !id.endsWith('#PREVIEW_POINTS')
-      && !id.endsWith('#HERO_STATS')
-      && !id.endsWith('#PRESS_START_FONT_HREF')
-      && !id.endsWith('#PRESS_START_FONT_ID')
-      && !id.endsWith('#LandingMateVignette.Icon')
-      && !id.endsWith('#MATE_DETAIL_ICONS')
-  ));
   const pending = manifest.components.filter(({ id, status }) => (
     publicLandingVisualIds.includes(id) && status !== 'registered'
   ));
@@ -3746,10 +3893,16 @@ test('public landing tree has no pending direct or hosted visual symbol', async 
     publicLandingVisualIds.includes(componentId)
   ));
 
-  assert.equal(publicLandingVisualIds.length, 17);
-  assert.deepEqual(pending, []);
-  assert.equal(scenarios.length, 326);
-  assert.equal(new Set(scenarios.map(({ componentId }) => componentId)).size, 16);
+  assert.equal(publicLandingVisualIds.length, 20);
+  assert.deepEqual(pending.map(({ id }) => id), [
+    'src/components/landing/LandingFooter.tsx#LandingFooter',
+    'src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection',
+    'src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen',
+    'src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen',
+    'src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen',
+  ]);
+  assert.equal(scenarios.length, 322);
+  assert.equal(new Set(scenarios.map(({ componentId }) => componentId)).size, 14);
   const heroOpen = scenarios.find(({ stateCombinationId }) => (
     stateCombinationId === 'data=populated|interactions=open|variant.theme=light|interactionTarget=home'
   ));

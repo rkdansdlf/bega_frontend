@@ -2,6 +2,7 @@ import {
   Component,
   createElement,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ComponentType,
@@ -15,6 +16,7 @@ import { MemoryRouter, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '../hooks/useTheme';
 import { ConfirmDialogProvider } from '../components/contexts/ConfirmDialogContext';
 import { cn } from '../lib/utils';
+import { useAuthStore } from '../store/authStore';
 import { installHarnessBrowserState } from './harnessBrowserState';
 import { resolveHarnessScenario } from './harnessCatalog';
 import { renderInSemanticHost } from './semanticHost';
@@ -128,6 +130,41 @@ function HarnessRouterLocationProbe() {
       data-vqa-router-search={location.search}
     />
   );
+}
+
+function HarnessAuthStateBridge({
+  authState,
+  children,
+}: {
+  authState?: ComponentStateAdapterResult['harnessAuthState'];
+  children: ReactNode;
+}) {
+  useLayoutEffect(() => {
+    if (authState === undefined) {
+      return undefined;
+    }
+
+    const previousState = useAuthStore.getState();
+    useAuthStore.setState({
+      user: authState.user,
+      isAuthLoading: false,
+      publicAuthBootstrapPhase: 'idle',
+      showLoginRequiredDialog: false,
+      pendingLoginRedirect: null,
+    });
+
+    return () => {
+      useAuthStore.setState({
+        user: previousState.user,
+        isAuthLoading: previousState.isAuthLoading,
+        publicAuthBootstrapPhase: previousState.publicAuthBootstrapPhase,
+        showLoginRequiredDialog: previousState.showLoginRequiredDialog,
+        pendingLoginRedirect: previousState.pendingLoginRedirect,
+      });
+    };
+  }, [authState]);
+
+  return <>{children}</>;
 }
 
 const scenarioFromLocation = () => {
@@ -256,26 +293,28 @@ export default function VisualQaHarnessApp() {
               <QueryClientProvider client={queryClient}>
                 <MemoryRouter initialEntries={[renderResult.initialPathname ?? '/__visual-qa__']}>
                   <ConfirmDialogProvider>
-                    <section
-                      className={cn(
-                        'flex min-h-48 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm',
-                        renderResult.surfaceClassName,
-                      )}
-                      data-vqa-capture-selector={renderResult.captureSelector}
-                      data-vqa-expected-hash={renderResult.expectedHash}
-                      data-vqa-expected-pathname={renderResult.expectedPathname}
-                      data-vqa-expected-search={renderResult.expectedSearch}
-                      data-vqa-harness-surface
-                      data-vqa-rendered-component-id={scenario.componentId}
-                      data-vqa-rendered-scenario-id={scenario.id}
-                    >
-                      <HarnessRouterLocationProbe />
-                      {renderInSemanticHost(
-                        createElement(LoadedComponent, renderResult.props),
-                        renderResult.semanticHost,
-                      )}
-                      {renderResult.companion}
-                    </section>
+                    <HarnessAuthStateBridge authState={renderResult.harnessAuthState}>
+                      <section
+                        className={cn(
+                          'flex min-h-48 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm',
+                          renderResult.surfaceClassName,
+                        )}
+                        data-vqa-capture-selector={renderResult.captureSelector}
+                        data-vqa-expected-hash={renderResult.expectedHash}
+                        data-vqa-expected-pathname={renderResult.expectedPathname}
+                        data-vqa-expected-search={renderResult.expectedSearch}
+                        data-vqa-harness-surface
+                        data-vqa-rendered-component-id={scenario.componentId}
+                        data-vqa-rendered-scenario-id={scenario.id}
+                      >
+                        <HarnessRouterLocationProbe />
+                        {renderInSemanticHost(
+                          createElement(LoadedComponent, renderResult.props),
+                          renderResult.semanticHost,
+                        )}
+                        {renderResult.companion}
+                      </section>
+                    </HarnessAuthStateBridge>
                   </ConfirmDialogProvider>
                 </MemoryRouter>
               </QueryClientProvider>

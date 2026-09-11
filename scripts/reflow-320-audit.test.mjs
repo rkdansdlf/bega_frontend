@@ -2,7 +2,36 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, evaluateKeyboard, evaluateRoute, summarize } from './reflow-320-audit.mjs';
+import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, evaluateKeyboard, evaluateRoute, isApiRequestUrl, stubApi, summarize } from './reflow-320-audit.mjs';
+
+test('API stubbing matches API paths without intercepting Vite source modules', () => {
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/api/auth/mypage'), true);
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/api'), true);
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/api/home?date=2026-09-09'), true);
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/apiary/home'), false);
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/src/api/homeCore.ts'), false);
+  assert.equal(isApiRequestUrl('https://evil.example/api/home', 'http://127.0.0.1:5181'), false);
+  assert.equal(isApiRequestUrl('http://127.0.0.1:5181/api/home', 'http://127.0.0.1:5181'), true);
+});
+
+test('every API stub matcher stays inside the allowed origin', async () => {
+  const matchers = [];
+  const context = {
+    route: async (matcher) => {
+      matchers.push(matcher);
+    },
+  };
+  await stubApi(context, { allowedOrigin: 'http://127.0.0.1:5181' });
+  assert.equal(matchers.length, 3);
+  for (const matcher of matchers) {
+    assert.equal(matcher('https://evil.example/api/home'), false);
+    assert.equal(matcher('http://127.0.0.1:5181/src/api/homeCore.ts'), false);
+  }
+  assert.equal(matchers[0]('http://127.0.0.1:5181/api/home?date=2026-09-09'), true);
+  assert.equal(matchers[1]('http://127.0.0.1:5181/api/home?date=2026-09-09'), true);
+  assert.equal(matchers[2]('http://127.0.0.1:5181/api/auth/mypage'), true);
+  assert.equal(matchers[2]('http://127.0.0.1:5181/api/other'), false);
+});
 
 test('route that fits at both text sizes passes', () => {
   const result = evaluateRoute({

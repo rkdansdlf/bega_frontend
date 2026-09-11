@@ -1,0 +1,20 @@
+.home-runtime-touch-outline,
+.home-runtime-touch-icon {
+  height: 44px !important;
+  min-height: 44px !important;
+}
+
+.home-runtime-touch-outline {
+  padding-inline: 16px !important;
+}
+
+.home-runtime-touch-icon {
+  min-width: 44px !important;
+  width: 44px !important;
+}
+
+.home-runtime-date-link {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding-inline: 12px !important;
+}

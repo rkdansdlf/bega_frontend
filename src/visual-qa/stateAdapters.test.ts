@@ -100,6 +100,111 @@ test('SeatMapLegend resolves its fourteen literal synthetic direct props and fai
   }));
 });
 
+test('HomeGameCard adapter uses the real payload branches and isolates logo fallbacks', () => {
+  const componentId = 'src/components/home/HomeGameCard.tsx#HomeGameCard';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.game-card'), true);
+
+  const completed = resolveComponentStateAdapter('home.game-card', {
+    componentId,
+    states: { data: 'populated', interactions: 'selected' },
+    variants: { logo: 'normal', theme: 'dark' },
+    interactionTargetId: 'prediction-card',
+  });
+
+  assert.equal(completed.theme, 'dark');
+  assert.equal(completed.captureSelector, '[data-vqa-harness-surface] > .group');
+  assert.equal(completed.props.shouldMountTeamLogo, true);
+  assert.equal(typeof completed.props.onSelectPrediction, 'function');
+  assert.equal((completed.props.game as { gameStatus: string }).gameStatus, 'FINAL');
+  assert.equal((completed.props.game as { homeScore: number }).homeScore, 4);
+
+  const deferredLogo = resolveComponentStateAdapter('home.game-card', {
+    componentId,
+    states: { data: 'missing-image', interactions: 'default' },
+    variants: { logo: 'address-missing', theme: 'light' },
+  });
+  assert.equal(deferredLogo.props.shouldMountTeamLogo, false);
+  assert.equal((deferredLogo.props.game as { homeTeam: string }).homeTeam, 'LG');
+
+  assert.throws(() => resolveComponentStateAdapter('home.game-card', {
+    componentId,
+    states: { data: 'populated', interactions: 'selected' },
+    variants: { logo: 'normal', theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('home.game-card', {
+    componentId: 'src/components/home/HomeMatchPanel.tsx#HomeMatchPanel',
+    states: { data: 'single' },
+    variants: { logo: 'normal', theme: 'light' },
+  }));
+});
+
+test('HomeMatchPanel adapter keeps schedule data local and exposes callback evidence markers', () => {
+  const componentId = 'src/components/home/HomeMatchPanel.tsx#HomeMatchPanel';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.match-panel'), true);
+
+  const scheduled = resolveComponentStateAdapter('home.match-panel', {
+    componentId,
+    states: { data: 'populated', interactions: 'open', system: 'idle' },
+    variants: { tab: 'scheduled', theme: 'light' },
+    interactionTargetId: 'secondary-toggle',
+  });
+
+  assert.equal(scheduled.theme, 'light');
+  assert.equal(scheduled.captureSelector, '[data-testid="home-match-priority-panel"]');
+  assert.equal(scheduled.props.activeLeagueTab, 'scheduled');
+  assert.equal(scheduled.props.isSecondarySectionExpanded, true);
+  assert.equal(scheduled.props.activeStandardGames instanceof Array, true);
+  assert.equal((scheduled.props.scheduledSecondaryGames as unknown[]).length, 1);
+  assert.equal(typeof scheduled.props.onToggleSecondarySection, 'function');
+
+  const error = resolveComponentStateAdapter('home.match-panel', {
+    componentId,
+    states: { data: 'single', interactions: 'retry', system: 'error-503' },
+    variants: { tab: 'regular', theme: 'dark' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(error.props.isGamesError, true);
+  assert.equal(error.props.loadFailureReason, 'request-failed');
+  assert.equal(typeof error.props.onRetry, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('home.match-panel', {
+    componentId,
+    states: { data: 'empty', interactions: 'selected', system: 'idle' },
+    variants: { tab: 'regular', theme: 'light' },
+    interactionTargetId: 'game-card',
+  }));
+  assert.throws(() => resolveComponentStateAdapter('home.match-panel', {
+    componentId,
+    states: { data: 'single', interactions: 'open', system: 'idle' },
+    variants: { tab: 'regular', theme: 'light' },
+    interactionTargetId: 'secondary-toggle',
+  }));
+});
+
+test('HomeRuntime adapter is fail-closed and binds the real route-owned runtime surface', () => {
+  const componentId = 'src/components/HomeRuntime.tsx#HomeRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.runtime'), true);
+  const ready = resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'normal', system: 'ready', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(ready.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(ready.initialPathname, '/home?date=2026-09-10');
+  assert.equal(ready.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('home.runtime', {
+    componentId: 'src/components/Home.tsx#Home',
+    states: { data: 'normal', system: 'ready', interactions: 'default' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'normal', system: 'ready', interactions: 'retry' },
+    variants: { theme: 'light' },
+  }));
+});
+
 type VisualQaReleaseDecisionState = {
   releaseArtifactAction: { artifactId: string; mode: string } | null;
   releaseArtifacts: unknown[];
@@ -197,6 +302,9 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'figma.image-with-fallback',
     'global-error.content',
     'global-error.root',
+    'home.game-card',
+    'home.match-panel',
+    'home.runtime',
     'image.lightbox',
     'landing.app-preview',
     'landing.capability-showcase',
@@ -349,10 +457,12 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'seat-map-template-shell',
     'seat-view-direct-upload-modal',
     'simple-markdown.content',
+    'stadium-seat-map-error-boundary',
     'stadium-seatmap.error',
     'stadium-seatmap.loading',
     'stadium-seatmap.manual-required',
     'stadium.favorite-toggle',
+    'stadium.guide',
     'team-recommendation.test',
     'team.logo',
     'terms-of-service.page',
@@ -4572,6 +4682,39 @@ test('app routes adapter renders the wildcard route inside the lazy route bounda
   }), /지원하지 않는 Visual QA state/);
 });
 
+test('app routes adapter renders the authenticated MyPage route with a real session fixture', () => {
+  const myPage = resolveComponentStateAdapter('app.routes', {
+    componentId: 'src/components/AppRoutes.tsx#AppRoutes',
+    states: { data: 'single' },
+    variants: { route: 'mypage', theme: 'light' },
+  });
+
+  assert.deepEqual(myPage.props, {});
+  assert.equal(myPage.captureSelector, '[data-testid="mypage-prototype-shell"]');
+  assert.equal(myPage.expectedPathname, '/mypage');
+  assert.equal(myPage.initialPathname, '/mypage');
+  assert.equal(myPage.semanticHost, 'suspense');
+  assert.equal(myPage.theme, 'light');
+  assert.equal(myPage.harnessAuthState?.user.email, 'visual-qa-mypage@example.com');
+  assert.equal(myPage.harnessAuthState?.user.role, 'ROLE_USER');
+});
+
+test('app routes adapter renders the public Home route without inventing route-owned controls', () => {
+  const home = resolveComponentStateAdapter('app.routes', {
+    componentId: 'src/components/AppRoutes.tsx#AppRoutes',
+    states: { data: 'single' },
+    variants: { route: 'home', theme: 'dark' },
+  });
+
+  assert.deepEqual(home.props, {});
+  assert.equal(home.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(home.expectedPathname, '/home');
+  assert.equal(home.initialPathname, '/home');
+  assert.equal(home.semanticHost, 'suspense');
+  assert.equal(home.theme, 'dark');
+  assert.equal(home.harnessAuthState, undefined);
+});
+
 test('navbar shell adapter maps permission, menu, route, badge, scroll, and theme branches', () => {
   const closedUser = resolveComponentStateAdapter('navbar.shell', {
     componentId: 'src/components/Navbar.tsx#Navbar',
@@ -7080,6 +7223,80 @@ test('stadium-seatmap-error-scenarios', () => {
       variants: { stadiumName: 'short' },
     }),
     /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('stadium-seat-map-error-boundary resolves real fallback and retry fixtures', () => {
+  const componentId = 'src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary';
+  const recoverable = resolveComponentStateAdapter('stadium-seat-map-error-boundary', {
+    componentId,
+    states: { data: 'long-korean', system: 'error-recoverable', interactions: 'retry' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'retry-recoverable',
+  });
+  assert.equal(recoverable.captureSelector, '[data-testid="stadium-seatmap-error"]');
+  assert.equal(recoverable.theme, 'dark');
+  assert.equal(typeof recoverable.props.fallback, 'function');
+  assert.ok(recoverable.props.children);
+
+  const persistent = resolveComponentStateAdapter('stadium-seat-map-error-boundary', {
+    componentId,
+    states: { data: 'unbroken-token', system: 'error-503', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(persistent.captureSelector, '[data-testid="stadium-seatmap-error"]');
+  assert.equal(persistent.theme, 'light');
+  assert.throws(
+    () => resolveComponentStateAdapter('stadium-seat-map-error-boundary', {
+      componentId,
+      states: { data: 'empty', system: 'idle', interactions: 'default' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'retry-recoverable',
+    }),
+    /expected retry target|default state does not accept interaction targets/,
+  );
+});
+
+test('stadium guide adapter resolves the real wrapper fallback and runtime phases', () => {
+  const componentId = 'src/components/StadiumGuide.tsx#StadiumGuide';
+  for (const theme of ['light', 'dark'] as const) {
+    const fallback = resolveComponentStateAdapter('stadium.guide', {
+      componentId,
+      states: {},
+      variants: { phase: 'fallback', theme },
+    });
+    assert.equal(fallback.captureSelector, '[data-testid="stadium-guide-route-fallback"]');
+    assert.equal(fallback.theme, theme);
+    assert.equal(fallback.props.visualQaPhase, 'fallback');
+    assert.equal(fallback.props.visualQaRuntimeOverride, undefined);
+
+    const runtime = resolveComponentStateAdapter('stadium.guide', {
+      componentId,
+      states: {},
+      variants: { phase: 'runtime', theme },
+    });
+    assert.equal(runtime.captureSelector, '[data-testid="stadium-guide-runtime-resolved"]');
+    assert.equal(runtime.theme, theme);
+    assert.equal(runtime.props.visualQaPhase, 'runtime');
+    assert.ok(runtime.props.visualQaRuntimeOverride);
+  }
+
+  assert.throws(
+    () => resolveComponentStateAdapter('stadium.guide', {
+      componentId,
+      states: { data: 'single' },
+      variants: { phase: 'runtime', theme: 'light' },
+    }),
+    /does not support state axes/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('stadium.guide', {
+      componentId,
+      states: {},
+      variants: { phase: 'runtime', theme: 'light' },
+      interactionTargetId: 'unexpected',
+    }),
+    /does not support interaction targets/,
   );
 });
 

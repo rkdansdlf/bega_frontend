@@ -4,6 +4,26 @@
   z-index: 50;
 }
 
+@media (max-width: 767px) {
+  .navbar-capsule-mobile {
+    height: auto !important;
+    min-height: 48px !important;
+    gap: 8px !important;
+    padding-inline: 12px !important;
+  }
+
+  .navbar-home-link {
+    min-height: 44px !important;
+    gap: 8px !important;
+    padding-inline: 4px !important;
+  }
+
+  .navbar-logo-image {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
 .mobile-menu-backdrop {
   position: absolute;
   inset: 0;

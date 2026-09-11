@@ -24875,9 +24875,11 @@
           {
             "name": "route",
             "values": [
-              "not-found"
+              "not-found",
+              "mypage",
+              "home"
             ],
-            "reason": "The wildcard route bypasses auth and query providers, isolating the route table and lazy boundary without external state.",
+            "reason": "The route table is exercised through its public wildcard destination, protected MyPage destination, and public Home destination; delegated page data remains owned by the hosted child contracts.",
             "owner": "frontend-platform",
             "testEvidence": "src/visual-qa/stateAdapters.test.ts#app-routes-adapter"
           },
@@ -24932,8 +24934,62 @@
     },
     {
       "id": "src/components/AppRoutes.tsx#Home",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AppRoutes.tsx#AppRoutes:data=single|variant.route=home|variant.theme=light",
+          "state:src/components/AppRoutes.tsx#AppRoutes:data=single|variant.route=home|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The public /home route binds the canonical Home lazy surface; bootstrap and widget payload branches remain owned by HomeRuntime.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "permissions": {
+          "values": [
+            "anonymous"
+          ],
+          "reason": "AppRoutes places /home under the public Layout and does not require an authenticated session; authenticated home chrome is delegated to HomeRuntime.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The route binding owns no local control; HomeRuntime owns date navigation, prediction/off-season CTA, and content interactions.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The route binding performs no transport request; bootstrap, widget, retry, and manual-data states belong to HomeRuntime.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/HomeRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The public route renders the theme-aware Layout and Home surface in both supported document themes.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/Layout.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/AppRoutes.tsx#Layout",
@@ -25232,8 +25288,62 @@
     },
     {
       "id": "src/components/AppRoutes.tsx#MyPage",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AppRoutes.tsx#AppRoutes:data=single|variant.route=mypage|variant.theme=light",
+          "state:src/components/AppRoutes.tsx#AppRoutes:data=single|variant.route=mypage|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The route binding delegates the canonical authenticated MyPage shell; profile and diary payload states remain owned by MyPageRuntime.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "permissions": {
+          "values": [
+            "user"
+          ],
+          "reason": "The route is reachable only through ProtectedRoute for an authenticated regular user; anonymous and administrator outcomes are owned by their route guards.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/ProtectedRoute.tsx"
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The route binding owns no control; MyPageRuntime and its direct child contracts own navigation and dialog interactions.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The route binding performs no transport request; profile, diary, and ticket outcomes belong to the delegated MyPage runtime.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The authenticated route shell and delegated MyPage surface are theme-aware in both document themes.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/MyPageRuntime.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/AppRoutes.tsx#NotFound",
@@ -26118,8 +26228,55 @@
     },
     {
       "id": "src/components/AppRoutes.tsx#StadiumGuide",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=fallback|variant.theme=light",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=fallback|variant.theme=dark",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=runtime|variant.theme=light",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=runtime|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The route binding owns lazy resolution only; StadiumGuide owns the visible fallback and runtime phase contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The public stadium route does not make an independent authorization decision.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Route-level navigation is covered by the route-flow evidence; the route binding owns no local control.",
+            "owner": "frontend-platform",
+            "testEvidence": "scripts/visual-qa-route-flow.integration.mjs"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Transport and stadium data branches belong to StadiumGuideRuntime, not the route binding.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AppRoutes.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The route forwards the wrapper without changing its phase or theme; both are exercised by the hosted wrapper scenarios.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/StadiumGuide.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/AppRoutes.tsx#TermsOfService",
@@ -29922,6 +30079,11 @@
       "constraints": []
     },
     {
+      "id": "src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
       "id": "src/components/contexts/ConfirmDialogContext.tsx#ConfirmDialogProvider",
       "status": "pending",
       "renderAccess": "module-export"
@@ -32566,6 +32728,379 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/HomeRuntime.tsx#HomeRuntime",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "home.runtime"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "normal",
+            "empty",
+            "date-a",
+            "date-b",
+            "long-korean",
+            "manual"
+          ],
+          "reason": "HomeRuntime owns the real bootstrap payload, including ordinary content, no-game days, date-transition fixtures, long-copy pressure, and the manual-data contract response.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-runtime-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "HomeRuntime reads the auth snapshot to delegate visibility, but authorization decisions belong to the auth bridge and route shell.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/HomeRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry",
+            "next-date",
+            "cta"
+          ],
+          "reason": "The runtime owns the existing recovery retry, date navigation, and prediction/off-season CTA transitions.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        "system": {
+          "values": [
+            "loading",
+            "ready",
+            "empty",
+            "request-failed",
+            "manual-data-required"
+          ],
+          "reason": "These are the production bootstrap phases rendered by HomeRuntime and its HomeMatchPanel boundary; no synthetic retry or loading branch is added.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The real HomeRuntime surface and its hosted panels have explicit light and dark visual branches.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/HomeRuntime.css"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "recovery-retry",
+              "selector": "[data-testid=\"home-global-recovery\"] button, [data-testid=\"home-match-priority-panel\"] button",
+              "waitForSelector": "[data-testid=\"home-match-priority-panel\"]"
+            }
+          ],
+          "reason": "Retry must invoke the production recovery callback and complete a new bootstrap request.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        "next-date": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "date-next",
+              "selector": "[data-testid=\"home-date-next\"]",
+              "waitForSelector": "[data-testid=\"home-match-priority-panel\"]"
+            }
+          ],
+          "reason": "The existing next-date control changes the route-owned date and requests the matching bootstrap payload.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        "cta": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "primary-cta",
+              "selector": "[data-testid=\"home-secondary-prediction-cta\"], [data-testid=\"home-offseason-cta\"], [data-testid=\"home-game-card\"]"
+            }
+          ],
+          "reason": "The route integration runner verifies the existing prediction or off-season CTA result, including the selected game identifier.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "data": "normal"
+          },
+          "reason": "The empty system branch is only valid for the empty bootstrap fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "data": "date-a"
+          },
+          "reason": "The empty system branch is only valid for the empty bootstrap fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "data": "date-b"
+          },
+          "reason": "The empty system branch is only valid for the empty bootstrap fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "data": "long-korean"
+          },
+          "reason": "The empty system branch is only valid for the empty bootstrap fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "data": "manual"
+          },
+          "reason": "The empty system branch is only valid for the empty bootstrap fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "data": "normal"
+          },
+          "reason": "The manual-data-required response is only represented by the manual fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "data": "empty"
+          },
+          "reason": "The manual-data-required response is only represented by the manual fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "data": "date-a"
+          },
+          "reason": "The manual-data-required response is only represented by the manual fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "data": "date-b"
+          },
+          "reason": "The manual-data-required response is only represented by the manual fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "data": "long-korean"
+          },
+          "reason": "The manual-data-required response is only represented by the manual fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "request-failed",
+            "data": "normal"
+          },
+          "reason": "A request-failed state needs the explicit failure fixture so its retry path is deterministic.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "request-failed",
+            "data": "date-a"
+          },
+          "reason": "A request-failed state needs the explicit failure fixture so its retry path is deterministic.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "request-failed",
+            "data": "date-b"
+          },
+          "reason": "A request-failed state needs the explicit failure fixture so its retry path is deterministic.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "request-failed",
+            "data": "long-korean"
+          },
+          "reason": "A request-failed state needs the explicit failure fixture so its retry path is deterministic.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "retry"
+          },
+          "reason": "Loading has no recovery control until the request resolves.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "next-date"
+          },
+          "reason": "The date control is verified after a ready bootstrap response.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "cta"
+          },
+          "reason": "The prediction CTA is only actionable after content is ready.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "interactions": "cta"
+          },
+          "reason": "An empty day has no game selection CTA.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "interactions": "next-date"
+          },
+          "reason": "Date navigation is verified from the ready date-a fixture.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-data-required",
+            "interactions": "cta"
+          },
+          "reason": "Manual-data-required is a recovery state and does not invent a prediction action.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "request-failed",
+            "interactions": "cta"
+          },
+          "reason": "Request failure renders recovery UI rather than a prediction action.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "empty",
+            "interactions": "retry"
+          },
+          "reason": "An empty successful day has no recovery retry control.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": [
+              "loading",
+              "ready",
+              "empty"
+            ],
+            "interactions": "retry"
+          },
+          "reason": "Retry is executable only for request-failed or manual-data-required responses.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": [
+              "normal",
+              "empty",
+              "date-b",
+              "long-korean",
+              "manual"
+            ],
+            "interactions": "next-date"
+          },
+          "reason": "The date-transition fixture starts from date-a so the response order and final selection are deterministic.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": [
+              "loading",
+              "empty",
+              "request-failed",
+              "manual-data-required"
+            ],
+            "interactions": "next-date"
+          },
+          "reason": "Date navigation is executable only after the ready date-a bootstrap response.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": [
+              "loading",
+              "empty",
+              "request-failed",
+              "manual-data-required"
+            ],
+            "interactions": "cta"
+          },
+          "reason": "The CTA is executable only after a ready bootstrap response.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "cta"
+          },
+          "reason": "An empty day has no game or prediction CTA target.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/HomeRuntime.tsx"
+        }
+      ]
+    },
+    {
       "id": "src/components/home/HomeDeferredSurfaces.tsx#HomeDeferredSurfaces",
       "status": "pending",
       "renderAccess": "module-export"
@@ -32597,8 +33132,106 @@
     },
     {
       "id": "src/components/home/HomeGameCard.tsx#HomeGameCard",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "home.game-card"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single",
+            "populated",
+            "long-korean",
+            "unbroken-token",
+            "missing-image",
+            "unknown-team"
+          ],
+          "reason": "HomeGameCard renders the real Game payload branches for scheduled, completed, long-copy, unbroken-token, deferred-logo, and unknown-team fallback states.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-game-card-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "HomeGameCard receives no permission prop and does not make an authorization decision; the parent HomeRuntime owns route and auth state.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeGameCard.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "selected",
+            "keyboard-navigation"
+          ],
+          "reason": "The card is either static or exposes its existing click and Enter/Space selection path through the optional onSelectPrediction callback.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-game-card-adapter"
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "HomeGameCard has no transport or timer state; loading and request failures are rendered by HomeMatchPanel and HomeRuntime.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeGameCard.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "logo",
+            "values": [
+              "normal",
+              "address-missing",
+              "load-fallback"
+            ],
+            "reason": "The production card distinguishes deferred logo mounting from the TeamLogo unknown-team fallback; it has no remote image URL or onError prop of its own.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeGameCard.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The card has distinct light and dark class branches for status, scores, team labels, and action affordances.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/home/HomeGameCard.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "prediction-card",
+              "selector": "[role=\"button\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-home-game-selection\"]"
+            }
+          ],
+          "reason": "A selected card must invoke the existing prediction callback and expose its deterministic harness marker.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-game-card-adapter"
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "targets": [
+            {
+              "id": "prediction-card",
+              "selector": "[role=\"button\"]",
+              "key": "Enter",
+              "waitForSelector": "[data-testid=\"visual-qa-home-game-selection\"]"
+            }
+          ],
+          "reason": "The existing card keyboard handler must produce the same selection result as a pointer click.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeGameCard.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/home/HomeGameCard.tsx#HomeSideLabel",
@@ -32627,8 +33260,247 @@
     },
     {
       "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchPanel",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "home.match-panel"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "populated",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "The panel receives deterministic regular and scheduled Game arrays, including empty, populated, long-copy, and unbroken-token content pressure.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-match-panel-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "HomeMatchPanel does not receive or resolve permission state; HomeRuntime owns the auth snapshot and recovery visibility.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry",
+            "selected",
+            "open"
+          ],
+          "reason": "The panel owns presentation callbacks for retry, card selection, and the scheduled secondary-section toggle; transport ownership remains above it.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-match-panel-adapter"
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading",
+            "error-503",
+            "manual-required"
+          ],
+          "reason": "The panel renders its actual loading and error branches from parent-provided flags, including the MANUAL_BASEBALL_DATA_REQUIRED presentation path.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "tab",
+            "values": [
+              "regular",
+              "scheduled"
+            ],
+            "reason": "The active league tab selects the regular-game board or the lazy scheduled-game panel branch.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Both regular and scheduled panel branches contain distinct light and dark visual treatments.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"home-match-priority-panel\"] button",
+              "waitForSelector": "[data-testid=\"visual-qa-home-match-panel-interaction\"]"
+            }
+          ],
+          "reason": "An error panel retry must invoke the existing parent callback without replacing the production error surface.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-match-panel-adapter"
+        },
+        "selected": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "game-card",
+              "selector": "[data-testid=\"home-game-card\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-home-match-panel-interaction\"]"
+            }
+          ],
+          "reason": "A panel card selection must pass the real Game payload through the existing callback boundary.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        "open": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "secondary-toggle",
+              "selector": "[data-testid=\"home-scheduled-secondary-toggle\"]",
+              "waitForSelector": "[data-testid=\"visual-qa-home-match-panel-interaction\"]",
+              "when": {
+                "variant.tab": "scheduled",
+                "data": [
+                  "populated",
+                  "long-korean"
+                ],
+                "system": "idle"
+              }
+            }
+          ],
+          "reason": "The scheduled secondary section must use its existing toggle callback and preserve the production disclosure control.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "selected"
+          },
+          "reason": "An empty panel has no game card to select.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "selected"
+          },
+          "reason": "Loading branches render skeletons rather than selectable game cards.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "interactions": "selected"
+          },
+          "reason": "Request-error branches render recovery UI rather than selectable game cards.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-required",
+            "interactions": "selected"
+          },
+          "reason": "Manual-data-required branches render recovery UI rather than selectable game cards.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "idle",
+            "interactions": "retry"
+          },
+          "reason": "Retry is only executable when the panel exposes an error branch.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "retry"
+          },
+          "reason": "Loading branches have no retry button in the panel surface.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "variant.tab": "regular",
+            "interactions": "open"
+          },
+          "reason": "The secondary disclosure control only exists in the scheduled tab.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "interactions": "open"
+          },
+          "reason": "The empty scheduled branch has no secondary section to expand.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "single",
+            "interactions": "open"
+          },
+          "reason": "The single fixture intentionally contains only primary scheduled games.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-match-panel-adapter"
+        },
+        {
+          "excludeWhen": {
+            "data": "unbroken-token",
+            "interactions": "open"
+          },
+          "reason": "The unbroken-token pressure fixture does not invent a secondary schedule branch.",
+          "owner": "frontend-home",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#home-match-panel-adapter"
+        },
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": "open"
+          },
+          "reason": "Loading branches expose skeletons and no scheduled disclosure control.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "interactions": "open"
+          },
+          "reason": "Request-error branches expose recovery UI and no scheduled disclosure control.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "manual-required",
+            "interactions": "open"
+          },
+          "reason": "Manual-data-required branches expose recovery UI and no scheduled disclosure control.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleBoardHeader",
@@ -32672,6 +33544,11 @@
     },
     {
       "id": "src/components/home/HomeMatchPanelErrorState.tsx#HomeMatchPanelErrorState",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
+      "id": "src/components/home/HomePullToRefresh.tsx#HomePullToRefresh",
       "status": "pending",
       "renderAccess": "module-export"
     },
@@ -32776,22 +33653,12 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/HomeRuntime.tsx#HomeRuntime",
-      "status": "pending",
-      "renderAccess": "module-export"
-    },
-    {
       "id": "src/components/HomeRuntime.tsx#LazyHomeDeferredSurfaces",
       "status": "pending",
       "renderAccess": "hosted"
     },
     {
       "id": "src/components/HomeRuntime.tsx#LazyHomeMatchPanel",
-      "status": "pending",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/HomeRuntime.tsx#LazyHomeRecoveryBanner",
       "status": "pending",
       "renderAccess": "hosted"
     },
@@ -33703,6 +34570,11 @@
       "constraints": []
     },
     {
+      "id": "src/components/landing/LandingFooter.tsx#LandingFooter",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
       "id": "src/components/landing/LandingHero.tsx#LandingHero",
       "status": "registered",
       "renderAccess": "module-export",
@@ -33923,6 +34795,11 @@
       "constraints": []
     },
     {
+      "id": "src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
       "id": "src/components/landing/LandingStartGuide.tsx#LandingStartGuide",
       "status": "registered",
       "renderAccess": "module-export",
@@ -34141,6 +35018,21 @@
         ]
       },
       "constraints": []
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen",
+      "status": "pending",
+      "renderAccess": "module-export"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen",
+      "status": "pending",
+      "renderAccess": "module-export"
     },
     {
       "id": "src/components/landing/vignettes/LandingCheerVignette.tsx#LandingCheerVignette",
@@ -34425,122 +35317,6 @@
               "dark"
             ],
             "reason": "Forecast cards and probability bars expose both supported themes.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/Landing.css"
-          }
-        ]
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/landing/vignettes/LandingStadiumVignette.tsx#LandingStadiumChips",
-      "status": "registered",
-      "renderAccess": "module-export",
-      "render": {
-        "mode": "direct",
-        "adapterId": "landing.stadium-chips",
-        "styles": [
-          "src/components/Landing.css"
-        ]
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "populated"
-          ],
-          "reason": "The stadium chip group owns its complete fixed guide labels.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The chip group is public and independent of identity.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "The chips are informational and own no focusable or pointer-operated controls.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The chip group performs no runtime request.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "Guide chips expose both supported themes.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/Landing.css"
-          }
-        ]
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/landing/vignettes/LandingStadiumVignette.tsx#LandingStadiumVignette",
-      "status": "registered",
-      "renderAccess": "module-export",
-      "render": {
-        "mode": "direct",
-        "adapterId": "landing.stadium-vignette",
-        "styles": [
-          "src/components/Landing.css"
-        ]
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "populated"
-          ],
-          "reason": "The stadium vignette owns one complete fixed venue guide example.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The vignette is public and independent of identity.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "The vignette owns no focusable or pointer-operated controls.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The vignette uses fixed project showcase data and performs no runtime request.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/landing/vignettes/LandingStadiumVignette.tsx"
-          }
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "Venue cards, rows, and guide chips expose both supported themes.",
             "owner": "frontend-platform",
             "testEvidence": "src/components/Landing.css"
           }
@@ -60052,8 +60828,52 @@
     },
     {
       "id": "src/components/MyPageRuntime.tsx#TicketUploadModal",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/ticket/TicketUploadModal.tsx#TicketUploadModal:data=empty|interactions=default|system=online|variant.gameMatch=missing"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The MyPage runtime owns lazy mounting and visibility; ticket payload branches are covered by the directly registered TicketUploadModal contract.",
+            "owner": "frontend-ticket",
+            "testEvidence": "src/components/MyPageRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy modal binding receives the authenticated host context and does not make an independent authorization decision.",
+            "owner": "frontend-ticket",
+            "testEvidence": "src/components/MyPageRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Modal controls and their keyboard paths are owned by the directly registered TicketUploadModal component.",
+            "owner": "frontend-ticket",
+            "testEvidence": "src/components/ticket/TicketUploadModal.mobile.test.ts"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Analysis transport outcomes belong to TicketUploadModal; this binding only mounts and unmounts the lazy child.",
+            "owner": "frontend-ticket",
+            "testEvidence": "src/components/MyPageRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The binding forwards no visual variant of its own; game-match and modal visual branches are covered by the direct child contract.",
+          "owner": "frontend-ticket",
+          "testEvidence": "src/components/ticket/TicketUploadModal.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/MyPageRuntime.tsx#UserListModal",
@@ -78919,13 +79739,122 @@
     },
     {
       "id": "src/components/StadiumGuide.tsx#StadiumGuide",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium.guide",
+        "styles": [
+          "src/components/StadiumGuide.css"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The wrapper owns fallback and lazy mounting; stadium payload branches belong to StadiumGuideRuntime.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The wrapper does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The wrapper boundary exposes no component-local controls; runtime controls are owned by the lazy child.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The wrapper only owns the local Suspense boundary; transport outcomes belong to StadiumGuideRuntime.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "phase",
+            "values": [
+              "fallback",
+              "runtime"
+            ],
+            "reason": "The wrapper exposes the loading fallback and the resolved runtime phase as distinct visual surfaces.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.mobile.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The fallback and resolved wrapper surfaces remain theme-aware at mobile widths.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuide.mobile.test.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/StadiumGuide.tsx#StadiumGuideRuntime",
-      "status": "pending",
-      "renderAccess": "hosted"
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=fallback|variant.theme=light",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=fallback|variant.theme=dark",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=runtime|variant.theme=light",
+          "state:src/components/StadiumGuide.tsx#StadiumGuide:variant.phase=runtime|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The hosted wrapper evidence covers the lazy child boundary; StadiumGuideRuntime data branches require their own fixture contract.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The wrapper host does not make an independent authorization decision for the runtime child.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Runtime controls are not asserted by this wrapper-boundary contract and remain owned by the runtime's pending direct contract.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuide.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The wrapper boundary does not model runtime transport; the route-flow evidence covers the real resolved page separately.",
+            "owner": "frontend-stadium",
+            "testEvidence": "scripts/visual-qa-route-flow.integration.mjs"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "This hosted entry reuses the wrapper phase/theme scenarios and does not invent additional runtime dimensions.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuide.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/StadiumGuidePlacesRuntime.tsx#StadiumGuidePlacesRuntime",
@@ -80771,8 +81700,104 @@
     },
     {
       "id": "src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium-seat-map-error-boundary"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated",
+            "null-optional",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "Covers empty, populated, optional-name, Korean text-pressure, unbroken-token, and maximum bounded copy through the real error boundary child and fallback.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The error boundary does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry"
+          ],
+          "reason": "The boundary owns retry through the fallback callback; default captures the stable error surface and retry exercises the actual recovery path.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+        },
+        "system": {
+          "values": [
+            "idle",
+            "error-recoverable",
+            "error-503"
+          ],
+          "reason": "Idle renders the child, error-recoverable proves retry recovery, and error-503 proves a repeated render failure remains contained by the boundary.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The owned fallback surface has distinct light and dark styling that must remain readable at narrow widths.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry-recoverable",
+              "selector": "[data-testid=\"stadium-seatmap-error\"] button",
+              "when": {
+                "system": "error-recoverable"
+              },
+              "waitForSelector": "[data-testid=\"stadium-seatmap-boundary-recovered\"]"
+            },
+            {
+              "id": "retry-persistent",
+              "selector": "[data-testid=\"stadium-seatmap-error\"] button",
+              "when": {
+                "system": "error-503"
+              },
+              "waitForSelector": "[data-testid=\"stadium-seatmap-error\"]"
+            }
+          ],
+          "reason": "Retry must recover a transient child render error and keep a persistent child render error contained without leaving the boundary.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "interactions": "retry",
+            "system": "idle"
+          },
+          "reason": "The idle child has no error fallback or retry control to exercise.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/stadiumSeatMap/StadiumSeatMapErrorBoundary.mobile.test.tsx"
+        }
+      ]
     },
     {
       "id": "src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorFallback",
