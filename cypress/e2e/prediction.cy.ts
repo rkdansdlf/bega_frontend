@@ -1674,6 +1674,13 @@ describe('Game Prediction', () => {
         cy.then(() => {
             voteStatusPhase = 'after-cancel';
         });
+        // executeVote의 finally(버튼 잠금 해제)는 실제 네트워크 완료(reloadVoteStatus,
+        // 필요시 refetchUserLeaderboardStats)에 달려 있어 fake-clock tick과는 무관하다.
+        // 위 tick(600)이 "그 정도면 충분히 지났을 것"이라는 real-time 가정에 기대고
+        // 있었는데, dev 서버가 느려지면 이 가정이 깨져 버튼이 아직 잠긴("처리 중...")
+        // 상태로 남아 두 번째 클릭이 확인 다이얼로그를 못 띄우는 게 실제로 재현됨.
+        // 고정 대기 대신 버튼이 실제로 풀린 것을 직접 확인한다.
+        cy.get('[data-testid="vote-home-btn"]').should('not.be.disabled');
         cy.get('[data-testid="vote-home-btn"]').click({ force: true });
         cy.get('[role="dialog"]').contains('button', '확인').click({ force: true });
         cy.wait('@cancelVote');
