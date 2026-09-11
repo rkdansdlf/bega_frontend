@@ -165,7 +165,13 @@ test('keeps the redesigned landing CTA-free, local-asset-only, and lazy below th
   assert.equal(/https?:\/\//.test(landingAssetsSource), false);
 
   assert.ok(mascotImage);
-  assert.ok(mascotImage.includes('loading="lazy"'));
+  // Native loading="lazy" only hints the browser's viewport-distance
+  // heuristic, which measurably fetched the image before scroll on this
+  // (short) landing page. src assignment is deferred to the same
+  // IntersectionObserver-driven reveal already used for the fade-in
+  // animation (useLandingMotion.ts) via data-lazy-src instead.
+  assert.ok(mascotImage.includes('data-lazy-src='));
+  assert.equal(mascotImage.includes(' src='), false);
   assert.ok(mascotImage.includes('decoding="async"'));
 
   assert.ok(bundleGuardSource.includes("label: 'Landing manifest avoids heavy icon runtime'"));
