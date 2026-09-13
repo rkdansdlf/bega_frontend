@@ -112,7 +112,7 @@ export default function StadiumGuidePlacesRuntime({
       </div>
 
       <div className="flex gap-2 mb-3">
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="장소 이름 검색..."
@@ -122,13 +122,13 @@ export default function StadiumGuidePlacesRuntime({
             className="stadium-guide-control min-h-11 pl-9 text-body"
           />
         </div>
-        <div className="relative">
+        <div className="relative min-w-0 max-w-[6.5rem] flex-shrink-0">
           <ArrowUpDownIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as StadiumGuideSortOrder)}
             disabled={listControlsDisabled}
-            className="stadium-guide-select stadium-guide-control min-h-11 pl-8 pr-3 text-body rounded-md border border-input bg-background dark:text-white cursor-pointer"
+            className="stadium-guide-select stadium-guide-control box-border min-h-11 w-full max-w-full pl-8 pr-2 text-body rounded-md border border-input bg-background dark:text-white cursor-pointer"
           >
             <option value="default">기본순</option>
             <option value="rating">평점순</option>

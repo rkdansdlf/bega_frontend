@@ -56,13 +56,13 @@ export function OffseasonMobileCards({
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1 text-caption font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-white">
-                                <CalendarDaysIcon className="h-3.5 w-3.5" />
+                            <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-caption font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-white">
+                                <CalendarDaysIcon className="h-3.5 w-3.5 flex-shrink-0" />
                                 {formatDateLabel(item.date)}
                             </span>
                             {amountLabel && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-caption font-semibold text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
-                                <TrendingUpIcon className="h-3.5 w-3.5" />
+                            <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-caption font-semibold text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
+                                <TrendingUpIcon className="h-3.5 w-3.5 flex-shrink-0" />
                                 {amountLabel}
                             </span>
                             )}
