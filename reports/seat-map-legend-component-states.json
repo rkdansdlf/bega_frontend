@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-02T15:48:12.596Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 14,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/seat-map-legend-screenshots"
+  },
+  "summary": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=empty|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-empty-variant-theme-dark-f6524214d94e.png",
+      "sha256": "18b479afb74dd0cc7eea8b2df8d45e9bb108f9d1441b61c160ae8bbaa00f0e4b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=empty|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-empty-variant-theme-light-cd5e24983e98.png",
+      "sha256": "18b479afb74dd0cc7eea8b2df8d45e9bb108f9d1441b61c160ae8bbaa00f0e4b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=long-korean|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-long-korean-variant-theme-dark-4c4eb9eb3a13.png",
+      "sha256": "c3682eb4a3ec5ca951892be66be6b20bf5120896b3fbdd21c03a631de56c33d5",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=long-korean|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-long-korean-variant-theme-light-e2673e31a0d6.png",
+      "sha256": "a92c3f3933d273f43f0d04d2243815d20d1db871ee792a1085449de1cb1bc199",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=maximum-supported|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-maximum-supported-variant-theme-dark-a81530049bdb.png",
+      "sha256": "ff4694bf1f0269cd0656e05321784b1b28fafe3354cfd18da2a658d6ceda9684",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=maximum-supported|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-maximum-supported-variant-theme-light-174ce10c02d8.png",
+      "sha256": "535234417f98bf726967df6d8dc72915ab4402b88084a9142a29c74dd9edc269",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=null-optional|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-null-optional-variant-theme-dark-07254c754ade.png",
+      "sha256": "6a0b8b06aea21d65cae36bffe0c0124029c54a1703662fadf3b71eb2250fe6b7",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=null-optional|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-null-optional-variant-theme-light-77fac9dd214b.png",
+      "sha256": "d637ffe056012dd1d3d13c166c47c25c8b7921de1c13c37158bebe149d53e8a3",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=populated|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-populated-variant-theme-dark-c729e5f534ff.png",
+      "sha256": "2520604432e4364d72e73a8fca0d8c406087d23c6ebeec748548cc2ed78f1c5e",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=populated|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-populated-variant-theme-light-30da2fb49039.png",
+      "sha256": "2ed02f1586a085cf4157da592533ae2000a43b8850902f89f273d4d3465afd4b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=single|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-single-variant-theme-dark-e7d50bb2758f.png",
+      "sha256": "4d174d09d02e6ea859bc2c9c776523fda0468c2956fd90771e97f6e5021b25ea",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=single|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-single-variant-theme-light-59e065275a87.png",
+      "sha256": "6ba5c6ee9bbc678de8031b79bdfe988c541af6c06df3929227fd6113f91bf85b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=unbroken-token|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-unbroken-token-variant-theme-dark-59a07bd332f4.png",
+      "sha256": "870c33af0e4dee1529d55b8816555150d034d2cf2671850f21c2002f4727b501",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend:data=unbroken-token|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend",
+      "status": "pass",
+      "screenshot": "reports/seat-map-legend-screenshots/seatmaplegend-seatmaplegend-data-unbroken-token-variant-theme-light-c8689e697fd0.png",
+      "sha256": "a2ae643446dac787f46d92060895e7f49a3ba4e80014fc2731a353e214349629",
+      "attempts": 1
+    }
+  ]
+}

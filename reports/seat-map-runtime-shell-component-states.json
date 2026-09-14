@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-02T16:28:26.715Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "fresh-page-and-storage-per-scenario-with-bounded-module-affine-worker-groups",
+  "pageMode": "fresh",
+  "captureHeightMode": "expand-tall-flow",
+  "groupSize": 72,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "reports/seat-map-runtime-shell-screenshots"
+  },
+  "summary": {
+    "total": 72,
+    "passed": 72,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-error-503-variant-geom-05d18673f44d.png",
+      "sha256": "57cb2b0ec59254c4c840423bbce128413868d4a3af022ebabb9cf880f5486783",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-error-503-variant-geom-5445e263a1c7.png",
+      "sha256": "83aba5589ef92f4db5dc3a05fd323422910e2949833ff69f68cd6ae2c1d948eb",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-error-503-variant-geom-6115723bf2dd.png",
+      "sha256": "57cb2b0ec59254c4c840423bbce128413868d4a3af022ebabb9cf880f5486783",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-error-503-variant-geom-97c24659490c.png",
+      "sha256": "83aba5589ef92f4db5dc3a05fd323422910e2949833ff69f68cd6ae2c1d948eb",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-idle-variant-geometry-67cdd0bf7b22.png",
+      "sha256": "1ec586eadc833a3263cb69dad0560395c61def0710bbcb5e96cbc7edbdadc2df",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-idle-variant-geometry-60f0e38b2f33.png",
+      "sha256": "88ebb27386249e62ddddd45d83ca303490d4b9bc92296f041ac6b0020870356e",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-idle-variant-geometry-3f8883e0d1e1.png",
+      "sha256": "1ec586eadc833a3263cb69dad0560395c61def0710bbcb5e96cbc7edbdadc2df",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-idle-variant-geometry-c7382b22da52.png",
+      "sha256": "88ebb27386249e62ddddd45d83ca303490d4b9bc92296f041ac6b0020870356e",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-loading-variant-geomet-6bcc160ca7c9.png",
+      "sha256": "ea96c73e96218eaeda29b0e42a9279315232223df52ab641446f4821187e8172",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-loading-variant-geomet-20b2f3491aa6.png",
+      "sha256": "b5db9af859b1e62fe9730349cb01e65646e91c00e3407290c1a1f0b178f12061",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-loading-variant-geomet-cfa27760f44d.png",
+      "sha256": "ea96c73e96218eaeda29b0e42a9279315232223df52ab641446f4821187e8172",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=empty|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-empty-system-loading-variant-geomet-08688fd01de6.png",
+      "sha256": "b5db9af859b1e62fe9730349cb01e65646e91c00e3407290c1a1f0b178f12061",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-error-503-varian-80be73795306.png",
+      "sha256": "739e5ca10e2f3f8dea1b056468e3043bf0f2806876ae80242aa375b96f83402c",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-error-503-varian-9a2f105579d6.png",
+      "sha256": "77eef59d35bd2cd7a51aac45ffbe0f8b0ef3ce660c1f9685bb1159b4b240e905",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-error-503-varian-36781bfd8aeb.png",
+      "sha256": "739e5ca10e2f3f8dea1b056468e3043bf0f2806876ae80242aa375b96f83402c",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-error-503-varian-e7c355a1ce79.png",
+      "sha256": "77eef59d35bd2cd7a51aac45ffbe0f8b0ef3ce660c1f9685bb1159b4b240e905",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-idle-variant-geo-0ba9ebcb1b38.png",
+      "sha256": "3660d84a7afb0c959b86812b146369164a650ac604ce5a43ca802971e0105296",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-idle-variant-geo-0791392c045e.png",
+      "sha256": "b08d0450c45f2a1f634a1633907f4ce81058ff1d6231ae73ff4301388f369148",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-idle-variant-geo-ef1d55ecb3f8.png",
+      "sha256": "3660d84a7afb0c959b86812b146369164a650ac604ce5a43ca802971e0105296",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-idle-variant-geo-c4e2d6b3d18f.png",
+      "sha256": "b08d0450c45f2a1f634a1633907f4ce81058ff1d6231ae73ff4301388f369148",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-loading-variant-b8c08bc8487a.png",
+      "sha256": "545af52114da6b1f805cf74a3ffec7fe55c9ff5a347a098a65418de73985e7c9",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-loading-variant-8c7aef8ee422.png",
+      "sha256": "dfb52d8767eeb7625e0b312b29b741013ace5c40b8ed3729de88ecf6a7affa63",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-loading-variant-63930723505a.png",
+      "sha256": "545af52114da6b1f805cf74a3ffec7fe55c9ff5a347a098a65418de73985e7c9",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=long-korean|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-long-korean-system-loading-variant-e25cf0059e80.png",
+      "sha256": "dfb52d8767eeb7625e0b312b29b741013ace5c40b8ed3729de88ecf6a7affa63",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-error-503-82280543d7d2.png",
+      "sha256": "958ab135c4266ec980b4b19520aae9b931c91a76ea271f11f1b4e3d0f96e2c20",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-error-503-3f653d45a69a.png",
+      "sha256": "56df72eabd6b0b08ce633369d382059a1f4cfe0281ea0b1b49565393438ea9a8",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-error-503-5cf1b82d6999.png",
+      "sha256": "958ab135c4266ec980b4b19520aae9b931c91a76ea271f11f1b4e3d0f96e2c20",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-error-503-b9baa7be3de2.png",
+      "sha256": "56df72eabd6b0b08ce633369d382059a1f4cfe0281ea0b1b49565393438ea9a8",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-idle-varia-e581ac468823.png",
+      "sha256": "3c44eb32143bb819028f13f6f9421854d445828b9dc3cfc06eddd21c56496751",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-idle-varia-b034b8579b8a.png",
+      "sha256": "49294f13234f9fe3e6358aaaee191923ae281dec58802cc93aaf520dbe208871",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-idle-varia-59736bec2817.png",
+      "sha256": "3c44eb32143bb819028f13f6f9421854d445828b9dc3cfc06eddd21c56496751",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-idle-varia-66ba95072b45.png",
+      "sha256": "49294f13234f9fe3e6358aaaee191923ae281dec58802cc93aaf520dbe208871",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-loading-va-0e6f46aee52e.png",
+      "sha256": "9320404b57c16e5464c5220da2b81c0af18814bd8fc74682dc18b009c7186905",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-loading-va-292195d3c5cd.png",
+      "sha256": "0c3ecc0b4242ace3aa9710ff4bb33ee57a3bfffe1563e58d695b2adf23b69ec8",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-loading-va-504f153a9c2a.png",
+      "sha256": "9320404b57c16e5464c5220da2b81c0af18814bd8fc74682dc18b009c7186905",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=maximum-supported|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-maximum-supported-system-loading-va-4e7ed7e3be6a.png",
+      "sha256": "0c3ecc0b4242ace3aa9710ff4bb33ee57a3bfffe1563e58d695b2adf23b69ec8",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-error-503-vari-851ba7f4399f.png",
+      "sha256": "57cb2b0ec59254c4c840423bbce128413868d4a3af022ebabb9cf880f5486783",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-error-503-vari-746c7918d7d3.png",
+      "sha256": "83aba5589ef92f4db5dc3a05fd323422910e2949833ff69f68cd6ae2c1d948eb",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-error-503-vari-7788be55889d.png",
+      "sha256": "57cb2b0ec59254c4c840423bbce128413868d4a3af022ebabb9cf880f5486783",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-error-503-vari-31d4382fc39e.png",
+      "sha256": "83aba5589ef92f4db5dc3a05fd323422910e2949833ff69f68cd6ae2c1d948eb",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-idle-variant-g-3572135fcc57.png",
+      "sha256": "526dd386a4b1cb947ee544b50d593f78288468b84f2a7dcffdea1f78e84f7807",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-idle-variant-g-7c27579f40e5.png",
+      "sha256": "def3e08847582d6f6e038b64c1cede3ac14004cd45a8e276b9ce5a46558d13a7",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-idle-variant-g-1f025ce2bc7e.png",
+      "sha256": "526dd386a4b1cb947ee544b50d593f78288468b84f2a7dcffdea1f78e84f7807",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-idle-variant-g-12ee9f679937.png",
+      "sha256": "def3e08847582d6f6e038b64c1cede3ac14004cd45a8e276b9ce5a46558d13a7",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-loading-varian-31647f3deeee.png",
+      "sha256": "882657e43e9a2b14975f27a89a9c4fe73a12bbfa20a9cbb3e7b80d7d8dd3d91e",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-loading-varian-df277ee9f169.png",
+      "sha256": "9139979c0ef9d25b3bf9f379a3c09cbea7afebf8b8d14ac016023dce3ac588c3",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-loading-varian-1df05a30853c.png",
+      "sha256": "882657e43e9a2b14975f27a89a9c4fe73a12bbfa20a9cbb3e7b80d7d8dd3d91e",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=null-optional|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-null-optional-system-loading-varian-621a35d9e6b6.png",
+      "sha256": "9139979c0ef9d25b3bf9f379a3c09cbea7afebf8b8d14ac016023dce3ac588c3",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-error-503-variant-e3ee7288b945.png",
+      "sha256": "a4e014242af9ab294d864937e8f3f348eb4983be17f2eaaaf1c115f294b84818",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-error-503-variant-e3fff484136c.png",
+      "sha256": "d19fbf849944262f28c56713d97930407f0ca45c4e3e9a5c05f12195d435f29b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-error-503-variant-29a3bc30f16e.png",
+      "sha256": "a4e014242af9ab294d864937e8f3f348eb4983be17f2eaaaf1c115f294b84818",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-error-503-variant-cb3bf7e49d1b.png",
+      "sha256": "d19fbf849944262f28c56713d97930407f0ca45c4e3e9a5c05f12195d435f29b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-idle-variant-geome-07180387bdcd.png",
+      "sha256": "fdbf404e36f1eed827a3287f61e9ab7deaf96160cf7ac6572019daaf400e695a",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-idle-variant-geome-c5d2286595cf.png",
+      "sha256": "7968545f70fa74bedbdedff7b71e41941d5bd3ef36ac031ee8144a63221c0ba1",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-idle-variant-geome-3b8d452d5319.png",
+      "sha256": "fdbf404e36f1eed827a3287f61e9ab7deaf96160cf7ac6572019daaf400e695a",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-idle-variant-geome-8129978ff9c8.png",
+      "sha256": "7968545f70fa74bedbdedff7b71e41941d5bd3ef36ac031ee8144a63221c0ba1",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-loading-variant-ge-e5413cb2cadc.png",
+      "sha256": "d99a331e858568d073325867ee87b59018d5674816b86e42b66a178a6ce1ee78",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-loading-variant-ge-50bd98abe820.png",
+      "sha256": "50afe557adb445695e1b380d262e7409e010ca2168054031c493a0d56df46be3",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-loading-variant-ge-65bc5562ca7c.png",
+      "sha256": "d99a331e858568d073325867ee87b59018d5674816b86e42b66a178a6ce1ee78",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=populated|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-populated-system-loading-variant-ge-27cf41f73628.png",
+      "sha256": "50afe557adb445695e1b380d262e7409e010ca2168054031c493a0d56df46be3",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=error-503|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-error-503-var-74a274f19f93.png",
+      "sha256": "9275616f81cd181923582d5a86f32a565fb4e6c4d7026bd9244453e93244827a",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=error-503|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-error-503-var-46d037cb0d8a.png",
+      "sha256": "ed3ac1bd1da8fe3d5b05ca9357f79eee837e6d1d695670407b092a841ef6c9e4",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=error-503|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-error-503-var-3e6cba758615.png",
+      "sha256": "9275616f81cd181923582d5a86f32a565fb4e6c4d7026bd9244453e93244827a",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=error-503|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-error-503-var-d0989b927560.png",
+      "sha256": "ed3ac1bd1da8fe3d5b05ca9357f79eee837e6d1d695670407b092a841ef6c9e4",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=idle|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-idle-variant-ffb315df4449.png",
+      "sha256": "72fdde9040b182422eda4c7e177ae86031b9bf5cbd11c98f6795b34412f39461",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=idle|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-idle-variant-67be51658497.png",
+      "sha256": "e4a378802347983aae4bcfb41d55aa54d1fbe0a70b4bde2e2617b71553f6330b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=idle|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-idle-variant-1926f5ed8f67.png",
+      "sha256": "72fdde9040b182422eda4c7e177ae86031b9bf5cbd11c98f6795b34412f39461",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=idle|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-idle-variant-3111c367817b.png",
+      "sha256": "e4a378802347983aae4bcfb41d55aa54d1fbe0a70b4bde2e2617b71553f6330b",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=loading|variant.geometry=coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-loading-varia-ae791053006d.png",
+      "sha256": "41ea71c490d65f8eb2db1f179223f65786b9f861cc1d839b413a9066377e0cd0",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=loading|variant.geometry=coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-loading-varia-676450c4fd3e.png",
+      "sha256": "e770fc6109de432e0e7d91b853d7c31d40744a346fca9cdc24646bf9fabffadc",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=loading|variant.geometry=non-coordinate|variant.theme=dark",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-loading-varia-0835ba50e7cf.png",
+      "sha256": "41ea71c490d65f8eb2db1f179223f65786b9f861cc1d839b413a9066377e0cd0",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell:data=unbroken-token|system=loading|variant.geometry=non-coordinate|variant.theme=light",
+      "componentId": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell",
+      "status": "pass",
+      "screenshot": "reports/seat-map-runtime-shell-screenshots/seatmapruntimeshell-seatmapruntimeshell-data-unbroken-token-system-loading-varia-11e2a831346e.png",
+      "sha256": "e770fc6109de432e0e7d91b853d7c31d40744a346fca9cdc24646bf9fabffadc",
+      "attempts": 1
+    }
+  ]
+}
