@@ -49,7 +49,7 @@ export default function SeatViewDirectUploadModal({
   submitUpload = submitDirectSeatViewUpload,
   visualQaStateOverride: visualQaStateOverrideProp,
 }: SeatViewDirectUploadModalProps) {
-  const visualQaStateOverride = import.meta.env.PROD ? undefined : visualQaStateOverrideProp;
+  const visualQaStateOverride = import.meta.env?.PROD ? undefined : visualQaStateOverrideProp;
   const initialSubmitting = visualQaStateOverride?.submitting ?? false;
   const [file, setFile] = useState<File | null>(visualQaStateOverride?.file ?? null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(visualQaStateOverride?.previewUrl ?? null);
