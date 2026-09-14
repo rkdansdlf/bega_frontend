@@ -466,6 +466,20 @@ describe('MyPage tab backend health', () => {
         waitForStableLayout(MY_PAGE_SHELL_SELECTOR, 'MyPage shell');
     };
 
+    // index.html defers the Pretendard webfont until the user's first scroll/click/
+    // keydown/touchstart so it never counts against first-load metrics. Clicking the
+    // theme toggle button is itself a pointerdown, so it can accidentally trigger that
+    // deferred font swap mid-test — the "before" height gets measured in the fallback
+    // font and "after" in Pretendard, a real layout shift with nothing to do with theme.
+    // Force the swap to happen (or confirm it already has) before any baseline height
+    // is captured, so both measurements always use the same, final font.
+    const settleDeferredFonts = () => {
+        cy.window().then((win) => {
+            win.dispatchEvent(new Event('scroll'));
+            return win.document.fonts.ready;
+        });
+    };
+
     const waitForDiaryEditorStable = () => {
         cy.get('.diary-green-surface', { timeout: 30000 }).should('be.visible');
         cy.get('[data-testid="diary-editor-form-card"], .diary-editor-form-card', { timeout: 30000 }).should('be.visible');
@@ -743,6 +757,7 @@ describe('MyPage tab backend health', () => {
         openScreen();
         waitAliases.forEach((alias) => cy.wait(alias));
         (assertScreenVisible ?? (() => visibleScreen(viewLabel)))();
+        settleDeferredFonts();
         waitForThemeMeasurementSettle();
 
         let beforeHeight = 0;
