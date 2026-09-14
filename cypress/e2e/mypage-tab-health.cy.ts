@@ -748,19 +748,27 @@ describe('MyPage tab backend health', () => {
         let beforeHeight = 0;
         let beforeSidebarHeight = 0;
         let beforeContentHeight = 0;
+        let beforeSidebarIdHeight = 0;
+        let beforeSidebarMoreHeight = 0;
+        let beforeHeatmapHeight = 0;
         let darkSnapshot: ThemeSnapshot | null = null;
+
+        const measureIfPresent = (selector: string, assign: (height: number) => void) => {
+            cy.get('body').then(($body) => {
+                if ($body.find(selector).length > 0) {
+                    getRoundedHeight(selector).then(assign);
+                }
+            });
+        };
 
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             beforeHeight = height;
             cy.log(`[${viewLabel}] Before toggle - shell height: ${height}`);
         });
-        cy.get('body').then(($body) => {
-            if ($body.find('.mypage-season-side').length > 0) {
-                getRoundedHeight('.mypage-season-side').then((height) => {
-                    beforeSidebarHeight = height;
-                });
-            }
-        });
+        measureIfPresent('.mypage-season-side', (height) => { beforeSidebarHeight = height; });
+        measureIfPresent('.mypage-season-id', (height) => { beforeSidebarIdHeight = height; });
+        measureIfPresent('[data-testid="mypage-season-sidebar-more"]', (height) => { beforeSidebarMoreHeight = height; });
+        measureIfPresent('[data-testid="mypage-season-heatmap"]', (height) => { beforeHeatmapHeight = height; });
         getRoundedHeight(screenSelector).then((height) => {
             beforeContentHeight = height;
         });
@@ -787,17 +795,33 @@ describe('MyPage tab backend health', () => {
         
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             cy.log(`[${viewLabel}] After light toggle wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
+
+            let sidebarHeight = beforeSidebarHeight;
+            let sidebarIdHeight = beforeSidebarIdHeight;
+            let sidebarMoreHeight = beforeSidebarMoreHeight;
+            let heatmapHeight = beforeHeatmapHeight;
+
             cy.get('body').then(($body) => {
-                const sidebarPromise = $body.find('.mypage-season-side').length > 0
-                    ? getRoundedHeight('.mypage-season-side')
-                    : cy.wrap(beforeSidebarHeight);
-                sidebarPromise.then((sidebarHeight) => {
-                    getRoundedHeight(screenSelector).then((contentHeight) => {
-                        expect(
-                            Math.abs(height - beforeHeight),
-                            `${viewLabel} height should remain stable in light mode (root ${beforeHeight}->${height}, sidebar ${beforeSidebarHeight}->${sidebarHeight}, content ${beforeContentHeight}->${contentHeight})`,
-                        ).to.be.lte(heightTolerancePx);
-                    });
+                if ($body.find('.mypage-season-side').length > 0) {
+                    getRoundedHeight('.mypage-season-side').then((h) => { sidebarHeight = h; });
+                }
+                if ($body.find('.mypage-season-id').length > 0) {
+                    getRoundedHeight('.mypage-season-id').then((h) => { sidebarIdHeight = h; });
+                }
+                if ($body.find('[data-testid="mypage-season-sidebar-more"]').length > 0) {
+                    getRoundedHeight('[data-testid="mypage-season-sidebar-more"]').then((h) => { sidebarMoreHeight = h; });
+                }
+                if ($body.find('[data-testid="mypage-season-heatmap"]').length > 0) {
+                    getRoundedHeight('[data-testid="mypage-season-heatmap"]').then((h) => { heatmapHeight = h; });
+                }
+            });
+
+            getRoundedHeight(screenSelector).then((contentHeight) => {
+                cy.then(() => {
+                    expect(
+                        Math.abs(height - beforeHeight),
+                        `${viewLabel} height should remain stable in light mode (root ${beforeHeight}->${height}, sidebar ${beforeSidebarHeight}->${sidebarHeight} [id ${beforeSidebarIdHeight}->${sidebarIdHeight}, more ${beforeSidebarMoreHeight}->${sidebarMoreHeight}], content ${beforeContentHeight}->${contentHeight} [heatmap ${beforeHeatmapHeight}->${heatmapHeight}])`,
+                    ).to.be.lte(heightTolerancePx);
                 });
             });
         });
