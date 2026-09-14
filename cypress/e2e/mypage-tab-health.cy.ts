@@ -746,11 +746,23 @@ describe('MyPage tab backend health', () => {
         waitForThemeMeasurementSettle();
 
         let beforeHeight = 0;
+        let beforeSidebarHeight = 0;
+        let beforeContentHeight = 0;
         let darkSnapshot: ThemeSnapshot | null = null;
 
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             beforeHeight = height;
             cy.log(`[${viewLabel}] Before toggle - shell height: ${height}`);
+        });
+        cy.get('body').then(($body) => {
+            if ($body.find('.mypage-season-side').length > 0) {
+                getRoundedHeight('.mypage-season-side').then((height) => {
+                    beforeSidebarHeight = height;
+                });
+            }
+        });
+        getRoundedHeight(screenSelector).then((height) => {
+            beforeContentHeight = height;
         });
 
         collectThemeSnapshot(screenSelector).then((snapshot) => {
@@ -775,7 +787,19 @@ describe('MyPage tab backend health', () => {
         
         getRoundedHeight(MY_PAGE_SHELL_SELECTOR).then((height) => {
             cy.log(`[${viewLabel}] After light toggle wait - shell height: ${height}, diff: ${Math.abs(height - beforeHeight)}`);
-            expect(Math.abs(height - beforeHeight), `${viewLabel} height should remain stable in light mode`).to.be.lte(heightTolerancePx);
+            cy.get('body').then(($body) => {
+                const sidebarPromise = $body.find('.mypage-season-side').length > 0
+                    ? getRoundedHeight('.mypage-season-side')
+                    : cy.wrap(beforeSidebarHeight);
+                sidebarPromise.then((sidebarHeight) => {
+                    getRoundedHeight(screenSelector).then((contentHeight) => {
+                        expect(
+                            Math.abs(height - beforeHeight),
+                            `${viewLabel} height should remain stable in light mode (root ${beforeHeight}->${height}, sidebar ${beforeSidebarHeight}->${sidebarHeight}, content ${beforeContentHeight}->${contentHeight})`,
+                        ).to.be.lte(heightTolerancePx);
+                    });
+                });
+            });
         });
         assertReadableContrast(MY_PAGE_SHELL_SELECTOR, `${viewLabel} light shell`);
         assertReadableContrast(screenSelector, `${viewLabel} light screen`);
