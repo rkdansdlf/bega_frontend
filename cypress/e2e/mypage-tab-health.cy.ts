@@ -751,12 +751,22 @@ describe('MyPage tab backend health', () => {
         let beforeSidebarIdHeight = 0;
         let beforeSidebarMoreHeight = 0;
         let beforeHeatmapHeight = 0;
+        let beforeComposerHeight = 0;
+        let beforeCountersText = '';
         let darkSnapshot: ThemeSnapshot | null = null;
 
         const measureIfPresent = (selector: string, assign: (height: number) => void) => {
             cy.get('body').then(($body) => {
                 if ($body.find(selector).length > 0) {
                     getRoundedHeight(selector).then(assign);
+                }
+            });
+        };
+
+        const readTextIfPresent = (selector: string, assign: (text: string) => void) => {
+            cy.get('body').then(($body) => {
+                if ($body.find(selector).length > 0) {
+                    cy.get(selector).invoke('text').then((text) => { assign(String(text)); });
                 }
             });
         };
@@ -769,6 +779,8 @@ describe('MyPage tab backend health', () => {
         measureIfPresent('.mypage-season-id', (height) => { beforeSidebarIdHeight = height; });
         measureIfPresent('[data-testid="mypage-season-sidebar-more"]', (height) => { beforeSidebarMoreHeight = height; });
         measureIfPresent('[data-testid="mypage-season-heatmap"]', (height) => { beforeHeatmapHeight = height; });
+        measureIfPresent('.mypage-season-composer', (height) => { beforeComposerHeight = height; });
+        readTextIfPresent('.mypage-season-counters', (text) => { beforeCountersText = text; });
         getRoundedHeight(screenSelector).then((height) => {
             beforeContentHeight = height;
         });
@@ -800,6 +812,8 @@ describe('MyPage tab backend health', () => {
             let sidebarIdHeight = beforeSidebarIdHeight;
             let sidebarMoreHeight = beforeSidebarMoreHeight;
             let heatmapHeight = beforeHeatmapHeight;
+            let composerHeight = beforeComposerHeight;
+            let countersText = beforeCountersText;
 
             cy.get('body').then(($body) => {
                 if ($body.find('.mypage-season-side').length > 0) {
@@ -814,13 +828,19 @@ describe('MyPage tab backend health', () => {
                 if ($body.find('[data-testid="mypage-season-heatmap"]').length > 0) {
                     getRoundedHeight('[data-testid="mypage-season-heatmap"]').then((h) => { heatmapHeight = h; });
                 }
+                if ($body.find('.mypage-season-composer').length > 0) {
+                    getRoundedHeight('.mypage-season-composer').then((h) => { composerHeight = h; });
+                }
+                if ($body.find('.mypage-season-counters').length > 0) {
+                    cy.get('.mypage-season-counters').invoke('text').then((text) => { countersText = String(text); });
+                }
             });
 
             getRoundedHeight(screenSelector).then((contentHeight) => {
                 cy.then(() => {
                     expect(
                         Math.abs(height - beforeHeight),
-                        `${viewLabel} height should remain stable in light mode (root ${beforeHeight}->${height}, sidebar ${beforeSidebarHeight}->${sidebarHeight} [id ${beforeSidebarIdHeight}->${sidebarIdHeight}, more ${beforeSidebarMoreHeight}->${sidebarMoreHeight}], content ${beforeContentHeight}->${contentHeight} [heatmap ${beforeHeatmapHeight}->${heatmapHeight}])`,
+                        `${viewLabel} height should remain stable in light mode (root ${beforeHeight}->${height}, sidebar ${beforeSidebarHeight}->${sidebarHeight} [id ${beforeSidebarIdHeight}->${sidebarIdHeight}, more ${beforeSidebarMoreHeight}->${sidebarMoreHeight}, counters "${beforeCountersText}"->"${countersText}"], content ${beforeContentHeight}->${contentHeight} [heatmap ${beforeHeatmapHeight}->${heatmapHeight}, composer ${beforeComposerHeight}->${composerHeight}])`,
                     ).to.be.lte(heightTolerancePx);
                 });
             });
