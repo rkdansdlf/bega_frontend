@@ -1,5 +1,6 @@
 import begaLogo from '../../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
 import begaMascot from '../../assets/27f7b8ac0aacea2470847e809062c7bbf0e4163f.webp';
+import begaMascotAvatar from '../../assets/images/bega_mascot_avatar.webp';
 import stadium from '../../assets/images/stadium_bg.webp';
 import lgLogo from '../../assets/202a55c2e2083b7f096b21380d22d1769e56d762.png';
 import doosanLogo from '../../assets/560639a3d1481dca02309d52b06d0efe43f355f7.png';
@@ -16,6 +17,9 @@ export type TeamKey = 'lg' | 'doosan' | 'kia' | 'samsung' | 'ssg' | 'lotte' | 'k
 
 export const BEGA_LOGO_ASSET = begaLogo;
 export const BEGA_MASCOT_ASSET = begaMascot;
+// 24px 아바타 전용 소형 파생본. 큰 마스코트 원본(BEGA_MASCOT_ASSET)은 닫기 섹션 지연 로드 전용이라
+// 첫 로드 경로(폰 목업)에서 참조하면 안 된다 (landing-first-load 감사 계약).
+export const BEGA_MASCOT_AVATAR_ASSET = begaMascotAvatar;
 export const STADIUM_ASSET = stadium;
 
 export const TEAM_ASSETS: Record<TeamKey, string> = {
