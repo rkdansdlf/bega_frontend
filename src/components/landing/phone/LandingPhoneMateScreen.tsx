@@ -1,5 +1,5 @@
 import { LandingPlusIcon, LandingSearchIcon } from '../../icons/LandingIcons';
-import { BEGA_MASCOT_ASSET, TEAM_ASSETS } from '../landingAssets';
+import { BEGA_MASCOT_AVATAR_ASSET, TEAM_ASSETS } from '../landingAssets';
 import { LANDING_PHONE_MATE_SCREEN } from '../landingShowcaseData';
 
 const DATA = LANDING_PHONE_MATE_SCREEN;
@@ -48,7 +48,7 @@ export default function LandingPhoneMateScreen() {
         <article className="landing-phone-card landing-phone-mate-match-card" key={card.hostName}>
           <div className="landing-phone-mate-host">
             {card.hostAvatarKind === 'mascot' ? (
-              <img src={BEGA_MASCOT_ASSET} alt="" width={24} height={24} />
+              <img src={BEGA_MASCOT_AVATAR_ASSET} alt="" width={24} height={24} />
             ) : (
               <span className="landing-phone-mate-host-initial">{card.hostInitial}</span>
             )}
