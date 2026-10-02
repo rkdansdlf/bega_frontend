@@ -5,6 +5,10 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SHARED_PATTERNS = [
+  // In the deploy repository a submodule pointer bump shows up as the bare gitlink path
+  // `bega_frontend` (no file below it), so it matches none of the source globs below.
+  // A new frontend commit can regress any suite, hence it fans out to all of them.
+  'bega_frontend',
   'bega_frontend/package.json',
   'bega_frontend/package-lock.json',
   '.github/workflows/_frontend-node-suite.yml',

@@ -42,6 +42,26 @@ test('pull request paths select matching suites', () => {
   );
 });
 
+test('a submodule pointer bump (bare gitlink path) fans out to every suite', () => {
+  assert.deepEqual(detectFrontendUiImpact(['bega_frontend'], 'all', 'pull_request'), {
+    reflow_changed: true,
+    pages_changed: true,
+    auth_changed: true,
+    home_changed: true,
+    landing_changed: true,
+    stadium_changed: true,
+  });
+  // The gitlink must not make unrelated deploy-repository paths select UI suites.
+  assert.deepEqual(detectFrontendUiImpact(['bega_backend', 'bega_AI', 'docs/README.md'], 'all', 'pull_request'), {
+    reflow_changed: false,
+    pages_changed: false,
+    auth_changed: false,
+    home_changed: false,
+    landing_changed: false,
+    stadium_changed: false,
+  });
+});
+
 test('supports frontend-repository-relative paths', () => {
   assert.deepEqual(detectFrontendUiImpact(['src/components/Login.tsx'], 'all', 'pull_request'), {
     reflow_changed: true,
