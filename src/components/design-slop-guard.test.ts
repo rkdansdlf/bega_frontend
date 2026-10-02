@@ -204,6 +204,9 @@ const inlineSvgAllowedFiles = new Set([
   'ImageLightbox.mobile.test.tsx',
   'admin/ClientErrorTrendChart.mobile.test.tsx',
   'visual-qa/ImageLightboxHarness.tsx',
+  // 휴지통 SVG 를 앱 아이콘(createAppIcon→_AppIcon 공유 청크)으로 바꾸면 Navbar/CheerBookmarks 매니페스트가
+  // bundle-guard 의 forbidden manifest dependency 에 걸린다. 의도적으로 인라인 SVG 를 유지한다.
+  'common/SwipeToRevealRow.tsx',
   'StadiumGuideRuntimeSeatMaps.test.ts',
 ]);
 

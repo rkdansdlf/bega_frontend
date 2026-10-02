@@ -53,6 +53,12 @@ const criticalLandingAssetNames = [
 const deferredClosingAssetNames = [
   '27f7b8ac0aacea2470847e809062c7bbf0e4163f',
 ];
+// Imported by landingAssets.ts but small enough (< Vite assetsInlineLimit) to be inlined as data URIs:
+// no request and no emitted file. Showing up in the landing manifest means the inlining regressed
+// into a real first-load request (e.g. the derived file grew past 4 KB).
+const inlinedLandingAssetNames = [
+  'bega_mascot_avatar',
+];
 const stateAuthManifestReferencePatterns = [
   { label: 'authStore', pattern: /src\/store\/authStore|authStore-/i },
   { label: 'AuthBootstrap', pattern: /src\/components\/AuthBootstrap\.tsx|(^|\/)AuthBootstrap-/i },
@@ -206,11 +212,16 @@ const isDeferredClosingAsset = (filePath) => (
   deferredClosingAssetNames.some((assetName) => filePath.includes(assetName))
 );
 
+const isInlinedLandingAsset = (filePath) => (
+  inlinedLandingAssetNames.some((assetName) => filePath.includes(assetName))
+);
+
 const collectCriticalLandingAssets = async (landingAssets = []) => {
   const criticalAssets = landingAssets.filter(isCriticalLandingAsset);
   const deferredAssets = landingAssets.filter(isDeferredClosingAsset);
+  const inlinedEmittedAssets = landingAssets.filter(isInlinedLandingAsset);
   const unexpectedAssets = landingAssets.filter((asset) => (
-    !isCriticalLandingAsset(asset) && !isDeferredClosingAsset(asset)
+    !isCriticalLandingAsset(asset) && !isDeferredClosingAsset(asset) && !isInlinedLandingAsset(asset)
   ));
   const assets = await Promise.all(criticalAssets.map(async (file) => ({
     file,
@@ -235,6 +246,7 @@ const collectCriticalLandingAssets = async (landingAssets = []) => {
     missingNames,
     missingDeferredNames,
     unexpectedAssets,
+    inlinedEmittedAssets,
     budgetBytes: criticalLandingAssetBudgetBytes,
   };
 };
@@ -1478,6 +1490,9 @@ const run = async () => {
   if (landingCriticalAssets.unexpectedAssets.length > 0) {
     setupFailures.push(`Landing manifest contains unexpected first-load assets: ${landingCriticalAssets.unexpectedAssets.join(', ')}`);
   }
+  if (landingCriticalAssets.inlinedEmittedAssets.length > 0) {
+    setupFailures.push(`Landing assets expected to stay inlined were emitted as files: ${landingCriticalAssets.inlinedEmittedAssets.join(', ')}`);
+  }
   const missingSizedAssets = landingCriticalAssets.assets.filter((asset) => asset.sizeBytes === null);
   const missingSizedClosingAssets = landingCriticalAssets.closingAssets.filter((asset) => asset.sizeBytes === null);
   if (missingSizedAssets.length > 0) {
@@ -1493,6 +1508,7 @@ const run = async () => {
     landingCriticalAssets.missingNames.length === 0
     && landingCriticalAssets.missingDeferredNames.length === 0
     && landingCriticalAssets.unexpectedAssets.length === 0
+    && landingCriticalAssets.inlinedEmittedAssets.length === 0
     && missingSizedAssets.length === 0
     && missingSizedClosingAssets.length === 0
     && landingCriticalAssets.totalBytes <= landingCriticalAssets.budgetBytes
