@@ -1,4 +1,5 @@
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { SwipeToRevealRowTrashIcon } from './SwipeToRevealRowIcons';
 
 const ACTION_WIDTH = 88;
 const OPEN_THRESHOLD = 56;
@@ -72,19 +73,7 @@ export default function SwipeToRevealRow({ children, onDelete, deleteLabel = 'ì‚
           aria-label={deleteLabel}
           className="flex h-full w-full flex-col items-center justify-center gap-1 text-white"
         >
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            viewBox="0 0 24 24"
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.9}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
-          </svg>
+          <SwipeToRevealRowTrashIcon className="h-5 w-5" />
           <span className="text-11 font-bold">{deleteLabel}</span>
         </button>
       </div>

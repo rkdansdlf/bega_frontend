@@ -201,6 +201,9 @@ const inlineSvgAllowedFiles = new Set([
   'suwon/SuwonSeatMapSvg.tsx',
   'changwon/ChangwonSeatMapSvg.tsx',
   'DaejeonStadiumUxAuditContract.test.ts',
+  'ImageLightbox.mobile.test.tsx',
+  'admin/ClientErrorTrendChart.mobile.test.tsx',
+  'visual-qa/ImageLightboxHarness.tsx',
   'StadiumGuideRuntimeSeatMaps.test.ts',
 ]);
 

@@ -186,9 +186,23 @@ test('keeps the redesigned landing CTA-free, local-asset-only, and lazy below th
 });
 
 test('keeps every phone preview baseball example in the typed landing showcase dataset', () => {
-  assert.match(landingShowcaseDataSource, /export interface LandingPhonePreviewData/);
-  assert.match(landingShowcaseDataSource, /export const LANDING_PHONE_PREVIEW/);
-  assert.match(landingPhonePreviewSource, /import \{ LANDING_PHONE_PREVIEW \} from '\.\/landingShowcaseData'/);
+  const phoneScreens = [
+    { file: 'LandingPhoneHomeScreen.tsx', dataset: 'LANDING_PHONE_HOME_SCREEN' },
+    { file: 'LandingPhoneMateScreen.tsx', dataset: 'LANDING_PHONE_MATE_SCREEN' },
+    { file: 'LandingPhoneBoardScreen.tsx', dataset: 'LANDING_PHONE_BOARD_SCREEN' },
+  ];
+
+  assert.match(landingShowcaseDataSource, /export interface LandingPhoneNavTab/);
+  assert.match(landingShowcaseDataSource, /export const LANDING_PHONE_NAV_TABS/);
+  assert.match(landingPhonePreviewSource, /import \{ LANDING_PHONE_NAV_TABS \} from '\.\/landingShowcaseData'/);
+  for (const { file, dataset } of phoneScreens) {
+    const screenSource = readFileSync(new URL(`../src/components/landing/phone/${file}`, import.meta.url), 'utf8');
+    assert.match(landingShowcaseDataSource, new RegExp(`export const ${dataset}\\b`));
+    assert.ok(
+      screenSource.includes(`import { ${dataset} } from '../landingShowcaseData';`),
+      `${file} should read its baseball examples from ${dataset}`,
+    );
+  }
   assert.equal(landingPhonePreviewSource.includes("const PHONE_TABS = ['홈'"), false);
   assert.equal(landingPhonePreviewSource.includes('LIVE · 7회말 · 잠실'), false);
   assert.equal(landingPhonePreviewSource.includes('9회말 끝내기라니'), false);
@@ -513,11 +527,17 @@ test('defers public home footer outside the first card critical path', () => {
   assert.ok(layoutSource.includes('window.removeEventListener(HOME_FIRST_CARD_READY_EVENT, handleHomeFirstCardReady);'));
 });
 
-test('uses a zero-request system font stack on the app critical path', () => {
-  const systemFontStack = "['system-ui', '-apple-system', 'BlinkMacSystemFont', '\"Segoe UI\"', 'sans-serif']";
-  assert.ok(tailwindConfigSource.includes(`sans: ${systemFontStack}`));
-  assert.ok(tailwindConfigSource.includes(`native: ${systemFontStack}`));
-  assert.ok(indexCssSource.includes("font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"));
+test('keeps the app critical path free of font requests and defers Pretendard until first interaction', () => {
+  const systemFontStack = "'system-ui', '-apple-system', 'BlinkMacSystemFont', '\"Segoe UI\"', 'sans-serif'";
+  // Pretendard leads the stack but is only fetched after the first user interaction,
+  // so the first load makes zero font requests (index.html loader + landing first-load audit).
+  assert.ok(tailwindConfigSource.includes(`sans: ['"Pretendard Variable"', 'Pretendard', ${systemFontStack}]`));
+  assert.ok(tailwindConfigSource.includes(`native: [${systemFontStack}]`));
+  assert.ok(indexCssSource.includes("font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"));
+  assert.ok(indexHtmlSource.includes("var events = ['scroll', 'pointerdown', 'keydown', 'touchstart'];"));
+  assert.ok(indexHtmlSource.includes('function loadPretendard()'));
+  // The only static stylesheet reference is the <noscript> fallback; nothing blocks first paint.
+  assert.equal(/<link[^>]*rel="stylesheet"[^>]*cdn\.jsdelivr\.net/.test(indexHtmlSource.replace(/<noscript>[\s\S]*?<\/noscript>/g, '')), false);
   assert.equal(appShellRuntimeSource.includes('DeferredPretendardFont'), false);
   assert.equal(appShellRuntimeSource.includes('cdn.jsdelivr.net'), false);
 });
@@ -620,9 +640,12 @@ test('defers home secondary panels with a real post-card delay before idle work'
   assert.ok(bundleGuardSource.includes("'HomeDeferredSurfaces-'"));
 });
 
-test('defers home recovery banner outside the first-card static path', () => {
-  assert.ok(homeRuntimeSource.includes("const LazyHomeRecoveryBanner = lazy(() => import('./home/HomeRecoveryBanner'));"));
-  assert.ok(homeRuntimeSource.includes('<LazyHomeRecoveryBanner'));
+test('keeps the home recovery banner eager so network-status UI never waits on a chunk fetch', () => {
+  // a71d5450: the banner reports bad network conditions, so it must not need an extra chunk fetch
+  // exactly when the network is bad. It stays out of the first-card static path via HomeRuntime itself.
+  assert.ok(homeRuntimeSource.includes("import HomeRecoveryBanner from './home/HomeRecoveryBanner';"));
+  assert.ok(homeRuntimeSource.includes('<HomeRecoveryBanner'));
+  assert.equal(homeRuntimeSource.includes('LazyHomeRecoveryBanner'), false);
   assert.equal(homeRuntimeSource.includes('MANUAL_BASEBALL_DATA_REQUIRED_MESSAGE'), false);
   assert.equal(homeRuntimeSource.includes('data-testid="home-global-recovery"'), false);
   assert.ok(homeRecoveryBannerSource.includes('MANUAL_BASEBALL_DATA_REQUIRED_MESSAGE'));
