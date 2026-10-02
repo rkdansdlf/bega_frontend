@@ -23,7 +23,7 @@ test('홈 복구 배너는 콘텐츠 흐름 안에 있고 viewport overlay가 �
   const homeRuntime = readSource('./HomeRuntime.tsx');
   const recoveryBanner = readSource('./home/HomeRecoveryBanner.tsx');
   const contentIndex = homeRuntime.indexOf('<div className="max-w-7xl');
-  const bannerIndex = homeRuntime.indexOf('<LazyHomeRecoveryBanner');
+  const bannerIndex = homeRuntime.indexOf('<HomeRecoveryBanner');
 
   assert.ok(contentIndex >= 0 && bannerIndex > contentIndex);
   assert.doesNotMatch(recoveryBanner, /\bfixed\b/);

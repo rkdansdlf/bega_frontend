@@ -827,7 +827,7 @@ export default function HomeRuntime() {
     }, [applyHomeSnapshot, buildLegacyFailureSnapshot, leagueStartDates]);
 
     /**
-     * 풀투리프레시 전용 — loadHomeBootstrap과 달리 로딩 스켈레톤으로
+     * 풀투리프레시 전용: loadHomeBootstrap과 달리 로딩 스켈레톤으로
      * 되돌리지 않고 조용히 최신 데이터로 교체합니다.
      */
     const refreshHomeSilently = useCallback(async (date: Date) => {
