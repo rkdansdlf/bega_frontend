@@ -142,6 +142,35 @@ describe('Stadium Guide Quality Flow', () => {
     }).as('getDaeguFoodPlaces');
   };
 
+  // index.html 은 Pretendard 를 첫 scroll/pointerdown/keydown/touchstart 에 지연 로드한다.
+  // 클릭 자체가 그 트리거가 되면 mousedown 과 click 사이에 폰트가 교체되어 제목 줄이
+  // 재배치되고(즐겨찾기 버튼이 ~30px 이동), click 이 버튼이 아닌 제목 DIV 에 떨어진다.
+  // 클릭 전에 폰트를 먼저 교체시키고 버튼 위치가 안정될 때까지 기다린다.
+  const settleDeferredFonts = (selector: string) => {
+    cy.window().then((win) => {
+      win.dispatchEvent(new Event('scroll'));
+      return win.document.fonts.ready;
+    });
+    cy.get(selector).then(($el) => {
+      const left = () => $el[0].getBoundingClientRect().left;
+      let previous = left();
+      let stableSince = Date.now();
+      const poll = (): Cypress.Chainable<void> =>
+        cy.wait(50, { log: false }).then(() => {
+          const current = left();
+          if (Math.abs(current - previous) > 0.5) {
+            previous = current;
+            stableSince = Date.now();
+          }
+          if (Date.now() - stableSince < 300) {
+            return poll();
+          }
+          return undefined as unknown as Cypress.Chainable<void>;
+        });
+      return poll();
+    });
+  };
+
   const desktopPanels = () =>
     cy.get('[data-testid="stadium-guide-desktop-panels"]').should('be.visible');
 
@@ -354,6 +383,7 @@ describe('Stadium Guide Quality Flow', () => {
     cy.wait('@getFoodPlaces');
     cy.wait('@getFavorites');
 
+    settleDeferredFonts('button[aria-label="즐겨찾기 추가"]');
     cy.get('button[aria-label="즐겨찾기 추가"]').click();
     cy.wait('@addFavorite');
     favoriteIds = ['JAMSIL'];
