@@ -1078,6 +1078,10 @@ describe('MyPage tab backend health', () => {
         let darkAppHeight = 0;
 
         cy.visit('/mypage', { onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark') });
+        // 기준 높이를 재기 전에 지연 Pretendard 교체를 끝낸다. 테마 토글 클릭 자체가
+        // pointerdown 이라 교체를 일으키고, 그러면 첫 검사는 교체 전(통과), 두 번째 검사는
+        // 교체 후 높이로 측정되어 줄바꿈 차이만큼 어긋난다.
+        settleDeferredFonts();
         waitForThemeMeasurementSettle();
 
         getThemeClassState('dark');
