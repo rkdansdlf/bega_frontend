@@ -440,20 +440,27 @@ describe('MyPage tab backend health', () => {
             })
             .then(($target) => Math.round($target[0].getBoundingClientRect().height));
 
+    // MyPage 는 단계적으로 마운트된다(빈 shell 720px -> 사이드바/로딩 -> 시즌 로그 -> 일기 목록).
+    // 단계 사이 간격이 최대 ~450ms 라서 "연속 N샘플 동일" 같은 짧은 창으로는 단계 사이의
+    // 정지를 안정으로 오판해 기준 높이를 중간 단계에서 잰다. 시간 기준으로 판정한다.
+    const STABLE_LAYOUT_WINDOW_MS = 600;
+
     const waitForStableLayout = (selector: string, label: string) => {
         let previousHeight: number | undefined;
-        let stableSamples = 0;
+        let stableSince = 0;
 
         cy.get(selector, { timeout: 20000 }).should(($target) => {
+            const now = Date.now();
             const height = $target[0].getBoundingClientRect().height;
-            if (previousHeight !== undefined && Math.abs(height - previousHeight) < 0.5) {
-                stableSamples += 1;
-            } else {
-                stableSamples = 0;
+            if (previousHeight === undefined || Math.abs(height - previousHeight) >= 0.5) {
+                stableSince = now;
             }
             previousHeight = height;
 
-            expect(stableSamples, `${label} layout should remain stable`).to.be.at.least(2);
+            expect(
+                now - stableSince,
+                `${label} layout should remain stable for ${STABLE_LAYOUT_WINDOW_MS}ms`,
+            ).to.be.at.least(STABLE_LAYOUT_WINDOW_MS);
         });
     };
 
@@ -1078,10 +1085,9 @@ describe('MyPage tab backend health', () => {
         let darkAppHeight = 0;
 
         cy.visit('/mypage', { onBeforeLoad: (win) => seedAuthWithTheme(win, 'dark') });
-        // 기준 높이를 재기 전에 지연 Pretendard 교체를 끝낸다. 테마 토글 클릭 자체가
-        // pointerdown 이라 교체를 일으키고, 그러면 첫 검사는 교체 전(통과), 두 번째 검사는
-        // 교체 후 높이로 측정되어 줄바꿈 차이만큼 어긋난다.
-        settleDeferredFonts();
+        // 콘텐츠가 마운트되기 전(빈 shell 720px)에는 '불러오는 중' 부재 검사가 공허하게 통과하므로
+        // 기준 높이를 재기 전에 실제 시즌 로그 섹션이 나타나기를 먼저 기다린다.
+        visibleScreen('시즌 로그');
         waitForThemeMeasurementSettle();
 
         getThemeClassState('dark');
