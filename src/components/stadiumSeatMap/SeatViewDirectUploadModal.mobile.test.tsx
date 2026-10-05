@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
-import { chromium, type Browser, type Page } from 'playwright';
+import { chromium, type Browser, type Locator, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 
 const packageManifest = JSON.parse(
@@ -256,6 +256,18 @@ const settle = (page: Page) => page.evaluate(() => new Promise<void>((resolve) =
   requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
 }));
 
+// border-color 에는 Tailwind `transition`(150ms)이 걸려 있다. 포커스 직후 곧바로 읽으면 전환이 아직
+// 진행되지 않아 포커스 전과 같은 값이 나오고(타이밍 의존), 빠른 머신에서만 통과한다. 스타일 재계산을
+// 강제해 전환을 시작시킨 뒤 끝나기를 기다린 최종 값을 읽는다.
+const readSettledBorderColor = (locator: Locator) => locator.evaluate(async (node) => {
+  getComputedStyle(node).borderColor;
+  await Promise.race([
+    Promise.all(node.getAnimations().map((animation) => animation.finished.catch(() => undefined))),
+    new Promise<void>((resolve) => { window.setTimeout(resolve, 2000); }),
+  ]);
+  return getComputedStyle(node).borderColor;
+});
+
 const readCalls = (page: Page) => page.evaluate(() => JSON.parse(JSON.stringify((
   window as unknown as { __SEAT_VIEW_DIRECT_UPLOAD_TEST__: { calls: Calls } }
 ).__SEAT_VIEW_DIRECT_UPLOAD_TEST__.calls)) as Calls);
@@ -368,10 +380,10 @@ test('actual modal exposes visible keyboard focus and announces validation error
     const fileInput = page.getByTestId('seat-view-direct-upload-file');
     const fileSurface = page.getByTestId('seat-view-direct-upload-file-surface');
     assert.equal(await close.evaluate((node) => node === document.activeElement), true, 'initial close focus');
-    const restingBorderColor = await fileSurface.evaluate((node) => getComputedStyle(node).borderColor);
+    const restingBorderColor = await readSettledBorderColor(fileSurface);
     await page.keyboard.press('Tab');
     assert.equal(await fileInput.evaluate((node) => node === document.activeElement), true, 'Tab close→file');
-    const focusedBorderColor = await fileSurface.evaluate((node) => getComputedStyle(node).borderColor);
+    const focusedBorderColor = await readSettledBorderColor(fileSurface);
     assert.notEqual(focusedBorderColor, restingBorderColor, 'hidden file input must expose a visible focus border');
 
     await page.getByTestId('seat-view-direct-upload-submit').click();
