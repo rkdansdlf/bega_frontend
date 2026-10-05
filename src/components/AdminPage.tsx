@@ -24,12 +24,12 @@ export default function AdminPage({ runtimeContentOverride }: AdminPageProps = {
     >
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-10">
-          <div className="flex items-center gap-4 mb-3">
+          <div className="flex flex-wrap items-center gap-4 mb-3">
             <div className="rounded-xl border border-amber-500/30 bg-slate-900 p-3 text-amber-300 shadow-sm">
               <AdminShieldIcon className="h-8 w-8" />
             </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+            <div className="min-w-0 flex-1 basis-[12rem]">
+              <h1 className="break-keep text-2xl font-black tracking-tight text-white sm:text-3xl">
                 BEGA 관리자 콘솔
               </h1>
               <p className="text-slate-400 text-caption font-semibold mt-1">

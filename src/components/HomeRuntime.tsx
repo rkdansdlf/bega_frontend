@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import {
@@ -52,8 +52,8 @@ const HOME_BUTTON_BASE_CLASS = 'inline-flex shrink-0 items-center justify-center
 // Keep touch targets in CSS pixels at text zoom. Rem-based h-11/size-11
 // becomes 88px at 200%, which pushes the date controls outside 320px and
 // makes the header feel like it is colliding with the first content row.
-const HOME_BUTTON_OUTLINE_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-11 rounded-xl border bg-background px-4 text-15 text-foreground hover:bg-accent hover:text-accent-foreground has-[>svg]:px-3 dark:border-input dark:bg-input/30 dark:hover:bg-input/50`;
-const HOME_BUTTON_GHOST_ICON_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} size-11 rounded-xl p-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50`;
+const HOME_BUTTON_OUTLINE_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-[44px] min-h-[44px] rounded-xl border bg-background px-4 text-15 text-foreground hover:bg-accent hover:text-accent-foreground has-[>svg]:px-3 dark:border-input dark:bg-input/30 dark:hover:bg-input/50`;
+const HOME_BUTTON_GHOST_ICON_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-[44px] min-h-[44px] w-[44px] min-w-[44px] rounded-xl p-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50`;
 const HOME_BUTTON_LINK_SM_CLASS = `${HOME_BUTTON_BASE_CLASS} h-8 rounded-md px-3 text-primary underline-offset-4 hover:underline has-[>svg]:px-2.5`;
 const HOME_CSS_CHEVRON_LEFT_CLASS = 'block h-3.5 w-3.5 -rotate-45 border-l-2 border-t-2 border-current';
 const HOME_CSS_CHEVRON_RIGHT_CLASS = 'block h-3.5 w-3.5 rotate-45 border-r-2 border-t-2 border-current';
@@ -1299,22 +1299,27 @@ export default function HomeRuntime() {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-border bg-card px-4 py-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100 sm:flex-row sm:items-center sm:justify-center sm:px-6 md:w-fit md:mx-auto">
-                  <div className="flex items-center justify-center gap-4 sm:gap-6">
+                <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-border bg-card px-[min(1rem,16px)] py-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-700 delay-100 sm:flex-row sm:items-center sm:justify-center sm:px-6 md:w-fit md:mx-auto">
+                  <div className="flex items-center justify-center gap-[min(1rem,12px)] sm:gap-6">
                     <button
                       type="button"
                       data-testid="home-date-prev"
                       onClick={() => changeDate('prev')}
                       disabled={isLoading || isScopedNavigationLoading || !dateNavigation.hasPrev}
                       aria-label="이전 날짜"
-                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
+                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon home-runtime-date-control hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
                     >
                         <span className={HOME_CSS_CHEVRON_LEFT_CLASS} aria-hidden="true" />
                     </button>
 
-                    <div className="flex flex-col items-center min-w-[140px]">
-                        <h2 className="text-xl font-extrabold text-foreground tracking-tight leading-none mb-1">
-                            {formatHomeDate(displayedHomeDate)}
+                    <div className="flex min-w-0 max-w-full flex-col items-center">
+                        <h2 className="mb-1 max-w-full text-center [overflow-wrap:break-word] [word-break:keep-all] text-[length:min(1.25rem,30px)] font-extrabold leading-none tracking-tight text-foreground">
+                            {formatHomeDate(displayedHomeDate).split(' ').map((part, index) => (
+                                <Fragment key={index}>
+                                    {index > 0 ? ' ' : null}
+                                    <span className="whitespace-nowrap">{part}</span>
+                                </Fragment>
+                            ))}
                         </h2>
                         <button
                             type="button"
@@ -1322,7 +1327,7 @@ export default function HomeRuntime() {
                                 setShouldMountDeferredSurfaces(true);
                                 setShowCalendar(true);
                             }}
-                            className={`${HOME_BUTTON_LINK_SM_CLASS} home-runtime-date-link min-h-11 px-2 py-0 text-body font-bold text-primary opacity-80 transition-opacity hover:opacity-100 dark:text-emerald-400`}
+                            className={`${HOME_BUTTON_LINK_SM_CLASS} home-runtime-date-link min-h-[44px] px-2 py-0 text-body font-bold text-primary opacity-80 transition-opacity hover:opacity-100 dark:text-emerald-400`}
                         >
                             날짜 변경
                         </button>
@@ -1334,7 +1339,7 @@ export default function HomeRuntime() {
                       onClick={() => changeDate('next')}
                       disabled={isLoading || isScopedNavigationLoading || !dateNavigation.hasNext}
                       aria-label="다음 날짜"
-                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
+                      className={`${HOME_BUTTON_GHOST_ICON_TOUCH_CLASS} home-runtime-touch-icon home-runtime-date-control hover:bg-emerald-50 hover:text-primary disabled:opacity-30 dark:hover:bg-emerald-900/20`}
                     >
                         <span className={HOME_CSS_CHEVRON_RIGHT_CLASS} aria-hidden="true" />
                     </button>

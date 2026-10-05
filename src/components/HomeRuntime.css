@@ -14,7 +14,13 @@
 }
 
 .home-runtime-date-link {
-  height: 32px !important;
-  min-height: 32px !important;
+  height: 44px !important;
+  min-height: 44px !important;
   padding-inline: 12px !important;
+}
+
+/* Keep a focused date control below the sticky public navbar while the match
+ * panel reflows after an asynchronous date change at large text sizes. */
+.home-runtime-date-control {
+  scroll-margin-top: calc(var(--mobile-chrome-height) + 7rem);
 }

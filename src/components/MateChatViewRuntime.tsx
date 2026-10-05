@@ -225,15 +225,15 @@ export default function MateChatViewRuntime({
           <Card className={`status-badge-hover-scope p-0 ${mateHeroCardClass}`}>
             <div className="border-b border-gray-200/70 bg-[linear-gradient(135deg,_rgba(22,163,74,0.12),_rgba(255,255,255,0.92)_55%,_rgba(22,163,74,0.04))] px-5 py-5 dark:border-border/70 dark:bg-[linear-gradient(135deg,_rgba(16,185,129,0.18),_rgba(0,0,0,0.94)_58%,_rgba(16,185,129,0.08))] sm:px-6 sm:py-6">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                <div className="flex min-w-0 gap-3 sm:gap-4">
+                <div className="flex min-w-0 flex-wrap gap-3 sm:gap-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl border border-white/70 bg-white/90 shadow-lg dark:border-white/10 dark:bg-white/10 sm:h-16 sm:w-16">
                     <TeamLogo teamId={getMatePartyDisplayTeamId(party)} size="md" />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1 basis-[12rem]">
                     <p className="text-13 font-semibold text-primary/80 dark:text-emerald-300">
                       {headerTitle}
                     </p>
-                    <h1 className="mt-2 text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+                    <h1 className="mt-2 break-keep text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">
                       {heroHeading}
                     </h1>
                     <p className="mt-3 max-w-2xl text-body leading-6 text-gray-600 dark:text-white">

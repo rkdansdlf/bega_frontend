@@ -24,7 +24,7 @@ export default function AdminPageRuntimeContent({
       <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 shadow-xl">
         <div className="border-b border-slate-800 px-3 pt-3 sm:px-6 sm:pt-6">
           <div
-            className="grid w-full grid-cols-2 gap-1 rounded-xl bg-slate-800/50 p-1 sm:grid-cols-5 xl:grid-cols-10"
+            className="grid w-full grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-1 rounded-xl bg-slate-800/50 p-1"
             role="tablist"
             aria-label="관리자 메뉴"
           >
@@ -47,7 +47,7 @@ export default function AdminPageRuntimeContent({
                   }`}
                 >
                   <Icon className="mr-1.5 h-4 w-4 shrink-0" />
-                  <span className="min-w-0 break-words text-center leading-tight">{label}</span>
+                  <span className="min-w-0 break-keep text-center leading-tight [overflow-wrap:break-word]">{label}</span>
                 </button>
               );
             })}

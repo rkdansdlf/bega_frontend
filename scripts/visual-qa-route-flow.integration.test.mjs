@@ -7,6 +7,7 @@ import {
   MY_PAGE_ASSERTION_IDS,
   MY_PAGE_FLOW_SOURCE,
   PRODUCT_DEFECT_SOURCES,
+  ROUTE_FLOW_SERVICE_WORKERS,
   ROUTE_FLOW_WIDTHS,
   ROUTE_FLOW_ZOOMS,
   ROUTE_FLOW_EVIDENCE_RECORDS,
@@ -19,6 +20,7 @@ import {
   productDefectAssertions,
   resolveRouteFlowStatus,
   routeFlowLabel,
+  routeFlowContextOptions,
   stadiumAssertions,
 } from './visual-qa-route-flow.integration.mjs';
 
@@ -26,6 +28,14 @@ test('route-flow matrix keeps the representative mobile and text-zoom axes expli
   assert.deepEqual(ROUTE_FLOW_WIDTHS, [320, 390]);
   assert.deepEqual(ROUTE_FLOW_ZOOMS, [1, 2]);
   assert.equal(routeFlowLabel({ browser: 'webkit', route: '/mypage', width: 390, zoom: 2 }), 'webkit:/mypage:390px:200%');
+});
+
+test('fixture route-flow blocks service workers in every browser context', () => {
+  assert.equal(ROUTE_FLOW_SERVICE_WORKERS, 'block');
+  assert.deepEqual(routeFlowContextOptions(320), {
+    viewport: { width: 320, height: 844 },
+    serviceWorkers: 'block',
+  });
 });
 
 test('route-flow evidence records keep Home registration and its route evidence linked', () => {

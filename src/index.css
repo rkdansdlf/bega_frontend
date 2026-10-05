@@ -274,6 +274,17 @@
     scroll-behavior: smooth;
   }
 
+  /* Below md the sticky header and the floating bottom tab bar both overlay content.
+     Without scroll-padding, keyboard focus / scrollIntoView can park a control behind them. */
+  @media (max-width: 767px) {
+    html {
+      scroll-padding-top: calc(var(--mobile-chrome-height) + 1.5rem);
+      scroll-padding-bottom: calc(
+        var(--mobile-chrome-height) + var(--mobile-chrome-bottom-offset) + env(safe-area-inset-bottom) + 1rem
+      );
+    }
+  }
+
   body {
     margin: 0;
     font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

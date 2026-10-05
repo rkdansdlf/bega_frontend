@@ -10,6 +10,12 @@ import { loadPlaywright, settle, stubApi } from './reflow-320-audit.mjs';
 
 export const ROUTE_FLOW_WIDTHS = [320, 390];
 export const ROUTE_FLOW_ZOOMS = [1, 2];
+export const ROUTE_FLOW_SERVICE_WORKERS = 'block';
+
+export const routeFlowContextOptions = (width) => ({
+  viewport: { width, height: width <= 430 ? 844 : 900 },
+  serviceWorkers: ROUTE_FLOW_SERVICE_WORKERS,
+});
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const PROJECT_ROOT = resolve(dirname(SCRIPT_PATH), '..');
@@ -44,6 +50,7 @@ export const HOME_FLOW_SOURCE = {
     priorityPanel: '[data-testid="home-match-priority-panel"]',
     gameCard: '[data-testid="home-game-card"]',
     primaryAction: '[data-testid="home-secondary-prediction-cta"], [data-testid="home-offseason-cta"]',
+    datePrev: '[data-testid="home-date-prev"]',
     dateNext: '[data-testid="home-date-next"]',
   },
 };
@@ -72,6 +79,7 @@ export const HOME_ASSERTION_IDS = [
   'home-primary-action-missing',
   'home-date-navigation-missing',
   'home-date-navigation-not-updated',
+  'home-navbar-interactive-overlap',
 ];
 
 export const MY_PAGE_ASSERTION_IDS = [
@@ -355,6 +363,13 @@ export const homeAssertions = (evidence) => {
       evidence,
     });
   }
+  if (evidence?.dateNavigationChecked && (evidence?.navbarInteractiveOverlaps?.length ?? 0) > 0) {
+    failures.push({
+      id: 'home-navbar-interactive-overlap',
+      message: 'the sticky public navbar covers a Home date control after asynchronous date reflow',
+      evidence: evidence.navbarInteractiveOverlaps,
+    });
+  }
   return failures;
 };
 
@@ -429,8 +444,52 @@ export const collectHomeEvidence = async (page) => page.evaluate((source) => {
   const panelText = panel?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
   const heading = panel?.querySelector('h2, h3');
   const primaryAction = document.querySelector(source.selectors.primaryAction);
+  const datePrevious = document.querySelector(source.selectors.datePrev);
   const dateNext = document.querySelector(source.selectors.dateNext);
   const gameCards = panel?.querySelectorAll(source.selectors.gameCard) ?? [];
+  const rectData = (rect) => ({
+    x: Number((rect.x ?? rect.left).toFixed(2)),
+    y: Number((rect.y ?? rect.top).toFixed(2)),
+    width: Number(rect.width.toFixed(2)),
+    height: Number(rect.height.toFixed(2)),
+    right: Number(rect.right.toFixed(2)),
+    bottom: Number(rect.bottom.toFixed(2)),
+  });
+  const intersect = (left, right) => {
+    const x = Math.max(left.left, right.left);
+    const y = Math.max(left.top, right.top);
+    const rightEdge = Math.min(left.right, right.right);
+    const bottomEdge = Math.min(left.bottom, right.bottom);
+    return rightEdge > x && bottomEdge > y
+      ? { left: x, top: y, right: rightEdge, bottom: bottomEdge, width: rightEdge - x, height: bottomEdge - y }
+      : null;
+  };
+  const navbarRoot = document.querySelector('header');
+  const navbar = document.querySelector('[data-testid="navbar-capsule"]') ?? navbarRoot;
+  const navbarRect = navbar?.getBoundingClientRect();
+  const navbarInteractiveOverlaps = navbar instanceof HTMLElement && navbarRect
+    ? [
+      ['home-primary-action', primaryAction],
+      ['home-date-prev', datePrevious],
+      ['home-date-next', dateNext],
+    ].flatMap(([id, element]) => {
+      if (!(element instanceof HTMLElement)) return [];
+      const elementRect = element.getBoundingClientRect();
+      const overlap = intersect(navbarRect, elementRect);
+      if (!overlap) return [];
+      const hitPoint = [
+        [overlap.left + overlap.width / 2, overlap.top + overlap.height / 2],
+        [overlap.left + 1, overlap.top + 1],
+      ].find(([x, y]) => {
+        const topElement = document.elementFromPoint(x, y);
+        return topElement && navbarRoot
+          && (navbarRoot === topElement || navbarRoot.contains(topElement));
+      });
+      return hitPoint
+        ? [{ id, elementRect: rectData(elementRect), navbarRect: rectData(navbarRect), overlap: rectData(overlap) }]
+        : [];
+    })
+    : [];
   return {
     source,
     priorityPanelVisible: panel instanceof HTMLElement && panel.getBoundingClientRect().height > 0,
@@ -444,6 +503,7 @@ export const collectHomeEvidence = async (page) => page.evaluate((source) => {
     primaryActionVisible: primaryAction instanceof HTMLElement && primaryAction.getBoundingClientRect().height > 0,
     dateNextVisible: dateNext instanceof HTMLElement && dateNext.getBoundingClientRect().height > 0,
     dateNextDisabled: dateNext instanceof HTMLButtonElement ? dateNext.disabled : null,
+    navbarInteractiveOverlaps,
     url: window.location.href,
   };
 }, HOME_FLOW_SOURCE);
@@ -685,8 +745,11 @@ const runStadiumFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   await page.goto(new URL('/stadium', baseUrl).toString(), { waitUntil: 'commit' });
   await settle(page);
   const zoomMetrics = await setTextZoom(page, zoom, ['#stadium-guide-select', '[data-testid="stadium-seat-map"] h2']);
-  await waitFor(page, '[data-testid="stadium-seat-map"]');
-  const seatMapVisible = await page.locator('[data-testid="stadium-seat-map"]').first().isVisible();
+  // The page renders a mobile and a desktop seat-map; only one is displayed per
+  // viewport, so target the visible instance instead of the DOM-first (possibly hidden) one.
+  const visibleSeatMap = '[data-testid="stadium-seat-map"]:visible';
+  await waitFor(page, visibleSeatMap);
+  const seatMapVisible = await page.locator(visibleSeatMap).first().isVisible();
   const guideSelect = page.locator('#stadium-guide-select');
   const guideSelectVisible = await guideSelect.isVisible();
   await guideSelect.focus();
@@ -805,24 +868,24 @@ const runHomeFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   await waitFor(page, HOME_FLOW_SOURCE.selectors.gameCard);
   await page.locator(HOME_FLOW_SOURCE.selectors.dateNext).focus();
   const evidence = await collectHomeEvidence(page);
-  const failures = homeAssertions(evidence);
   const beforeNavigationUrl = page.url();
   const dateNext = page.locator(HOME_FLOW_SOURCE.selectors.dateNext);
   if (!await dateNext.isDisabled()) {
     await dateNext.click();
     await waitForCondition(page, (previousUrl) => window.location.href !== previousUrl, beforeNavigationUrl);
+    await page.locator(`${HOME_FLOW_SOURCE.selectors.dateNext}:not([disabled])`).waitFor({ state: 'visible' });
+    await settle(page);
   }
   const afterNavigationUrl = page.url();
+  const postNavigationEvidence = await collectHomeEvidence(page);
   const navigationEvidence = {
-    ...evidence,
+    ...postNavigationEvidence,
     dateNavigationChecked: true,
     dateNavigationUpdated: afterNavigationUrl !== beforeNavigationUrl,
     beforeNavigationUrl,
     afterNavigationUrl,
   };
-  failures.push(...homeAssertions(navigationEvidence).filter((failure) => (
-    failure.id === 'home-date-navigation-not-updated'
-  )));
+  const failures = homeAssertions(navigationEvidence);
   const normal = await measureFocusedRoute(page, '/home', width, zoom, 'home-content-and-navigation');
   normal.zoomMetrics = zoomMetrics;
   normal.homeEvidence = navigationEvidence;
@@ -876,7 +939,7 @@ export const runRouteFlowAudit = async ({
       const browserVersion = browser.version();
       for (const width of widths) {
         for (const zoom of zooms) {
-          const context = await browser.newContext({ viewport: { width, height: width <= 430 ? 844 : 900 } });
+          const context = await browser.newContext(routeFlowContextOptions(width));
           const externalRequests = [];
           await context.route('**/*', (route) => {
             const requestUrl = new URL(route.request().url());

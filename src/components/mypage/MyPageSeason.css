@@ -2217,7 +2217,16 @@ button.mypage-season-cell:focus-visible {
     flex-flow: row nowrap;
     overflow-x: auto;
     padding-bottom: 1px;
+    scroll-padding-inline: 12px;
     scrollbar-width: none;
+  }
+
+  /* The row scrolls (overflow-x also clips on y), so an outset focus ring would be cut off. */
+  .mypage-season-nav button:focus-visible,
+  .mypage-season-nav a:focus-visible,
+  .mypage-season-nav-sub button:focus-visible,
+  .mypage-season-nav-sub a:focus-visible {
+    outline-offset: -2px;
   }
 
   .mypage-season-nav::-webkit-scrollbar,
