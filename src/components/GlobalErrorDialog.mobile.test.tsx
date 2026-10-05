@@ -11,6 +11,12 @@ const testModuleId = '\0virtual:global-error-dialog-test';
 const staleRetryCompletionMutation = process.env.GLOBAL_ERROR_DIALOG_MUTATE_STALE_CLOSE === '1';
 const feedbackEarlyReadMutation = process.env.GLOBAL_ERROR_DIALOG_MUTATE_FEEDBACK_EARLY_READ === '1';
 
+// Each test boots its own Vite server and Chromium, so the limits below are hang
+// guards that must tolerate a loaded CI/dev machine, not performance budgets.
+const parsedTimeoutScale = Number(process.env.GLOBAL_ERROR_DIALOG_TEST_TIMEOUT_SCALE);
+const timeoutScale = Number.isFinite(parsedTimeoutScale) && parsedTimeoutScale > 0 ? parsedTimeoutScale : 3;
+const scaledTimeout = (milliseconds: number) => Math.round(milliseconds * timeoutScale);
+
 const createGlobalErrorDialogTestPlugin = (): Plugin => ({
   name: 'global-error-dialog-actual-mount-test',
   configureServer(server) {
@@ -325,7 +331,7 @@ const withActualBrowser = async (
 };
 
 test('actual StrictMode root owns one listener, ignores suppressed events, keeps latest, and removes it on unmount', {
-  timeout: 60_000,
+  timeout: scaledTimeout(60_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     await openPage(page, port, '?kind=root');
@@ -406,7 +412,7 @@ test('actual StrictMode root owns one listener, ignores suppressed events, keeps
 });
 
 test('actual Root fails closed for malformed/missing renderers and suppresses Cypress events', {
-  timeout: 60_000,
+  timeout: scaledTimeout(60_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     for (const kind of ['missing-renderer', 'malformed']) {
@@ -425,7 +431,7 @@ test('actual Root fails closed for malformed/missing renderers and suppresses Cy
 });
 
 test('actual Root close paths and retry transports isolate the original callback exactly once', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     const closeActions: Array<{ name: string; run: () => Promise<void> }> = [
@@ -477,7 +483,7 @@ test('actual Root close paths and retry transports isolate the original callback
 });
 
 test('actual root exposes a named visible busy status for the lazy fallback', {
-  timeout: 60_000,
+  timeout: scaledTimeout(60_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     await openPage(page, port, '?kind=fallback');
@@ -490,7 +496,7 @@ test('actual root exposes a named visible busy status for the lazy fallback', {
 });
 
 test('actual Content exposes owned selectors and uses only the injected static feedback submitter', {
-  timeout: 60_000,
+  timeout: scaledTimeout(60_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     await openPage(page, port, '?kind=content&feedback=success&source=api');
@@ -517,7 +523,7 @@ test('actual Content exposes owned selectors and uses only the injected static f
 });
 
 test('actual Content isolates close/retry/feedback actions, transport results, and source action codes', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     const closeActions: Array<{ name: string; run: () => Promise<void> }> = [
@@ -642,7 +648,7 @@ test('actual Content isolates close/retry/feedback actions, transport results, a
 });
 
 test('actual 320px portal contains pressure text, exposes 44px targets, traps focus, and restores scroll lock', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     const longMessage = `MOCK-${'UNBROKEN'.repeat(90)}`;
@@ -707,7 +713,7 @@ test('actual 320px portal contains pressure text, exposes 44px targets, traps fo
 });
 
 test('actual Root isolates stale retry completion from newer errors, ordinary close, and unmount', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   await withActualBrowser(async ({ page, port }) => {
     for (const outcome of ['resolve', 'reject'] as const) {
