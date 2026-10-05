@@ -41,6 +41,7 @@ const EXECUTABLE_INTERACTION_ACTIONS = new Set([
   'hover',
   'focus-visible',
   'pressed',
+  'drag',
   'fill',
   'select-option',
   'press-key',
@@ -50,6 +51,7 @@ const EXPECTED_INTERACTION_ACTIONS = {
   hover: 'hover',
   'focus-visible': 'focus-visible',
   pressed: 'pressed',
+  drag: 'drag',
   open: 'click',
   retry: 'click',
   selected: 'click',
@@ -57,6 +59,12 @@ const EXPECTED_INTERACTION_ACTIONS = {
   change: ['press-key', 'select-option'],
   submitting: 'click',
   'keyboard-navigation': 'press-key',
+  'next-date': 'click',
+  cta: 'click',
+  click: 'click',
+  delete: 'click',
+  'tab-change': 'click',
+  submit: 'click',
 };
 
 const conditionValues = (value) => (Array.isArray(value) ? value : [value]);
@@ -88,10 +96,10 @@ const isFullyNotApplicableHostedEntry = (entry) => entry.renderAccess === 'hoste
 
 const matchesConstraint = (combination, constraint) => Object.entries(constraint.excludeWhen)
   .every(([key, value]) => {
-    if (key.startsWith('variant.')) {
-      return combination.variants[key.slice('variant.'.length)] === value;
-    }
-    return combination.states[key] === value;
+    const actual = key.startsWith('variant.')
+      ? combination.variants[key.slice('variant.'.length)]
+      : combination.states[key];
+    return conditionValues(value).includes(actual);
   });
 
 export const expandComponentStateCombinations = (entry, coverageContract) => {
@@ -401,8 +409,15 @@ const validateRegisteredEntry = (entry, coverageContract) => {
           const values = key.startsWith('variant.')
             ? dimensions.find(({ name }) => name === key.slice('variant.'.length))?.values
             : axisValues(entry, key);
-          if (!Array.isArray(values) || !values.includes(value)) {
-            errors.push(`${label} references undeclared ${key}=${value}`);
+          const expectedValues = conditionValues(value);
+          if (expectedValues.length === 0) {
+            errors.push(`${label} requires at least one value for ${key}`);
+          } else if (new Set(expectedValues).size !== expectedValues.length) {
+            errors.push(`${label} contains duplicate values for ${key}`);
+          } else if (!Array.isArray(values) || expectedValues.some((expectedValue) => (
+            !values.includes(expectedValue)
+          ))) {
+            errors.push(`${label} references undeclared ${key}=${expectedValues.join(',')}`);
           }
         }
       }
