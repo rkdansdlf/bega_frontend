@@ -1313,7 +1313,7 @@ export default function HomeRuntime() {
                     </button>
 
                     <div className="flex min-w-0 max-w-full flex-col items-center">
-                        <h2 className="mb-1 max-w-full text-center [overflow-wrap:break-word] [word-break:keep-all] text-[length:min(1.25rem,30px)] font-extrabold leading-none tracking-tight text-foreground">
+                        <h2 className="mb-1 max-w-full text-center break-words break-keep text-[length:min(1.25rem,30px)] font-extrabold leading-none tracking-tight text-foreground">
                             {formatHomeDate(displayedHomeDate).split(' ').map((part, index) => (
                                 <Fragment key={index}>
                                     {index > 0 ? ' ' : null}
