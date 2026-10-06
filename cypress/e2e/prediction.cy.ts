@@ -219,9 +219,26 @@ describe('Game Prediction', () => {
                 cy.wait(ms, { log: false });
             });
         };
+        // AuthBootstrap schedules the profile fetch with a faked setTimeout(80ms). When the app
+        // mounts late (cold Vite transforms, loaded CI runner) the fixed ticks above can run
+        // before that timer is registered, and nothing ever advances the clock again, so the
+        // page stays on the loading view. Keep ticking while the loading view is still shown.
+        const settleFakeClockWhileLoading = (attempt = 0) => {
+            cy.window({ log: false }).then((win) => {
+                const hasFakeClock = Boolean((win.setTimeout as typeof win.setTimeout & { clock?: unknown }).clock);
+                const isLoading = (win.document.body.innerText || '').includes('데이터 워밍업');
+                if (!hasFakeClock || !isLoading || attempt >= 10) {
+                    return;
+                }
+                cy.tick(100, { log: false });
+                cy.wait(50, { log: false });
+                settleFakeClockWhileLoading(attempt + 1);
+            });
+        };
         advanceTime(100);
         cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
         advanceTime(100);
+        settleFakeClockWhileLoading();
         if (waitForScheduleRange) {
             cy.get('@getScheduleRange.all').should('have.length.gte', 1);
             advanceTime(100);
