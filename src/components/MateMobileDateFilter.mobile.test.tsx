@@ -327,6 +327,13 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
     await mount('maximum', 'outside');
     const outsideLabel = page.getByRole('region', { name: '경기 날짜' }).locator('span').first();
     await outsideLabel.waitFor();
+    // mount() only schedules root.render(): the previous tree's span is still attached, so waiting for the
+    // element alone races React's commit. Wait for the new tree's label text before asserting on it.
+    await page.waitForFunction(
+      () => document.querySelector('[data-testid="mate-mobile-date-filter-selected-label"]')?.textContent?.includes('1월 7일'),
+      undefined,
+      { timeout: 5_000 },
+    );
     if (!/1월 7일/.test(await outsideLabel.textContent() ?? '')) problems.push('outside-range label missing');
     if (await page.getByRole('group', { name: '경기 날짜 필터' }).locator('button[aria-pressed="true"]:not([aria-label^="전체"])').count() !== 0) {
       problems.push('outside-range state selected an in-range date');
