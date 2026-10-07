@@ -222,17 +222,29 @@ describe('Game Prediction', () => {
         // AuthBootstrap schedules the profile fetch with a faked setTimeout(80ms). When the app
         // mounts late (cold Vite transforms, loaded CI runner) the fixed ticks above can run
         // before that timer is registered, and nothing ever advances the clock again, so the
-        // page stays on the loading view. Keep ticking while the loading view is still shown.
-        const settleFakeClockWhileLoading = (attempt = 0) => {
+        // page stays on the loading view. cy.contains('전력분석실') also matches the navbar link,
+        // so it does not prove the prediction page has mounted. Keep ticking until the page shell
+        // (prediction-tab-match) exists, then until its loading view is gone.
+        const settleFakeClockWhileLoading = (waitingTicks = 0, mountedTicks = 0) => {
             cy.window({ log: false }).then((win) => {
                 const hasFakeClock = Boolean((win.setTimeout as typeof win.setTimeout & { clock?: unknown }).clock);
+                if (!hasFakeClock) {
+                    return;
+                }
+                const isMounted = Boolean(win.document.querySelector('[data-testid="prediction-tab-match"]'));
                 const isLoading = (win.document.body.innerText || '').includes('데이터 워밍업');
-                if (!hasFakeClock || !isLoading || attempt >= 10) {
+                if (isMounted && !isLoading) {
+                    return;
+                }
+                if (isMounted ? mountedTicks >= 10 : waitingTicks >= 200) {
                     return;
                 }
                 cy.tick(100, { log: false });
                 cy.wait(50, { log: false });
-                settleFakeClockWhileLoading(attempt + 1);
+                settleFakeClockWhileLoading(
+                    isMounted ? waitingTicks : waitingTicks + 1,
+                    isMounted ? mountedTicks + 1 : mountedTicks,
+                );
             });
         };
         advanceTime(100);
