@@ -220,34 +220,29 @@ describe('Game Prediction', () => {
                 cy.wait(ms, { log: false });
             });
         };
-        // AuthBootstrap schedules the profile fetch with a faked setTimeout(80ms). When the app
-        // renders slowly (CI measured ~2-3 fps) the fixed ticks above run before that timer is
-        // registered, and nothing ever advances the clock again, so the page stays on the loading
-        // view and no /api request but the navbar's dm poll is ever issued. Keep ticking until the
-        // page shell exists and either its loading view is gone or the app has issued an API
-        // request, i.e. the timer has fired. cy.contains('전력분석실') alone is not a mount signal
-        // because the navbar link matches it too.
-        const settleFakeClockWhileLoading = (ticks = 0) => {
+        // The prediction page's first requests are gated by faked setTimeouts (e.g. AuthBootstrap's
+        // 80ms deferral), and a faked timer only fires when the spec ticks the clock. The fixed
+        // ticks above can run before those timers are registered when the app renders slowly (CI
+        // measured ~2-3 fps), after which nothing advances the clock and the page stays on its
+        // loading view with no /api request but the navbar's dm poll. A loading-text or mount
+        // check is not a safe stop condition (the page shows other fallbacks before the loading
+        // view), so keep ticking until the app has actually issued a request of its own.
+        const settleFakeClockUntilFirstApiRequest = (ticks = 0) => {
             cy.window({ log: false }).then((win) => {
                 const hasFakeClock = Boolean((win.setTimeout as typeof win.setTimeout & { clock?: unknown }).clock);
-                if (!hasFakeClock || ticks >= 300) {
-                    return;
-                }
-                const isMounted = Boolean(win.document.querySelector('[data-testid="prediction-tab-match"]'));
-                const isLoading = (win.document.body.innerText || '').includes('데이터 워밍업');
                 const hasIssuedApiRequest = apiRequestPaths.some((path) => path !== '/api/dm/rooms/my');
-                if (isMounted && (!isLoading || hasIssuedApiRequest)) {
+                if (!hasFakeClock || hasIssuedApiRequest || ticks >= 120) {
                     return;
                 }
                 cy.tick(100, { log: false });
                 cy.wait(50, { log: false });
-                settleFakeClockWhileLoading(ticks + 1);
+                settleFakeClockUntilFirstApiRequest(ticks + 1);
             });
         };
         advanceTime(100);
         cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
         advanceTime(100);
-        settleFakeClockWhileLoading();
+        settleFakeClockUntilFirstApiRequest();
         if (waitForScheduleRange) {
             cy.get('@getScheduleRange.all').should('have.length.gte', 1);
             advanceTime(100);
