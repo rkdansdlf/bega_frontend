@@ -12,6 +12,7 @@ import {
 } from '../support/predictionPage';
 
 describe('Game Prediction', () => {
+    let apiRequestPaths: string[] = [];
     const getCoachAnalysisDialog = () => cy.get('[data-testid="coach-analysis-dialog"]');
 
     type ScheduleGameMock = {
@@ -219,26 +220,29 @@ describe('Game Prediction', () => {
                 cy.wait(ms, { log: false });
             });
         };
-        // AuthBootstrap schedules the profile fetch with a faked setTimeout(80ms). When the app
-        // mounts late (cold Vite transforms, loaded CI runner) the fixed ticks above can run
-        // before that timer is registered, and nothing ever advances the clock again, so the
-        // page stays on the loading view. Keep ticking while the loading view is still shown.
-        const settleFakeClockWhileLoading = (attempt = 0) => {
+        // The prediction page's first requests are gated by faked setTimeouts (e.g. AuthBootstrap's
+        // 80ms deferral), and a faked timer only fires when the spec ticks the clock. The fixed
+        // ticks above can run before those timers are registered when the app renders slowly (CI
+        // measured ~2-3 fps), after which nothing advances the clock and the page stays on its
+        // loading view with no /api request but the navbar's dm poll. A loading-text or mount
+        // check is not a safe stop condition (the page shows other fallbacks before the loading
+        // view), so keep ticking until the app has actually issued a request of its own.
+        const settleFakeClockUntilFirstApiRequest = (ticks = 0) => {
             cy.window({ log: false }).then((win) => {
                 const hasFakeClock = Boolean((win.setTimeout as typeof win.setTimeout & { clock?: unknown }).clock);
-                const isLoading = (win.document.body.innerText || '').includes('데이터 워밍업');
-                if (!hasFakeClock || !isLoading || attempt >= 10) {
+                const hasIssuedApiRequest = apiRequestPaths.some((path) => path !== '/api/dm/rooms/my');
+                if (!hasFakeClock || hasIssuedApiRequest || ticks >= 120) {
                     return;
                 }
                 cy.tick(100, { log: false });
                 cy.wait(50, { log: false });
-                settleFakeClockWhileLoading(attempt + 1);
+                settleFakeClockUntilFirstApiRequest(ticks + 1);
             });
         };
         advanceTime(100);
         cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
         advanceTime(100);
-        settleFakeClockWhileLoading();
+        settleFakeClockUntilFirstApiRequest();
         if (waitForScheduleRange) {
             cy.get('@getScheduleRange.all').should('have.length.gte', 1);
             advanceTime(100);
@@ -258,6 +262,13 @@ describe('Game Prediction', () => {
     };
 
     beforeEach(() => {
+        apiRequestPaths = [];
+        cy.intercept({ middleware: true, url: '**/api/**' }, (req) => {
+            const { pathname } = new URL(req.url);
+            if (!pathname.startsWith('/src/')) {
+                apiRequestPaths.push(pathname);
+            }
+        });
         cy.clearCookies();
         cy.clearLocalStorage();
         (cy as any).mockAPI({ skipRankings: true });
