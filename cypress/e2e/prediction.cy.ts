@@ -12,6 +12,7 @@ import {
 } from '../support/predictionPage';
 
 describe('Game Prediction', () => {
+    let apiRequestPaths: string[] = [];
     const getCoachAnalysisDialog = () => cy.get('[data-testid="coach-analysis-dialog"]');
 
     type ScheduleGameMock = {
@@ -220,31 +221,27 @@ describe('Game Prediction', () => {
             });
         };
         // AuthBootstrap schedules the profile fetch with a faked setTimeout(80ms). When the app
-        // mounts late (cold Vite transforms, loaded CI runner) the fixed ticks above can run
-        // before that timer is registered, and nothing ever advances the clock again, so the
-        // page stays on the loading view. cy.contains('전력분석실') also matches the navbar link,
-        // so it does not prove the prediction page has mounted. Keep ticking until the page shell
-        // (prediction-tab-match) exists, then until its loading view is gone.
-        const settleFakeClockWhileLoading = (waitingTicks = 0, mountedTicks = 0) => {
+        // renders slowly (CI measured ~2-3 fps) the fixed ticks above run before that timer is
+        // registered, and nothing ever advances the clock again, so the page stays on the loading
+        // view and no /api request but the navbar's dm poll is ever issued. Keep ticking until the
+        // page shell exists and either its loading view is gone or the app has issued an API
+        // request, i.e. the timer has fired. cy.contains('전력분석실') alone is not a mount signal
+        // because the navbar link matches it too.
+        const settleFakeClockWhileLoading = (ticks = 0) => {
             cy.window({ log: false }).then((win) => {
                 const hasFakeClock = Boolean((win.setTimeout as typeof win.setTimeout & { clock?: unknown }).clock);
-                if (!hasFakeClock) {
+                if (!hasFakeClock || ticks >= 300) {
                     return;
                 }
                 const isMounted = Boolean(win.document.querySelector('[data-testid="prediction-tab-match"]'));
                 const isLoading = (win.document.body.innerText || '').includes('데이터 워밍업');
-                if (isMounted && !isLoading) {
-                    return;
-                }
-                if (isMounted ? mountedTicks >= 10 : waitingTicks >= 200) {
+                const hasIssuedApiRequest = apiRequestPaths.some((path) => path !== '/api/dm/rooms/my');
+                if (isMounted && (!isLoading || hasIssuedApiRequest)) {
                     return;
                 }
                 cy.tick(100, { log: false });
                 cy.wait(50, { log: false });
-                settleFakeClockWhileLoading(
-                    isMounted ? waitingTicks : waitingTicks + 1,
-                    isMounted ? mountedTicks + 1 : mountedTicks,
-                );
+                settleFakeClockWhileLoading(ticks + 1);
             });
         };
         advanceTime(100);
@@ -270,6 +267,13 @@ describe('Game Prediction', () => {
     };
 
     beforeEach(() => {
+        apiRequestPaths = [];
+        cy.intercept({ middleware: true, url: '**/api/**' }, (req) => {
+            const { pathname } = new URL(req.url);
+            if (!pathname.startsWith('/src/')) {
+                apiRequestPaths.push(pathname);
+            }
+        });
         cy.clearCookies();
         cy.clearLocalStorage();
         (cy as any).mockAPI({ skipRankings: true });
