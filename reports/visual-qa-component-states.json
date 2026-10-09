@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-09T16:38:23.809Z",
-  "ok": false,
+  "generatedAt": "2026-10-09T11:02:00.995Z",
+  "ok": true,
   "total": 1014,
-  "registered": 466,
+  "registered": 473,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -180,13 +180,6 @@
     "src/components/MatePage.tsx#MateLoggedOutEntry",
     "src/components/MatePage.tsx#MatePage",
     "src/components/MatePage.tsx#MateRuntime",
-    "src/components/MatePartyCard.tsx#$default",
-    "src/components/MatePartyCard.tsx#FavoriteToggleButton",
-    "src/components/MatePartyCard.tsx#MatePartyCard",
-    "src/components/MatePartyCard.tsx#PartyCompact",
-    "src/components/MatePartyCard.tsx#PartyCompactBase",
-    "src/components/MatePartyCard.tsx#PartyRow",
-    "src/components/MatePartyCard.tsx#PartyRowBase",
     "src/components/MatePopularSearchesPanel.tsx#MatePopularSearchesPanel",
     "src/components/MateRecentSearchesPanel.tsx#MateRecentSearchesPanel",
     "src/components/MateResultsRuntime.tsx#$default",
@@ -557,23 +550,6 @@
   "duplicates": [],
   "missing": [],
   "stale": [],
-  "errors": [
-    "src/components/HomeRuntime.tsx#HomeRuntime axis data uses unknown value normal",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis data uses unknown value date-a",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis data uses unknown value date-b",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis data uses unknown value manual",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis interactions uses unknown value next-date",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis interactions uses unknown value cta",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis system uses unknown value ready",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis system uses unknown value empty",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis system uses unknown value request-failed",
-    "src/components/HomeRuntime.tsx#HomeRuntime axis system uses unknown value manual-data-required",
-    "src/components/HomeRuntime.tsx#HomeRuntime interactionPlans.next-date has no executable action mapping for next-date",
-    "src/components/HomeRuntime.tsx#HomeRuntime interactionPlans.cta has no executable action mapping for cta",
-    "src/components/HomeRuntime.tsx#HomeRuntime constraint 22 references undeclared system=loading,ready,empty",
-    "src/components/HomeRuntime.tsx#HomeRuntime constraint 23 references undeclared data=normal,empty,date-b,long-korean,manual",
-    "src/components/HomeRuntime.tsx#HomeRuntime constraint 24 references undeclared system=loading,empty,request-failed,manual-data-required",
-    "src/components/HomeRuntime.tsx#HomeRuntime constraint 25 references undeclared system=loading,empty,request-failed,manual-data-required"
-  ],
-  "validCombinations": 72978
+  "errors": [],
+  "validCombinations": 73196
 }

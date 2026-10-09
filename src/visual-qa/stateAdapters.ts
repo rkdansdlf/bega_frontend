@@ -384,6 +384,62 @@ const requireStateValueFromMap = <T>(
 
 const landingDirectSurface = 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none';
 
+// Mate party fixtures shared by the MatePartyCard direct adapters. Only the copy and
+// status vary; ids, dates, and participant counts stay fixed so captures are deterministic.
+const matePartyFixture = (
+  data: 'long-korean' | 'single' | 'unbroken-token',
+  favorite: boolean,
+  status: 'MATCHED' | 'SELLING',
+) => {
+  const stadium = data === 'long-korean'
+    ? '서울특별시 종합운동장 야구장 공식 좌석 안내 경기장'
+    : data === 'unbroken-token'
+      ? `STADIUM${'UNBROKEN'.repeat(20)}`
+      : '잠실';
+  const section = data === 'long-korean'
+    ? '1루 내야 응원단상 바로 아래 통로와 좌석 열이 매우 길게 이어지는 공식 좌석 안내 구역'
+    : data === 'unbroken-token'
+      ? `SECTION${'UNBROKEN'.repeat(24)}`
+      : '1루 내야 101구역';
+  const hostName = data === 'long-korean'
+    ? '매우 긴 한국어 호스트 이름 비주얼 테스트'
+    : data === 'unbroken-token'
+      ? `HOST${'TOKEN'.repeat(16)}`
+      : '비주얼 QA 호스트';
+  const description = data === 'long-korean'
+    ? '긴 한국어 소개 문장이 두 줄 이상으로 이어지며 카드 안에서 잘리지 않고 감싸지는지 확인합니다.'
+    : data === 'unbroken-token'
+      ? `DESCRIPTION${'UNBROKEN'.repeat(18)}`
+      : '승인 전 짧은 파티 소개입니다.';
+  return {
+    id: 77,
+    hostId: 11,
+    hostHandle: '@visual_qa_host',
+    hostName,
+    hostBadge: 'TRUSTED' as const,
+    hostAverageRating: 4.9,
+    hostReviewCount: 27,
+    teamId: 'LG',
+    cheeringSide: 'HOME' as const,
+    gameDate: '2026-09-05',
+    gameTime: '18:30:00',
+    stadium,
+    homeTeam: 'LG',
+    awayTeam: 'OB',
+    section,
+    maxParticipants: 4,
+    currentParticipants: 2,
+    description,
+    ticketVerified: true,
+    status,
+    ticketPrice: 28000,
+    favorited: favorite,
+    createdAt: '2026-08-27T00:00:00+09:00',
+  };
+};
+const matePartyTodayKey = '2026-09-03';
+const matePartyDesktopSurface = 'block w-[960px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none';
+
 const resolveLandingTheme = (context: ComponentStateAdapterContext) => (
   resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
     dark: 'dark',
@@ -12269,6 +12325,102 @@ const adapters: Record<string, ComponentStateAdapter> = {
       },
       captureSelector: '[data-testid="mate-check-in-overview"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mate.party-card': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 MatePartyCard state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-card"]',
+      surfaceClassName: 'block w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'mate.party-row': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 PartyRow state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-row"]',
+      surfaceClassName: matePartyDesktopSurface,
+      theme,
+    };
+  },
+  'mate.party-compact': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 PartyCompact state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-compact"]',
+      surfaceClassName: matePartyDesktopSurface,
       theme,
     };
   },
