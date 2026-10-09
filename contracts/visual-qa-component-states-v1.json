@@ -57185,8 +57185,58 @@
     },
     {
       "id": "src/components/MateGuestSampleList.tsx#MateGuestSampleList",
-      "status": "pending",
-      "renderAccess": "module-export"
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "mate.guest-sample-list"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The guest sample list is static copy with two fixed sample cards; there is no data-driven variant.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MateGuestSampleList.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The sample list is the logged-out guest preview; it has no role-dependent rendering.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateGuestSampleList.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The sample cards are non-interactive articles; no control exists to exercise.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateGuestSampleList.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The list has no transport or loading state; it renders synchronously from constants.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateGuestSampleList.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Card surfaces, tags, and text switch between light and dark tokens.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateGuestSampleList.tsx"
+          }
+        ]
+      },
+      "constraints": []
     },
     {
       "id": "src/components/MateGuidePanelRuntime.tsx#MateGuidePanelRuntime",

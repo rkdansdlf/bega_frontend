@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-09T11:44:18.830Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "reset-storage-cache-state-and-reuse-page-per-bounded-worker",
+  "pageMode": "reuse",
+  "captureHeightMode": "mobile",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "../vqa-b2/shots"
+  },
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MateGuestSampleList.tsx#MateGuestSampleList:data=single|variant.theme=dark",
+      "componentId": "src/components/MateGuestSampleList.tsx#MateGuestSampleList",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-guest-sample-list-mobile-screenshots/mateguestsamplelist-mateguestsamplelist-data-single-variant-theme-dark-f4ed85db4ee5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MateGuestSampleList.tsx#MateGuestSampleList:data=single|variant.theme=light",
+      "componentId": "src/components/MateGuestSampleList.tsx#MateGuestSampleList",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-guest-sample-list-mobile-screenshots/mateguestsamplelist-mateguestsamplelist-data-single-variant-theme-light-5b6cc28562b0.png",
+      "attempts": 1
+    }
+  ],
+  "note": "Synthetic harness fixtures only. Viewport is 320px, so the sm:grid-cols-2 two-column layout is not exercised by this capture; only the single-column mobile layout is verified."
+}
