@@ -889,7 +889,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 72021);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 72093);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -902,7 +902,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    294,
+    297,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (

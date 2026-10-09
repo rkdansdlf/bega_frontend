@@ -138,6 +138,7 @@ function MatePartyCard({
 
   return (
     <div
+      data-testid="mate-party-card"
       className={cn(
         'status-badge-hover-scope group relative flex w-full cursor-pointer flex-col gap-[10px] rounded-18 border border-gray-200/90 bg-white p-[14px] text-left transition-[transform,border-color,box-shadow] duration-150 ease-out',
         'hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_12px_28px_rgba(15,23,42,0.08),0_0_0_3px_rgba(45,95,79,0.08)]',
@@ -297,7 +298,7 @@ function PartyRowBase({
   const favorited = Boolean(party.favorited);
 
   return (
-    <div className="relative">
+    <div data-testid="mate-party-row" className="relative">
       <button
         type="button"
         aria-label={buildPartyAriaLabel(party, statusMeta)}
@@ -363,7 +364,7 @@ function PartyCompactBase({
   const favorited = Boolean(party.favorited);
 
   return (
-    <div className="relative">
+    <div data-testid="mate-party-compact" className="relative">
       <button
         type="button"
         aria-label={buildPartyAriaLabel(party, statusMeta)}
