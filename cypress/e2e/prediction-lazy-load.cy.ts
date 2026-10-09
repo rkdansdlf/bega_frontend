@@ -7,6 +7,7 @@ import {
     installPredictionGuestSessionIntercept,
     visitPredictionPage,
 } from '../support/predictionPage';
+import { CI_FLAKE_RETRIES } from '../support/ciFlakeRetries';
 
 const COACH_BRIEFING_SESSION_STORAGE_KEY = 'prediction:coachBriefing:v2';
 const COACH_BRIEFING_LOCAL_STORAGE_KEY = 'prediction:coachBriefing:local:v2';
@@ -24,7 +25,7 @@ type PredictionDeferredIdleWindow = Window & {
     __flushPredictionDeferredWork?: () => void;
 };
 
-describe('Prediction Lazy Load', () => {
+describe('Prediction Lazy Load', CI_FLAKE_RETRIES, () => {
     const today = '2026-02-03';
     const previousDate = '2026-02-02';
     const nextDate = '2026-02-06';

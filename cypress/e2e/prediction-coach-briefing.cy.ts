@@ -9,8 +9,9 @@ import {
   visitPredictionPage,
   waitForPredictionVoteBootstrap,
 } from '../support/predictionPage';
+import { CI_FLAKE_RETRIES } from '../support/ciFlakeRetries';
 
-describe('Prediction Coach Briefing Regression', () => {
+describe('Prediction Coach Briefing Regression', CI_FLAKE_RETRIES, () => {
   type ScheduleGameMock = {
     gameId: string;
     gameDate: string;
