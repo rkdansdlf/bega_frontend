@@ -12424,6 +12424,23 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.guest-sample-list': (context) => {
+    requireStateValue(context, 'data', 'single');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.permissions !== undefined || context.states.interactions !== undefined
+      || context.states.system !== undefined || context.interactionTargetId !== undefined) {
+      throw new Error('지원하지 않는 MateGuestSampleList state');
+    }
+    return {
+      props: {},
+      captureSelector: '[data-testid="mate-guest-sample-list"]',
+      surfaceClassName: 'block w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
   'mate.check-in-page': (context) => {
     requireStateValue(context, 'data', 'single');
     const phase = resolveDeclaredVariant<'fallback' | 'runtime'>(context, 'phase', {

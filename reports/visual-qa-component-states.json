@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-09T11:02:00.995Z",
+  "generatedAt": "2026-10-09T11:44:57.189Z",
   "ok": true,
   "total": 1014,
-  "registered": 473,
+  "registered": 474,
   "pending": [
     "src/components/AppRoutes.tsx#Cheer",
     "src/components/AppRoutes.tsx#CheerBookmarksPage",
@@ -144,7 +144,6 @@
     "src/components/MateDetailRuntime.tsx#MateDetailRuntime",
     "src/components/MateDetailSeatPanel.tsx#MateDetailSeatPanel",
     "src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet",
-    "src/components/MateGuestSampleList.tsx#MateGuestSampleList",
     "src/components/MateGuidePanelRuntime.tsx#MateGuidePanelRuntime",
     "src/components/MateListControlsRuntime.tsx#MateDateRailFilter",
     "src/components/MateListControlsRuntime.tsx#MateFilterBottomSheet",
@@ -551,5 +550,5 @@
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 73196
+  "validCombinations": 73198
 }

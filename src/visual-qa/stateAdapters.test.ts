@@ -372,6 +372,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'mate.detail-review-block',
     'mate.detail-reviews-section',
     'mate.detail-seat-view',
+    'mate.guest-sample-list',
     'mate.host-reviews-modal',
     'mate.mobile-date-filter',
     'mate.page',
