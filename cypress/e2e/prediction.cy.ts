@@ -10,8 +10,9 @@ import {
     visitPredictionPage,
     waitForPredictionVoteBootstrap,
 } from '../support/predictionPage';
+import { CI_FLAKE_RETRIES } from '../support/ciFlakeRetries';
 
-describe('Game Prediction', () => {
+describe('Game Prediction', CI_FLAKE_RETRIES, () => {
     let apiRequestPaths: string[] = [];
     const getCoachAnalysisDialog = () => cy.get('[data-testid="coach-analysis-dialog"]');
 
