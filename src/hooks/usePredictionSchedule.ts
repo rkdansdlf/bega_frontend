@@ -132,6 +132,7 @@ export const usePredictionSchedule = ({
   const navigationSeedAppliedRef = useRef(false);
   const allDatesDataRef = useRef<DateGames[]>([]);
   const currentDateIndexRef = useRef(0);
+  const selectedGameRef = useRef(0);
   const dayNavigationByDateRef = useRef<Record<string, MatchDayNavigationMeta>>({});
   const dayRequestInFlightRef = useRef<Map<string, Promise<MatchDayResult>>>(new Map());
   const adjacentPrefetchCancelRef = useRef<PredictionDeferredWorkCancel | null>(null);
@@ -169,6 +170,10 @@ export const usePredictionSchedule = ({
   useEffect(() => {
     currentDateIndexRef.current = currentDateIndex;
   }, [currentDateIndex]);
+
+  useEffect(() => {
+    selectedGameRef.current = selectedGame;
+  }, [selectedGame]);
 
   const stateGame = locationState?.game;
   const stateGameId = typeof locationState?.gameId === 'string'
@@ -357,8 +362,23 @@ export const usePredictionSchedule = ({
       dayData.date
     );
 
+    // 전체 날짜 목록이 들어오면 경기 목록의 순서가 바뀌어 선택 인덱스가 다른 경기를 가리킬 수 있다.
+    // 같은 날짜를 보고 있었다면 선택했던 경기 ID 를 기준으로 새 인덱스를 다시 맞춘다.
+    const previouslySelectedGameId = dayData.date === currentVisibleDate
+      ? allDatesDataRef.current[currentDateIndexRef.current]?.games[selectedGameRef.current]?.gameId || null
+      : null;
+
     setAllDatesData(normalizedDates);
     allDatesDataRef.current = normalizedDates;
+
+    if (previouslySelectedGameId) {
+      const visibleGames = normalizedDates.find((entry) => entry.date === currentVisibleDate)?.games ?? [];
+      const keptGameIndex = visibleGames.findIndex((game) => game.gameId === previouslySelectedGameId);
+      if (keptGameIndex >= 0 && keptGameIndex !== selectedGameRef.current) {
+        setSelectedGame(keptGameIndex);
+        selectedGameRef.current = keptGameIndex;
+      }
+    }
 
     const targetDate = options.moveToLoadedDate
       ? dayData.date
