@@ -193,6 +193,27 @@ describe('Prediction Coach Briefing Regression', CI_FLAKE_RETRIES, () => {
     advanceTime(100);
     cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
     advanceTime(100);
+    // 앱의 첫 API 요청은 가짜 setTimeout 뒤에 나간다. 고정 횟수로 밀면 타이머 등록보다 먼저 끝나
+    // 시계가 멈춘 채 요청이 영영 나가지 않는다 (prediction.cy.ts 와 같은 원인). 요청이 나갈 때까지 민다.
+    // 요청 여부는 리소스 타이밍으로 본다 (모듈 로딩 /src/api/ 는 제외).
+    const settleFakeClockUntilApiRequest = (ticks = 0) => {
+      if (useRealClock) {
+        return;
+      }
+      cy.window({ log: false }).then((win) => {
+        const requested = win.performance.getEntriesByType('resource').some((entry) => {
+          const { pathname } = new URL(entry.name);
+          return pathname.startsWith('/api/') && !pathname.startsWith('/api/dm/');
+        });
+        if (requested || ticks >= 120) {
+          return;
+        }
+        cy.tick(100, { log: false });
+        cy.wait(50, { log: false });
+        settleFakeClockUntilApiRequest(ticks + 1);
+      });
+    };
+    settleFakeClockUntilApiRequest();
     if (waitForGameDetail) {
       cy.wait('@getGameDetail');
       advanceTime(100);
