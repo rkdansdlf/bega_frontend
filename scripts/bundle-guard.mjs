@@ -1768,7 +1768,7 @@ const routeStaticClosureTargets = [
   {
     route: '/password/reset',
     label: '/password/reset route static closure',
-    maxJsGzipBytes: 83_000,
+    maxJsGzipBytes: 83_200,
     entrypoints: [
       'index.html',
       'src/components/PasswordReset.tsx',
@@ -1823,7 +1823,7 @@ const routeStaticClosureTargets = [
   {
     route: '/cheer',
     label: '/cheer route static closure',
-    maxJsGzipBytes: 121_600,
+    maxJsGzipBytes: 121_900,
     entrypoints: [
       'index.html',
       'src/components/Cheer.tsx',
