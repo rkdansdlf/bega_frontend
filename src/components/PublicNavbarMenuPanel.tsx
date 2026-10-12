@@ -67,10 +67,9 @@ export default function PublicNavbarMenuPanel({
     navigate(path);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     onClose();
-    logout();
-    navigate('/home');
+    if (await logout()) navigate('/home');
   };
 
   return (
@@ -174,7 +173,7 @@ export default function PublicNavbarMenuPanel({
                   <ShieldAlertIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <span className="font-semibold text-amber-700 dark:text-amber-400">관리자</span>
-                <span className="ml-auto px-2 py-0.5 text-body font-bold rounded bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                <span className="hidden lg:inline-flex ml-auto px-2 py-0.5 text-body font-bold rounded bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
                   ADMIN
                 </span>
               </button>

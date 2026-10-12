@@ -141,8 +141,6 @@ test('every route in AppRoutes.tsx is either audited or explicitly excluded', ()
   const EXCLUDED = new Set([
     '*',                                  // covered as the 404 catch-all by hand
     '/oauth/callback',                    // redirect-only, renders no UI
-    '/password/reset/confirm',            // needs a live token
-    '/account/deletion/recovery',         // needs a live recovery link
     '/mypage/:handle',                    // redirects to /profile/:handle
     '/test/error',                        // dev-only error harness
     '/internal/sajik-seatmap-editor',     // dev-only internal tool

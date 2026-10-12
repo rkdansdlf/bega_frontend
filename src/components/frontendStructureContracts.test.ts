@@ -9,6 +9,7 @@ test('auth session boundary는 라우트 provider가 아니라 앱 루트에 마
   const appQueryProvider = readSource('./AppQueryProvider.tsx');
 
   assert.match(appShell, /<AuthSessionBoundary>/);
+  assert.match(appShell, /<AuthSessionSync \/>/);
   assert.doesNotMatch(appQueryProvider, /auth-session-expired/);
   assert.doesNotMatch(appQueryProvider, /Notification\.requestPermission/);
 });
@@ -17,6 +18,7 @@ test('OAuth 성공 경로도 auth session generation을 명시적으로 갱신�
   const oauthCallback = readSource('./OAuthCallback.tsx');
 
   assert.match(oauthCallback, /markAuthSessionEstablished\(\)/);
+  assert.match(oauthCallback, /publishAuthSessionChanged\(\)/);
 });
 
 test('홈 복구 배너는 콘텐츠 흐름 안에 있고 viewport overlay가 아니다', () => {
@@ -26,6 +28,8 @@ test('홈 복구 배너는 콘텐츠 흐름 안에 있고 viewport overlay가 �
   const bannerIndex = homeRuntime.indexOf('<HomeRecoveryBanner');
 
   assert.ok(contentIndex >= 0 && bannerIndex > contentIndex);
+  assert.match(homeRuntime, /import HomeRecoveryBanner from '\.\/home\/HomeRecoveryBanner';/);
+  assert.doesNotMatch(homeRuntime, /LazyHomeRecoveryBanner/);
   assert.doesNotMatch(recoveryBanner, /\bfixed\b/);
   assert.doesNotMatch(recoveryBanner, /inset-x-0|top-\[/);
 });

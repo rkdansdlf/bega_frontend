@@ -13,6 +13,7 @@ import {
 import type { AdminSeatView, AdminSeatViewFilters } from '../../types/admin';
 import { formatStadiumDisplayName } from '../../utils/stadiumDisplay';
 import { AdminEyeIcon } from './AdminDetailIcons';
+import { AdminCameraIcon } from './AdminPanelIcons';
 import { AdminBadge, adminNativeSelectClassName } from './AdminPanelPrimitives';
 
 type SeatViewModerationPayload = {
@@ -49,6 +50,36 @@ const defaultSeatViewFilters: AdminSeatViewFilters = {
 const filterLabelClassName = 'mb-1 block text-caption font-medium text-slate-400';
 const seatViewSelectClassName = `${adminNativeSelectClassName} min-h-11 sm:min-h-9`;
 const seatViewRowActionClassName = 'min-h-11 min-w-11 whitespace-normal [overflow-wrap:anywhere] sm:min-h-8 sm:min-w-8';
+
+function AdminSeatViewPhoto({ id, photoUrl }: { id: number; photoUrl: string | null }) {
+  const [failedPhotoUrl, setFailedPhotoUrl] = useState<string | null>(null);
+  const normalizedPhotoUrl = photoUrl?.trim() ?? '';
+  const unavailable = !normalizedPhotoUrl || failedPhotoUrl === normalizedPhotoUrl;
+  const fallbackLabel = `시야뷰 후보 ${id}번 사진을 불러올 수 없습니다`;
+
+  if (unavailable) {
+    return (
+      <div
+        data-testid={`admin-seat-view-photo-fallback-${id}`}
+        role="img"
+        aria-label={fallbackLabel}
+        className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-slate-700 bg-slate-900/70 text-slate-500"
+      >
+        <AdminCameraIcon size={20} />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={normalizedPhotoUrl}
+      alt={`시야뷰 후보 ${id}번`}
+      loading="lazy"
+      onError={() => setFailedPhotoUrl(normalizedPhotoUrl)}
+      className="h-14 w-14 rounded-lg border border-slate-800 object-cover"
+    />
+  );
+}
 
 export function AdminSeatViewsPanel({
   seatViewFilters,
@@ -225,12 +256,7 @@ export function AdminSeatViewsPanel({
                     {seatView.id}
                   </TableCell>
                   <TableCell className="w-28">
-                    <img
-                      src={seatView.photoUrl}
-                      alt={`시야뷰 후보 ${seatView.id}번`}
-                      loading="lazy"
-                      className="h-14 w-14 rounded-lg border border-slate-800 object-cover"
-                    />
+                    <AdminSeatViewPhoto id={seatView.id} photoUrl={seatView.photoUrl} />
                   </TableCell>
                   <TableCell className="w-56 max-w-56 text-caption text-slate-300">
                     <div className="truncate" title={stadiumName}>{stadiumName}</div>

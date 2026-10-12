@@ -533,7 +533,7 @@ export default function CoachAnalysisDialogRuntime({
             hideHeader
             className={isMobileSheet
                 ? "h-[100dvh] max-h-[100dvh] w-screen !max-w-none overflow-hidden rounded-none border-0 bg-white p-0 shadow-none dark:bg-[#000000]"
-                : "max-h-[90vh] overflow-hidden rounded-3xl border border-[#e5e7eb] bg-white p-0 shadow-2xl sm:max-w-[1080px] dark:border-slate-800 dark:bg-[#000000]"}
+                : "max-h-[90vh] overflow-hidden rounded-3xl border border-gray-200 bg-white p-0 shadow-2xl sm:max-w-[1080px] dark:border-slate-800 dark:bg-[#000000]"}
             bodyClassName={isMobileSheet
                 ? "flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-white p-0 dark:bg-[#000000]"
                 : "flex max-h-[90vh] flex-col overflow-hidden bg-white p-0 dark:bg-[#000000]"}
@@ -557,7 +557,7 @@ export default function CoachAnalysisDialogRuntime({
                     type="button"
                     onClick={onRequestClose}
                     aria-label="닫기"
-                    className="ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-[#e5e7eb] bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
+                    className="ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
                 >
                     <PredictionCloseIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
@@ -592,7 +592,7 @@ export default function CoachAnalysisDialogRuntime({
                     </p>
                     {!result ? (
                     <div className="p-6">
-                        <div role="status" className="rounded-20 border border-[#e5e7eb] bg-[#f7fafc] p-6 dark:border-white/10 dark:bg-white/[0.03]">
+                        <div role="status" className="rounded-20 border border-gray-200 bg-[#f7fafc] p-6 dark:border-white/10 dark:bg-white/[0.03]">
                             <div className="flex items-center gap-3 text-[#2d5f4f] dark:text-emerald-200">
                                 <PredictionLoaderIcon className="h-5 w-5 animate-spin shrink-0" />
                                 <span className="text-15 font-extrabold">{analysisStep || ANALYSIS_LOADING_FALLBACK_MESSAGE}</span>
@@ -674,7 +674,7 @@ export default function CoachAnalysisDialogRuntime({
                 <Button
                     type="button"
                     onClick={onRequestClose}
-                    className="h-9 rounded-14 bg-[#2d5f4f] px-5 text-13 font-extrabold text-white hover:bg-[#2f6c5c]"
+                    className="h-11 rounded-14 bg-[#2d5f4f] px-5 text-13 font-extrabold text-white hover:bg-[#2f6c5c] sm:h-9"
                 >
                     닫기
                 </Button>

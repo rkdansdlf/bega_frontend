@@ -79,6 +79,7 @@ interface FavoriteToggleButtonProps {
   disabled?: boolean;
   onToggle?: () => void;
   className?: string;
+  testId?: string;
 }
 
 function FavoriteToggleButton({
@@ -86,12 +87,14 @@ function FavoriteToggleButton({
   disabled = false,
   onToggle,
   className,
+  testId,
 }: FavoriteToggleButtonProps) {
   const label = favorited ? '찜 해제' : '찜하기';
 
   return (
     <button
       type="button"
+      data-testid={testId}
       aria-label={label}
       aria-pressed={favorited}
       disabled={disabled}
@@ -138,6 +141,7 @@ function MatePartyCard({
 
   return (
     <div
+      data-testid="mate-party-card"
       className={cn(
         'status-badge-hover-scope group relative flex w-full cursor-pointer flex-col gap-[10px] rounded-18 border border-gray-200/90 bg-white p-[14px] text-left transition-[transform,border-color,box-shadow] duration-150 ease-out',
         'hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_12px_28px_rgba(15,23,42,0.08),0_0_0_3px_rgba(45,95,79,0.08)]',
@@ -149,10 +153,12 @@ function MatePartyCard({
         favorited={favorited}
         disabled={favoriteUpdating}
         onToggle={() => onFavoriteToggle?.(party)}
+        testId="mate-party-card-favorite"
         className="absolute right-3 top-3 z-10"
       />
       <button
         type="button"
+        data-testid="mate-party-card-detail"
         aria-label={`${zoneName} ${stadiumDisplayName} ${formatGameDate(party.gameDate)} ${statusMeta.accessibleLabel} 파티 상세 보기`}
         onClick={() => onClick(party)}
         className="flex w-full flex-col gap-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-[#000000]"
@@ -300,6 +306,7 @@ function PartyRowBase({
     <div className="relative">
       <button
         type="button"
+        data-testid="mate-party-row"
         aria-label={buildPartyAriaLabel(party, statusMeta)}
         onClick={() => onClick(party)}
         className={cn(rowSurfaceClass, 'grid grid-cols-[68px_minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] items-center gap-3 p-3 pr-12')}
@@ -342,6 +349,7 @@ function PartyRowBase({
         favorited={favorited}
         disabled={favoriteUpdating}
         onToggle={() => onFavoriteToggle?.(party)}
+        testId="mate-party-row-favorite"
         className="absolute right-2 top-1/2 -translate-y-1/2"
       />
     </div>
@@ -366,6 +374,7 @@ function PartyCompactBase({
     <div className="relative">
       <button
         type="button"
+        data-testid="mate-party-compact"
         aria-label={buildPartyAriaLabel(party, statusMeta)}
         onClick={() => onClick(party)}
         className={cn(rowSurfaceClass, 'flex items-center gap-3 rounded-xl px-3.5 py-2.5 pr-12')}
@@ -384,6 +393,7 @@ function PartyCompactBase({
         favorited={favorited}
         disabled={favoriteUpdating}
         onToggle={() => onFavoriteToggle?.(party)}
+        testId="mate-party-compact-favorite"
         className="absolute right-2 top-1/2 -translate-y-1/2"
       />
     </div>

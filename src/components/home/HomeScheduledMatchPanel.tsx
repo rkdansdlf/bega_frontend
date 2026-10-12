@@ -140,6 +140,7 @@ function HomeScheduledErrorState({
       ) : (
         <button
           type="button"
+          data-testid="home-scheduled-retry"
           onClick={onRetry}
           className={HOME_SCHEDULED_RETRY_BUTTON_CLASS}
         >
@@ -319,7 +320,7 @@ export default function HomeScheduledMatchPanel({
               <button
                 type="button"
                 data-testid="home-scheduled-secondary-toggle"
-                className="inline-flex min-h-10 items-center gap-1 rounded-xl border border-amber-200 bg-white px-3 py-1 text-15 font-black text-amber-700 hover:bg-amber-50 dark:border-amber-700/40 dark:bg-white/[0.04] dark:text-amber-200 dark:hover:bg-amber-950/20"
+                className="inline-flex min-h-11 items-center gap-1 rounded-xl border border-amber-200 bg-white px-3 py-1 text-15 font-black text-amber-700 hover:bg-amber-50 dark:border-amber-700/40 dark:bg-white/[0.04] dark:text-amber-200 dark:hover:bg-amber-950/20"
                 aria-expanded={isSecondarySectionExpanded}
                 onClick={onToggleSecondarySection}
               >

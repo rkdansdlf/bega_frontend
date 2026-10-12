@@ -16,6 +16,10 @@ import {
 import { parseError } from '../utils/errorUtils';
 import { toast } from 'sonner';
 import { getRepostErrorMessageFromCode } from '../utils/repostPolicy';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { getViewerQueryScope, matchesViewerQueryScope } from '../utils/viewerQueryScope';
+import { useViewerQueryScope } from './useViewerQueryScope';
+import type { ViewerQueryScope } from '../utils/viewerQueryScope';
 
 type CheerInfiniteData = InfiniteData<PageResponse<CheerPost>>;
 type CheerContentPage = { content: CheerPost[] };
@@ -63,14 +67,17 @@ const LIKE_CONTENT_PAGE_QUERY_PREFIXES = [
     ['cheer-bookmarks'],
 ] as const;
 
-const getRepostListQueries = (
-    queryClient: ReturnType<typeof useQueryClient>
+const getRepostListQueriesForScope = (
+    queryClient: ReturnType<typeof useQueryClient>,
+    scope: ViewerQueryScope = getViewerQueryScope(),
 ): InfiniteQueriesSnapshot => {
     const snapshots = REPOST_LIST_QUERY_PREFIXES.flatMap((queryKey) =>
         queryClient.getQueriesData<CheerInfiniteData>({ queryKey })
     );
     const uniq = new Map<string, [readonly unknown[], CheerInfiniteData | undefined]>();
-    snapshots.forEach(([queryKey, data]) => {
+    snapshots
+        .filter(([queryKey]) => queryKey[0] !== 'userPosts' || matchesViewerQueryScope(queryKey, scope))
+        .forEach(([queryKey, data]) => {
         uniq.set(JSON.stringify(queryKey), [queryKey, data]);
     });
     return Array.from(uniq.values());
@@ -79,14 +86,17 @@ const getRepostListQueries = (
 const cancelRepostListQueries = (queryClient: ReturnType<typeof useQueryClient>): Promise<void[]> =>
     Promise.all(REPOST_LIST_QUERY_PREFIXES.map((queryKey) => queryClient.cancelQueries({ queryKey })));
 
-const getLikeContentPageQueries = (
-    queryClient: ReturnType<typeof useQueryClient>
+const getLikeContentPageQueriesForScope = (
+    queryClient: ReturnType<typeof useQueryClient>,
+    scope: ViewerQueryScope = getViewerQueryScope(),
 ): ContentPageQueriesSnapshot => {
     const snapshots = LIKE_CONTENT_PAGE_QUERY_PREFIXES.flatMap((queryKey) =>
         queryClient.getQueriesData<CheerContentPage>({ queryKey })
     );
     const uniq = new Map<string, [readonly unknown[], CheerContentPage | undefined]>();
-    snapshots.forEach(([queryKey, data]) => {
+    snapshots
+        .filter(([queryKey]) => queryKey[0] !== 'cheer-bookmarks' || matchesViewerQueryScope(queryKey, scope))
+        .forEach(([queryKey, data]) => {
         uniq.set(JSON.stringify(queryKey), [queryKey, data]);
     });
     return Array.from(uniq.values());
@@ -95,21 +105,23 @@ const getLikeContentPageQueries = (
 const cancelLikeContentPageQueries = (queryClient: ReturnType<typeof useQueryClient>): Promise<void[]> =>
     Promise.all(LIKE_CONTENT_PAGE_QUERY_PREFIXES.map((queryKey) => queryClient.cancelQueries({ queryKey })));
 
-const updateRepostListQueries = (
+const updateRepostListQueriesForScope = (
     queryClient: ReturnType<typeof useQueryClient>,
-    updater: (old: CheerInfiniteData | undefined) => CheerInfiniteData | undefined
+    updater: (old: CheerInfiniteData | undefined) => CheerInfiniteData | undefined,
+    scope: ViewerQueryScope = getViewerQueryScope(),
 ) => {
-    REPOST_LIST_QUERY_PREFIXES.forEach((queryKey) => {
-        queryClient.setQueriesData<CheerInfiniteData>({ queryKey }, updater);
+    getRepostListQueriesForScope(queryClient, scope).forEach(([queryKey]) => {
+        queryClient.setQueryData<CheerInfiniteData>(queryKey, updater);
     });
 };
 
-const updateLikeContentPageQueries = (
+const updateLikeContentPageQueriesForScope = (
     queryClient: ReturnType<typeof useQueryClient>,
-    updater: (old: CheerContentPage | undefined) => CheerContentPage | undefined
+    updater: (old: CheerContentPage | undefined) => CheerContentPage | undefined,
+    scope: ViewerQueryScope = getViewerQueryScope(),
 ) => {
-    LIKE_CONTENT_PAGE_QUERY_PREFIXES.forEach((queryKey) => {
-        queryClient.setQueriesData<CheerContentPage>({ queryKey }, updater);
+    getLikeContentPageQueriesForScope(queryClient, scope).forEach(([queryKey]) => {
+        queryClient.setQueryData<CheerContentPage>(queryKey, updater);
     });
 };
 
@@ -173,11 +185,12 @@ const syncLikeActionStateInContentPages = (
     queryClient: ReturnType<typeof useQueryClient>,
     targetPostId: number,
     liked: boolean,
-    likeCount: number
+    likeCount: number,
+    scope: ViewerQueryScope = getViewerQueryScope(),
 ) => {
-    updateLikeContentPageQueries(queryClient, (old) =>
+    updateLikeContentPageQueriesForScope(queryClient, (old) =>
         applyCheerLikeStateToContentPage(old, targetPostId, liked, likeCount)
-    );
+    , scope);
 };
 
 const syncBookmarkActionState = (
@@ -370,6 +383,20 @@ export const useCheerHotPosts = () => {
 
 export const useCheerMutations = () => {
     const queryClient = useQueryClient();
+    const viewerScope = useViewerQueryScope();
+    const bookmarksQueryKey = PRIVATE_QUERY_KEYS.cheerBookmarks(viewerScope);
+    const getRepostListQueries = (client: ReturnType<typeof useQueryClient>) =>
+        getRepostListQueriesForScope(client, viewerScope);
+    const getLikeContentPageQueries = (client: ReturnType<typeof useQueryClient>) =>
+        getLikeContentPageQueriesForScope(client, viewerScope);
+    const updateRepostListQueries = (
+        client: ReturnType<typeof useQueryClient>,
+        updater: (old: CheerInfiniteData | undefined) => CheerInfiniteData | undefined,
+    ) => updateRepostListQueriesForScope(client, updater, viewerScope);
+    const updateLikeContentPageQueries = (
+        client: ReturnType<typeof useQueryClient>,
+        updater: (old: CheerContentPage | undefined) => CheerContentPage | undefined,
+    ) => updateLikeContentPageQueriesForScope(client, updater, viewerScope);
 
     const toggleLikeMutation = useMutation<cheerApi.LikeToggleResponse, unknown, number, LikeMutationContext>({
         mutationFn: cheerApi.toggleLike,
@@ -413,7 +440,7 @@ export const useCheerMutations = () => {
             updateRepostListQueries(queryClient, (old) =>
                 syncLikeActionStateInInfinitePages(old, postId, data.liked, data.likes)
             );
-            syncLikeActionStateInContentPages(queryClient, postId, data.liked, data.likes);
+            syncLikeActionStateInContentPages(queryClient, postId, data.liked, data.likes, viewerScope);
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['cheer-posts', 'popular'] });
@@ -426,12 +453,12 @@ export const useCheerMutations = () => {
         mutationFn: cheerApi.toggleBookmark,
         onMutate: async (postId) => {
             await cancelRepostListQueries(queryClient);
-            await queryClient.cancelQueries({ queryKey: ['cheer-bookmarks'] });
+            await queryClient.cancelQueries({ queryKey: bookmarksQueryKey });
             await queryClient.cancelQueries({ queryKey: ['cheer-post', postId] });
 
             const previousPost = queryClient.getQueryData<cheerApi.CheerPost>(['cheer-post', postId]);
             const previousPostLists = getRepostListQueries(queryClient);
-            const previousBookmarks = queryClient.getQueryData<PageResponse<CheerPost>>(['cheer-bookmarks']);
+            const previousBookmarks = queryClient.getQueryData<PageResponse<CheerPost>>(bookmarksQueryKey);
 
             const applyOptimisticToggleOnInfinite = (old: CheerInfiniteData | undefined) => {
                 if (!old?.pages) return old;
@@ -489,7 +516,7 @@ export const useCheerMutations = () => {
             }
 
             updateRepostListQueries(queryClient, (old) => applyOptimisticToggleOnInfinite(old));
-            queryClient.setQueryData<PageResponse<CheerPost>>(['cheer-bookmarks'], (old) =>
+            queryClient.setQueryData<PageResponse<CheerPost>>(bookmarksQueryKey, (old) =>
                 applyOptimisticToggleOnPage(old)
             );
 
@@ -505,7 +532,7 @@ export const useCheerMutations = () => {
             }
             restoreInfiniteQueries(queryClient, context?.previousPostLists);
             if (context?.previousBookmarks) {
-                queryClient.setQueryData(['cheer-bookmarks'], context.previousBookmarks);
+                queryClient.setQueryData(bookmarksQueryKey, context.previousBookmarks);
             }
             const parsed = parseError(_err);
             toast.error(parsed.message || '북마크 처리에 실패했습니다.');
@@ -520,7 +547,7 @@ export const useCheerMutations = () => {
                 );
             }
 
-            queryClient.setQueryData<PageResponse<CheerPost>>(['cheer-bookmarks'], (old) => {
+            queryClient.setQueryData<PageResponse<CheerPost>>(bookmarksQueryKey, (old) => {
                 if (!old?.content) return old;
                 return {
                     ...old,
@@ -539,7 +566,7 @@ export const useCheerMutations = () => {
         onSettled: (_data, _error, postId) => {
             queryClient.invalidateQueries({ queryKey: ['cheer-post', postId] });
             invalidateRepostListQueries(queryClient);
-            queryClient.invalidateQueries({ queryKey: ['cheer-bookmarks'] });
+            queryClient.invalidateQueries({ queryKey: bookmarksQueryKey });
         },
     });
 

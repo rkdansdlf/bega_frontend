@@ -26,11 +26,18 @@ export default function ConfirmDialogRenderer({
       bodyClassName="hidden"
       footer={(
         <>
-          <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => onResult(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            data-testid="confirm-dialog-cancel"
+            className="w-full sm:w-auto"
+            onClick={() => onResult(false)}
+          >
             {options.cancelLabel || '취소'}
           </Button>
           <Button
             type="button"
+            data-testid="confirm-dialog-confirm"
             onClick={() => onResult(true)}
             className={cn(
               'w-full sm:w-auto',

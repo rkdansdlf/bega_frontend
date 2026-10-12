@@ -1,6 +1,7 @@
 import { type UIEvent } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { getBlockedUsers } from '../../api/blockApi';
+import { getBlockedUsers, type BlockToggleResponse } from '../../api/blockApi';
+import type { PageResponse, UserFollowSummary } from '../../api/followShared';
 import { ProfileAvatar } from '../ui/ProfileAvatar';
 import BlockButton from '../profile/BlockButton';
 import {
@@ -8,8 +9,30 @@ import {
   MyPageLoaderIcon,
 } from './MyPageFlowIcons';
 import MyPageSeasonEmptyState from './MyPageSeasonEmptyState';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 
-export default function BlockedUsersSection() {
+export interface BlockedUsersSectionVisualQaStateOverride {
+    users?: UserFollowSummary[];
+    isLoading?: boolean;
+    hasNextPage?: boolean;
+    isFetchingNextPage?: boolean;
+    blockToggleResponse?: BlockToggleResponse;
+    onNextPage?: () => void;
+    onBlockChange?: (response: BlockToggleResponse) => void;
+}
+
+export interface BlockedUsersSectionProps {
+    visualQaStateOverride?: BlockedUsersSectionVisualQaStateOverride;
+}
+
+export default function BlockedUsersSection({
+    visualQaStateOverride: requestedVisualQaStateOverride,
+}: BlockedUsersSectionProps = {}) {
+    const viewerScope = useViewerQueryScope();
+    const visualQaStateOverride = import.meta.env.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const queryClient = useQueryClient();
 
     const {
@@ -18,28 +41,46 @@ export default function BlockedUsersSection() {
         hasNextPage,
         isFetchingNextPage,
         isLoading,
-    } = useInfiniteQuery({
-        queryKey: ['blockedUsers'],
-        queryFn: ({ pageParam = 0 }) => getBlockedUsers(pageParam),
+    } = useInfiniteQuery<PageResponse<UserFollowSummary>>({
+        queryKey: PRIVATE_QUERY_KEYS.blockedUsers(viewerScope),
+        queryFn: ({ pageParam = 0 }) => {
+            const page = typeof pageParam === 'number' ? pageParam : Number(pageParam);
+            return getBlockedUsers(Number.isFinite(page) ? page : 0);
+        },
         getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
         initialPageParam: 0,
+        enabled: visualQaStateOverride === undefined,
     });
 
-    const users = data?.pages.flatMap((page) => page.content) || [];
+    const users = visualQaStateOverride?.users ?? data?.pages.flatMap((page) => page.content) ?? [];
+    const effectiveHasNextPage = visualQaStateOverride?.hasNextPage ?? hasNextPage;
+    const effectiveIsFetchingNextPage = visualQaStateOverride?.isFetchingNextPage ?? isFetchingNextPage;
+    const effectiveIsLoading = visualQaStateOverride?.isLoading ?? isLoading;
 
     const handleScroll = (e: UIEvent<HTMLDivElement>) => {
         const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-        if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+        if (scrollHeight - scrollTop <= clientHeight * 1.5 && effectiveHasNextPage && !effectiveIsFetchingNextPage) {
+            if (visualQaStateOverride?.onNextPage) {
+                visualQaStateOverride.onNextPage();
+            } else {
+                void fetchNextPage({ cancelRefetch: false });
+            }
         }
     };
 
-    const handleBlockChange = () => {
-        queryClient.invalidateQueries({ queryKey: ['blockedUsers'] });
+    const handleBlockChange = (response: BlockToggleResponse) => {
+        visualQaStateOverride?.onBlockChange?.(response);
+        if (visualQaStateOverride === undefined) {
+            void queryClient.invalidateQueries({ queryKey: ['blockedUsers'] });
+        }
     };
 
     return (
-        <div className="bg-card rounded-2xl shadow-lg border-2 border-border p-4 sm:p-6 md:p-8 mb-6">
+        <div
+            className="bg-card rounded-2xl shadow-lg border-2 border-border p-4 sm:p-6 md:p-8 mb-6"
+            data-screen-label="차단 관리"
+            data-testid="mypage-blocked-users-section"
+        >
             <div className="flex items-center gap-3 mb-6">
                 <MyPageBanIcon className="w-6 h-6 text-destructive" />
                 <h2 className="text-xl font-bold text-destructive">차단 관리</h2>
@@ -58,7 +99,7 @@ export default function BlockedUsersSection() {
                 className="max-h-[400px] overflow-y-auto custom-scrollbar border border-border rounded-lg"
                 onScroll={handleScroll}
             >
-                {isLoading ? (
+                {effectiveIsLoading ? (
                     <div className="flex justify-center p-8">
                         <MyPageLoaderIcon className="h-8 w-8 animate-spin text-destructive" />
                     </div>
@@ -95,11 +136,14 @@ export default function BlockedUsersSection() {
                                     size="sm"
                                     variant="destructive"
                                     onBlockChange={handleBlockChange}
+                                    visualQaToggleBlock={visualQaStateOverride?.blockToggleResponse
+                                        ? async () => visualQaStateOverride.blockToggleResponse as BlockToggleResponse
+                                        : undefined}
                                 />
                             </div>
                         ))}
 
-                        {isFetchingNextPage && (
+                        {effectiveIsFetchingNextPage && (
                             <div className="flex justify-center p-4">
                                 <MyPageLoaderIcon className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>

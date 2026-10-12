@@ -2,7 +2,7 @@
 
 import { visitHomePage } from '../support/homePage';
 
-const desktopBoundaryWidths = [768, 820, 920];
+const desktopBoundaryWidths = [768, 820, 920, 1024, 1100, 1180, 1279];
 const spaciousDesktopWidths = [1280, 1440];
 const NAVBAR_READY_TIMEOUT_MS = 20000;
 const NAVBAR_MODULE_PREWARM_TIMEOUT_MS = 10000;
@@ -48,9 +48,24 @@ const assertNavbarCapsuleContainsChrome = (label: string) => {
       if (desktopNav && rightControls) {
         const navRect = desktopNav.getBoundingClientRect();
         const rightControlsRect = rightControls.getBoundingClientRect();
+        const navSegment = desktopNav.firstElementChild;
+        const segmentRect = navSegment?.getBoundingClientRect();
 
         expect(navRect.right, `${label} desktop nav/right controls overlap`)
           .to.be.at.most(rightControlsRect.left + 0.5);
+
+        expect(segmentRect, `${label} desktop nav segment`).to.exist;
+        desktopNav.querySelectorAll<HTMLElement>('[data-nav-id]').forEach((item) => {
+          const itemRect = item.getBoundingClientRect();
+          const itemName = item.getAttribute('data-nav-id');
+
+          expect(itemRect.left, `${label} ${itemName} not clipped on left`)
+            .to.be.at.least(segmentRect!.left - 0.5);
+          expect(itemRect.right, `${label} ${itemName} not clipped on right`)
+            .to.be.at.most(segmentRect!.right + 0.5);
+          expect(itemRect.right, `${label} ${itemName} separate from profile controls`)
+            .to.be.at.most(rightControlsRect.left + 0.5);
+        });
       }
     });
 };
@@ -129,7 +144,71 @@ const assertLogoutButtonVerticallyCenteredInCapsule = (label: string) => {
   });
 };
 
-const waitForNavbarReady = ({ authenticated }: { authenticated: boolean }) => {
+const assertNavbarColumnHitAreasSeparated = (label: string, isDesktop: boolean) => {
+  if (!isDesktop) {
+    cy.get('[data-testid="navbar-capsule"]').should('be.visible');
+    cy.get('button[aria-label="메뉴 열기"]').should('be.visible').click();
+    cy.get('#mobile-menu-popup').should('be.visible');
+    cy.get('#mobile-menu-popup').should(($popup) => {
+      expect($popup[0].scrollWidth, `${label} menu has no horizontal overflow`)
+        .to.be.at.most($popup[0].clientWidth + 1);
+    });
+    cy.screenshot(`navbar-${label.replace(/\s+/g, '-')}-menu-top`, { capture: 'viewport', overwrite: true });
+    cy.get('#mobile-menu-popup button[aria-label="로그아웃"]').scrollIntoView().should('be.visible');
+    cy.get('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"]').should('not.exist');
+    cy.screenshot(`navbar-${label.replace(/\s+/g, '-')}-menu-account`, { capture: 'viewport', overwrite: true });
+    return;
+  }
+
+  cy.get('[data-testid="navbar-capsule"] nav[aria-label="주 메뉴"]').should('be.visible');
+  cy.get('[data-testid="navbar-capsule"]')
+    .should('be.visible')
+    .should(($capsule) => {
+      const capsule = $capsule[0];
+      const desktopNav = capsule.querySelector('nav[aria-label="주 메뉴"]');
+      expect(desktopNav, `${label} desktop navigation`).to.exist;
+      if (!desktopNav) {
+        throw new Error(`${label} desktop navigation is missing`);
+      }
+
+      const brand = capsule.querySelector('.navbar-home-link');
+      const firstNavItem = desktopNav.querySelector<HTMLElement>('[data-nav-id="cheer"]');
+      const lastNavItem = desktopNav.querySelector<HTMLElement>('[data-nav-id="mate"]');
+      const themeToggle = capsule.querySelector<HTMLElement>(
+        '[data-testid="navbar-right-controls"] button[aria-label*="모드로 변경"]',
+      );
+      expect(brand, `${label} brand link`).to.exist;
+      expect(firstNavItem, `${label} first nav item`).to.exist;
+      expect(lastNavItem, `${label} last nav item`).to.exist;
+      expect(themeToggle, `${label} theme toggle`).to.exist;
+
+      const intersects = (left: Element, right: Element) => {
+        const leftRect = left.getBoundingClientRect();
+        const rightRect = right.getBoundingClientRect();
+        return leftRect.left < rightRect.right
+          && leftRect.right > rightRect.left
+          && leftRect.top < rightRect.bottom
+          && leftRect.bottom > rightRect.top;
+      };
+      const centerHits = (element: Element) => {
+        const rect = element.getBoundingClientRect();
+        const hit = capsule.ownerDocument.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return hit === element || (hit !== null && element.contains(hit));
+      };
+
+      expect(intersects(brand!, firstNavItem!), `${label} brand/first-nav hit areas`)
+        .to.equal(false);
+      expect(intersects(lastNavItem!, themeToggle!), `${label} last-nav/theme hit areas`)
+        .to.equal(false);
+      [brand!, firstNavItem!, lastNavItem!, themeToggle!].forEach((element) => {
+        expect(centerHits(element), `${label} ${element.getAttribute('aria-label') || element.textContent?.trim()} center target`)
+          .to.equal(true);
+      });
+    })
+    .then(() => cy.screenshot(`navbar-${label.replace(/\s+/g, '-')}`, { capture: 'viewport', overwrite: true }));
+};
+
+const waitForNavbarReady = ({ authenticated, desktop = true }: { authenticated: boolean; desktop?: boolean }) => {
   waitForNavbarCapsuleOrLoadingShell().then(($body) => {
     if ($body.find('[data-testid="navbar-capsule"]').length === 0) {
       cy.reload();
@@ -137,6 +216,16 @@ const waitForNavbarReady = ({ authenticated }: { authenticated: boolean }) => {
   });
 
   cy.get('[data-testid="navbar-capsule"]', { timeout: NAVBAR_READY_TIMEOUT_MS }).should('be.visible');
+
+  if (!desktop) {
+    cy.get('button[aria-label="메뉴 열기"]', { timeout: NAVBAR_READY_TIMEOUT_MS }).should('be.visible').click();
+    cy.get('#mobile-menu-popup').should('be.visible');
+    cy.get(authenticated
+      ? '#mobile-menu-popup button[aria-label="로그아웃"]'
+      : '#mobile-menu-popup button[data-testid="public-navbar-menu-login"]')
+      .should('be.visible');
+    return;
+  }
 
   if (authenticated) {
     cy.get('button[aria-label="로그아웃"]', { timeout: NAVBAR_READY_TIMEOUT_MS }).should('be.visible');
@@ -192,17 +281,29 @@ const warmNavbarRouteModules = () => {
   waitForNavbarReady({ authenticated: true });
 };
 
-const waitForScrolledNavbarLayout = () => {
+const waitForScrolledNavbarLayout = (options: { maxCapsuleHeight?: number; maxCapsuleWidth?: number } = {}) => {
   cy.get('[data-testid="navbar-capsule"]', { timeout: 5000 }).should(($capsule) => {
     const capsuleRect = $capsule[0].getBoundingClientRect();
 
     expect(capsuleRect.height, 'scrolled navbar capsule height')
-      .to.be.at.most(58);
+      .to.be.at.most(options.maxCapsuleHeight ?? 58);
+    if (options.maxCapsuleWidth !== undefined) {
+      expect(capsuleRect.width, 'scrolled navbar capsule width')
+        .to.be.at.most(options.maxCapsuleWidth);
+    }
   });
 };
 
-const scrollNavbarToCompact = () => {
+const scrollNavbarToCompact = (options?: { maxCapsuleHeight?: number; maxCapsuleWidth?: number }) => {
+  let rootScrollBehavior = '';
+  let bodyScrollBehavior = '';
+
   cy.document().then((document) => {
+    rootScrollBehavior = document.documentElement.style.scrollBehavior;
+    bodyScrollBehavior = document.body.style.scrollBehavior;
+    // The app enables smooth document scrolling globally; keep this assertion deterministic.
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
     document.documentElement.style.minHeight = '1800px';
     document.body.style.minHeight = '1800px';
   });
@@ -212,7 +313,11 @@ const scrollNavbarToCompact = () => {
   cy.wait(50);
   cy.scrollTo(0, 720, { duration: 0 });
   cy.window().its('scrollY').should('be.gte', 180);
-  waitForScrolledNavbarLayout();
+  cy.document().then((document) => {
+    document.documentElement.style.scrollBehavior = rootScrollBehavior;
+    document.body.style.scrollBehavior = bodyScrollBehavior;
+  });
+  waitForScrolledNavbarLayout(options);
 };
 
 const assertCapsuleShrinksOnScroll = (label: string) => {
@@ -342,7 +447,7 @@ describe('navbar responsive desktop boundary', () => {
         authenticated: false,
         resetStorage: true,
       });
-      waitForNavbarReady({ authenticated: false });
+      waitForNavbarReady({ authenticated: false, desktop: width >= 1024 });
 
       assertNavbarCapsuleContainsChrome(`logged-out ${width}px`);
     });
@@ -359,9 +464,112 @@ describe('navbar responsive desktop boundary', () => {
           role: 'ROLE_ADMIN',
         },
       });
-      waitForNavbarReady({ authenticated: true });
+      waitForNavbarReady({ authenticated: true, desktop: width >= 1024 });
 
       assertNavbarCapsuleContainsChrome(`logged-in ${width}px`);
+    });
+  });
+
+  it('keeps public and authenticated navbar hit areas separate at 200% root text scale', () => {
+    [
+      { path: '/home', shell: 'public' },
+      { path: '/mate/create', shell: 'authenticated' },
+    ].forEach(({ path, shell }) => {
+      [320, 390, 768, 920, 1024, 1180, 1440].forEach((width) => {
+        cy.viewport(width, 900);
+        visitHomePage({
+          path,
+          authenticated: true,
+          resetStorage: true,
+          user: {
+            name: 'VeryLongAdminUserName',
+            handle: 'verylongadminuser',
+            role: 'ROLE_ADMIN',
+          },
+        });
+        if (width >= 1024) {
+          waitForNavbarReady({ authenticated: true });
+        } else {
+          cy.get('button[aria-label="메뉴 열기"]', { timeout: NAVBAR_READY_TIMEOUT_MS }).should('be.visible');
+        }
+        cy.document().then((document) => {
+          document.documentElement.style.fontSize = '32px';
+          expect(getComputedStyle(document.documentElement).fontSize, `${shell} root text scale`)
+            .to.equal('32px');
+        });
+        if (width >= 1024) {
+          cy.get('[data-testid="navbar-capsule"]').should(($capsule) => {
+            expect(
+              $capsule[0].getBoundingClientRect().height,
+              `${shell} ${width}px capsule accommodates 200% root text`,
+            ).to.be.at.least(90);
+          });
+        }
+        assertNavbarCapsuleContainsChrome(`${shell} ${width}px at 200% root text`);
+        assertNavbarColumnHitAreasSeparated(`${shell} ${width}px at 200% root text`, width >= 1024);
+      });
+    });
+  });
+
+  it('keeps both navbar variants contained while compact at 200% root text scale', () => {
+    [
+      { path: '/home', shell: 'public' },
+      { path: '/mate/create', shell: 'authenticated' },
+    ].forEach(({ path, shell }) => {
+      cy.viewport(1440, 900);
+      visitHomePage({
+        path,
+        authenticated: true,
+        resetStorage: true,
+        user: {
+          name: 'VeryLongAdminUserName',
+          handle: 'verylongadminuser',
+          role: 'ROLE_ADMIN',
+        },
+      });
+      waitForNavbarReady({ authenticated: true });
+      cy.document().then((document) => {
+        document.documentElement.style.fontSize = '32px';
+        expect(getComputedStyle(document.documentElement).fontSize, `${shell} root text scale`)
+          .to.equal('32px');
+      });
+      cy.get('[data-testid="navbar-capsule"]').should(($capsule) => {
+        expect($capsule[0].getBoundingClientRect().height, `${shell} expanded capsule accommodates 200% text`)
+          .to.be.at.least(90);
+      });
+
+      let expandedWidth = 0;
+      cy.get('[data-testid="navbar-capsule"]').then(($capsule) => {
+        expandedWidth = $capsule[0].getBoundingClientRect().width;
+      });
+      scrollNavbarToCompact({ maxCapsuleHeight: 150, maxCapsuleWidth: 1100 });
+      cy.get('[data-testid="navbar-capsule"]').should(($capsule) => {
+        const rect = $capsule[0].getBoundingClientRect();
+        expect(expandedWidth - rect.width, `${shell} compact width reduction at 200% text`)
+          .to.be.at.least(60);
+        expect(rect.height, `${shell} compact capsule preserves 200% text height`)
+          .to.be.at.least(90);
+      });
+      assertNavbarCapsuleContainsChrome(`${shell} compact at 200% root text`);
+    });
+  });
+
+  [1024, 1180].forEach((width) => {
+    it(`keeps authenticated mate menu separate from profile controls at ${width}px`, () => {
+      cy.viewport(width, 720);
+      visitHomePage({
+        path: '/mate/create',
+        authenticated: true,
+        resetStorage: true,
+        user: {
+          name: 'VeryLongAdminUserName',
+          handle: 'verylongadminuser',
+          role: 'ROLE_ADMIN',
+        },
+      });
+      waitForNavbarReady({ authenticated: true });
+
+      assertNavbarCapsuleContainsChrome(`authenticated mate ${width}px`);
     });
   });
 
@@ -379,8 +587,8 @@ describe('navbar responsive desktop boundary', () => {
     });
   });
 
-  it('keeps compact logout icon centered in its button at the desktop boundary', () => {
-    cy.viewport(768, 720);
+  it('keeps the mobile-menu logout icon centered at the tablet boundary', () => {
+    cy.viewport(1024, 720);
     visitHomePage({
       path: '/home',
       authenticated: true,
@@ -393,7 +601,7 @@ describe('navbar responsive desktop boundary', () => {
     });
     waitForNavbarReady({ authenticated: true });
 
-    assertLogoutIconCentered('logged-in 768px');
+    assertLogoutIconCentered('logged-in 1024px');
   });
 
   it('keeps expanded logout button vertically centered in the capsule', () => {

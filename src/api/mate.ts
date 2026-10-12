@@ -514,11 +514,7 @@ export async function uploadChatImage(file: File): Promise<{ path: string; url?:
 }
 
 export async function updateChatReadTimestamp(partyId: number | string): Promise<void> {
-  try {
-    await privatePost(`/chat/party/${partyId}/read`);
-  } catch (error) {
-    console.error('채팅 읽음 처리 실패:', error);
-  }
+  await privatePost(`/chat/party/${partyId}/read`);
 }
 
 export async function getChatUnreadCounts(

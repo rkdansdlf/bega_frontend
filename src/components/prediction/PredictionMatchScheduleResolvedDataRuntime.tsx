@@ -1,4 +1,4 @@
-import type { ComponentProps, ComponentType } from 'react';
+import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
 import { usePredictionSchedule } from '../../hooks/usePredictionSchedule';
 import { usePredictionUserVotes } from '../../hooks/usePredictionUserVotes';
@@ -22,6 +22,8 @@ interface PredictionMatchScheduleResolvedDataRuntimeProps {
   PredictionLoadingViewComponent: PredictionLoadingViewComponent;
   PredictionMatchesErrorViewComponent: PredictionMatchesErrorViewComponent;
   PredictionMatchScheduleReadyViewComponent: PredictionMatchScheduleReadyViewComponent;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 export default function PredictionMatchScheduleResolvedDataRuntime({
@@ -34,7 +36,18 @@ export default function PredictionMatchScheduleResolvedDataRuntime({
   PredictionLoadingViewComponent,
   PredictionMatchesErrorViewComponent,
   PredictionMatchScheduleReadyViewComponent,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchScheduleResolvedDataRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-resolved-data-runtime-fallback">일정 데이터를 확인하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const LoadingView = PredictionLoadingViewComponent;
   const MatchesErrorView = PredictionMatchesErrorViewComponent;
   const MatchScheduleReadyView = PredictionMatchScheduleReadyViewComponent;

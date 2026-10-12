@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getHomeWidgetsQueryOptions } from '../../api/home';
 import { seedMatePartyQueryData } from '../../hooks/mateList';
 import { useTodayKey } from '../../hooks/useTodayKey';
-import type { FeaturedMateCard } from '../../types/home';
+import type { FeaturedMateCard, HomeWidgetsResponse } from '../../types/home';
 import { buildDisplayableRankings } from '../../utils/homeDashboard';
 import { getRankingDisplayName } from '../../utils/homeTeamNameResolution';
 const HomeSecondaryPanels = lazy(() => import('./HomeSecondaryPanels'));
@@ -33,7 +33,14 @@ interface HomeSecondaryPanelsContainerProps {
   onCloseCalendar: () => void;
   onCalendarMonthChange: (month: Date) => void;
   onSelectCalendarDate: (date: Date) => void;
+  visualQaStateOverride?: HomeSecondaryPanelsContainerVisualQaStateOverride;
 }
+
+export type HomeSecondaryPanelsContainerVisualQaStateOverride = {
+  status: 'error' | 'loading' | 'success';
+  data?: HomeWidgetsResponse;
+  onRetry?: () => void;
+};
 
 export default function HomeSecondaryPanelsContainer({
   selectedDate,
@@ -52,6 +59,7 @@ export default function HomeSecondaryPanelsContainer({
   onCloseCalendar,
   onCalendarMonthChange,
   onSelectCalendarDate,
+  visualQaStateOverride,
 }: HomeSecondaryPanelsContainerProps) {
   const queryClient = useQueryClient();
   const todayKey = useTodayKey();
@@ -92,16 +100,19 @@ export default function HomeSecondaryPanelsContainer({
 
   const widgetsQuery = useQuery({
     ...getHomeWidgetsQueryOptions(selectedDate),
+    enabled: visualQaStateOverride === undefined,
     refetchOnWindowFocus: false,
   });
 
   const rankingOverrideQuery = useQuery({
     ...getHomeWidgetsQueryOptions(selectedDate, rankingSeasonOverride ?? undefined),
-    enabled: rankingSeasonOverride != null,
+    enabled: visualQaStateOverride === undefined && rankingSeasonOverride != null,
     refetchOnWindowFocus: false,
   });
 
-  const widgetsData = widgetsQuery.data;
+  const widgetsData = visualQaStateOverride === undefined
+    ? widgetsQuery.data
+    : visualQaStateOverride.data;
   const rankingSnapshot = rankingSeasonOverride == null
     ? widgetsData?.rankingSnapshot ?? null
     : rankingOverrideQuery.data?.rankingSnapshot ?? null;
@@ -117,15 +128,22 @@ export default function HomeSecondaryPanelsContainer({
   const displayedRankings = displayableRankings.slice(0, HOME_DASHBOARD_TEAM_COUNT);
   const rankingPlaceholderRows = Math.max(0, HOME_DASHBOARD_TEAM_COUNT - displayedRankings.length);
 
-  const widgetsFailedWithoutData = widgetsQuery.isError && !widgetsData;
+  const widgetsFailedWithoutData = visualQaStateOverride === undefined
+    ? widgetsQuery.isError && !widgetsData
+    : visualQaStateOverride.status === 'error' && !widgetsData;
   const rankingFailedWithoutData = rankingSeasonOverride == null
     ? widgetsFailedWithoutData
     : rankingOverrideQuery.isError && !rankingOverrideQuery.data;
-  const isHotCheerLoading = widgetsQuery.isLoading && !widgetsData;
-  const isFeaturedMatesLoading = widgetsQuery.isLoading && !widgetsData;
-  const isRankingsLoading = rankingSeasonOverride == null
+  const isWidgetsLoading = visualQaStateOverride === undefined
     ? widgetsQuery.isLoading && !widgetsData
-    : rankingOverrideQuery.isLoading && !rankingOverrideQuery.data;
+    : visualQaStateOverride.status === 'loading' && !widgetsData;
+  const isHotCheerLoading = isWidgetsLoading;
+  const isFeaturedMatesLoading = isWidgetsLoading;
+  const isRankingsLoading = visualQaStateOverride === undefined
+    ? rankingSeasonOverride == null
+      ? widgetsQuery.isLoading && !widgetsData
+      : rankingOverrideQuery.isLoading && !rankingOverrideQuery.data
+    : visualQaStateOverride.status === 'loading' && !widgetsData;
   const hotCheerPosts = widgetsData?.hotCheerPosts ?? [];
   const featuredMates = widgetsData?.featuredMates ?? [];
   const hotCheerError = widgetsFailedWithoutData ? '인기 응원글을 불러오지 못했습니다.' : null;
@@ -139,10 +157,18 @@ export default function HomeSecondaryPanelsContainer({
     : '현재 시즌이 시작된 상태입니다. 시즌 순위는 경기 결과 집계 후 표시됩니다.';
 
   const handleRetryWidgets = () => {
+    if (visualQaStateOverride !== undefined) {
+      visualQaStateOverride.onRetry?.();
+      return;
+    }
     void widgetsQuery.refetch();
   };
 
   const handleRetryRanking = () => {
+    if (visualQaStateOverride !== undefined) {
+      visualQaStateOverride.onRetry?.();
+      return;
+    }
     if (rankingSeasonOverride == null) {
       void widgetsQuery.refetch();
       return;

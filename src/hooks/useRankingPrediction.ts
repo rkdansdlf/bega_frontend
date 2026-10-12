@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 import { useAuthSession } from '../store/authStore';
-import { usePredictionStore, Team } from '../store/predictionStore';
+import { getInitialPredictionState, usePredictionStore, Team } from '../store/predictionStore';
 import {
   fetchRankingPredictionInit,
   fetchSavedPrediction,
@@ -20,18 +20,21 @@ import {
 } from '../utils/ranking';
 import { KAKAO_APP_KEY } from '../constants/ranking';
 import { getApiErrorMessage, parseError } from '../utils/errorUtils';
-import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
+import { buildLoginPath } from '../utils/loginRedirect';
 import {
   resolveRankingPredictionInitFailure,
   type RankingPredictionInitState,
 } from '../utils/rankingPredictionState';
+import { isViewerQueryScopeCurrent, type ViewerQueryScope } from '../utils/viewerQueryScope';
 
 export const useRankingPrediction = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, isAuthLoading } = useAuthSession();
+  const { isLoggedIn, isAuthLoading, userId, sessionEpoch } = useAuthSession();
+  const viewerScope: ViewerQueryScope = { viewerId: userId, sessionEpoch };
   const redirectToLogin = (replace = true) => {
     toast.error('로그인이 필요한 서비스입니다.');
-    navigate(buildLoginPath(getCurrentRelativeUrl()), { replace });
+    navigate(buildLoginPath(`${location.pathname}${location.search}${location.hash}`), { replace });
   };
 
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -42,15 +45,23 @@ export const useRankingPrediction = () => {
   const [initErrorMessage, setInitErrorMessage] = useState<string | null>(null);
   const [shareId, setShareId] = useState<string | null>(null);
   const [previousSeasonResult, setPreviousSeasonResult] = useState<SavedPredictionResponse | null>(null);
+  const [pageViewerId, setPageViewerId] = useState(userId);
+  const initRequestGenerationRef = useRef(0);
 
-  const { rankings, availableTeams, isPredictionSaved, allTeams } = usePredictionStore(
+  const storedPredictionState = usePredictionStore(
     useShallow((state) => ({
+      viewerId: state.viewerId,
       rankings: state.rankings,
       availableTeams: state.availableTeams,
       isPredictionSaved: state.isPredictionSaved,
       allTeams: state.allTeams,
     }))
   );
+  const activePredictionState = storedPredictionState.viewerId === userId
+    ? storedPredictionState
+    : getInitialPredictionState(userId);
+  const { rankings, availableTeams, isPredictionSaved, allTeams } = activePredictionState;
+  const isPageViewerReady = pageViewerId === userId;
 
   const { addTeamToRanking, removeTeamFromRanking, moveTeam, resetRankings, completePrediction, setRankings, setIsPredictionSaved } = usePredictionStore(
     useShallow((state) => ({
@@ -72,32 +83,76 @@ export const useRankingPrediction = () => {
     if (!isAuthLoading && !isLoggedIn) {
       redirectToLogin(true);
     }
-  }, [isLoggedIn, isAuthLoading, navigate]);
+  }, [isLoggedIn, isAuthLoading, location.hash, location.pathname, location.search, navigate]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      void initializePage();
-    }
-  }, [isLoggedIn]);
+    const generation = ++initRequestGenerationRef.current;
+    const scope = viewerScope;
+    const isCurrentRequest = () => (
+      generation === initRequestGenerationRef.current
+      && isViewerQueryScopeCurrent(scope)
+    );
 
-  const loadPreviousSeasonResult = async (previousSeasonYear: number) => {
+    setPageViewerId(userId);
+    setCurrentSeason(null);
+    setInitState('loading');
+    setInitErrorMessage(null);
+    setShareId(null);
+    setPreviousSeasonResult(null);
+    setAlreadySaved(false);
+
+    if (isAuthLoading || !isLoggedIn || userId === null) {
+      return () => {
+        if (initRequestGenerationRef.current === generation) initRequestGenerationRef.current += 1;
+      };
+    }
+
+    void (async () => {
+      await usePredictionStore.persist.rehydrate();
+      if (!isCurrentRequest()) return;
+
+      const currentStore = usePredictionStore.getState();
+      if (currentStore.viewerId !== userId) {
+        currentStore.setViewerId(userId);
+      }
+      await initializePage(isCurrentRequest, userId);
+    })();
+
+    return () => {
+      if (initRequestGenerationRef.current === generation) initRequestGenerationRef.current += 1;
+    };
+  }, [isAuthLoading, isLoggedIn, sessionEpoch, userId]);
+
+  const loadPreviousSeasonResult = async (
+    previousSeasonYear: number,
+    isCurrentRequest: () => boolean,
+  ) => {
     try {
       const previousPrediction = await fetchSavedPrediction(previousSeasonYear);
+      if (!isCurrentRequest()) return;
       setPreviousSeasonResult(previousPrediction?.settledAt ? previousPrediction : null);
     } catch {
+      if (!isCurrentRequest()) return;
       // 결과 표시는 부가 기능이므로 실패해도 메인 예측 플로우에는 영향 없음
       setPreviousSeasonResult(null);
     }
   };
 
-  const initializePage = async () => {
+  const initializePage = async (
+    isCurrentRequest: () => boolean,
+    viewerId: number,
+  ) => {
     setInitState('loading');
     setInitErrorMessage(null);
 
     try {
       const initData = await fetchRankingPredictionInit();
+      if (!isCurrentRequest()) return;
       setCurrentSeason(initData.seasonYear);
-      void loadPreviousSeasonResult(initData.seasonYear - 1);
+      void loadPreviousSeasonResult(initData.seasonYear - 1, isCurrentRequest);
+
+      const currentStore = usePredictionStore.getState();
+      if (currentStore.viewerId !== viewerId) currentStore.setViewerId(viewerId);
 
       if (initData.saved) {
         setAlreadySaved(true);
@@ -114,6 +169,7 @@ export const useRankingPrediction = () => {
         setIsPredictionSaved(false);
       }
     } catch (error: unknown) {
+      if (!isCurrentRequest()) return;
       setShareId(null);
 
       const failure = resolveRankingPredictionInitFailure(error);
@@ -136,12 +192,13 @@ export const useRankingPrediction = () => {
       return;
     }
 
-    setInitState('ready');
+    if (isCurrentRequest()) setInitState('ready');
   };
 
   const isComplete = isRankingComplete(rankings);
 
   const handleTeamClick = (team: Team) => {
+    if (!isPageViewerReady) return;
     if (alreadySaved) {
       toast.warning('이미 저장된 예측은 수정할 수 없습니다.');
       return;
@@ -150,6 +207,7 @@ export const useRankingPrediction = () => {
   };
 
   const handleRemoveTeam = (index: number) => {
+    if (!isPageViewerReady) return;
     if (alreadySaved) {
       toast.warning('이미 저장된 예측은 수정할 수 없습니다.');
       return;
@@ -158,6 +216,7 @@ export const useRankingPrediction = () => {
   };
 
   const handleCompletePrediction = () => {
+    if (!isPageViewerReady) return;
     if (isComplete) {
       completePrediction();
       toast.success('순위 예측이 완료되었습니다!');
@@ -165,6 +224,7 @@ export const useRankingPrediction = () => {
   };
 
   const handleSave = () => {
+    if (!isPageViewerReady) return;
     if (alreadySaved) {
       toast.error('이미 순위 예측을 저장하셨습니다.');
       return;
@@ -173,7 +233,8 @@ export const useRankingPrediction = () => {
   };
 
   const confirmSave = async () => {
-    if (isSaving || alreadySaved || !currentSeason) return;
+    const scope = viewerScope;
+    if (!isPageViewerReady || scope.viewerId === null || isSaving || alreadySaved || !currentSeason) return;
     if (!isRankingComplete(rankings)) {
       toast.error('10개 팀을 모두 배치한 후 저장할 수 있습니다.');
       return;
@@ -188,6 +249,7 @@ export const useRankingPrediction = () => {
         seasonYear: currentSeason,
         teamIdsInOrder: teamIds,
       });
+      if (!isViewerQueryScopeCurrent(scope)) return;
 
       toast.success(`${currentSeason} 시즌 예측이 저장되었습니다!`);
       setShowSaveDialog(false);
@@ -195,6 +257,7 @@ export const useRankingPrediction = () => {
       setIsPredictionSaved(true);
       setShareId(savedPrediction.shareId);
     } catch (error: unknown) {
+      if (!isViewerQueryScopeCurrent(scope)) return;
       const parsedError = parseError(error);
       if (parsedError.type === 'AUTH') {
         setShowSaveDialog(false);
@@ -204,7 +267,8 @@ export const useRankingPrediction = () => {
 
       if (parsedError.responseCode === 'RANKING_PREDICTION_ALREADY_EXISTS') {
         setShowSaveDialog(false);
-        await initializePage();
+        await initializePage(() => isViewerQueryScopeCurrent(scope), scope.viewerId);
+        if (!isViewerQueryScopeCurrent(scope)) return;
         toast.error(parsedError.message || '이미 저장된 예측입니다.');
         return;
       }
@@ -219,12 +283,15 @@ export const useRankingPrediction = () => {
       const errorMessage = getApiErrorMessage(error, '저장에 실패했습니다.');
       toast.error(errorMessage);
     } finally {
-      setIsSaving(false);
+      if (isViewerQueryScopeCurrent(scope)) setIsSaving(false);
     }
   };
 
   const handleShare = async () => {
+    const scope = viewerScope;
+    if (!isPageViewerReady || scope.viewerId === null) return;
     const sdkReady = isKakaoSDKReady() || await initializeKakaoSDK(KAKAO_APP_KEY);
+    if (!isViewerQueryScopeCurrent(scope)) return;
     if (!sdkReady) {
       toast.error('카카오톡 공유 기능을 불러올 수 없습니다.');
       return;
@@ -280,20 +347,26 @@ export const useRankingPrediction = () => {
     }
   };
 
+  const retryInitialize = () => {
+    const scope = viewerScope;
+    if (!isPageViewerReady || scope.viewerId === null) return;
+    void initializePage(() => isViewerQueryScopeCurrent(scope), scope.viewerId);
+  };
+
   return {
-    showSaveDialog,
+    showSaveDialog: isPageViewerReady && showSaveDialog,
     setShowSaveDialog,
-    isSaving,
-    alreadySaved,
-    currentSeason,
-    isPredictionPeriod: initState !== 'closed',
-    isLoading: initState === 'loading',
-    initState,
-    initErrorMessage,
+    isSaving: isPageViewerReady && isSaving,
+    alreadySaved: isPageViewerReady && alreadySaved,
+    currentSeason: isPageViewerReady ? currentSeason : null,
+    isPredictionPeriod: !isPageViewerReady || initState !== 'closed',
+    isLoading: !isPageViewerReady || initState === 'loading',
+    initState: isPageViewerReady ? initState : 'loading',
+    initErrorMessage: isPageViewerReady ? initErrorMessage : null,
     isAuthLoading,
     isLoggedIn,
-    shareId,
-    previousSeasonResult,
+    shareId: isPageViewerReady ? shareId : null,
+    previousSeasonResult: isPageViewerReady ? previousSeasonResult : null,
     rankings,
     availableTeams,
     isPredictionSaved,
@@ -307,6 +380,6 @@ export const useRankingPrediction = () => {
     handleSave,
     confirmSave,
     handleShare,
-    retryInitialize: initializePage,
+    retryInitialize,
   };
 };

@@ -10,8 +10,16 @@ import { getMateStatusBadgeMeta } from '../utils/statusBadgeMeta';
 import type { Party } from '../types/mate';
 import { StatusBadge } from './ui/status-badge';
 
-interface MateMyPartiesPanelProps {
+export type MateMyPartiesPanelVisualQaStateOverride = {
+  userId: number | null;
+  userHandle?: string;
+  parties: Party[];
+  isLoading: boolean;
+};
+
+export interface MateMyPartiesPanelProps {
   onPartyClick: (party: Party) => void;
+  visualQaStateOverride?: MateMyPartiesPanelVisualQaStateOverride;
 }
 
 const formatMiniDate = (gameDate: string) => {
@@ -23,24 +31,36 @@ const formatMiniDate = (gameDate: string) => {
  * 데스크톱 사이드바 "내가 만든 파티" 섹션. `/api/parties/my`에서 호스트(=나)가 만든 파티만 필터.
  * 데이터/auth는 자체 처리한다. 호스트 파티가 없으면 compact empty state를 보여준다.
  */
-export default function MateMyPartiesPanel({ onPartyClick }: MateMyPartiesPanelProps) {
+export default function MateMyPartiesPanel({
+  onPartyClick,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: MateMyPartiesPanelProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const user = useAuthStore((state) => state.user);
-  const userId = user?.id ?? null;
+  const userId = visualQaStateOverride ? visualQaStateOverride.userId : user?.id ?? null;
+  const userHandle = visualQaStateOverride ? visualQaStateOverride.userHandle : user?.handle;
   const todayKey = useTodayKey();
-  const { data, isLoading } = useQuery({
+  const partiesQuery = useQuery({
     ...getMateMyPartiesQueryOptions(userId),
-    enabled: Boolean(userId),
+    enabled: Boolean(!visualQaStateOverride && userId),
   });
+  const data = visualQaStateOverride ? visualQaStateOverride.parties : partiesQuery.data;
+  const isLoading = visualQaStateOverride ? visualQaStateOverride.isLoading : partiesQuery.isLoading;
 
   const hostedParties = useMemo(
     () => (data ?? [])
-      .filter((party) => isPartyHostedByUser(party, { id: userId, handle: user?.handle }))
+      .filter((party) => isPartyHostedByUser(party, { id: userId, handle: userHandle }))
       .slice(0, 3),
-    [data, user?.handle, userId],
+    [data, userHandle, userId],
   );
 
   return (
-    <section className="space-y-3 rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#000000]">
+    <section
+      data-testid="mate-my-parties-panel"
+      className="space-y-3 rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#000000]"
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-13 font-black text-gray-900 dark:text-white">내가 만든 파티</h2>
         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-11 font-bold text-primary dark:bg-primary/15 dark:text-primary-light">

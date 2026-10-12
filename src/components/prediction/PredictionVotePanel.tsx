@@ -229,7 +229,7 @@ export default function PredictionVotePanel({
             type="button"
             data-testid="prediction-vote-cancel-btn"
             aria-label={`${selectedVoteOption?.teamName ?? '선택한 팀'} 승리 예측 취소`}
-            className="min-h-10 rounded-full px-2.5 text-12 font-bold text-slate-500 underline-offset-4 hover:bg-slate-100 hover:text-slate-900 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-white/60 dark:hover:bg-slate-900/80 dark:hover:text-white"
+            className="min-h-11 rounded-full px-2.5 text-12 font-bold text-slate-500 underline-offset-4 hover:bg-slate-100 hover:text-slate-900 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-white/60 dark:hover:bg-slate-900/80 dark:hover:text-white"
             onClick={() => onVote(userVote)}
             disabled={isVoteActionLocked}
           >

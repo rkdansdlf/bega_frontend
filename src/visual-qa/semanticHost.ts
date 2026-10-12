@@ -7,6 +7,7 @@ export type VisualQaSemanticHost =
   | 'protected-route'
   | 'public-only-auth-route'
   | 'suspense'
+  | 'svg'
   | 'table'
   | 'table-body'
   | 'table-body-row'
@@ -92,6 +93,18 @@ export const renderInSemanticHost = (
             },
             '라우트 화면을 불러오는 중입니다.',
           ),
+        },
+        node,
+      );
+    case 'svg':
+      return createElement(
+        'svg',
+        {
+          'aria-label': 'Visual QA SVG surface',
+          className: 'h-auto w-full max-w-[320px] overflow-visible',
+          'data-vqa-semantic-host': 'svg',
+          role: 'img',
+          viewBox: '0 0 320 320',
         },
         node,
       );

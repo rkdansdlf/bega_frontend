@@ -117,16 +117,25 @@ export default function PredictionErrorOverlay({
       onClose={onClose}
       title={title || DEFAULT_TITLE}
       description={displayedMessage}
+      contentTestId="prediction-error-overlay"
       className="max-w-md"
       footer={(
         <>
-          <Button type="button" variant="outline" onClick={onClose}>닫기</Button>
+          <Button
+            type="button"
+            variant="outline"
+            data-testid="prediction-error-overlay-close"
+            onClick={onClose}
+          >
+            닫기
+          </Button>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             {actions.slice(0, 3).map((action) => {
               if (action === 'RETRY') {
                 return (
                   <Button
                     key={action}
+                    data-testid={`prediction-error-overlay-action-${action.toLowerCase()}`}
                     className="w-full sm:w-auto"
                     onClick={() => handleAction(action)}
                     disabled={isBusy}
@@ -140,6 +149,7 @@ export default function PredictionErrorOverlay({
                 <Button
                   key={action}
                   variant="outline"
+                  data-testid={`prediction-error-overlay-action-${action.toLowerCase()}`}
                   className="w-full sm:w-auto"
                   onClick={() => handleAction(action)}
                   disabled={isBusy}

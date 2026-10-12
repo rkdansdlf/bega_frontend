@@ -4,6 +4,7 @@ import type { AdminSeatView } from '../../types/admin';
 import { formatStadiumDisplayName } from '../../utils/stadiumDisplay';
 import { Button } from '../ui/button';
 import PlainDialog from '../ui/plain-dialog';
+import { AdminCameraIcon } from './AdminPanelIcons';
 
 interface AdminSeatViewDetailDrawerProps {
   selectedSeatViewId: number;
@@ -44,8 +45,11 @@ export default function AdminSeatViewDetailDrawer({
     : requestedVisualQaStateOverride;
   const visualQaInteractive = visualQaStateOverride?.interactive === true;
   const [visualQaAdminMemo, setVisualQaAdminMemo] = useState(adminMemo);
+  const [failedPhotoUrl, setFailedPhotoUrl] = useState<string | null>(null);
   const effectiveAdminMemo = visualQaInteractive ? visualQaAdminMemo : adminMemo;
   const updateAdminMemo = visualQaInteractive ? setVisualQaAdminMemo : setAdminMemo;
+  const normalizedPhotoUrl = selectedSeatViewDetail?.photoUrl?.trim() ?? '';
+  const photoUnavailable = !normalizedPhotoUrl || failedPhotoUrl === normalizedPhotoUrl;
   const submissionTags = selectedSeatViewDetail?.tags ?? [];
   const hasSubmissionDetails = Boolean(
     selectedSeatViewDetail
@@ -155,11 +159,24 @@ export default function AdminSeatViewDetailDrawer({
           </div>
         ) : (
           <div className="space-y-5">
-            <img
-              src={selectedSeatViewDetail.photoUrl}
-              alt={`시야뷰 후보 ${selectedSeatViewDetail.id}번 좌석 시야`}
-              className="aspect-video w-full rounded-xl border border-slate-800 bg-slate-950 object-contain"
-            />
+            {photoUnavailable ? (
+              <div
+                data-testid={`admin-seat-view-detail-photo-fallback-${selectedSeatViewDetail.id}`}
+                role="img"
+                aria-label={`시야뷰 후보 ${selectedSeatViewDetail.id}번 사진을 불러올 수 없습니다`}
+                className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700 bg-slate-950 text-caption text-slate-400"
+              >
+                <AdminCameraIcon size={28} />
+                <span>사진을 불러올 수 없습니다</span>
+              </div>
+            ) : (
+              <img
+                src={normalizedPhotoUrl}
+                alt={`시야뷰 후보 ${selectedSeatViewDetail.id}번 좌석 시야`}
+                onError={() => setFailedPhotoUrl(normalizedPhotoUrl)}
+                className="aspect-video w-full rounded-xl border border-slate-800 bg-slate-950 object-contain"
+              />
+            )}
 
             <dl className="grid grid-cols-1 gap-3 text-caption sm:grid-cols-2">
               <div className="min-w-0 rounded-lg border border-slate-800 p-3">

@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BEGA Visual QA</title>
+<style>
+:root{color-scheme:light;font-family:Pretendard,Inter,system-ui,sans-serif;color:#172033;background:#f4f6fa}*{box-sizing:border-box}body{margin:0}.wrap{width:min(1180px,calc(100% - 32px));margin:32px auto 80px}h1,h2,p{margin-top:0}.meta{color:#59657a}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}.metric,.scenario{background:#fff;border:1px solid #dfe4ec;border-radius:16px;box-shadow:0 8px 24px rgba(28,39,60,.06)}.metric{padding:16px}.metric strong{display:block;font-size:28px}.types{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}.types li{display:flex;gap:8px;padding:7px 10px;border-radius:999px;background:#e9edf5}.scenario{padding:18px;margin:18px 0}.scenario>header{display:flex;justify-content:space-between;gap:16px;align-items:center}.scenario h2{font-size:18px}.status{padding:5px 9px;border-radius:999px;background:#e9edf5}.status-issues,.status-error{background:#ffeadf;color:#9b3214}.shot{display:block;margin:14px 0}.shot img{display:block;max-width:min(100%,560px);max-height:620px;object-fit:contain;object-position:top;border:1px solid #dfe4ec;border-radius:12px}.issue{margin-top:12px;padding:14px;border-left:4px solid #e2a83b;background:#fffaf0;border-radius:10px}.issue-major{border-color:#d84a28;background:#fff5f2}.issue-heading{display:flex;gap:9px;align-items:center}.issue-heading span{margin-left:auto;color:#59657a}.issue dl{display:grid;grid-template-columns:110px 1fr;gap:7px 12px;margin:12px 0 0}.issue dt{font-weight:700}.issue dd{margin:0;min-width:0;overflow-wrap:anywhere}.error{padding:12px;color:#9b1c1c;background:#fff1f1;border-radius:10px}@media(max-width:600px){.wrap{width:min(100% - 20px,1180px);margin-top:18px}.scenario{padding:14px}.issue dl{grid-template-columns:1fr}.issue dd{margin-bottom:5px}}
+</style></head><body><main class="wrap"><h1>BEGA Visual QA</h1><p class="meta">2026-10-05T16:03:39.081Z · http://127.0.0.1:5177 · /, /home, /login, /signup, /password/reset, /oauth/email/confirm, /prediction, /mate, /cheer, /stadium, /leaderboard, /offseason, /offseason/list, /notice, /terms, /privacy, /mypage, /messages, /messages/@testuser, /mate/create, /mate/1, /mate/1/apply, /mate/1/chat, /mate/1/manage, /mate/1/checkin, /cheer/bookmarks, /cheer/1, /cheer/write, /cheer/edit/1, /profile/@testuser, /prediction/matches/20260726KTLT0, /predictions/ranking/share/abc/2026, /admin · 7 interaction states</p>
+<section class="summary"><div class="metric"><span>Scenarios</span><strong>667</strong></div><div class="metric"><span>Affected</span><strong>0</strong></div><div class="metric"><span>Issues</span><strong>0</strong></div><div class="metric"><span>Scan errors</span><strong>12</strong></div></section>
+<ul class="types"></ul><section class="scenario"><header><h2>/ · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/ · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/login · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/signup · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/password/reset · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/oauth/email/confirm · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/leaderboard · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/offseason/list · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/notice · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/terms · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/privacy · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/messages/@testuser · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/create · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/apply · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/chat · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/manage · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate/1/checkin · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/bookmarks · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/1 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/write · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/cheer/edit/1 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/profile/@testuser · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/prediction/matches/20260726KTLT0 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/predictions/ranking/share/abc/2026 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 390×844</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 430×844</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 480×1024</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 600×1024</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 767×1024</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 768×1024</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 834×1024</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 1040×900</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 1160×900</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 1440×900</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 667×375</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/admin · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/admin · 932×430</h2><span class="status status-error">error</span></header><p class="error">redirected to /login</p></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/home · 공개 모바일 메뉴 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 모바일 메뉴 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mate · 메이트 필터 바텀시트 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 티켓 등록 모달 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 430×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 480×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 600×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 767×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 768×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 834×1024</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 1024×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 1040×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 1160×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 1280×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 1440×900</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 568×320</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 667×375</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 844×390</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 인증 챗봇 패널 · 932×430</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 실제 경기장 좌석도 라우트 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 실제 경기장 좌석도 라우트 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/stadium · 실제 경기장 좌석도 라우트 · 390×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 마이페이지 기록 탭 · 320×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 마이페이지 기록 탭 · 360×844</h2><span class="status status-pass">pass</span></header></section>
+<section class="scenario"><header><h2>/mypage · 마이페이지 기록 탭 · 390×844</h2><span class="status status-pass">pass</span></header></section></main></body></html>

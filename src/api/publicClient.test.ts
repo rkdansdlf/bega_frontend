@@ -31,6 +31,103 @@ test('publicGet appends query params to the public api path', async (t) => {
   assert.equal(requestInit?.credentials, 'include');
 });
 
+test('publicGet preserves caller cancellation instead of converting it to a timeout', async (t) => {
+  const controller = new AbortController();
+  const abortReason = new DOMException('Request cancelled by caller', 'AbortError');
+
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => (
+    new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+      if (!signal) {
+        reject(new Error('Expected the request to receive a signal'));
+        return;
+      }
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    })
+  ));
+
+  const request = publicGet('/matches/bounds', { signal: controller.signal });
+  controller.abort(abortReason);
+
+  await assert.rejects(request, (error: unknown) => {
+    assert.equal(error, abortReason);
+    return true;
+  });
+});
+
+test('publicGet preserves an already-aborted caller signal', async (t) => {
+  const controller = new AbortController();
+  const abortReason = new DOMException('Request was already cancelled', 'AbortError');
+  controller.abort(abortReason);
+
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => {
+    const signal = init?.signal;
+    if (!signal?.aborted) {
+      throw new Error('Expected the combined signal to be already aborted');
+    }
+    throw signal.reason;
+  });
+
+  await assert.rejects(publicGet('/matches/bounds', { signal: controller.signal }), (error: unknown) => {
+    assert.equal(error, abortReason);
+    return true;
+  });
+});
+
+test('publicGet preserves caller cancellation while reading a response body', async (t) => {
+  const controller = new AbortController();
+  const abortReason = new DOMException('Body read cancelled by caller', 'AbortError');
+  let signal: AbortSignal | undefined;
+  let markBodyReadStarted: (() => void) | undefined;
+  const bodyReadStarted = new Promise<void>((resolve) => {
+    markBodyReadStarted = resolve;
+  });
+
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => {
+    signal = init?.signal ?? undefined;
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: () => new Promise<unknown>((_resolve, reject) => {
+        signal?.addEventListener('abort', () => reject(signal?.reason), { once: true });
+        markBodyReadStarted?.();
+      }),
+    } as Response;
+  });
+
+  const request = publicGet('/matches/bounds', { signal: controller.signal });
+  await bodyReadStarted;
+  controller.abort(abortReason);
+
+  await assert.rejects(request, (error: unknown) => {
+    assert.equal(error, abortReason);
+    return true;
+  });
+});
+
+test('publicGet still reports an internal deadline as a timeout', async (t) => {
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => (
+    new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+      if (!signal) {
+        reject(new Error('Expected the request to receive a signal'));
+        return;
+      }
+      if (signal.aborted) {
+        reject(signal.reason);
+        return;
+      }
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    })
+  ));
+
+  await assert.rejects(publicGet('/matches/bounds', { timeoutMs: 25 }), (error: unknown) => {
+    assert.equal((error as Error).message, 'Request timed out after 25ms');
+    return true;
+  });
+});
+
 test('publicGet throws a parseable public api error when the server responds with json', async (t) => {
   t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({
     code: 'OFFSEASON_DOWN',

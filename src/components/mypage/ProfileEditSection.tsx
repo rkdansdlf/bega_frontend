@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 import type { ProfileSection } from '../../types/profile';
 
 const ProfileEditSectionRuntime = lazy(() => import('./ProfileEditSectionRuntime'));
 
-interface ProfileEditSectionProps {
+export interface ProfileEditSectionProps {
   profileImage: string | null;
   name: string;
   email: string;
@@ -17,6 +18,8 @@ interface ProfileEditSectionProps {
   onSectionChange?: (section: ProfileSection) => void;
   onChangePassword?: () => void;
   hasPassword?: boolean;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 const profileEditSectionFallback = (
@@ -25,7 +28,24 @@ const profileEditSectionFallback = (
   </div>
 );
 
-export default function ProfileEditSection(props: ProfileEditSectionProps) {
+export default function ProfileEditSection({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+  ...props
+}: ProfileEditSectionProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true
+    ? undefined
+    : visualQaRuntimeOverrideProp;
+
+  if (visualQaPhase === 'fallback') {
+    return profileEditSectionFallback;
+  }
+
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   return (
     <Suspense fallback={profileEditSectionFallback}>
       <ProfileEditSectionRuntime {...props} />

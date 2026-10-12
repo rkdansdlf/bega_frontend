@@ -839,7 +839,7 @@ export default function CoachAnalysisDialogResultRuntime({
     return (
         <>
             {loading && !analysisData && (
-                <div className="p-6">
+                <div data-testid="coach-analysis-result-loading" className="p-6">
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-white/[0.03]">
                         <div className="flex items-center gap-3 text-emerald-800 dark:text-emerald-200">
                             <CoachAnalysisResultLoaderIcon className="h-5 w-5 animate-spin shrink-0" aria-hidden="true" />
@@ -883,48 +883,50 @@ export default function CoachAnalysisDialogResultRuntime({
             )}
 
             {analysisData && (
-                <ErrorBoundary
-                    key={`coach-analysis-result-boundary-${resultBoundaryToken}-${resultViewRetryKey}`}
-                    fallback={(
-                        <CoachAnalysisResultViewLoadFailureFallback
-                            onRetry={() => {
-                                setResultViewRetryKey((prev) => prev + 1);
-                            }}
-                            onReload={() => {
-                                if (typeof window !== 'undefined') {
-                                    window.location.reload();
-                                }
-                            }}
-                        />
-                    )}
-                >
-                    <Suspense fallback={null}>
-                        <CoachAnalysisResultView
-                            key={`${resultBoundaryToken}-${resultViewRetryKey}`}
-                            analysisData={analysisData}
-                            homeTeamId={homeTeamId}
-                            awayTeamId={awayTeamId}
-                            homeScore={homeScore}
-                            awayScore={awayScore}
-                            homeRank={initialHomeRank}
-                            awayRank={initialAwayRank}
-                            winProbabilityHome={result?.win_probability_home ?? initialWinProbabilityHome ?? null}
-                            dataQualityLabel={analysisDataQualityLabel}
-                            dataQualityMessage={analysisDataQualityNotice?.message}
-                            supportedFactCount={result?.supported_fact_count ?? initialSupportedFactCount}
-                            usedEvidence={result?.used_evidence ?? initialUsedEvidence}
-                            groundingWarnings={result?.grounding_warnings ?? initialGroundingWarnings}
-                            groundingReasons={result?.grounding_reasons ?? initialGroundingReasons}
-                            dataQuality={result?.data_quality ?? initialDataQuality}
-                            generationMode={result?.generation_mode}
-                            freshnessLabel={freshnessLabel}
-                        />
-                    </Suspense>
-                </ErrorBoundary>
+                <div data-testid="coach-analysis-result-view" className="contents">
+                    <ErrorBoundary
+                        key={`coach-analysis-result-boundary-${resultBoundaryToken}-${resultViewRetryKey}`}
+                        fallback={(
+                            <CoachAnalysisResultViewLoadFailureFallback
+                                onRetry={() => {
+                                    setResultViewRetryKey((prev) => prev + 1);
+                                }}
+                                onReload={() => {
+                                    if (typeof window !== 'undefined') {
+                                        window.location.reload();
+                                    }
+                                }}
+                            />
+                        )}
+                    >
+                        <Suspense fallback={null}>
+                            <CoachAnalysisResultView
+                                key={`${resultBoundaryToken}-${resultViewRetryKey}`}
+                                analysisData={analysisData}
+                                homeTeamId={homeTeamId}
+                                awayTeamId={awayTeamId}
+                                homeScore={homeScore}
+                                awayScore={awayScore}
+                                homeRank={initialHomeRank}
+                                awayRank={initialAwayRank}
+                                winProbabilityHome={result?.win_probability_home ?? initialWinProbabilityHome ?? null}
+                                dataQualityLabel={analysisDataQualityLabel}
+                                dataQualityMessage={analysisDataQualityNotice?.message}
+                                supportedFactCount={result?.supported_fact_count ?? initialSupportedFactCount}
+                                usedEvidence={result?.used_evidence ?? initialUsedEvidence}
+                                groundingWarnings={result?.grounding_warnings ?? initialGroundingWarnings}
+                                groundingReasons={result?.grounding_reasons ?? initialGroundingReasons}
+                                dataQuality={result?.data_quality ?? initialDataQuality}
+                                generationMode={result?.generation_mode}
+                                freshnessLabel={freshnessLabel}
+                            />
+                        </Suspense>
+                    </ErrorBoundary>
+                </div>
             )}
 
             {result?.error && !analysisData && (
-                <div className="m-6 rounded-14 border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30">
+                <div data-testid="coach-analysis-result-error" className="m-6 rounded-14 border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30">
                     <p className="text-caption font-bold text-red-700 dark:text-red-300">
                         {result.error}
                     </p>

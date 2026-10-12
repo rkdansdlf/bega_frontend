@@ -308,6 +308,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/payment-intents/reconciliation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/payment-intents/reconciliation/{intentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getReview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/payment-intents/reconciliation/{intentId}/resolution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/posts": {
         parameters: {
             query?: never;
@@ -1150,6 +1198,70 @@ export interface paths {
         get: operations["getMyProfile"];
         put: operations["updateMyProfile"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submitEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/oauth2/email-challenge/{challengeId}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resend"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4461,6 +4573,15 @@ export interface components {
             message?: string;
             success?: boolean;
         };
+        ApiResponseChallengeStatus: {
+            code?: string;
+            data?: components["schemas"]["ChallengeStatus"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
         ApiResponseChatFavoriteItem: {
             code?: string;
             data?: components["schemas"]["ChatFavoriteItem"];
@@ -4828,6 +4949,33 @@ export interface components {
             message?: string;
             success?: boolean;
         };
+        ApiResponsePaymentIntentReconciliationPageDto: {
+            code?: string;
+            data?: components["schemas"]["PaymentIntentReconciliationPageDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponsePaymentIntentReconciliationResolutionResultDto: {
+            code?: string;
+            data?: components["schemas"]["PaymentIntentReconciliationResolutionResultDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponsePaymentIntentReconciliationReviewDto: {
+            code?: string;
+            data?: components["schemas"]["PaymentIntentReconciliationReviewDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
         ApiResponsePlaceDto: {
             code?: string;
             data?: components["schemas"]["PlaceDto"];
@@ -4956,6 +5104,13 @@ export interface components {
             /** Format: int64 */
             roomId?: number;
             targetUser?: components["schemas"]["TargetUser"];
+        };
+        ChallengeStatus: {
+            challengeId?: string;
+            /** Format: date-time */
+            expiresAt?: string;
+            maskedEmail?: string;
+            status?: string;
         };
         ChangePasswordRequest: {
             confirmPassword: string;
@@ -5174,18 +5329,18 @@ export interface components {
         CreateAssistantChatMessageRequest: {
             cached?: boolean;
             cancelled?: boolean;
-            citations?: components["schemas"]["JsonNode"];
+            citations?: unknown;
             content: string;
             errorCode?: string;
             fallbackReason?: string;
             finishReason?: string;
             intent?: string;
-            metadata?: components["schemas"]["JsonNode"];
+            metadata?: unknown;
             plannerCacheHit?: boolean;
             plannerMode?: string;
             status?: string;
             strategy?: string;
-            toolCalls?: components["schemas"]["JsonNode"];
+            toolCalls?: unknown;
             toolExecutionMode?: string;
             verified?: boolean;
         };
@@ -5359,6 +5514,24 @@ export interface components {
             repostCount?: number;
             teamColor?: string;
             teamId?: string;
+        };
+        Event: {
+            /** Format: int32 */
+            candidateAmount?: number;
+            candidateOrderId?: string;
+            candidatePaymentKey?: string;
+            candidateStatus?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            eventType?: string;
+            evidenceReference?: string;
+            /** Format: int64 */
+            recordedBy?: number;
+            /** Format: int32 */
+            verifiedAmount?: number;
+            verifiedOrderId?: string;
+            verifiedPaymentKey?: string;
+            verifiedStatus?: string;
         };
         FeaturedMateCardDto: {
             awayTeam?: string;
@@ -5834,6 +6007,10 @@ export interface components {
             operatorMessage?: string;
             scope?: string;
         };
+        MarkAllAsReadRequest: {
+            /** Format: date-time */
+            readThrough: string;
+        };
         MatchBoundsResponseDto: {
             /** Format: date */
             earliestGameDate?: string;
@@ -6230,7 +6407,7 @@ export interface components {
             /** Format: int64 */
             intentId?: number;
             /** @enum {string} */
-            status?: "PREPARED" | "CONFIRMED" | "APPLICATION_CREATED" | "CANCEL_REQUESTED" | "CANCELED" | "CANCEL_FAILED" | "EXPIRED";
+            status?: "PREPARED" | "CONFIRMED" | "APPLICATION_CREATED" | "CANCEL_REQUESTED" | "CANCELED" | "CANCEL_FAILED" | "RECONCILIATION_REQUIRED" | "EXPIRED";
         };
         MatePaymentCapabilityResponse: {
             /** @enum {string} */
@@ -6420,6 +6597,13 @@ export interface components {
             reasons?: string[];
             startTime?: string;
         };
+        OAuthEmailChallengeConfirmDto: {
+            token: string;
+        };
+        OAuthEmailChallengeSubmitDto: {
+            /** Format: email */
+            email: string;
+        };
         OffseasonMetaDto: {
             awards?: components["schemas"]["AwardDto"][];
             postSeasonResults?: components["schemas"]["PostSeasonResultDto"][];
@@ -6581,6 +6765,48 @@ export interface components {
             /** Format: email */
             email: string;
             redirect?: string;
+        };
+        PaymentIntentReconciliationPageDto: {
+            items?: components["schemas"]["PaymentIntentReconciliationReviewDto"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
+        PaymentIntentReconciliationResolutionRequest: {
+            evidenceReference: string;
+            /** @enum {string} */
+            outcome: "VERIFIED_PAYMENT" | "VERIFIED_CANCELED" | "VERIFIED_REFUNDED";
+            /** Format: int32 */
+            verifiedAmount: number;
+            verifiedOrderId: string;
+            verifiedPaymentKey: string;
+            verifiedStatus: string;
+        };
+        PaymentIntentReconciliationResolutionResultDto: {
+            awaitingIndependentReview?: boolean;
+            outcome?: string;
+        };
+        PaymentIntentReconciliationReviewDto: {
+            /** Format: int32 */
+            candidateAmount?: number;
+            candidateOrderId?: string;
+            candidatePaymentKey?: string;
+            candidateStatus?: string;
+            currency?: string;
+            /** Format: date-time */
+            detectedAt?: string;
+            events?: components["schemas"]["Event"][];
+            /** Format: int32 */
+            expectedAmount?: number;
+            /** Format: int64 */
+            intentId?: number;
+            orderId?: string;
+            requestedPaymentKey?: string;
         };
         PitcherDto: {
             era: string | null;
@@ -7883,6 +8109,77 @@ export interface operations {
                 content: {
                     "application/json; charset=UTF-8": components["schemas"]["ApiResponseMapStringLong"];
                     "application/json;charset=UTF-8": components["schemas"]["ApiResponseMapStringLong"];
+                };
+            };
+        };
+    };
+    listPending: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationPageDto"];
+                };
+            };
+        };
+    };
+    getReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                intentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationReviewDto"];
+                };
+            };
+        };
+    };
+    resolve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                intentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentIntentReconciliationResolutionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationResolutionResultDto"];
                 };
             };
         };
@@ -9250,6 +9547,100 @@ export interface operations {
                 "application/json": components["schemas"]["UserProfileDto"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OAuthEmailChallengeConfirmDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseChallengeStatus"];
+                };
+            };
+        };
+    };
+    submitEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OAuthEmailChallengeSubmitDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    resend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                challengeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -12096,7 +12487,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkAllAsReadRequest"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {

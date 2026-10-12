@@ -12,6 +12,12 @@ type MateViewToggleIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+type MateViewToggleProps = {
+  viewModeOverride?: MateListViewMode;
+  onViewModeChangeOverride?: (mode: MateListViewMode) => void;
+  forceVisible?: boolean;
+};
+
 const VIEW_OPTIONS: { key: MateListViewMode; label: string; Icon: ComponentType<MateViewToggleIconProps> }[] = [
   {
     key: 'grid',
@@ -34,26 +40,41 @@ const VIEW_OPTIONS: { key: MateListViewMode; label: string; Icon: ComponentType<
  * 데스크톱(xl) 전용 결과 뷰 모드 세그먼트 토글(카드/리스트/컴팩트).
  * 상태는 uiStore에 영속(`mateListViewMode`). lazy 분리로 Mate runtime 슬림 유지.
  */
-export default function MateViewToggle() {
+export default function MateViewToggle({
+  viewModeOverride,
+  onViewModeChangeOverride,
+  forceVisible = false,
+}: MateViewToggleProps = {}) {
   const { mateListViewMode, setMateListViewMode } = useUIStore(
     useShallow((state) => ({
       mateListViewMode: state.mateListViewMode,
       setMateListViewMode: state.setMateListViewMode,
     })),
   );
+  const visualQaViewModeOverride = import.meta.env.DEV ? viewModeOverride : undefined;
+  const visualQaOnViewModeChangeOverride = import.meta.env.DEV
+    ? onViewModeChangeOverride
+    : undefined;
+  const activeViewMode = visualQaViewModeOverride ?? mateListViewMode;
+  const handleViewModeChange = visualQaOnViewModeChangeOverride ?? setMateListViewMode;
+  const isVisualQaForcedVisible = import.meta.env.DEV && forceVisible;
 
   return (
-    <div className="hidden h-[46px] items-center gap-0.5 rounded-xl border border-gray-200/80 bg-white p-1 dark:border-white/10 dark:bg-card xl:inline-flex">
+    <div
+      className={`${isVisualQaForcedVisible ? 'inline-flex' : 'hidden'} h-[46px] items-center gap-0.5 rounded-xl border border-gray-200/80 bg-white p-1 dark:border-white/10 dark:bg-card ${isVisualQaForcedVisible ? '' : 'xl:inline-flex'}`}
+      data-testid="mate-view-toggle"
+    >
       {VIEW_OPTIONS.map(({ key, label, Icon }) => (
         <button
           key={key}
           type="button"
           title={`${label} 보기`}
           aria-label={`${label} 보기`}
-          aria-pressed={mateListViewMode === key}
-          onClick={() => setMateListViewMode(key)}
+          aria-pressed={activeViewMode === key}
+          data-testid={`mate-view-toggle-${key}`}
+          onClick={() => handleViewModeChange(key)}
           className={`inline-flex h-[38px] w-[38px] items-center justify-center rounded-lg transition-colors ${
-            mateListViewMode === key
+            activeViewMode === key
               ? 'bg-primary text-primary-foreground'
               : 'text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-white dark:hover:bg-primary/20'
           }`}

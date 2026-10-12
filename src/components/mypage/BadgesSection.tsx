@@ -1,3 +1,4 @@
+import type { DiaryStatistics } from '../../types/diary';
 import { useDiaryStatistics } from '../../hooks/useDiaryStatistics';
 import LoadingSpinner from '../LoadingSpinner';
 import BadgeShowcase from './BadgeShowcase';
@@ -10,8 +11,24 @@ import {
 
 const BADGE_TOTAL = 5;
 
-export default function BadgesSection() {
-  const { statistics, isLoading } = useDiaryStatistics();
+export interface BadgesSectionVisualQaStateOverride {
+  statistics?: DiaryStatistics;
+  isLoading?: boolean;
+}
+
+export interface BadgesSectionProps {
+  visualQaStateOverride?: BadgesSectionVisualQaStateOverride;
+}
+
+export default function BadgesSection({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: BadgesSectionProps = {}) {
+  const liveState = useDiaryStatistics();
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const statistics = visualQaStateOverride?.statistics ?? liveState.statistics;
+  const isLoading = visualQaStateOverride?.isLoading ?? liveState.isLoading;
   const earnedBadges = statistics.earnedBadges || [];
   const stadiumCount = Object.keys(statistics.stadiumVisitCounts || {}).length;
   const earnedCount = earnedBadges.length;

@@ -122,3 +122,13 @@ test('suspense host keeps lazy route suspension inside a visible deterministic f
   assert.match(html, /data-testid="visual-qa-lazy-route-fallback"/);
   assert.match(html, /라우트 화면을 불러오는 중입니다/);
 });
+
+test('svg host places group-based visual leaves beneath a valid svg ancestor', () => {
+  const html = renderToStaticMarkup(renderInSemanticHost(
+    createElement('g', null, createElement('circle', { cx: 10, cy: 10, r: 5 })),
+    'svg',
+  ));
+
+  assert.match(html, /^<svg[^>]*data-vqa-semantic-host="svg"[^>]*><g><circle/);
+  assert.match(html, /viewBox="0 0 320 320"/);
+});

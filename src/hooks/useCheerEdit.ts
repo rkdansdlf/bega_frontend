@@ -6,11 +6,38 @@ import { useCheerMutations, useCheerPost } from './useCheerQueries';
 import * as cheerApi from '../api/cheerApi';
 import { parseError } from '../utils/errorUtils';
 
-export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
+export type CheerEditVisualQaStateOverride = {
+    postId?: number;
+    favoriteTeam: string | null;
+    post: cheerApi.CheerPost | null;
+    isLoading: boolean;
+    isError: boolean;
+    hasAccess: boolean;
+    content: string;
+    existingImages: cheerApi.PostImageDto[];
+    newFilePreviews: { file: File; url: string }[];
+    deletingImageId: number | null;
+    isDragging: boolean;
+    isSubmitting: boolean;
+    onSubmit?: () => void | Promise<void>;
+    onCancel?: () => void;
+};
+
+export const useCheerEdit = (
+    postId: number,
+    favoriteTeam: string | null,
+    visualQaStateOverride?: CheerEditVisualQaStateOverride,
+) => {
     const navigate = useNavigate();
     const { confirm } = useConfirmDialog();
     const { updatePostMutation } = useCheerMutations();
-    const { data: post, isLoading: loading, error: queryError } = useCheerPost(postId); // Added
+    const {
+        data: queriedPost,
+        isLoading: queryLoading,
+        error: queryError,
+    } = useCheerPost(postId, { enabled: visualQaStateOverride === undefined });
+    const post = visualQaStateOverride ? visualQaStateOverride.post : queriedPost;
+    const loading = visualQaStateOverride?.isLoading ?? queryLoading;
 
     // const [post, setPost] = useState<cheerApi.CheerPost | null>(null); // Replaced by query
     // const [loading, setLoading] = useState(true); // Replaced by query
@@ -18,20 +45,24 @@ export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
     const [hasAccess, setHasAccess] = useState(false);
 
     // const [title, setTitle] = useState(''); // Removed title state
-    const [content, setContent] = useState('');
+    const [content, setContent] = useState(() => visualQaStateOverride?.content ?? '');
 
     // Image handling
-    const [existingImages, setExistingImages] = useState<cheerApi.PostImageDto[]>([]);
+    const [existingImages, setExistingImages] = useState<cheerApi.PostImageDto[]>(
+        () => visualQaStateOverride?.existingImages ?? [],
+    );
     const [newFiles, setNewFiles] = useState<File[]>([]);
-    const [newFilePreviews, setNewFilePreviews] = useState<{ file: File; url: string }[]>([]);
-    const deletingImageId = null;
+    const [newFilePreviews, setNewFilePreviews] = useState<{ file: File; url: string }[]>(
+        () => visualQaStateOverride?.newFilePreviews ?? [],
+    );
+    const deletingImageId = visualQaStateOverride?.deletingImageId ?? null;
     const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]); // Track locally until submit
 
-    const [isDragging, setIsDragging] = useState(false);
+    const [isDragging, setIsDragging] = useState(() => visualQaStateOverride?.isDragging ?? false);
     // const [isSubmitting, setIsSubmitting] = useState(false); // Replaced by mutation status
 
     useEffect(() => {
-        if (!post) return;
+        if (visualQaStateOverride || !post) return;
 
         // setTitle(post.title || ''); // Removed
         setContent(post.content || '');
@@ -46,12 +77,12 @@ export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
             setHasAccess(false);
         }
 
-    }, [post, postId]);
+    }, [post, postId, visualQaStateOverride]);
 
     // Error handling
     useEffect(() => {
-        if (queryError) setError(true);
-    }, [queryError]);
+        if (!visualQaStateOverride && queryError) setError(true);
+    }, [queryError, visualQaStateOverride]);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -110,6 +141,10 @@ export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
 
 
     const handleSubmit = async () => {
+        if (visualQaStateOverride) {
+            await visualQaStateOverride.onSubmit?.();
+            return;
+        }
         try {
             await updatePostMutation.mutateAsync({
                 id: postId,
@@ -128,13 +163,19 @@ export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
         }
     };
 
-    const handleCancel = () => navigate(-1);
+    const handleCancel = () => {
+        if (visualQaStateOverride) {
+            visualQaStateOverride.onCancel?.();
+            return;
+        }
+        navigate(-1);
+    };
 
     return {
         post,
         isLoading: loading,
-        isError: error,
-        hasAccess,
+        isError: visualQaStateOverride?.isError ?? error,
+        hasAccess: visualQaStateOverride?.hasAccess ?? hasAccess,
         // title, // Removed
         // setTitle, // Removed
         content,
@@ -143,7 +184,7 @@ export const useCheerEdit = (postId: number, favoriteTeam: string | null) => {
         newFilePreviews,
         deletingImageId,
         isDragging,
-        isSubmitting: updatePostMutation.isPending,
+        isSubmitting: visualQaStateOverride?.isSubmitting ?? updatePostMutation.isPending,
         handleFileSelect,
         handleDeleteExistingImage,
         handleRemoveNewFile,

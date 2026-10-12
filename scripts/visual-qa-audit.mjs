@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import {
   AUTHED_ROUTES,
   DEFAULT_ROUTES as REFLOW_DEFAULT_ROUTES,
+  isApiRequestUrl,
   LOGGED_OUT_ROUTES,
   loadPlaywright,
   settle,
@@ -25,6 +26,26 @@ const PROJECT_ROOT = resolve(SCRIPT_DIR, '..');
 
 export const DEFAULT_ROUTES = [...REFLOW_DEFAULT_ROUTES];
 export const DEFAULT_WIDTHS = [320, 360, 390, 430, 480, 600, 767, 768, 834, 1024, 1040, 1160, 1280, 1440];
+export const DEFAULT_VIEWPORTS = [
+  { width: 320, height: 844 },
+  { width: 360, height: 844 },
+  { width: 390, height: 844 },
+  { width: 430, height: 844 },
+  { width: 480, height: 1024 },
+  { width: 600, height: 1024 },
+  { width: 767, height: 1024 },
+  { width: 768, height: 1024 },
+  { width: 834, height: 1024 },
+  { width: 1024, height: 900 },
+  { width: 1040, height: 900 },
+  { width: 1160, height: 900 },
+  { width: 1280, height: 900 },
+  { width: 1440, height: 900 },
+  { width: 568, height: 320 },
+  { width: 667, height: 375 },
+  { width: 844, height: 390 },
+  { width: 932, height: 430 },
+];
 export const DEFAULT_STATE_SCENARIOS = [
   {
     id: 'public-mobile-menu',
@@ -103,17 +124,32 @@ export const viewportForWidth = (width) => ({
 export const buildVisualQaScenarioRuns = ({
   routes,
   widths,
+  viewports,
   stateScenarios = DEFAULT_STATE_SCENARIOS,
-}) => [
-  ...routes.flatMap((route) => widths.map((width) => ({ route, width, state: null }))),
-  ...stateScenarios.flatMap((state) => (
-    routes.includes(state.route)
-      ? widths
-        .filter((width) => width >= state.minWidth && width <= state.maxWidth)
-        .map((width) => ({ route: state.route, width, state }))
-      : []
-  )),
-];
+}) => {
+  const targetViewports = viewports ?? (widths ?? DEFAULT_WIDTHS).map(viewportForWidth);
+  const targetWidths = targetViewports.map(({ width }) => width);
+  return [
+    ...routes.flatMap((route) => targetViewports.map((viewport) => ({
+      route,
+      width: viewport.width,
+      viewport,
+      state: null,
+    }))),
+    ...stateScenarios.flatMap((state) => (
+      routes.includes(state.route)
+        ? targetWidths
+          .filter((width) => width >= state.minWidth && width <= state.maxWidth)
+          .map((width) => ({
+            route: state.route,
+            width,
+            viewport: targetViewports.find((viewport) => viewport.width === width),
+            state,
+          }))
+        : []
+    )),
+  ];
+};
 
 const argumentValue = (argv, name) => {
   const inline = argv.find((argument) => argument.startsWith(`${name}=`));
@@ -154,7 +190,26 @@ export const resolveRouteUrl = (baseUrl, route) => {
 export const parseArguments = (argv = process.argv.slice(2), env = process.env) => {
   const baseUrl = argumentValue(argv, '--base-url') || env.VISUAL_QA_BASE_URL || 'http://127.0.0.1:5180';
   const routes = parseRoutes(argumentValue(argv, '--routes') || env.VISUAL_QA_ROUTES || DEFAULT_ROUTES.join(','));
-  const widths = parseViewportWidths(argumentValue(argv, '--widths') || env.VISUAL_QA_WIDTHS || DEFAULT_WIDTHS.join(','));
+  const explicitViewports = argumentValue(argv, '--viewports');
+  const explicitWidths = argumentValue(argv, '--widths');
+  if (explicitViewports !== undefined && explicitWidths !== undefined) {
+    throw new Error('Use either --viewports or --widths, not both.');
+  }
+  const viewportValue = explicitViewports ?? (
+    explicitWidths === undefined ? env.VISUAL_QA_VIEWPORTS : undefined
+  );
+  const widthValue = explicitWidths ?? (
+    explicitViewports === undefined ? env.VISUAL_QA_WIDTHS : undefined
+  );
+  if (viewportValue !== undefined && widthValue !== undefined) {
+    throw new Error('Use either VISUAL_QA_VIEWPORTS or VISUAL_QA_WIDTHS, not both.');
+  }
+  const viewports = viewportValue !== undefined
+    ? parseViewportSpecs(viewportValue)
+    : widthValue !== undefined
+      ? parseViewportWidths(widthValue).map(viewportForWidth)
+      : DEFAULT_VIEWPORTS.map((viewport) => ({ ...viewport }));
+  const widths = viewports.map(({ width }) => width);
   const outputDir = resolve(PROJECT_ROOT, argumentValue(argv, '--output-dir') || env.VISUAL_QA_OUTPUT_DIR || 'visual-qa');
   const failOn = argumentValue(argv, '--fail-on') || env.VISUAL_QA_FAIL_ON || 'none';
   if (!['none', 'major', 'any'].includes(failOn)) throw new Error('--fail-on must be none, major, or any.');
@@ -174,11 +229,36 @@ export const parseArguments = (argv = process.argv.slice(2), env = process.env) 
     baseUrl: url.toString().replace(/\/$/, ''),
     routes,
     widths,
+    viewports,
     outputDir,
     failOn,
     allowApi,
     storageState,
   };
+};
+
+export const parseViewportSpecs = (value) => {
+  const viewports = String(value)
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const match = /^(\d+)x(\d+)$/i.exec(part);
+      if (!match) throw new Error(`Viewport must use widthxheight: ${part}`);
+      const width = Number(match[1]);
+      const height = Number(match[2]);
+      if (width < 320 || width > 2560) {
+        throw new Error(`Viewport width must be between 320 and 2560: ${width}`);
+      }
+      if (height < 240 || height > 4096) {
+        throw new Error(`Viewport height must be between 240 and 4096: ${height}`);
+      }
+      return { width, height };
+    });
+  if (viewports.length === 0) throw new Error('Provide at least one viewport.');
+  const widths = viewports.map(({ width }) => width);
+  if (new Set(widths).size !== widths.length) throw new Error('Viewport widths must be unique.');
+  return viewports;
 };
 
 export const shouldFailReport = (report, failOn) => {
@@ -222,15 +302,38 @@ export const VISUAL_QA_PROBE = () => {
   const overlapAllowed = (element) => element.closest('[data-vqa-overlap="allowed"]') !== null;
   const overflowAllowed = (element) => element.closest('[data-vqa-overflow="allowed"]') !== null;
   const compactTouchAllowed = (element) => element.closest('[data-vqa-touch-target="compact"]') !== null;
+  const visibleRectOf = (element) => {
+    const elementRect = element.getBoundingClientRect();
+    let left = Math.max(0, elementRect.left);
+    let right = Math.min(viewportWidth, elementRect.right);
+    let top = Math.max(0, elementRect.top);
+    let bottom = Math.min(viewportHeight, elementRect.bottom);
+    let ancestor = element.parentElement;
+    while (ancestor && ancestor !== document.documentElement && right > left && bottom > top) {
+      const style = getComputedStyle(ancestor);
+      const ancestorRect = ancestor.getBoundingClientRect();
+      if (['auto', 'scroll', 'hidden', 'clip'].includes(style.overflowX)) {
+        const clipLeft = ancestorRect.left + ancestor.clientLeft;
+        left = Math.max(left, clipLeft);
+        right = Math.min(right, clipLeft + ancestor.clientWidth);
+      }
+      if (['auto', 'scroll', 'hidden', 'clip'].includes(style.overflowY)) {
+        const clipTop = ancestorRect.top + ancestor.clientTop;
+        top = Math.max(top, clipTop);
+        bottom = Math.min(bottom, clipTop + ancestor.clientHeight);
+      }
+      ancestor = ancestor.parentElement;
+    }
+    if (right <= left || bottom <= top) return null;
+    return { left, right, top, bottom, width: right - left, height: bottom - top };
+  };
   const visible = (element) => {
     const style = getComputedStyle(element);
-    const rect = element.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0
+    const rect = visibleRectOf(element);
+    return rect !== null
       && style.display !== 'none'
       && style.visibility !== 'hidden'
-      && Number(style.opacity) !== 0
-      && rect.bottom > 0
-      && rect.top < viewportHeight;
+      && Number(style.opacity) !== 0;
   };
   if (!activeSurface) {
     const visibleModalSurfaces = [...document.querySelectorAll('[aria-modal="true"]')].filter(visible);
@@ -502,11 +605,16 @@ export const VISUAL_QA_PROBE = () => {
     return element;
   };
   const interactiveGeometry = interactiveCandidates
-    .map((element) => ({ element, rect: rectData(effectiveTouchTarget(element)) }))
-    .filter(({ rect }) => rect.right > 0 && rect.left < viewportWidth)
-    .map(({ element, rect }) => ({
+    .map((element) => ({
+      element,
+      rect: visibleRectOf(effectiveTouchTarget(element)),
+      rawRect: rectData(effectiveTouchTarget(element)),
+    }))
+    .filter(({ rect }) => rect !== null)
+    .map(({ element, rect, rawRect }) => ({
       element,
       rect,
+      rawRect,
       fixedLayer: fixedLayer(element),
       overlapAllowed: overlapAllowed(element),
       parent: element.parentElement,
@@ -515,21 +623,21 @@ export const VISUAL_QA_PROBE = () => {
   result.diagnostics.interactiveCount = interactiveGeometry.length;
 
   if (viewportWidth < 768) {
-    for (const { element, rect } of interactiveGeometry) {
+    for (const { element, rawRect } of interactiveGeometry) {
       if (result.smallTargets.length >= 20) break;
       const style = getComputedStyle(element);
       if (style.display === 'inline') continue;
       const visibleText = (element.innerText || '').trim();
       const iconLike = visibleText.length === 0 || element.querySelector('svg, img') !== null;
-      const belowMinimum = rect.width < 24 || rect.height < 24;
+      const belowMinimum = rawRect.width < 24 || rawRect.height < 24;
       // 40px is the conservative automatic threshold. The report still
       // recommends 44px, but treating every established 40px icon button as a
       // defect creates repeated noise across every route.
       const belowComfortableIconTarget = !compactTouchAllowed(element)
         && iconLike
-        && (rect.width < 40 || rect.height < 40);
+        && (rawRect.width < 40 || rawRect.height < 40);
       if (!belowMinimum && !belowComfortableIconTarget) continue;
-      result.smallTargets.push({ selector: selector(element), width: rect.width, height: rect.height, text: text(element) });
+      result.smallTargets.push({ selector: selector(element), width: rawRect.width, height: rawRect.height, text: text(element) });
     }
   }
 
@@ -653,13 +761,24 @@ export const VISUAL_QA_PROBE = () => {
   return result;
 };
 
+export const installLocalOnlyRoutes = async (context, baseUrl) => {
+  const allowedOrigin = new URL(baseUrl).origin;
+  await context.route((requestUrl) => (
+    ['http:', 'https:'].includes(requestUrl.protocol)
+    && requestUrl.origin !== allowedOrigin
+  ), (route) => route.abort());
+};
+
 const prepareAuthedContext = async (browser, options) => {
   const context = await browser.newContext({
-    viewport: viewportForWidth(options.widths[0]),
+    viewport: options.viewports?.[0] ?? viewportForWidth(options.widths[0]),
     deviceScaleFactor: 1,
     ...(options.storageState ? { storageState: options.storageState } : {}),
   });
-  if (!options.allowApi) await stubApi(context);
+  if (!options.allowApi) {
+    await installLocalOnlyRoutes(context, options.baseUrl);
+    await stubApi(context, { allowedOrigin: new URL(options.baseUrl).origin });
+  }
   await context.addInitScript(() => {
     try {
       window.localStorage.setItem('auth-bootstrap-hint', '1');
@@ -669,9 +788,14 @@ const prepareAuthedContext = async (browser, options) => {
 };
 
 const prepareLoggedOutContext = async (browser, options) => {
-  const context = await browser.newContext({ viewport: viewportForWidth(options.widths[0]), deviceScaleFactor: 1 });
+  const context = await browser.newContext({
+    viewport: options.viewports?.[0] ?? viewportForWidth(options.widths[0]),
+    deviceScaleFactor: 1,
+  });
   if (!options.allowApi) {
-    await context.route('**/api/**', (route) => route.fulfill({
+    await installLocalOnlyRoutes(context, options.baseUrl);
+    const allowedOrigin = new URL(options.baseUrl).origin;
+    await context.route((requestUrl) => isApiRequestUrl(requestUrl, allowedOrigin), (route) => route.fulfill({
       status: 503,
       contentType: 'application/json',
       body: JSON.stringify({ success: false, code: 'VISUAL_QA_STUB' }),
@@ -1112,14 +1236,13 @@ export const runVisualQa = async (options = parseArguments()) => {
 
       const previousIssueSignatures = new Map();
       const scenarioRuns = buildVisualQaScenarioRuns(options);
-      for (const { route, width, state } of scenarioRuns) {
+      for (const { route, width, viewport, state } of scenarioRuns) {
         const pathname = routePathname(route);
         const loggedOut = state?.session === 'logged-out'
           || (!state && (pathname === '/' || LOGGED_OUT_ROUTES.includes(pathname)));
         const page = loggedOut ? loggedOutPage : authedPage;
-        const viewport = viewportForWidth(width);
         const scenarioKey = state ? `${route}#state=${state.id}` : route;
-        const label = `${route}${state ? ` (${state.name})` : ''} @ ${width}px`;
+        const label = `${route}${state ? ` (${state.name})` : ''} @ ${width}×${viewport.height}px`;
         try {
           await page.setViewportSize(viewport);
           await page.goto(resolveRouteUrl(options.baseUrl, route), { waitUntil: 'commit' });
@@ -1168,7 +1291,7 @@ export const runVisualQa = async (options = parseArguments()) => {
       await closeVisualQaResources({ loggedOutContext, authedContext, browser });
     }
 
-    const viewports = options.widths.map(viewportForWidth);
+    const viewports = options.viewports ?? options.widths.map(viewportForWidth);
     const states = DEFAULT_STATE_SCENARIOS
       .filter((state) => options.routes.includes(state.route))
       .map(({ id, name, route, minWidth, maxWidth }) => ({ id, name, route, minWidth, maxWidth }));
@@ -1192,11 +1315,13 @@ Options:
   --base-url <url>       App URL (default: http://127.0.0.1:5180)
   --routes <csv>         Routes to scan
   --widths <csv>         Viewport widths from 320 to 2560
+  --viewports <csv>      Viewports as widthxheight pairs from the coverage contract
   --output-dir <path>    Report directory (default: visual-qa)
   --storage-state <path> Playwright auth state for protected live-API routes
   --fail-on <policy>     none | major | any (default: none)
 
 The default run stubs /api for reproducible, offline-safe screenshots.
+VISUAL_QA_VIEWPORTS accepts comma-separated widthxheight pairs; legacy VISUAL_QA_WIDTHS remains supported.
 Set VISUAL_QA_ALLOW_API=1 only when intentionally testing a trusted backend.`);
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);

@@ -1,5 +1,10 @@
 import PredictionRuntime from './prediction/PredictionRuntime';
+import type { ReactNode } from 'react';
 
-export default function Prediction() {
-  return <PredictionRuntime />;
+export type PredictionPageProps = {
+  runtimeOverride?: ReactNode;
+};
+
+export default function Prediction({ runtimeOverride }: PredictionPageProps = {}) {
+  return runtimeOverride !== undefined ? runtimeOverride : <PredictionRuntime />;
 }

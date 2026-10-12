@@ -39,7 +39,7 @@ const getTeamLabel = (teamId: string): string => {
   return TEAM_DATA[teamId]?.name || '응원하는 팀을 선택하세요';
 };
 
-interface ProfileEditProfileRuntimeProps {
+export interface ProfileEditProfileRuntimeProps {
   name: string;
   setName: (value: string) => void;
   email: string;
@@ -135,7 +135,7 @@ export default function ProfileEditProfileRuntime({
 
   return (
     <>
-      <div className="space-y-6 p-1 md:p-0">
+      <div className="space-y-6 p-1 md:p-0" data-testid="profile-edit-profile-runtime">
         {saveAttempted && hasValidationErrors && (
           <Alert variant="destructive" className="animate-in fade-in">
             <MyPageAlertCircleIcon className="h-4 w-4" />
@@ -281,7 +281,7 @@ export default function ProfileEditProfileRuntime({
                     <Button
                       variant="outline"
                       onClick={() => setShowTeamTest(true)}
-                      className="mypage-profile-team-test-button flex h-10 items-center justify-center px-3 text-body text-primary hover:bg-primary/10"
+                      className="mypage-profile-team-test-button flex min-h-11 items-center justify-center px-3 text-body text-primary hover:bg-primary/10"
                       title={TEAM_TEST_HINT}
                       disabled={isLoading}
                     >
@@ -306,7 +306,8 @@ export default function ProfileEditProfileRuntime({
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
-                        className="h-8 text-body"
+                        className="h-auto min-h-11 text-body sm:h-8"
+                        data-testid="profile-team-change-button"
                         onClick={() => setShowTeamSheet(true)}
                         disabled={isLoading}
                       >
@@ -315,7 +316,7 @@ export default function ProfileEditProfileRuntime({
                       <Button
                         variant="outline"
                         onClick={() => setShowTeamTest(true)}
-                        className="h-8 px-2 text-body"
+                        className="h-auto min-h-11 px-2 text-body sm:h-8"
                         title={TEAM_TEST_HINT}
                         disabled={isLoading}
                       >
@@ -348,6 +349,7 @@ export default function ProfileEditProfileRuntime({
               </Button>
               <Button
                 onClick={handleSave}
+                data-testid="profile-save-button"
                 className={`flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground sm:flex-1 ${!canSubmit && 'opacity-70'}`}
                 disabled={isLoading || !canSubmit || isNameChecking || hasFieldErrors}
               >

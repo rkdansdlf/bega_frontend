@@ -39,7 +39,7 @@ test('authenticated chrome keeps deterministic runtime seams development-only', 
   assert.match(source, /import\.meta\.env\.DEV/);
   assert.match(source, /isChatBotRequestedOverride/);
   assert.match(source, /runtimeOverrides/);
-  assert.match(source, /max-md:hidden/);
+  assert.match(source, /max-lg:hidden/);
   assert.match(source, /mobile-content-safe-bottom/);
   assert.match(source, /<ChatBotComponent/);
   assert.match(source, /<ChatBotFloatingButtonComponent/);
@@ -94,7 +94,10 @@ test('app provider caller bindings reuse only executable direct host scenarios',
 
   const matePage = readSource('./MatePage.tsx');
   assert.match(matePage, /const AppQueryProvider = lazy\(\(\) => import\('\.\/AppQueryProvider'\)\)/);
-  assert.match(matePage, /<AppQueryProvider>\s*<MateRuntime \/>\s*<\/AppQueryProvider>/);
+  assert.match(
+    matePage,
+    /<AppQueryProvider>\s*\{runtimeOverride !== undefined \? runtimeOverride : <MateRuntime \/>\}\s*<\/AppQueryProvider>/,
+  );
 
   const predictionRuntime = readSource('./prediction/PredictionRuntime.tsx');
   assert.match(predictionRuntime, /const AppQueryProvider = lazy\(\(\) => import\('\.\.\/AppQueryProvider'\)\)/);

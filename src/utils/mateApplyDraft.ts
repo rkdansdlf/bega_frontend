@@ -1,4 +1,5 @@
 import type { TicketInfo } from '../api/ticket';
+import { getViewerScopedStorageKey, type ViewerId } from './viewerScopedDraftStorage';
 
 const MATE_APPLY_DRAFT_PREFIX = 'mateApplyDraft:';
 
@@ -22,10 +23,13 @@ const hasDraftContent = (draft: {
   || draft.ticketInfo !== null
 );
 
-export const getMateApplyDraftStorageKey = (partyId: string): string =>
-  `${MATE_APPLY_DRAFT_PREFIX}${normalizePartyId(partyId)}`;
+export const getMateApplyDraftStorageKey = (partyId: string, viewerId: ViewerId): string | null => {
+  const normalizedPartyId = normalizePartyId(partyId);
+  if (!normalizedPartyId) return null;
+  return getViewerScopedStorageKey(`${MATE_APPLY_DRAFT_PREFIX}${normalizedPartyId}`, viewerId);
+};
 
-export const loadMateApplyDraft = (partyId: string): MateApplyDraft | null => {
+export const loadMateApplyDraft = (partyId: string, viewerId: ViewerId): MateApplyDraft | null => {
   if (typeof window === 'undefined') {
     return null;
   }
@@ -35,8 +39,11 @@ export const loadMateApplyDraft = (partyId: string): MateApplyDraft | null => {
     return null;
   }
 
+  const storageKey = getMateApplyDraftStorageKey(normalizedPartyId, viewerId);
+  if (!storageKey) return null;
+
   try {
-    const raw = window.sessionStorage.getItem(getMateApplyDraftStorageKey(normalizedPartyId));
+    const raw = window.sessionStorage.getItem(storageKey);
     if (!raw) {
       return null;
     }
@@ -60,10 +67,12 @@ export const loadMateApplyDraft = (partyId: string): MateApplyDraft | null => {
 
 export const saveMateApplyDraft = (
   partyId: string,
+  viewerId: ViewerId,
   draft: Pick<MateApplyDraft, 'message' | 'ticketVerified' | 'ticketInfo'>,
 ): MateApplyDraft | null => {
   const normalizedPartyId = normalizePartyId(partyId);
-  if (!normalizedPartyId) {
+  const storageKey = getMateApplyDraftStorageKey(normalizedPartyId, viewerId);
+  if (!normalizedPartyId || !storageKey) {
     return null;
   }
 
@@ -78,7 +87,7 @@ export const saveMateApplyDraft = (
   }
 
   if (!hasDraftContent(draft)) {
-    clearMateApplyDraft(normalizedPartyId);
+    clearMateApplyDraft(normalizedPartyId, viewerId);
     return null;
   }
 
@@ -92,7 +101,7 @@ export const saveMateApplyDraft = (
 
   try {
     window.sessionStorage.setItem(
-      getMateApplyDraftStorageKey(normalizedPartyId),
+      storageKey,
       JSON.stringify(payload),
     );
   } catch {
@@ -102,7 +111,7 @@ export const saveMateApplyDraft = (
   return payload;
 };
 
-export const clearMateApplyDraft = (partyId: string): void => {
+export const clearMateApplyDraft = (partyId: string, viewerId: ViewerId): void => {
   if (typeof window === 'undefined') {
     return;
   }
@@ -112,8 +121,11 @@ export const clearMateApplyDraft = (partyId: string): void => {
     return;
   }
 
+  const storageKey = getMateApplyDraftStorageKey(normalizedPartyId, viewerId);
+  if (!storageKey) return;
+
   try {
-    window.sessionStorage.removeItem(getMateApplyDraftStorageKey(normalizedPartyId));
+    window.sessionStorage.removeItem(storageKey);
   } catch {
     // Ignore storage failures and continue without draft persistence.
   }

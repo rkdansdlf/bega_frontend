@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { useAuthSession } from '../../store/authStore';
@@ -10,7 +11,24 @@ import {
 import PredictionLoadingView from './PredictionLoadingView';
 import PredictionMatchScheduleResolvedRuntime from './PredictionMatchScheduleResolvedRuntime';
 
-export default function PredictionMatchScheduleDataContent() {
+export interface PredictionMatchScheduleDataContentProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function PredictionMatchScheduleDataContent({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionMatchScheduleDataContentProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-data-content-fallback">일정 데이터를 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const location = useLocation();
   const navigate = useNavigate();
   const { gameId: routeGameId } = useParams<{ gameId?: string }>();

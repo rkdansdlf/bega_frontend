@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import type { ViewMode } from '../../types/profile';
+import { keepFocusedNavItemVisible } from './keepFocusedNavItemVisible';
 import {
   MyPageBarChartIcon,
   MyPageBellIcon,
@@ -29,9 +30,11 @@ export default function MyPageSidebarMoreRuntime({
         className="mypage-season-nav-sub"
         aria-label="마이페이지 더보기"
         data-testid="mypage-season-sidebar-more"
+        onFocusCapture={keepFocusedNavItemVisible}
       >
         <button
           type="button"
+          data-testid="mypage-more-diary"
           className={viewMode === 'diaryEditor' ? 'is-active' : undefined}
           onClick={() => onSetViewMode('diaryEditor', { date: todayDate })}
         >
@@ -56,12 +59,13 @@ export default function MyPageSidebarMoreRuntime({
           <MyPageFlameIcon />
           <span>응원석 글</span>
         </button>
-        <Link to="/stadium">
+        <Link to="/stadium" data-testid="mypage-more-stadium">
           <MyPageSearchIcon />
           <span>구장 검색</span>
         </Link>
         <button
           type="button"
+          data-testid="mypage-more-alerts"
           className={viewMode === 'alerts' ? 'is-active' : undefined}
           onClick={() => onSetViewMode('alerts')}
         >
@@ -70,6 +74,7 @@ export default function MyPageSidebarMoreRuntime({
         </button>
         <button
           type="button"
+          data-testid="mypage-more-badges"
           className={viewMode === 'badges' ? 'is-active' : undefined}
           onClick={() => onSetViewMode('badges')}
         >
@@ -78,6 +83,7 @@ export default function MyPageSidebarMoreRuntime({
         </button>
         <button
           type="button"
+          data-testid="mypage-more-stats"
           className={viewMode === 'stats' ? 'is-active' : undefined}
           onClick={() => onSetViewMode('stats')}
         >

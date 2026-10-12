@@ -21,6 +21,11 @@ type ViteAliasConfigOptions = {
 };
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
+const LOCAL_PREVIEW_PROXY_HOSTS = new Set([
+  ...LOOPBACK_HOSTS,
+  'backend',
+  'host.docker.internal',
+]);
 
 const designSystemFallbackAliases = {
   'design_system/Button': './src/components/moduleFederation/fallback/Button.tsx',
@@ -52,6 +57,34 @@ export const shouldEnableCloudflarePlugin = (
   configuredValue?: string,
 ): boolean => configuredValue !== 'false'
   && (command !== 'serve' || configuredValue === 'true');
+
+export const resolvePreviewProxyTarget = (configuredValue?: string): string | undefined => {
+  const target = configuredValue?.trim() ?? '';
+  if (!target) {
+    return undefined;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(target);
+  } catch {
+    throw new Error(`[vite] Preview proxy target must be an absolute local URL: ${target}`);
+  }
+
+  if (!/^https?:$/.test(parsed.protocol)) {
+    throw new Error(`[vite] Preview proxy target must use HTTP(S): ${target}`);
+  }
+  if (parsed.username || parsed.password) {
+    throw new Error('[vite] Preview proxy target must not contain credentials.');
+  }
+  if (!LOCAL_PREVIEW_PROXY_HOSTS.has(parsed.hostname.toLowerCase())) {
+    throw new Error(
+      `[vite] Preview proxy target must be local during preview; refusing ${parsed.origin}`,
+    );
+  }
+
+  return target;
+};
 
 export const validateProductionPublicEnv = (targetEnv: MutableBuildEnv) => {
   const siteUrlValue = targetEnv.VITE_SITE_URL?.trim() ?? '';
@@ -128,7 +161,7 @@ export const createViteAliasConfig = ({
   return alias;
 };
 
-export default defineConfig(({ mode, command }) => {
+export default defineConfig(({ mode, command, isPreview }) => {
   const isProductionBuild = isProductionBuildCommand({ command, mode });
   if (isProductionBuild) {
     forceProductionBuildNodeEnv(process.env);
@@ -149,7 +182,23 @@ export default defineConfig(({ mode, command }) => {
   }
 
   const nodeEnv = isProductionBuild ? 'production' : process.env.NODE_ENV ?? mode;
-  const proxyTarget = env.VITE_PROXY_TARGET ?? 'http://localhost:8080';
+  const configuredProxyTarget = process.env.VITE_PROXY_TARGET ?? env.VITE_PROXY_TARGET;
+  const proxyTarget = configuredProxyTarget ?? 'http://localhost:8080';
+  const previewProxyTarget = isPreview
+    ? resolvePreviewProxyTarget(configuredProxyTarget)
+    : undefined;
+  const createProxy = (target: string) => ({
+    '/api': {
+      target,
+      changeOrigin: true,
+      secure: false,
+    },
+    '/ws': {
+      target,
+      ws: true,
+      changeOrigin: true,
+    },
+  });
   const suppressCypressProxyErrors = env.VITE_SUPPRESS_CYPRESS_PROXY_ERRORS === 'true';
   const enableCloudflarePlugin = shouldEnableCloudflarePlugin(
     command,
@@ -205,7 +254,7 @@ export default defineConfig(({ mode, command }) => {
       'globalThis.process.env.NODE_ENV': JSON.stringify(nodeEnv),
     },
     optimizeDeps: {
-      include: ['sockjs-client'],
+      include: ['sockjs-client', '@stomp/stompjs'],
     },
     esbuild: {
       drop: mode === 'production' ? ['debugger'] : [],
@@ -221,7 +270,6 @@ export default defineConfig(({ mode, command }) => {
           manualChunks(id) {
             const normalizedId = id.split(path.sep).join('/');
             const homeFirstLoadCoreChunkModules = [
-              '/src/api/homeCore.ts',
               '/src/utils/dateKey.ts',
               '/src/utils/homeSeasonLogic.ts',
               '/src/utils/manualBaseballDataContract.ts',
@@ -303,19 +351,14 @@ export default defineConfig(({ mode, command }) => {
       port: 5176,
       allowedHosts: ['host.docker.internal'],
       open: false,
-      proxy: {
-        '/api': {
-          target: proxyTarget,
-          changeOrigin: true,
-          secure: false,
-          // cookieDomainRewrite: 'localhost',
-        },
-        '/ws': {
-          target: proxyTarget,
-          ws: true,
-          changeOrigin: true,
-        },
-      },
+      proxy: createProxy(proxyTarget),
+    },
+
+    // Vite preview defaults to the dev proxy when preview.proxy is omitted.
+    // Keep the preview boundary explicit so a production env file can never
+    // silently turn a fixture-only preview into a remote backend client.
+    preview: {
+      proxy: previewProxyTarget ? createProxy(previewProxyTarget) : {},
     },
   };
 });

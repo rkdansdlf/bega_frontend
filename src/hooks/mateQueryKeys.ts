@@ -1,4 +1,6 @@
 import type { MateHistoryTab, MatePartySortBy, MatePartySortDir, PartyStatus } from '../types/mate';
+import { getViewerQueryScope, viewerScopedQueryKey } from '../utils/viewerQueryScope';
+import type { ViewerQueryScope } from '../utils/viewerQueryScope';
 
 export interface MatePartyListKeyParams {
   teamId?: string;
@@ -25,6 +27,8 @@ const mateSearchTermsKey = [...mateAllKey, 'search-terms'] as const;
 
 const normalizePartyId = (partyId: number | string) =>
   typeof partyId === 'number' ? partyId : partyId.trim();
+
+const matePartyBase = (partyId: number | string) => [...MATE_KEYS.parties(), normalizePartyId(partyId)] as const;
 
 const normalizeUserKey = (userId: number | null | undefined) =>
   typeof userId === 'number' && Number.isFinite(userId) ? userId : 'guest';
@@ -55,23 +59,43 @@ export const MATE_KEYS = {
   all: mateAllKey,
   parties: () => matePartiesKey,
   partyLists: () => [...matePartiesKey, 'list'] as const,
-  partyList: (params: MatePartyListKeyParams) =>
-    [...MATE_KEYS.partyLists(), normalizePartyListKey(params)] as const,
-  party: (partyId: number | string) => [...MATE_KEYS.parties(), normalizePartyId(partyId)] as const,
-  partyReviews: (partyId: number | string) => [...MATE_KEYS.party(partyId), 'reviews'] as const,
-  partyApplications: (partyId: number | string) => [...MATE_KEYS.party(partyId), 'applications'] as const,
-  partyMyApplications: (partyId: number | string) => [...MATE_KEYS.party(partyId), 'my-application'] as const,
-  partyMyApplication: (partyId: number | string, userId?: number | null) =>
-    [...MATE_KEYS.partyMyApplications(partyId), normalizeUserKey(userId)] as const,
-  partyMessages: (partyId: number | string) => [...MATE_KEYS.party(partyId), 'messages'] as const,
-  partyCheckIns: (partyId: number | string) => [...MATE_KEYS.party(partyId), 'check-ins'] as const,
-  myParties: (userId?: number | null) =>
+  partyList: (
+    params: MatePartyListKeyParams,
+    scope: ViewerQueryScope = getViewerQueryScope(),
+  ) => viewerScopedQueryKey([...MATE_KEYS.partyLists(), normalizePartyListKey(params)], scope),
+  party: (
+    partyId: number | string,
+    scope: ViewerQueryScope = getViewerQueryScope(),
+  ) => viewerScopedQueryKey(matePartyBase(partyId), scope),
+  partyReviews: (partyId: number | string) => [...matePartyBase(partyId), 'reviews'] as const,
+  partyApplications: (partyId: number | string, scope: ViewerQueryScope = getViewerQueryScope()) =>
+    [...MATE_KEYS.party(partyId, scope), 'applications'] as const,
+  partyMyApplications: (partyId: number | string, scope: ViewerQueryScope = getViewerQueryScope()) =>
+    [...MATE_KEYS.party(partyId, scope), 'my-application'] as const,
+  partyMyApplication: (
+    partyId: number | string,
+    userId?: number | null,
+    scope: ViewerQueryScope = getViewerQueryScope(),
+  ) => [...MATE_KEYS.partyMyApplications(partyId, scope), normalizeUserKey(userId)] as const,
+  partyMessages: (partyId: number | string) => [...matePartyBase(partyId), 'messages'] as const,
+  partyCheckIns: (partyId: number | string, scope: ViewerQueryScope = getViewerQueryScope()) =>
+    [...MATE_KEYS.party(partyId, scope), 'check-ins'] as const,
+  myParties: (userId?: number | null, scope?: ViewerQueryScope) =>
     userId === undefined
       ? mateMyPartiesKey
-      : [...mateMyPartiesKey, normalizeUserKey(userId)] as const,
+      : viewerScopedQueryKey(
+        [...mateMyPartiesKey, normalizeUserKey(userId)],
+        scope ?? getViewerQueryScope(),
+      ),
   myPartyHistories: () => mateMyPartyHistoryKey,
-  myPartyHistory: (userId?: number | null, params: MateHistoryKeyParams = {}) =>
-    [...MATE_KEYS.myPartyHistories(), normalizeUserKey(userId), normalizeMateHistoryKey(params)] as const,
+  myPartyHistory: (
+    userId?: number | null,
+    params: MateHistoryKeyParams = {},
+    scope?: ViewerQueryScope,
+  ) => viewerScopedQueryKey(
+    [...MATE_KEYS.myPartyHistories(), normalizeUserKey(userId), normalizeMateHistoryKey(params)],
+    scope ?? getViewerQueryScope(),
+  ),
   popularSearchTerms: (limit = 5) =>
     [...mateSearchTermsKey, 'popular', normalizePageValue(limit, 5)] as const,
 } as const;

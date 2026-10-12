@@ -4,13 +4,22 @@ import { useGamesData } from '../api/home';
 import type { Game as HomeGame } from '../types/home';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
 import TeamLogo from './TeamLogo';
-import CheerHot from './CheerHot';
+import CheerHot, { type CheerHotVisualQaStateOverride } from './CheerHot';
 import CheerThemeControl from './CheerThemeControl';
+import type { CheerCommunityPulseVisualQaStateOverride } from './CheerCommunityPulse';
 import { StatusBadge } from './ui/status-badge';
 
 const LazyCheerCommunityPulse = lazy(() => import('./CheerCommunityPulse'));
 
-interface CheerSidebarPanelsProps {
+export type CheerSidebarPanelsVisualQaStateOverride = {
+    games?: HomeGame[];
+    gamesState?: 'loading' | 'error' | 'ready';
+    onRetryGames?: () => void;
+    hot?: CheerHotVisualQaStateOverride;
+    communityPulse?: CheerCommunityPulseVisualQaStateOverride;
+};
+
+export interface CheerSidebarPanelsProps {
     teamLogoId?: string;
     teamLabel: string;
     teamName: string;
@@ -24,6 +33,7 @@ interface CheerSidebarPanelsProps {
     favoriteTeamFull: string | null;
     onGoPrediction: () => void;
     teamAccent: string;
+    visualQaStateOverride?: CheerSidebarPanelsVisualQaStateOverride;
 }
 
 export default function CheerSidebarPanels({
@@ -40,14 +50,21 @@ export default function CheerSidebarPanels({
     favoriteTeamFull,
     onGoPrediction,
     teamAccent,
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerSidebarPanelsProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const today = useMemo(() => new Date(), []);
     const {
-        data: todaysGames = [],
+        data: queriedTodaysGames = [],
         isLoading: isGamesLoading,
         isError: isGamesError,
         refetch: refetchGames,
-    } = useGamesData(today);
+    } = useGamesData(today, { enabled: visualQaStateOverride === undefined });
+    const todaysGames = visualQaStateOverride?.games ?? queriedTodaysGames;
+    const gamesState = visualQaStateOverride?.gamesState
+        ?? (isGamesLoading ? 'loading' : isGamesError ? 'error' : 'ready');
     const featuredGame = useMemo(() => {
         if (!todaysGames.length) return null;
         const normalized = (value?: string) => value?.toLowerCase().trim();
@@ -76,10 +93,10 @@ export default function CheerSidebarPanels({
     }, [favoriteTeamFull, favoriteTeamId, favoriteTeamLabel, todaysGames]);
 
     return (
-        <div className="flex w-full flex-col gap-4">
+        <div data-testid="cheer-sidebar-panels" className="flex w-full flex-col gap-4">
             <CheerThemeControl accentColor={teamAccent} compact />
 
-            <div className="min-h-[140px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4">
+            <div data-testid="cheer-sidebar-team" className="min-h-[140px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4">
                 <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--cheer-chip-bg)]">
                         <TeamLogo teamId={teamLogoId} team={teamLabel} size={48} />
@@ -107,8 +124,9 @@ export default function CheerSidebarPanels({
                         </p>
                         <button
                             type="button"
+                            data-testid="cheer-sidebar-team-retry"
                             onClick={onRefetchTeamMetadata}
-                                className="mt-3 w-full rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-600 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-secondary"
+                                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-600 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-secondary"
                         >
                             다시 시도
                         </button>
@@ -118,21 +136,28 @@ export default function CheerSidebarPanels({
                 )}
             </div>
 
-            <div className="min-h-[188px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4">
+            <div data-testid="cheer-sidebar-games" className="min-h-[188px] rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] p-4">
                     <p className="text-body font-bold text-[#0F172A] dark:text-white">오늘 경기</p>
-                {isGamesLoading ? (
+                {gamesState === 'loading' ? (
                     <div className="mt-3 space-y-3">
                         <div className="h-4 w-32 rounded bg-[var(--cheer-chip-bg)]" />
                         <div className="h-12 rounded bg-[var(--cheer-chip-bg)]" />
                         <div className="h-9 w-full rounded-full bg-[var(--cheer-chip-bg)]" />
                     </div>
-                ) : isGamesError ? (
+                ) : gamesState === 'error' ? (
                         <div className="mt-3 rounded-xl bg-slate-50 px-3 py-3 text-body font-semibold text-[#64748B] dark:bg-secondary/70 dark:text-white">
                         경기 정보를 불러오지 못했습니다.
                         <button
                             type="button"
-                            onClick={() => void refetchGames()}
-                            className="mt-3 w-full rounded-full border border-slate-200 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                            data-testid="cheer-sidebar-games-retry"
+                            onClick={() => {
+                                if (visualQaStateOverride?.onRetryGames) {
+                                    visualQaStateOverride.onRetryGames();
+                                    return;
+                                }
+                                void refetchGames();
+                            }}
+                            className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
                         >
                             다시 시도
                         </button>
@@ -180,7 +205,8 @@ export default function CheerSidebarPanels({
                         </div>
                         <button
                             type="button"
-                            className="w-full rounded-full border border-slate-200 py-2 text-body font-bold text-[#0F172A] hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                            data-testid="cheer-sidebar-detail"
+                                className="flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-[#0F172A] hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
                             onClick={onGoPrediction}
                         >
                             경기 상세 보기
@@ -193,7 +219,7 @@ export default function CheerSidebarPanels({
                 )}
             </div>
 
-            <CheerHot />
+            <CheerHot visualQaStateOverride={visualQaStateOverride?.hot} />
             <Suspense
                 fallback={(
                     <div className="space-y-4">
@@ -206,7 +232,7 @@ export default function CheerSidebarPanels({
                     </div>
                 )}
             >
-                <LazyCheerCommunityPulse />
+                <LazyCheerCommunityPulse visualQaStateOverride={visualQaStateOverride?.communityPulse} />
             </Suspense>
         </div>
     );

@@ -14,6 +14,8 @@ interface BlockButtonProps {
     userName?: string;
     initialBlocked?: boolean;
     onBlockChange?: (response: BlockToggleResponse) => void;
+    visualQaToggleBlock?: () => Promise<BlockToggleResponse>;
+    visualQaInitialConfirmOpen?: boolean;
     size?: 'sm' | 'default' | 'lg';
     variant?: 'default' | 'ghost' | 'destructive';
 }
@@ -23,13 +25,17 @@ export default function BlockButton({
     userName = '이 사용자',
     initialBlocked = false,
     onBlockChange,
+    visualQaToggleBlock,
+    visualQaInitialConfirmOpen = false,
     size = 'default',
     variant = 'ghost',
 }: BlockButtonProps) {
     const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
     const [isBlocked, setIsBlocked] = useState(initialBlocked);
     const [isLoading, setIsLoading] = useState(false);
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(
+        import.meta.env.DEV && visualQaInitialConfirmOpen,
+    );
     const titleId = useId();
     const descriptionId = useId();
 
@@ -54,10 +60,6 @@ export default function BlockButton({
         };
     }, [isConfirmOpen]);
 
-    if (handle && currentUserHandle === handle) {
-        return null;
-    }
-
     const handleToggleBlock = useCallback(async () => {
         if (isLoading) {
             return;
@@ -65,7 +67,11 @@ export default function BlockButton({
 
         setIsLoading(true);
         try {
-            const response = await toggleBlockByHandle(handle);
+            const response = await (
+                import.meta.env.DEV && visualQaToggleBlock
+                    ? visualQaToggleBlock()
+                    : toggleBlockByHandle(handle)
+            );
             setIsBlocked(response.blocked);
             onBlockChange?.(response);
             setIsConfirmOpen(false);
@@ -77,7 +83,11 @@ export default function BlockButton({
         }
     }, [handle, isLoading, onBlockChange]);
 
-    const buttonSize = size === 'sm' ? 'h-8 px-3 text-body' : size === 'lg' ? 'h-11 px-6' : 'h-9 px-4';
+    if (handle && currentUserHandle === handle) {
+        return null;
+    }
+
+    const buttonSize = size === 'sm' ? 'h-auto min-h-11 px-3 text-body' : size === 'lg' ? 'h-11 px-6' : 'h-auto min-h-11 px-4';
 
     if (isBlocked) {
         return (
@@ -85,6 +95,7 @@ export default function BlockButton({
                 onClick={handleToggleBlock}
                 variant="outline"
                 disabled={isLoading}
+                data-testid="profile-unblock-button"
                 className={`${buttonSize} border-red-500 text-red-500 hover:bg-red-50`}
             >
                 {isLoading ? (
@@ -105,6 +116,7 @@ export default function BlockButton({
                 variant={variant}
                 disabled={isLoading}
                 onClick={() => setIsConfirmOpen(true)}
+                data-testid="profile-block-button"
                 className={`${buttonSize} text-gray-500 hover:bg-red-50 hover:text-red-500`}
             >
                 {isLoading ? (
@@ -143,13 +155,19 @@ export default function BlockButton({
                                 </div>
                             </div>
                             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                                <Button variant="outline" onClick={() => setIsConfirmOpen(false)} disabled={isLoading}>
-                                    취소
-                                </Button>
-                                <Button
-                                    onClick={handleToggleBlock}
-                                    disabled={isLoading}
-                                    className="bg-red-500 text-white hover:bg-red-600"
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setIsConfirmOpen(false)}
+                                        disabled={isLoading}
+                                        data-testid="profile-block-cancel"
+                                    >
+                                        취소
+                                    </Button>
+                                    <Button
+                                        onClick={handleToggleBlock}
+                                        disabled={isLoading}
+                                        data-testid="profile-block-confirm"
+                                        className="bg-red-500 text-white hover:bg-red-600"
                                 >
                                     {isLoading ? '처리 중...' : '차단하기'}
                                 </Button>

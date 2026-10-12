@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
+import type { ReactNode } from 'react';
 
 const RemoteButton = lazy(() => import('design_system/Button'));
 const RemoteModal = lazy(() => import('design_system/Modal'));
@@ -14,7 +15,24 @@ function ModuleFederationProbeFallback() {
   );
 }
 
-export default function ModuleFederationDesignSystemProbe() {
+export interface ModuleFederationDesignSystemProbeProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function ModuleFederationDesignSystemProbe({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: ModuleFederationDesignSystemProbeProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="module-federation-design-system-probe-fallback">디자인 시스템 원격 모듈을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

@@ -19,6 +19,7 @@ import {
     type LeagueTab,
 } from '../utils/homeScheduleClassification';
 import { cacheLeagueStartDates, formatDateForAPI, getFallbackLeagueStartDates } from '../utils/home';
+import { readTimedMapValue, writeTimedMapValue } from '../utils/expiredMapEntries';
 import { groupGamesBySourceDate, summarizeHomeLeagueGames } from '../utils/homeGameGrouping';
 import {
     buildHomeRouteSearchParams,
@@ -173,14 +174,6 @@ const HOME_LEAGUE_TABS: Array<{ value: LeagueTab; label: string }> = [
     { value: 'koreanseries', label: '한국시리즈' },
     { value: 'scheduled', label: '예정경기' },
 ];
-const EMPTY_SCOPED_NAVIGATION: HomeScopedNavigationResponse = {
-    resolvedDate: null,
-    prevGameDate: null,
-    nextGameDate: null,
-    hasPrev: false,
-    hasNext: false,
-};
-
 const EMPTY_HOME_AUTH_SNAPSHOT: HomeAuthSnapshot = {
     userId: null,
     isLoggedIn: false,
@@ -192,12 +185,12 @@ type HomeLiveSummaryTimeoutWarningState = {
     timeoutWarningLogged: boolean;
 };
 type HomeBootstrapData = Awaited<ReturnType<typeof fetchHomeBootstrap>>;
-type HomeBootstrapCacheEntry = {
-    data: HomeBootstrapData;
-    updatedAt: number;
+type HomeScopedNavigationState = {
+    scope: HomeNavigationScope;
+    dateKey: string;
+    response: HomeScopedNavigationResponse | null;
 };
-
-const homeBootstrapCache = new Map<string, HomeBootstrapCacheEntry>();
+const homeBootstrapCache = new Map<string, { data: HomeBootstrapData; updatedAt: number }>();
 
 const getTodayMidday = () => {
     const today = new Date();
@@ -206,20 +199,22 @@ const getTodayMidday = () => {
 };
 
 const readCachedHomeBootstrap = (date: Date): HomeBootstrapData | null => {
-    const cacheEntry = homeBootstrapCache.get(formatDateForAPI(date));
-
-    if (!cacheEntry || Date.now() - cacheEntry.updatedAt > HOME_BOOTSTRAP_CACHE_STALE_MS) {
-        return null;
-    }
-
-    return cacheEntry.data;
+    return readTimedMapValue(
+        homeBootstrapCache,
+        formatDateForAPI(date),
+        Date.now(),
+        HOME_BOOTSTRAP_CACHE_STALE_MS,
+    );
 };
 
 const writeCachedHomeBootstrap = (date: Date, data: HomeBootstrapData) => {
-    homeBootstrapCache.set(formatDateForAPI(date), {
+    writeTimedMapValue(
+        homeBootstrapCache,
+        formatDateForAPI(date),
         data,
-        updatedAt: Date.now(),
-    });
+        Date.now(),
+        HOME_BOOTSTRAP_CACHE_STALE_MS,
+    );
 };
 
 const fetchHomeBootstrapWithRetry = async (date: Date): Promise<HomeBootstrapData> => {
@@ -445,7 +440,7 @@ export default function HomeRuntime() {
     const [isScheduledLoading, setIsScheduledLoading] = useState(false);
     const [isScheduledError, setIsScheduledError] = useState(false);
     const [isSecondarySectionExpanded, setIsSecondarySectionExpanded] = useState(false);
-    const [, setScopedNavInfo] = useState<HomeScopedNavigationResponse>(EMPTY_SCOPED_NAVIGATION);
+    const [scopedNavInfo, setScopedNavInfo] = useState<HomeScopedNavigationState | null>(null);
     const [isScopedNavigationLoading, setIsScopedNavigationLoading] = useState(false);
     const hasUserChangedTabRef = useRef(initialHomeRouteState.hasExplicitTab);
     const shouldSyncHomeRouteQueryRef = useRef(initialHomeRouteState.hasRouteQuery);
@@ -594,17 +589,29 @@ export default function HomeRuntime() {
                 return;
             }
 
-            setScopedNavInfo(navigation);
-            if (options.applyResolvedDate && navigation.resolvedDate) {
-                const resolvedDate = toLocalMiddayDate(navigation.resolvedDate);
-                if (!Number.isNaN(resolvedDate.getTime())) {
+            const resolvedDate = navigation.resolvedDate
+                ? toLocalMiddayDate(navigation.resolvedDate)
+                : null;
+            const hasResolvedDate = resolvedDate !== null && !Number.isNaN(resolvedDate.getTime());
+            const navigationDate = hasResolvedDate ? resolvedDate : anchorDate;
+            setScopedNavInfo({
+                scope,
+                dateKey: formatDateForAPI(navigationDate),
+                response: navigation,
+            });
+            if (options.applyResolvedDate && hasResolvedDate) {
+                if (formatDateForAPI(resolvedDate) !== formatDateForAPI(anchorDate)) {
                     setSelectedDate(resolvedDate);
                     replaceHomeRouteState(resolvedDate, scope);
                 }
             }
         } catch {
             if (requestId === scopedNavigationRequestIdRef.current) {
-                setScopedNavInfo(EMPTY_SCOPED_NAVIGATION);
+                setScopedNavInfo({
+                    scope,
+                    dateKey: formatDateForAPI(anchorDate),
+                    response: null,
+                });
             }
         } finally {
             if (requestId === scopedNavigationRequestIdRef.current) {
@@ -613,9 +620,20 @@ export default function HomeRuntime() {
         }
     }, [replaceHomeRouteState]);
 
+    const currentDateNavigation = activeLeagueTab === 'regular'
+        ? navInfo
+        : scopedNavInfo?.scope === activeLeagueTab
+            && scopedNavInfo.dateKey === formatDateForAPI(selectedDate)
+            && scopedNavInfo.response
+            ? {
+                prev: scopedNavInfo.response.prevGameDate ?? null,
+                next: scopedNavInfo.response.nextGameDate ?? null,
+            }
+            : null;
+
     const changeDate = (direction: 'prev' | 'next') => {
         const targetDateKey = normalizeSameSeasonNavigationDate(
-            direction === 'prev' ? navInfo.prev : navInfo.next,
+            direction === 'prev' ? currentDateNavigation?.prev : currentDateNavigation?.next,
             selectedDate.getFullYear(),
         );
         if (!targetDateKey) {
@@ -853,13 +871,23 @@ export default function HomeRuntime() {
 
         hasUserChangedTabRef.current = true;
         setActiveLeagueTab(tabValue);
-        replaceHomeRouteState(selectedDate, tabValue);
-
         const today = getTodayMidday();
-        void loadScopedNavigation(tabValue, today, { applyResolvedDate: true });
+        setSelectedDate(today);
+        replaceHomeRouteState(today, tabValue);
     };
 
     const selectedDateKey = useMemo(() => formatDateForAPI(selectedDate), [selectedDate]);
+    useEffect(() => {
+        if (activeLeagueTab === 'regular') {
+            scopedNavigationRequestIdRef.current += 1;
+            setScopedNavInfo(null);
+            setIsScopedNavigationLoading(false);
+            return;
+        }
+
+        void loadScopedNavigation(activeLeagueTab, selectedDate, { applyResolvedDate: true });
+    }, [activeLeagueTab, loadScopedNavigation, selectedDate, selectedDateKey]);
+
     const homeLivePollingCandidateKey = useMemo(
         () => shouldResolveHomeLivePollingCandidateKey
             ? buildHomeLivePollingCandidateKey(games, scheduledGames, selectedDateKey)
@@ -872,8 +900,8 @@ export default function HomeRuntime() {
     );
     const dateNavigation = useMemo(() => {
         const seasonYear = selectedDate.getFullYear();
-        const prev = normalizeSameSeasonNavigationDate(navInfo.prev, seasonYear);
-        const next = normalizeSameSeasonNavigationDate(navInfo.next, seasonYear);
+        const prev = normalizeSameSeasonNavigationDate(currentDateNavigation?.prev, seasonYear);
+        const next = normalizeSameSeasonNavigationDate(currentDateNavigation?.next, seasonYear);
 
         return {
             prev,
@@ -881,7 +909,7 @@ export default function HomeRuntime() {
             hasPrev: Boolean(prev),
             hasNext: Boolean(next),
         };
-    }, [navInfo.next, navInfo.prev, selectedDate]);
+    }, [currentDateNavigation, selectedDate]);
     const activeTabIsScheduled = activeLeagueTab === 'scheduled';
     const showAdminManualDataRecoveryBanner = isAdmin
         && loadFailureReason === 'manual-data-required'

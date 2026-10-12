@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { ChatStreamEventError, sendChatMessageStream } from '../api/chatbot';
-import { resolveChatBotFailureText } from './useChatBot';
+import {
+  getChatBotCurrentSessionStorageKey,
+  getChatBotCurrentSessionTitleStorageKey,
+  getChatBotPendingMessageStorageKey,
+  resolveChatBotFailureText,
+} from './useChatBot';
 
 const createChatStreamError = (
   message: string,
@@ -22,6 +27,16 @@ const createChatStreamError = (
 const buildStreamResponse = (body: string, headers: Record<string, string> = {}) => new Response(body, {
   status: 200,
   headers: { 'Content-Type': 'text/event-stream', ...headers },
+});
+
+test('chatbot session and pending-message storage keys are isolated by viewer', () => {
+  assert.equal(getChatBotCurrentSessionStorageKey(101), 'chatbot_current_session_id:viewer:101');
+  assert.equal(getChatBotCurrentSessionTitleStorageKey(101), 'chatbot_current_session_title:viewer:101');
+  assert.equal(getChatBotPendingMessageStorageKey(101), 'last_pending_msg:viewer:101');
+  assert.notEqual(getChatBotPendingMessageStorageKey(101), getChatBotPendingMessageStorageKey(202));
+  assert.equal(getChatBotCurrentSessionStorageKey(null), null);
+  assert.equal(getChatBotCurrentSessionTitleStorageKey(null), null);
+  assert.equal(getChatBotPendingMessageStorageKey(null), null);
 });
 
 test('chat UI boundary uses an explicitly public upstreamMessage when detail is null', () => {

@@ -42,8 +42,12 @@ const getNotifications = async (): Promise<NotificationData[]> => {
       return [];
     }
 
-    if (isHttpErrorStatus(error, 404) || getApiErrorStatus(error) === null) {
+    if (isHttpErrorStatus(error, 404)) {
       notificationListEndpointAvailable = false;
+      return [];
+    }
+
+    if (getApiErrorStatus(error) === null) {
       return [];
     }
 
@@ -74,7 +78,6 @@ const getUnreadCount = async (): Promise<number> => {
       }
 
       if (getApiErrorStatus(error) === null) {
-        notificationUnreadCountEndpointAvailable = false;
         return 0;
       }
 
@@ -104,11 +107,15 @@ const getUnreadCount = async (): Promise<number> => {
       return 0;
     }
 
-    if (isHttpErrorStatus(error, 404) || getApiErrorStatus(error) === null) {
+    if (isHttpErrorStatus(error, 404)) {
       if (!notificationAuthFailure) {
         notificationListEndpointAvailable = false;
       }
 
+      return 0;
+    }
+
+    if (getApiErrorStatus(error) === null) {
       return 0;
     }
 
@@ -120,8 +127,10 @@ const markAsRead = async (notificationId: number): Promise<void> => {
   await privatePost<void>(`/notifications/${notificationId}/read`);
 };
 
-const markAllAsRead = async (): Promise<void> => {
-  await privatePost<void>('/notifications/mark-all-read');
+const markAllAsRead = async (readThrough: number): Promise<void> => {
+  await privatePost<void>('/notifications/mark-all-read', {
+    readThrough: new Date(readThrough).toISOString(),
+  });
 };
 
 const deleteNotification = async (notificationId: number): Promise<void> => {

@@ -14,8 +14,8 @@
     <title>BEGA - 야구 플랫폼</title>
 
     <!-- External resource hints -->
-    <link rel="dns-prefetch" href="https://api.begabaseball.xyz">
-    <link rel="preconnect" href="https://api.begabaseball.xyz" crossorigin>
+    <link rel="dns-prefetch" href="%VITE_API_BASE_URL%">
+    <link rel="preconnect" href="%VITE_API_BASE_URL%" crossorigin>
 
     <!-- Pretendard: deferred until the user's first scroll/click/keypress/touch so it never counts against landing first-load metrics -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -45,6 +45,17 @@
     </script>
 
     <style>
+      @font-face {
+        font-family: 'Galmuri11';
+        font-display: swap;
+        src: local('Galmuri11');
+      }
+      @font-face {
+        font-family: 'Galmuri9';
+        font-display: swap;
+        src: local('Galmuri9');
+      }
+
       /* FOUC 방지: 다크모드일 때 CSS 로드 전 즉시 배경색 적용 */
       html.dark body {
         background-color: #000000; /* Tailwind Slate-950 (approx HSL 222 84% 4.9%) */

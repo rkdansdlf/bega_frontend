@@ -350,7 +350,11 @@ describe('AI chatbot real integration smoke', () => {
         resolveBackendBaseUrl().then((backendBaseUrl) => {
             expect(backendBaseUrl, 'resolved backend url').to.be.a('string').and.not.be.empty;
 
-            cy.visit('/mate', {
+            // /mate is intentionally rendered with the public layout even for
+            // authenticated visitors, so it does not mount the authenticated
+            // chatbot chrome. Use an authenticated route for this integration
+            // smoke while keeping the real session/message API assertions below.
+            cy.visit('/mypage', {
                 onBeforeLoad(win) {
                     win.localStorage.setItem('bega_has_visited', 'true');
                     win.localStorage.setItem('bega_dont_show_guide', 'true');

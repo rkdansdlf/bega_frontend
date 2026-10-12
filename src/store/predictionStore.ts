@@ -1,6 +1,8 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { getTeamColorByAnyKey } from '../constants/teams';
+import { useAuthStore } from './authStore';
+import { createViewerScopedStateStorage } from '../utils/viewerScopedDraftStorage';
 
 export interface Team {
   id: string;
@@ -22,7 +24,8 @@ const initialTeams: Team[] = [
   { id: 'kia', name: '기아 타이거즈', shortName: '기아', color: getTeamColorByAnyKey('kia') }
 ];
 
-interface PredictionState {
+export interface PredictionState {
+  viewerId: number | null;
   rankings: (Team | null)[];
   availableTeams: Team[];
   allTeams: Team[];
@@ -37,17 +40,21 @@ interface PredictionActions {
   completePrediction: () => void;
   setIsPredictionSaved: (saved: boolean) => void;
   setRankings: (rankings: (Team | null)[]) => void;
+  setViewerId: (viewerId: number | null) => void;
   reset: () => void;
 }
 
 type PredictionStore = PredictionState & PredictionActions;
 
-const getInitialState = (): PredictionState => ({
+export const getInitialPredictionState = (viewerId: number | null = null): PredictionState => ({
+  viewerId,
   rankings: Array(10).fill(null),
   availableTeams: [...initialTeams],
   allTeams: [...initialTeams],
   isPredictionSaved: false,
 });
+
+const getInitialState = getInitialPredictionState;
 
 export const usePredictionStore = create<PredictionStore>()(
   persist(
@@ -102,7 +109,7 @@ export const usePredictionStore = create<PredictionStore>()(
       },
 
       resetRankings: () => {
-        set(getInitialState());
+        set((state) => getInitialState(state.viewerId));
       },
 
       completePrediction: () => {
@@ -113,15 +120,36 @@ export const usePredictionStore = create<PredictionStore>()(
         set({ isPredictionSaved: saved });
       },
 
+      setViewerId: (viewerId) => set((state) => (
+        state.viewerId === viewerId ? state : getInitialState(viewerId)
+      )),
+
       reset: () =>
         set(getInitialState()),
     }),
     {
       name: 'prediction-storage',
+      storage: createJSONStorage(() => createViewerScopedStateStorage(
+        () => useAuthStore.getState().user?.id ?? null,
+        () => window.localStorage,
+      )),
       partialize: (state) => ({
+        viewerId: state.viewerId,
         rankings: state.rankings,
         isPredictionSaved: state.isPredictionSaved,
       }),
+      merge: (persistedState, currentState) => {
+        const viewerId = useAuthStore.getState().user?.id ?? null;
+        const persisted = persistedState as Partial<PredictionState> | undefined;
+        if (viewerId === null || persisted?.viewerId !== viewerId) {
+          return { ...currentState, ...getInitialState(viewerId) };
+        }
+        return {
+          ...currentState,
+          ...persisted,
+          viewerId,
+        };
+      },
     }
   )
 );

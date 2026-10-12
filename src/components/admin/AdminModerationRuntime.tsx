@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import {
   fetchAdminReportDetail,
@@ -64,13 +65,26 @@ interface AdminModerationRuntimeProps {
   activeTab: AdminTabValue;
   onErrorChange: (next: string | null) => void;
   onSuccessMessageChange: (next: string | null) => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 export default function AdminModerationRuntime({
   activeTab,
   onErrorChange,
   onSuccessMessageChange,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: AdminModerationRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="admin-moderation-runtime-fallback">관리자 검수 화면을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const [reports, setReports] = useState<AdminReport[]>([]);
   const [seatViews, setSeatViews] = useState<AdminSeatView[]>([]);
   const [reportFilters, setReportFilters] = useState<AdminReportFilters>(DEFAULT_REPORT_FILTERS);

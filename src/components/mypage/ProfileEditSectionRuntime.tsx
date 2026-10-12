@@ -16,7 +16,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import VerificationRequiredDialog from '../VerificationRequiredDialog';
 import PlainDialog from '../ui/plain-dialog';
 
-interface ProfileEditSectionProps {
+export interface ProfileEditSectionRuntimeProps {
   profileImage: string | null;
   name: string;
   email: string;
@@ -30,6 +30,7 @@ interface ProfileEditSectionProps {
   onSectionChange?: (section: ProfileSection) => void;
   onChangePassword?: () => void;
   hasPassword?: boolean;
+  visualQaPhase?: 'fallback' | 'resolved';
 }
 
 const sectionList: Array<{
@@ -60,7 +61,20 @@ export default function ProfileEditSection({
   onSectionChange,
   onChangePassword,
   hasPassword = true,
-}: ProfileEditSectionProps) {
+  visualQaPhase: requestedVisualQaPhase,
+}: ProfileEditSectionRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  if (visualQaPhase === 'fallback') {
+    return (
+      <div
+        className="rounded-xl border border-border bg-card p-6 text-body text-muted-foreground"
+        data-testid="profile-edit-section-runtime-fallback"
+      >
+        프로필 편집 화면을 불러오는 중입니다...
+      </div>
+    );
+  }
+
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const [pendingPasswordAction, setPendingPasswordAction] = useState(false);
   const [pendingSection, setPendingSection] = useState<ProfileSection | null>(null);
@@ -238,7 +252,7 @@ export default function ProfileEditSection({
 
   return (
     <>
-      <section data-screen-label="설정" className="mypage-card-screen mb-6">
+      <section data-screen-label="설정" data-testid="profile-edit-section-runtime" className="mypage-card-screen mb-6">
         <div className="mypage-profile-header-panel">
           <div>
             <h2 className="text-xl font-bold text-primary">설정</h2>
@@ -265,7 +279,7 @@ export default function ProfileEditSection({
               </button>
             ))}
           </div>
-          {(!userProvider || userProvider === 'LOCAL') && onChangePassword && hasPassword && (
+          {onChangePassword && (
             <Button
               variant="outline"
               onClick={() => setPendingPasswordAction(true)}
@@ -273,7 +287,7 @@ export default function ProfileEditSection({
               disabled={isLoading}
             >
               <MyPageLockIcon className="w-4 h-4" />
-              비밀번호 변경
+              {hasPassword ? '비밀번호 변경' : '비밀번호 설정'}
             </Button>
           )}
         </div>
@@ -314,8 +328,10 @@ export default function ProfileEditSection({
         isOpen={pendingPasswordAction}
         onClose={() => setPendingPasswordAction(false)}
         mode="security"
-        title="비밀번호 변경"
-        description="비밀번호 변경은 민감한 작업입니다. 본인 확인을 위해 보안 모드로 이동합니다."
+        title={hasPassword ? '비밀번호 변경' : '비밀번호 설정'}
+        description={hasPassword
+          ? '비밀번호 변경은 민감한 작업입니다. 본인 확인을 위해 보안 모드로 이동합니다.'
+          : '비밀번호 설정은 민감한 작업입니다. 본인 확인을 위해 보안 모드로 이동합니다.'}
         confirmLabel="안전하게 진행"
         onConfirm={handleChangePassword}
       />

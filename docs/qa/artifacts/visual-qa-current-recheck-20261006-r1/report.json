@@ -1,0 +1,6484 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T16:03:39.081Z",
+  "baseUrl": "http://127.0.0.1:5177",
+  "coverage": {
+    "routes": [
+      "/",
+      "/home",
+      "/login",
+      "/signup",
+      "/password/reset",
+      "/oauth/email/confirm",
+      "/prediction",
+      "/mate",
+      "/cheer",
+      "/stadium",
+      "/leaderboard",
+      "/offseason",
+      "/offseason/list",
+      "/notice",
+      "/terms",
+      "/privacy",
+      "/mypage",
+      "/messages",
+      "/messages/@testuser",
+      "/mate/create",
+      "/mate/1",
+      "/mate/1/apply",
+      "/mate/1/chat",
+      "/mate/1/manage",
+      "/mate/1/checkin",
+      "/cheer/bookmarks",
+      "/cheer/1",
+      "/cheer/write",
+      "/cheer/edit/1",
+      "/profile/@testuser",
+      "/prediction/matches/20260726KTLT0",
+      "/predictions/ranking/share/abc/2026",
+      "/admin"
+    ],
+    "viewports": [
+      {
+        "width": 320,
+        "height": 844
+      },
+      {
+        "width": 360,
+        "height": 844
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 430,
+        "height": 844
+      },
+      {
+        "width": 480,
+        "height": 1024
+      },
+      {
+        "width": 600,
+        "height": 1024
+      },
+      {
+        "width": 767,
+        "height": 1024
+      },
+      {
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "width": 834,
+        "height": 1024
+      },
+      {
+        "width": 1024,
+        "height": 900
+      },
+      {
+        "width": 1040,
+        "height": 900
+      },
+      {
+        "width": 1160,
+        "height": 900
+      },
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 568,
+        "height": 320
+      },
+      {
+        "width": 667,
+        "height": 375
+      },
+      {
+        "width": 844,
+        "height": 390
+      },
+      {
+        "width": 932,
+        "height": 430
+      }
+    ],
+    "states": [
+      {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴",
+        "route": "/home",
+        "minWidth": 320,
+        "maxWidth": 767
+      },
+      {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴",
+        "route": "/mypage",
+        "minWidth": 320,
+        "maxWidth": 767
+      },
+      {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트",
+        "route": "/mate",
+        "minWidth": 320,
+        "maxWidth": 1023
+      },
+      {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달",
+        "route": "/mypage",
+        "minWidth": 320,
+        "maxWidth": 1440
+      },
+      {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널",
+        "route": "/mypage",
+        "minWidth": 320,
+        "maxWidth": 1440
+      },
+      {
+        "id": "stadium-seat-map-route",
+        "name": "실제 경기장 좌석도 라우트",
+        "route": "/stadium",
+        "minWidth": 320,
+        "maxWidth": 390
+      },
+      {
+        "id": "mypage-stats-tab-route",
+        "name": "마이페이지 기록 탭",
+        "route": "/mypage",
+        "minWidth": 320,
+        "maxWidth": 390
+      }
+    ]
+  },
+  "summary": {
+    "scenarios": 667,
+    "affectedScenarios": 0,
+    "issues": 0,
+    "severity": {},
+    "types": {},
+    "scanErrors": 12
+  },
+  "scenarios": [
+    {
+      "route": "/",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/password/reset",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/leaderboard",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/offseason/list",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/notice",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/create",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/1",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/write",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/home",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "public-mobile-menu",
+        "name": "공개 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-mobile-menu",
+        "name": "인증 모바일 메뉴"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mate",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mate-filter-sheet",
+        "name": "메이트 필터 바텀시트"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-ticket-upload",
+        "name": "티켓 등록 모달"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "authenticated-chatbot",
+        "name": "인증 챗봇 패널"
+      }
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "stadium-seat-map-route",
+        "name": "실제 경기장 좌석도 라우트"
+      }
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "stadium-seat-map-route",
+        "name": "실제 경기장 좌석도 라우트"
+      }
+    },
+    {
+      "route": "/stadium",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "stadium-seat-map-route",
+        "name": "실제 경기장 좌석도 라우트"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-stats-tab-route",
+        "name": "마이페이지 기록 탭"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-stats-tab-route",
+        "name": "마이페이지 기록 탭"
+      }
+    },
+    {
+      "route": "/mypage",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": [],
+      "state": {
+        "id": "mypage-stats-tab-route",
+        "name": "마이페이지 기록 탭"
+      }
+    }
+  ]
+}

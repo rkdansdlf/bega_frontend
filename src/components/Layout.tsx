@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import baseballLogo from '../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
 import { requestLoadTrace } from '../utils/requestLoadTrace';
 
 const PublicNavbar = lazy(() => import('./PublicNavbar'));
@@ -51,29 +52,37 @@ function PublicNavbarFallback() {
   return (
     <header
       aria-hidden="true"
-      className="sticky top-0 z-[60] px-3 py-2 md:px-4 md:py-1.5 relative overflow-x-clip"
+      className="sticky top-0 z-[60] px-3 py-2 lg:px-4 lg:py-1.5 relative overflow-x-clip"
     >
       <div className="pointer-events-none absolute inset-0 bg-gray-50 dark:bg-background" />
-      <div className="relative flex h-12 items-center gap-2 rounded-full border border-white/80 bg-white/72 px-3 shadow-navbar-capsule backdrop-blur-xl md:left-1/2 md:h-16 md:w-full md:max-w-5xl md:-translate-x-1/2 md:px-4 dark:border-white/8 dark:bg-black/65 dark:shadow-navbar-capsule-dark">
+      <div className="relative flex h-12 items-center gap-2 rounded-full border border-white/80 bg-white/72 px-3 shadow-navbar-capsule backdrop-blur-xl lg:left-1/2 lg:h-16 lg:w-full lg:max-w-5xl lg:-translate-x-1/2 lg:px-4 dark:border-white/8 dark:bg-black/65 dark:shadow-navbar-capsule-dark">
         <div className="flex min-h-11 shrink-0 items-center gap-2 rounded-full px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-13 font-black text-white md:h-9 md:w-9">
-            B
-          </div>
+          <img
+            src={baseballLogo}
+            alt=""
+            aria-hidden="true"
+            width={36}
+            height={36}
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
+            className="h-8 w-8 object-contain lg:h-9 lg:w-9"
+          />
           <div className="flex flex-col items-start leading-none">
             <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light">
               BEGA
             </span>
-            <span className="hidden text-10 font-bold tracking-tight text-muted-foreground md:block dark:text-white">
+            <span className="hidden text-10 font-bold tracking-tight text-muted-foreground lg:block dark:text-white">
               BASEBALL GUIDE
             </span>
           </div>
         </div>
-        <div className="ml-auto hidden items-center gap-2 md:flex">
+        <div className="ml-auto hidden items-center gap-2 lg:flex">
           <span className="h-8 w-16 rounded-full bg-muted" />
           <span className="h-8 w-16 rounded-full bg-muted" />
           <span className="h-8 w-16 rounded-full bg-muted" />
         </div>
-        <div className="ml-auto h-10 w-10 rounded-full bg-muted md:hidden" />
+        <div className="ml-auto h-10 w-10 rounded-full bg-muted lg:hidden" />
       </div>
     </header>
   );

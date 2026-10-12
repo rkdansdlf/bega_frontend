@@ -20,6 +20,10 @@ interface UseFocusTrapOptions {
     active: boolean;
     /** 긴 스크롤 다이얼로그는 컨테이너를 먼저 포커스해 상단 위치를 보존합니다. */
     initialFocus?: 'container' | 'first';
+    /** 지정하면 비활성화 시 이 요소로 포커스를 돌려보냅니다. */
+    restoreFocusTo?: HTMLElement | null;
+    /** 컨테이너 밖에서 시작된 Tab 입력도 가로챕니다. */
+    listenOnDocument?: boolean;
 }
 
 /**
@@ -30,7 +34,12 @@ interface UseFocusTrapOptions {
  */
 export function useFocusTrap(
     containerRef: RefObject<HTMLElement | null>,
-    { active, initialFocus = 'first' }: UseFocusTrapOptions,
+    {
+        active,
+        initialFocus = 'first',
+        restoreFocusTo,
+        listenOnDocument = false,
+    }: UseFocusTrapOptions,
 ): void {
     useEffect(() => {
         if (!active) return;
@@ -49,7 +58,8 @@ export function useFocusTrap(
             container.focus();
         }
 
-        const handleKeyDown = (event: KeyboardEvent) => {
+        const handleKeyDown = (nativeEvent: Event) => {
+            const event = nativeEvent as KeyboardEvent;
             if (event.key !== 'Tab') return;
             const focusable = getFocusable(container);
             if (focusable.length === 0) {
@@ -63,7 +73,7 @@ export function useFocusTrap(
             const activeEl = document.activeElement;
 
             if (event.shiftKey) {
-                if (activeEl === first || !container.contains(activeEl)) {
+                if (activeEl === first || activeEl === container || !container.contains(activeEl)) {
                     event.preventDefault();
                     last.focus();
                 }
@@ -73,14 +83,16 @@ export function useFocusTrap(
             }
         };
 
-        container.addEventListener('keydown', handleKeyDown);
+        const keydownTarget = listenOnDocument ? document : container;
+        keydownTarget.addEventListener('keydown', handleKeyDown);
 
         return () => {
-            container.removeEventListener('keydown', handleKeyDown);
+            keydownTarget.removeEventListener('keydown', handleKeyDown);
             // 직전 포커스 요소가 여전히 문서에 연결돼 있으면 복귀.
-            if (previouslyFocused && typeof previouslyFocused.focus === 'function' && document.contains(previouslyFocused)) {
-                previouslyFocused.focus();
+            const focusTarget = restoreFocusTo ?? previouslyFocused;
+            if (focusTarget && typeof focusTarget.focus === 'function' && document.contains(focusTarget)) {
+                focusTarget.focus();
             }
         };
-    }, [active, containerRef, initialFocus]);
+    }, [active, containerRef, initialFocus, listenOnDocument, restoreFocusTo]);
 }

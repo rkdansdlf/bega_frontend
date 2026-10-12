@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T16:06:25.309Z",
+  "baseUrl": "http://127.0.0.1:5177",
+  "coverage": {
+    "routes": [
+      "/admin"
+    ],
+    "viewports": [
+      {
+        "width": 320,
+        "height": 844
+      },
+      {
+        "width": 360,
+        "height": 844
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 430,
+        "height": 844
+      },
+      {
+        "width": 480,
+        "height": 1024
+      },
+      {
+        "width": 600,
+        "height": 1024
+      },
+      {
+        "width": 767,
+        "height": 1024
+      },
+      {
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "width": 834,
+        "height": 1024
+      },
+      {
+        "width": 1024,
+        "height": 900
+      },
+      {
+        "width": 1040,
+        "height": 900
+      },
+      {
+        "width": 1160,
+        "height": 900
+      },
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 568,
+        "height": 320
+      },
+      {
+        "width": 667,
+        "height": 375
+      },
+      {
+        "width": 844,
+        "height": 390
+      },
+      {
+        "width": 932,
+        "height": 430
+      }
+    ],
+    "states": []
+  },
+  "summary": {
+    "scenarios": 18,
+    "affectedScenarios": 0,
+    "issues": 0,
+    "severity": {},
+    "types": {},
+    "scanErrors": 7
+  },
+  "scenarios": [
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 360,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 430,
+        "height": 844
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 480,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 600,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 767,
+        "height": 1024
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 834,
+        "height": 1024
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1040,
+        "height": 900
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1160,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "status": "error",
+      "error": "redirected to /login",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "status": "pass",
+      "issues": []
+    },
+    {
+      "route": "/admin",
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "status": "pass",
+      "issues": []
+    }
+  ]
+}

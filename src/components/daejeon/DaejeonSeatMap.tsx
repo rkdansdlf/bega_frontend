@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ArrowSquareOutIcon as ExternalLink,
   BookOpenIcon as BookOpen,
   MinusIcon as Minus,
   PlusIcon as Plus,
@@ -117,6 +118,7 @@ function ZoomControls({
   onZoomOut,
   onReset,
   canReset,
+  onFullscreen,
   mode,
 }: {
   zoom: number;
@@ -124,9 +126,10 @@ function ZoomControls({
   onZoomOut: () => void;
   onReset: () => void;
   canReset: boolean;
+  onFullscreen?: () => void;
   mode: 'light' | 'dark';
 }) {
-  const buttonClass = 'flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800';
+  const buttonClass = 'flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8 sm:w-8';
   const borderColor = mode === 'dark' ? '#334155' : '#e2e8f0';
 
   return (
@@ -148,7 +151,7 @@ function ZoomControls({
         aria-label="초기화"
         onClick={onReset}
         disabled={!canReset}
-        className="h-8 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800"
+        className="h-11 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8"
         style={{ borderColor }}
       >
         {zoom.toFixed(2)}x
@@ -164,6 +167,17 @@ function ZoomControls({
       >
         <Minus className="h-4 w-4" />
       </button>
+      {onFullscreen && (
+        <button
+          type="button"
+          data-testid="daejeon-seatmap-fullscreen-open"
+          aria-label="대전 좌석도 전체화면"
+          onClick={onFullscreen}
+          className={buttonClass}
+        >
+          <ExternalLink className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
@@ -203,7 +217,7 @@ function OfficialBlockChips({
         <button
           type="button"
           onClick={() => setShowAll((value) => !value)}
-          className="cursor-pointer rounded-full border px-2.5 py-1 text-11 font-bold transition-opacity hover:opacity-80"
+          className="min-h-11 cursor-pointer rounded-full border px-2.5 py-1 text-11 font-bold transition-opacity hover:opacity-80 sm:min-h-0"
           style={{ background: `${accent}0f`, borderColor: `${accent}55`, color: accent }}
         >
           {showAll ? '접기' : `더보기 +${hiddenCount}`}
@@ -266,7 +280,7 @@ function SectionFinder({
           onChange={(event) => onSearchChange(event.target.value)}
           autoFocus={autoFocusInput}
           placeholder="구역명, 블록 검색"
-          className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-orange-400 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+          className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-orange-400 dark:border-slate-700 dark:bg-slate-950 dark:text-white sm:h-10"
         />
       </label>
       <div className="max-h-[420px] space-y-1.5 overflow-y-auto pr-1">
@@ -376,7 +390,7 @@ function DetailPanel({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
+          className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800 sm:h-8 sm:w-8"
         >
           ×
         </button>
@@ -500,9 +514,20 @@ function DaejeonExtraMeta({ section, accent }: { section: DaejeonBlock; accent: 
   );
 }
 
-export default function DaejeonSeatMap() {
+export interface DaejeonSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface DaejeonSeatMapProps {
+  stateOverride?: DaejeonSeatMapStateOverride;
+}
+
+export default function DaejeonSeatMap({ stateOverride }: DaejeonSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [finderSelectedBlockId, setFinderSelectedBlockId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -538,7 +563,12 @@ export default function DaejeonSeatMap() {
       return true;
     },
   });
-  const { isMobile, isFullscreenOpen, closeFullscreen } = useSeatMapTemplateShellState();
+  const {
+    isMobile,
+    isFullscreenOpen,
+    openFullscreen,
+    closeFullscreen,
+  } = useSeatMapTemplateShellState();
 
   useEffect(() => {
     if (!selected) {
@@ -548,6 +578,7 @@ export default function DaejeonSeatMap() {
   const canUseSeatMapImage = DAEJEON_SEATMAP_IMAGE.assetStatus !== 'OPERATOR_REFERENCE_PENDING_ASSET'
     && DAEJEON_SEATMAP_IMAGE.assetStatus !== 'EXTERNAL_REFERENCE_PENDING_ASSET';
   const hasOfficialBlocks = canUseSeatMapImage && DAEJEON_BLOCKS.length > 0;
+  const hasSelectableBlocks = hasOfficialBlocks && DAEJEON_BLOCKS.some(isDaejeonSelectableSeatBlock);
   const hoveredCategory = hoveredSection ? DAEJEON_CATEGORIES[hoveredSection.category] : null;
   const hoveredAccent = hoveredCategory ? (mode === 'dark' ? hoveredCategory.dark : hoveredCategory.light) : '#F37321';
   const usedCategories = useMemo(() => [...new Set(DAEJEON_BLOCKS.map((block) => block.category))], []);
@@ -761,6 +792,7 @@ export default function DaejeonSeatMap() {
             onZoomOut={handleZoomOut}
             onReset={handleResetView}
             canReset={canResetView}
+            onFullscreen={hasSelectableBlocks ? openFullscreen : undefined}
             mode={mode}
           />
         </div>
@@ -849,6 +881,8 @@ export default function DaejeonSeatMap() {
         toast={toast}
         isFullscreenOpen={isFullscreenOpen}
         onFullscreenClose={closeFullscreen}
+        fullscreenDialogTestId="daejeon-seatmap-fullscreen"
+        fullscreenCloseTestId="daejeon-seatmap-fullscreen-close"
         fullscreenMapContent={(
           <div className="w-full">
             <div className="relative">

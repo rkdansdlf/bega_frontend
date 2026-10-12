@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchBookmarks } from '../api/cheerApi';
+import { fetchBookmarks, type CheerPost } from '../api/cheerApi';
 import { useCheerMutations } from '../hooks/useCheerQueries';
 import CheerCard from './CheerCard';
 import SwipeToRevealRow from './common/SwipeToRevealRow';
@@ -18,10 +18,30 @@ import {
 } from '../utils/teamColors';
 import { requestChatbotOpen } from '../utils/chatbotLauncher';
 import CheerMobileBottomNav from './CheerMobileBottomNav';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 
-export default function CheerBookmarks() {
+export interface CheerBookmarksVisualQaStateOverride {
+  posts?: CheerPost[];
+  queryState?: 'loading' | 'error' | 'ready';
+  onNavigate?: (path: string) => void;
+  onRetry?: () => void;
+  onToggleBookmark?: (postId: number) => void;
+}
+
+export interface CheerBookmarksProps {
+  visualQaStateOverride?: CheerBookmarksVisualQaStateOverride;
+}
+
+export default function CheerBookmarks({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: CheerBookmarksProps) {
+  const viewerScope = useViewerQueryScope();
   const navigate = useNavigate();
   const location = useLocation();
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const { resolvedTheme } = useTheme();
   const { userHandle, userFavoriteTeamColor } = useAuthProfileSnapshot();
   const userProfilePath = userHandle ? `/profile/${userHandle.startsWith('@') ? userHandle : `@${userHandle}`}` : '/mypage';
@@ -32,15 +52,25 @@ export default function CheerBookmarks() {
     : getLightModeAccentText(teamColor);
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['cheer-bookmarks'],
+    queryKey: PRIVATE_QUERY_KEYS.cheerBookmarks(viewerScope),
     queryFn: () => fetchBookmarks(0, 20),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
+    enabled: visualQaStateOverride === undefined,
   });
   const { toggleBookmarkMutation } = useCheerMutations();
 
-  const bookmarkedPosts = data?.content ?? [];
-  const handleWriteClick = () => navigate('/cheer/write');
+  const bookmarkedPosts = visualQaStateOverride?.posts ?? data?.content ?? [];
+  const effectiveIsLoading = visualQaStateOverride?.queryState === 'loading' || isLoading;
+  const effectiveIsError = visualQaStateOverride?.queryState === 'error' || isError;
+  const navigateTo = (path: string) => {
+    if (visualQaStateOverride?.onNavigate) {
+      visualQaStateOverride.onNavigate(path);
+      return;
+    }
+    navigate(path);
+  };
+  const handleWriteClick = () => navigateTo('/cheer/write');
 
   const navItems = [
     { id: 'home', label: '홈', icon: HomeIcon, path: '/home' },
@@ -51,7 +81,10 @@ export default function CheerBookmarks() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--cheer-page-bg)] pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div
+      data-testid="cheer-bookmarks"
+      className="min-h-screen bg-[var(--cheer-page-bg)] pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0"
+    >
       <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
         <div className="grid grid-cols-1 gap-0 md:grid-cols-[1fr_264px] md:gap-x-4 lg:grid-cols-[68px_1fr_264px] xl:grid-cols-[200px_1fr_270px]">
           <aside className="hidden lg:flex w-[68px] xl:w-[200px] flex-col gap-3 sticky top-6 self-start px-2 xl:px-3">
@@ -62,7 +95,7 @@ export default function CheerBookmarks() {
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => navigate(item.path)}
+                  onClick={() => navigateTo(item.path)}
                   className={cn(
                     'flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors',
                     isActive
@@ -94,7 +127,7 @@ export default function CheerBookmarks() {
               <p className="text-body text-slate-500 dark:text-white">저장해둔 게시글을 모아볼 수 있어요.</p>
             </div>
 
-            {isLoading ? (
+            {effectiveIsLoading ? (
               <div className="divide-y divide-[var(--cheer-line-10)]">
                 {[1, 2, 3].map((item) => (
                   <div key={item} className="px-4 py-4 animate-skeleton-pulse">
@@ -123,12 +156,19 @@ export default function CheerBookmarks() {
                   </div>
                 ))}
               </div>
-            ) : isError ? (
+            ) : effectiveIsError ? (
               <div className="px-4 sm:px-6 py-8 sm:py-10 text-center">
                 <p className="text-body text-slate-500 dark:text-white">북마크를 불러오지 못했습니다.</p>
                 <button
                   type="button"
-                  onClick={() => refetch()}
+                  data-testid="cheer-bookmarks-retry"
+                  onClick={() => {
+                    if (visualQaStateOverride?.onRetry) {
+                      visualQaStateOverride.onRetry();
+                      return;
+                    }
+                    void refetch();
+                  }}
                   className="mt-3 min-h-11 rounded-full border border-[var(--cheer-line-10)] px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:text-white dark:hover:bg-secondary"
                 >
                   다시 시도
@@ -147,7 +187,8 @@ export default function CheerBookmarks() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => navigate('/cheer')}
+                  data-testid="cheer-bookmarks-empty-cta"
+                  onClick={() => navigateTo('/cheer')}
                   className="min-h-11 rounded-full bg-primary px-5 py-2 text-body font-bold text-white transition-opacity hover:opacity-90"
                 >
                   응원 게시판으로 이동
@@ -159,7 +200,13 @@ export default function CheerBookmarks() {
                   <SwipeToRevealRow
                     key={post.id}
                     deleteLabel="북마크 해제"
-                    onDelete={() => toggleBookmarkMutation.mutate(post.id)}
+                    onDelete={() => {
+                      if (visualQaStateOverride?.onToggleBookmark) {
+                        visualQaStateOverride.onToggleBookmark(post.id);
+                        return;
+                      }
+                      toggleBookmarkMutation.mutate(post.id);
+                    }}
                   >
                     <CheerCard post={post} teamColor={teamAccent} />
                   </SwipeToRevealRow>

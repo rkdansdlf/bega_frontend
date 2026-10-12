@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import * as ts from 'typescript';
 
 const componentsRoot = path.dirname(fileURLToPath(import.meta.url));
 
@@ -137,12 +138,15 @@ const inlineSvgAllowedFiles = new Set([
   'CoachBriefingContentCardRuntime.tsx',
   'StadiumGuideRuntimeSeatMaps.gwangju.ts',
   'design-slop-guard.test.ts',
+  'ImageLightbox.mobile.test.tsx',
+  'admin/ClientErrorTrendChart.mobile.test.tsx',
   'AdminIcons.tsx',
   'admin/ClientErrorTrendChart.tsx',
   'admin/AdminDetailIcons.tsx',
   'admin/AdminPanelIcons.tsx',
   'cheer/CommentItemIcons.tsx',
   'common/QrCodeSvg.tsx',
+  'visual-qa/ImageLightboxHarness.tsx',
   'icons/AuthFlowIcons.tsx',
   'icons/CalendarIcons.tsx',
   'icons/CheerCardIcons.tsx',
@@ -214,6 +218,29 @@ function readComponent(relativePath: string) {
   return fs.readFileSync(path.join(componentsRoot, relativePath), 'utf8');
 }
 
+function collectVisibleText(source: string, fileName = 'component.tsx'): string {
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  const visibleText: string[] = [];
+
+  const visit = (node: ts.Node) => {
+    if (ts.isStringLiteralLike(node)) {
+      visibleText.push(node.text);
+    } else if (ts.isJsxText(node)) {
+      visibleText.push(node.getText(sourceFile));
+    }
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return visibleText.join('\n');
+}
+
 function collectSourceFiles(directory: string): string[] {
   const entries = fs.readdirSync(directory, { withFileTypes: true });
   const files: string[] = [];
@@ -247,11 +274,24 @@ test('focused user surfaces do not reintroduce visible dash flourishes', () => {
 
   for (const relativePath of focusFiles) {
     assert.doesNotMatch(
-      readComponent(relativePath),
+      collectVisibleText(readComponent(relativePath), relativePath),
       typographicDashPattern,
       `${relativePath} should avoid typographic dash flourishes in visible copy`,
     );
   }
+});
+
+test('visible dash detection ignores comments but still detects literal and JSX copy', () => {
+  const source = [
+    '// 허용되는 설명 — 주석',
+    'const label = "표시 문구 — 금지";',
+    'const Example = () => <span>또 다른 표시 — 금지</span>;',
+  ].join('\n');
+  const visibleText = collectVisibleText(source);
+
+  assert.match(visibleText, /표시 문구 — 금지/);
+  assert.match(visibleText, /또 다른 표시 — 금지/);
+  assert.doesNotMatch(collectVisibleText('// 주석 — 허용\nconst label = "허용";'), /—/);
 });
 
 test('summary surfaces avoid equal three-card and four-card strips', () => {

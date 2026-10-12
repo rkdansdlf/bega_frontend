@@ -1,14 +1,16 @@
 import { lazy, Suspense } from 'react';
 
 import { ChatBotSessionSpinnerIcon as SpinnerIcon } from './chatbot/ChatBotSessionIcons';
+import type { ChatBotSessionVisualQaStateOverride } from './chatbot/ChatBotSessionRuntime';
 
 const ChatBotSessionRuntime = lazy(() => import('./chatbot/ChatBotSessionRuntime'));
 
-interface ChatBotAuthenticatedPanelProps {
+export interface ChatBotAuthenticatedPanelProps {
   isOpen: boolean;
   isClosing: boolean;
   isMobile: boolean;
   onRequestClose: () => void;
+  visualQaStateOverride?: ChatBotSessionVisualQaStateOverride;
 }
 
 export default function ChatBotAuthenticatedPanel({
@@ -16,6 +18,7 @@ export default function ChatBotAuthenticatedPanel({
   isClosing,
   isMobile,
   onRequestClose,
+  visualQaStateOverride,
 }: ChatBotAuthenticatedPanelProps) {
   const authenticatedPanelFallback = (
     <div className="flex h-full items-center justify-center text-body text-muted-foreground">
@@ -45,6 +48,7 @@ export default function ChatBotAuthenticatedPanel({
         <ChatBotSessionRuntime
           isOpen={isOpen}
           onRequestClose={onRequestClose}
+          visualQaStateOverride={visualQaStateOverride}
         />
       </Suspense>
     </div>

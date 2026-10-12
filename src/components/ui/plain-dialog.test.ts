@@ -21,8 +21,10 @@ test('plain dialog keeps long header copy and the close control in separate boun
   const source = await readSource();
 
   assert.match(source, /overflowWrap: 'break-word'/);
+  assert.match(source, /max-h-\[35dvh\] shrink-0 items-start gap-3 overflow-hidden/);
   assert.match(source, /min-h-0 max-h-\[calc\(35dvh-2rem\)\] min-w-0 flex-1 overflow-y-auto/);
-  assert.match(source, /absolute right-5 top-4 shrink-0 p-0/);
+  assert.doesNotMatch(source, /absolute right-5 top-4 shrink-0 p-0/);
+  assert.match(source, /style=\{\{ width: 44, height: 44, minWidth: 44, minHeight: 44 \}\}/);
   assert.match(source, /aria-label="닫기"/);
   assert.match(source, /initialFocus\?: 'container' \| 'first'/);
   assert.match(source, /useFocusTrap\(dialogRef, \{ active: open, initialFocus \}\)/);

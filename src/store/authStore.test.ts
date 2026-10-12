@@ -1,16 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createJSONStorage } from 'zustand/middleware';
+import type { GlobalApiErrorDetail } from '../types/error';
 
-import { queryClient } from '../lib/queryClient';
 import {
   getPersistedAuthBootstrapMeta,
   setPersistedAuthBootstrapMeta,
 } from '../utils/authBootstrap';
 import {
   claimAuthSessionExpiry,
+  getAuthSessionGeneration,
   markAuthSessionEstablished,
 } from '../api/authSessionGeneration';
+import {
+  AUTH_SESSION_CHANGED_STORAGE_KEY,
+  publishAuthSessionChanged,
+  subscribeToAuthSessionChanges,
+} from '../utils/authSessionEvents';
+import { refreshSessionFromSharedCookie } from '../utils/authSessionSyncRuntime';
 
 const createStorage = () => {
   const values = new Map<string, string>();
@@ -44,6 +51,7 @@ const installGlobalLocalStorage = (storage: ReturnType<typeof createStorage>) =>
 const initialStorage = createStorage();
 installGlobalLocalStorage(initialStorage);
 
+const { queryClient } = await import('../lib/queryClient');
 const { authStoreApi, useAuthStore } = await import('./authStore');
 
 const installPersistStorage = (storage: ReturnType<typeof createStorage>) => {
@@ -103,7 +111,7 @@ test('fetchProfileAndAuthenticate는 성공한 프로필을 MyPage 쿼리 캐시
   });
 });
 
-test('login과 profile bootstrap 성공은 새 auth session generation을 수립한다', async (t) => {
+test('login and initial guest profile bootstrap establish a new session generation', async (t) => {
   const storage = createStorage();
   withWindowLocalStorage(storage, '/mypage');
 
@@ -128,8 +136,32 @@ test('login과 profile bootstrap 성공은 새 auth session generation을 수립
     hasPassword: false,
   }) as never);
 
+  useAuthStore.getState().reset();
   await useAuthStore.getState().fetchProfileAndAuthenticate();
   assert.equal(claimAuthSessionExpiry(), true);
+});
+
+test('a successful login clears a stale login-required dialog from the previous session', async () => {
+  const storage = createStorage();
+  withWindowLocalStorage(storage, '/mate/create');
+  useAuthStore.getState().requireLogin('/mate/create');
+  assert.equal(useAuthStore.getState().showLoginRequiredDialog, true);
+  assert.equal(useAuthStore.getState().pendingLoginRedirect, '/mate/create');
+
+  useAuthStore.getState().login(
+    'viewer-b@example.invalid',
+    'Viewer B',
+    null,
+    'ROLE_USER',
+    undefined,
+    202,
+  );
+  await new Promise<void>((resolve) => setImmediate(resolve));
+
+  assert.equal(useAuthStore.getState().user?.id, 202);
+  assert.equal(useAuthStore.getState().showLoginRequiredDialog, false);
+  assert.equal(useAuthStore.getState().pendingLoginRedirect, null);
+  assert.ok(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY));
 });
 
 const withWindowLocalStorage = (
@@ -154,6 +186,135 @@ const withWindowLocalStorage = (
   });
 };
 
+test('다른 탭의 계정 변경은 사용자 캐시를 먼저 비우고 공유 쿠키로 재인증한다', async (t) => {
+  withWindowLocalStorage(createStorage(), '/mypage');
+  const tabBEvents = new EventTarget();
+  let syncRequest: Promise<boolean> | null = null;
+  const stopListening = subscribeToAuthSessionChanges(() => {
+    syncRequest = refreshSessionFromSharedCookie();
+  }, tabBEvents as unknown as Window);
+  t.after(stopListening);
+
+  useAuthStore.getState().login('viewer-a@example.invalid', 'Viewer A', null, 'ROLE_USER', undefined, 101);
+  queryClient.setQueryData(['userProfile', 101], { id: 101, email: 'viewer-a@example.invalid' });
+
+  let stateAtProfileRequest: { userId: number | null; isAuthLoading: boolean; staleProfile: unknown } | null = null;
+  t.mock.method(authStoreApi, 'fetchCurrentUserProfile', async () => {
+    stateAtProfileRequest = {
+      userId: useAuthStore.getState().user?.id ?? null,
+      isAuthLoading: useAuthStore.getState().isAuthLoading,
+      staleProfile: queryClient.getQueryData(['userProfile', 101]),
+    };
+    return {
+      id: 202,
+      email: 'viewer-b@example.invalid',
+      name: 'Viewer B',
+      handle: 'viewer-b',
+      favoriteTeam: null,
+      favoriteTeamColor: null,
+      role: 'ROLE_USER',
+      profileImageUrl: null,
+      provider: 'LOCAL',
+      providerId: null,
+      bio: null,
+      cheerPoints: 0,
+      hasPassword: true,
+    } as never;
+  });
+
+  const tabAStorage = {
+    setItem: (key: string, value: string) => {
+      const event = Object.assign(new Event('storage'), {
+        key,
+        oldValue: null,
+        newValue: value,
+      });
+      tabBEvents.dispatchEvent(event);
+    },
+  };
+
+  publishAuthSessionChanged(tabAStorage);
+
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(useAuthStore.getState().isAuthLoading, true);
+  assert.equal(queryClient.getQueryData(['userProfile', 101]), undefined);
+  assert.ok(syncRequest, 'the other tab should begin a cookie-backed profile check');
+
+  assert.equal(await syncRequest, true);
+  assert.deepEqual(stateAtProfileRequest, {
+    userId: null,
+    isAuthLoading: true,
+    staleProfile: undefined,
+  });
+  assert.equal(useAuthStore.getState().user?.id, 202);
+});
+
+test('다른 탭의 로그아웃은 재인증 실패 뒤에도 이전 사용자와 캐시를 복구하지 않는다', async (t) => {
+  withWindowLocalStorage(createStorage(), '/mypage');
+  const tabBEvents = new EventTarget();
+  let syncRequest: Promise<boolean> | null = null;
+  const stopListening = subscribeToAuthSessionChanges(() => {
+    syncRequest = refreshSessionFromSharedCookie();
+  }, tabBEvents as unknown as Window);
+  t.after(stopListening);
+
+  useAuthStore.getState().login('viewer-a@example.invalid', 'Viewer A', null, 'ROLE_USER', undefined, 101);
+  queryClient.setQueryData(['userProfile', 101], { id: 101, email: 'viewer-a@example.invalid' });
+  t.mock.method(authStoreApi, 'fetchCurrentUserProfile', async () => {
+    throw Object.assign(new Error('session expired'), { status: 401 });
+  });
+
+  publishAuthSessionChanged({
+    setItem: (key, value) => tabBEvents.dispatchEvent(Object.assign(new Event('storage'), {
+      key,
+      oldValue: null,
+      newValue: value,
+    })),
+  });
+
+  assert.ok(syncRequest);
+  assert.equal(await syncRequest, false);
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(useAuthStore.getState().isAuthLoading, false);
+  assert.equal(queryClient.getQueryData(['userProfile', 101]), undefined);
+});
+
+for (const transition of ['account-switch', 'local-logout', 'server-logout'] as const) {
+  test(`auth ${transition} drops ownerless drafts but preserves viewer-scoped drafts`, async (t) => {
+    const localStorage = createStorage();
+    const sessionStorage = createStorage();
+    withWindowLocalStorage(localStorage, '/mate/77/apply');
+    Object.defineProperty(window, 'sessionStorage', {
+      configurable: true,
+      writable: true,
+      value: sessionStorage,
+    });
+
+    useAuthStore.getState().login('viewer-a@example.invalid', 'Viewer A', null, 'ROLE_USER', undefined, 71);
+    sessionStorage.setItem('mateApplyDraft:77', 'ownerless-session-draft');
+    sessionStorage.setItem('mateApplyDraft:77:viewer:71', 'viewer-a-session-draft');
+    localStorage.setItem('prediction-storage', 'ownerless-local-draft');
+    localStorage.setItem('prediction-storage:viewer:71', 'viewer-a-local-draft');
+
+    if (transition === 'account-switch') {
+      useAuthStore.getState().login('viewer-b@example.invalid', 'Viewer B', null, 'ROLE_USER', undefined, 202);
+      assert.equal(useAuthStore.getState().user?.id, 202);
+    } else if (transition === 'local-logout') {
+      assert.equal(await useAuthStore.getState().logout(true), true);
+      assert.equal(useAuthStore.getState().user, null);
+    } else {
+      t.mock.method(authStoreApi, 'logoutUser', async () => {});
+      assert.equal(await useAuthStore.getState().logout(), true);
+      assert.equal(useAuthStore.getState().user, null);
+    }
+
+    assert.equal(sessionStorage.getItem('mateApplyDraft:77'), null);
+    assert.equal(localStorage.getItem('prediction-storage'), null);
+    assert.equal(sessionStorage.getItem('mateApplyDraft:77:viewer:71'), 'viewer-a-session-draft');
+    assert.equal(localStorage.getItem('prediction-storage:viewer:71'), 'viewer-a-local-draft');
+  });
+}
+
 const AUTH_BOOTSTRAP_HINT_KEY = 'auth-bootstrap-hint';
 
 const setAuthBootstrapHint = (storage: ReturnType<typeof createStorage>, enabled: boolean) => {
@@ -168,6 +329,524 @@ const setAuthBootstrapHint = (storage: ReturnType<typeof createStorage>, enabled
 const hasAuthBootstrapHint = (storage: ReturnType<typeof createStorage>) => storage.getItem(AUTH_BOOTSTRAP_HINT_KEY) === '1';
 
 const getAuthBootstrapMeta = () => getPersistedAuthBootstrapMeta();
+
+const flushLogoutRequest = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushAuthSessionSignal = () => new Promise<void>((resolve) => setImmediate(resolve));
+
+const installLogoutSession = () => {
+  const storage = createStorage();
+  withWindowLocalStorage(storage, '/mypage');
+  const errors: GlobalApiErrorDetail[] = [];
+  window.dispatchEvent = (event: Event) => {
+    assert.equal(event.type, 'global-api-error');
+    errors.push((event as CustomEvent<GlobalApiErrorDetail>).detail);
+    return true;
+  };
+  useAuthStore.getState().login('logout@example.com', 'Logout User', null, 'ROLE_USER', undefined, 71);
+  const user = useAuthStore.getState().user;
+  queryClient.setQueryData(['userProfile', 71], user);
+  return { storage, errors, user };
+};
+
+const logoutUnavailable = {
+  status: 503,
+  data: { code: 'LOGOUT_REVOCATION_UNAVAILABLE' },
+};
+
+for (const mode of ['success', 'retry', 'local-only', 'guest'] as const) {
+  test(`logout completion ends protected-route loading after ${mode}`, async (t) => {
+    const { storage, errors } = installLogoutSession();
+    window.location.pathname = '/messages';
+    let calls = 0;
+    t.mock.method(authStoreApi, 'logoutUser', async () => {
+      if (++calls === 1 && mode === 'retry') throw logoutUnavailable;
+    });
+
+    if (mode === 'guest') {
+      useAuthStore.getState().reset();
+      assert.equal(useAuthStore.getState().isAuthLoading, true);
+    }
+    if (mode === 'retry') {
+      assert.equal(await useAuthStore.getState().logout(), false);
+      assert.equal(useAuthStore.getState().isAuthLoading, false);
+      assert.equal(hasAuthBootstrapHint(storage), true);
+      await errors[0].onRetry?.();
+    } else {
+      assert.equal(await useAuthStore.getState().logout(mode === 'local-only'), true);
+    }
+
+    assert.equal(useAuthStore.getState().user, null);
+    assert.equal(useAuthStore.getState().isAuthLoading, false);
+    assert.equal(useAuthStore.getState().publicAuthBootstrapPhase, 'idle');
+    assert.equal(hasAuthBootstrapHint(storage), false);
+    assert.equal(getAuthBootstrapMeta(), null);
+    assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+    assert.equal(calls, mode === 'retry' ? 2 : mode === 'success' ? 1 : 0);
+  });
+}
+
+test('protected-route reset still initializes bootstrap loading', async () => {
+  installLogoutSession();
+  window.location.pathname = '/messages';
+  await useAuthStore.getState().logout(true);
+  useAuthStore.getState().reset();
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(useAuthStore.getState().isAuthLoading, true);
+});
+
+test('logout keeps the session pending, deduplicates requests and clears it on success', async (t) => {
+  const { storage, errors, user } = installLogoutSession();
+  await flushAuthSessionSignal();
+  const signalBeforeLogout = storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY);
+  let resolve!: () => void;
+  const request = new Promise<void>((done) => { resolve = done; });
+  const logout = t.mock.method(authStoreApi, 'logoutUser', () => request);
+  t.after(async () => { resolve(); await flushLogoutRequest(); });
+
+  const result = useAuthStore.getState().logout();
+  assert.ok(result instanceof Promise);
+  assert.equal(useAuthStore.getState().logout(), result);
+  let settled = false;
+  void result.then(() => { settled = true; });
+  await flushLogoutRequest();
+  await flushAuthSessionSignal();
+  assert.equal(settled, false);
+  assert.equal(logout.mock.callCount(), 1);
+  assert.equal(useAuthStore.getState().user, user);
+  assert.equal(hasAuthBootstrapHint(storage), true);
+  assert.deepEqual(queryClient.getQueryData(['userProfile', 71]), user);
+  assert.equal(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY), signalBeforeLogout);
+
+  resolve();
+  assert.equal(await result, true);
+  await flushLogoutRequest();
+  await flushAuthSessionSignal();
+
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(hasAuthBootstrapHint(storage), false);
+  assert.notEqual(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY), signalBeforeLogout);
+  assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+  assert.equal(errors.length, 0);
+});
+
+for (const [shape, failure] of [
+  ['private client', logoutUnavailable],
+  ['response wrapper', { response: logoutUnavailable }],
+] as const) {
+  test(`logout preserves authentication and offers a working retry on 503 (${shape})`, async (t) => {
+    const { storage, errors, user } = installLogoutSession();
+    await flushAuthSessionSignal();
+    const signalBeforeLogout = storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY);
+    const meta = getAuthBootstrapMeta();
+    let calls = 0;
+    t.mock.method(authStoreApi, 'logoutUser', async () => {
+      if (++calls === 1) throw failure;
+    });
+
+    const result = useAuthStore.getState().logout();
+    assert.equal(useAuthStore.getState().logout(), result);
+    assert.equal(await result, false);
+    await flushLogoutRequest();
+    await flushAuthSessionSignal();
+
+    assert.equal(calls, 1);
+    assert.equal(useAuthStore.getState().user, user);
+    assert.equal(useAuthStore.getState().isAuthLoading, false);
+    assert.equal(hasAuthBootstrapHint(storage), true);
+    assert.deepEqual(getAuthBootstrapMeta(), meta);
+    assert.deepEqual(queryClient.getQueryData(['userProfile', 71]), user);
+    assert.equal(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY), signalBeforeLogout);
+    assert.equal(errors.length, 1);
+    assert.equal(errors[0].statusCode, 503);
+    assert.equal(errors[0].responseCode, 'LOGOUT_REVOCATION_UNAVAILABLE');
+    assert.equal(errors[0].endpoint, '/auth/logout');
+    assert.match(errors[0].message, /로그아웃.*못.*다시/);
+    assert.equal(typeof errors[0].onRetry, 'function');
+
+    await errors[0].onRetry?.();
+    await flushLogoutRequest();
+    await flushAuthSessionSignal();
+
+    assert.equal(calls, 2);
+    assert.equal(useAuthStore.getState().user, null);
+    assert.equal(hasAuthBootstrapHint(storage), false);
+    assert.notEqual(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY), signalBeforeLogout);
+    assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+    assert.equal(errors.length, 1);
+  });
+}
+
+for (const [name, failure] of [
+  ['expired session', { status: 401, data: { code: 'TOKEN_EXPIRED' } }],
+  ['unrelated server error', { status: 503, data: { code: 'OTHER_ERROR' } }],
+] as const) {
+  test(`logout retains legacy local cleanup for ${name}`, async (t) => {
+    const { storage, errors } = installLogoutSession();
+    t.mock.method(authStoreApi, 'logoutUser', async () => { throw failure; });
+
+    assert.equal(await useAuthStore.getState().logout(), true);
+    await flushLogoutRequest();
+
+    assert.equal(useAuthStore.getState().user, null);
+    assert.equal(hasAuthBootstrapHint(storage), false);
+    assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+    assert.equal(errors.length, 0);
+  });
+}
+
+test('logout(true) and guest logout clear local state without a server request', async (t) => {
+  const { storage, errors } = installLogoutSession();
+  await flushAuthSessionSignal();
+  const signalBeforeLogout = storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY);
+  const logout = t.mock.method(authStoreApi, 'logoutUser', async () => {});
+
+  const result = useAuthStore.getState().logout(true);
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(hasAuthBootstrapHint(storage), false);
+  assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+  assert.equal(await result, true);
+  await flushAuthSessionSignal();
+  assert.notEqual(storage.getItem(AUTH_SESSION_CHANGED_STORAGE_KEY), signalBeforeLogout);
+  assert.equal(await useAuthStore.getState().logout(), true);
+  assert.equal(logout.mock.callCount(), 0);
+  assert.equal(errors.length, 0);
+});
+
+for (const outcome of ['success', 'unavailable'] as const) {
+  for (const transition of ['expired', 'new login', 'reset'] as const) {
+    test(`late logout ${outcome} cannot overwrite ${transition}`, async (t) => {
+      const { errors } = installLogoutSession();
+      let resolve!: () => void;
+      let reject!: (error: unknown) => void;
+      const request = new Promise<void>((done, fail) => { resolve = done; reject = fail; });
+      t.mock.method(authStoreApi, 'logoutUser', () => request);
+      t.after(async () => { resolve(); await flushLogoutRequest(); });
+
+      const result = useAuthStore.getState().logout();
+      await flushLogoutRequest();
+      if (transition === 'expired') useAuthStore.getState().logout(true);
+      if (transition === 'reset') useAuthStore.getState().reset();
+      if (transition === 'new login') {
+        useAuthStore.getState().login('new@example.com', 'New User', null, 'ROLE_USER', undefined, 72);
+      }
+      const currentUser = useAuthStore.getState().user;
+      if (outcome === 'success') resolve();
+      else reject(logoutUnavailable);
+      assert.equal(await result, false);
+      await flushLogoutRequest();
+
+      assert.equal(useAuthStore.getState().user, currentUser);
+      assert.equal(errors.length, 0);
+    });
+  }
+}
+
+test('a stale logout retry cannot log out a newly established session', async (t) => {
+  const { errors } = installLogoutSession();
+  const logout = t.mock.method(authStoreApi, 'logoutUser', async () => { throw logoutUnavailable; });
+  useAuthStore.getState().logout();
+  await flushLogoutRequest();
+  assert.equal(errors.length, 1);
+
+  useAuthStore.getState().login('new@example.com', 'New User', null, 'ROLE_USER', undefined, 72);
+  errors[0].onRetry?.();
+  await flushLogoutRequest();
+
+  assert.equal(logout.mock.callCount(), 1);
+  assert.equal(useAuthStore.getState().user?.id, 72);
+});
+
+test('logout returns a fresh successful result when retrying a failed revocation', async (t) => {
+  installLogoutSession();
+  let calls = 0;
+  t.mock.method(authStoreApi, 'logoutUser', async () => {
+    if (++calls === 1) throw logoutUnavailable;
+  });
+
+  const first = useAuthStore.getState().logout();
+  assert.equal(await first, false);
+  const retry = useAuthStore.getState().logout();
+  assert.notEqual(retry, first);
+  assert.equal(useAuthStore.getState().logout(), retry);
+  assert.equal(await retry, true);
+  assert.equal(calls, 2);
+});
+
+test('local-only logout clears synchronously and invalidates the pending result', async (t) => {
+  installLogoutSession();
+  let resolve!: () => void;
+  const request = new Promise<void>((done) => { resolve = done; });
+  t.mock.method(authStoreApi, 'logoutUser', () => request);
+  t.after(async () => { resolve(); await flushLogoutRequest(); });
+
+  const pending = useAuthStore.getState().logout();
+  const local = useAuthStore.getState().logout(true);
+  assert.equal(useAuthStore.getState().user, null);
+  assert.equal(await local, true);
+  const guest = useAuthStore.getState().logout();
+  resolve();
+  assert.equal(await guest, true);
+  assert.equal(await pending, false);
+});
+
+test('logout converts synchronous API failures into a resolved false result', async (t) => {
+  const { user, errors } = installLogoutSession();
+  t.mock.method(authStoreApi, 'logoutUser', () => { throw logoutUnavailable; });
+
+  assert.equal(await useAuthStore.getState().logout(), false);
+  assert.equal(useAuthStore.getState().user, user);
+  assert.equal(errors.length, 1);
+});
+
+const deferredLogout = () => {
+  let resolve!: () => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<void>((done, fail) => { resolve = done; reject = fail; });
+  return { promise, resolve, reject };
+};
+
+const deferredProfile = () => {
+  type Profile = Awaited<ReturnType<typeof authStoreApi.fetchCurrentUserProfile>>;
+  let resolve!: (profile: Profile) => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<Profile>((done, fail) => { resolve = done; reject = fail; });
+  return {
+    promise,
+    resolve: (profile: Pick<Profile, 'id' | 'email'> & Partial<Profile>) => resolve({
+      ...profile,
+      profileImageUrl: profile.profileImageUrl ?? null,
+      cheerPoints: profile.cheerPoints ?? 0,
+    }),
+    reject,
+  };
+};
+
+test('profile race: same-user revalidation preserves generation and an existing logout retry', async (t) => {
+  const { user, errors } = installLogoutSession();
+  const generation = getAuthSessionGeneration();
+  let calls = 0;
+  t.mock.method(authStoreApi, 'logoutUser', async () => {
+    if (++calls === 1) throw logoutUnavailable;
+  });
+  t.mock.method(authStoreApi, 'fetchCurrentUserProfile', async () => ({ ...user!, name: 'Revalidated' }));
+  assert.equal(await useAuthStore.getState().logout(), false);
+  assert.equal(await useAuthStore.getState().fetchProfileAndAuthenticate(), true);
+  assert.equal(getAuthSessionGeneration(), generation);
+  await errors[0].onRetry?.();
+  assert.equal(calls, 2);
+  assert.equal(useAuthStore.getState().user, null);
+});
+
+for (const order of ['profile-first', 'logout-first'] as const) {
+  for (const outcome of ['success', '503'] as const) {
+    test(`profile race: ${order} ${outcome} cannot undo logout intent`, async (t) => {
+      const { user, errors, storage } = installLogoutSession();
+      const profile = deferredProfile();
+      const logout = deferredLogout();
+      let isCurrentRequest: (() => boolean) | undefined;
+      t.mock.method(authStoreApi, 'fetchCurrentUserProfile', (options: Parameters<typeof authStoreApi.fetchCurrentUserProfile>[0]) => {
+        isCurrentRequest = options?.isCurrentRequest;
+        return profile.promise;
+      });
+      let calls = 0;
+      t.mock.method(authStoreApi, 'logoutUser', () => ++calls === 1 ? logout.promise : Promise.resolve());
+      t.after(async () => { profile.resolve(user!); logout.resolve(); await flushLogoutRequest(); });
+      const profileResult = useAuthStore.getState().fetchProfileAndAuthenticate();
+      assert.equal(typeof isCurrentRequest, 'function');
+      assert.equal(isCurrentRequest?.(), true);
+      const logoutResult = useAuthStore.getState().logout();
+      assert.equal(isCurrentRequest?.(), false);
+      if (order === 'profile-first') {
+        profile.resolve(user!);
+        assert.equal(await profileResult, false);
+      }
+      if (outcome === 'success') logout.resolve();
+      else logout.reject(logoutUnavailable);
+      assert.equal(await logoutResult, outcome === 'success');
+      if (order === 'logout-first') {
+        profile.resolve(user!);
+        assert.equal(await profileResult, false);
+      }
+      if (outcome === '503') {
+        assert.equal(useAuthStore.getState().user, user);
+        assert.equal(hasAuthBootstrapHint(storage), true);
+        assert.equal(errors.length, 1);
+        await errors[0].onRetry?.();
+        assert.equal(calls, 2);
+      }
+      assert.equal(useAuthStore.getState().user, null);
+      assert.equal(useAuthStore.getState().isAuthLoading, false);
+      assert.equal(getAuthBootstrapMeta(), null);
+      assert.equal(queryClient.getQueryData(['userProfile', 71]), undefined);
+    });
+  }
+}
+
+for (const transition of ['same-user-login', 'other-user-login', 'local-logout', 'reset'] as const) {
+  for (const outcome of ['success', 'failure'] as const) {
+    test(`profile race: late ${outcome} cannot overwrite ${transition}`, async (t) => {
+      const { user, storage } = installLogoutSession();
+      const pending = deferredProfile();
+      t.mock.method(authStoreApi, 'fetchCurrentUserProfile', () => pending.promise);
+      t.after(async () => { pending.resolve(user!); await flushLogoutRequest(); });
+      const result = useAuthStore.getState().fetchProfileAndAuthenticate();
+      if (transition === 'local-logout') await useAuthStore.getState().logout(true);
+      else if (transition === 'reset') useAuthStore.getState().reset();
+      else useAuthStore.getState().login('next@example.invalid', 'Next', null, 'ROLE_USER', undefined,
+        transition === 'same-user-login' ? 71 : 72);
+      const state = useAuthStore.getState();
+      const meta = getAuthBootstrapMeta();
+      const hint = hasAuthBootstrapHint(storage);
+      const cache = queryClient.getQueryData(['userProfile', 71]);
+      if (outcome === 'success') pending.resolve({ ...user!, name: 'Obsolete' });
+      else pending.reject({ status: 401 });
+      assert.equal(await result, false);
+      assert.equal(useAuthStore.getState(), state);
+      assert.deepEqual(getAuthBootstrapMeta(), meta);
+      assert.equal(hasAuthBootstrapHint(storage), hint);
+      assert.equal(queryClient.getQueryData(['userProfile', 71]), cache);
+    });
+  }
+}
+
+test('profile race: obsolete optional finally cannot clear a newer request or its phase', async (t) => {
+  const { user } = installLogoutSession();
+  window.location.pathname = '/home';
+  const first = deferredProfile();
+  const second = deferredProfile();
+  let calls = 0;
+  t.mock.method(authStoreApi, 'fetchCurrentUserProfile', () => ++calls === 1 ? first.promise : second.promise);
+  t.after(async () => { first.resolve(user!); second.resolve(user!); await flushLogoutRequest(); });
+  const a = useAuthStore.getState().fetchProfileAndAuthenticate({ mode: 'public-optional' });
+  useAuthStore.getState().login('next@example.invalid', 'Next', null, 'ROLE_USER', undefined, 72);
+  const b = useAuthStore.getState().fetchProfileAndAuthenticate({ mode: 'public-optional' });
+  assert.equal(calls, 2);
+  first.resolve(user!);
+  assert.equal(await a, false);
+  assert.equal(useAuthStore.getState().publicAuthBootstrapPhase, 'running');
+  const duplicate = useAuthStore.getState().fetchProfileAndAuthenticate({ mode: 'public-optional' });
+  assert.equal(calls, 2);
+  second.resolve({ ...user!, id: 72 });
+  assert.equal(await b, true);
+  assert.equal(await duplicate, true);
+  assert.equal(useAuthStore.getState().publicAuthBootstrapPhase, 'idle');
+});
+
+test('profile race: same-session fetch is blocked while logout is pending and resumes after 503', async (t) => {
+  const { user } = installLogoutSession();
+  const logout = deferredLogout();
+  t.mock.method(authStoreApi, 'logoutUser', () => logout.promise);
+  const profile = t.mock.method(authStoreApi, 'fetchCurrentUserProfile', async () => user!);
+  t.after(async () => { logout.resolve(); await flushLogoutRequest(); });
+  const result = useAuthStore.getState().logout();
+  assert.equal(await useAuthStore.getState().fetchProfileAndAuthenticate(), false);
+  assert.equal(profile.mock.callCount(), 0);
+  logout.reject(logoutUnavailable);
+  assert.equal(await result, false);
+  assert.equal(await useAuthStore.getState().fetchProfileAndAuthenticate(), true);
+  assert.equal(profile.mock.callCount(), 1);
+});
+
+for (const firstOutcome of ['success', 'unavailable'] as const) {
+  test(`a new session logout waits for the previous ${firstOutcome} then sends its own request`, async (t) => {
+    const { errors } = installLogoutSession();
+    const first = deferredLogout();
+    const second = deferredLogout();
+    const requestedUsers: Array<number | undefined> = [];
+    t.mock.method(authStoreApi, 'logoutUser', () => {
+      requestedUsers.push(useAuthStore.getState().user?.id);
+      return requestedUsers.length === 1 ? first.promise : second.promise;
+    });
+    t.after(async () => { first.resolve(); second.resolve(); await flushLogoutRequest(); });
+
+    const a = useAuthStore.getState().logout();
+    await flushLogoutRequest();
+    useAuthStore.getState().login('b@example.com', 'B', null, 'ROLE_USER', undefined, 72);
+    const b = useAuthStore.getState().logout();
+    assert.notEqual(b, a);
+    assert.equal(useAuthStore.getState().logout(), b);
+    await flushLogoutRequest();
+    assert.deepEqual(requestedUsers, [71]);
+
+    if (firstOutcome === 'success') first.resolve();
+    else first.reject(logoutUnavailable);
+    assert.equal(await a, false);
+    await flushLogoutRequest();
+    assert.deepEqual(requestedUsers, [71, 72]);
+    assert.equal(useAuthStore.getState().user?.id, 72);
+    assert.equal(useAuthStore.getState().logout(), b);
+
+    second.resolve();
+    assert.equal(await b, true);
+    assert.equal(useAuthStore.getState().user, null);
+    assert.equal(errors.length, 0);
+  });
+}
+
+for (const transition of ['new user', 'same user new session', 'expired', 'reset'] as const) {
+  test(`a queued logout sends no request after ${transition}`, async (t) => {
+    const { errors } = installLogoutSession();
+    const first = deferredLogout();
+    const logout = t.mock.method(authStoreApi, 'logoutUser', () => first.promise);
+    t.after(async () => { first.resolve(); await flushLogoutRequest(); });
+
+    const a = useAuthStore.getState().logout();
+    await flushLogoutRequest();
+    useAuthStore.getState().login('b@example.com', 'B', null, 'ROLE_USER', undefined, 72);
+    const b = useAuthStore.getState().logout();
+    assert.notEqual(b, a);
+    if (transition === 'new user' || transition === 'same user new session') {
+      useAuthStore.getState().login('next@example.com', 'Next', null, 'ROLE_USER', undefined,
+        transition === 'new user' ? 73 : 72);
+    } else if (transition === 'expired') {
+      const local = useAuthStore.getState().logout(true);
+      assert.equal(useAuthStore.getState().user, null);
+      assert.equal(await local, true);
+    } else {
+      useAuthStore.getState().reset();
+    }
+    const currentUser = useAuthStore.getState().user;
+    first.resolve();
+
+    assert.equal(await a, false);
+    assert.equal(await b, false);
+    assert.equal(logout.mock.callCount(), 1);
+    assert.equal(useAuthStore.getState().user, currentUser);
+    assert.equal(errors.length, 0);
+  });
+}
+
+test('a third session logout skips an obsolete queued session and stays serialized', async (t) => {
+  installLogoutSession();
+  const first = deferredLogout();
+  const third = deferredLogout();
+  const requestedUsers: Array<number | undefined> = [];
+  t.mock.method(authStoreApi, 'logoutUser', () => {
+    requestedUsers.push(useAuthStore.getState().user?.id);
+    return requestedUsers.length === 1 ? first.promise : third.promise;
+  });
+  t.after(async () => { first.resolve(); third.resolve(); await flushLogoutRequest(); });
+
+  const a = useAuthStore.getState().logout();
+  await flushLogoutRequest();
+  useAuthStore.getState().login('b@example.com', 'B', null, 'ROLE_USER', undefined, 72);
+  const b = useAuthStore.getState().logout();
+  useAuthStore.getState().login('c@example.com', 'C', null, 'ROLE_USER', undefined, 73);
+  const c = useAuthStore.getState().logout();
+  assert.notEqual(c, b);
+  assert.equal(useAuthStore.getState().logout(), c);
+  await flushLogoutRequest();
+  assert.deepEqual(requestedUsers, [71]);
+
+  first.resolve();
+  assert.equal(await a, false);
+  assert.equal(await b, false);
+  await flushLogoutRequest();
+  assert.deepEqual(requestedUsers, [71, 73]);
+  assert.equal(useAuthStore.getState().logout(), c);
+  third.resolve();
+  assert.equal(await c, true);
+});
 
 test('익명 prediction 초기화는 auth loading을 즉시 해제한다', () => {
   const storage = createStorage();
@@ -316,7 +995,8 @@ test('public-optional bootstrap 401 실패는 사용자 state를 비우지 않�
   assert.equal(state.user?.email, 'viewer@example.com');
   assert.equal(state.isAuthLoading, false);
   assert.equal(state.publicAuthBootstrapPhase, 'idle');
-  assert.deepEqual(fetchOptions, [{ retryOn401: false }]);
+  assert.equal(fetchOptions.length, 1);
+  assert.equal(fetchOptions[0]?.retryOn401, false);
   assert.equal(hasAuthBootstrapHint(storage), false);
   assert.deepEqual(getAuthBootstrapMeta(), {
     version: 1,
@@ -354,7 +1034,8 @@ test('cheer public-optional bootstrap 401 실패는 공개 페이지 사용자 s
   assert.equal(state.user?.email, 'cheer-viewer@example.com');
   assert.equal(state.isAuthLoading, false);
   assert.equal(state.publicAuthBootstrapPhase, 'idle');
-  assert.deepEqual(fetchOptions, [{ retryOn401: false }]);
+  assert.equal(fetchOptions.length, 1);
+  assert.equal(fetchOptions[0]?.retryOn401, false);
   assert.equal(hasAuthBootstrapHint(storage), false);
   assert.deepEqual(getAuthBootstrapMeta(), {
     version: 1,

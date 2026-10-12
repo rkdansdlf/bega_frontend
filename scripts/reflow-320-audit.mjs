@@ -40,7 +40,14 @@ const MIN_TRUSTWORTHY_VIEWPORT = 100;
  * silently measures /home instead — which is exactly what happened before this
  * split existed.
  */
-export const LOGGED_OUT_ROUTES = ['/login', '/signup', '/password/reset', '/oauth/email/confirm'];
+export const LOGGED_OUT_ROUTES = [
+  '/login',
+  '/signup',
+  '/password/reset',
+  '/password/reset/confirm',
+  '/account/deletion/recovery',
+  '/oauth/email/confirm',
+];
 
 /** Routes reachable without a session. */
 export const PUBLIC_ROUTES = [

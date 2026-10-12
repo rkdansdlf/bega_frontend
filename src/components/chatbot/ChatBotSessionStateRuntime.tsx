@@ -10,7 +10,10 @@ import {
   ChatBotSessionSpinnerIcon as ChatBotSpinnerIcon,
   ChatBotSessionStarIcon as ChatBotStarIcon,
 } from './ChatBotSessionIcons';
-import type { ChatBotSessionRuntimeProps } from './ChatBotSessionRuntime';
+import type {
+  ChatBotSessionRuntimeProps,
+  ChatBotSessionVisualQaStateOverride,
+} from './ChatBotSessionRuntime';
 
 const ChatBotConversationRuntime = lazy(() => import('./ChatBotConversationRuntime'));
 const ChatBotHistoryTab = lazy(() => import('./ChatBotHistoryTab'));
@@ -27,39 +30,50 @@ type ChatbotTab = (typeof CHATBOT_TABS)[number]['value'];
 export default function ChatBotSessionStateRuntime({
   isOpen,
   onRequestClose,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: ChatBotSessionRuntimeProps) {
-  const {
-    currentSessionId,
-    currentSessionTitle,
-    messages,
-    inputMessage,
-    setInputMessage,
-    isTyping,
-    isProcessing,
-    rateLimitActive,
-    rateLimitCountdown,
-    rateLimitStage,
-    queueStatus,
-    pendingMessage,
-    isLoadingMessages,
-    sessionListVersion,
-    favoritesVersion,
-    messagesEndRef,
-    messagesContainerRef,
-    handleSendMessage,
-    handleRetrySend,
-    handleRestorePendingMessage,
-    handleCancelStream,
-    handleCreateNewSession,
-    handleSelectSession,
-    handleDeleteSession,
-    handleToggleFavorite,
-    handleUseFavoritePrompt,
-  } = useChatBot(true);
+  const visualQaStateOverride: ChatBotSessionVisualQaStateOverride | undefined = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const liveSessionState = useChatBot(true);
+  const [visualQaInputMessage, setVisualQaInputMessage] = useState(
+    visualQaStateOverride?.inputMessage ?? '',
+  );
+  const currentSessionId = visualQaStateOverride?.currentSessionId !== undefined
+    ? visualQaStateOverride.currentSessionId
+    : liveSessionState.currentSessionId;
+  const currentSessionTitle = visualQaStateOverride?.currentSessionTitle ?? liveSessionState.currentSessionTitle;
+  const messages = visualQaStateOverride?.messages ?? liveSessionState.messages;
+  const inputMessage = visualQaStateOverride ? visualQaInputMessage : liveSessionState.inputMessage;
+  const setInputMessage = visualQaStateOverride ? setVisualQaInputMessage : liveSessionState.setInputMessage;
+  const isTyping = visualQaStateOverride?.isTyping ?? liveSessionState.isTyping;
+  const isProcessing = visualQaStateOverride?.isProcessing ?? liveSessionState.isProcessing;
+  const rateLimitActive = visualQaStateOverride?.rateLimitActive ?? liveSessionState.rateLimitActive;
+  const rateLimitCountdown = visualQaStateOverride?.rateLimitCountdown ?? liveSessionState.rateLimitCountdown;
+  const rateLimitStage = visualQaStateOverride?.rateLimitStage ?? liveSessionState.rateLimitStage;
+  const queueStatus = visualQaStateOverride?.queueStatus ?? liveSessionState.queueStatus;
+  const pendingMessage = visualQaStateOverride?.pendingMessage ?? liveSessionState.pendingMessage;
+  const isLoadingMessages = visualQaStateOverride?.isLoadingMessages ?? liveSessionState.isLoadingMessages;
+  const sessionListVersion = visualQaStateOverride?.sessionListVersion ?? liveSessionState.sessionListVersion;
+  const favoritesVersion = visualQaStateOverride?.favoritesVersion ?? liveSessionState.favoritesVersion;
+  const { messagesEndRef, messagesContainerRef } = liveSessionState;
+  const handleSendMessage = visualQaStateOverride?.handleSendMessage ?? liveSessionState.handleSendMessage;
+  const handleRetrySend = visualQaStateOverride?.handleRetrySend ?? liveSessionState.handleRetrySend;
+  const handleRestorePendingMessage = visualQaStateOverride?.handleRestorePendingMessage ?? liveSessionState.handleRestorePendingMessage;
+  const handleCancelStream = visualQaStateOverride?.handleCancelStream ?? liveSessionState.handleCancelStream;
+  const handleCreateNewSession = visualQaStateOverride?.handleCreateNewSession ?? liveSessionState.handleCreateNewSession;
+  const handleSelectSession = visualQaStateOverride?.handleSelectSession ?? liveSessionState.handleSelectSession;
+  const handleDeleteSession = visualQaStateOverride?.handleDeleteSession ?? liveSessionState.handleDeleteSession;
+  const handleToggleFavorite = visualQaStateOverride?.handleToggleFavorite ?? liveSessionState.handleToggleFavorite;
+  const handleUseFavoritePrompt = visualQaStateOverride?.handleUseFavoritePrompt ?? liveSessionState.handleUseFavoritePrompt;
 
-  const [activeTab, setActiveTab] = useState<ChatbotTab>('conversation');
-  const [hasOpenedHistoryTab, setHasOpenedHistoryTab] = useState(false);
-  const [hasOpenedFavoritesTab, setHasOpenedFavoritesTab] = useState(false);
+  const [activeTab, setActiveTab] = useState<ChatbotTab>(visualQaStateOverride?.activeTab ?? 'conversation');
+  const [hasOpenedHistoryTab, setHasOpenedHistoryTab] = useState(
+    visualQaStateOverride?.hasOpenedHistoryTab ?? visualQaStateOverride?.activeTab === 'history',
+  );
+  const [hasOpenedFavoritesTab, setHasOpenedFavoritesTab] = useState(
+    visualQaStateOverride?.hasOpenedFavoritesTab ?? visualQaStateOverride?.activeTab === 'favorites',
+  );
 
   useEffect(() => {
     if (activeTab === 'history') {
@@ -122,7 +136,10 @@ export default function ChatBotSessionStateRuntime({
 
   return (
     <>
-      <div className="p-3 md:p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-primary">
+      <div
+        className="p-3 md:p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-primary"
+        data-testid="chatbot-session-state"
+      >
         <div className="flex items-center gap-3">
           <span className="h-14 w-14 rounded-full bg-primary grid place-items-center p-0.5">
             <img
@@ -152,6 +169,7 @@ export default function ChatBotSessionStateRuntime({
         <button
           type="button"
           onClick={handleClose}
+          data-testid="chatbot-session-close"
           className="text-white/80 hover:text-white bg-transparent border-none cursor-pointer p-2 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus-visible:outline-none focus:ring-0"
           aria-label="챗봇 닫기"
         >
@@ -234,6 +252,7 @@ export default function ChatBotSessionStateRuntime({
                 }}
                 onOpenSession={handleOpenSession}
                 onDeleteSession={handleDeleteSession}
+                visualQaStateOverride={visualQaStateOverride?.historyStateOverride}
               />
             </Suspense>
           </div>
@@ -247,6 +266,7 @@ export default function ChatBotSessionStateRuntime({
                 onCopyMessage={handleCopyMessage}
                 onReaskFavorite={handleFavoritePromptClick}
                 onOpenFavoriteSession={handleFavoriteSessionClick}
+                visualQaStateOverride={visualQaStateOverride?.favoritesStateOverride}
               />
             </Suspense>
           </div>

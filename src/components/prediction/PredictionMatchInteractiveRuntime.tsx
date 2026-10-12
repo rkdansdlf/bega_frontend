@@ -1,11 +1,28 @@
 import { lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 
 import { Card } from '../ui/card';
 import { PredictionLoaderIcon } from './PredictionShellIcons';
 
 const PredictionMatchInteractiveDataRuntime = lazy(() => import('./PredictionMatchInteractiveDataRuntime'));
 
-export default function PredictionMatchInteractiveRuntime() {
+export interface PredictionMatchInteractiveRuntimeProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function PredictionMatchInteractiveRuntime({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionMatchInteractiveRuntimeProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-interactive-runtime-fallback">경기 화면을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
   return (
     <Suspense
       fallback={(

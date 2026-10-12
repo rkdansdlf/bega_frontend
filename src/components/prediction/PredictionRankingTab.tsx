@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 import { useTodayKey } from '../../hooks/useTodayKey';
 import { Card } from '../ui/card';
 import { PredictionLoaderIcon } from './PredictionShellIcons';
@@ -12,9 +13,24 @@ const PredictionStatsPanel = lazy(() => import('./PredictionStatsPanel'));
 
 interface PredictionRankingTabProps {
   isLoggedIn: boolean;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
-export default function PredictionRankingTab({ isLoggedIn }: PredictionRankingTabProps) {
+export default function PredictionRankingTab({
+  isLoggedIn,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionRankingTabProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-ranking-tab-fallback">순위 예측 화면을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const seasonYear = useTodayKey().slice(0, 4);
 
   return (

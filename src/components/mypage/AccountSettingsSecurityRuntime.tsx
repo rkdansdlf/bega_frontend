@@ -12,9 +12,11 @@ import {
   getSecurityEvents,
   getTrustedDevices,
 } from '../../api/profile';
-import { type DeviceSessionItem, type SecurityEventItem } from '../../types/profile';
+import type { DeviceSessionItem, SecurityEventItem, TrustedDeviceItem } from '../../types/profile';
 import { getApiErrorMessage } from '../../utils/errorUtils';
 import { useAuthAccessActions } from '../../store/authStore';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import VerificationRequiredDialog from '../VerificationRequiredDialog';
 import { Button } from '../ui/button';
 import MyPageSeasonEmptyState from './MyPageSeasonEmptyState';
@@ -25,8 +27,25 @@ import {
   MyPageSmartphoneIcon,
 } from './MyPageFlowIcons';
 
-interface AccountSettingsSecurityRuntimeProps {
+export interface AccountSettingsSecurityRuntimeVisualQaStateOverride {
+  securityEvents?: SecurityEventItem[];
+  isSecurityEventsLoading?: boolean;
+  deviceSessions?: DeviceSessionItem[];
+  isSessionLoading?: boolean;
+  isSessionError?: boolean;
+  sessionErrorMessage?: string;
+  trustedDevices?: TrustedDeviceItem[];
+  isTrustedDevicesLoading?: boolean;
+  isDeleteSessionPending?: boolean;
+  isDeleteOtherSessionsPending?: boolean;
+  onDeleteSession?: (sessionId: string) => void;
+  onDeleteOtherSessions?: () => void;
+  onAdvancedSectionRequest?: () => void;
+}
+
+export interface AccountSettingsSecurityRuntimeProps {
   userProvider?: string;
+  visualQaStateOverride?: AccountSettingsSecurityRuntimeVisualQaStateOverride;
 }
 
 const DELETE_CONFIRM_TEXT = '삭제하겠습니다';
@@ -46,7 +65,12 @@ const getSessionIcon = (deviceType?: string) => {
 
 export default function AccountSettingsSecurityRuntime({
   userProvider,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: AccountSettingsSecurityRuntimeProps) {
+  const viewerScope = useViewerQueryScope();
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const navigate = useNavigate();
   const { logout } = useAuthAccessActions();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -60,38 +84,41 @@ export default function AccountSettingsSecurityRuntime({
   const isLocalUser = !userProvider || userProvider.toLowerCase() === 'local';
   const isDeleteConfirmMatched = deleteConfirmText === DELETE_CONFIRM_TEXT;
 
-  const {
-    data: securityEvents = [],
-    isLoading: isSecurityEventsLoading,
-    refetch: refetchSecurityEvents,
-  } = useQuery<SecurityEventItem[]>({
-    queryKey: ['accountSecurityEvents'],
+  const securityEventsQuery = useQuery<SecurityEventItem[]>({
+    queryKey: PRIVATE_QUERY_KEYS.accountSecurityEvents(viewerScope),
     queryFn: getSecurityEvents,
     staleTime: 60_000,
+    enabled: visualQaStateOverride === undefined,
   });
+  const securityEvents = visualQaStateOverride?.securityEvents ?? securityEventsQuery.data ?? [];
+  const isSecurityEventsLoading = visualQaStateOverride?.isSecurityEventsLoading
+    ?? securityEventsQuery.isLoading;
+  const refetchSecurityEvents = securityEventsQuery.refetch;
 
-  const {
-    data: deviceSessions = [],
-    isLoading: isSessionLoading,
-    isError: isSessionError,
-    error: sessionError,
-    refetch: refetchDeviceSessions,
-  } = useQuery<DeviceSessionItem[]>({
-    queryKey: ['accountSessions'],
+  const deviceSessionsQuery = useQuery<DeviceSessionItem[]>({
+    queryKey: PRIVATE_QUERY_KEYS.accountSessions(viewerScope),
     queryFn: getDeviceSessions,
     staleTime: 60_000,
+    enabled: visualQaStateOverride === undefined,
   });
+  const deviceSessions = visualQaStateOverride?.deviceSessions ?? deviceSessionsQuery.data ?? [];
+  const isSessionLoading = visualQaStateOverride?.isSessionLoading ?? deviceSessionsQuery.isLoading;
+  const isSessionError = visualQaStateOverride?.isSessionError ?? deviceSessionsQuery.isError;
+  const sessionError = visualQaStateOverride?.sessionErrorMessage
+    ? new Error(visualQaStateOverride.sessionErrorMessage)
+    : deviceSessionsQuery.error;
+  const refetchDeviceSessions = deviceSessionsQuery.refetch;
 
-  const {
-    data: trustedDevices = [],
-    isLoading: isTrustedDevicesLoading,
-    refetch: refetchTrustedDevices,
-  } = useQuery({
+  const trustedDevicesQuery = useQuery<TrustedDeviceItem[]>({
     queryKey: ['trustedDevices'],
     queryFn: getTrustedDevices,
     staleTime: 60_000,
-    enabled: showAdvancedSettingsDialog || showDeleteDialog,
+    enabled: visualQaStateOverride === undefined && (showAdvancedSettingsDialog || showDeleteDialog),
   });
+  const trustedDevices = visualQaStateOverride?.trustedDevices ?? trustedDevicesQuery.data ?? [];
+  const isTrustedDevicesLoading = visualQaStateOverride?.isTrustedDevicesLoading
+    ?? trustedDevicesQuery.isLoading;
+  const refetchTrustedDevices = trustedDevicesQuery.refetch;
 
   const sortedDeviceSessions = useMemo(
     () =>
@@ -220,7 +247,24 @@ export default function AccountSettingsSecurityRuntime({
   };
 
   const handleAdvancedSectionRequest = () => {
+    visualQaStateOverride?.onAdvancedSectionRequest?.();
     setShowAdvancedSecurityDialog(true);
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    if (visualQaStateOverride?.onDeleteSession) {
+      visualQaStateOverride.onDeleteSession(sessionId);
+      return;
+    }
+    deleteSessionMutation.mutate(sessionId);
+  };
+
+  const handleDeleteOtherSessions = () => {
+    if (visualQaStateOverride?.onDeleteOtherSessions) {
+      visualQaStateOverride.onDeleteOtherSessions();
+      return;
+    }
+    deleteOtherSessionsMutation.mutate();
   };
 
   const handleAdvancedSecurityConfirm = () => {
@@ -257,7 +301,7 @@ export default function AccountSettingsSecurityRuntime({
   };
 
   return (
-    <>
+    <div data-testid="account-settings-security-runtime" className="contents">
       <section className="mb-8">
         <h3 className="mb-4 text-body font-semibold text-muted-foreground">현재 기기</h3>
         {isSessionLoading ? (
@@ -335,11 +379,12 @@ export default function AccountSettingsSecurityRuntime({
                   </div>
                   {!session.isCurrent && (
                     <Button
+                      data-testid={`account-settings-session-end-${session.id}`}
                       variant="ghost"
                       size="sm"
                       className="w-full shrink-0 sm:w-auto"
-                      disabled={deleteSessionMutation.isPending}
-                      onClick={() => deleteSessionMutation.mutate(session.id)}
+                      disabled={visualQaStateOverride?.isDeleteSessionPending ?? deleteSessionMutation.isPending}
+                      onClick={() => handleDeleteSession(session.id)}
                     >
                       세션 종료
                     </Button>
@@ -349,11 +394,12 @@ export default function AccountSettingsSecurityRuntime({
             ))}
             {sortedDeviceSessions.length > 1 && (
               <Button
+                data-testid="account-settings-other-sessions"
                 variant="outline"
                 size="sm"
                 className="w-full"
-                disabled={deleteOtherSessionsMutation.isPending}
-                onClick={() => deleteOtherSessionsMutation.mutate()}
+                disabled={visualQaStateOverride?.isDeleteOtherSessionsPending ?? deleteOtherSessionsMutation.isPending}
+                onClick={handleDeleteOtherSessions}
               >
                 {deleteOtherSessionsMutation.isPending ? '세션 정리 중...' : '다른 기기에서 로그아웃'}
               </Button>
@@ -436,6 +482,7 @@ export default function AccountSettingsSecurityRuntime({
               </div>
             </div>
             <Button
+              data-testid="account-settings-advanced-open"
               variant="outline"
               size="sm"
               onClick={handleAdvancedSectionRequest}
@@ -497,6 +544,6 @@ export default function AccountSettingsSecurityRuntime({
         confirmLabel="고급 설정 진입"
         onConfirm={handleAdvancedSecurityConfirm}
       />
-    </>
+    </div>
   );
 }

@@ -132,5 +132,5 @@ test('signup keeps visibility, recommendation, and login controls mobile-sized a
   assert.equal((html.match(/h-11 w-11/g) ?? []).length, 2);
   assert.equal((html.match(/focus-visible:ring-2/g) ?? []).length, 2);
   assert.match(html, /min-h-11[^>]*data-testid="signup-team-test"/);
-  assert.match(html, /min-h-11[^>]*data-testid="signup-login-link"/);
+  assert.match(html, /min-h-11 min-w-11[^>]*data-testid="signup-login-link"/);
 });

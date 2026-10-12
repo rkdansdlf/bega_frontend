@@ -1,19 +1,48 @@
+import { Link } from 'react-router-dom';
+
 import { BEGA_LOGO_ASSET } from './landingAssets';
 
 interface LandingFooterLinkGroup {
   heading: string;
-  links: readonly string[];
+  links: readonly LandingFooterLink[];
+}
+
+interface LandingFooterLink {
+  label: string;
+  to: string;
 }
 
 const LANDING_FOOTER_GROUPS: readonly LandingFooterLinkGroup[] = [
-  { heading: '서비스', links: ['오늘의 경기', '승리예측', '구장가이드', '직관일기'] },
-  { heading: '커뮤니티', links: ['응원게시판', '같이가요', '팀별 게시판', '레트로 리더보드'] },
-  { heading: '고객지원', links: ['공지사항', '문의하기', '이용약관', '개인정보처리방침'] },
+  {
+    heading: '서비스',
+    links: [
+      { label: '오늘의 경기', to: '/home' },
+      { label: '승리예측', to: '/prediction' },
+      { label: '구장가이드', to: '/stadium' },
+      { label: '직관일기', to: '/mypage' },
+    ],
+  },
+  {
+    heading: '커뮤니티',
+    links: [
+      { label: '응원게시판', to: '/cheer' },
+      { label: '같이가요', to: '/mate' },
+      { label: '팀별 게시판', to: '/cheer' },
+      { label: '레트로 리더보드', to: '/leaderboard' },
+    ],
+  },
+  {
+    heading: '고객지원',
+    links: [
+      { label: '공지사항', to: '/notice' },
+      { label: '문의하기', to: 'mailto:baseballguide251021@gmail.com' },
+      { label: '이용약관', to: '/terms' },
+      { label: '개인정보처리방침', to: '/privacy' },
+    ],
+  },
 ];
 
-const preventPlaceholderNavigation = (event: React.MouseEvent<HTMLAnchorElement>) => {
-  event.preventDefault();
-};
+const landingFooterLinkClass = 'inline-flex min-h-11 min-w-11 items-center';
 
 export default function LandingFooter() {
   return (
@@ -32,9 +61,15 @@ export default function LandingFooter() {
               <p className="landing-footer-group-heading">{group.heading}</p>
               <div className="landing-footer-group-links">
                 {group.links.map((link) => (
-                  <a href="#" key={link} onClick={preventPlaceholderNavigation}>
-                    {link}
-                  </a>
+                  link.to.startsWith('mailto:') ? (
+                    <a href={link.to} key={link.label} className={landingFooterLinkClass}>
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.to} key={link.label} className={landingFooterLinkClass}>
+                      {link.label}
+                    </Link>
+                  )
                 ))}
               </div>
             </div>
@@ -45,8 +80,8 @@ export default function LandingFooter() {
             © 2025 BEGA. KBO 경기 정보는 각 구단 및 KBO 공식 자료를 기준으로 제공됩니다.
           </p>
           <div className="landing-footer-bottom-links">
-            <a href="#" onClick={preventPlaceholderNavigation}>공지사항</a>
-            <a href="#" onClick={preventPlaceholderNavigation}>문의하기</a>
+            <Link to="/notice" className={landingFooterLinkClass}>공지사항</Link>
+            <a href="mailto:baseballguide251021@gmail.com" className={landingFooterLinkClass}>문의하기</a>
           </div>
         </div>
       </div>

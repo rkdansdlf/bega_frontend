@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuthProfileActions, useAuthProfileSnapshot } from '../store/authStore';
 import { FRANCHISE_TEAM_IDS, TEAM_NAME_TO_ID } from '../constants/teams';
 import { getApiErrorMessage } from '../utils/errorUtils';
+import { invalidatePublicProfileQuery } from './profileQueryKeys';
 
 interface UseProfileEditProps {
   initialProfileImage: string | null;
@@ -238,6 +239,7 @@ export const useProfileEdit = ({
 
       queryClient.invalidateQueries({ queryKey: ['cheer-posts'] });
       queryClient.invalidateQueries({ queryKey: ['recent-posts'] });
+      void invalidatePublicProfileQuery(queryClient, userHandle);
 
       setNewProfileImageFile(null);
       setFieldErrors({});

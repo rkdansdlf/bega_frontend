@@ -36,7 +36,7 @@ test('마이페이지 알림 뷰는 기존 알림 패널을 렌더링한다', ()
   assert.match(viewRuntimeSource, /lazy\(\(\) => import\('\.\/AlertsSection'\)\)/);
   assert.match(viewRuntimeSource, /viewMode === 'alerts'/);
   assert.match(sidebarMoreSource, /onSetViewMode\('alerts'\)/);
-  assert.match(alertsSectionSource, /<NotificationPanel \/>/);
+  assert.match(alertsSectionSource, /<NotificationPanel(?:\s|>)/);
 });
 
 test('마이페이지 계정 설정은 auth providers 백엔드 흐름으로 연결된다', () => {

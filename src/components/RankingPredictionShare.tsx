@@ -2,9 +2,27 @@ import RankingItem from './ranking/RankingItem';
 import RankingPredictionResultPanel from './ranking/RankingPredictionResultPanel';
 import { useRankingPredictionShare } from '../hooks/useRankingPredictionShare';
 import LoadingSpinner from './LoadingSpinner';
+import type { ReactNode } from 'react';
 
-export default function RankingPredictionShare() {
-  const { seasonYear, rankings, result, isLoading } = useRankingPredictionShare();
+export interface RankingPredictionShareProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function RankingPredictionShare({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: RankingPredictionShareProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="ranking-prediction-share-fallback">공유된 순위 예측을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
+  const { seasonYear, rankings, result, errorMessage, isLoading } = useRankingPredictionShare();
 
   if (isLoading) {
     return (
@@ -19,7 +37,15 @@ export default function RankingPredictionShare() {
           {seasonYear} KBO 시즌 순위 예측
         </h1>
 
-        {result?.settledAt ? (
+        {errorMessage ? (
+          <div
+            data-testid="ranking-share-error"
+            role="alert"
+            className="rounded-lg border border-red-200 bg-red-50 p-4 text-center text-sm font-medium text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300"
+          >
+            {errorMessage}
+          </div>
+        ) : result?.settledAt ? (
           <RankingPredictionResultPanel result={result} />
         ) : (
           <div className="space-y-2">

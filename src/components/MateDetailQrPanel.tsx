@@ -32,10 +32,10 @@ export default function MateDetailQrPanel({
       className="sm:max-w-md"
       footer={(
         <>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" data-testid="mate-qr-panel-close" onClick={onClose}>
             닫기
           </Button>
-          <Button className="bg-primary text-white" onClick={onOpenCheckInPage}>
+          <Button data-testid="mate-qr-panel-open-check-in" className="bg-primary text-white" onClick={onOpenCheckInPage}>
             체크인 페이지 열기
           </Button>
         </>

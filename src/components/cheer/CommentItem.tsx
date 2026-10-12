@@ -97,11 +97,11 @@ function CommentItemComponent({
                             />
           </div>
         </div>
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 max-w-full">
               <p
-                className="font-bold text-gray-900 dark:text-white cursor-pointer hover:underline"
+                className="max-w-full break-words font-bold text-gray-900 dark:text-white cursor-pointer hover:underline [overflow-wrap:anywhere]"
                 onClick={() => {
                   if (comment.authorHandle) navigate(`/profile/${comment.authorHandle}`);
                 }}
@@ -116,14 +116,14 @@ function CommentItemComponent({
               <button
               type="button"
                 onClick={() => onDelete?.(comment.id)}
-                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                className="flex h-11 w-11 items-center justify-center text-gray-400 hover:text-red-500 transition-colors p-1 sm:h-8 sm:w-8"
                 title="삭제"
               >
                 <CommentTrashIcon className="h-4 w-4" />
               </button>
             )}
           </div>
-          <p className="mt-2 whitespace-pre-wrap text-body font-bold text-gray-700 dark:text-white leading-relaxed">
+          <p className="mt-2 max-w-full whitespace-pre-wrap break-words text-body font-bold text-gray-700 dark:text-white leading-relaxed [overflow-wrap:anywhere]">
             {comment.content}
           </p>
           <div className="mt-3 flex items-center gap-4 text-body text-gray-500 dark:text-white">
@@ -131,7 +131,8 @@ function CommentItemComponent({
               type="button"
               onClick={() => onCommentLike(comment.id)}
               disabled={!canLike || isCommentLikePending}
-              className={`flex items-center gap-1 transition-colors hover:text-red-500 ${isCommentLiked ? 'text-red-500' : ''
+              aria-label={`댓글 좋아요 ${likeCount}`}
+              className={`flex min-h-11 min-w-11 items-center justify-center gap-1 transition-colors hover:text-red-500 ${isCommentLiked ? 'text-red-500' : ''
                 } ${!canLike ? 'cursor-not-allowed text-gray-400 dark:text-white hover:text-gray-400 dark:hover:text-gray-600' : ''}`}
             >
               <span className="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors">
@@ -149,7 +150,8 @@ function CommentItemComponent({
               type="button"
                 onClick={() => onReplyToggle(comment.id)}
                 disabled={!canInteract}
-                className="flex items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-600"
+                aria-label="답글 달기"
+                className="flex min-h-11 items-center gap-1.5 transition-colors hover:text-gray-700 dark:hover:text-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 dark:disabled:text-gray-600"
               >
                 답글 달기
               </button>

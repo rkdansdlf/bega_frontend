@@ -39,6 +39,16 @@ test('PredictionRuntime는 prediction 전용 우측 상단 toast 영역을 렌�
   assert.match(source, /<Toaster position="top-right" \/>/);
 });
 
+test('PredictionRuntime mobile shell keeps chrome geometry stable under root overrides', () => {
+  const source = readRuntimeSource();
+
+  assert.match(source, /pb-5/);
+  assert.match(source, /px-4 pb-4 pt-5/);
+  assert.match(source, /min-h-11.*px-4/);
+  assert.match(source, /min-h-11.*px-3/);
+  assert.match(source, /aria-label="랭킹 보기"[\s\S]*h-11 min-w-11/);
+});
+
 test('PredictionRuntime는 ranking 탭 청크를 post-paint idle에 선로딩한다', () => {
   const source = readRuntimeSource();
 
@@ -94,6 +104,16 @@ test('getPredictionOtherGamesLinkState는 date가 비어 있으면 기본 경기
 
 test('getInitialPredictionTab은 ?tab=ranking이면 ranking 탭으로 진입한다', () => {
   assert.equal(getInitialPredictionTab('ranking'), 'ranking');
+});
+
+test('ranking login redirects preserve the current prediction route', async () => {
+  const hookSource = readFileSync(new URL('../../hooks/useRankingPrediction.ts', import.meta.url), 'utf8');
+  const componentSource = readFileSync(new URL('../RankingPrediction.tsx', import.meta.url), 'utf8');
+
+  assert.match(hookSource, /useLocation/);
+  assert.match(hookSource, /`\$\{location\.pathname\}\$\{location\.search\}\$\{location\.hash\}`/);
+  assert.match(componentSource, /useLocation/);
+  assert.match(componentSource, /buildLoginPath\(`\$\{location\.pathname\}\$\{location\.search\}\$\{location\.hash\}`\)/);
 });
 
 test('getInitialPredictionTab은 tab 파라미터가 없거나 알 수 없으면 match 탭으로 진입한다', () => {

@@ -7,6 +7,8 @@ import { bootstrapDirectMessageRoom, deleteDirectMessage, fetchDirectMessages, s
 import { useDmSocket } from '../../hooks/useDmSocket';
 import { useAuthProfileSnapshot, useAuthSession } from '../../store/authStore';
 import type { DirectMessage } from '../../types/dm';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import { parseError, type ParsedError } from '../../utils/errorUtils';
 import { ProfileAvatar } from '../ui/ProfileAvatar';
 import { Button } from '../ui/button';
@@ -18,11 +20,6 @@ import {
   DirectMessageTrashIcon as TrashIcon,
   DirectMessageXCircleIcon as XCircleIcon,
 } from './DirectMessageIcons';
-
-const DM_QUERY_KEYS = {
-  roomBootstrap: (handle: string) => ['dmRoomBootstrap', handle] as const,
-  messages: (roomId: number) => ['dmMessages', roomId] as const,
-};
 
 type DmRecoveryEvent =
   | { kind: 'message'; message: DirectMessage }
@@ -93,6 +90,7 @@ const buildProfilePath = (handle?: string): string => {
 };
 
 export default function DirectMessageRuntime() {
+  const viewerScope = useViewerQueryScope();
   const { handle } = useParams<{ handle: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -110,7 +108,7 @@ export default function DirectMessageRuntime() {
   const normalizedHandle = normalizeHandle(handle);
 
   const bootstrapQuery = useQuery({
-    queryKey: normalizedHandle ? DM_QUERY_KEYS.roomBootstrap(normalizedHandle) : ['dmRoomBootstrap', 'missing'],
+    queryKey: normalizedHandle ? PRIVATE_QUERY_KEYS.dmRoomBootstrap(normalizedHandle, viewerScope) : ['dmRoomBootstrap', 'missing'],
     queryFn: () => bootstrapDirectMessageRoom(normalizedHandle!),
     enabled: Boolean(normalizedHandle),
     retry: false,
@@ -126,7 +124,7 @@ export default function DirectMessageRuntime() {
   }, [roomId]);
 
   const messagesQuery = useQuery({
-    queryKey: roomId ? DM_QUERY_KEYS.messages(roomId) : ['dmMessages', 'missing'],
+    queryKey: roomId ? PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope) : ['dmMessages', 'missing'],
     queryFn: () => fetchDirectMessages(roomId!),
     enabled: roomId != null,
     retry: false,
@@ -140,7 +138,7 @@ export default function DirectMessageRuntime() {
       return;
     }
 
-    queryClient.setQueryData<DirectMessage[]>(DM_QUERY_KEYS.messages(roomId), (current) => {
+    queryClient.setQueryData<DirectMessage[]>(PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope), (current) => {
       const safeCurrent = Array.isArray(current) ? current : [];
       return updater(safeCurrent);
     });
@@ -156,7 +154,7 @@ export default function DirectMessageRuntime() {
       return;
     }
 
-    queryClient.setQueryData<DirectMessage[]>(DM_QUERY_KEYS.messages(roomId), (current) => (
+    queryClient.setQueryData<DirectMessage[]>(PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope), (current) => (
       replayRecoveryEvents(Array.isArray(current) ? current : [], recovery.events)
     ));
     recoveryBufferRef.current = null;
@@ -167,13 +165,13 @@ export default function DirectMessageRuntime() {
       return;
     }
 
-    const snapshot = queryClient.getQueryData<DirectMessage[]>(DM_QUERY_KEYS.messages(roomId));
+    const snapshot = queryClient.getQueryData<DirectMessage[]>(PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope));
     updateMessagesCache((current) => current.filter((m) => String(m.id) !== String(messageId)));
     try {
       await deleteDirectMessage(messageId);
     } catch (error) {
       if (snapshot) {
-        queryClient.setQueryData(DM_QUERY_KEYS.messages(roomId), snapshot);
+        queryClient.setQueryData(PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope), snapshot);
       }
       toast.error(parseError(error).message);
     }
@@ -211,7 +209,7 @@ export default function DirectMessageRuntime() {
       try {
         await Promise.all([
           queryClient.refetchQueries({
-            queryKey: DM_QUERY_KEYS.messages(roomId),
+            queryKey: PRIVATE_QUERY_KEYS.dmMessages(roomId, viewerScope),
             exact: true,
             type: 'active',
           }),
@@ -381,8 +379,8 @@ export default function DirectMessageRuntime() {
 
         <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm dark:border-border dark:bg-card">
           <div className="border-b border-gray-100 px-5 py-4 dark:border-border">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="flex min-w-0 items-center gap-3 md:flex-1">
                 <ProfileAvatar
                   src={targetUser?.profileImageUrl}
                   alt={targetUser?.name || '대화 상대'}
@@ -392,23 +390,23 @@ export default function DirectMessageRuntime() {
                   showRing
                   ringClassName="p-0.5 bg-black/5 dark:bg-white/10"
                 />
-                <div>
-                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <div className="min-w-0 flex-1">
+                  <div className="break-words text-base font-bold text-gray-900 dark:text-white sm:text-lg">
                     {targetUser?.name}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-white">
+                  <div className="break-words text-sm text-gray-500 dark:text-white">
                     {targetUser?.handle}
                   </div>
                 </div>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-secondary/40 dark:text-white">
+              <div className="inline-flex max-w-full shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-secondary/40 dark:text-white">
                 {isConnected ? <MessageCircleIcon className="h-3.5 w-3.5" /> : <SpinnerIcon className="h-3.5 w-3.5 animate-spin" />}
                 {isConnected ? '실시간 연결됨' : '실시간 연결 중'}
               </div>
             </div>
           </div>
 
-          <div className="h-[52vh] overflow-y-auto bg-gradient-to-b from-gray-50/80 to-white px-4 py-5 dark:from-background dark:to-card">
+          <div data-testid="dm-message-viewport" style={{ minHeight: '14rem' }} className="h-[52vh] overflow-y-auto bg-gradient-to-b from-gray-50/80 to-white px-4 py-5 dark:from-background dark:to-card">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/70 px-6 text-center dark:border-border dark:bg-secondary/20">
                 <MessageCircleIcon className="mb-3 h-10 w-10 text-gray-400 dark:text-white" />
@@ -454,7 +452,7 @@ export default function DirectMessageRuntime() {
                           <button
                             type="button"
                             onClick={() => void handleDeleteMessage(message.id)}
-                            className="absolute -right-2 -top-2 rounded-full border border-border bg-white p-1 text-muted-foreground opacity-0 shadow transition-opacity hover:text-destructive group-hover:opacity-100 dark:bg-secondary"
+                            className="absolute -right-2 -top-2 rounded-full border border-border bg-white p-1 text-muted-foreground opacity-100 shadow transition-opacity hover:text-destructive focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100 dark:bg-secondary"
                             aria-label="메시지 삭제"
                           >
                             <TrashIcon className="h-3 w-3" />
@@ -483,11 +481,15 @@ export default function DirectMessageRuntime() {
                 placeholder="메시지를 입력하세요"
                 className="min-h-[72px] w-full resize-none border-0 bg-transparent text-sm leading-6 text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-400"
               />
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <p className="text-xs text-gray-400 dark:text-white">
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                <p className="text-xs leading-5 text-gray-400 dark:text-white">
                   Enter로 전송, Shift+Enter로 줄바꿈
                 </p>
-                <Button onClick={() => void handleSendMessage()} disabled={submitDisabled}>
+                <Button
+                  onClick={() => void handleSendMessage()}
+                  disabled={submitDisabled}
+                  className="w-full shrink-0 justify-center whitespace-nowrap sm:w-auto"
+                >
                   {isSending ? <SpinnerIcon className="h-4 w-4 animate-spin" /> : <MessageCircleIcon className="h-4 w-4" />}
                   메시지 보내기
                 </Button>

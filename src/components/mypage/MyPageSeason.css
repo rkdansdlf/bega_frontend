@@ -882,6 +882,18 @@ button.mypage-season-cell:focus-visible {
   animation: mypage-season-fade 0.24s ease-out both;
 }
 
+@media (max-width: 767px) and (max-height: 680px) {
+  .mypage-season-section--error .mypage-season-empty {
+    padding: 12px 16px;
+  }
+
+  .mypage-season-section--error .mypage-season-empty-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+}
+
 .mypage-season-head {
   display: flex;
   align-items: center;
@@ -2297,6 +2309,7 @@ button.mypage-season-cell:focus-visible {
 
   .mypage-season-id {
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .mypage-season-id [data-testid="profile-avatar-frame"] {

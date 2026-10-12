@@ -43,20 +43,22 @@ export default function PredictionCoachBriefingRuntime({
   isAuthLoading,
 }: PredictionCoachBriefingRuntimeProps) {
   return (
-    <Suspense fallback={null}>
-      <CoachBriefing
-        game={game}
-        gameDetail={gameDetail}
-        seasonContext={seasonContext}
-        isPastGame={isPastGame}
-        isFutureGame={isFutureGame}
-        isLoggedIn={isLoggedIn}
-        isAuthLoading={isAuthLoading}
-        requestMode={requestMode}
-        analysisType={analysisType}
-        autoEnabled={autoEnabled}
-        forceManual={forceManual}
-      />
-    </Suspense>
+    <div className="contents" data-testid="prediction-coach-briefing-runtime">
+      <Suspense fallback={null}>
+        <CoachBriefing
+          game={game}
+          gameDetail={gameDetail}
+          seasonContext={seasonContext}
+          isPastGame={isPastGame}
+          isFutureGame={isFutureGame}
+          isLoggedIn={isLoggedIn}
+          isAuthLoading={isAuthLoading}
+          requestMode={requestMode}
+          analysisType={analysisType}
+          autoEnabled={autoEnabled}
+          forceManual={forceManual}
+        />
+      </Suspense>
+    </div>
   );
 }

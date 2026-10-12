@@ -25,6 +25,8 @@ import {
 } from '../utils/mateFlowUi';
 import { hasSameMateUserIdentity, isPartyHostedByUser } from '../utils/mate';
 import type { CheckIn, Party } from '../types/mate';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
+import { isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
 
 const MateCheckInContentRuntime = lazy(() => import('./MateCheckInContentRuntime'));
 
@@ -66,6 +68,7 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
   } = useAuthProfileSnapshot();
   const { isAuthLoading: liveAuthLoading, userId: liveCurrentUserId } = useAuthSession();
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
 
   const [liveIsChecking, setIsChecking] = useState(false);
   const [liveManualCode, setManualCode] = useState('');
@@ -93,8 +96,8 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
 
   const checkInsQuery = useQuery({
     ...(party?.id != null
-      ? getMatePartyCheckInsQueryOptions(party.id)
-      : getMatePartyCheckInsQueryOptions('unknown')),
+      ? getMatePartyCheckInsQueryOptions(party.id, viewerScope)
+      : getMatePartyCheckInsQueryOptions('unknown', viewerScope)),
     enabled: visualQaStateOverride == null && Boolean(party?.id),
   });
   const checkInStatus = visualQaStateOverride
@@ -230,12 +233,13 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
         ...(qrSessionId ? { qrSessionId } : {}),
         ...(!qrSessionId ? { manualCode: trimmedManualCode } : {}),
       });
-      const nextCheckIns = appendMatePartyCheckInQueryData(queryClient, party.id, createdCheckIn);
+      if (!isViewerQueryScopeCurrent(viewerScope)) return;
+      const nextCheckIns = appendMatePartyCheckInQueryData(queryClient, party.id, createdCheckIn, viewerScope);
       if (nextCheckIns.length >= party.currentParticipants) {
         updateMatePartyCollectionQueryData(queryClient, party.id, (currentParty) => ({
           ...currentParty,
           status: 'CHECKED_IN',
-        }));
+        }), {}, viewerScope);
       }
       toast.success('체크인이 완료되었습니다!');
     } catch (error) {
@@ -331,7 +335,7 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
                     }
                   }}
                   placeholder="예: 0427"
-                  className="h-11 min-w-0 text-base tracking-[0.35em]"
+                  className="h-11 min-w-0 text-base tracking-[0.35em] sm:h-11"
                 />
                 {manualCodeError ? (
                   <p className="mt-2 text-body text-red-600 dark:text-red-400">{manualCodeError}</p>

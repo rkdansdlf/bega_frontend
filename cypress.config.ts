@@ -177,6 +177,15 @@ export default defineConfig({
         requestTimeout: 10000,
         responseTimeout: 30000,
         setupNodeEvents(on, config) {
+            on('before:browser:launch', (browser, launchOptions) => {
+                if (browser.name === 'electron' && browser.isHeadless) {
+                    launchOptions.preferences.width = 1400;
+                    launchOptions.preferences.height = 1200;
+                }
+
+                return launchOptions;
+            });
+
             const workspaceOutputDir = resolveWorkspaceOutputDir(config.projectRoot);
             const visualAuditRunId = makeVisualAuditRunId();
             const visualAuditRoot = path.join(

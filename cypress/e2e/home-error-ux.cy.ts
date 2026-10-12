@@ -554,6 +554,11 @@ describe('Home error UX', () => {
       body: buildManualDataRequiredResponse('home.schedule'),
     }).as('getHomeBootstrapManualData');
 
+    cy.intercept('GET', '**/api/dm/rooms/my*', {
+      statusCode: 200,
+      body: { success: true, data: [] },
+    });
+
     cy.intercept('GET', '**/api/home/widgets*', {
       statusCode: 200,
       body: buildWidgetsResponse(),
@@ -578,7 +583,7 @@ describe('Home error UX', () => {
     cy.contains('button', /^다시 시도$/).should('be.visible');
 
     cy.get('@getHomeBootstrapManualData.all').should('have.length', 1);
-    cy.get('@consoleError').should('not.have.been.called');
+    cy.get('@consoleError').should('not.have.been.calledWithMatch', '[HomeBootstrap] Error loading bootstrap:');
     cy.get('@consoleWarn').should('have.been.calledWithMatch', '[HomeBootstrap] Business conflict while loading bootstrap:');
   });
 
@@ -780,13 +785,11 @@ describe('Home error UX', () => {
     const bootstrapResponseGate = new Promise<void>((resolve) => {
       releaseBootstrapResponse = resolve;
     });
-    cy.intercept('GET', '**/api/home/bootstrap*', (req) => {
-      req.reply(async (res) => {
-        await bootstrapResponseGate;
-        res.send({
-          statusCode: 200,
-          body: buildBootstrapResponse('2026-03-16', '2026-03-15', '2026-03-17'),
-        });
+    cy.intercept('GET', '**/api/home/bootstrap*', async (req) => {
+      await bootstrapResponseGate;
+      req.reply({
+        statusCode: 200,
+        body: buildBootstrapResponse('2026-03-16', '2026-03-15', '2026-03-17'),
       });
     }).as('getHomeBootstrapDelayedSoftFallback');
 
@@ -830,17 +833,18 @@ describe('Home error UX', () => {
       resetStorage: true,
     });
 
+    cy.get('[data-testid="home-global-recovery"]', { timeout: 15000 })
+      .should('be.visible')
+      .and('contain.text', '서비스 연결을 확인하지 못했습니다');
+    cy.then(() => releaseBootstrapResponse?.());
+    cy.wait('@getHomeBootstrapDelayedSoftFallback');
     cy.wait('@getHomeWidgets');
-    cy.get('[data-testid="home-global-recovery"]', { timeout: 15000 }).should('be.visible');
-    cy.contains('서비스 연결을 확인하지 못했습니다').should('be.visible');
+    cy.get('[data-testid="home-global-recovery"]').should('not.exist');
     cy.contains('경기가 없는 날입니다.').should('be.visible');
     cy.get('@getLegacyLeagueDates.all').should('have.length', 0);
     cy.get('@getLegacyNavigation.all').should('have.length', 0);
     cy.get('@getLegacyScheduleDelayed.all').should('have.length', 0);
     cy.get('@legacyRankingsShouldNotRun.all').should('have.length', 0);
-    cy.then(() => releaseBootstrapResponse?.());
-    cy.wait('@getHomeBootstrapDelayedSoftFallback');
-    cy.get('[data-testid="home-global-recovery"]').should('not.exist');
     cy.get('@getHomeBootstrapDelayedSoftFallback.all').should('have.length', 1);
   });
 

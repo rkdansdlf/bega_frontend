@@ -43,3 +43,12 @@ test('mate apply back action keeps explicit contrast in dark mode', async () => 
     /data-testid="mate-apply-back"[\s\S]*?className="[^"]*text-gray-800[^"]*dark:text-gray-100[^"]*"/,
   );
 });
+
+test('mate apply preserves the filtered-list return path when leaving the page', async () => {
+  const source = await readFile(sourceUrl, 'utf8');
+
+  assert.match(source, /useLocation/);
+  assert.match(source, /normalizeMateListReturnTo/);
+  assert.match(source, /const returnTo/);
+  assert.match(source, /navigate\(`\/mate\/\$\{id\}`, \{ state: \{ returnTo \} \}\)/);
+});

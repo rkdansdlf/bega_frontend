@@ -1,4 +1,5 @@
 import { CSSProperties, useState } from 'react';
+import type { PowerupInventory as PowerupInventoryState } from '../../api/leaderboard';
 
 const retroDisplay = "'Press Start 2P', monospace";
 const retroText = "'Galmuri11', 'Galmuri9', sans-serif";
@@ -142,7 +143,7 @@ const powerupInventoryStyles = `
 `;
 
 interface PowerupData {
-  type: string;
+  type: keyof PowerupInventoryState;
   name: string;
   nameKo: string;
   description: string;
@@ -178,9 +179,10 @@ const POWERUPS: PowerupData[] = [
 ];
 
 interface PowerUpInventoryProps {
-  powerups: Record<string, number>;
+  powerups: PowerupInventoryState;
   activePowerups?: string[];
-  onUsePowerup?: (type: string) => Promise<void>;
+  gameId?: string;
+  onUsePowerup?: (type: string) => Promise<unknown>;
   disabled?: boolean;
   containerTestId?: string;
 }
@@ -209,6 +211,7 @@ const getPowerupTextStyle = (color: string, hasItem: boolean): CSSProperties => 
 export default function PowerUpInventory({
   powerups,
   activePowerups = [],
+  gameId,
   onUsePowerup,
   disabled = false,
   containerTestId,
@@ -229,7 +232,7 @@ export default function PowerUpInventory({
   };
 
   const handleUse = async () => {
-    if (!selectedPowerup || !onUsePowerup) return;
+    if (!selectedPowerup || !onUsePowerup || !gameId?.trim()) return;
 
     setUseError(null);
     setIsUsing(true);
@@ -324,7 +327,7 @@ export default function PowerUpInventory({
           const isActive = activePowerups.includes(powerup.type);
           const hasItem = count > 0;
           const available = hasItem && !disabled;
-          const actionable = available && !isActive && Boolean(onUsePowerup);
+          const actionable = available && !isActive && Boolean(onUsePowerup) && Boolean(gameId?.trim());
 
           return (
             <button

@@ -4,6 +4,7 @@ import { getApiErrorStatus } from '../api/errorStatus';
 import { Party } from '../types/mate';
 import { getMatePartyQueryOptions } from './mateQueryOptions';
 import { getMateRoutePlaceholderParty } from '../utils/mate';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
 export interface MatePartyRouteState {
   party: Party | null;
@@ -24,13 +25,14 @@ const parseRoutePartyId = (id?: string): number | null => {
 
 export function useMatePartyFromRoute(id?: string): MatePartyRouteState {
   const location = useLocation();
+  const viewerScope = useViewerQueryScope();
   const routePartyId = parseRoutePartyId(id);
-  const placeholderParty = getMateRoutePlaceholderParty(location.state, routePartyId);
+  const placeholderParty = getMateRoutePlaceholderParty(location.state, routePartyId, viewerScope);
 
   const partyQuery = useQuery({
     ...(routePartyId !== null
-      ? getMatePartyQueryOptions(routePartyId)
-      : getMatePartyQueryOptions('invalid')),
+      ? getMatePartyQueryOptions(routePartyId, viewerScope)
+      : getMatePartyQueryOptions('invalid', viewerScope)),
     enabled: routePartyId !== null,
     placeholderData: placeholderParty,
   });

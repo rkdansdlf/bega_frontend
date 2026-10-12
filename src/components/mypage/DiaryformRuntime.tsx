@@ -10,6 +10,7 @@ import AchievementCelebrationOverlay from '../AchievementCelebrationOverlay';
 import { useWeekCalendar } from '../../hooks/useWeekCalendar';
 import { useMonthCalendar } from '../../hooks/useMonthCalendar';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import type { DiaryViewVisualQaStateOverride } from '../../hooks/useDiaryView';
 import { type DiaryFormData, type DiaryEntry } from '../../types/diary';
 import { getEmojiByName, getFullImageUrl, formatDateString, getWinningLabel } from '../../utils/diary';
 import { formatStadiumDisplayName } from '../../utils/stadiumDisplay';
@@ -25,7 +26,7 @@ import {
   DiaryformChevronRightIcon as MyPageChevronRightIcon,
 } from './DiaryformIcons';
 
-interface DiaryReadModeProps {
+export interface DiaryReadModeProps {
   diaryForm: DiaryFormData;
   selectedDiary: DiaryEntry | undefined;
   setIsEditMode: (value: boolean) => void;
@@ -37,9 +38,10 @@ interface DiaryReadModeProps {
 
 const DiaryEditModeRuntime = lazy(() => import('./DiaryEditModeRuntime'));
 
-interface DiaryViewSectionProps {
+export interface DiaryViewSectionProps {
   initialDate?: string;
   onBackToLog?: () => void;
+  visualQaStateOverride?: DiaryViewVisualQaStateOverride;
 }
 
 const getCalendarDayStyle = (type: DiaryEntry['type'] | undefined): CSSProperties | undefined => {
@@ -80,7 +82,14 @@ const diaryEditModeFallback = (
   </div>
 );
 
-export default function DiaryViewSection({ initialDate, onBackToLog }: DiaryViewSectionProps) {
+export default function DiaryViewSection({
+  initialDate,
+  onBackToLog,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: DiaryViewSectionProps) {
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const navigate = useNavigate();
   const cheerEntryActionRef = useRef(createCheerLinkedEntryAction());
   const [isShareToCheerPending, setIsShareToCheerPending] = useState(false);
@@ -109,7 +118,7 @@ export default function DiaryViewSection({ initialDate, onBackToLog }: DiaryView
     diaryEntries,
     currentAchievement,
     dismissCurrentAchievement,
-  } = useDiaryView(initialDate);
+  } = useDiaryView(initialDate, visualQaStateOverride);
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const weekCalendar = useWeekCalendar(selectedDate);

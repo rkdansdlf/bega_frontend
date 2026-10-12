@@ -91,6 +91,13 @@ function getChangwonSearchMatchLabels(query: string, block: ChangwonBlock): stri
   return [...new Set(labels)];
 }
 
+export interface ChangwonSeatMapStateOverride {
+  isFullscreenOpen?: boolean;
+  isLoggedIn: boolean;
+  selectedBlockId?: string;
+  uploadBlockId?: string;
+}
+
 function ZoomControls({
   zoom,
   onZoomIn,
@@ -106,7 +113,7 @@ function ZoomControls({
   onFullscreen: () => void;
   mode: 'light' | 'dark';
 }) {
-  const buttonClass = 'flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800';
+  const buttonClass = 'flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8 sm:w-8';
   const borderColor = mode === 'dark' ? '#334155' : '#e2e8f0';
 
   return (
@@ -128,7 +135,7 @@ function ZoomControls({
         aria-label="초기화"
         onClick={onReset}
         disabled={zoom === 1}
-        className="h-8 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800"
+        className="h-11 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8"
         style={{ borderColor }}
       >
         {zoom.toFixed(2)}x
@@ -186,7 +193,7 @@ function BlockSearch({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="블록/구역/좌석 타입 검색"
-          className="h-10 w-full rounded-xl border bg-white pl-9 pr-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-[#315288] dark:bg-slate-950 dark:text-white"
+          className="h-11 w-full rounded-xl border bg-white pl-9 pr-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-[#315288] dark:bg-slate-950 dark:text-white sm:h-10"
           style={{ borderColor }}
         />
       </label>
@@ -215,7 +222,7 @@ function BlockSearch({
                     type="button"
                     data-testid={`changwon-search-result-${block.id}`}
                     onClick={() => onSelect(block)}
-                    className="flex w-full cursor-pointer items-start gap-2.5 px-3 py-2 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-900"
+                    className="flex min-h-11 w-full cursor-pointer items-start gap-2.5 px-3 py-2 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-900 sm:min-h-0"
                   >
                     <span
                       className="mt-0.5 shrink-0 rounded-md px-2 py-1 text-11 font-black text-white"
@@ -291,7 +298,7 @@ function DetailPanel({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
+          className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800 sm:h-8 sm:w-8"
         >
           ×
         </button>
@@ -381,13 +388,33 @@ function DetailPanel({
   );
 }
 
-export default function ChangwonSeatMap() {
+interface ChangwonSeatMapProps {
+  stateOverride?: ChangwonSeatMapStateOverride;
+}
+
+function resolveChangwonStateBlock(blockId: string | undefined, fieldName: string) {
+  if (blockId === undefined) {
+    return null;
+  }
+  const block = CHANGWON_BLOCKS.find((candidate) => candidate.id === blockId);
+  if (!block) {
+    throw new Error(`지원하지 않는 창원 좌석 상태: ${fieldName}=${blockId}`);
+  }
+  return block;
+}
+
+export default function ChangwonSeatMap({ stateOverride }: ChangwonSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });
-  const [uploadFor, setUploadFor] = useState<ChangwonBlock | null>(null);
+  const [uploadFor, setUploadFor] = useState<ChangwonBlock | null>(() => (
+    resolveChangwonStateBlock(stateOverride?.uploadBlockId, 'uploadBlockId')
+  ));
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchResultListOpen, setIsSearchResultListOpen] = useState(false);
   const {
@@ -409,9 +436,12 @@ export default function ChangwonSeatMap() {
     filterGroups: CHANGWON_CATEGORY_GROUPS,
     getId: (section) => section.id,
     getCategoryId: (section) => section.category,
+    initialSelected: resolveChangwonStateBlock(stateOverride?.selectedBlockId, 'selectedBlockId'),
     isSectionVisible: (section, group) => (group ? isChangwonBlockInCategoryGroup(section, group) : true),
   });
-  const { isMobile, isFullscreenOpen, openFullscreen, closeFullscreen } = useSeatMapTemplateShellState();
+  const { isMobile, isFullscreenOpen, openFullscreen, closeFullscreen } = useSeatMapTemplateShellState({
+    initialFullscreenOpen: stateOverride?.isFullscreenOpen,
+  });
   const canUseSeatMapImage = CHANGWON_SEATMAP_IMAGE.assetStatus !== 'OPERATOR_REFERENCE_PENDING_ASSET'
     && CHANGWON_SEATMAP_IMAGE.assetStatus !== 'EXTERNAL_REFERENCE_PENDING_ASSET';
   const hasOfficialBlocks = canUseSeatMapImage && CHANGWON_BLOCKS.length > 0;

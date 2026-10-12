@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useGamesData } from '../api/home';
 import { fetchGameLiveSnapshot } from '../api/prediction';
 import type { Game as HomeGame } from '../types/home';
+import type { GameLiveSnapshot } from '../types/prediction';
 import { parseError } from '../utils/errorUtils';
 import { LIVE_GAME_EVENT_LIMIT, LIVE_GAME_POLL_INTERVAL_MS, normalizeLiveStatus } from '../utils/liveGame';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
@@ -19,7 +20,17 @@ interface CheerLivePanelProps {
   favoriteTeamFull: string | null;
   teamAccent: string;
   onGoPrediction: () => void;
+  visualQaStateOverride?: CheerLivePanelVisualQaStateOverride;
 }
+
+export type CheerLivePanelVisualQaStateOverride = {
+  games?: HomeGame[];
+  gamesState?: 'loading' | 'error' | 'ready';
+  liveSnapshot?: GameLiveSnapshot | null;
+  isLiveSnapshotLoading?: boolean;
+  liveSnapshotError?: unknown;
+  onRetry?: () => void;
+};
 
 const isLiveStatus = (status?: string) => (
   ['PLAYING', 'LIVE', 'IN_PROGRESS', 'INPROGRESS'].includes((status || '').trim().toUpperCase())
@@ -31,17 +42,26 @@ export default function CheerLivePanel({
   favoriteTeamFull,
   teamAccent,
   onGoPrediction,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerLivePanelProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const today = useMemo(() => new Date(), []);
+  const gamesQuery = useGamesData(today, { enabled: visualQaStateOverride === undefined });
   const {
     data: todaysGames = [],
     isLoading,
     isError,
     error: gamesError,
     refetch: refetchGames,
-  } = useGamesData(today);
+  } = gamesQuery;
+  const resolvedTodaysGames = visualQaStateOverride?.games ?? todaysGames;
+  const resolvedGamesState = visualQaStateOverride?.gamesState;
+  const resolvedIsLoading = resolvedGamesState === 'loading' || (resolvedGamesState === undefined && isLoading);
+  const resolvedIsError = resolvedGamesState === 'error' || (resolvedGamesState === undefined && isError);
   const featuredGame = useMemo(() => {
-    const liveGames = todaysGames.filter((game) => (
+    const liveGames = resolvedTodaysGames.filter((game) => (
       ['PLAYING', 'LIVE', 'IN_PROGRESS', 'INPROGRESS'].includes(normalizeLiveStatus(game.gameStatus))
     ));
     if (liveGames.length === 0) return null;
@@ -56,7 +76,7 @@ export default function CheerLivePanel({
         .map((value) => String(value).toLowerCase())
         .some((team) => favoriteNames.some((favorite) => team.includes(favorite)))
     )) ?? liveGames[0];
-  }, [favoriteTeamFull, favoriteTeamId, favoriteTeamLabel, todaysGames]);
+  }, [favoriteTeamFull, favoriteTeamId, favoriteTeamLabel, resolvedTodaysGames]);
   const {
     data: liveSnapshot = null,
     error: liveSnapshotError,
@@ -67,18 +87,23 @@ export default function CheerLivePanel({
       limit: LIVE_GAME_EVENT_LIMIT,
       signal,
     }),
-    enabled: Boolean(featuredGame?.gameId),
+    enabled: Boolean(featuredGame?.gameId) && visualQaStateOverride === undefined,
     retry: false,
     refetchInterval: featuredGame ? LIVE_GAME_POLL_INTERVAL_MS : false,
     refetchIntervalInBackground: false,
   });
-  const parsedLiveSnapshotError = liveSnapshotError ? parseError(liveSnapshotError) : null;
+  const resolvedLiveSnapshot = visualQaStateOverride?.liveSnapshot !== undefined
+    ? visualQaStateOverride.liveSnapshot
+    : liveSnapshot;
+  const resolvedLiveSnapshotError = visualQaStateOverride?.liveSnapshotError ?? liveSnapshotError;
+  const resolvedIsLiveSnapshotLoading = visualQaStateOverride?.isLiveSnapshotLoading ?? isLiveSnapshotLoading;
+  const parsedLiveSnapshotError = resolvedLiveSnapshotError ? parseError(resolvedLiveSnapshotError) : null;
   const parsedGamesError = gamesError ? parseError(gamesError) : null;
   const gamesErrorPresentation = getBaseballScheduleErrorPresentation(parsedGamesError?.responseCode);
   const teamAccentText = getAccessibleCheerTextColor(teamAccent);
-  if (isLoading) {
+  if (resolvedIsLoading) {
     return (
-      <section className="mx-4 mt-4 animate-skeleton-pulse rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] p-5">
+      <section data-testid="cheer-live-panel" className="mx-4 mt-4 animate-skeleton-pulse rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] p-5">
         <div className="h-5 w-32 rounded bg-[var(--cheer-chip-bg)]" />
         <div className="mt-5 h-24 rounded-xl bg-[var(--cheer-chip-bg)]" />
         <div className="mt-4 h-11 rounded-full bg-[var(--cheer-chip-bg)]" />
@@ -86,9 +111,10 @@ export default function CheerLivePanel({
     );
   }
 
-  if (isError) {
+  if (resolvedIsError) {
     return (
       <section
+        data-testid="cheer-live-panel"
         className="mx-4 mt-4 rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-900/40 dark:bg-red-950/20"
         data-error-code={parsedGamesError?.responseCode || undefined}
       >
@@ -102,7 +128,14 @@ export default function CheerLivePanel({
         ) : null}
         <button
           type="button"
-          onClick={() => void refetchGames()}
+          data-testid="cheer-live-retry"
+          onClick={() => {
+            if (visualQaStateOverride?.onRetry) {
+              visualQaStateOverride.onRetry();
+              return;
+            }
+            void refetchGames();
+          }}
           className="mt-4 min-h-11 rounded-full border border-red-300 px-4 text-body font-black text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-200 dark:hover:bg-red-900/30"
         >
           다시 시도
@@ -113,13 +146,14 @@ export default function CheerLivePanel({
 
   if (!featuredGame) {
     return (
-      <section className="mx-4 mt-4 rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] p-6 text-center">
+      <section data-testid="cheer-live-panel" className="mx-4 mt-4 rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] p-6 text-center">
         <h2 className="text-lg font-black text-slate-900 dark:text-white">오늘 진행 중인 경기가 없습니다.</h2>
         <p className="mt-2 text-body font-semibold text-slate-500 dark:text-slate-300">
           예정 경기와 분석은 전력분석실에서 확인할 수 있습니다.
         </p>
         <button
           type="button"
+          data-testid="cheer-live-schedule"
           onClick={onGoPrediction}
           className="mt-5 min-h-11 rounded-full px-5 text-body font-black text-white active:scale-[0.98]"
           style={{ backgroundColor: teamAccent, color: teamAccentText }}
@@ -136,7 +170,7 @@ export default function CheerLivePanel({
   const hasScore = homeScore != null && awayScore != null;
 
   return (
-    <section className="mx-4 mt-4 overflow-hidden rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] shadow-[0_1px_3px_rgba(15,23,42,0.05)]">
+    <section data-testid="cheer-live-panel" className="mx-4 mt-4 overflow-hidden rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] shadow-[0_1px_3px_rgba(15,23,42,0.05)]">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--cheer-line-10)] px-5 py-4">
         <div>
           <h2 className="text-lg font-black text-slate-900 dark:text-white">오늘 경기</h2>
@@ -175,14 +209,15 @@ export default function CheerLivePanel({
         </div>
       </div>
       <CheerLiveEventSummary
-        snapshot={liveSnapshot}
-        isLoading={isLiveSnapshotLoading}
+        snapshot={resolvedLiveSnapshot}
+        isLoading={resolvedIsLiveSnapshotLoading}
         errorMessage={parsedLiveSnapshotError?.message}
         errorCode={parsedLiveSnapshotError?.responseCode}
       />
       <div className="px-5 pb-5">
         <button
           type="button"
+          data-testid="cheer-live-detail"
           onClick={onGoPrediction}
           className="min-h-11 w-full rounded-full text-body font-black text-white active:scale-[0.98]"
           style={{ backgroundColor: teamAccent, color: teamAccentText }}

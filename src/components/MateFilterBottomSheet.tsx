@@ -3,8 +3,12 @@ import { useState } from 'react';
 import { normalizeMateSearchText } from '../utils/mateSearchTerms';
 import { resolveMateSeatFilterOptions } from '../utils/mateSeatFilterOptions';
 import { SEAT_ICONS } from '../utils/seatIcons';
-import MatePopularSearchesPanel from './MatePopularSearchesPanel';
-import MateRecentSearchesPanel from './MateRecentSearchesPanel';
+import MatePopularSearchesPanel, {
+  type MatePopularSearchesPanelVisualQaStateOverride,
+} from './MatePopularSearchesPanel';
+import MateRecentSearchesPanel, {
+  type MateRecentSearchesPanelVisualQaStateOverride,
+} from './MateRecentSearchesPanel';
 import TeamLogo from './TeamLogo';
 import { Button } from './ui/button';
 import PlainDialog from './ui/plain-dialog';
@@ -21,6 +25,10 @@ interface MateFilterBottomSheetProps {
   onApplyFilters: (myTeamOnly: boolean, searchQuery: string) => void;
   onPopularTermSelect?: () => void;
   onResetFilters: () => void;
+  visualQaStateOverride?: {
+    popularSearches?: MatePopularSearchesPanelVisualQaStateOverride;
+    recentSearches?: MateRecentSearchesPanelVisualQaStateOverride;
+  };
 }
 
 export default function MateFilterBottomSheet({
@@ -33,7 +41,9 @@ export default function MateFilterBottomSheet({
   onApplyFilters,
   onPopularTermSelect,
   onResetFilters,
+  visualQaStateOverride: visualQaStateOverrideProp,
 }: MateFilterBottomSheetProps) {
+  const visualQaStateOverride = import.meta.env.DEV ? visualQaStateOverrideProp : undefined;
   const [draftMyTeamOnly, setDraftMyTeamOnly] = useState(myTeamOnly);
   const [draftInputValue, setDraftInputValue] = useState(inputValue);
   const seatOptions = resolveMateSeatFilterOptions(draftInputValue);
@@ -65,6 +75,7 @@ export default function MateFilterBottomSheet({
           <Button
             variant="outline"
             size="touch"
+            data-testid="mate-filter-reset"
             className="w-full rounded-xl focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-offset-[#000000]"
             disabled={draftActiveFilterCount === 0}
             onClick={onResetFilters}
@@ -73,6 +84,7 @@ export default function MateFilterBottomSheet({
           </Button>
           <Button
             size="touch"
+            data-testid="mate-filter-apply"
             className="w-full rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000]"
             onClick={() => onApplyFilters(draftMyTeamOnly, draftInputValue)}
           >
@@ -96,6 +108,7 @@ export default function MateFilterBottomSheet({
           {favoriteTeamId ? (
             <button
               type="button"
+              data-testid="mate-filter-team-toggle"
               aria-pressed={draftMyTeamOnly}
               onClick={() => setDraftMyTeamOnly(!draftMyTeamOnly)}
               className={`flex w-full items-center justify-between rounded-10 border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
@@ -132,6 +145,7 @@ export default function MateFilterBottomSheet({
                 <button
                   key={option.id}
                   type="button"
+                  data-testid={`mate-filter-seat-${option.id}`}
                   aria-pressed={isActive}
                   onClick={() => handleToggleSeat(option.label)}
                   className={`inline-flex min-h-11 items-center rounded-full border px-3 py-1.5 text-left text-12 font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
@@ -151,10 +165,12 @@ export default function MateFilterBottomSheet({
         <MateRecentSearchesPanel
           onTermClick={onSearchTermSelect}
           onTermSelect={onPopularTermSelect}
+          visualQaStateOverride={visualQaStateOverride?.recentSearches}
         />
         <MatePopularSearchesPanel
           onTermClick={onSearchTermSelect}
           onTermSelect={onPopularTermSelect}
+          visualQaStateOverride={visualQaStateOverride?.popularSearches}
         />
       </div>
     </PlainDialog>

@@ -67,6 +67,37 @@ test('harness request policy blocks external traffic and stubs every same-origin
   );
 });
 
+test('password-change fixture preserves real success, pending, and failure response semantics', () => {
+  assert.deepEqual(
+    harnessSmokeModule.resolvePasswordChangeFixtureResponse(
+      { currentPassword: 'VisualQaCurrent1!', newPassword: 'VisualQaSuccess1!', confirmPassword: 'VisualQaSuccess1!' },
+      1,
+    ),
+    { status: 200, body: { success: true } },
+  );
+  assert.deepEqual(
+    harnessSmokeModule.resolvePasswordChangeFixtureResponse(
+      { currentPassword: 'VisualQaCurrent1!', newPassword: 'VisualQaPending1!', confirmPassword: 'VisualQaPending1!' },
+      1,
+    ),
+    { status: 200, body: { success: true }, delayMs: 1_500 },
+  );
+  assert.equal(
+    harnessSmokeModule.resolvePasswordChangeFixtureResponse(
+      { currentPassword: 'VisualQaCurrent1!', newPassword: 'VisualQaError1!', confirmPassword: 'VisualQaError1!' },
+      1,
+    ).status,
+    401,
+  );
+  assert.equal(
+    harnessSmokeModule.resolvePasswordChangeFixtureResponse(
+      { currentPassword: 'VisualQaCurrent1!', newPassword: 'VisualQaError1!', confirmPassword: 'VisualQaError1!' },
+      2,
+    ).status,
+    503,
+  );
+});
+
 test('capture viewport preserves the real mobile height for fixed portal surfaces', async () => {
   const sizes: Array<{ width: number; height: number }> = [];
   const evaluateInputs: unknown[] = [];
@@ -858,13 +889,14 @@ test('the browser probe timeout has a conservative validated default', () => {
   assert.throws(() => resolveHarnessTimeoutMs('abc'), /positive integer/);
 });
 
-test('the browser engine defaults to system Chrome and can require bundled Chromium', () => {
+test('the browser engine supports system Chrome, bundled Chromium, and bundled WebKit', () => {
   assert.equal(resolveHarnessBrowserEngine(undefined), 'chrome');
   assert.equal(resolveHarnessBrowserEngine('chrome'), 'chrome');
   assert.equal(resolveHarnessBrowserEngine('chromium'), 'chromium');
+  assert.equal(resolveHarnessBrowserEngine('webkit'), 'webkit');
   assert.throws(
-    () => resolveHarnessBrowserEngine('webkit'),
-    /VISUAL_QA_HARNESS_BROWSER must be either chrome or chromium/,
+    () => resolveHarnessBrowserEngine('firefox'),
+    /VISUAL_QA_HARNESS_BROWSER must be either chrome, chromium, or webkit/,
   );
 });
 

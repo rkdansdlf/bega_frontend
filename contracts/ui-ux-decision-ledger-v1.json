@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "ledgerId": "bega-ui-ux-decision-ledger-v1",
+  "source": {
+    "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "commit": "09170eec67eefd46a7ae85de61b40c194020f997"
+  },
+  "decisionPolicy": {
+    "acceptedRequiresAdoptedRuleIds": true,
+    "automaticContractUpdates": false
+  },
+  "decisions": [
+    {
+      "id": "bega-baseline",
+      "profile": "bega",
+      "query": "baseball fan companion sports community stadium guide mobile-first",
+      "recommendationSummary": "Minimalism & Swiss Style; red palette; Bebas Neue and Source Sans 3",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "landing-baseline",
+      "profile": "landing",
+      "query": "baseball fan companion landing community mobile-first",
+      "recommendationSummary": "Vibrant & Block-based; red palette",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "auth-baseline",
+      "profile": "auth",
+      "query": "sports community secure account sign-in accessible form",
+      "recommendationSummary": "Trust & Authority; navy and gold; Lexend and Source Sans 3",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "home-baseline",
+      "profile": "home",
+      "query": "baseball fan home feed games community content discovery",
+      "recommendationSummary": "Generic minimal sports direction",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "mate-baseline",
+      "profile": "mate",
+      "query": "baseball fan meetup social matching messaging mobile workflow",
+      "recommendationSummary": "Generic hero-centric red and minimal direction",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "stadium-off-topic",
+      "profile": "stadium",
+      "query": "baseball stadium guide seat map venue places mobile information",
+      "recommendationSummary": "Unrelated event-landing result and dark palette",
+      "decision": "rejected",
+      "reason": "The captured result was off-topic for the stadium guide and does not replace BEGA's venue and seat-map information architecture.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "prediction-baseline",
+      "profile": "prediction",
+      "query": "baseball prediction statistics data dense sports dashboard",
+      "recommendationSummary": "Enterprise gateway; blue and amber; Fira Sans and Fira Code",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "mypage-off-topic",
+      "profile": "mypage",
+      "query": "baseball fan personal profile diary season history",
+      "recommendationSummary": "Scroll-triggered storytelling; brown and indigo; Caveat and Quicksand",
+      "decision": "rejected",
+      "reason": "The captured direction is off-topic for BEGA's personal profile and diary workflows and conflicts with the existing dense application structure.",
+      "adoptedRuleIds": []
+    },
+    {
+      "id": "admin-baseline",
+      "profile": "admin",
+      "query": "sports community administration operational data dashboard",
+      "recommendationSummary": "Real-time operations; dark status green; Fira Sans and Fira Code",
+      "decision": "pending",
+      "reason": "No BEGA adoption decision was recorded for this result; keep it advisory until reviewed against current Guidelines and tokens.",
+      "adoptedRuleIds": []
+    }
+  ]
+}

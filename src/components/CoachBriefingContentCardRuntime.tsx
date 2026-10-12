@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { Game, GameDetail } from '../types/prediction';
@@ -54,6 +55,8 @@ export interface CoachBriefingContentRuntimeProps {
   awayRank?: number | null;
   // V5: explicit win probability (null = not available from backend yet)
   winProbabilityHome: number | null;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 const getCoachBriefingBadgeClassName = (dataQuality?: string): string => {
@@ -337,7 +340,18 @@ export default function CoachBriefingContentCardRuntime({
   homeRank,
   awayRank,
   winProbabilityHome,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: CoachBriefingContentRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="coach-briefing-content-card-runtime-fallback">코치 브리핑을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const isNarrow = useMediaQuery('(max-width: 640px)');
   const [displayedMessage, setDisplayedMessage] = useState('');
 

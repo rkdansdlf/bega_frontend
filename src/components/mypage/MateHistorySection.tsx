@@ -1,24 +1,47 @@
 // MateHistorySection.tsx
 import { useState } from 'react';
 import { useMateHistory } from '../../hooks/useMateHistory';
-import { MateHistoryTab } from '../../types/mate';
+import { MateHistoryTab, MateParty } from '../../types/mate';
 import MateHistoryCard from './MateHistoryCard';
 import LoadingSpinner from '../LoadingSpinner';
 
-interface MateHistoryContentProps {
-  tab: MateHistoryTab;
+export interface MateHistorySectionVisualQaTabState {
+  parties: MateParty[];
+  isLoading: boolean;
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  isEmpty?: boolean;
+  emptyMessage: string;
 }
 
-function MateHistoryContent({ tab }: MateHistoryContentProps) {
+export interface MateHistorySectionVisualQaStateOverride {
+  initialTab?: MateHistoryTab;
+  tabStates: Partial<Record<MateHistoryTab, MateHistorySectionVisualQaTabState>>;
+  onFetchNextPage?: () => void | Promise<unknown>;
+}
+
+interface MateHistorySectionProps {
+  visualQaStateOverride?: MateHistorySectionVisualQaStateOverride;
+}
+
+interface MateHistoryContentProps {
+  tab: MateHistoryTab;
+  visualQaStateOverride?: MateHistorySectionVisualQaStateOverride;
+}
+
+function MateHistoryContent({ tab, visualQaStateOverride }: MateHistoryContentProps) {
+  const liveState = useMateHistory(tab);
+  const overrideState = visualQaStateOverride?.tabStates[tab];
   const {
     parties,
     isLoading,
     isFetchingNextPage,
     hasNextPage,
-    fetchNextPage,
     isEmpty,
     emptyMessage,
-  } = useMateHistory(tab);
+  } = overrideState ?? liveState;
+  const resolvedFetchNextPage = visualQaStateOverride?.onFetchNextPage ?? liveState.fetchNextPage;
+  const resolvedIsEmpty = overrideState?.isEmpty ?? isEmpty;
 
   if (isLoading) {
     return (
@@ -26,7 +49,7 @@ function MateHistoryContent({ tab }: MateHistoryContentProps) {
     );
   }
 
-  if (isEmpty) {
+  if (resolvedIsEmpty) {
     return (
       <div className="mypage-season-empty">
         <p>{emptyMessage}</p>
@@ -43,7 +66,8 @@ function MateHistoryContent({ tab }: MateHistoryContentProps) {
         <div className="flex justify-center pt-2">
           <button
             type="button"
-            onClick={() => void fetchNextPage()}
+            data-testid="mypage-mate-history-load-more"
+            onClick={() => void resolvedFetchNextPage()}
             disabled={isFetchingNextPage}
             className="mypage-season-ghost-button disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -55,8 +79,15 @@ function MateHistoryContent({ tab }: MateHistoryContentProps) {
   );
 }
 
-export default function MateHistorySection() {
-  const [mateHistoryTab, setMateHistoryTab] = useState<MateHistoryTab>('all');
+export default function MateHistorySection({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: MateHistorySectionProps) {
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const [mateHistoryTab, setMateHistoryTab] = useState<MateHistoryTab>(
+    visualQaStateOverride?.initialTab ?? 'all',
+  );
 
   const tabs: Array<{ key: MateHistoryTab; label: string }> = [
     { key: 'all', label: '전체' },
@@ -65,7 +96,7 @@ export default function MateHistorySection() {
   ];
 
   return (
-    <section data-screen-label="메이트 내역">
+    <section data-screen-label="메이트 내역" data-testid="mypage-mate-history-section">
       <div className="mypage-season-head">
         <div>
           <h1>메이트 내역</h1>
@@ -79,6 +110,7 @@ export default function MateHistorySection() {
             <button
               type="button"
               key={tab.key}
+              data-testid={`mypage-mate-history-tab-${tab.key}`}
               onClick={() => setMateHistoryTab(tab.key)}
               className={mateHistoryTab === tab.key ? 'is-active' : undefined}
             >
@@ -87,7 +119,7 @@ export default function MateHistorySection() {
           ))}
         </div>
 
-        <MateHistoryContent tab={mateHistoryTab} />
+        <MateHistoryContent tab={mateHistoryTab} visualQaStateOverride={visualQaStateOverride} />
       </div>
     </section>
   );

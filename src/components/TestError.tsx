@@ -35,7 +35,7 @@ export default function TestError() {
             <h1 className="text-2xl font-bold">Global Error Handler Test</h1>
             <div className="flex flex-wrap gap-4">
                 {isDev && (
-                    <Button onClick={() => setShouldCrashOnRender(true)} variant="destructive">
+                    <Button data-testid="test-error-trigger-crash" onClick={() => setShouldCrashOnRender(true)} variant="destructive">
                         Trigger Render Crash
                     </Button>
                 )}
@@ -43,19 +43,19 @@ export default function TestError() {
                 <div className="w-full h-px bg-gray-200 my-4" />
                 <h2 className="text-lg font-semibold w-full">Simulate UI (Event Dispatch)</h2>
 
-                <Button onClick={() => triggerManualDispatch(400)} variant="outline">
+                <Button data-testid="test-error-400" onClick={() => triggerManualDispatch(400)} variant="outline">
                     Simulate 400
                 </Button>
-                <Button onClick={() => triggerManualDispatch(401)} variant="outline">
+                <Button data-testid="test-error-401" onClick={() => triggerManualDispatch(401)} variant="outline">
                     Simulate 401
                 </Button>
-                <Button onClick={() => triggerManualDispatch(403)} variant="outline">
+                <Button data-testid="test-error-403" onClick={() => triggerManualDispatch(403)} variant="outline">
                     Simulate 403
                 </Button>
-                <Button onClick={() => triggerManualDispatch(404)} variant="outline">
+                <Button data-testid="test-error-404" onClick={() => triggerManualDispatch(404)} variant="outline">
                     Simulate 404
                 </Button>
-                <Button onClick={() => triggerManualDispatch(500)} variant="destructive">
+                <Button data-testid="test-error-500" onClick={() => triggerManualDispatch(500)} variant="destructive">
                     Simulate 500
                 </Button>
             </div>

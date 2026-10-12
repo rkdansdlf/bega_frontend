@@ -47,6 +47,7 @@ interface StadiumGuidePlacesRuntimeProps {
   listControlsDisabled: boolean;
   isDark: boolean;
   isNearbyCategory: boolean;
+  testId?: string;
 }
 
 export default function StadiumGuidePlacesRuntime({
@@ -62,6 +63,7 @@ export default function StadiumGuidePlacesRuntime({
   listControlsDisabled,
   isDark,
   isNearbyCategory,
+  testId,
 }: StadiumGuidePlacesRuntimeProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<StadiumGuideSortOrder>('default');
@@ -101,7 +103,11 @@ export default function StadiumGuidePlacesRuntime({
   };
 
   return (
-    <div data-testid="stadium-guide-places-panel">
+    <div
+      data-testid={testId ?? 'stadium-guide-places-panel'}
+      data-result-count={filteredPlaces.length}
+      data-sort-order={sortOrder}
+    >
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-bold dark:text-white text-balance" style={{ color: titleColor }}>
           {CATEGORY_CONFIGS[selectedCategory].label} 목록
@@ -119,6 +125,7 @@ export default function StadiumGuidePlacesRuntime({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             disabled={listControlsDisabled}
+            data-testid={testId ? `${testId}-search` : undefined}
             className="stadium-guide-control min-h-11 pl-9 text-body"
           />
         </div>
@@ -128,6 +135,7 @@ export default function StadiumGuidePlacesRuntime({
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as StadiumGuideSortOrder)}
             disabled={listControlsDisabled}
+            data-testid={testId ? `${testId}-sort` : undefined}
             className="stadium-guide-select stadium-guide-control box-border min-h-11 w-full max-w-full pl-8 pr-2 text-body rounded-md border border-input bg-background dark:text-white cursor-pointer"
           >
             <option value="default">기본순</option>
@@ -188,6 +196,7 @@ export default function StadiumGuidePlacesRuntime({
                     variant="outline"
                     className="text-red-600 border-red-300 hover:bg-red-50 dark:bg-transparent dark:text-red-200 dark:border-red-400/30 dark:hover:bg-red-400/10"
                     onClick={retryPlaces}
+                    data-testid={testId ? `${testId}-retry` : undefined}
                   >
                     <RefreshIcon className="w-3.5 h-3.5 mr-1" />
                     목록 다시 시도
@@ -213,6 +222,8 @@ export default function StadiumGuidePlacesRuntime({
                     <Card
                       key={place.id}
                       id={`place-${place.id}`}
+                      data-testid={testId ? `${testId}-card-${place.id}` : undefined}
+                      data-expanded={isExpanded}
                       className="p-3 sm:p-4 hover:shadow-lg transition-shadow cursor-pointer border-2"
                       style={{
                         backgroundColor: isSelected
@@ -279,6 +290,7 @@ export default function StadiumGuidePlacesRuntime({
                               e.stopPropagation();
                               openKakaoMapRoute(place.name, place.lat, place.lng);
                             }}
+                            data-testid={testId ? `${testId}-route-${place.id}` : undefined}
                             disabled={!hasPlaceCoordinates}
                             className="min-h-11 px-3 py-2 sm:px-4 rounded-lg text-white text-sm transition-colors hover:opacity-90 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2"
                             style={{

@@ -2,6 +2,7 @@ import { AiDataSource, AiStreamMetaPayload, AiToolCall } from '../types/ai';
 import type { ManualBaseballDataRequest } from '../types/manualBaseballData';
 import type { components as AiStreamComponents } from './generated/aiStreamV2';
 import { requestAuthReissue } from './authReissue';
+import { AuthOperationSupersededError, assertAuthOperationCurrent, getAuthOperationRevision } from './authSessionGeneration';
 import { normalizeAiDataSources, normalizeAiToolCalls } from './aiMeta';
 import {
     AI_EVENT_VERSION_HEADER,
@@ -470,6 +471,7 @@ export async function analyzeTeam(
     onStream?: (chunk: string) => void,
     options?: AnalyzeOptions
 ): Promise<CoachAnalyzeResponse> {
+    const authRevision = getAuthOperationRevision();
     const eventVersion = getAiEventVersion();
     const requestMode = normalizeCoachRequestMode(data.request_mode);
     const normalizedQuestionOverride = normalizeQuestionOverride(data.question_override);
@@ -502,6 +504,7 @@ export async function analyzeTeam(
         attempt++;
 
         try {
+            assertAuthOperationCurrent(authRevision);
             const request = await requestStream(COACH_ANALYZE_ENDPOINT, {
                 ...requestInit,
                 timeoutMs: getCoachStreamRequestTimeoutMs(requestMode),
@@ -517,13 +520,16 @@ export async function analyzeTeam(
                 }
 
                 try {
-                    const refreshSucceeded = await requestAuthReissue();
+                    const refreshSucceeded = await requestAuthReissue(authRevision);
+                    assertAuthOperationCurrent(authRevision);
                     if (refreshSucceeded) {
                         if (attempt < MAX_RETRIES) {
                             continue;
                         }
                     }
-                } catch {
+                } catch (error) {
+                    if (error instanceof AuthOperationSupersededError) throw error;
+                    assertAuthOperationCurrent(authRevision);
                     response = request;
                     responseError = requestError;
                     break;

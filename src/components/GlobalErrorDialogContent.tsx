@@ -50,7 +50,7 @@ export default function GlobalErrorDialogContent({
                     data-testid="global-error-dialog-title"
                     className="block min-w-0 max-w-full text-xl font-bold text-red-600 [overflow-wrap:anywhere]"
                 >
-                    {prefixText} (HTTP {statusCode || 0})
+                    {prefixText}{statusCode !== null && statusCode > 0 ? ` (HTTP ${statusCode})` : ''}
                 </span>
             )}
             description={message}

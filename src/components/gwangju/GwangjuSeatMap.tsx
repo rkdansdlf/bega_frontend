@@ -196,7 +196,7 @@ function DetailPanel({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
+          className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800 sm:h-8 sm:w-8"
         >
           ×
         </button>
@@ -264,9 +264,20 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const ZOOM_STEP = 0.25;
 
-export default function GwangjuSeatMap() {
+export interface GwangjuSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface GwangjuSeatMapProps {
+  stateOverride?: GwangjuSeatMapStateOverride;
+}
+
+export default function GwangjuSeatMap({ stateOverride }: GwangjuSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });
@@ -292,7 +303,12 @@ export default function GwangjuSeatMap() {
     getCategoryId: (section) => section.category,
     isSectionVisible: isGwangjuSectionVisibleInFilter,
   });
-  const { isMobile, isFullscreenOpen, closeFullscreen } = useSeatMapTemplateShellState();
+  const {
+    isMobile,
+    isFullscreenOpen,
+    openFullscreen,
+    closeFullscreen,
+  } = useSeatMapTemplateShellState();
   const filterFanRoles = activeFilterGroup?.fanRoles ?? null;
   const hasSelectableBlocks = GWANGJU_SELECTABLE_BLOCKS_READY;
   const hoveredCategory = hoveredSection ? GWANGJU_CATEGORIES[hoveredSection.category] : null;
@@ -314,7 +330,7 @@ export default function GwangjuSeatMap() {
     showToast('시야 사진이 검수 대기열에 등록되었습니다.');
   }, [showToast]);
 
-  const mapSvg = (
+  const renderMapSvg = (allowFullscreen = true) => (
     <GwangjuSeatMapSvg
       mode={mode}
       selected={selected}
@@ -333,6 +349,7 @@ export default function GwangjuSeatMap() {
       minZoom={MIN_ZOOM}
       maxZoom={MAX_ZOOM}
       zoomStep={ZOOM_STEP}
+      onFullscreen={allowFullscreen && hasSelectableBlocks ? openFullscreen : undefined}
     />
   );
 
@@ -427,7 +444,7 @@ export default function GwangjuSeatMap() {
 
   const mapContent = (
     <div className="relative">
-      {mapSvg}
+      {renderMapSvg()}
       <SeatMapHoverPreview
         visible={Boolean(hoveredSection && hoveredCategory)}
         title={hoveredSection?.name}
@@ -472,7 +489,21 @@ export default function GwangjuSeatMap() {
         toast={toast}
         isFullscreenOpen={isFullscreenOpen}
         onFullscreenClose={closeFullscreen}
-        fullscreenMapContent={mapContent}
+        fullscreenMapContent={(
+          <div className="relative">
+            {renderMapSvg(false)}
+            <SeatMapHoverPreview
+              visible={Boolean(hoveredSection && hoveredCategory)}
+              title={hoveredSection?.name}
+              subtitle={hoveredSection ? `블록 ${hoveredSection.block}` : undefined}
+              badgeLabel={hoveredCategory?.label}
+              accentColor={hoveredAccent}
+              description={hoveredSection ? `${getGwangjuSideLabel(hoveredSection.side)} · ${getGwangjuFanRoleLabel(hoveredSection.fanRole)}` : undefined}
+            />
+          </div>
+        )}
+        fullscreenDialogTestId="gwangju-seatmap-fullscreen"
+        fullscreenCloseTestId="gwangju-seatmap-fullscreen-close"
         fullscreenTitle="광주-KIA 챔피언스필드"
         fullscreenSubtitle="광주 KIA 공식 좌석도 전체화면"
       />

@@ -23,7 +23,16 @@ type PendingComment = Comment & { isPending?: boolean };
 type CheerCommentsPage = Awaited<ReturnType<typeof cheerApi.fetchComments>>;
 type CheerCommentsInfiniteData = InfiniteData<CheerCommentsPage, number>;
 
-interface CheerDetailCommentsPanelProps {
+export type CheerDetailCommentsPanelVisualQaPhase = 'empty' | 'error' | 'loading' | 'populated';
+
+export interface CheerDetailCommentsPanelVisualQaStateOverride {
+  phase: CheerDetailCommentsPanelVisualQaPhase;
+  comments?: Comment[];
+  hasNextPage?: boolean;
+  onInteraction?: (intent: string) => void;
+}
+
+export interface CheerDetailCommentsPanelProps {
   resolvedPostId: number;
   commentCount: number;
   onCommentCountChange: (count: number) => void;
@@ -38,6 +47,7 @@ interface CheerDetailCommentsPanelProps {
   surfaceTintStyle: CSSProperties;
   onRedirectToLogin: () => void;
   confirm: (options: ConfirmOptions) => Promise<boolean>;
+  visualQaStateOverride?: CheerDetailCommentsPanelVisualQaStateOverride;
 }
 
 const resolveProfileImage = (imageUrl?: string | null) => {
@@ -90,14 +100,21 @@ export default function CheerDetailCommentsPanel({
   surfaceTintStyle,
   onRedirectToLogin,
   confirm,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerDetailCommentsPanelProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const { deleteCommentMutation } = useCheerMutations();
   const queryClient = useQueryClient();
   const commentsQueryOptions = useMemo(
     () => getCheerCommentsQueryOptions(resolvedPostId),
     [resolvedPostId],
   );
-  const commentsQuery = useInfiniteQuery(commentsQueryOptions);
+  const commentsQuery = useInfiniteQuery({
+    ...commentsQueryOptions,
+    enabled: visualQaStateOverride == null,
+  });
   const [commentText, setCommentText] = useState('');
   const [commentsTotal, setCommentsTotal] = useState(commentCount);
   const [sendingComment, setSendingComment] = useState(false);
@@ -108,12 +125,18 @@ export default function CheerDetailCommentsPanel({
   const commentLikeTimersRef = useRef<Record<number, number>>({});
   const commentsRef = useRef<PendingComment[]>([]);
   const comments = useMemo<PendingComment[]>(
-    () => commentsQuery.data?.pages.flatMap((page) => page.content as PendingComment[]) ?? [],
-    [commentsQuery.data],
+    () => visualQaStateOverride?.comments ?? commentsQuery.data?.pages.flatMap((page) => page.content as PendingComment[]) ?? [],
+    [commentsQuery.data, visualQaStateOverride],
   );
-  const commentsLoading = commentsQuery.isPending;
-  const loadingMoreComments = commentsQuery.isFetchingNextPage;
-  const commentsError = commentsQuery.isError ? '댓글을 불러오지 못했습니다.' : null;
+  const commentsLoading = visualQaStateOverride?.phase === 'loading'
+    || (visualQaStateOverride == null && commentsQuery.isPending);
+  const loadingMoreComments = visualQaStateOverride == null && commentsQuery.isFetchingNextPage;
+  const commentsError = visualQaStateOverride?.phase === 'error'
+    || (visualQaStateOverride == null && commentsQuery.isError)
+    ? '댓글을 불러오지 못했습니다.'
+    : null;
+  const hasNextPage = visualQaStateOverride?.hasNextPage
+    ?? commentsQuery.hasNextPage;
 
   useEffect(() => {
     return () => {
@@ -168,6 +191,11 @@ export default function CheerDetailCommentsPanel({
     if (!commentText.trim()) return;
     if (!isLoggedIn) {
       onRedirectToLogin();
+      return;
+    }
+    if (visualQaStateOverride) {
+      visualQaStateOverride.onInteraction?.('comment-submit');
+      setCommentText('');
       return;
     }
 
@@ -254,6 +282,10 @@ export default function CheerDetailCommentsPanel({
       onRedirectToLogin();
       return;
     }
+    if (visualQaStateOverride) {
+      visualQaStateOverride.onInteraction?.(`comment-like:${commentId}`);
+      return;
+    }
 
     const previousData = queryClient.getQueryData<CheerCommentsInfiniteData>(commentsQueryOptions.queryKey);
     setCommentsData((data) => ({
@@ -286,6 +318,7 @@ export default function CheerDetailCommentsPanel({
       onRedirectToLogin();
       return;
     }
+    visualQaStateOverride?.onInteraction?.(`reply-toggle:${commentId}`);
     setActiveReplyId((prev) => (prev === commentId ? null : commentId));
     setReplyDraft('');
   };
@@ -304,6 +337,11 @@ export default function CheerDetailCommentsPanel({
   const handleReplySubmit = async (commentId: number) => {
     if (!commentId || commentId !== activeReplyId) return;
     if (!replyDraft.trim()) return;
+    if (visualQaStateOverride) {
+      visualQaStateOverride.onInteraction?.(`reply-submit:${commentId}`);
+      handleReplyCancel();
+      return;
+    }
     setIsReplyPending(true);
     try {
       handleReplyCancel();
@@ -320,6 +358,10 @@ export default function CheerDetailCommentsPanel({
       variant: 'destructive',
     });
     if (!commentDeleteConfirmed) return;
+    if (visualQaStateOverride) {
+      visualQaStateOverride.onInteraction?.(`comment-delete:${commentId}`);
+      return;
+    }
 
     const previousComments = commentsRef.current;
     const previousData = queryClient.getQueryData<CheerCommentsInfiniteData>(commentsQueryOptions.queryKey);
@@ -350,7 +392,11 @@ export default function CheerDetailCommentsPanel({
   };
 
   const handleLoadMoreComments = async () => {
-    if (loadingMoreComments || !commentsQuery.hasNextPage) {
+    if (loadingMoreComments || !hasNextPage) {
+      return;
+    }
+    if (visualQaStateOverride) {
+      visualQaStateOverride.onInteraction?.('load-more');
       return;
     }
     try {
@@ -364,6 +410,7 @@ export default function CheerDetailCommentsPanel({
   return (
     <div
       id="cheer-comments-section"
+      data-testid="cheer-detail-comments-panel"
       className="mt-4 border-t border-[var(--cheer-line-10)] pt-4"
     >
       <div className="mb-2">
@@ -406,7 +453,8 @@ export default function CheerDetailCommentsPanel({
                   onClick={handleCommentSubmit}
                   disabled={!commentText.trim() || sendingComment}
                   aria-label="댓글 등록"
-                  className="h-7 rounded-full px-3 text-body font-bold text-white sm:h-7 sm:text-body"
+                  data-testid="cheer-comments-submit"
+                  className="h-auto min-h-11 rounded-full px-3 text-body font-bold text-white sm:min-h-7 sm:text-body"
                   style={{ backgroundColor: detailAccent }}
                 >
                   등록
@@ -428,7 +476,8 @@ export default function CheerDetailCommentsPanel({
           </p>
           <Button
             onClick={onRedirectToLogin}
-            className="mt-2.5 h-7 rounded-full px-3 text-body font-bold text-white"
+            data-testid="cheer-comments-login"
+            className="mt-2.5 h-auto min-h-11 rounded-full px-3 text-body font-bold text-white sm:min-h-7"
             style={{ backgroundColor: detailAccent }}
           >
             로그인하고 참여하기
@@ -443,8 +492,13 @@ export default function CheerDetailCommentsPanel({
             variant="outline"
             className="mt-3 rounded-full font-bold"
             onClick={() => {
+              if (visualQaStateOverride) {
+                visualQaStateOverride.onInteraction?.('retry');
+                return;
+              }
               void commentsQuery.refetch();
             }}
+            data-testid="cheer-comments-retry"
           >
             다시 시도
           </Button>
@@ -553,10 +607,10 @@ export default function CheerDetailCommentsPanel({
               ) : null,
             ])}
           </div>
-          {commentsQuery.hasNextPage ? (
+          {hasNextPage ? (
             <Button
               variant="outline"
-              className="mt-3 h-8 w-full rounded-full text-body font-bold"
+              className="mt-3 h-auto min-h-11 w-full rounded-full text-body font-bold sm:min-h-8"
               onClick={() => {
                 void handleLoadMoreComments();
               }}

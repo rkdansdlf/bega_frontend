@@ -22,7 +22,20 @@ function CoachBriefingContentFallback() {
   );
 }
 
-export default function CoachBriefingContentRuntime(props: CoachBriefingContentRuntimeProps) {
+export default function CoachBriefingContentRuntime({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+  ...props
+}: CoachBriefingContentRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="coach-briefing-content-runtime-fallback">코치 브리핑 화면을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   return (
     <Suspense fallback={<CoachBriefingContentFallback />}>
       <CoachBriefingContentCardRuntime {...props} />

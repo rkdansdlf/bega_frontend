@@ -32,6 +32,7 @@ import { useScrollMetrics } from '../hooks/useScrollStage';
 import { cn } from '../lib/utils';
 import { buildNavbarNavPath, isNavbarNavItemActive } from '../utils/navbarNavigation';
 import { ProfileAvatar } from './ui/ProfileAvatar';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
 
 const CHAT_UNREAD_UPDATED_EVENT = 'chat-unread-updated';
 const MOBILE_MENU_TRANSITION_MS = 280;
@@ -108,7 +109,7 @@ export default function Navbar(props: NavbarProps) {
   const userRole = visualQaStateOverride?.userRole ?? liveProfile.userRole;
   const isAdmin = isAdminRole(userRole);
   const displayName = userName?.trim() || '회원';
-  const liveIsDesktop = useMediaQuery('(min-width: 768px)');
+  const liveIsDesktop = useMediaQuery('(min-width: 1024px)');
   const liveMobileMenuPresence = useAnimatedPresence(
     !liveIsDesktop && liveIsMenuOpen,
     MOBILE_MENU_TRANSITION_MS,
@@ -146,7 +147,7 @@ export default function Navbar(props: NavbarProps) {
   const isScrollCenteredLayout = scrollChromeProgress >= 0.75;
   const logoSubtitleProgress = Math.min(1, shrinkProgress * 1.6);
   const isLogoSubtitleCollapsed = logoSubtitleProgress >= 0.98 || viewportFitProgress >= 0.98;
-  const navIconButtonClass = 'relative inline-flex h-10 w-10 shrink-0 transform-gpu items-center justify-center rounded-full p-2 transition-all duration-[220ms] ease-out motion-safe:hover:-translate-y-0.5 motion-safe:focus-visible:-translate-y-0.5 motion-reduce:transform-none focus:outline-none';
+  const navIconButtonClass = 'relative inline-flex h-11 w-11 shrink-0 transform-gpu items-center justify-center rounded-full p-2 transition-all duration-[220ms] ease-out motion-safe:hover:-translate-y-0.5 motion-safe:focus-visible:-translate-y-0.5 motion-reduce:transform-none focus:outline-none';
   const menuToggleButtonClass = 'relative inline-flex h-11 w-11 shrink-0 transform-gpu items-center justify-center rounded-full p-0 transition-all duration-[220ms] ease-out motion-safe:hover:-translate-y-0.5 motion-safe:focus-visible:-translate-y-0.5 motion-reduce:transform-none focus:outline-none';
   const navIconToggleClass = `${navIconButtonClass} focus-visible:ring-2 focus-visible:ring-primary/50 text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8`;
   const navIconSizeClass = 'h-5 w-5';
@@ -173,7 +174,7 @@ export default function Navbar(props: NavbarProps) {
     ?? (shouldFetchChatUnread ? (chatUnreadQueryData ?? 0) : 0);
 
   const { data: dmRoomsData } = useQuery({
-    queryKey: ['dm', 'inbox'],
+    queryKey: PRIVATE_QUERY_KEYS.dmInbox(),
     queryFn: async () => { const { fetchMyDmRooms } = await import('../api/dm'); return fetchMyDmRooms(); },
     staleTime: 30_000,
     enabled: visualQaStateOverride === undefined && authenticatedShell && isLoggedIn,
@@ -280,9 +281,8 @@ export default function Navbar(props: NavbarProps) {
     };
   }, [shouldShowMobileMenuThemeToggle]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/home');
+  const handleLogout = async () => {
+    if (await logout()) navigate('/home');
   };
 
   const handleMobileNav = (path: string) => {
@@ -411,7 +411,7 @@ export default function Navbar(props: NavbarProps) {
 
   return (
     <>
-    <header className="sticky top-0 z-[60] px-3 py-2 md:px-4 md:py-1.5 relative overflow-x-clip">
+    <header className="sticky top-0 z-[60] px-3 py-2 lg:px-4 lg:py-1.5 relative overflow-x-clip">
       {/* Backdrop tint — visible only at stage 0 */}
       <div
         aria-hidden="true"
@@ -425,7 +425,7 @@ export default function Navbar(props: NavbarProps) {
       <div
         data-testid="navbar-capsule"
         className={cn(
-          'navbar-capsule-mobile relative flex h-12 flex-wrap items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] md:left-1/2 md:grid md:h-[var(--navbar-capsule-height)] md:w-[var(--navbar-capsule-width)] md:max-w-[calc(100vw-1rem)] md:grid-cols-navbar-capsule md:items-center md:gap-[var(--navbar-capsule-gap)] md:-translate-x-1/2 md:px-[var(--navbar-capsule-px)]',
+          'navbar-capsule-mobile relative flex h-auto min-h-12 flex-wrap items-center justify-between gap-2 rounded-full border px-3 transition-all duration-[240ms] ease-[var(--navbar-motion-ease)] lg:left-1/2 lg:grid lg:min-h-[var(--navbar-capsule-height)] lg:w-[var(--navbar-capsule-width)] lg:max-w-[calc(100vw-1rem)] lg:grid-cols-navbar-capsule lg:items-center lg:gap-[var(--navbar-capsule-gap)] lg:-translate-x-1/2 lg:px-[var(--navbar-capsule-px)]',
           capsuleGlass,
         )}
         style={capsuleStyle}
@@ -434,19 +434,25 @@ export default function Navbar(props: NavbarProps) {
         <Link
           to="/home"
           aria-label="BEGA 홈"
-          className="navbar-home-link flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 md:justify-self-start"
+          className="navbar-home-link flex min-h-11 items-center gap-2 shrink-0 group rounded-full px-1 lg:justify-self-start"
         >
           <img
             src={baseballLogo}
             alt=""
-            className="navbar-logo-image w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:rotate-12"
+            aria-hidden="true"
+            width={36}
+            height={36}
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
+            className="navbar-logo-image w-8 h-8 lg:w-9 lg:h-9 transition-transform duration-300 group-hover:rotate-12"
           />
           <div className="flex flex-col items-start leading-none">
             <span className="font-black text-17 tracking-widest text-primary dark:text-primary-light leading-none">
               BEGA
             </span>
             <p
-              className="hidden overflow-hidden text-10 font-bold text-muted-foreground dark:text-white tracking-tight transition-all duration-150 ease-out md:block"
+              className="hidden overflow-hidden text-10 font-bold text-muted-foreground dark:text-white tracking-tight transition-all duration-150 ease-out lg:block"
               style={logoSubtitleStyle}
             >
               BASEBALL GUIDE
@@ -456,7 +462,7 @@ export default function Navbar(props: NavbarProps) {
 
         {/* 2. 데스크톱 세그먼트 네비게이션 */}
         {isDesktop && (
-          <nav className="flex min-w-0 items-center justify-center md:justify-self-center" aria-label="주 메뉴">
+          <nav className="flex min-w-0 items-center justify-center lg:justify-self-center" aria-label="주 메뉴">
             <div
               ref={navSegmentRef}
               className="relative flex items-center gap-0.5 overflow-hidden rounded-full bg-black/[.035] dark:bg-white/[.045] transition-all duration-[240ms] ease-[var(--navbar-motion-ease)]"
@@ -735,7 +741,7 @@ export default function Navbar(props: NavbarProps) {
                           <ShieldAlertIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                         </div>
                         <span className="font-semibold text-amber-700 dark:text-amber-400">관리자</span>
-                    <span className="ml-auto px-2 py-0.5 text-body font-bold rounded bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                    <span className="hidden lg:inline-flex ml-auto px-2 py-0.5 text-body font-bold rounded bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
                           ADMIN
                         </span>
                       </button>
@@ -780,7 +786,7 @@ export default function Navbar(props: NavbarProps) {
       <nav
         data-testid="auth-mobile-bottom-nav"
         data-vqa-content-overlay="allowed"
-        className="md:hidden fixed inset-x-3.5 z-50"
+        className="lg:hidden fixed inset-x-3.5 z-50"
         style={{
           bottom: 'calc(var(--mobile-chrome-bottom-offset) + env(safe-area-inset-bottom))',
         }}
@@ -806,7 +812,7 @@ export default function Navbar(props: NavbarProps) {
                 )}
               >
                 <Icon className="w-5 h-5 shrink-0" />
-                <span className="max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
+                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
                 {item.id === 'mate' && chatUnreadCount > 0 && (
                   <span className="absolute top-1 right-2 inline-flex min-w-[14px] h-3.5 items-center justify-center rounded-full bg-red-600 px-1 text-9 font-bold leading-none text-white">
                     {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
@@ -823,7 +829,7 @@ export default function Navbar(props: NavbarProps) {
             data-testid="auth-mobile-chatbot-tab"
           >
             <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-            <span className="text-[10.5px] font-bold leading-none">BEGA</span>
+            <span data-mobile-chrome-label className="mobile-chrome-label text-[10.5px] font-bold leading-none">BEGA</span>
           </button>
         </div>
       </nav>

@@ -240,7 +240,7 @@ export function AdminCoachAutoBriefOpsPanel({
           )}
         </div>
 
-        <div className="grid gap-3 md:grid-cols-4">
+        <div data-testid="admin-ai-auto-brief-summary-grid" className="grid min-w-0 grid-cols-2 gap-3">
           <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
             <p className="text-caption uppercase tracking-wide text-slate-500">Unresolved</p>
             <p className="mt-3 min-w-0 break-all text-2xl font-semibold text-amber-200">

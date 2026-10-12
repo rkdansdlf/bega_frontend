@@ -95,12 +95,12 @@ export default function CheerMobileBottomNav({
                   >
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="leading-none text-gray-500 dark:text-white">{item.label}</span>
+                  <span data-mobile-chrome-label className="mobile-chrome-label leading-none text-gray-500 dark:text-white">{item.label}</span>
                 </>
               ) : (
                 <>
                   <Icon className="h-[18px] w-[18px]" />
-                  <span className="truncate leading-none">{item.label}</span>
+                  <span data-mobile-chrome-label className="mobile-chrome-label truncate leading-none">{item.label}</span>
                 </>
               )}
             </button>
@@ -115,7 +115,7 @@ export default function CheerMobileBottomNav({
             data-testid="cheer-bottom-nav-chatbot"
           >
             <img src={baseballLogo} alt="" aria-hidden="true" className="h-[18px] w-[18px] object-contain" />
-            <span className="truncate leading-none">BEGA</span>
+            <span data-mobile-chrome-label className="mobile-chrome-label truncate leading-none">BEGA</span>
           </button>
         ) : null}
       </div>

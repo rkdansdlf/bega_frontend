@@ -51,6 +51,10 @@ const formatOperatorGuidanceValue = (value: string) => (
     : formatManualBaseballDataDisplayValue(value)
 );
 
+export interface SuwonSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
 type SuwonGuideIntent =
   | '전체'
   | '홈 응원'
@@ -238,7 +242,7 @@ function SuwonFirstVisitGuide({
               data-testid={`suwon-guide-intent-${option.testId}`}
               onClick={() => onIntentChange(option.id)}
               aria-pressed={active}
-              className="shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-all"
+              className="min-h-11 shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-all sm:min-h-0"
               style={{
                 background: active ? '#0B57A7' : 'transparent',
                 borderColor: active ? '#0B57A7' : (isDark ? '#334155' : '#e2e8f0'),
@@ -263,7 +267,7 @@ function SuwonFirstVisitGuide({
                 type="button"
                 data-testid={`suwon-guide-result-${block.id}`}
                 onClick={() => onSelectBlock(block)}
-                className="shrink-0 cursor-pointer rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700"
+                className="min-h-11 shrink-0 cursor-pointer rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:border-slate-700 sm:min-h-0"
                 style={{
                   borderColor: accent ? `${accent}66` : undefined,
                   background: isDark ? '#000000' : '#f8fafc',
@@ -329,7 +333,7 @@ function SuwonMobileSecondaryPanel({
               aria-selected={active}
               data-testid={tab.testId}
               onClick={() => onTabChange(tab.id)}
-              className="h-9 cursor-pointer rounded-lg text-sm font-black transition-colors"
+              className="h-11 cursor-pointer rounded-lg text-sm font-black transition-colors sm:h-9"
               style={{
                 background: active ? '#0B57A7' : 'transparent',
                 color: active ? '#fff' : (mode === 'dark' ? '#cbd5e1' : '#334155'),
@@ -377,7 +381,7 @@ function SuwonCompareAction({
           onAdd(section);
         }}
         disabled={disabled}
-        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-black transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-black transition-colors disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-0"
         style={{
           borderColor: isCompared ? `${accent}66` : disabled ? '#cbd5e1' : accent,
           background: isCompared ? 'transparent' : disabled ? '#f1f5f9' : `${accent}14`,
@@ -431,7 +435,7 @@ function SuwonCompareTray({
           data-testid="suwon-compare-clear"
           onClick={onClear}
           disabled={comparisonBlocks.length === 0}
-          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-11 font-black text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800"
+          className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-11 font-black text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:min-h-0"
           style={{ borderColor }}
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -500,7 +504,7 @@ function SuwonCompareTray({
                     type="button"
                     data-testid="suwon-compare-view"
                     onClick={() => onView(block)}
-                    className="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black text-slate-600 transition-colors hover:bg-white dark:text-white dark:hover:bg-slate-800"
+                    className="flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black text-slate-600 transition-colors hover:bg-white dark:text-white dark:hover:bg-slate-800 sm:min-h-0"
                     style={{ borderColor }}
                   >
                     <Eye className="h-3.5 w-3.5" />
@@ -510,7 +514,7 @@ function SuwonCompareTray({
                     type="button"
                     data-testid="suwon-compare-remove"
                     onClick={() => onRemove(block.id)}
-                    className="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black transition-colors hover:bg-white dark:hover:bg-slate-800"
+                    className="flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black transition-colors hover:bg-white dark:hover:bg-slate-800 sm:min-h-0"
                     style={{ borderColor: accent ? `${accent}66` : borderColor, color: accent ?? '#0B57A7' }}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -548,7 +552,7 @@ function SuwonCompareTray({
                       type="button"
                       data-testid="suwon-recent-view"
                       onClick={() => onView(block)}
-                      className="h-7 cursor-pointer rounded-lg border text-10 font-black text-slate-600 dark:text-white"
+                      className="min-h-11 cursor-pointer rounded-lg border text-10 font-black text-slate-600 dark:text-white sm:min-h-0"
                       style={{ borderColor }}
                     >
                       보기
@@ -558,7 +562,7 @@ function SuwonCompareTray({
                       data-testid="suwon-recent-add"
                       onClick={() => onAdd(block)}
                       disabled={isFull}
-                      className="h-7 cursor-pointer rounded-lg border text-10 font-black disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-11 cursor-pointer rounded-lg border text-10 font-black disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0"
                       style={{ borderColor: accent ? `${accent}66` : borderColor, color: accent ?? '#0B57A7' }}
                     >
                       {isFull ? '3개까지' : '담기'}
@@ -657,9 +661,16 @@ function SuwonOperatorVisitMeta({
   );
 }
 
-export default function SuwonSeatMap() {
+interface SuwonSeatMapProps {
+  stateOverride?: SuwonSeatMapStateOverride;
+}
+
+export default function SuwonSeatMap({ stateOverride }: SuwonSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });

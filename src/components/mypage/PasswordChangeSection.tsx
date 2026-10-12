@@ -93,7 +93,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
     };
 
     return (
-        <div className="bg-card rounded-2xl shadow-lg border-2 border-border p-8 mb-6">
+        <div
+            className="bg-card rounded-2xl shadow-lg border-2 border-border p-8 mb-6"
+            data-testid="mypage-password-change-section"
+        >
             <div className="flex items-center gap-3 mb-6">
                 <MyPageLockIcon className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-bold text-primary">
@@ -102,7 +105,11 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
             </div>
 
             {error && (
-                <Alert variant="destructive" className="mb-6">
+                <Alert
+                    variant="destructive"
+                    className="mb-6"
+                    data-testid="mypage-password-change-error"
+                >
                     <MyPageAlertCircleIcon className="h-4 w-4" />
                     <AlertTitle>오류</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
@@ -119,6 +126,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         <div className="relative">
                             <Input
                                 id="currentPassword"
+                                data-testid="mypage-password-change-current"
                                 type={showCurrentPassword ? 'text' : 'password'}
                                 value={currentPassword}
                                 onChange={(e) => {
@@ -131,8 +139,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                             />
                             <button
                                 type="button"
+                                tabIndex={0}
+                                data-testid="mypage-password-change-current-visibility"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                             >
                                 {showCurrentPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                             </button>
@@ -148,6 +158,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                     <div className="relative">
                         <Input
                             id="newPassword"
+                            data-testid="mypage-password-change-new"
                             type={showNewPassword ? 'text' : 'password'}
                             value={newPassword}
                             onChange={(e) => {
@@ -160,8 +171,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         />
                         <button
                             type="button"
+                            tabIndex={0}
+                            data-testid="mypage-password-change-new-visibility"
                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                         >
                             {showNewPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                         </button>
@@ -177,6 +190,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                     <div className="relative">
                         <Input
                             id="confirmPassword"
+                            data-testid="mypage-password-change-confirm"
                             type={showConfirmPassword ? 'text' : 'password'}
                             value={confirmPassword}
                             onChange={(e) => {
@@ -189,8 +203,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         />
                         <button
                             type="button"
+                            tabIndex={0}
+                            data-testid="mypage-password-change-confirm-visibility"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                         >
                             {showConfirmPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                         </button>
@@ -212,6 +228,8 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                 <Button
                     variant="outline"
                     className="flex-1"
+                    tabIndex={0}
+                    data-testid="mypage-password-change-cancel"
                     onClick={onCancel}
                     disabled={mutation.isPending}
                 >
@@ -220,6 +238,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                 <Button
                     onClick={handleSubmit}
                     className="flex-1 text-primary-foreground bg-primary flex items-center justify-center gap-2"
+                    data-testid="mypage-password-change-submit"
                     disabled={mutation.isPending || (hasPassword && !currentPassword) || !newPassword || !confirmPassword}
                 >
                     <MyPageSaveIcon className="w-5 h-5" />

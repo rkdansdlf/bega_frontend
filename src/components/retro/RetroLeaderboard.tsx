@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import LeaderboardRow, { LeaderboardEntry } from './LeaderboardRow';
 import NewsTicker, { TickerMessage } from './NewsTicker';
 import ViewportDeferred from '../ViewportDeferred';
@@ -40,6 +41,7 @@ const retroLeaderboardStyles = `
 
   .retro-leaderboard-title {
     font-size: 52px;
+    text-shadow: 4px 4px 0 #000, -4px -4px 0 #000, 4px -4px 0 #000, -4px 4px 0 #000;
   }
 
   .retro-leaderboard-stat-grid {
@@ -116,6 +118,7 @@ const retroLeaderboardStyles = `
       font-size: clamp(32px, 5vw, 36px);
       line-height: 1.25;
       word-break: keep-all;
+      text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
     }
 
     .retro-leaderboard-stat-grid {
@@ -160,6 +163,8 @@ export interface RetroLeaderboardProps {
   totalPages?: number;
   containerTestId?: string;
   deferFooter?: boolean;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 export default function RetroLeaderboard({
@@ -176,7 +181,18 @@ export default function RetroLeaderboard({
   currentUserHandle,
   containerTestId,
   deferFooter = true,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: RetroLeaderboardProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="retro-leaderboard-fallback">레트로 랭킹을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const [showRules, setShowRules] = useState(false);
   const [showDecorations, setShowDecorations] = useState(false);
 
@@ -269,7 +285,6 @@ export default function RetroLeaderboard({
               fontFamily: retroText,
               color: '#fff',
               textAlign: 'center',
-              textShadow: '4px 4px 0 #000, -4px -4px 0 #000, 4px -4px 0 #000, -4px 4px 0 #000',
               margin: 0,
               imageRendering: 'pixelated',
               zIndex: 20,

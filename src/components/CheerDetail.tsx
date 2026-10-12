@@ -1,6 +1,7 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import type { CheerPost } from '../api/cheerApi';
 import { useCheerPost, useCheerMutations } from '../hooks/useCheerQueries';
 import { useAuthProfileSnapshot, useAuthSession } from '../store/authStore';
 import { parseError } from '../utils/errorUtils';
@@ -10,8 +11,26 @@ import { useConfirmDialog } from './contexts/ConfirmDialogContext';
 import { Button } from './ui/button';
 
 const LazyCheerDetailContent = lazy(() => import('./CheerDetailContent'));
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-export default function CheerDetail() {
+export type CheerDetailVisualQaStateOverride = {
+    selectedPost: CheerPost | null;
+    loading: boolean;
+    error?: Error | null;
+    isLoggedIn: boolean;
+    authUserId?: number | null;
+    authUserEmail?: string | null;
+    authUserName?: string | null;
+    authUserHandle?: string | null;
+    authUserProfileImageUrl?: string | null;
+    onRetry?: () => void;
+};
+
+export default function CheerDetail({
+    visualQaStateOverride,
+}: {
+    visualQaStateOverride?: CheerDetailVisualQaStateOverride;
+}) {
     const { postId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,18 +42,36 @@ export default function CheerDetail() {
         userHandle: authUserHandle,
         userProfileImageUrl: authUserProfileImageUrl,
     } = useAuthProfileSnapshot();
-    const { isLoggedIn } = useAuthSession();
+    const { isLoggedIn: sessionIsLoggedIn } = useAuthSession();
     const { confirm } = useConfirmDialog();
-    const authUserDisplayName = authUserName || authUserEmail || '나';
+    const resolvedAuthUserId = visualQaStateOverride ? visualQaStateOverride.authUserId ?? null : authUserId;
+    const resolvedAuthUserEmail = visualQaStateOverride ? visualQaStateOverride.authUserEmail ?? null : authUserEmail;
+    const resolvedAuthUserName = visualQaStateOverride ? visualQaStateOverride.authUserName ?? null : authUserName;
+    const resolvedAuthUserHandle = visualQaStateOverride ? visualQaStateOverride.authUserHandle ?? null : authUserHandle;
+    const resolvedAuthUserProfileImageUrl = visualQaStateOverride
+        ? visualQaStateOverride.authUserProfileImageUrl ?? null
+        : authUserProfileImageUrl;
+    const isLoggedIn = visualQaStateOverride?.isLoggedIn ?? sessionIsLoggedIn;
+    const authUserDisplayName = resolvedAuthUserName || resolvedAuthUserEmail || '나';
     const areCommentRepliesAvailable = false;
 
     const parsedPostId = postId ? parseInt(postId, 10) : 0;
-    const {
-        data: selectedPost,
-        isLoading: loading,
-        error,
-        refetch: refetchPost,
-    } = useCheerPost(parsedPostId, { retry: false });
+    const selectedPostQuery = useCheerPost(parsedPostId, {
+        retry: false,
+        enabled: visualQaStateOverride === undefined,
+    });
+    const selectedPost = visualQaStateOverride
+        ? visualQaStateOverride.selectedPost
+        : selectedPostQuery.data;
+    const loading = visualQaStateOverride?.loading ?? selectedPostQuery.isLoading;
+    const error = visualQaStateOverride ? visualQaStateOverride.error ?? null : selectedPostQuery.error;
+    const refetchPost = () => {
+        if (visualQaStateOverride) {
+            visualQaStateOverride.onRetry?.();
+            return Promise.resolve();
+        }
+        return selectedPostQuery.refetch();
+    };
     const {
         toggleLikeMutation,
         toggleBookmarkMutation,
@@ -42,6 +79,10 @@ export default function CheerDetail() {
         repostMutation,
         cancelRepostMutation,
     } = useCheerMutations();
+
+    useIsomorphicLayoutEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [parsedPostId, selectedPost?.id]);
 
     const [commentCount, setCommentCount] = useState(0);
     const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(false);
@@ -69,9 +110,11 @@ export default function CheerDetail() {
     );
 
     const { data: likeInteractionPost } = useCheerPost(likeTargetPostId, {
-        enabled: shouldLoadSeparateLikeTarget,
+        enabled: visualQaStateOverride === undefined && shouldLoadSeparateLikeTarget,
     });
-    const { data: interactionPost } = useCheerPost(resolvedPostId);
+    const { data: interactionPost } = useCheerPost(resolvedPostId, {
+        enabled: visualQaStateOverride === undefined,
+    });
 
     const interactionTargetPost = interactionPost ?? selectedPost;
     const interactionLikeTargetPost = likeInteractionPost ?? selectedPost;
@@ -194,7 +237,7 @@ export default function CheerDetail() {
 
     if (loading && !selectedPost) {
         return (
-            <div className="min-h-screen bg-[var(--cheer-page-bg)] font-sans pb-20">
+            <div data-testid="cheer-detail-route" className="min-h-screen bg-[var(--cheer-page-bg)] font-sans pb-20">
                 <div className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)]/80 px-4 backdrop-blur-md">
                     <div className="h-8 w-8 animate-skeleton-pulse rounded-full bg-[var(--cheer-chip-bg)]" />
                     <div className="h-4 w-40 animate-skeleton-pulse rounded bg-[var(--cheer-chip-bg)]" />
@@ -226,7 +269,7 @@ export default function CheerDetail() {
             : '게시글을 불러오지 못했습니다.';
 
         return (
-            <div className="min-h-screen bg-[var(--cheer-page-bg)] font-sans px-4 py-12">
+            <div data-testid="cheer-detail-route" className="min-h-screen bg-[var(--cheer-page-bg)] font-sans px-4 py-12">
                 <div className="mx-auto flex max-w-xl justify-center">
                     <div className="w-full rounded-3xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] p-6 text-center shadow-sm">
                         <p className="text-base font-bold text-slate-900 dark:text-white">
@@ -250,7 +293,7 @@ export default function CheerDetail() {
     }
 
     return (
-        <div className="min-h-screen bg-[var(--cheer-page-bg)] font-sans pb-24 sm:pb-20">
+        <div data-testid="cheer-detail-route" className="min-h-screen bg-[var(--cheer-page-bg)] font-sans pb-24 sm:pb-20">
             <div
                 className={`mx-auto w-full max-w-[980px] px-4 sm:px-6 lg:px-8 ${isHighlighted ? 'rounded-3xl animate-cheer-highlight-flash' : ''}`}
             >
@@ -279,10 +322,10 @@ export default function CheerDetail() {
                         parsedPostId={parsedPostId}
                         resolvedPostId={resolvedPostId}
                         selectedPost={selectedPost}
-                        authUserId={authUserId}
-                        authUserHandle={authUserHandle}
+                        authUserId={resolvedAuthUserId}
+                        authUserHandle={resolvedAuthUserHandle}
                         authUserDisplayName={authUserDisplayName}
-                        authUserProfileImageUrl={authUserProfileImageUrl}
+                        authUserProfileImageUrl={resolvedAuthUserProfileImageUrl}
                         areCommentRepliesAvailable={areCommentRepliesAvailable}
                         commentCount={commentCount}
                         hasMountedQuoteEditor={hasMountedQuoteEditor}

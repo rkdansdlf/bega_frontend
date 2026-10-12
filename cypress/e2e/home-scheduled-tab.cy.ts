@@ -184,6 +184,21 @@ describe('Home scheduled tab', () => {
       });
     }).as('getHomeBootstrap');
 
+    cy.intercept('GET', '**/api/home/navigation?*', (req) => {
+      const dateParam = req.query.date;
+      const date = Array.isArray(dateParam) ? dateParam[0] : String(dateParam || '2026-02-10');
+      req.reply({
+        statusCode: 200,
+        body: {
+          resolvedDate: date,
+          prevGameDate: addDays(date, -1),
+          nextGameDate: addDays(date, 1),
+          hasPrev: true,
+          hasNext: true,
+        },
+      });
+    }).as('getHomeScopedNavigation');
+
     cy.intercept('GET', '**/api/home/widgets*', (req) => {
       const seasonYearParam = req.query.seasonYear;
       const seasonYear = Array.isArray(seasonYearParam) ? seasonYearParam[0] : seasonYearParam;
@@ -441,6 +456,7 @@ describe('Home scheduled tab', () => {
       .click({ force: true })
       .should('have.attr', 'aria-expanded', 'true');
 
+    cy.wait('@getHomeScopedNavigation');
     cy.get('[data-testid="home-date-next"]').click({ force: true });
 
     cy.get('[data-testid="home-scheduled-secondary-toggle"]', { timeout: 15000 })

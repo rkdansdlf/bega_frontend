@@ -110,3 +110,23 @@ test('실패 후 재시도는 API를 다시 호출하고 success 상태로 복�
     'success',
   ]);
 });
+
+test('계정 전환 뒤 도착한 알림 응답은 상태와 store 반영 콜백에 전달되지 않는다', async () => {
+  let resolveRequest!: (notifications: NotificationData[]) => void;
+  const pendingRequest = new Promise<NotificationData[]>((resolve) => {
+    resolveRequest = resolve;
+  });
+  let currentSession = true;
+  const { states, onStateChange } = recordStates();
+
+  const load = loadNotificationPanelNotifications({
+    getNotifications: () => pendingRequest,
+    isCurrent: () => currentSession,
+    onStateChange,
+  });
+  currentSession = false;
+  resolveRequest([notification]);
+
+  assert.deepEqual(await load, { status: 'idle' });
+  assert.deepEqual(states, [{ status: 'loading' }]);
+});

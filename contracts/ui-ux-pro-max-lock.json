@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+  "commit": "09170eec67eefd46a7ae85de61b40c194020f997",
+  "snapshotDeclaredVersion": "2.13.0",
+  "archiveSha256": "93f4e8cbcd060533e5d368c3183b764adcbcc82c04a2cdc933bf97024bed67c9",
+  "vendorPath": ".agents/skills/ui-ux-pro-max",
+  "projectStack": {
+    "react": "18.3.1",
+    "tailwindcss": "3.4.19",
+    "vite": "7.3.6"
+  },
+  "reactRecommendationVersion": "19.2.x",
+  "guidanceApplicability": {
+    "react": "advisory-incompatible"
+  },
+  "ciSearchEnabled": false,
+  "runtimeImportAllowed": false,
+  "autoUpdate": false
+}

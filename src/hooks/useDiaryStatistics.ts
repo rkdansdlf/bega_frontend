@@ -4,6 +4,8 @@ import { fetchDiaries, fetchDiaryStatistics } from '../api/diary';
 import { calculateEmojiStats } from '../utils/diary';
 import { DiaryStatistics, DiaryEntry } from '../types/diary';
 import { toast } from 'sonner';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
 const getInitialStatistics = (): DiaryStatistics => ({
   totalCount: 0,
@@ -38,11 +40,19 @@ const getInitialStatistics = (): DiaryStatistics => ({
   earnedBadges: [],
 });
 
-export const useDiaryStatistics = () => {
+export interface DiaryStatisticsVisualQaStateOverride {
+  diaryEntries: DiaryEntry[];
+  statistics: DiaryStatistics;
+  isLoading: boolean;
+}
 
-  const { data: diaryEntries = [] } = useQuery<DiaryEntry[]>({
-    queryKey: ['diaries'],
+export const useDiaryStatistics = (visualQaStateOverride?: DiaryStatisticsVisualQaStateOverride) => {
+  const viewerScope = useViewerQueryScope();
+
+  const { data: queryDiaryEntries = [] } = useQuery<DiaryEntry[]>({
+    queryKey: PRIVATE_QUERY_KEYS.diaries(viewerScope),
     queryFn: () => fetchDiaries(),
+    enabled: visualQaStateOverride === undefined,
     staleTime: 1 * 60 * 1000,
   });
 
@@ -51,10 +61,12 @@ export const useDiaryStatistics = () => {
   const {
     data: statistics = getInitialStatistics(),
     isLoading,
+    isError,
     error,
   } = useQuery<DiaryStatistics>({
-    queryKey: ['statistics'],
+    queryKey: PRIVATE_QUERY_KEYS.diaryStatistics(viewerScope),
     queryFn: () => fetchDiaryStatistics(), // Error handled by useEffect below
+    enabled: visualQaStateOverride === undefined,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -66,6 +78,9 @@ export const useDiaryStatistics = () => {
     }
   }, [error]);
 
+  const diaryEntries = visualQaStateOverride?.diaryEntries ?? queryDiaryEntries;
+  const effectiveStatistics = visualQaStateOverride?.statistics ?? statistics;
+
   // ========== Emoji Statistics ==========
   const emojiStats = useMemo(() => {
     return calculateEmojiStats(diaryEntries);
@@ -76,10 +91,11 @@ export const useDiaryStatistics = () => {
   }, [emojiStats]);
 
   return {
-    statistics,
+    statistics: effectiveStatistics,
     emojiStats,
     totalEmojiCount,
-    isLoading,
+    isLoading: visualQaStateOverride?.isLoading ?? isLoading,
+    isError,
     diaryEntries,
   };
 };

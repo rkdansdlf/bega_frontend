@@ -12,13 +12,16 @@ import {
 } from '../api/mate';
 import type { MateHistoryTab } from '../types/mate';
 import { MATE_KEYS, type MatePartyListKeyParams } from './mateQueryKeys';
+import { getViewerQueryScope } from '../utils/viewerQueryScope';
+import type { ViewerQueryScope } from '../utils/viewerQueryScope';
 
 export const MATE_HISTORY_PAGE_SIZE = 20;
 
 export const getMatePartyListQueryOptions = (
   params: MatePartyListKeyParams,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.partyList(params),
+  queryKey: MATE_KEYS.partyList(params, scope),
   queryFn: ({ signal }: { signal: AbortSignal }) => fetchMatePartiesPage({
     ...params,
     status: params.status === 'all' ? undefined : params.status,
@@ -29,8 +32,9 @@ export const getMatePartyListQueryOptions = (
 
 export const getMateMyPartiesQueryOptions = (
   userId?: number | null,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.myParties(userId),
+  queryKey: MATE_KEYS.myParties(userId, scope),
   queryFn: fetchMyParties,
   staleTime: 5 * 60 * 1000,
   gcTime: 30 * 60 * 1000,
@@ -40,8 +44,9 @@ export const getMateMyPartyHistoryQueryOptions = (
   userId?: number | null,
   group: MateHistoryTab = 'all',
   size = MATE_HISTORY_PAGE_SIZE,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.myPartyHistory(userId, { group, size }),
+  queryKey: MATE_KEYS.myPartyHistory(userId, { group, size }, scope),
   queryFn: ({ pageParam = 0, signal }: { pageParam?: unknown; signal: AbortSignal }) => fetchMyPartyHistoryPage({
     group,
     page: typeof pageParam === 'number' ? pageParam : 0,
@@ -62,8 +67,9 @@ export const getMatePopularSearchTermsQueryOptions = (
 
 export const getMatePartyQueryOptions = (
   partyId: number | string,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.party(partyId),
+  queryKey: MATE_KEYS.party(partyId, scope),
   queryFn: ({ signal }: { signal: AbortSignal }) => fetchPartyById(partyId, {
     signal,
   }),
@@ -82,8 +88,9 @@ export const getMatePartyReviewsQueryOptions = (
 export const getMatePartyMyApplicationQueryOptions = (
   partyId: number | string,
   userId?: number | null,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.partyMyApplication(partyId, userId),
+  queryKey: MATE_KEYS.partyMyApplication(partyId, userId, scope),
   queryFn: () => fetchPartyMyApplication(partyId),
   retry: false,
   staleTime: 30 * 1000,
@@ -91,8 +98,9 @@ export const getMatePartyMyApplicationQueryOptions = (
 
 export const getMatePartyApplicationsQueryOptions = (
   partyId: number | string,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.partyApplications(partyId),
+  queryKey: MATE_KEYS.partyApplications(partyId, scope),
   queryFn: () => fetchPartyApplications(partyId),
   retry: false,
   staleTime: 30 * 1000,
@@ -109,8 +117,9 @@ export const getMatePartyMessagesQueryOptions = (
 
 export const getMatePartyCheckInsQueryOptions = (
   partyId: number | string,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => ({
-  queryKey: MATE_KEYS.partyCheckIns(partyId),
+  queryKey: MATE_KEYS.partyCheckIns(partyId, scope),
   queryFn: () => fetchPartyCheckIns(partyId),
   retry: false,
   refetchInterval: 15 * 1000,

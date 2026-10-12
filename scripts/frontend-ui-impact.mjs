@@ -4,6 +4,8 @@ import { appendFileSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { resolveDesignIntentImpact, UI_UX_PROFILE_IDS } from './uiux-impact.mjs';
+
 const SHARED_PATTERNS = [
   // In the deploy repository a submodule pointer bump shows up as the bare gitlink path
   // `bega_frontend` (no file below it), so it matches none of the source globs below.
@@ -124,13 +126,40 @@ export function detectFrontendUiImpact(changedPaths, suiteInput = 'all', eventNa
   const result = Object.fromEntries(
     Object.keys(UI_SUITE_PATTERNS).map((name) => [`${name}_changed`, false]),
   );
+  result.design_intent_changed = false;
+  result.design_intent_profiles = '';
 
   if (suiteInput !== 'all') {
+    if (suiteInput === 'design-intent') {
+      result.design_intent_changed = true;
+      result.design_intent_profiles = UI_UX_PROFILE_IDS.join(',');
+      return result;
+    }
     if (`${suiteInput}_changed` in result) result[`${suiteInput}_changed`] = true;
     return result;
   }
   if (eventName !== 'pull_request') {
-    return Object.fromEntries(Object.keys(result).map((name) => [name, true]));
+    const allSuites = Object.fromEntries(Object.keys(UI_SUITE_PATTERNS).map((name) => [
+      `${name}_changed`, true,
+    ]));
+    return {
+      ...allSuites,
+      design_intent_changed: true,
+      design_intent_profiles: UI_UX_PROFILE_IDS.join(','),
+    };
+  }
+
+  if (changedPaths.some((path) => path === 'bega_frontend')) {
+    return {
+      reflow_changed: true,
+      pages_changed: true,
+      auth_changed: true,
+      home_changed: true,
+      landing_changed: true,
+      stadium_changed: true,
+      design_intent_changed: true,
+      design_intent_profiles: UI_UX_PROFILE_IDS.join(','),
+    };
   }
 
   for (const [suite, patterns] of Object.entries(UI_SUITE_PATTERNS)) {
@@ -138,6 +167,9 @@ export function detectFrontendUiImpact(changedPaths, suiteInput = 'all', eventNa
       patterns.some((pattern) => matches(path, pattern)),
     );
   }
+  const designIntentImpact = resolveDesignIntentImpact(changedPaths);
+  result.design_intent_changed = designIntentImpact.changed;
+  result.design_intent_profiles = designIntentImpact.profiles.join(',');
   return result;
 }
 
@@ -152,7 +184,7 @@ function main() {
     process.env.GITHUB_EVENT_NAME ?? 'workflow_dispatch',
   );
   const output = Object.entries(result)
-    .map(([name, enabled]) => `${name}=${enabled ? 'true' : 'false'}`)
+    .map(([name, value]) => `${name}=${typeof value === 'boolean' ? String(value) : value}`)
     .join('\n');
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${output}\n`);
   else console.log(output);

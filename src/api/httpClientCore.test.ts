@@ -62,3 +62,15 @@ test('createTimeoutController aborts when the caller signal aborts and removes t
 
   timeout.cleanup();
 });
+
+test('createTimeoutController keeps caller abort as the cause when the internal deadline later expires', async () => {
+  const upstream = new AbortController();
+  const abortReason = new DOMException('Caller cancelled first', 'AbortError');
+  const timeout = createTimeoutController(15, upstream.signal);
+
+  upstream.abort(abortReason);
+  await new Promise((resolve) => setTimeout(resolve, 25));
+
+  assert.equal(timeout.signal.reason, abortReason);
+  assert.equal(timeout.isTimedOut(), false);
+});
