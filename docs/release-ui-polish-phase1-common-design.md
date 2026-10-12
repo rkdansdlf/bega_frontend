@@ -57,7 +57,11 @@ All run in the isolated worktree (`node_modules` cloned). Baseline = `cadaa985` 
 
 ## Status: BLOCKED on three required gates (all pre-existing, none caused by this work)
 
-1. `test:unit` — API-client, `authStore` and `mateQueryCache` tests fail at the baseline too (see above).
+1. `test:unit` — partly resolved in a follow-up commit:
+   - `privateClient`/`publicClient` (11 tests): **fixed**. Root cause: `AbortSignal.timeout()` timers are unref'd, so the deadline tests left the event loop idle and the runner cancelled them and every later test in the file. The two tests now hold a ref'd keep-alive timer (test-only change).
+   - `authStore.test.ts`: not fixed. It crashes at load because `authSessionSyncRuntime` is imported statically and pulls in `authStore` before the test installs `localStorage` (so zustand `persist` is never attached). Moving that import after the setup lets the file load and then shows **12 genuine failures** in the logout/session-serialization tests (e.g. identical session ids, stale-login dialog), which belong to the uncommitted auth work snapshotted in `4b29b2e9`. Left alone: auth state contract is out of scope.
+   - `mateQueryCache.test.ts`: same `persist`-undefined crash (static `authStore` import with no `localStorage`); not fixed.
+   - Browser-driven tests (`GlobalErrorDialog`, `SeatMapHoverPreview`, …) time out or hang when the machine is loaded; a full re-run during follow-up hung for 29 minutes at load average 20–60 and was killed, so the full-suite count above is from the earlier quiet run. Files touched by this work pass in isolation (69/69).
 2. `visual-qa:states` — two `PredictionGamePowerupInventory` entries are classified visual but unregistered since `4b29b2e9`. Registering them means adding harness adapters/scenarios for a Prediction component (or copying a sibling's `hostScenarioIds`, which would claim coverage that was not verified). Left for the Prediction owners.
 3. `build` — passes only with the budget change in `897774af`; whether to raise budgets or trim code is a policy call.
 
