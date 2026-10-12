@@ -63,6 +63,7 @@
     --brand-primary-rest: 27 67 56;     /* #1b4338 — bg-primary-dark   */
     --brand-primary-hover: 47 108 92;   /* #2f6c5c — bg-primary-hover  */
     --brand-primary-light: 99 179 155;  /* #63b39b — text-primary-light */
+    --brand-primary-deep: 23 59 52;     /* #173b34 — filled status surface */
 
     --background: var(--surface-default);
     --foreground: var(--text-primary);

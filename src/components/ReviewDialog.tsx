@@ -180,7 +180,7 @@ export default function ReviewDialog({
                   disabled={isSubmitting}
                   onChange={(event) => setComment(event.target.value.slice(0, 200))}
                   placeholder="한줄 후기를 남겨주세요 (선택)"
-                  className="min-h-[80px] w-full resize-none rounded-md border border-input bg-input-background px-3 py-2 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+                  className="min-h-[80px] w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
                 />
                 <span className="text-right text-body font-semibold text-gray-400">{comment.length}/200</span>
               </div>

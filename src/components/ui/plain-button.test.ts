@@ -5,6 +5,28 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { Button } from './plain-button';
+import { buttonVariants } from './button';
+
+test('plain and regular buttons share every common visual variant and size contract', () => {
+  const variants = ['default', 'outline', 'ghost', 'secondary', 'destructive', 'link'] as const;
+  const sizes = ['default', 'sm', 'icon', 'iconTouch', 'touch'] as const;
+  for (const variant of variants) {
+    for (const size of sizes) {
+      const props = { variant, size, 'aria-invalid': true, disabled: true };
+      assert.deepEqual(
+        classNameOf(props).split(/\s+/).sort(),
+        buttonVariants({ variant, size }).split(/\s+/).sort(),
+        `${variant}/${size} should share focus, invalid, dark, SVG and touch styles`,
+      );
+    }
+  }
+});
+
+test('plain button keeps its lightweight implementation and explicit consumer overrides', () => {
+  const source = readFileSync(new URL('./plain-button.tsx', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /from ['"](?:\.\/button|.*lib\/utils)['"]/);
+  assert.match(classNameOf({ className: 'bg-secondary px-8' }), /bg-secondary px-8$/);
+});
 
 const classNameOf = (props: Record<string, unknown> = {}) => {
   const html = renderToStaticMarkup(createElement(
@@ -14,7 +36,7 @@ const classNameOf = (props: Record<string, unknown> = {}) => {
   ));
   const button = /<button[^>]*class="([^"]+)"[^>]*>/.exec(html);
   assert.ok(button);
-  return button[1];
+  return button[1].replace(/&gt;/g, '>');
 };
 
 test('plain button keeps labelled controls contained and touch sized on mobile', () => {
