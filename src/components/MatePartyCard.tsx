@@ -145,7 +145,7 @@ function MatePartyCard({
       className={cn(
         'status-badge-hover-scope group relative flex w-full cursor-pointer flex-col gap-[10px] rounded-18 border border-gray-200/90 bg-white p-[14px] text-left transition-[transform,border-color,box-shadow] duration-150 ease-out',
         'hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_12px_28px_rgba(15,23,42,0.08),0_0_0_3px_rgba(45,95,79,0.08)]',
-        'dark:border-white/15 dark:bg-[#000000] dark:hover:border-primary',
+        'dark:border-white/15 dark:bg-card dark:hover:border-primary',
         className,
       )}
     >
@@ -161,7 +161,7 @@ function MatePartyCard({
         data-testid="mate-party-card-detail"
         aria-label={`${zoneName} ${stadiumDisplayName} ${formatGameDate(party.gameDate)} ${statusMeta.accessibleLabel} 파티 상세 보기`}
         onClick={() => onClick(party)}
-        className="flex w-full flex-col gap-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-[#000000]"
+        className="flex w-full flex-col gap-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-background"
       >
         {/* Row 1: D-day · date+time · status chip */}
         <div className="flex items-center gap-2 pr-10">
@@ -281,7 +281,7 @@ const buildPartyAriaLabel = (party: Party, statusMeta: StatusBadgeMeta) =>
   `${getZoneName(party.stadium, party.section)} ${formatStadiumDisplayName(party.stadium)} ${formatGameDate(party.gameDate)} ${statusMeta.accessibleLabel} 파티 상세 보기`;
 
 const rowSurfaceClass =
-  'status-badge-hover-scope group w-full cursor-pointer rounded-14 border border-gray-200/80 bg-white text-left transition-shadow duration-150 hover:shadow-[0_4px_14px_rgba(15,23,42,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:border-white/15 dark:bg-[#000000]';
+  'status-badge-hover-scope group w-full cursor-pointer rounded-14 border border-gray-200/80 bg-white text-left transition-shadow duration-150 hover:shadow-[0_4px_14px_rgba(15,23,42,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:border-white/15 dark:bg-card';
 
 // List (row) view — table-density horizontal layout. Desktop-oriented.
 function PartyRowBase({

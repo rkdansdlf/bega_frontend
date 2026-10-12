@@ -22,6 +22,9 @@ Line references in this table refer to the starting HEAD. Priority P2 means a ve
 | DS-006 | UI kit | `src/components/ui/UIKitPreview.tsx:82` | Only a few Button examples and Card samples; no form/PlainButton/badge/dialog/state comparison | Existing production primitives and state adapters | Actual JSX has no Input, Textarea, StatusBadge, PlainButton or PlainDialog specimens | No | P3 | Add representative side-by-side controls and states using existing primitives and existing harness entry | Existing UI kit interaction scenarios plus form/dialog keyboard operation; five widths and 200% |
 | DS-007 | Guardrails | `scripts/uiux-policy-check.mjs:337` | Existing check validates semantic token declarations, not new hardcoded colors, unsupported utilities or arbitrary type/radius values | Existing UI UX policy command + Visual QA contract | Current policy has no source drift baseline comparison | Legacy unresolved styles must be explicit baseline; intentional files need scoped reasons and owners | P3 | Extend existing policy command with an offline source check and reviewable occurrence baseline; no second QA system | Mutation tests proving new drift fails and removals do not grow baseline; policy command |
 
+| DS-008 | Home secondary panels | `src/components/home/HomeSecondaryPanels.tsx:519,552,607,608,619` | Five raw `#2d5f4f` brand accents | Existing SSOT pattern; exact RGB 45 95 79 | Avatar initials, trophy and own-team emphasis use the same non-team brand shade | Shade yes, duplication no | P3 | Define `primary-panel` preserving all dark overrides and alpha | Home panel harness and screenshots |
+| DS-009 | Mate cards and list controls | `src/components/MatePartyCard.tsx:148,164,284`, `MateStatusTabs.tsx:26,38`, `MateTeamFilterButton.tsx:14`, `MateListControlsRuntime.tsx:45,277,298,308` | Raw black dark surfaces and ring offsets | Current dark `--card` / `--background` both black | Exact CSS value equivalence; `MateViewToggle` already uses `dark:bg-card` | Favorite `#111111` remains separate | P3 | Use card/background tokens; retain `/95`, breakpoints and transparent overrides | Card/list controls/keyboard harness |
+
 ## Intentional exceptions
 
 | Scope / owner | Reason and boundary |
@@ -46,3 +49,7 @@ Line references in this table refer to the starting HEAD. Priority P2 means a ve
 Initial logs and screenshots: `artifacts/design-consistency-20261013/before/`. Final evidence: `artifacts/design-consistency-20261013/after/`. Screenshot changes are attributable to the finding IDs above; existing image baselines are not overwritten.
 
 The final command outcomes, expanded reviewed-file inventory, unresolved items and evidence paths will be appended after implementation and verification.
+
+## Deferred evidence-backed state difference
+
+`mypage/MyPageProfileCardRuntime.tsx:74,84,96` uses `lg` two-column loading layout while resolved content at `:211,279` uses `2xl`. This source discrepancy is recorded, but changing the breakpoint would violate the requested preservation of responsive behavior. Capture loading/resolved at 1024 and 1440 before a separately authorized layout change. A CTA with no visible hover color change remains a candidate because its intended interaction was not established.

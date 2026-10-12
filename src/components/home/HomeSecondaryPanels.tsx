@@ -516,7 +516,7 @@ export default function HomeSecondaryPanels({
                     <div className="mt-2 flex items-center gap-1.5">
                       <span
                         aria-hidden="true"
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2d5f4f] text-9 font-black text-white"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-panel text-9 font-black text-white"
                       >
                         {mate.hostHandle.replace(/^@/, '').slice(0, 1).toUpperCase()}
                       </span>
@@ -549,7 +549,7 @@ export default function HomeSecondaryPanels({
     <section data-home-panel-priority="secondary" className="w-full space-y-3 lg:order-3 lg:col-span-4 lg:w-auto">
       <PanelHeader
         title="팀 순위"
-        icon={<TrophyIcon className="h-5 w-5 text-[#2d5f4f] dark:text-emerald-200" />}
+        icon={<TrophyIcon className="h-5 w-5 text-primary-panel dark:text-emerald-200" />}
       >
         <div className="flex items-center rounded-full border border-zinc-200 bg-slate-100 p-0.5 shadow-sm dark:border-zinc-800 dark:bg-card">
           <Button
@@ -604,8 +604,8 @@ export default function HomeSecondaryPanels({
         ) : (
           <div>
             {myTeamRanking ? (
-              <div className="flex items-center gap-2.5 border-b border-zinc-200/80 bg-[#2d5f4f]/[0.06] px-3 py-2.5 dark:border-zinc-800/80 dark:bg-emerald-950/20">
-                <span className="w-6 shrink-0 text-center text-17 font-black text-[#2d5f4f] dark:text-emerald-200">
+              <div className="flex items-center gap-2.5 border-b border-zinc-200/80 bg-primary-panel/[0.06] px-3 py-2.5 dark:border-zinc-800/80 dark:bg-emerald-950/20">
+                <span className="w-6 shrink-0 text-center text-17 font-black text-primary-panel dark:text-emerald-200">
                   {myTeamRanking.rank}
                 </span>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 p-1 shadow-sm dark:bg-white">
@@ -616,7 +616,7 @@ export default function HomeSecondaryPanels({
                     <span className="truncate text-15 font-black text-gray-900 dark:text-white">
                       {myTeamRanking.displayName}
                     </span>
-                    <span className="shrink-0 rounded-md bg-[#2d5f4f] px-1.5 py-0.5 text-11 font-bold text-white dark:bg-emerald-800">
+                    <span className="shrink-0 rounded-md bg-primary-panel px-1.5 py-0.5 text-11 font-bold text-white dark:bg-emerald-800">
                       내 팀
                     </span>
                   </div>

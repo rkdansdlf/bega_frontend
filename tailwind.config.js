@@ -73,6 +73,7 @@ export default {
           light: 'rgb(var(--brand-primary-light) / <alpha-value>)',
           dark: 'rgb(var(--brand-primary-rest) / <alpha-value>)',
           deep: 'rgb(var(--brand-primary-deep) / <alpha-value>)',
+          panel: 'rgb(var(--brand-primary-panel) / <alpha-value>)',
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
