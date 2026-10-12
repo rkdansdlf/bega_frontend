@@ -11,7 +11,7 @@ interface MateTeamFilterButtonProps {
 }
 
 const FILTER_ACTIVE_CLASS = 'border-primary bg-primary/10 text-primary dark:border-primary dark:bg-primary/20 dark:text-primary-light';
-const FILTER_IDLE_CLASS = 'border-gray-200/80 bg-white text-gray-700 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20 dark:hover:text-primary';
+const FILTER_IDLE_CLASS = 'border-gray-200/80 bg-white text-gray-700 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-card dark:text-white dark:hover:bg-primary/20 dark:hover:text-primary';
 
 function MateTeamFilterButton({
   layout,

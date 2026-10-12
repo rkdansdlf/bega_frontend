@@ -64,6 +64,7 @@
     --brand-primary-hover: 47 108 92;   /* #2f6c5c — bg-primary-hover  */
     --brand-primary-light: 99 179 155;  /* #63b39b — text-primary-light */
     --brand-primary-deep: 23 59 52;     /* #173b34 — filled status surface */
+    --brand-primary-panel: 45 95 79;    /* #2d5f4f — Home panel accent */
 
     --background: var(--surface-default);
     --foreground: var(--text-primary);

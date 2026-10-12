@@ -96,7 +96,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                                 'relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
                                 isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
-                                    : 'text-[#64748B] hover:bg-white/70 hover:text-[#0F172A] dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
+                                    : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
                             )}
                             style={isActive ? { color: activeAccentText } : undefined}
                         >
@@ -476,7 +476,7 @@ export default function CheerRuntime({
 
     return (
         <div
-            className="min-h-screen bg-[#f7f9f9] pb-[var(--mobile-content-safe-bottom)] dark:bg-background md:pb-0"
+            className="min-h-screen bg-[var(--cheer-sub-card)] pb-[var(--mobile-content-safe-bottom)] dark:bg-background md:pb-0"
             data-testid="cheer-runtime-route"
         >
             <div className="px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
@@ -501,7 +501,7 @@ export default function CheerRuntime({
                                             'flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors',
                                             isActive
                                                 ? 'bg-slate-100 text-slate-900 dark:bg-secondary dark:text-white'
-                                                : 'text-[#334155] hover:bg-[#F1F5F9] dark:text-white dark:hover:bg-secondary'
+                                                : 'text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary'
                                         )}
                                         style={isActive ? { backgroundColor: `${teamColor}1A` } : undefined}
                                     >
