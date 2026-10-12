@@ -20,10 +20,10 @@ import {
 import { useAuthAccessActions, useAuthSession } from '../store/authStore';
 import TeamLogo from './TeamLogo';
 import { Alert, AlertDescription } from './ui/alert';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { createApplication, fetchMatePaymentCapability } from '../api/mate';
 import { getApiErrorStatus } from '../api/errorStatus';
-import { formatGameDate } from '../utils/mate';
+import { formatGameDate, normalizeMateListReturnTo } from '../utils/mate';
 import VerificationRequiredDialog from './VerificationRequiredDialog';
 import type { TicketInfo } from '../api/ticket';
 import { getApiErrorMessage } from '../utils/errorUtils';
@@ -38,6 +38,8 @@ import { mateMetaLabelClass, mateMobileBarClass } from '../utils/mateFlowUi';
 import { validateMateApplyMessage } from '../utils/mateValidation';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
 import type { Party } from '../types/mate';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
+import { isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
 
 const MateApplyTicketVerificationPanel = lazy(() => import('./MateApplyTicketVerificationPanel'));
 
@@ -79,9 +81,16 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
     : visualQaStateOverrideProp;
   const { isAuthLoading: liveAuthLoading, userId: liveCurrentUserId } = useAuthSession();
   const { logout } = useAuthAccessActions();
+  const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
   const { id } = useParams<{ id: string }>();
+  const returnTo = normalizeMateListReturnTo(
+    location.state && typeof location.state === 'object'
+      ? (location.state as { returnTo?: unknown }).returnTo
+      : undefined,
+  );
   const {
     party: liveParty,
     isLoading: livePartyLoading,
@@ -103,8 +112,9 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
   const [ticketVerified, setTicketVerified] = useState(() => visualQaStateOverride?.ticketVerified ?? false);
   const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(() => visualQaStateOverride?.ticketInfo ?? null);
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
-  const restoredDraftPartyIdRef = useRef<string | null>(null);
-  const previousPartyIdRef = useRef<string | null>(null);
+  const [draftViewerId, setDraftViewerId] = useState(currentUserId);
+  const restoredDraftIdentityRef = useRef<string | null>(null);
+  const previousDraftIdentityRef = useRef<{ partyId: string; viewerId: number | null } | null>(null);
   const paymentCapabilityQuery = useQuery({
     queryKey: ['mate', 'payment-capability'],
     queryFn: fetchMatePaymentCapability,
@@ -126,12 +136,15 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
       return;
     }
 
-    if (previousPartyIdRef.current && previousPartyIdRef.current !== id) {
-      clearMateApplyDraft(previousPartyIdRef.current);
+    const previousDraftIdentity = previousDraftIdentityRef.current;
+    if (previousDraftIdentity
+      && previousDraftIdentity.viewerId === currentUserId
+      && previousDraftIdentity.partyId !== id) {
+      clearMateApplyDraft(previousDraftIdentity.partyId, previousDraftIdentity.viewerId);
     }
 
-    previousPartyIdRef.current = id;
-  }, [id, visualQaStateOverride]);
+    previousDraftIdentityRef.current = { partyId: id, viewerId: currentUserId };
+  }, [currentUserId, id, visualQaStateOverride]);
 
   useEffect(() => {
     if (visualQaStateOverride) {
@@ -141,16 +154,17 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
     setMessage('');
     setTicketVerified(false);
     setTicketInfo(null);
+    restoredDraftIdentityRef.current = null;
 
     if (!id) {
-      restoredDraftPartyIdRef.current = null;
+      setDraftViewerId(currentUserId);
       setIsDraftHydrated(true);
       return;
     }
 
-    const draft = loadMateApplyDraft(id);
+    const draft = loadMateApplyDraft(id, currentUserId);
     if (!draft) {
-      restoredDraftPartyIdRef.current = null;
+      setDraftViewerId(currentUserId);
       setIsDraftHydrated(true);
       return;
     }
@@ -159,27 +173,36 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
     setTicketVerified(draft.ticketVerified);
     setTicketInfo(draft.ticketInfo);
 
-    if (restoredDraftPartyIdRef.current !== id) {
-      restoredDraftPartyIdRef.current = id;
+    const draftIdentity = `${currentUserId ?? 'anonymous'}:${id}`;
+    if (restoredDraftIdentityRef.current !== draftIdentity) {
+      restoredDraftIdentityRef.current = draftIdentity;
       toast.info('이전 신청 내용을 복원했습니다. 필요한 정보만 다시 확인해주세요.');
     }
 
+    setDraftViewerId(currentUserId);
     setIsDraftHydrated(true);
-  }, [id, visualQaStateOverride]);
+  }, [currentUserId, id, visualQaStateOverride]);
 
   useEffect(() => {
-    if (visualQaStateOverride || !id || !isDraftHydrated) {
+    if (visualQaStateOverride) return;
+    setIsSubmitting(false);
+    setShowVerificationDialog(false);
+  }, [viewerScope.sessionEpoch, viewerScope.viewerId, visualQaStateOverride]);
+
+  useEffect(() => {
+    if (visualQaStateOverride || !id || !isDraftHydrated || draftViewerId !== currentUserId) {
       return;
     }
 
-    saveMateApplyDraft(id, {
+    saveMateApplyDraft(id, currentUserId, {
       message,
       ticketVerified,
       ticketInfo,
     });
-  }, [id, isDraftHydrated, message, ticketInfo, ticketVerified, visualQaStateOverride]);
+  }, [currentUserId, draftViewerId, id, isDraftHydrated, message, ticketInfo, ticketVerified, visualQaStateOverride]);
 
-  if (isAuthLoading || (isPartyLoading && !party)) {
+  if (isAuthLoading || (!visualQaStateOverride && (draftViewerId !== currentUserId || !isDraftHydrated))
+    || (isPartyLoading && !party)) {
     return (
       <div
         data-testid="mate-apply-loading"
@@ -312,6 +335,7 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
       }
     }
 
+    const submissionScope = viewerScope;
     setIsSubmitting(true);
 
     const applyMessage = message || (isSelling ? '티켓 구매 신청합니다.' : '함께 즐거운 관람 부탁드립니다!');
@@ -329,20 +353,24 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
         ticketImageUrl: null,
       });
 
+      if (!isViewerQueryScopeCurrent(submissionScope)) return;
+
       if (id) {
-        clearMateApplyDraft(id);
+        clearMateApplyDraft(id, currentUserId);
       }
-      setMatePartyMyApplicationQueryData(queryClient, party.id, currentUserId, createdApplication);
+      setMatePartyMyApplicationQueryData(queryClient, party.id, currentUserId, createdApplication, viewerScope);
       updateMatePartyApplicationsQueryData(queryClient, party.id, (applications) => (
         applications.some((application) => application.id === createdApplication.id)
           ? applications
           : [createdApplication, ...applications]
-      ));
+      ), viewerScope);
       toast.success(isSelling
         ? '구매 신청이 접수되었습니다. 호스트 승인 후 직거래로 진행됩니다.'
         : '참여 신청이 접수되었습니다.');
-      navigate(`/mate/${party.id}`);
+      navigate(`/mate/${party.id}`, { state: { returnTo } });
     } catch (error: unknown) {
+      if (!isViewerQueryScopeCurrent(submissionScope)) return;
+
       const status = getApiErrorStatus(error);
 
       if (status === 401) {
@@ -357,7 +385,9 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
         toast.error(getApiErrorMessage(error, '신청 처리 중 오류가 발생했습니다.'));
       }
     } finally {
-      setIsSubmitting(false);
+      if (isViewerQueryScopeCurrent(submissionScope)) {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -384,9 +414,9 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
           size="touch"
           onClick={() => {
             if (id) {
-              clearMateApplyDraft(id);
+              clearMateApplyDraft(id, currentUserId);
             }
-            navigate(`/mate/${id}`);
+            navigate(`/mate/${id}`, { state: { returnTo } });
           }}
           className="mb-3 -ml-2 text-gray-800 dark:text-gray-100 sm:mb-4"
         >

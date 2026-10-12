@@ -21,6 +21,7 @@ test('TicketUploadModal exposes deterministic states and mobile-safe upload cont
   assert.doesNotMatch(source, /scroll-pb-24/);
   assert.match(source, /flex flex-col gap-6 pb-1 pt-1/);
   assert.match(source, /style=\{\{ minHeight: 176, padding: 24 \}\}/);
+  assert.equal((source.match(/style=\{\{ minHeight: 44 \}\}/g) ?? []).length, 3);
   assert.match(source, /break-keep text-body/);
   for (const id of ['away-team', 'home-team', 'section', 'row', 'seat']) {
     assert.match(source, new RegExp(`id="${id}"`));

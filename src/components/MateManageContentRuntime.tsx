@@ -27,6 +27,7 @@ export type MateManageMobileAction = {
   onClick: () => void;
   variant?: 'default' | 'outline';
   className: string;
+  testId?: string;
 };
 
 export type MateManageEditFormState = {
@@ -115,7 +116,7 @@ export default function MateManageContentRuntime({
   );
 
   return (
-    <>
+    <div className="contents" data-testid="mate-manage-content-runtime">
       {isEditing ? (
         <Suspense fallback={mateManageEditFallback}>
           <LazyMateManageEditPanel
@@ -183,13 +184,14 @@ export default function MateManageContentRuntime({
 
             <div className="mt-4 space-y-2">
               {approvedApplications.length > 0 && (
-                <Button onClick={onOpenChat} className="w-full bg-primary text-white">
+                <Button data-testid="mate-manage-content-chat" onClick={onOpenChat} className="w-full bg-primary text-white">
                   <MateMessageSquareIcon className="mr-2 h-4 w-4" />
                   채팅방 입장
                 </Button>
               )}
               {canReviewCheckIn && (
                 <Button
+                  data-testid="mate-manage-content-checkin"
                   onClick={onOpenCheckIn}
                   variant="outline"
                   className="w-full border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-900 dark:text-violet-300 dark:hover:bg-violet-950/30"
@@ -200,6 +202,7 @@ export default function MateManageContentRuntime({
               )}
               {canEdit && (
                 <Button
+                  data-testid="mate-manage-content-edit"
                   onClick={onStartEdit}
                   variant="outline"
                   className="w-full border-primary text-primary hover:bg-primary/10"
@@ -242,6 +245,7 @@ export default function MateManageContentRuntime({
             <div className="mt-4 space-y-2">
               {canEdit ? (
                 <Button
+                  data-testid="mate-manage-content-edit-secondary"
                   onClick={onStartEdit}
                   variant="outline"
                   className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary"
@@ -255,6 +259,7 @@ export default function MateManageContentRuntime({
                 </div>
               )}
               <Button
+                data-testid="mate-manage-content-delete"
                 onClick={onDeleteParty}
                 disabled={isDeleting}
                 variant="outline"
@@ -297,6 +302,7 @@ export default function MateManageContentRuntime({
                   onClick={primaryMobileAction.onClick}
                   variant={primaryMobileAction.variant}
                   size="touch"
+                  data-testid={primaryMobileAction.testId}
                   className={cn('w-full sm:flex-1', primaryMobileAction.className)}
                 >
                   {primaryMobileAction.label}
@@ -306,6 +312,6 @@ export default function MateManageContentRuntime({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

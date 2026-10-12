@@ -151,7 +151,7 @@ export const useLeagueStartDates = () => {
     });
 };
 
-export const useGamesData = (date: Date) => {
+export const useGamesData = (date: Date, options: { enabled?: boolean } = {}) => {
     const formattedDate = formatDateForAPI(date);
 
     return useQuery({
@@ -159,6 +159,6 @@ export const useGamesData = (date: Date) => {
         queryFn: () => fetchGamesData(date),
         staleTime: 5 * 60 * 1000, // 5분
         gcTime: 10 * 60 * 1000, // 10분
-        enabled: !!date, // date가 있을 때만 실행
+        enabled: options.enabled ?? !!date, // date가 있을 때만 실행
     });
 };

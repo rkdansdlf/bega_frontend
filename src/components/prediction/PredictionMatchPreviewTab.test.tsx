@@ -215,3 +215,19 @@ test('Prediction mobile date sheet exposes dialog semantics and restores focus',
   assert.match(previewSource, /event\.key === 'Escape'/);
   assert.match(previewSource, /handleDateSheetKeyDown/);
 });
+
+test('Prediction compact schedule keeps row and date-toolbar geometry independent of root rem scaling', () => {
+  assert.match(previewSource, /grid-cols-\[44px_minmax\(0,1fr\)_44px\]/);
+  assert.match(previewSource, /grid-cols-\[minmax\(0,1fr\)_40px_minmax\(0,1fr\)\]/);
+  assert.match(previewSource, /h-11 min-h-11 min-w-11/);
+  assert.match(previewSource, /className="h-11 min-h-11.*px-3/);
+  assert.match(previewSource, /min-h-11 shrink-0 items-center gap-1\.5 rounded-xl px-3/);
+});
+
+test('Prediction compact detail actions keep keyboard focus in the visible area', () => {
+  assert.match(previewSource, /public-mobile-bottom-nav/);
+  assert.match(
+    previewSource,
+    /scroll-mb-\[136px\]/,
+  );
+});

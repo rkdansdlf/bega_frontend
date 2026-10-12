@@ -3,11 +3,21 @@ import { useQuery } from '@tanstack/react-query';
 
 import { fetchMyDmRooms } from '../../api/dm';
 import { useAuthSession } from '../../store/authStore';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import type { DmInboxRoom } from '../../types/dm';
 import { ProfileAvatar } from '../ui/ProfileAvatar';
 import { DirectMessageMessageCircleIcon as MessageCircleIcon } from './DirectMessageIcons';
 
-const DM_INBOX_QUERY_KEY = ['dm', 'inbox'] as const;
+export type DmInboxRuntimeVisualQaStateOverride = {
+  rooms: DmInboxRoom[];
+  isLoading: boolean;
+  onRoomClick?: (room: DmInboxRoom) => void;
+};
+
+export type DmInboxRuntimeProps = {
+  visualQaStateOverride?: DmInboxRuntimeVisualQaStateOverride;
+};
 
 const formatRelativeTime = (dateString: string): string => {
   const date = new Date(dateString);
@@ -89,18 +99,27 @@ const EmptyState = () => (
   </div>
 );
 
-export default function DmInboxRuntime() {
+export default function DmInboxRuntime({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: DmInboxRuntimeProps = {}) {
+  const viewerScope = useViewerQueryScope();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthSession();
+  const visualQaStateOverride = import.meta.env.DEV
+    ? requestedVisualQaStateOverride
+    : undefined;
 
-  const { data: rooms = [], isLoading } = useQuery({
-    queryKey: DM_INBOX_QUERY_KEY,
+  const inboxQuery = useQuery({
+    queryKey: PRIVATE_QUERY_KEYS.dmInbox(viewerScope),
     queryFn: fetchMyDmRooms,
     staleTime: 15_000,
-    enabled: isLoggedIn,
+    enabled: isLoggedIn && visualQaStateOverride === undefined,
   });
+  const rooms = visualQaStateOverride?.rooms ?? inboxQuery.data ?? [];
+  const isLoading = visualQaStateOverride?.isLoading ?? inboxQuery.isLoading;
 
   const handleRoomClick = (room: DmInboxRoom) => {
+    visualQaStateOverride?.onRoomClick?.(room);
     const handle = room.targetUser?.handle?.replace(/^@/, '');
     if (handle) {
       navigate(`/messages/@${handle}`);
@@ -108,7 +127,10 @@ export default function DmInboxRuntime() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8"
+      data-testid="dm-inbox-runtime"
+    >
       <div className="mx-auto max-w-2xl space-y-3">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white" data-testid="dm-inbox-title">
           메시지

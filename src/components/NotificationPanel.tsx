@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useNavigate, type NavigateFunction } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useNotificationStore } from '../store/notificationStore';
+import { getViewerQueryScope, isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
 import { useAuthSession } from '../store/authStore';
 import { notificationApi, isIgnorableNotificationError } from '../utils/notificationApi';
 import { NotificationData as Notification, NotificationType } from '../types/notification';
@@ -39,7 +40,7 @@ export type TabType = 'ALL' | 'MATE' | 'CHEER';
 export type NotificationPanelRuntime = {
   deleteNotification?: (notificationId: number) => Promise<void>;
   getNotifications?: () => Promise<Notification[]>;
-  markAllAsRead?: () => Promise<void>;
+  markAllAsRead?: (readThrough: number) => Promise<void>;
   markAsRead?: (notificationId: number) => Promise<void>;
   navigate?: NavigateFunction;
   requestBrowserNotificationPermission?: () => Promise<BrowserNotificationPermission>;
@@ -60,6 +61,8 @@ const MATE_NOTIFICATION_TYPES: NotificationType[] = [
   'APPLICATION_REJECTED',
   'PARTY_EXPIRED',
   'PARTY_AUTO_COMPLETED',
+  'PARTY_CANCELLED_HOST_DELETED',
+  'PARTY_PARTICIPANT_LEFT',
   'GAME_TOMORROW_REMINDER',
   'GAME_DAY_REMINDER',
   'HOST_RESPONSE_NUDGE',
@@ -84,7 +87,7 @@ export default function NotificationPanel({
   runtimeOverride,
 }: NotificationPanelProps) {
   const liveNavigate = useNavigate();
-  const { isLoggedIn: liveIsLoggedIn } = useAuthSession();
+  const { isLoggedIn: liveIsLoggedIn, userId: liveUserId } = useAuthSession();
   const {
     notifications: liveNotifications,
     setNotifications,
@@ -129,8 +132,10 @@ export default function NotificationPanel({
       return;
     }
 
+    const scope = getViewerQueryScope();
     await loadNotificationPanelNotifications({
       getNotifications: runtimeOverride?.getNotifications,
+      isCurrent: () => isViewerQueryScopeCurrent(scope),
       onStateChange: (state) => {
         setNotificationLoadState(state);
         if (state.status === 'success') {
@@ -140,7 +145,7 @@ export default function NotificationPanel({
         }
       },
     });
-  }, [isLoggedIn, notificationsOverride, runtimeOverride?.getNotifications, setNotifications]);
+  }, [isLoggedIn, liveUserId, notificationsOverride, runtimeOverride?.getNotifications, setNotifications]);
 
   useEffect(() => {
     void loadNotifications();
@@ -177,25 +182,31 @@ export default function NotificationPanel({
   };
 
   const handleDelete = async (notificationId: number) => {
+    const scope = getViewerQueryScope();
     try {
       const deleteNotification = runtimeOverride?.deleteNotification
         ?? (usesDeterministicNotifications ? async () => {} : notificationApi.deleteNotification);
       await deleteNotification(notificationId);
+      if (!isViewerQueryScopeCurrent(scope)) return;
       removeNotification(notificationId);
     } catch (error) {
+      if (!isViewerQueryScopeCurrent(scope)) return;
       console.error('알림 삭제 오류:', error);
       toast.error('알림 삭제에 실패했습니다.');
     }
   };
 
   const handleMarkAllRead = async () => {
-    const requestStartedAt = now.getTime();
+    const scope = getViewerQueryScope();
+    const requestStartedAt = Date.now();
     try {
       const markAllAsReadRequest = runtimeOverride?.markAllAsRead
         ?? (usesDeterministicNotifications ? async () => {} : notificationApi.markAllAsRead);
-      await markAllAsReadRequest();
+      await markAllAsReadRequest(requestStartedAt);
+      if (!isViewerQueryScopeCurrent(scope)) return;
       markAllAsRead(requestStartedAt);
     } catch (error) {
+      if (!isViewerQueryScopeCurrent(scope)) return;
       console.error('일괄 읽음 처리 오류:', error);
       toast.error('일괄 읽음 처리에 실패했습니다.');
     }

@@ -7,11 +7,17 @@ import {
   ChatBotSessionStarIcon as ChatBotStarIcon,
 } from './ChatBotSessionIcons';
 
+export type ChatBotFavoritesTabVisualQaStateOverride = {
+  favorites: ChatFavoriteItem[];
+  isLoadingFavorites: boolean;
+};
+
 interface ChatBotFavoritesTabProps {
   refreshKey: number;
   onCopyMessage: (text: string, index: number) => Promise<void> | void;
   onReaskFavorite: (favorite: ChatFavoriteItem) => Promise<void> | void;
   onOpenFavoriteSession: (favorite: ChatFavoriteItem) => Promise<void> | void;
+  visualQaStateOverride?: ChatBotFavoritesTabVisualQaStateOverride;
 }
 
 export default function ChatBotFavoritesTab({
@@ -19,11 +25,20 @@ export default function ChatBotFavoritesTab({
   onCopyMessage,
   onReaskFavorite,
   onOpenFavoriteSession,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: ChatBotFavoritesTabProps) {
-  const [favorites, setFavorites] = useState<ChatFavoriteItem[]>([]);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const [favorites, setFavorites] = useState<ChatFavoriteItem[]>(visualQaStateOverride?.favorites ?? []);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(
+    visualQaStateOverride?.isLoadingFavorites ?? true,
+  );
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
     let cancelled = false;
 
     const loadFavorites = async () => {
@@ -45,23 +60,26 @@ export default function ChatBotFavoritesTab({
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }, [refreshKey, visualQaStateOverride]);
+
+  const renderedFavorites = visualQaStateOverride?.favorites ?? favorites;
+  const renderedIsLoadingFavorites = visualQaStateOverride?.isLoadingFavorites ?? isLoadingFavorites;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-testid="chatbot-favorites-tab">
       <p className="mb-3 text-body text-muted-foreground">저장한 답변을 다시 열고, 복사하거나 같은 질문을 이어갈 수 있습니다.</p>
       <div className="flex-1 space-y-3 overflow-y-auto">
-        {isLoadingFavorites ? (
+        {renderedIsLoadingFavorites ? (
           <div className="flex h-full items-center justify-center text-body text-muted-foreground">
             <ChatBotSpinnerIcon className="mr-2 h-4 w-4 animate-spin" />
             즐겨찾기를 불러오는 중입니다.
           </div>
-        ) : favorites.length === 0 ? (
+        ) : renderedFavorites.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-body text-muted-foreground dark:border-white/10 dark:bg-white/5">
             즐겨찾기한 답변이 없습니다.
           </div>
         ) : (
-          favorites.map((favorite) => (
+          renderedFavorites.map((favorite) => (
             <div
               key={favorite.messageId}
               data-testid="chatbot-favorite-card"
@@ -89,7 +107,7 @@ export default function ChatBotFavoritesTab({
                   type="button"
                   onClick={() => { void onCopyMessage(favorite.content, favorite.messageId); }}
                   data-testid="chatbot-favorite-copy"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-body font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-200 px-3 py-2 text-body font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
                 >
                   복사
                 </button>
@@ -98,7 +116,7 @@ export default function ChatBotFavoritesTab({
                   onClick={() => { void onReaskFavorite(favorite); }}
                   data-testid="chatbot-favorite-reask"
                   disabled={!favorite.prompt}
-                  className={`rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
+                  className={`inline-flex min-h-11 items-center justify-center rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
                     favorite.prompt
                       ? 'bg-primary text-white hover:bg-[#3d7f6f]'
                       : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-white/10 dark:text-white/40'
@@ -110,7 +128,7 @@ export default function ChatBotFavoritesTab({
                   type="button"
                   onClick={() => { void onOpenFavoriteSession(favorite); }}
                   data-testid="chatbot-favorite-open-session"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-body font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-200 px-3 py-2 text-body font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
                 >
                   원 대화로 이동
                 </button>

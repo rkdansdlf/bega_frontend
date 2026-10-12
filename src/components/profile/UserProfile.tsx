@@ -21,6 +21,9 @@ import { getTeamKoreanName } from '../../utils/teamNames';
 import { getTeamTheme } from '../../utils/teamColors';
 import { getNextPageParamFromPageResponse } from '../../utils/pageResponsePagination';
 import { useAuthProfileSnapshot, useAuthSession } from '../../store/authStore';
+import { profileQueryKeys } from '../../hooks/profileQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
+import { isViewerQueryScopeCurrent } from '../../utils/viewerQueryScope';
 
 const FollowButton = lazy(() => import('./FollowButton'));
 const UserListModal = lazy(() => import('./UserListModal'));
@@ -45,12 +48,30 @@ function ProfileBadge({
     );
 }
 
-export default function UserProfile() {
+export interface UserProfileProps {
+    visualQaPhase?: 'fallback' | 'resolved';
+    visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function UserProfile({
+    visualQaPhase: requestedVisualQaPhase,
+    visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: UserProfileProps = {}) {
+    const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+    const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+    if (visualQaPhase === 'fallback') {
+        return <div data-testid="user-profile-fallback">사용자 프로필을 불러오는 중입니다.</div>;
+    }
+    if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+        return <>{visualQaRuntimeOverride}</>;
+    }
+
     const { handle } = useParams<{ handle: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { isLoggedIn } = useAuthSession();
     const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
+    const viewerScope = useViewerQueryScope();
     const postsSectionRef = useRef<HTMLDivElement | null>(null);
 
     const [userListModalType, setUserListModalType] = useState<'followers' | 'following' | null>(null);
@@ -63,7 +84,7 @@ export default function UserProfile() {
         isLoading: isProfileLoading,
         error: profileError,
     } = useQuery({
-        queryKey: ['publicProfile', normalizedHandle],
+        queryKey: profileQueryKeys.publicProfile(normalizedHandle, viewerScope),
         queryFn: () => fetchPublicUserProfileByHandle(normalizedHandle!),
         enabled: !!normalizedHandle,
         retry: 0,
@@ -71,7 +92,7 @@ export default function UserProfile() {
 
     // 팔로워/팔로잉 카운트 조회
     const { data: followCounts } = useQuery({
-        queryKey: ['followCounts', profile?.handle],
+        queryKey: profileQueryKeys.followCounts(profile?.handle, viewerScope),
         queryFn: () => getPublicFollowCounts(profile!.handle),
         enabled: !!profile?.handle,
     });
@@ -85,7 +106,7 @@ export default function UserProfile() {
         isError: isPostsError,
         refetch: refetchPosts,
     } = useInfiniteQuery({
-        queryKey: ['userPosts', normalizedHandle],
+        queryKey: profileQueryKeys.userPosts(normalizedHandle, viewerScope),
         queryFn: ({ pageParam = 0 }) => fetchUserPostsByHandle(normalizedHandle!, pageParam),
         getNextPageParam: getNextPageParamFromPageResponse,
         enabled: !!profile?.handle, // Only fetch posts if user exists
@@ -96,8 +117,8 @@ export default function UserProfile() {
     const theme = getTeamTheme(profile?.favoriteTeam);
 
     const handleFollowChange = (response: FollowToggleResponse) => {
-        if (!profile?.handle) return;
-        queryClient.setQueryData<FollowCountResponse>(['followCounts', profile.handle], (prev) => ({
+        if (!profile?.handle || !isViewerQueryScopeCurrent(viewerScope)) return;
+        queryClient.setQueryData<FollowCountResponse>(profileQueryKeys.followCounts(profile.handle, viewerScope), (prev) => ({
             followerCount: response.followerCount,
             followingCount: response.followingCount,
             isFollowedByMe: response.following,

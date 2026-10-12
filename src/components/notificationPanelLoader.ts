@@ -10,16 +10,24 @@ export type NotificationPanelLoadState =
 type LoadNotificationPanelOptions = {
   getNotifications?: () => Promise<NotificationData[]>;
   onStateChange: (state: NotificationPanelLoadState) => void;
+  isCurrent?: () => boolean;
 };
 
 export const loadNotificationPanelNotifications = async ({
   getNotifications = notificationApi.getNotifications,
   onStateChange,
+  isCurrent = () => true,
 }: LoadNotificationPanelOptions): Promise<NotificationPanelLoadState> => {
+  if (!isCurrent()) {
+    return { status: 'idle' };
+  }
   onStateChange({ status: 'loading' });
 
   try {
     const notifications = await getNotifications();
+    if (!isCurrent()) {
+      return { status: 'idle' };
+    }
     const successState: NotificationPanelLoadState = {
       status: 'success',
       notifications,
@@ -27,6 +35,9 @@ export const loadNotificationPanelNotifications = async ({
     onStateChange(successState);
     return successState;
   } catch (error) {
+    if (!isCurrent()) {
+      return { status: 'idle' };
+    }
     const errorState: NotificationPanelLoadState = {
       status: 'error',
       error,

@@ -124,7 +124,8 @@ State requirements:
 
 ## Accessibility And Motion
 
-- Minimum touch target: `44px`
+- Minimum touch target: `44px` (CSS token: `--touch-target-min`)
+- Text zoom: `200%` without loss of content or functionality
 - Use `focus-visible`, not hover-only feedback
 - Maintain readable contrast for text and controls
 - Respect `prefers-reduced-motion`

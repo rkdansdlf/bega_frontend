@@ -1,5 +1,7 @@
 import { KBO_STADIUMS } from '../utils/stadiumData';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
+import type { SeatViewPhoto } from '../api/diary';
+import type { SeatViewPhotosVisualQaStateOverride } from '../hooks/useSeatViewPhotos';
 import { Button } from './ui/plain-button';
 import PlainDialog from './ui/plain-dialog';
 import SeatViewGallery from './SeatViewGallery';
@@ -14,6 +16,9 @@ interface MateDetailSeatPanelProps {
   section: string;
   seatDetail?: string;
   onClose: () => void;
+  visualQaStateOverride?: SeatViewPhotosVisualQaStateOverride & {
+    lightboxPhoto?: SeatViewPhoto | null;
+  };
 }
 
 const resolveSeatZone = (stadiumName: string, sectionName: string) => {
@@ -35,6 +40,7 @@ export default function MateDetailSeatPanel({
   section,
   seatDetail,
   onClose,
+  visualQaStateOverride,
 }: MateDetailSeatPanelProps) {
   const stadiumDisplayName = formatStadiumDisplayName(stadium);
   const seatDetailLabel = seatDetail?.trim();
@@ -49,7 +55,7 @@ export default function MateDetailSeatPanel({
       title="좌석/구역 보기"
       className="sm:max-w-3xl"
       footer={(
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" data-testid="mate-seat-panel-close" onClick={onClose}>
           닫기
         </Button>
       )}
@@ -104,7 +110,12 @@ export default function MateDetailSeatPanel({
             <MateMapPinIcon className="h-4 w-4 text-primary" />
             좌석 시야
           </h3>
-          <SeatViewGallery stadium={stadium} section={section} sectionAliases={sectionAliases} />
+          <SeatViewGallery
+            stadium={stadium}
+            section={section}
+            sectionAliases={sectionAliases}
+            visualQaStateOverride={visualQaStateOverride}
+          />
         </div>
       </div>
     </PlainDialog>

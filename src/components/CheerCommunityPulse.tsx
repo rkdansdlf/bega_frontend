@@ -1,30 +1,60 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
-import { fetchHotPosts } from '../api/cheerApi';
+import { fetchHotPosts, type CheerPost } from '../api/cheerApi';
 import { fetchLeaderboard } from '../api/leaderboardPublic';
+import type { LeaderboardEntry } from '../api/leaderboard';
 import { extractPopularCheerTags } from '../utils/cheerCommunityPulse';
 
-export default function CheerCommunityPulse() {
+export type CheerCommunityPulseVisualQaStateOverride = {
+  hotPosts?: Array<Pick<CheerPost, 'content'>>;
+  hotPostsState?: 'loading' | 'error' | 'ready';
+  weeklyLeaders?: LeaderboardEntry[];
+  weeklyLeaderboardState?: 'loading' | 'error' | 'ready';
+  onNavigate?: (path: string) => void;
+};
+
+export default function CheerCommunityPulse({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: {
+  visualQaStateOverride?: CheerCommunityPulseVisualQaStateOverride;
+}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const navigate = useNavigate();
   const hotPostsQuery = useQuery({
     queryKey: ['cheer-hot', 'HYBRID'],
     queryFn: () => fetchHotPosts({ page: 0, size: 5, algorithm: 'HYBRID' }),
     staleTime: 3 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: visualQaStateOverride === undefined,
   });
   const weeklyLeaderboardQuery = useQuery({
     queryKey: ['leaderboard', 'weekly', 0, 3],
     queryFn: () => fetchLeaderboard('weekly', 0, 3),
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
+    enabled: visualQaStateOverride === undefined,
   });
 
-  const popularTags = extractPopularCheerTags(hotPostsQuery.data?.content ?? []);
-  const weeklyLeaders = weeklyLeaderboardQuery.data?.content ?? [];
+  const hotPosts = visualQaStateOverride?.hotPosts ?? hotPostsQuery.data?.content ?? [];
+  const hotPostsState = visualQaStateOverride?.hotPostsState
+    ?? (hotPostsQuery.isLoading ? 'loading' : hotPostsQuery.isError ? 'error' : 'ready');
+  const weeklyLeaders = visualQaStateOverride?.weeklyLeaders ?? weeklyLeaderboardQuery.data?.content ?? [];
+  const weeklyLeaderboardState = visualQaStateOverride?.weeklyLeaderboardState
+    ?? (weeklyLeaderboardQuery.isLoading ? 'loading' : weeklyLeaderboardQuery.isError ? 'error' : 'ready');
+  const popularTags = extractPopularCheerTags(hotPosts);
+  const goTo = (path: string) => {
+    if (visualQaStateOverride?.onNavigate) {
+      visualQaStateOverride.onNavigate(path);
+      return;
+    }
+    navigate(path);
+  };
 
   return (
-    <div className="space-y-4">
+    <div data-testid="cheer-community-pulse" className="space-y-4">
       <section className="rounded-2xl border border-border/70 bg-white p-4 dark:border-border dark:bg-card">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -33,7 +63,7 @@ export default function CheerCommunityPulse() {
           </div>
           <span className="text-lg font-black text-slate-300 dark:text-slate-600">#</span>
         </div>
-        {hotPostsQuery.isLoading ? (
+        {hotPostsState === 'loading' ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {[1, 2, 3].map((item) => <span key={item} className="h-8 w-20 animate-pulse rounded-full bg-slate-100 dark:bg-secondary" />)}
           </div>
@@ -41,10 +71,11 @@ export default function CheerCommunityPulse() {
           <div className="mt-3 flex flex-wrap gap-2">
             {popularTags.map((item) => (
               <button
-                key={item.tag}
-                type="button"
+              key={item.tag}
+              type="button"
+                data-testid="cheer-community-pulse-tag"
                 className="min-h-11 rounded-full bg-slate-100 px-3 text-caption font-black text-slate-700 hover:bg-slate-200 dark:bg-secondary dark:text-white dark:hover:bg-slate-700"
-                onClick={() => navigate(`/cheer?q=${encodeURIComponent(`#${item.tag}`)}`)}
+                onClick={() => goTo(`/cheer?q=${encodeURIComponent(`#${item.tag}`)}`)}
               >
                 #{item.tag} <span className="ml-1 text-slate-400 dark:text-slate-300">{item.count}</span>
               </button>
@@ -52,7 +83,7 @@ export default function CheerCommunityPulse() {
           </div>
         ) : (
           <p className="mt-3 text-caption font-semibold text-slate-500 dark:text-slate-300">
-            {hotPostsQuery.isError ? '인기 피드 태그를 불러오지 못했습니다.' : '집계된 해시태그가 아직 없습니다.'}
+            {hotPostsState === 'error' ? '인기 피드 태그를 불러오지 못했습니다.' : '집계된 해시태그가 아직 없습니다.'}
           </p>
         )}
       </section>
@@ -62,7 +93,7 @@ export default function CheerCommunityPulse() {
           <h2 className="text-body font-black text-slate-900 dark:text-white">주간 포인트 리더</h2>
           <p className="mt-1 text-caption font-semibold text-slate-500 dark:text-slate-300">내부 리더보드 주간 집계 기준</p>
         </div>
-        {weeklyLeaderboardQuery.isLoading ? (
+        {weeklyLeaderboardState === 'loading' ? (
           <div className="mt-3 space-y-2">
             {[1, 2, 3].map((item) => <div key={item} className="h-11 animate-pulse rounded-xl bg-slate-100 dark:bg-secondary" />)}
           </div>
@@ -72,8 +103,9 @@ export default function CheerCommunityPulse() {
               <li key={`${leader.rank}-${leader.handle || leader.userName}`}>
                 <button
                   type="button"
+                  data-testid="cheer-community-pulse-leader"
                   className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-left hover:bg-slate-50 dark:hover:bg-secondary"
-                  onClick={() => navigate(leader.handle ? `/profile/${leader.handle.startsWith('@') ? leader.handle : `@${leader.handle}`}` : '/leaderboard')}
+                  onClick={() => goTo(leader.handle ? `/profile/${leader.handle.startsWith('@') ? leader.handle : `@${leader.handle}`}` : '/leaderboard')}
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-caption font-black text-slate-700 dark:bg-secondary dark:text-white">
                     {leader.rank}
@@ -86,7 +118,7 @@ export default function CheerCommunityPulse() {
           </ol>
         ) : (
           <p className="mt-3 text-caption font-semibold text-slate-500 dark:text-slate-300">
-            {weeklyLeaderboardQuery.isError ? '주간 리더보드를 불러오지 못했습니다.' : '이번 주 집계 데이터가 아직 없습니다.'}
+            {weeklyLeaderboardState === 'error' ? '주간 리더보드를 불러오지 못했습니다.' : '이번 주 집계 데이터가 아직 없습니다.'}
           </p>
         )}
       </section>

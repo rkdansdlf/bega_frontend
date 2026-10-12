@@ -65,9 +65,9 @@ const formatCount = (count: number): string => {
 };
 
 const secondaryActionButtonClass =
-  'h-10 min-w-0 shrink-0 gap-1.5 px-3 text-body font-semibold bg-card border-2 border-border text-primary hover:bg-muted';
+  'min-h-11 min-w-0 shrink-0 gap-1.5 px-3 text-body font-semibold bg-card border-2 border-border text-primary hover:bg-muted';
 const primaryActionButtonClass =
-  'h-10 min-w-0 shrink-0 gap-1.5 px-3 text-body font-semibold text-primary-foreground bg-primary hover:bg-primary';
+  'min-h-11 min-w-0 shrink-0 gap-1.5 px-3 text-body font-semibold text-primary-foreground bg-primary hover:bg-primary';
 
 function LoadingProfileCard() {
   return (
@@ -169,6 +169,7 @@ function FollowStats({
     <div className="flex items-center gap-4 md:gap-5 lg:justify-end">
       <button
         type="button"
+        data-testid="mypage-profile-followers"
         className="group min-w-[72px] cursor-pointer text-center"
         onClick={onOpenFollowers}
       >
@@ -183,6 +184,7 @@ function FollowStats({
       <div className="h-8 w-px bg-border" />
       <button
         type="button"
+        data-testid="mypage-profile-following"
         className="group min-w-[72px] cursor-pointer text-center"
         onClick={onOpenFollowing}
       >
@@ -209,6 +211,7 @@ function ActionButtons({
     <div className="grid w-full grid-cols-2 gap-2 2xl:flex 2xl:flex-wrap 2xl:justify-end">
       <Button
         onClick={onOpenEditProfile}
+        data-testid="mypage-profile-edit"
         className={`${primaryActionButtonClass} order-1 col-span-2 2xl:order-4 2xl:col-span-1`}
       >
         <MyPageEditIcon className="h-4 w-4 flex-shrink-0" />
@@ -216,6 +219,7 @@ function ActionButtons({
       </Button>
       <Button
         onClick={onOpenMateHistory}
+        data-testid="mypage-profile-mate-history"
         className={`${secondaryActionButtonClass} order-2 2xl:order-1`}
       >
         <MyPageUsersIcon className="h-4 w-4 flex-shrink-0" />
@@ -268,7 +272,7 @@ export default function MyPageProfileCardRuntime({
   const normalizedHandle = handle ? (handle.startsWith('@') ? handle : `@${handle}`) : '';
 
   return (
-    <Card className="mb-5 gap-2 p-4 md:p-5">
+    <Card className="mb-5 gap-2 p-4 md:p-5" data-testid="mypage-profile-card-runtime">
       {isProfileLoading ? (
         <LoadingProfileCard />
       ) : (

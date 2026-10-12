@@ -65,7 +65,7 @@ export default function CheerDetailActionBarRuntime({
                 onClick={onToggleLike}
                 aria-label={`좋아요 ${interactionLikeCount.toLocaleString()}`}
                 className={cn(
-                    'flex h-10 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center whitespace-nowrap transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:h-10 sm:gap-1',
+                    'flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center whitespace-nowrap transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                     interactionLikedByMe
                         ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300'
                         : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:text-white dark:hover:bg-slate-950'
@@ -81,7 +81,7 @@ export default function CheerDetailActionBarRuntime({
                 type="button"
                 onClick={onScrollToComments}
                 aria-label={`댓글 ${commentCount.toLocaleString()}`}
-                className="flex h-10 w-full items-center justify-center gap-0.5 rounded-full border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-1.5 text-center text-slate-700 whitespace-nowrap transition-all duration-150 hover:-translate-y-px hover:border-sky-200 hover:bg-sky-50 active:scale-[0.98] dark:text-white dark:hover:border-sky-500/20 dark:hover:bg-sky-500/10 sm:h-10 sm:gap-1"
+                className="flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-1.5 text-center text-slate-700 whitespace-nowrap transition-all duration-150 hover:-translate-y-px hover:border-sky-200 hover:bg-sky-50 active:scale-[0.98] dark:text-white dark:hover:border-sky-500/20 dark:hover:bg-sky-500/10 sm:gap-1"
             >
                 <MessageSquareIcon className="h-8 w-8 flex-shrink-0" />
                 <span className="whitespace-nowrap text-body font-bold leading-none sm:text-body">
@@ -111,7 +111,7 @@ export default function CheerDetailActionBarRuntime({
                             onRepostMenuOpenChange(!isRepostMenuOpen);
                         }}
                         className={cn(
-                            'flex h-10 w-full items-center justify-center gap-0.5 whitespace-nowrap rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:h-10 sm:gap-1',
+                            'flex min-h-11 w-full items-center justify-center gap-0.5 whitespace-nowrap rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                             repostButtonActive
                                 ? 'border-[var(--cheer-repost-on)]/30 bg-emerald-50 dark:bg-emerald-500/15'
                                 : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-emerald-200 hover:bg-emerald-50 dark:text-white dark:hover:border-emerald-500/20 dark:hover:bg-emerald-500/10'
@@ -136,7 +136,7 @@ export default function CheerDetailActionBarRuntime({
                             role="menuitem"
                             onClick={onCancelRepost}
                             aria-label="리포스트 삭제"
-                            className="flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
+                            className="flex min-h-11 items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
                         >
                             <RotateCcwIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
                             <div>
@@ -155,7 +155,7 @@ export default function CheerDetailActionBarRuntime({
                                 role="menuitem"
                                 onClick={onSimpleRepost}
                                 aria-label="리포스트"
-                                className="flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                                className="flex min-h-11 items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
                             >
                                 <div className="flex h-5 w-5 items-center justify-center">
                                     {interactionRepostedByMe ? (
@@ -176,7 +176,7 @@ export default function CheerDetailActionBarRuntime({
                                     role="menuitem"
                                     onClick={onQuoteRepost}
                                     aria-label="인용하기"
-                                    className="flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="flex min-h-11 items-center gap-3 px-3.5 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
                                 >
                                     <div className="flex h-5 w-5 items-center justify-center">
                                         <PenSquareIcon className="h-4 w-4 text-gray-500 dark:text-white" />
@@ -202,7 +202,7 @@ export default function CheerDetailActionBarRuntime({
                 onClick={onToggleBookmark}
                 aria-label={`북마크 ${interactionBookmarkCount.toLocaleString()}`}
                 className={cn(
-                    'flex h-10 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:h-10 sm:gap-1',
+                    'flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                     interactionBookmarked
                         ? 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300'
                         : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-amber-200 hover:bg-amber-50 dark:text-white dark:hover:border-amber-500/20 dark:hover:bg-amber-500/10'

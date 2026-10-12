@@ -341,7 +341,7 @@ export default function OffSeasonList(props: OffSeasonListProps = {}) {
                                 <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
                                 <Input
                                     placeholder="선수, 구단, 요약, 계약 내용 검색"
-                                    className="h-12 rounded-2xl border-zinc-200 bg-zinc-50 pl-12 text-base font-semibold shadow-none focus-visible:ring-primary/20 dark:border-zinc-800 dark:bg-zinc-950"
+                                    className="h-12 rounded-2xl border-zinc-200 bg-zinc-50 pl-12 text-base font-semibold shadow-none focus-visible:ring-primary/20 dark:border-zinc-800 dark:bg-zinc-950 sm:h-12"
                                     value={searchTerm}
                                     onChange={(event) => setSearchTerm(event.target.value)}
                                     data-testid="offseason-list-search"

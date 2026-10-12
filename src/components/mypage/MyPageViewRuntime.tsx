@@ -14,7 +14,7 @@ const MyCheerPostsSection = lazy(() => import('./MyCheerPostsSection'));
 const AlertsSection = lazy(() => import('./AlertsSection'));
 const MyPageSeasonLogRuntime = lazy(() => import('./MyPageSeasonLogRuntime'));
 
-type MyPageViewRuntimeProps = {
+export type MyPageViewRuntimeProps = {
   viewMode: ViewMode;
   profileImage: string | null;
   name: string;
@@ -29,6 +29,8 @@ type MyPageViewRuntimeProps = {
   onSetViewMode: (mode: ViewMode, options?: { date?: string | null }) => void;
   onProfileUpdated: () => void;
   onOpenTicketUploadModal: () => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 const sectionFallback = (
@@ -56,7 +58,17 @@ export default function MyPageViewRuntime({
   onSetViewMode,
   onProfileUpdated,
   onOpenTicketUploadModal,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride,
 }: MyPageViewRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  if (visualQaPhase === 'fallback') {
+    return sectionFallback;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   if (viewMode === 'diary') {
     return renderSection(
       <MyPageSeasonLogRuntime

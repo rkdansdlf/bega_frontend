@@ -211,7 +211,7 @@ function FacilityImageDialog({
             aria-label="시설현황 이미지 축소"
             onClick={() => updateZoom(zoom - 0.25)}
             disabled={zoom <= 1}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15 sm:h-9 sm:w-8"
           >
             -
           </button>
@@ -219,7 +219,7 @@ function FacilityImageDialog({
             type="button"
             aria-label="시설현황 이미지 원래 크기"
             onClick={() => updateZoom(1)}
-            className="h-9 min-w-14 rounded-lg border border-white/10 bg-white/10 px-2 text-12 font-black text-white transition hover:bg-white/15"
+            className="h-11 min-w-14 rounded-lg border border-white/10 bg-white/10 px-2 text-12 font-black text-white transition hover:bg-white/15 sm:h-9"
           >
             {Math.round(zoom * 100)}%
           </button>
@@ -228,7 +228,7 @@ function FacilityImageDialog({
             aria-label="시설현황 이미지 확대"
             onClick={() => updateZoom(zoom + 0.25)}
             disabled={zoom >= 3}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15 sm:h-9 sm:w-8"
           >
             +
           </button>
@@ -236,7 +236,7 @@ function FacilityImageDialog({
             type="button"
             aria-label="확대 보기 닫기"
             onClick={onClose}
-            className="ml-1 flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
+            className="ml-1 flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/15 sm:h-9 sm:w-8"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -330,7 +330,7 @@ export default function GocheokFacilityGuide({
                 data-testid={`gocheok-facility-tab-${tab.id}`}
                 aria-pressed={active}
                 onClick={() => handleTabChange(tab.id)}
-                className="shrink-0 rounded-lg border-0 px-3 py-2 text-11 font-black transition-colors"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border-0 px-3 py-2 text-11 font-black transition-colors sm:min-h-8"
                 style={{
                   background: active ? '#820024' : 'transparent',
                   color: active ? '#ffffff' : (mode === 'dark' ? '#cbd5e1' : '#475569'),

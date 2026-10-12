@@ -1,6 +1,9 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useDiaryStatistics } from '../../hooks/useDiaryStatistics';
+import {
+  useDiaryStatistics,
+  type DiaryStatisticsVisualQaStateOverride,
+} from '../../hooks/useDiaryStatistics';
 import type {
   DiaryEntry,
   DiaryScopedStatistics,
@@ -14,11 +17,12 @@ import { MyPageTicketIcon } from './MyPageFlowIcons';
 
 const MyPageSeasonTimelineRuntime = lazy(() => import('./MyPageSeasonTimelineRuntime'));
 
-type MyPageSeasonLogRuntimeProps = {
+export type MyPageSeasonLogRuntimeProps = {
   profileImage: string | null;
   name: string;
   onOpenDiaryEditor: (date?: string) => void;
   onOpenTicketUploadModal: () => void;
+  visualQaStateOverride?: DiaryStatisticsVisualQaStateOverride;
 };
 
 type HeatmapCell = {
@@ -247,8 +251,12 @@ export default function MyPageSeasonLogRuntime({
   name,
   onOpenDiaryEditor,
   onOpenTicketUploadModal,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MyPageSeasonLogRuntimeProps) {
-  const { diaryEntries, statistics, isLoading } = useDiaryStatistics();
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const { diaryEntries, statistics, isLoading } = useDiaryStatistics(visualQaStateOverride);
   const [flashingEntryId, setFlashingEntryId] = useState<number | null>(null);
   const [statsScope, setStatsScope] = useState<DiaryStatsScope>('all');
   const [resultFilter, setResultFilter] = useState<ResultFilter>('all');

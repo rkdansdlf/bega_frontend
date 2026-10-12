@@ -124,7 +124,7 @@ export default function ScheduledGameCard({ game, onSelectPrediction }: Schedule
 
         <Button
           onClick={handleButtonClick}
-          className="w-full h-9 text-body font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
+          className="w-full h-11 text-body font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm sm:h-9"
         >
           승부예측 하러가기
           <SharedArrowUpRightIcon className="w-3.5 h-3.5 ml-1.5" />

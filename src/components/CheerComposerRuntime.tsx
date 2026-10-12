@@ -21,6 +21,7 @@ import {
 } from './icons/CheerComposerIcons';
 import { ProfileAvatar } from './ui/ProfileAvatar';
 import TeamLogo from './TeamLogo';
+import CheerComposerLoginPrompt from './CheerComposerLoginPrompt';
 import type { CheerWritePayload } from './CheerWriteModal';
 import type { LinkedPostTarget } from './cheer/CheerPresentation';
 import type { LinkedComposerRouteLoader } from './cheer/CheerLinkedComposerRoute';
@@ -62,7 +63,14 @@ interface CheerComposerRuntimeProps {
     userDisplayName: string;
     onRequireLogin: (replace?: boolean) => void;
     linkedRouteDependencies?: LinkedRouteDependencies;
+    visualQaStateOverride?: CheerComposerRuntimeVisualQaStateOverride;
 }
+
+export type CheerComposerRuntimeVisualQaStateOverride = {
+    initialContent?: string;
+    isSubmitting?: boolean;
+    onSubmit?: () => void;
+};
 
 const importLinkedComposerRoute = () => import('./cheer/CheerLinkedComposerRoute');
 
@@ -106,7 +114,11 @@ export default function CheerComposerRuntime({
     userDisplayName,
     onRequireLogin,
     linkedRouteDependencies,
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerComposerRuntimeProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { reset: resetAuthState } = useAuthProfileActions();
@@ -114,10 +126,11 @@ export default function CheerComposerRuntime({
     const [hasMountedWriteModal, setHasMountedWriteModal] = useState(false);
     const [linkedContent, setLinkedContent] = useState<LinkedContent>();
     const [isLinkedRouteLoading, setIsLinkedRouteLoading] = useState(false);
-    const [composerContent, setComposerContent] = useState('');
+    const [composerContent, setComposerContent] = useState(visualQaStateOverride?.initialContent ?? '');
     const [composerFiles, setComposerFiles] = useState<File[]>([]);
     const [composerPreviews, setComposerPreviews] = useState<{ file: File; url: string }[]>([]);
     const [composerSubmitting, setComposerSubmitting] = useState(false);
+    const effectiveComposerSubmitting = visualQaStateOverride?.isSubmitting ?? composerSubmitting;
     const [composerDragging, setComposerDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const previewsRef = useRef<{ file: File; url: string }[]>([]);
@@ -549,6 +562,10 @@ export default function CheerComposerRuntime({
     });
 
     const handleComposerSubmit = async () => {
+        if (visualQaStateOverride?.onSubmit) {
+            visualQaStateOverride.onSubmit();
+            return;
+        }
         if (!isLoggedIn) {
             onRequireLogin(false);
             return;
@@ -581,18 +598,27 @@ export default function CheerComposerRuntime({
     return (
         <>
             <section
+                data-testid="cheer-composer-runtime"
                 className={`relative mx-4 mt-4 rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-4 py-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 ${composerDragging ? 'border-2 border-dashed border-sky-300 bg-sky-50/50 dark:border-sky-500 dark:bg-sky-900/30' : ''}`}
                 onDragOver={handleComposerDragOver}
                 onDragLeave={handleComposerDragLeave}
                 onDrop={handleComposerDrop}
             >
-                {composerDragging && (
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-sky-50/30 backdrop-blur-sm dark:bg-sky-900/30">
-                        <CheerComposerImagePlusIcon className="h-8 w-8 text-sky-500 dark:text-sky-400" />
-                        <span className="text-body font-bold text-sky-700 dark:text-sky-300">이미지를 놓으세요</span>
-                    </div>
-                )}
-                <div className="flex gap-3">
+                {!isAuthLoading && !isLoggedIn ? (
+                    <CheerComposerLoginPrompt
+                        teamColor={teamColor}
+                        teamContrastText={teamContrastText}
+                        onRequireLogin={onRequireLogin}
+                    />
+                ) : (
+                    <>
+                        {composerDragging && (
+                            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-sky-50/30 backdrop-blur-sm dark:bg-sky-900/30">
+                                <CheerComposerImagePlusIcon className="h-8 w-8 text-sky-500 dark:text-sky-400" />
+                                <span className="text-body font-bold text-sky-700 dark:text-sky-300">이미지를 놓으세요</span>
+                            </div>
+                        )}
+                        <div className="flex gap-3">
                     <div className="h-10 w-10 shrink-0">
                         {authUserProfileImageUrl ? (
                             <ProfileAvatar
@@ -629,6 +655,7 @@ export default function CheerComposerRuntime({
                     </div>
                     <div className="min-w-0 flex-1">
                         <AutosizeTextarea
+                            data-testid="cheer-composer-input"
                             placeholder="지금 우리 팀에게 응원을 남겨주세요!"
                             className="w-full resize-none border-none bg-transparent text-base text-[#0f1419] placeholder:text-[#536471] focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500 sm:text-body"
                             minRows={2}
@@ -640,6 +667,7 @@ export default function CheerComposerRuntime({
                             <div className="flex min-w-0 items-center gap-2 text-[#536471] dark:text-white">
                                 <button
                                     type="button"
+                                    data-testid="cheer-composer-attach"
                                     className={`group relative flex h-11 w-11 items-center justify-center rounded-full transition-colors ${composerFiles.length >= 10
                                         ? 'cursor-not-allowed opacity-50'
                                         : 'hover:bg-slate-100 dark:hover:bg-secondary'
@@ -666,7 +694,7 @@ export default function CheerComposerRuntime({
                                     multiple
                                     className="hidden"
                                     onChange={handleComposerFileSelect}
-                                    disabled={composerSubmitting || composerFiles.length >= 10}
+                                    disabled={effectiveComposerSubmitting || composerFiles.length >= 10}
                                 />
                             </div>
                             <button
@@ -675,9 +703,9 @@ export default function CheerComposerRuntime({
                                 onClick={handleComposerSubmit}
                                 className="min-h-11 max-w-full rounded-full px-5 py-2 text-body font-bold transition-transform active:scale-[0.98] disabled:opacity-60"
                                 style={{ backgroundColor: teamColor, color: teamContrastText }}
-                                disabled={composerSubmitting || !composerContent.trim()}
+                                disabled={effectiveComposerSubmitting || !composerContent.trim()}
                             >
-                                {composerSubmitting ? '등록 중...' : '게시하기'}
+                                {effectiveComposerSubmitting ? '등록 중...' : '게시하기'}
                             </button>
                         </div>
                         {composerPreviews.length > 0 && (
@@ -705,7 +733,9 @@ export default function CheerComposerRuntime({
                             </div>
                         )}
                     </div>
-                </div>
+                        </div>
+                    </>
+                )}
             </section>
 
             {isLinkedRouteLoading ? (

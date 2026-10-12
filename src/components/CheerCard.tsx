@@ -389,7 +389,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                         setIsOwnerMenuOpen(false);
                                         handleEdit(event);
                                     }}
-                                    className="flex w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
                                 >
                                     <EditIcon className="mr-2 h-4 w-4" />
                                     수정하기
@@ -401,7 +401,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                         setIsOwnerMenuOpen(false);
                                         void handleDelete(event);
                                     }}
-                                    className="flex w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                                 >
                                     <TrashIcon className="mr-2 h-4 w-4" />
                                     삭제하기
@@ -472,7 +472,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                         {shouldLoadInteractions ? (
                             <Suspense
                                 fallback={(
-                                    <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
+                                <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
                                         <button type="button" className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`댓글 ${commentCount}개`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
@@ -507,7 +507,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                 />
                             </Suspense>
                         ) : (
-                            <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
+                            <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
                                 <button
                                     type="button"
                                     className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-sky-500 sm:gap-1.5"

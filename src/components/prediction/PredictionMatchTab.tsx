@@ -77,7 +77,7 @@ export default function PredictionMatchTab({
           onClick={onPrevDate}
           disabled={!canMovePrevDate}
           aria-label="이전 날짜 보기"
-          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-primary/10 disabled:opacity-30"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-primary/10 disabled:opacity-30 sm:h-9 sm:w-9"
         >
           <PredictionChevronLeftIcon size={24} className="text-emerald-600 dark:text-emerald-300" />
         </button>
@@ -89,7 +89,7 @@ export default function PredictionMatchTab({
           onClick={onNextDate}
           disabled={!canMoveNextDate}
           aria-label="다음 날짜 보기"
-          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-primary/10 disabled:opacity-30"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-primary/10 disabled:opacity-30 sm:h-9 sm:w-9"
         >
           <PredictionChevronRightIcon size={24} className="text-emerald-600 dark:text-emerald-300" />
         </button>

@@ -13,6 +13,9 @@ const landingSource = readFileSync(new URL('../src/components/Landing.tsx', impo
 const landingAssetsSource = readFileSync(new URL('../src/components/landing/landingAssets.ts', import.meta.url), 'utf8');
 const landingClosingSource = readFileSync(new URL('../src/components/landing/LandingClosing.tsx', import.meta.url), 'utf8');
 const landingPhonePreviewSource = readFileSync(new URL('../src/components/landing/LandingPhonePreview.tsx', import.meta.url), 'utf8');
+const landingPhoneHomeScreenSource = readFileSync(new URL('../src/components/landing/phone/LandingPhoneHomeScreen.tsx', import.meta.url), 'utf8');
+const landingPhoneMateScreenSource = readFileSync(new URL('../src/components/landing/phone/LandingPhoneMateScreen.tsx', import.meta.url), 'utf8');
+const landingPhoneBoardScreenSource = readFileSync(new URL('../src/components/landing/phone/LandingPhoneBoardScreen.tsx', import.meta.url), 'utf8');
 const landingShowcaseDataSource = readFileSync(new URL('../src/components/landing/landingShowcaseData.ts', import.meta.url), 'utf8');
 const landingQaSource = readFileSync(new URL('./landing-qa.mjs', import.meta.url), 'utf8');
 const landingFirstLoadAuditSource = readFileSync(new URL('./landing-first-load-audit.mjs', import.meta.url), 'utf8');
@@ -100,6 +103,13 @@ test('keeps coach presentation helpers outside the CoachBriefing chunk', () => {
   assert.match(
     viteConfigSource,
     /id\.includes\('\/src\/utils\/predictionCoachPresentation'\)[\s\S]{0,160}return 'coach-presentation'/,
+  );
+});
+
+test('pre-bundles runtime websocket dependencies used by dynamic socket imports', () => {
+  assert.match(
+    viteConfigSource,
+    /optimizeDeps:\s*\{\s*include:\s*\['sockjs-client', '@stomp\/stompjs'\]/,
   );
 });
 
@@ -379,7 +389,10 @@ test('preloads /cheer route chunks before nested lazy route rendering', () => {
 });
 
 test('loads the /cheer feed runtime after the composer can paint', () => {
-  assert.ok(cheerRuntimeSource.includes('const [shouldRenderFeedRuntime, setShouldRenderFeedRuntime] = useState(false);'));
+  assert.match(
+    cheerRuntimeSource,
+    /const \[shouldRenderFeedRuntime, setShouldRenderFeedRuntime\] = useState\(\s*\(\) => visualQaStateOverride\?\.shouldRenderFeedRuntime \?\? false\s*\);/,
+  );
   assert.match(
     cheerRuntimeSource,
     /scheduleAfterNextPaint\(\(\) => \{\s*startTransition\(\(\) => setShouldRenderFeedRuntime\(true\)\);\s*\}\)/,
@@ -412,7 +425,7 @@ test('loads React Query only for the authenticated /mate runtime', () => {
   assert.ok(matePageSource.includes("const AppQueryProvider = lazy(() => import('./AppQueryProvider'));"));
   assert.match(
     matePageSource,
-    /<AppQueryProvider>\s*<MateRuntime \/>\s*<\/AppQueryProvider>/,
+    /<AppQueryProvider>[\s\S]*?runtimeOverride !== undefined \? runtimeOverride : <MateRuntime \/>[\s\S]*?<\/AppQueryProvider>/,
   );
   assert.match(
     appQueryProviderSource,
@@ -430,12 +443,16 @@ test('loads React Query only for the authenticated /mate runtime', () => {
   assert.equal(mateGuestFirstLoadGuard.includes("'src/components/Mate.tsx'"), false);
 });
 
-test('keeps the /mate guest LCP heading on the zero-request font stack', () => {
+test('keeps the /mate guest LCP heading on a native font without adding a global utility', () => {
   assert.ok(tailwindConfigSource.includes("native: ['system-ui', '-apple-system', 'BlinkMacSystemFont', '\"Segoe UI\"', 'sans-serif']"));
   assert.match(
     matePageSource,
-    /<h1 className="text-2xl font-native font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">/,
+    /className="text-2xl font-black tracking-tight text-foreground sm:text-3xl"/,
   );
+  assert.match(matePageSource, /fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'/);
+  assert.doesNotMatch(matePageSource, /font-native/);
+  assert.match(matePageSource, /className="min-h-screen bg-background transition-colors duration-200"/);
+  assert.match(matePageSource, /shadow-surface/);
 });
 
 test('reserves /cheer feed and sidebar space to prevent CLS', () => {
@@ -462,13 +479,15 @@ test('forbids the retired icon vendor chunk from production assets', () => {
 
 test('groups tiny /home first-load helpers to reduce pre-card request fanout', () => {
   assert.ok(viteConfigSource.includes("return 'home-first-load-core';"));
+  const sharedHelpers = viteConfigSource.match(/const homeFirstLoadCoreChunkModules = \[([\s\S]*?)\];/)?.[1];
+  assert.ok(sharedHelpers);
+  assert.equal(sharedHelpers.includes('/src/api/homeCore.ts'), false);
   for (const modulePath of [
-    '/src/api/homeCore.ts',
     '/src/utils/dateKey.ts',
     '/src/utils/homeSeasonLogic.ts',
     '/src/utils/manualBaseballDataContract.ts',
   ]) {
-    assert.ok(viteConfigSource.includes(modulePath));
+    assert.ok(sharedHelpers.includes(modulePath));
   }
 });
 
@@ -590,7 +609,7 @@ test('defers home ad slot outside the first-card critical path', () => {
   assert.ok(homeDeferredSurfacesSource.includes('const [shouldMountAdSlot, setShouldMountAdSlot] = useState(false);'));
   assert.ok(homeDeferredSurfacesSource.includes('const HOME_DEFERRED_AD_SLOT_DELAY_MS = 400;'));
   assert.ok(homeDeferredSurfacesSource.includes('HOME_DEFERRED_AD_SLOT_DELAY_MS'));
-  assert.ok(homeDeferredSurfacesSource.includes('{shouldMountAdSlot ? ('));
+  assert.ok(homeDeferredSurfacesSource.includes('{!visualQaDisableAdSlot && shouldMountAdSlot ? ('));
 });
 
 test('defers home secondary panels with a real post-card delay before idle work', () => {

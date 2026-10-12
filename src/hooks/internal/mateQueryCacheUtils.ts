@@ -152,10 +152,11 @@ export const updateMatePartyApplicationsArray = (
 
 export const extractMatePartyListParams = (queryKey: readonly unknown[]): MatePartyListKeyParams | null => {
   if (
-    queryKey.length !== 4 ||
+    (queryKey.length !== 4 && queryKey.length !== 7) ||
     queryKey[0] !== 'mate' ||
     queryKey[1] !== 'parties' ||
-    queryKey[2] !== 'list'
+    queryKey[2] !== 'list' ||
+    (queryKey.length === 7 && queryKey[4] !== 'viewer')
   ) {
     return null;
   }

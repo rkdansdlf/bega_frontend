@@ -4,6 +4,28 @@ import test from 'node:test';
 import { fetchCurrentUserProfile, logoutUser } from './auth';
 import { PrivateApiError } from './privateClient';
 
+for (const invalidateAt of ['entry', 'profile-401', 'reissue', 'profile-success'] as const) {
+  test(`obsolete profile work stops at ${invalidateAt}`, async (t) => {
+    let active = invalidateAt !== 'entry';
+    const urls: string[] = [];
+    t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+      const url = String(input);
+      urls.push(url);
+      const isReissue = url.endsWith('/auth/reissue');
+      if (isReissue || invalidateAt === 'profile-401' || invalidateAt === 'profile-success') active = false;
+      return new Response(JSON.stringify(isReissue ? { success: true } : {
+        data: { id: 42, email: 'profile@example.invalid' },
+      }), {
+        status: isReissue || invalidateAt === 'profile-success' ? 200 : 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    });
+    await assert.rejects(fetchCurrentUserProfile({ isCurrentRequest: () => active }), /superseded/);
+    assert.equal(urls.length, invalidateAt === 'entry' ? 0 : invalidateAt === 'reissue' ? 2 : 1);
+    assert.equal(urls.filter((url) => url.endsWith('/auth/reissue')).length, invalidateAt === 'reissue' ? 1 : 0);
+  });
+}
+
 test('fetchCurrentUserProfile는 부트스트랩용 인증 예외 플래그를 전달한다', async (t) => {
   let requestUrl = '';
   let requestInit: RequestInit | undefined;
@@ -179,6 +201,30 @@ test('logoutUser는 XSRF-TOKEN 쿠키 값을 logout POST header에 명시한다'
   assert.equal(requestInit?.method, 'POST');
   assert.equal(requestInit?.credentials, 'include');
   assert.equal(new Headers(requestInit?.headers).get('X-XSRF-TOKEN'), 'csrf-token.value');
+});
+
+test('logoutUser preserves the retryable revocation error contract', async (t) => {
+  Object.defineProperty(globalThis, 'document', {
+    configurable: true,
+    value: { cookie: 'XSRF-TOKEN=synthetic-csrf' },
+  });
+  t.after(() => { delete (globalThis as { document?: unknown }).document; });
+  const fetch = t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({
+    success: false,
+    code: 'LOGOUT_REVOCATION_UNAVAILABLE',
+    message: 'Logout could not be completed. Please retry.',
+  }), {
+    headers: { 'content-type': 'application/json', 'retry-after': '1' },
+    status: 503,
+  }));
+
+  await assert.rejects(logoutUser, (error: unknown) => {
+    assert.ok(error instanceof PrivateApiError);
+    assert.equal(error.status, 503);
+    assert.equal(error.data?.code, 'LOGOUT_REVOCATION_UNAVAILABLE');
+    return true;
+  });
+  assert.equal(fetch.mock.callCount(), 1);
 });
 
 test('logoutUser는 XSRF-TOKEN 쿠키가 없으면 보호되지 않은 POST를 보내지 않는다', async (t) => {

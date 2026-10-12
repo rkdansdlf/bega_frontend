@@ -117,6 +117,7 @@ function SourceTabs({
           <button
             key={option.id}
             type="button"
+            data-testid={`jamsil-source-${option.id.toLowerCase()}`}
             onClick={() => onChange(option.id)}
             className="min-h-11 rounded-lg border-0 px-2.5 py-2 text-11 font-black transition-colors whitespace-nowrap text-center shrink-0"
             style={{
@@ -217,7 +218,7 @@ function DoosanFloorImageDialog({
             aria-label="층별 안내 이미지 축소"
             onClick={() => updateZoom(zoom - 0.25)}
             disabled={zoom <= 1}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15 sm:h-9 sm:w-8"
           >
             -
           </button>
@@ -225,7 +226,7 @@ function DoosanFloorImageDialog({
             type="button"
             aria-label="층별 안내 이미지 원래 크기"
             onClick={() => updateZoom(1)}
-            className="h-9 min-w-14 rounded-lg border border-white/10 bg-white/10 px-2 text-12 font-black text-white transition hover:bg-white/15"
+            className="h-11 min-w-14 rounded-lg border border-white/10 bg-white/10 px-2 text-12 font-black text-white transition hover:bg-white/15 sm:h-9"
           >
             {Math.round(zoom * 100)}%
           </button>
@@ -234,7 +235,7 @@ function DoosanFloorImageDialog({
             aria-label="층별 안내 이미지 확대"
             onClick={() => updateZoom(zoom + 0.25)}
             disabled={zoom >= 3}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-lg font-black text-white transition disabled:cursor-not-allowed disabled:opacity-35 hover:bg-white/15 sm:h-9 sm:w-8"
           >
             +
           </button>
@@ -242,7 +243,7 @@ function DoosanFloorImageDialog({
             type="button"
             aria-label="확대 보기 닫기"
             onClick={onClose}
-            className="ml-1 flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
+            className="ml-1 flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/15 sm:h-9 sm:w-8"
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -286,7 +287,7 @@ function DoosanOfficialGuide({ mode }: { mode: 'light' | 'dark' }) {
   ];
 
   return (
-    <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
+    <div data-testid="jamsil-doosan-guide" className="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
       <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -1035,6 +1036,7 @@ export default function JamsilSeatMapSvg({
           <svg
             viewBox={`0 0 ${imageWidth} ${imageHeight}`}
             className="h-full w-full"
+            data-vqa-overlap="allowed"
             preserveAspectRatio="xMidYMid meet"
             aria-label="잠실 좌석도 구역 선택"
             onDoubleClick={handleSvgDoubleClick}
@@ -1126,6 +1128,7 @@ export default function JamsilSeatMapSvg({
                   <path
                     role="button"
                     data-touch-target-audit="shape-hit-area"
+                    data-testid={`jamsil-seat-block-${b.id}`}
                     tabIndex={isFiltered ? -1 : 0}
                     aria-label={`${b.name} ${b.block}`}
                     d={imageGeometry.d}

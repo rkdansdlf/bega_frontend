@@ -24,6 +24,9 @@ test('GwangjuSeatMapEditor는 precision v1 dev editor/export shell 계약을 렌
   assert.match(html, /data-testid="gwangju-editor-dataset-json"/);
   assert.match(html, /GWANGJU_PRECISION_V1_SECTION_GEOMETRY_PATCH_PREVIEW/);
   assert.match(html, /file-write disabled/);
+  assert.match(html, /min-w-0 grid gap-0/);
+  assert.match(html, /min-h-11/);
+  assert.match(html, /whitespace-pre-wrap break-words/);
 });
 
 test('GwangjuSeatMapEditor route는 production navigation에 노출되지 않는 dev-only 내부 route다', () => {

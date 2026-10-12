@@ -88,6 +88,7 @@ interface PanelHeaderProps {
   icon: ReactNode;
   onMore?: () => void;
   moreLabel?: string;
+  testId?: string;
   children?: ReactNode;
 }
 
@@ -96,6 +97,7 @@ function PanelHeader({
   icon,
   onMore,
   moreLabel = '더보기',
+  testId,
   children,
 }: PanelHeaderProps) {
   return (
@@ -109,6 +111,7 @@ function PanelHeader({
           <Button
             variant="ghost"
             size="touch"
+            data-testid={testId}
             onClick={onMore}
             className="rounded-full px-3 text-15 font-bold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/40 dark:hover:text-zinc-100"
           >
@@ -277,6 +280,7 @@ export default function HomeSecondaryPanels({
         icon={<FlameIcon className="h-5 w-5 text-red-500" />}
         onMore={onNavigateToCheer}
         moreLabel="전체 보기"
+        testId="home-secondary-cheer-more"
       />
       <Card className={panelCardClassName}>
         {isHotCheerLoading ? (
@@ -299,6 +303,7 @@ export default function HomeSecondaryPanels({
                   <button
                     type="button"
                     key={post.id}
+                    data-testid="home-secondary-hot-post"
                     onClick={() => onNavigateToCheerPost(post.id)}
                     className="group w-full rounded-xl px-2.5 py-2.5 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                   >
@@ -350,6 +355,7 @@ export default function HomeSecondaryPanels({
                 return (
                   <button
                     type="button"
+                    data-testid="home-secondary-hot-post"
                     onClick={() => onNavigateToCheerPost(hero.id)}
                     className="group w-full rounded-xl text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                   >
@@ -395,6 +401,7 @@ export default function HomeSecondaryPanels({
                       <button
                         type="button"
                         key={post.id}
+                        data-testid="home-secondary-hot-post"
                         onClick={() => onNavigateToCheerPost(post.id)}
                         className="group flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                       >
@@ -440,6 +447,7 @@ export default function HomeSecondaryPanels({
         icon={<UsersIcon className="h-5 w-5 text-blue-500" />}
         onMore={onNavigateToMate}
         moreLabel="전체 보기"
+        testId="home-secondary-mate-more"
       />
       <Card className={panelCardClassName}>
         {isFeaturedMatesLoading ? (
@@ -468,6 +476,7 @@ export default function HomeSecondaryPanels({
                 <button
                   type="button"
                   key={mate.id}
+                  data-testid="home-secondary-featured-mate"
                   onClick={() => onSelectFeaturedMate(mate)}
                   className="status-badge-hover-scope w-full rounded-xl px-2.5 py-2.5 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/35"
                 >
@@ -547,6 +556,7 @@ export default function HomeSecondaryPanels({
             aria-label={`${rankingSeasonYear - 1}시즌 팀 순위 보기`}
             variant="ghost"
             size="iconTouch"
+            data-testid="home-secondary-ranking-previous"
             onClick={onLoadPreviousRankingSeason}
             className="rounded-md text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/60 dark:hover:text-white"
           >
@@ -559,6 +569,7 @@ export default function HomeSecondaryPanels({
             aria-label={`${rankingSeasonYear + 1}시즌 팀 순위 보기`}
             variant="ghost"
             size="iconTouch"
+            data-testid="home-secondary-ranking-next"
             onClick={onLoadNextRankingSeason}
             disabled={rankingSeasonYear >= currentYear}
             className="rounded-md text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-white dark:hover:bg-zinc-800/60 dark:hover:text-white"
@@ -747,6 +758,7 @@ export default function HomeSecondaryPanels({
                 </h2>
                 <button
                   type="button"
+                  data-testid="home-secondary-calendar-close"
                   className="min-h-11 rounded-md px-3 py-1 text-body text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800 dark:hover:text-white"
                   onClick={onCloseCalendar}
                 >

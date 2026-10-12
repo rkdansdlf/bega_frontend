@@ -15,6 +15,7 @@ import {
 import { buildLoginPathWithError, getStoredLoginRedirect } from '../utils/loginRedirect';
 import { parseError } from '../utils/errorUtils';
 import { markAuthSessionEstablished } from '../api/authSessionGeneration';
+import { publishAuthSessionChanged } from '../utils/authSessionEvents';
 
 export type OAuthCallbackVisualQaStateOverride = {
   phase: 'loading' | 'error';
@@ -85,6 +86,7 @@ export default function OAuthCallback(props: OAuthCallbackProps) {
             return;
           }
           markAuthSessionEstablished();
+          publishAuthSessionChanged();
           clearPendingLoginRedirect();
           navigate(redirectPath, { replace: true });
         } else {

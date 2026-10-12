@@ -117,3 +117,19 @@ test('markAllAsRead keeps notifications created after the request boundary unrea
     [true, false],
   );
 });
+
+test('markAllAsRead does not mark an already-loaded post-click notification as read', () => {
+  useNotificationStore.getState().reset();
+  const requestStartedAt = Date.parse('2026-07-18T00:00:00Z');
+  useNotificationStore.getState().setNotifications([
+    notification({ id: 10, createdAt: '2026-07-17T23:59:59Z' }),
+    notification({ id: 11, createdAt: '2026-07-18T00:00:01Z' }),
+  ]);
+
+  useNotificationStore.getState().markAllAsRead(requestStartedAt);
+
+  assert.deepEqual(
+    useNotificationStore.getState().notifications.map((item) => item.isRead),
+    [true, false],
+  );
+});

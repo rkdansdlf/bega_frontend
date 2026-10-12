@@ -7,9 +7,12 @@ import {
   usePowerup as usePowerupApi,
   type PowerupInventory,
 } from '../api/leaderboard';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
-export function usePowerups() {
+export function usePowerups(gameId?: string) {
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
   const DEFAULT_POWERUPS: PowerupInventory = {
     MAGIC_BAT: 0,
     GOLDEN_GLOVE: 0,
@@ -17,13 +20,13 @@ export function usePowerups() {
   };
 
   const inventoryQuery = useQuery({
-    queryKey: ['powerups', 'inventory'],
+    queryKey: PRIVATE_QUERY_KEYS.powerupInventory(viewerScope),
     queryFn: fetchPowerups,
     staleTime: 60000,
   });
 
   const activeQuery = useQuery({
-    queryKey: ['powerups', 'active'],
+    queryKey: PRIVATE_QUERY_KEYS.activePowerups(viewerScope),
     queryFn: fetchActivePowerups,
     staleTime: 30000,
   });
@@ -45,7 +48,9 @@ export function usePowerups() {
 
   return {
     powerups: inventoryQuery.data ?? DEFAULT_POWERUPS,
-    activePowerups: activeQuery.data?.map((powerup) => powerup.type) ?? [],
+    activePowerups: activeQuery.data
+      ?.filter((powerup) => gameId === undefined || powerup.gameId === gameId)
+      .map((powerup) => powerup.type) ?? [],
     isLoading: inventoryQuery.isLoading || activeQuery.isLoading,
     isUsingPowerup: usePowerupMutation.isPending,
     usePowerup,
@@ -57,9 +62,10 @@ type UseUserLeaderboardStatsOptions = {
 };
 
 export function useUserLeaderboardStats(options: UseUserLeaderboardStatsOptions = {}) {
+  const viewerScope = useViewerQueryScope();
   const { enabled = true } = options;
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['leaderboard', 'me'],
+    queryKey: PRIVATE_QUERY_KEYS.leaderboardMe(viewerScope),
     queryFn: fetchMyRank,
     staleTime: 60000,
     enabled,

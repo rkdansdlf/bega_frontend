@@ -107,6 +107,7 @@ function MateResultsRuntime({
             <Button
               variant="outline"
               size="touch"
+              data-testid="mate-results-reset"
               className="rounded-xl border-primary/25 bg-primary/10 px-5 font-black text-primary hover:bg-primary/15"
               onClick={onResetFilters}
             >
@@ -206,6 +207,7 @@ function MateResultsRuntime({
     <div className="mb-8 mt-10 flex items-center justify-center gap-2 sm:gap-4">
       <Button
         variant="outline"
+        data-testid="mate-results-previous"
         className="border-gray-200/80 bg-white text-gray-700 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20 dark:hover:text-primary"
         onClick={() => onPageChange(Math.max(0, queryPage - 1))}
         disabled={queryPage === 0}
@@ -219,6 +221,7 @@ function MateResultsRuntime({
       </span>
       <Button
         variant="outline"
+        data-testid="mate-results-next"
         className="border-gray-200/80 bg-white text-gray-700 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20 dark:hover:text-primary"
         onClick={() => onPageChange(Math.min(totalPages - 1, queryPage + 1))}
         disabled={queryPage >= totalPages - 1}
@@ -232,7 +235,12 @@ function MateResultsRuntime({
 
   if (isLoading) {
     return (
-      <div role="status" aria-live="polite" aria-label="메이트 파티 목록 불러오는 중">
+      <div
+        data-testid="mate-results-runtime"
+        role="status"
+        aria-live="polite"
+        aria-label="메이트 파티 목록 불러오는 중"
+      >
         {renderSkeletonGrid()}
       </div>
     );
@@ -240,7 +248,11 @@ function MateResultsRuntime({
 
   if (fetchError) {
     return (
-      <div role="alert" className="rounded-3xl border border-red-300 bg-red-50 px-5 py-14 text-center shadow-sm dark:border-red-900/70 dark:bg-red-950/30">
+      <div
+        data-testid="mate-results-runtime"
+        role="alert"
+        className="rounded-3xl border border-red-300 bg-red-50 px-5 py-14 text-center shadow-sm dark:border-red-900/70 dark:bg-red-950/30"
+      >
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-red-300 bg-white text-red-600 shadow-sm dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-200">
           <MateAlertCircleIcon className="h-7 w-7" />
         </div>
@@ -253,6 +265,7 @@ function MateResultsRuntime({
         <Button
           variant="outline"
           size="touch"
+          data-testid="mate-results-retry"
           className="mt-6 rounded-xl border-red-300 bg-white px-5 font-black text-red-700 hover:bg-red-100 dark:border-red-900/70 dark:bg-red-950/20 dark:text-red-100 dark:hover:bg-red-900/30"
           onClick={onRetry}
         >
@@ -264,7 +277,7 @@ function MateResultsRuntime({
   }
 
   return (
-    <div className="m-0 space-y-4">
+    <div className="m-0 space-y-4" data-testid="mate-results-runtime">
       <div className="transition-opacity duration-200">
         {parties.length === 0 ? (
           renderEmptyState(activeTab)

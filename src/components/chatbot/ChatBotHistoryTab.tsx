@@ -9,12 +9,18 @@ import {
   ChatBotSessionTrashIcon as ChatBotTrashIcon,
 } from './ChatBotSessionIcons';
 
+export type ChatBotHistoryTabVisualQaStateOverride = {
+  sessions: ChatSessionSummary[];
+  isLoadingSessions: boolean;
+};
+
 interface ChatBotHistoryTabProps {
   currentSessionId: number | null;
   refreshKey: number;
   onCreateNewSession: () => Promise<ChatSessionSummary | null>;
   onOpenSession: (sessionId: number, title?: string) => Promise<void> | void;
   onDeleteSession: (sessionId: number) => Promise<boolean> | boolean;
+  visualQaStateOverride?: ChatBotHistoryTabVisualQaStateOverride;
 }
 
 const sortSessions = (items: ChatSessionSummary[]) => [...items].sort(
@@ -27,11 +33,20 @@ export default function ChatBotHistoryTab({
   onCreateNewSession,
   onOpenSession,
   onDeleteSession,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: ChatBotHistoryTabProps) {
-  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
-  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>(visualQaStateOverride?.sessions ?? []);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(
+    visualQaStateOverride?.isLoadingSessions ?? true,
+  );
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
     let cancelled = false;
 
     const loadSessions = async () => {
@@ -53,7 +68,10 @@ export default function ChatBotHistoryTab({
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }, [refreshKey, visualQaStateOverride]);
+
+  const renderedSessions = visualQaStateOverride?.sessions ?? sessions;
+  const renderedIsLoadingSessions = visualQaStateOverride?.isLoadingSessions ?? isLoadingSessions;
 
   const handleCreateSession = async () => {
     const created = await onCreateNewSession();
@@ -70,7 +88,7 @@ export default function ChatBotHistoryTab({
       return;
     }
 
-    const remainingSessions = sessions.filter((session) => session.sessionId !== sessionId);
+    const remainingSessions = renderedSessions.filter((session) => session.sessionId !== sessionId);
     setSessions(remainingSessions);
 
     if (sessionId === currentSessionId && remainingSessions[0]) {
@@ -79,31 +97,31 @@ export default function ChatBotHistoryTab({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-testid="chatbot-history-tab">
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="m-0 text-body text-muted-foreground">최근 세션을 다시 열거나 새 대화를 시작할 수 있습니다.</p>
         <button
           type="button"
           onClick={() => { void handleCreateSession(); }}
           data-testid="chatbot-history-new-session"
-          className="inline-flex items-center gap-1 rounded-xl bg-primary px-3 py-2 text-body font-semibold text-white transition-colors hover:bg-[#3d7f6f]"
+          className="inline-flex min-h-11 items-center justify-center gap-1 rounded-xl bg-primary px-3 py-2 text-body font-semibold text-white transition-colors hover:bg-[#3d7f6f]"
         >
           <ChatBotPlusIcon className="h-3.5 w-3.5" />
           새 대화
         </button>
       </div>
       <div className="flex-1 space-y-2 overflow-y-auto">
-        {isLoadingSessions ? (
+        {renderedIsLoadingSessions ? (
           <div className="flex h-full items-center justify-center text-body text-muted-foreground">
             <ChatBotSpinnerIcon className="mr-2 h-4 w-4 animate-spin" />
             히스토리를 불러오는 중입니다.
           </div>
-        ) : sessions.length === 0 ? (
+        ) : renderedSessions.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-body text-muted-foreground dark:border-white/10 dark:bg-white/5">
             아직 저장된 대화가 없습니다.
           </div>
         ) : (
-          sessions.map((session) => (
+          renderedSessions.map((session) => (
             <div
               key={session.sessionId}
               data-testid="chatbot-history-session"
@@ -120,7 +138,7 @@ export default function ChatBotHistoryTab({
                   onClick={() => { void onOpenSession(session.sessionId, session.title); }}
                   data-testid="chatbot-history-session-open"
                   data-session-id={session.sessionId}
-                  className="min-w-0 flex-1 text-left"
+                  className="flex min-h-11 min-w-0 flex-1 flex-col justify-center text-left"
                 >
                   <div className="flex items-center gap-2">
                     <ChatBotHistoryIcon className="h-4 w-4 text-primary" />
@@ -141,7 +159,7 @@ export default function ChatBotHistoryTab({
                   }}
                   data-testid="chatbot-history-session-delete"
                   data-session-id={session.sessionId}
-                  className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 sm:h-8 sm:w-8"
                   aria-label="세션 삭제"
                 >
                   <ChatBotTrashIcon className="h-4 w-4" />

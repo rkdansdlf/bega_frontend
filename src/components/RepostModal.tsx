@@ -60,11 +60,12 @@ export default function RepostModal({
             bodyClassName="p-0"
             hideCloseButton
         >
-                <div className="py-2">
+                <div className="py-2" data-testid="repost-modal-content">
                     {isRepost ? (
                         isOwner && onCancelRepost ? (
                         <button
                           type="button"
+                          data-testid="repost-modal-cancel-repost"
                           onClick={() => {
                             onCancelRepost();
                             onClose();
@@ -98,6 +99,7 @@ export default function RepostModal({
                             {canSimpleRepost ? (
                             <button
                                 type="button"
+                                data-testid="repost-modal-simple"
                                 onClick={handleSimpleRepost}
                                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
@@ -130,6 +132,7 @@ export default function RepostModal({
                             {canQuoteRepost ? (
                             <button
                                 type="button"
+                                data-testid="repost-modal-quote"
                                 onClick={handleQuoteRepost}
                                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
@@ -172,6 +175,7 @@ export default function RepostModal({
                 <div className="px-4 py-3 border-t border-gray-100 dark:border-border">
                     <button
                         type="button"
+                        data-testid="repost-modal-close"
                         onClick={onClose}
                         className="w-full py-2.5 text-body font-semibold text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                     >

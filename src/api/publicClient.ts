@@ -4,7 +4,6 @@ import {
   buildApiRequestHeaders,
   buildApiUrl,
   createTimeoutController,
-  isAbortError,
   parseResponseBody,
   toJsonRequestBody,
 } from './httpClientCore';
@@ -68,7 +67,7 @@ const publicRequest = async <T>(
 
     return responseBody as T;
   } catch (error) {
-    if (isAbortError(error)) {
+    if (timeout.isTimedOut()) {
       throw new Error(`Request timed out after ${timeout.timeoutMs}ms`);
     }
 

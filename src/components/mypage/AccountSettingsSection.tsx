@@ -11,6 +11,8 @@ import { useAuthAccessActions, useAuthRedirectState } from '../../store/authStor
 import { toast } from 'sonner';
 import { getApiErrorMessage } from '../../utils/errorUtils';
 import { ACCOUNT_SETTINGS_REDIRECT_PATH } from '../../utils/authFlow';
+import type { UserProviderDto } from '../../types/profile';
+import type { AccountSettingsSecurityRuntimeVisualQaStateOverride } from './AccountSettingsSecurityRuntime';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import VerificationRequiredDialog from '../VerificationRequiredDialog';
 import ViewportDeferred from '../ViewportDeferred';
@@ -21,10 +23,25 @@ import {
   MyPageTrashIcon,
   MyPageUnlinkIcon,
 } from './MyPageFlowIcons';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 
-interface AccountSettingsSectionProps {
+export interface AccountSettingsSectionVisualQaStateOverride {
+  connectedProviders?: UserProviderDto[];
+  isProvidersLoading?: boolean;
+  isLinking?: boolean;
+  onLinkAccount?: (provider: ProviderKey) => void;
+  onUnlinkRequest?: (provider: ProviderKey) => void;
+  onUnlinkConfirm?: (provider: ProviderKey) => void;
+  onLogoutRequest?: () => void;
+  onLogout?: () => void;
+  securityRuntime?: AccountSettingsSecurityRuntimeVisualQaStateOverride;
+}
+
+export interface AccountSettingsSectionProps {
   userProvider?: string;
   hasPassword?: boolean;
+  visualQaStateOverride?: AccountSettingsSectionVisualQaStateOverride;
 }
 
 const LAST_METHOD_TOOLTIP = '현재 로그인 중인 유일한 수단이라 해제할 수 없습니다.';
@@ -99,19 +116,32 @@ const PROVIDERS: ProviderMeta[] = [
   },
 ];
 
-export default function AccountSettingsSection({ userProvider, hasPassword = true }: AccountSettingsSectionProps) {
+export default function AccountSettingsSection({
+  userProvider,
+  hasPassword = true,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: AccountSettingsSectionProps) {
+  const viewerScope = useViewerQueryScope();
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const { setPendingLoginRedirect } = useAuthRedirectState();
   const { logout } = useAuthAccessActions();
 
   const [showSecurityDialog, setShowSecurityDialog] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [pendingUnlinkProvider, setPendingUnlinkProvider] = useState<ProviderKey | null>(null);
-  const [isLinking, setIsLinking] = useState(false);
+  const [isLinkingState, setIsLinking] = useState(false);
 
-  const { data: connectedProviders = [], isLoading: isProvidersLoading, refetch: refetchProviders } = useQuery({
-    queryKey: ['connectedProviders'],
+  const providersQuery = useQuery<UserProviderDto[]>({
+    queryKey: PRIVATE_QUERY_KEYS.connectedProviders(viewerScope),
     queryFn: getConnectedProviders,
+    enabled: visualQaStateOverride === undefined,
   });
+  const connectedProviders = visualQaStateOverride?.connectedProviders ?? providersQuery.data ?? [];
+  const isProvidersLoading = visualQaStateOverride?.isProvidersLoading ?? providersQuery.isLoading;
+  const isLinking = visualQaStateOverride?.isLinking ?? isLinkingState;
+  const refetchProviders = providersQuery.refetch;
 
   const unlinkMutation = useMutation({
     mutationFn: (provider: string) => unlinkProvider(provider),
@@ -145,6 +175,10 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
   };
 
   const handleLinkAccount = async (provider: ProviderKey) => {
+    if (visualQaStateOverride?.onLinkAccount) {
+      visualQaStateOverride.onLinkAccount(provider);
+      return;
+    }
     setIsLinking(true);
     try {
       const { linkToken } = await getLinkToken();
@@ -167,6 +201,7 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
     }
 
     setPendingUnlinkProvider(provider);
+    visualQaStateOverride?.onUnlinkRequest?.(provider);
     setShowSecurityDialog(true);
   };
 
@@ -182,7 +217,22 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
       return;
     }
 
+    if (visualQaStateOverride?.onUnlinkConfirm) {
+      visualQaStateOverride.onUnlinkConfirm(pendingUnlinkProvider);
+      setShowSecurityDialog(false);
+      setPendingUnlinkProvider(null);
+      return;
+    }
+
     unlinkMutation.mutate(pendingUnlinkProvider);
+  };
+
+  const handleLogout = () => {
+    if (visualQaStateOverride?.onLogout) {
+      visualQaStateOverride.onLogout();
+      return;
+    }
+    logout();
   };
 
   const handleUnlinkDialogClose = () => {
@@ -198,6 +248,7 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
     const helperTextId = `${provider.key}-provider-helper`;
     const button = (
       <Button
+        data-testid={`account-settings-provider-${provider.key}`}
         variant="outline"
         size="sm"
         disabled={isButtonDisabled}
@@ -208,7 +259,7 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
           }
           handleLinkAccount(provider.key);
         }}
-        className="h-9 px-3"
+        className="h-auto min-h-11 px-3 sm:h-9"
         aria-describedby={disabled && isConnected ? helperTextId : undefined}
       >
         {isConnected ? (
@@ -270,7 +321,7 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
   };
 
   return (
-    <div className="mypage-card-panel mypage-account-panel">
+    <div data-testid="account-settings-section" className="mypage-card-panel mypage-account-panel">
       <div className="flex items-center gap-3 mb-6">
         <MyPageShieldAlertIcon className="w-6 h-6 text-primary" />
         <h2 className="text-xl font-bold text-primary">계정 설정</h2>
@@ -287,7 +338,10 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
           type="button"
           className="mypage-card-setting-row is-danger"
           data-testid="mypage-account-logout"
-          onClick={() => setShowLogoutDialog(true)}
+          onClick={() => {
+            visualQaStateOverride?.onLogoutRequest?.();
+            setShowLogoutDialog(true);
+          }}
         >
           <span className="mypage-card-setting-icon" aria-hidden="true">
             <MyPageTrashIcon className="h-4 w-4" />
@@ -310,7 +364,10 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
         rootMargin="220px 0px 300px 0px"
       >
         <Suspense fallback={null}>
-          <LazyAccountSettingsSecurityRuntime userProvider={userProvider} />
+          <LazyAccountSettingsSecurityRuntime
+            userProvider={userProvider}
+            visualQaStateOverride={visualQaStateOverride?.securityRuntime}
+          />
         </Suspense>
       </ViewportDeferred>
 
@@ -337,14 +394,19 @@ export default function AccountSettingsSection({ userProvider, hasPassword = tru
         className="max-w-md"
         footer={(
           <>
-            <Button variant="outline" onClick={() => setShowLogoutDialog(false)}>
+            <Button
+              data-testid="account-settings-logout-cancel"
+              variant="outline"
+              onClick={() => setShowLogoutDialog(false)}
+            >
               취소
             </Button>
             <Button
+              data-testid="account-settings-logout-confirm"
               variant="destructive"
               onClick={() => {
                 setShowLogoutDialog(false);
-                logout();
+                handleLogout();
               }}
             >
               로그아웃

@@ -1,4 +1,5 @@
 import { lazy, Suspense, startTransition, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { Card } from '../ui/card';
@@ -62,7 +63,24 @@ export function getPredictionOtherGamesLinkState(dateParam: string | null) {
   };
 }
 
-export default function PredictionRuntime() {
+export interface PredictionRuntimeProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function PredictionRuntime({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionRuntimeProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-runtime-fallback">예측 화면을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'match' | 'ranking'>(
     () => getInitialPredictionTab(searchParams.get('tab'))
@@ -179,7 +197,7 @@ export default function PredictionRuntime() {
               <Link
                 to="/leaderboard"
                 aria-label="랭킹 보기"
-                className="group flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 text-emerald-100 transition-colors hover:bg-white/20 sm:px-3"
+                className="group flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 text-emerald-100 transition-colors hover:bg-white/20 sm:px-3"
               >
                 <PredictionGamepadIcon className="h-4 w-4" />
                 <span className="hidden text-13 font-extrabold sm:inline">랭킹</span>
@@ -199,14 +217,14 @@ export default function PredictionRuntime() {
             <div className="mt-3 flex items-center gap-2">
               <Link
                 to="/mypage"
-                className="inline-flex min-h-10 min-w-0 flex-1 items-center truncate rounded-lg text-12 font-bold leading-relaxed text-emerald-200 hover:text-white sm:text-13"
+                className="inline-flex min-h-11 min-w-0 flex-1 items-center truncate rounded-lg text-12 font-bold leading-relaxed text-emerald-200 hover:text-white sm:text-13"
               >
                 📸 다이어리 시야 사진 공유 → 리더보드 +50P
               </Link>
             </div>
           ) : null}
 
-          <div className="mt-4 flex flex-nowrap items-center gap-2 overflow-x-auto sm:overflow-visible">
+          <div className="mt-4 flex flex-wrap items-center gap-2 sm:flex-nowrap sm:overflow-visible">
             <div
               className="relative flex shrink-0 overflow-hidden rounded-xl border border-white/20 bg-slate-950/25 p-1"
               data-vqa-overlap="allowed"
@@ -240,12 +258,12 @@ export default function PredictionRuntime() {
                 <span className="relative z-10">순위예측</span>
               </button>
             </div>
-            <span className="flex-1" />
+            <span className="hidden flex-1 sm:block" />
             <Link
               to={otherGamesPath}
               data-testid="prediction-other-games-link"
               aria-label={`${otherGamesDate || '선택 날짜'} 다른 경기 조회`}
-              className="inline-flex min-h-10 shrink-0 items-center gap-0.5 rounded-xl border border-white/20 bg-white px-3 py-1.5 text-13 font-extrabold text-primary-dark shadow-[0_8px_20px_-12px_rgba(0,0,0,0.5)] transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0"
+              className="inline-flex min-h-11 shrink-0 items-center gap-0.5 rounded-xl border border-white/20 bg-white px-3 py-1.5 text-13 font-extrabold text-primary-dark shadow-[0_8px_20px_-12px_rgba(0,0,0,0.5)] transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0"
             >
               <PredictionChevronLeftIcon className="h-3.5 w-3.5" />
               <span>다른 경기 조회</span>

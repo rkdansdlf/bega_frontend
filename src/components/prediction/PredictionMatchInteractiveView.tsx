@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import type {
   LoadVoteStatusOptions,
@@ -65,6 +66,8 @@ export type PredictionMatchInteractiveViewProps = {
   voteControllerState?: PredictionMatchVoteControllerRenderState;
   onQueueVoteAction: (team: VoteTeam, game: Game, isVoteOpen: boolean) => void;
   onRequireLoginForVote: () => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchInteractiveView({
@@ -75,8 +78,19 @@ export default function PredictionMatchInteractiveView({
   currentUserVoteResolutionState,
   onQueueVoteAction,
   onRequireLoginForVote,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
   ...rest
 }: PredictionMatchInteractiveViewProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-interactive-view-fallback">경기 화면을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const immediateVoteLockRef = useRef(false);
   const voteLockReleaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [optimisticVoteLock, setOptimisticVoteLock] = useState(false);

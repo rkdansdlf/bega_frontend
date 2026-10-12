@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useMemo, type ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import type { Game, VoteTeam } from '../../types/prediction';
 import { useTodayKey } from '../../hooks/useTodayKey';
@@ -28,6 +29,8 @@ type PredictionMatchInteractiveContentRuntimeProps = Omit<
 > & {
   effectiveVoteActionLocked: boolean;
   onVote: (team: VoteTeam, game: Game, isVoteOpen: boolean) => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchInteractiveContentRuntime({
@@ -79,7 +82,18 @@ export default function PredictionMatchInteractiveContentRuntime({
   voteControllerState,
   effectiveVoteActionLocked,
   onVote,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchInteractiveContentRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-interactive-content-runtime-fallback">경기 콘텐츠를 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const todayKey = useTodayKey();
   const predictionRecoveryPath = buildPredictionRecoveryPath({
     currentDate,

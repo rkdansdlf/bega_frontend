@@ -111,7 +111,7 @@ export default function PasswordResetConfirm(props: PasswordResetConfirmProps) {
                     onChange={(event) => handleFieldChange('newPassword', event.target.value)}
                     onBlur={() => handleFieldBlur('newPassword')}
                     className={`auth-input auth-autofill-input pr-14 ${fieldErrors.newPassword ? 'auth-input-error' : ''}`}
-                    placeholder={`새 비밀번호를 입력하세요 (최소 ${VALIDATION_RULES.PASSWORD.MIN_LENGTH}자)`}
+                    placeholder="새 비밀번호 입력"
                     disabled={isLoading || !token}
                     data-testid="password-reset-confirm-new-password"
                   />
@@ -152,7 +152,7 @@ export default function PasswordResetConfirm(props: PasswordResetConfirmProps) {
                     onChange={(event) => handleFieldChange('confirmPassword', event.target.value)}
                     onBlur={() => handleFieldBlur('confirmPassword')}
                     className={`auth-input auth-autofill-input pr-14 ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
-                    placeholder="비밀번호를 다시 입력하세요"
+                    placeholder="비밀번호 재입력"
                     disabled={isLoading || !token}
                     data-testid="password-reset-confirm-confirm-password"
                   />

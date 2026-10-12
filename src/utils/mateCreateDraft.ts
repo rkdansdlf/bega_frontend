@@ -1,3 +1,5 @@
+import { getViewerScopedStorageKey, type ViewerId } from './viewerScopedDraftStorage';
+
 export type CheeringSide = 'HOME' | 'AWAY' | 'NEUTRAL' | '';
 
 export interface PartyFormData {
@@ -36,6 +38,9 @@ type PersistedMateCreateDraftPayload = {
 };
 
 export const MATE_CREATE_DRAFT_STORAGE_KEY = 'mate-storage';
+
+export const getMateCreateDraftStorageKey = (viewerId: ViewerId): string | null =>
+  getViewerScopedStorageKey(MATE_CREATE_DRAFT_STORAGE_KEY, viewerId);
 
 export const createInitialPartyFormData = (): PartyFormData => ({
   gameDate: '',

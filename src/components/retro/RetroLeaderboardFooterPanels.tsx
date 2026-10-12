@@ -111,7 +111,7 @@ export default function RetroLeaderboardFooterPanels({
 
       <div style={{ width: '90%', maxWidth: '800px', margin: '20px auto 40px' }}>
         <PowerUpInventory
-          powerups={powerups as unknown as Record<string, number>}
+          powerups={powerups}
           activePowerups={activePowerups}
           onUsePowerup={onUsePowerup}
         />

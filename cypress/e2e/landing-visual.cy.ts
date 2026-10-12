@@ -846,3 +846,41 @@ describe('Landing hero and ticker foundation', () => {
       .and('have.attr', 'data-test-owner', 'existing');
   });
 });
+
+describe('Landing viewport evidence', () => {
+  [
+    { id: 'mobile-light', width: 375, height: 812, theme: 'light' as const },
+    { id: 'mobile-dark', width: 375, height: 812, theme: 'dark' as const },
+    { id: 'desktop-light', width: 1280, height: 900, theme: 'light' as const },
+    { id: 'desktop-dark', width: 1280, height: 900, theme: 'dark' as const },
+  ].forEach(({ id, width, height, theme }) => {
+    it(`captures the ${id} landing viewport and footer`, () => {
+      cy.viewport(width, height);
+      visitLanding({ theme, reducedMotion: true });
+      assertNoHorizontalOverflow();
+      cy.screenshot(`landing-root-${id}-top`, { capture: 'viewport' });
+
+      cy.document().then((document) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.body.style.scrollBehavior = 'auto';
+      });
+      cy.scrollTo('bottom', { duration: 0 });
+      cy.window().should((win) => {
+        const pageHeight = Math.max(
+          win.document.documentElement.scrollHeight,
+          win.document.body.scrollHeight,
+        );
+        expect(win.scrollY + win.innerHeight).to.be.closeTo(pageHeight, 2);
+      });
+      cy.getBySel('landing-footer').then(($footer) => {
+        const footerRect = $footer[0].getBoundingClientRect();
+        cy.window().then((win) => {
+          expect(footerRect.top).to.be.lessThan(win.innerHeight + 2);
+          expect(footerRect.bottom).to.be.greaterThan(0);
+        });
+      });
+      cy.get('.landing-footer-copyright').should('be.visible');
+      cy.screenshot(`landing-root-${id}-footer`, { capture: 'viewport' });
+    });
+  });
+});

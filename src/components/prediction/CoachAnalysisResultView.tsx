@@ -1,4 +1,4 @@
-import { type ComponentType, type SVGProps, lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { type ComponentType, type ReactNode, type SVGProps, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import {
     CoachAnalysisData,
     CoachDataQuality,
@@ -42,7 +42,7 @@ import RiskVersus from './RiskVersus';
 import { shortTeamName, useIsDark } from './coachRiskHelpers';
 import { getCoachTokens, IMPACT } from './coachStyleTokens';
 
-interface CoachAnalysisResultViewProps {
+export interface CoachAnalysisResultViewProps {
     analysisData: CoachAnalysisData | null;
     homeTeamId?: string;
     awayTeamId?: string;
@@ -60,6 +60,8 @@ interface CoachAnalysisResultViewProps {
     groundingReasons?: string[];
     generationMode?: CoachGenerationMode;
     freshnessLabel?: string | null;
+    visualQaPhase?: 'fallback' | 'resolved';
+    visualQaRuntimeOverride?: ReactNode;
 }
 
 /** data_quality 별 톤(칩/사이드바 행). 신규 하드코딩 hex 없이 Tailwind arbitrary class 재사용. */
@@ -796,7 +798,18 @@ export default function CoachAnalysisResultView({
     groundingReasons,
     generationMode,
     freshnessLabel,
+    visualQaPhase: requestedVisualQaPhase,
+    visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: CoachAnalysisResultViewProps) {
+    const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+    const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+    if (visualQaPhase === 'fallback') {
+        return <div data-testid="coach-analysis-result-view-fallback">코치 분석 결과를 준비하고 있습니다.</div>;
+    }
+    if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+        return <>{visualQaRuntimeOverride}</>;
+    }
+
     const isMobileSheet = useMediaQuery('(max-width: 640px)');
     // 상세 리포트(react-markdown)는 사용자가 펼친 뒤에만 마운트/로드한다(한 번 열리면 유지).
     const [detailReportOpened, setDetailReportOpened] = useState(false);

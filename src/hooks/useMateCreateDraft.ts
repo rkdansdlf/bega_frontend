@@ -1,67 +1,113 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { useAuthSession } from '../store/authStore';
 import {
   createInitialMateCreateFormErrors,
   createInitialPartyFormData,
+  getMateCreateDraftStorageKey,
   isMateCreateDraftEmpty,
-  MATE_CREATE_DRAFT_STORAGE_KEY,
   readMateCreateDraft,
   serializeMateCreateDraft,
   type MateCreateFormErrors,
   type PartyFormData,
 } from '../utils/mateCreateDraft';
 
-const loadInitialDraft = (): {
+type MateCreateDraftState = {
+  viewerId: number | null;
   createStep: 1 | 2 | 3 | 4;
   formData: PartyFormData;
-} => {
-  if (typeof window === 'undefined') {
-    return {
-      createStep: 1,
-      formData: createInitialPartyFormData(),
-    };
-  }
+  formErrors: MateCreateFormErrors;
+};
 
-  return readMateCreateDraft(window.sessionStorage.getItem(MATE_CREATE_DRAFT_STORAGE_KEY));
+const createInitialDraftState = (viewerId: number | null): MateCreateDraftState => ({
+  viewerId,
+  createStep: 1,
+  formData: createInitialPartyFormData(),
+  formErrors: createInitialMateCreateFormErrors(),
+});
+
+const loadInitialDraft = (viewerId: number | null): MateCreateDraftState => {
+  const initialState = createInitialDraftState(viewerId);
+  const storageKey = getMateCreateDraftStorageKey(viewerId);
+  if (typeof window === 'undefined' || !storageKey) return initialState;
+
+  try {
+    return {
+      ...initialState,
+      ...readMateCreateDraft(window.sessionStorage.getItem(storageKey)),
+    };
+  } catch {
+    return initialState;
+  }
 };
 
 export const useMateCreateDraft = () => {
-  const initialDraft = useMemo(loadInitialDraft, []);
-  const [createStep, setCreateStep] = useState<1 | 2 | 3 | 4>(initialDraft.createStep);
-  const [formData, setFormData] = useState<PartyFormData>(initialDraft.formData);
-  const [formErrors, setFormErrors] = useState<MateCreateFormErrors>(createInitialMateCreateFormErrors);
+  const { userId, sessionEpoch } = useAuthSession();
+  const [draftState, setDraftState] = useState(() => loadInitialDraft(userId));
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    setDraftState(loadInitialDraft(userId));
+  }, [sessionEpoch, userId]);
+
+  const activeDraftState = draftState.viewerId === userId
+    ? draftState
+    : createInitialDraftState(userId);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || userId === null || draftState.viewerId !== userId) {
       return;
     }
 
-    if (isMateCreateDraftEmpty(createStep, formData)) {
-      window.sessionStorage.removeItem(MATE_CREATE_DRAFT_STORAGE_KEY);
-      return;
-    }
+    const storageKey = getMateCreateDraftStorageKey(userId);
+    if (!storageKey) return;
 
-    window.sessionStorage.setItem(
-      MATE_CREATE_DRAFT_STORAGE_KEY,
-      serializeMateCreateDraft(createStep, formData),
-    );
-  }, [createStep, formData]);
+    try {
+      if (isMateCreateDraftEmpty(draftState.createStep, draftState.formData)) {
+        window.sessionStorage.removeItem(storageKey);
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        storageKey,
+        serializeMateCreateDraft(draftState.createStep, draftState.formData),
+      );
+    } catch {
+      // Continue with in-memory draft state when session storage is unavailable.
+    }
+  }, [draftState, userId]);
+
+  const updateForCurrentViewer = (
+    update: (current: MateCreateDraftState) => MateCreateDraftState,
+  ) => {
+    setDraftState((current) => update(
+      current.viewerId === userId ? current : createInitialDraftState(userId),
+    ));
+  };
+
+  const setCreateStep: Dispatch<SetStateAction<1 | 2 | 3 | 4>> = (value) => {
+    updateForCurrentViewer((current) => ({
+      ...current,
+      createStep: typeof value === 'function' ? value(current.createStep) : value,
+    }));
+  };
 
   return {
-    createStep,
-    formData,
-    formErrors,
+    createStep: activeDraftState.createStep,
+    formData: activeDraftState.formData,
+    formErrors: activeDraftState.formErrors,
     setCreateStep,
     updateFormData: (data: Partial<PartyFormData>) => {
-      setFormData((current) => ({ ...current, ...data }));
+      updateForCurrentViewer((current) => ({
+        ...current,
+        formData: { ...current.formData, ...data },
+      }));
     },
     setFormError: (field: keyof MateCreateFormErrors, error: string) => {
-      setFormErrors((current) => ({ ...current, [field]: error }));
+      updateForCurrentViewer((current) => ({
+        ...current,
+        formErrors: { ...current.formErrors, [field]: error },
+      }));
     },
-    resetForm: () => {
-      setCreateStep(1);
-      setFormData(createInitialPartyFormData());
-      setFormErrors(createInitialMateCreateFormErrors());
-    },
+    resetForm: () => setDraftState(createInitialDraftState(userId)),
   };
 };
 

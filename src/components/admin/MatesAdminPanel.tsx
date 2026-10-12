@@ -112,7 +112,7 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
         open={Boolean(pendingDeleteMate)}
         onClose={() => setPendingDeleteMate(null)}
         title="메이트 모임을 삭제하시겠습니까?"
-        description="이 작업은 되돌릴 수 없습니다. 모임과 관련된 모든 데이터가 영구적으로 삭제됩니다."
+        description="연결된 신청·결제·대화·체크인 등의 기록이 있으면 삭제가 차단됩니다. 연결 기록은 자동 삭제·환불되지 않으며 별도 정리 절차가 필요합니다."
         contentTestId="admin-mate-delete-dialog"
         className="sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
         footer={(
@@ -141,7 +141,7 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
       >
         {pendingDeleteMate ? (
           <p className="text-caption text-slate-400">
-            <span className="font-semibold text-slate-200">{pendingDeleteMate.title}</span> 모임을 삭제합니다.
+            <span className="font-semibold text-slate-200">{pendingDeleteMate.title}</span> 모임은 연결 기록이 없는 경우에만 삭제됩니다.
           </p>
         ) : null}
       </PlainDialog>

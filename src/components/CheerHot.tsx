@@ -1,21 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchHotPosts } from '../api/cheerApi';
+import { fetchHotPosts, type CheerPost } from '../api/cheerApi';
 import CheerCard from './CheerCard';
 import { AlertCircleIcon, FlameIcon } from './icons/CheerFlowIcons';
 
-export default function CheerHot() {
+export type CheerHotVisualQaStateOverride = {
+    hotPosts?: CheerPost[];
+    hotPostsState?: 'loading' | 'error' | 'ready';
+    onRetry?: () => void;
+};
+
+export default function CheerHot({
+    visualQaStateOverride: requestedVisualQaStateOverride,
+}: {
+    visualQaStateOverride?: CheerHotVisualQaStateOverride;
+}) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['cheer-hot', 'HYBRID'],
         queryFn: () => fetchHotPosts({ page: 0, size: 5, algorithm: 'HYBRID' }),
         staleTime: 3 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
+        enabled: visualQaStateOverride === undefined,
     });
 
-    const hotPosts = data?.content ?? [];
+    const hotPosts = visualQaStateOverride?.hotPosts ?? data?.content ?? [];
+    const hotPostsState = visualQaStateOverride?.hotPostsState
+        ?? (isLoading ? 'loading' : isError ? 'error' : 'ready');
 
-    if (isLoading) {
+    if (hotPostsState === 'loading') {
         return (
-            <div className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
+            <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-4">
                     <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
                     <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
@@ -33,9 +49,9 @@ export default function CheerHot() {
         );
     }
 
-    if (isError) {
+    if (hotPostsState === 'error') {
         return (
-            <div className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
+            <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-3">
                     <AlertCircleIcon className="w-5 h-5 text-red-500 dark:text-red-400" />
                     <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
@@ -46,8 +62,15 @@ export default function CheerHot() {
                 </p>
                 <button
                     type="button"
-                    onClick={() => refetch()}
-                    className="mt-3 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-secondary"
+                    data-testid="cheer-hot-retry"
+                    onClick={() => {
+                        if (visualQaStateOverride?.onRetry) {
+                            visualQaStateOverride.onRetry();
+                            return;
+                        }
+                        void refetch();
+                    }}
+                    className="mt-3 min-h-11 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-secondary"
                 >
                     다시 시도
                 </button>
@@ -57,7 +80,7 @@ export default function CheerHot() {
 
     if (!hotPosts.length) {
         return (
-            <div className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
+            <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-4">
                     <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
                     <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
@@ -68,7 +91,7 @@ export default function CheerHot() {
     }
 
     return (
-        <div className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
+        <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
             <div className="flex items-center gap-2 mb-4">
                 <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
                 <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>

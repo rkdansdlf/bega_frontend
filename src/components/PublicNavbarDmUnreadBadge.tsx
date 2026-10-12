@@ -1,6 +1,8 @@
 import { QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 import { queryClient } from '../lib/queryClient';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 
 interface PublicNavbarDmUnreadBadgeProps {
   stateOverride?: 'error' | 'loading';
@@ -11,8 +13,9 @@ function PublicNavbarDmUnreadBadgeContent({
   stateOverride,
   unreadCountOverride,
 }: PublicNavbarDmUnreadBadgeProps) {
+  const viewerScope = useViewerQueryScope();
   const { data: dmRoomsData } = useQuery({
-    queryKey: ['dm', 'inbox'],
+    queryKey: PRIVATE_QUERY_KEYS.dmInbox(viewerScope),
     queryFn: async () => {
       const { fetchMyDmRooms } = await import('../api/dm');
       return fetchMyDmRooms();

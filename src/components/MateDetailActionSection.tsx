@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from './ui/plain-button';
 import {
@@ -53,7 +53,7 @@ interface MateDetailActionSectionProps {
 }
 
 const getMobileActionClass = (actionKey: string) => {
-  if (actionKey === 'checkin') return 'border-[#5b21b6] text-[#5b21b6] hover:bg-[#5b21b6]/10 dark:border-violet-400/70 dark:text-violet-300 dark:hover:bg-violet-950/30';
+  if (actionKey === 'checkin') return 'border-[#5b21b6] text-violet-800 hover:bg-[#5b21b6]/10 dark:border-violet-400/70 dark:text-violet-300 dark:hover:bg-violet-950/30';
   if (actionKey === 'sale') return 'border-orange-400 text-orange-600 hover:bg-orange-50 dark:border-orange-400/70 dark:text-orange-300 dark:hover:bg-orange-950/30';
   if (actionKey === 'cancel') return 'border-red-200 text-red-500 hover:bg-red-50 dark:border-red-400/50 dark:text-red-300 dark:hover:bg-red-950/30';
   if (actionKey === 'back') return 'border-primary text-primary hover:bg-primary/10 dark:border-emerald-400/60 dark:text-emerald-300 dark:hover:bg-emerald-950/30';
@@ -83,6 +83,12 @@ export default function MateDetailActionSection({
   const visualQaLayout = visualQaStateOverride?.layout;
   const [showSheet, setShowSheet] = useState(visualQaStateOverride?.sheetOpen ?? false);
   const showSheetValue = showSheet;
+  const summaryTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const primaryTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const actionSheetRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const wasSheetOpenRef = useRef(false);
   const view = buildMateDetailViewModel(party);
   const applyLabel = party.status === 'SELLING'
     ? '직거래 신청하기'
@@ -103,13 +109,53 @@ export default function MateDetailActionSection({
   };
 
   useEffect(() => {
-    if (!showSheetValue || typeof window === 'undefined') return undefined;
+    if (!showSheetValue || typeof window === 'undefined') {
+      if (wasSheetOpenRef.current) {
+        wasSheetOpenRef.current = false;
+        (lastTriggerRef.current ?? primaryTriggerRef.current)?.focus();
+      }
+      return undefined;
+    }
+
+    wasSheetOpenRef.current = true;
+    const focusFrame = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setShowSheet(false);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShowSheet(false);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const sheet = actionSheetRef.current;
+      if (!sheet) return;
+      const focusable = [...sheet.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )].filter((element) => element.getAttribute('aria-hidden') !== 'true');
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (!sheet.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [showSheetValue]);
 
   const renderActionButtons = (surface: 'desktop' | 'sheet') => (
@@ -211,8 +257,12 @@ export default function MateDetailActionSection({
           <div className="mx-auto max-w-3xl">
             <button
               type="button"
-              onClick={() => setShowSheet(true)}
+              onClick={(event) => {
+                lastTriggerRef.current = event.currentTarget;
+                setShowSheet(true);
+              }}
               data-testid="mate-detail-mobile-summary"
+              ref={summaryTriggerRef}
               aria-expanded={showSheetValue}
               aria-controls="mate-detail-action-sheet"
               className="mb-2 flex min-h-11 min-w-0 w-full items-center justify-between gap-3 rounded-lg bg-transparent px-2 py-1 text-left [overflow-wrap:anywhere] hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:hover:bg-white/5"
@@ -226,10 +276,14 @@ export default function MateDetailActionSection({
             </button>
             <Button
               data-testid="mate-detail-mobile-primary"
-              onClick={() => setShowSheet(true)}
+              onClick={(event) => {
+                lastTriggerRef.current = event.currentTarget;
+                setShowSheet(true);
+              }}
               disabled={primaryMobileAction.disabled}
               aria-expanded={showSheetValue}
               aria-controls="mate-detail-action-sheet"
+              ref={primaryTriggerRef}
               variant={primaryMobileAction.key === 'manage' || primaryMobileAction.key === 'apply' || primaryMobileAction.key === 'chat' ? 'default' : (primaryMobileAction.variant ?? 'outline')}
               className={`min-h-11 min-w-0 w-full whitespace-normal rounded-13 px-4 py-[15px] text-body font-black [overflow-wrap:anywhere] focus-visible:ring-2 active:scale-[0.98] motion-reduce:transform-none sm:min-h-11 ${primaryMobileAction.disabled ? 'bg-gray-300 text-gray-500 dark:bg-secondary/80 dark:text-white' : getMobileActionClass(primaryMobileAction.key)}`}
             >
@@ -248,6 +302,7 @@ export default function MateDetailActionSection({
           <section
             id="mate-detail-action-sheet"
             data-testid="mate-detail-action-sheet"
+            ref={actionSheetRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="mate-detail-action-sheet-title"
@@ -259,6 +314,7 @@ export default function MateDetailActionSection({
               <button
                 type="button"
                 data-testid="mate-detail-action-sheet-close"
+                ref={closeButtonRef}
                 aria-label="상세 액션 닫기"
                 className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-24 leading-none text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:text-white/70"
                 onClick={() => setShowSheet(false)}

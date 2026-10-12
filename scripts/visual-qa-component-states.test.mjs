@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import {
@@ -54,6 +55,25 @@ test('draft manifests include every visual symbol exactly once and keep render a
   ]);
 });
 
+test('the registered HomeRuntime contract uses values accepted by the global state catalog', async () => {
+  const [manifest, classificationManifest, coverageContract] = await Promise.all([
+    readFile(new URL('../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8')
+      .then(JSON.parse),
+    readFile(new URL('../contracts/visual-qa-component-classifications-v1.json', import.meta.url), 'utf8')
+      .then(JSON.parse),
+    readFile(new URL('../contracts/visual-qa-coverage-v1.json', import.meta.url), 'utf8')
+      .then(JSON.parse),
+  ]);
+  const validation = validateComponentStateManifest({
+    manifest,
+    classificationManifest,
+    coverageContract,
+    requireComplete: false,
+  });
+  assert.equal(validation.errors.length, 0, validation.errors.join('\n'));
+  assert.equal(validation.pending.length, 0);
+});
+
 test('registered component states expand the full cartesian product minus evidenced constraints', () => {
   const component = {
     id: 'src/components/A.tsx#A',
@@ -94,6 +114,144 @@ test('registered component states expand the full cartesian product minus eviden
       && states.permissions === 'anonymous'
       && variants.feedTab === 'following'
   )));
+});
+
+test('array-valued constraints exclude each declared state value', () => {
+  const component = {
+    id: 'src/components/A.tsx#A',
+    status: 'registered',
+    renderAccess: 'module-export',
+    render: { mode: 'direct', adapterId: 'a.default' },
+    axes: {
+      data: axis(['empty', 'populated']),
+      permissions: notApplicable(),
+      interactions: axis(['default']),
+      system: axis(['online', 'offline']),
+    },
+    variants: noVariants(),
+    constraints: [{
+      excludeWhen: {
+        data: ['empty', 'populated'],
+        system: ['offline'],
+      },
+      ...evidence,
+    }],
+  };
+  const validation = validateComponentStateManifest({
+    manifest: { schemaVersion: 1, components: [component] },
+    classificationManifest: {
+      components: [{ id: component.id, classification: 'visual', renderAccess: 'module-export' }],
+    },
+    coverageContract,
+    requireComplete: true,
+  });
+  assert.equal(validation.ok, true, validation.errors.join('\n'));
+  assert.deepEqual(
+    expandComponentStateCombinations(component, coverageContract).map(({ id }) => id),
+    [
+      'data=empty|interactions=default|system=online',
+      'data=populated|interactions=default|system=online',
+    ],
+  );
+});
+
+test('scalar and singleton-array constraints have identical semantics across state and variant axes', () => {
+  const base = {
+    id: 'src/components/A.tsx#A',
+    status: 'registered',
+    renderAccess: 'module-export',
+    render: { mode: 'direct', adapterId: 'a.default' },
+    axes: {
+      data: axis(['empty', 'populated']),
+      permissions: axis(['anonymous', 'user']),
+      interactions: axis(['default']),
+      system: notApplicable(),
+    },
+    variants: {
+      dimensions: [{ name: 'feedTab', values: ['all', 'following'], ...evidence }],
+    },
+  };
+  const scalar = {
+    ...base,
+    constraints: [{
+      excludeWhen: { data: 'empty', permissions: 'anonymous', 'variant.feedTab': 'following' },
+      ...evidence,
+    }],
+  };
+  const singletonArray = {
+    ...base,
+    constraints: [{
+      excludeWhen: {
+        data: ['empty'],
+        permissions: ['anonymous'],
+        'variant.feedTab': ['following'],
+      },
+      ...evidence,
+    }],
+  };
+  assert.deepEqual(
+    expandComponentStateCombinations(singletonArray, coverageContract),
+    expandComponentStateCombinations(scalar, coverageContract),
+  );
+
+  const combined = {
+    ...base,
+    constraints: [{
+      excludeWhen: {
+        data: ['empty', 'populated'],
+        permissions: ['anonymous'],
+        'variant.feedTab': ['following'],
+      },
+      ...evidence,
+    }, {
+      excludeWhen: { data: ['populated'], permissions: ['user'], 'variant.feedTab': ['all'] },
+      ...evidence,
+    }],
+  };
+  assert.deepEqual(
+    expandComponentStateCombinations(combined, coverageContract).map(({ id }) => id),
+    [
+      'data=empty|permissions=anonymous|interactions=default|variant.feedTab=all',
+      'data=empty|permissions=user|interactions=default|variant.feedTab=all',
+      'data=empty|permissions=user|interactions=default|variant.feedTab=following',
+      'data=populated|permissions=anonymous|interactions=default|variant.feedTab=all',
+      'data=populated|permissions=user|interactions=default|variant.feedTab=following',
+    ],
+  );
+});
+
+test('array constraints reject empty, duplicate, and undeclared values', () => {
+  const makeComponent = (excludeWhen) => ({
+    id: 'src/components/A.tsx#A',
+    status: 'registered',
+    renderAccess: 'module-export',
+    render: { mode: 'direct', adapterId: 'a.default' },
+    axes: {
+      data: axis(['empty', 'populated']),
+      permissions: notApplicable(),
+      interactions: axis(['default']),
+      system: notApplicable(),
+    },
+    variants: noVariants(),
+    constraints: [{ excludeWhen, ...evidence }],
+  });
+  for (const [excludeWhen, expected] of [
+    [{ data: [] }, 'at least one value'],
+    [{ data: ['empty', 'empty'] }, 'duplicate values'],
+    [{ data: ['unknown'] }, 'undeclared data=unknown'],
+  ]) {
+    const component = makeComponent(excludeWhen);
+    const validation = validateComponentStateManifest({
+      manifest: { schemaVersion: 1, components: [component] },
+      classificationManifest: {
+        components: [{ id: component.id, classification: 'visual', renderAccess: 'module-export' }],
+      },
+      coverageContract,
+      requireComplete: true,
+    });
+    assert.equal(validation.ok, false);
+    assert.ok(validation.errors.some((message) => message.includes(expected)), validation.errors.join('\n'));
+  }
 });
 
 test('entries without component-local variants retain an explicit empty variant object', () => {

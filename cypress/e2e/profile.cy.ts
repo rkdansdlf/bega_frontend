@@ -105,6 +105,102 @@ describe('Public User Profile Page', () => {
 
     });
 
+    it('refreshes the current user public profile after saving profile edits in the same SPA session', () => {
+        let profileSaved = false;
+        const updatedBio = 'Updated public profile bio';
+
+        cy.intercept('GET', /\/api\/users\/profile\/(?:%40|@)?testuser$/, (request) => {
+            request.reply({
+                statusCode: 200,
+                body: {
+                    success: true,
+                    data: {
+                        id: 123,
+                        email: 'test@example.com',
+                        name: 'TestUser',
+                        handle: '@testuser',
+                        favoriteTeam: 'HH',
+                        role: 'ROLE_USER',
+                        profileImageUrl: null,
+                        bio: profileSaved ? updatedBio : 'Original public profile bio',
+                        cheerPoints: 0,
+                    },
+                },
+            });
+        }).as('getOwnPublicProfile');
+        cy.intercept('GET', '**/api/users/profile/**/follow-counts*', {
+            statusCode: 200,
+            body: {
+                followerCount: 0,
+                followingCount: 0,
+                isFollowedByMe: false,
+                notifyNewPosts: false,
+                blockedByMe: false,
+                blockingMe: false,
+            },
+        });
+        cy.intercept('GET', '**/api/cheer/user/**/posts*', {
+            statusCode: 200,
+            body: { content: [], last: true, totalPages: 0, totalElements: 0 },
+        });
+        cy.intercept('GET', '**/api/auth/mypage*', (request) => {
+            request.reply({
+                statusCode: 200,
+                body: {
+                    success: true,
+                    data: {
+                        id: 123,
+                        email: 'test@example.com',
+                        name: 'TestUser',
+                        handle: 'testuser',
+                        favoriteTeam: 'HH',
+                        role: 'ROLE_USER',
+                        hasPassword: true,
+                        profileImageUrl: null,
+                        bio: profileSaved ? updatedBio : 'Original public profile bio',
+                    },
+                },
+            });
+        });
+        cy.intercept('PUT', '**/api/auth/mypage', (request) => {
+            profileSaved = true;
+            request.reply({
+                statusCode: 200,
+                body: {
+                    success: true,
+                    data: {
+                        name: 'TestUser',
+                        email: 'test@example.com',
+                        favoriteTeam: 'HH',
+                        bio: updatedBio,
+                        profileImageUrl: null,
+                    },
+                },
+            });
+        }).as('saveOwnProfile');
+
+        visitProfile('/profile/@testuser');
+        cy.wait('@getOwnPublicProfile');
+        cy.contains('Original public profile bio').should('be.visible');
+
+        cy.get('[data-testid="public-navbar-desktop-profile"]').click();
+        cy.get('[data-testid="mypage-season-sidebar"]', { timeout: 20000 })
+            .contains('button', '설정')
+            .click();
+        cy.contains('button[role="tab"]', '내 정보 수정').click();
+        cy.get('textarea#bio').clear().type(updatedBio);
+        cy.contains('button', '저장하기').click();
+        cy.wait('@saveOwnProfile');
+        cy.contains('변경사항이 적용되었습니다').should('be.visible');
+
+        cy.window().then((win) => {
+            win.history.pushState({}, '', '/profile/@testuser');
+            win.dispatchEvent(new PopStateEvent('popstate'));
+        });
+        cy.wait('@getOwnPublicProfile');
+        cy.contains(updatedBio).should('be.visible');
+    });
+
     it('displays user name and handle', () => {
         visitProfile();
 

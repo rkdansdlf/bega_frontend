@@ -10,12 +10,21 @@ import {
   submitSeatViewSelections,
   type UploadDiaryImagesResponse,
 } from '../api/diary';
-import { AchievementDto, DiaryEntry, Game, SaveDiaryRequest, SeatViewCandidate } from '../types/diary';
+import {
+  AchievementDto,
+  DiaryEntry,
+  DiaryFormData,
+  Game,
+  SaveDiaryRequest,
+  SeatViewCandidate,
+} from '../types/diary';
 import { formatDateString } from '../utils/diary';
 import { useDiaryForm } from './useDiaryForm';
 import { toast } from 'sonner';
 import { useConfirmDialog } from '../components/contexts/ConfirmDialogContext';
 import { useDiaryStore } from '../store/diaryStore';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
 const DEFAULT_IMAGE_UPLOAD_RESULT: UploadDiaryImagesResponse = {
   photos: [],
@@ -30,6 +39,18 @@ interface SeatViewSelectionState {
   candidates: SeatViewCandidate[];
   selectedIds: number[];
   submitting: boolean;
+}
+
+export interface DiaryViewVisualQaStateOverride {
+  selectedDate: Date;
+  currentMonth: Date;
+  isEditMode: boolean;
+  selectedDiary: DiaryEntry | undefined;
+  availableGames: Game[];
+  diaryEntries: DiaryEntry[];
+  diaryForm: DiaryFormData;
+  seatViewSelectionState?: SeatViewSelectionState;
+  currentAchievement?: AchievementDto | null;
 }
 
 const createEmptySeatViewSelectionState = (): SeatViewSelectionState => ({
@@ -60,19 +81,50 @@ const getAutoSelectedCandidateIds = (candidates: SeatViewCandidate[]): number[] 
     )
     .map((candidate) => candidate.id);
 
-export const useDiaryView = (initialDateString?: string) => {
+export const useDiaryView = (
+  initialDateString?: string,
+  visualQaStateOverride?: DiaryViewVisualQaStateOverride,
+) => {
+  const viewerScope = useViewerQueryScope();
   const queryClient = useQueryClient();
   const { confirm } = useConfirmDialog();
-  const pendingDraft = useDiaryStore((state) => state.pendingDraft);
+  const pendingDraft = useDiaryStore((state) => (
+    state.viewerId === viewerScope.viewerId ? state.pendingDraft : null
+  ));
   const clearPendingDraft = useDiaryStore((state) => state.clearPendingDraft);
   const seatViewDialogResolverRef = useRef<(() => void) | null>(null);
   const appliedDraftKeyRef = useRef<string | null>(null);
+  const previousViewerIdRef = useRef(viewerScope.viewerId);
 
-  const [selectedDate, setSelectedDate] = useState(() => parseInitialDate(initialDateString));
-  const [currentMonth, setCurrentMonth] = useState(() => parseInitialDate(initialDateString));
-  const [isEditMode, setIsEditMode] = useState(false);
+  useEffect(() => {
+    const viewerId = viewerScope.viewerId;
+    if (viewerId === null) return;
+
+    let isCurrentViewer = true;
+    void Promise.resolve(useDiaryStore.persist.rehydrate()).then(() => {
+      if (!isCurrentViewer) return;
+      const store = useDiaryStore.getState();
+      if (store.viewerId !== viewerId) {
+        store.setViewerId(viewerId);
+      }
+    });
+
+    return () => {
+      isCurrentViewer = false;
+    };
+  }, [viewerScope.sessionEpoch, viewerScope.viewerId]);
+
+  const [selectedDate, setSelectedDate] = useState(
+    () => visualQaStateOverride?.selectedDate ?? parseInitialDate(initialDateString),
+  );
+  const [currentMonth, setCurrentMonth] = useState(
+    () => visualQaStateOverride?.currentMonth ?? parseInitialDate(initialDateString),
+  );
+  const [isEditMode, setIsEditMode] = useState(
+    () => visualQaStateOverride?.isEditMode ?? false,
+  );
   const [seatViewSelectionState, setSeatViewSelectionState] = useState<SeatViewSelectionState>(
-    createEmptySeatViewSelectionState()
+    () => visualQaStateOverride?.seatViewSelectionState ?? createEmptySeatViewSelectionState(),
   );
   const [achievementQueue, setAchievementQueue] = useState<AchievementDto[]>([]);
 
@@ -84,19 +136,35 @@ export const useDiaryView = (initialDateString?: string) => {
     removePhoto,
     validateForm,
   } = useDiaryForm();
+  const effectiveDiaryForm = visualQaStateOverride?.diaryForm ?? diaryForm;
+
+  useEffect(() => {
+    if (previousViewerIdRef.current === viewerScope.viewerId) {
+      return;
+    }
+
+    previousViewerIdRef.current = viewerScope.viewerId;
+    appliedDraftKeyRef.current = null;
+    resetForm();
+  }, [resetForm, viewerScope.viewerId]);
 
   const dateStr = useMemo(() => formatDateString(selectedDate), [selectedDate]);
 
   const { data: diaryEntries = [], isLoading: entriesLoading } = useQuery({
-    queryKey: ['diaries'],
+    queryKey: PRIVATE_QUERY_KEYS.diaries(viewerScope),
     queryFn: () => fetchDiaries(),
+    enabled: visualQaStateOverride === undefined,
     staleTime: 1 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });
 
-  const selectedDiary = useMemo(() => {
+  const selectedDiaryFromQuery = useMemo(() => {
     return diaryEntries.find((e: DiaryEntry) => e.date === dateStr);
   }, [diaryEntries, dateStr]);
+  const effectiveDiaryEntries = visualQaStateOverride?.diaryEntries ?? diaryEntries;
+  const selectedDiary = visualQaStateOverride
+    ? visualQaStateOverride.selectedDiary
+    : selectedDiaryFromQuery;
 
   useEffect(() => {
     if (!initialDateString) {
@@ -105,13 +173,13 @@ export const useDiaryView = (initialDateString?: string) => {
 
     const nextDate = parseInitialDate(initialDateString);
     const nextDateString = formatDateString(nextDate);
-    const entry = diaryEntries.find((diaryEntry: DiaryEntry) => diaryEntry.date === nextDateString);
+    const entry = effectiveDiaryEntries.find((diaryEntry: DiaryEntry) => diaryEntry.date === nextDateString);
 
     setSelectedDate(nextDate);
     setCurrentMonth(nextDate);
     resetForm(entry);
     setIsEditMode(!entry);
-  }, [diaryEntries, initialDateString]);
+  }, [effectiveDiaryEntries, initialDateString]);
 
   useEffect(() => {
     if (!pendingDraft?.date) {
@@ -124,7 +192,7 @@ export const useDiaryView = (initialDateString?: string) => {
       return;
     }
 
-    const existingEntry = diaryEntries.find((entry: DiaryEntry) => entry.date === pendingDraft.date);
+    const existingEntry = effectiveDiaryEntries.find((entry: DiaryEntry) => entry.date === pendingDraft.date);
 
     setSelectedDate(nextDate);
     setCurrentMonth(nextDate);
@@ -151,21 +219,23 @@ export const useDiaryView = (initialDateString?: string) => {
       toast.success(`${stadiumDraftToastLabel} 좌석 정보가 반영되었습니다`);
     }
     clearPendingDraft();
-  }, [clearPendingDraft, diaryEntries, pendingDraft, resetForm, updateForm]);
+  }, [clearPendingDraft, effectiveDiaryEntries, pendingDraft, resetForm, updateForm]);
 
   const { data: availableGames = [], isLoading: gamesLoading } = useQuery({
     queryKey: ['games', dateStr],
     queryFn: () => fetchGames(dateStr),
+    enabled: visualQaStateOverride === undefined,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
+  const effectiveAvailableGames = visualQaStateOverride?.availableGames ?? availableGames;
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
     setIsEditMode(false);
 
     const newDateStr = formatDateString(date);
-    const entry = diaryEntries.find((e: DiaryEntry) => e.date === newDateStr);
+    const entry = effectiveDiaryEntries.find((e: DiaryEntry) => e.date === newDateStr);
 
     if (entry) {
       resetForm(entry);
@@ -355,25 +425,25 @@ export const useDiaryView = (initialDateString?: string) => {
       return;
     }
 
-    const game = availableGames.find((g: Game) => g.id === diaryForm.gameId);
-    const isAttended = diaryForm.type === 'attended';
+    const game = effectiveAvailableGames.find((g: Game) => g.id === effectiveDiaryForm.gameId);
+    const isAttended = effectiveDiaryForm.type === 'attended';
 
     const entry: SaveDiaryRequest = {
       date: dateStr,
-      type: diaryForm.type,
-      emoji: diaryForm.emoji,
-      emojiName: diaryForm.emojiName,
-      winningName: isAttended ? diaryForm.winningName : null,
-      gameId: diaryForm.gameId,
-      memo: isAttended ? diaryForm.memo : '',
-      photos: isAttended ? diaryForm.photoStoragePaths : [],
+      type: effectiveDiaryForm.type,
+      emoji: effectiveDiaryForm.emoji,
+      emojiName: effectiveDiaryForm.emojiName,
+      winningName: isAttended ? effectiveDiaryForm.winningName : null,
+      gameId: effectiveDiaryForm.gameId,
+      memo: isAttended ? effectiveDiaryForm.memo : '',
+      photos: isAttended ? effectiveDiaryForm.photoStoragePaths : [],
       team: game ? `${game.homeTeam} vs ${game.awayTeam}` : '',
       stadium: game?.stadium || '',
-      section: isAttended ? diaryForm.section : '',
-      block: isAttended ? diaryForm.block : '',
-      seatRow: isAttended ? diaryForm.seatRow : '',
-      seatNumber: isAttended ? diaryForm.seatNumber : '',
-      ticketVerificationToken: isAttended ? diaryForm.ticketVerificationToken : undefined,
+      section: isAttended ? effectiveDiaryForm.section : '',
+      block: isAttended ? effectiveDiaryForm.block : '',
+      seatRow: isAttended ? effectiveDiaryForm.seatRow : '',
+      seatNumber: isAttended ? effectiveDiaryForm.seatNumber : '',
+      ticketVerificationToken: isAttended ? effectiveDiaryForm.ticketVerificationToken : undefined,
     };
 
     if (selectedDiary) {
@@ -411,9 +481,9 @@ export const useDiaryView = (initialDateString?: string) => {
     setIsEditMode,
     dateStr,
     selectedDiary,
-    availableGames,
-    gamesLoading,
-    diaryForm,
+    availableGames: effectiveAvailableGames,
+    gamesLoading: visualQaStateOverride ? false : gamesLoading,
+    diaryForm: effectiveDiaryForm,
     updateForm,
     handlePhotoUpload,
     removePhoto,
@@ -423,14 +493,16 @@ export const useDiaryView = (initialDateString?: string) => {
     saveMutation,
     updateMutation,
     deleteMutation,
-    diaryEntries,
-    entriesLoading,
+    diaryEntries: effectiveDiaryEntries,
+    entriesLoading: visualQaStateOverride ? false : entriesLoading,
     seatViewSelectionState,
     toggleSeatViewCandidate,
     handleSeatViewSelectionConfirm: () =>
       handleSeatViewSelectionSubmit(seatViewSelectionState.selectedIds),
     handleSeatViewSelectionSkip: () => handleSeatViewSelectionSubmit([]),
-    currentAchievement: achievementQueue[0] ?? null,
+    currentAchievement: visualQaStateOverride
+      ? visualQaStateOverride.currentAchievement ?? null
+      : achievementQueue[0] ?? null,
     dismissCurrentAchievement,
   };
 };

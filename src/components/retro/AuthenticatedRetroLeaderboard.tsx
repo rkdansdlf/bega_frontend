@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import RetroLeaderboard from './RetroLeaderboard';
 import { usePowerups, useUserLeaderboardStats } from '../../hooks/useLeaderboardPrivate';
 import type { PowerupInventory, UserLeaderboardStats } from '../../api/leaderboard';
@@ -16,25 +15,32 @@ export type AuthenticatedRetroLeaderboardProps = Omit<
   'userStats' | 'powerups' | 'activePowerups' | 'onUsePowerup'
 > & {
   stateOverride?: AuthenticatedRetroLeaderboardStateOverride;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function AuthenticatedRetroLeaderboard(
-  { stateOverride, ...props }: AuthenticatedRetroLeaderboardProps,
+  {
+    stateOverride,
+    visualQaPhase: requestedVisualQaPhase,
+    visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+    ...props
+  }: AuthenticatedRetroLeaderboardProps,
 ) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="authenticated-retro-leaderboard-fallback">개인 랭킹을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const { stats: myRank } = useUserLeaderboardStats();
   const {
     powerups,
     activePowerups,
-    usePowerup,
   } = usePowerups();
-
-  const handleUsePowerup = useCallback(async (powerupType: string) => {
-    if (stateOverride?.onUsePowerup) {
-      await stateOverride.onUsePowerup(powerupType);
-      return;
-    }
-    await usePowerup(powerupType);
-  }, [stateOverride, usePowerup]);
 
   return (
     <RetroLeaderboard
@@ -42,7 +48,7 @@ export default function AuthenticatedRetroLeaderboard(
       userStats={stateOverride ? stateOverride.stats : myRank}
       powerups={stateOverride ? stateOverride.powerups : powerups}
       activePowerups={stateOverride ? stateOverride.activePowerups : activePowerups}
-      onUsePowerup={handleUsePowerup}
+      onUsePowerup={stateOverride?.onUsePowerup}
     />
   );
 }

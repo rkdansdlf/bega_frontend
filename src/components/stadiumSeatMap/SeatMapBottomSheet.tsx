@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { MapPinIcon, XIcon } from '../icons/StadiumGuideIcons';
 import SeatViewGallery from '../SeatViewGallery';
+import type { SeatViewPhotosVisualQaStateOverride } from '../../hooks/useSeatViewPhotos';
 import type {
   SeatMapCategoryMeta,
   SeatMapCommonCopy,
@@ -28,6 +29,7 @@ interface SeatMapBottomSheetProps<TSection> {
   isUploadDisabled?: (section: TSection) => boolean;
   getUploadLabel?: (section: TSection) => ReactNode;
   searchAction?: SeatMapSearchAction;
+  visualQaStateOverride?: SeatViewPhotosVisualQaStateOverride;
 }
 
 export function SeatMapBottomSheet<TSection>({
@@ -45,6 +47,7 @@ export function SeatMapBottomSheet<TSection>({
   isUploadDisabled,
   getUploadLabel,
   searchAction,
+  visualQaStateOverride,
 }: SeatMapBottomSheetProps<TSection>) {
   const [snap, setSnap] = useState<Snap>('peek');
   const startY = useRef(0);
@@ -74,6 +77,7 @@ export function SeatMapBottomSheet<TSection>({
     return (
       <div
         data-testid={testId}
+        data-snap="peek"
         className="fixed bottom-0 left-0 right-0 z-50 flex items-center gap-2.5 border-t border-slate-200 bg-white px-5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
         style={{
           bottom: mobileSheetBottomOffset,
@@ -114,6 +118,7 @@ export function SeatMapBottomSheet<TSection>({
   return (
     <div
       data-testid={testId}
+      data-snap={snap}
       className="fixed bottom-0 left-0 right-0 z-50 flex flex-col overflow-hidden bg-white"
       style={{
         bottom: mobileSheetBottomOffset,
@@ -128,6 +133,7 @@ export function SeatMapBottomSheet<TSection>({
       }}
     >
       <div
+        data-testid={testId ? `${testId}-handle` : undefined}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onClick={() => setSnap((value) => value === 'half' ? 'full' : value === 'full' ? 'peek' : 'half')}
@@ -166,6 +172,7 @@ export function SeatMapBottomSheet<TSection>({
         )}
         <button
           type="button"
+          data-testid={testId ? `${testId}-close` : undefined}
           onClick={onClose}
           aria-label="닫기"
           className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-400"
@@ -252,6 +259,7 @@ export function SeatMapBottomSheet<TSection>({
             section={adapter.getName(section)}
             sectionAliases={[...adapter.getSeatViewSections(section)]}
             compact
+            visualQaStateOverride={visualQaStateOverride}
           />
         </div>
       </div>
@@ -268,6 +276,7 @@ export function SeatMapBottomSheet<TSection>({
       >
         <button
           type="button"
+          data-testid={testId ? `${testId}-upload` : undefined}
           onClick={onUpload}
           disabled={uploadDisabled}
           className="w-full cursor-pointer rounded-xl border-0 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"

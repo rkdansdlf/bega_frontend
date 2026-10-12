@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, ReactElement, ReactNode, SetStateAction } from 'react';
 
 import type {
   LoadVoteStatusOptions,
@@ -41,10 +41,23 @@ export type PredictionMatchVoteControllerProps = {
   pendingVoteAction: PredictionPendingVoteAction | null;
   onPendingVoteHandled: (requestId: number) => void;
   children: (state: PredictionMatchVoteControllerRenderState) => ReactElement;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchVoteController({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
   ...props
 }: PredictionMatchVoteControllerProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-vote-controller-fallback">투표 기능을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   return <PredictionMatchVoteControllerRuntime {...props} />;
 }

@@ -12,6 +12,7 @@ import {
 } from '../utils/authBootstrap';
 
 const AuthSessionBoundary = lazy(() => import('./AuthSessionBoundary'));
+const AuthSessionSync = lazy(() => import('./AuthSessionSync'));
 
 const hasInjectedAuthProfileForTests = (): boolean => (
   typeof window !== 'undefined'
@@ -73,12 +74,17 @@ export default function AppShellRuntime(props: AppShellRuntimeProps = {}) {
   );
 
   return (
-    <Suspense fallback={appRoutesFallback}>
-      {shouldMountAuthSessionBoundary(pathname) ? (
-        <AuthSessionBoundary>
-          {appRoutesTree}
-        </AuthSessionBoundary>
-      ) : appRoutesTree}
-    </Suspense>
+    <>
+      <Suspense fallback={null}>
+        <AuthSessionSync />
+      </Suspense>
+      <Suspense fallback={appRoutesFallback}>
+        {shouldMountAuthSessionBoundary(pathname) ? (
+          <AuthSessionBoundary>
+            {appRoutesTree}
+          </AuthSessionBoundary>
+        ) : appRoutesTree}
+      </Suspense>
+    </>
   );
 }

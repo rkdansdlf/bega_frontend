@@ -6,6 +6,7 @@ import { getFullTeamName, TEAM_DATA } from '../../constants/teams';
 import type { ViewMode } from '../../types/profile';
 import TeamLogo from '../TeamLogo';
 import { ProfileAvatar } from '../ui/ProfileAvatar';
+import { keepFocusedNavItemVisible } from './keepFocusedNavItemVisible';
 import {
   MyPageBarChartIcon,
   MyPageCoinsIcon,
@@ -24,6 +25,7 @@ type MyPageSidebarRuntimeProps = {
   savedFavoriteTeam: string;
   cheerPoints: number;
   viewMode: ViewMode;
+  todayDate?: string;
   onOpenFollowers: () => void;
   onOpenFollowing: () => void;
   onSetViewMode: (mode: ViewMode, options?: { date?: string | null }) => void;
@@ -92,6 +94,7 @@ export default function MyPageSidebarRuntime({
   savedFavoriteTeam,
   cheerPoints,
   viewMode,
+  todayDate,
   onOpenFollowers,
   onOpenFollowing,
   onSetViewMode,
@@ -142,10 +145,10 @@ export default function MyPageSidebarRuntime({
           </span>
         </div>
         <div className="mypage-season-counters">
-          <button type="button" className="mypage-season-counter" onClick={onOpenFollowers}>
+          <button type="button" data-testid="mypage-sidebar-followers" className="mypage-season-counter" onClick={onOpenFollowers}>
             <b>{formatCount(followCounts?.followerCount || 0)}</b> 팔로워
           </button>
-          <button type="button" className="mypage-season-counter" onClick={onOpenFollowing}>
+          <button type="button" data-testid="mypage-sidebar-following" className="mypage-season-counter" onClick={onOpenFollowing}>
             <b>{formatCount(followCounts?.followingCount || 0)}</b> 팔로잉
           </button>
           <span className="mypage-season-counter--points">
@@ -155,9 +158,14 @@ export default function MyPageSidebarRuntime({
         </div>
       </section>
 
-      <nav className="mypage-season-nav" aria-label="마이페이지 메뉴">
+      <nav
+        className="mypage-season-nav"
+        aria-label="마이페이지 메뉴"
+        onFocusCapture={keepFocusedNavItemVisible}
+      >
         <button
           type="button"
+          data-testid="mypage-sidebar-diary"
           className={isLogView(viewMode) ? 'is-active' : undefined}
           aria-current={isLogView(viewMode) ? 'page' : undefined}
           onClick={() => onSetViewMode('diary')}
@@ -177,6 +185,7 @@ export default function MyPageSidebarRuntime({
         </button>
         <button
           type="button"
+          data-testid="mypage-sidebar-settings"
           className={isSettingsView(viewMode) ? 'is-active' : undefined}
           aria-current={isSettingsView(viewMode) ? 'page' : undefined}
           onClick={() => onSetViewMode('editProfile')}
@@ -189,7 +198,7 @@ export default function MyPageSidebarRuntime({
       <Suspense fallback={null}>
         <MyPageSidebarMoreRuntime
           viewMode={viewMode}
-          todayDate={formatTodayString()}
+          todayDate={todayDate ?? formatTodayString()}
           onSetViewMode={onSetViewMode}
         />
       </Suspense>

@@ -23,7 +23,7 @@ const entries = new Map(manifest.components.map((entry) => [entry.id, entry]));
 test('navbar keeps deterministic mobile state development-only without replacing production hooks', () => {
   assert.match(source, /visualQaStateOverride\?: NavbarVisualQaStateOverride/);
   assert.match(source, /import\.meta\.env\.DEV \? props\.visualQaStateOverride : undefined/);
-  assert.match(source, /const liveIsDesktop = useMediaQuery\('\(min-width: 768px\)'\)/);
+  assert.match(source, /const liveIsDesktop = useMediaQuery\('\(min-width: 1024px\)'\)/);
   assert.match(source, /const liveScrollMetrics = useScrollMetrics\(\)/);
   assert.match(source, /visualQaStateOverride === undefined && authenticatedShell && isLoggedIn/);
   assert.match(source, /enabled: visualQaStateOverride === undefined && authenticatedShell && isLoggedIn/);

@@ -42,7 +42,7 @@ export default function PredictionMatchTabEmptyState({
           onClick={onPrevDate}
           disabled={!canMovePrevDate}
           aria-label="이전 날짜 보기"
-          className="absolute left-6 top-1/2 z-10 -translate-y-1/2 rounded-full p-3 text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+          className="absolute left-6 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
         >
           <PredictionChevronLeftIcon size={36} />
         </button>
@@ -51,7 +51,7 @@ export default function PredictionMatchTabEmptyState({
           onClick={onNextDate}
           disabled={!canMoveNextDate}
           aria-label="다음 날짜 보기"
-          className="absolute right-6 top-1/2 z-10 -translate-y-1/2 rounded-full p-3 text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+          className="absolute right-6 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
         >
           <PredictionChevronRightIcon size={36} />
         </button>

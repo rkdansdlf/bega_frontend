@@ -309,7 +309,7 @@ const AdvancedMatchCard = React.memo(function AdvancedMatchCard({
                 onClick={onPrevDate}
                 disabled={!hasPrevDate}
                 aria-label="이전 날짜 보기"
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white/80 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white/80 transition-colors hover:bg-black/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
               >
                 <PredictionChevronLeftIcon size={32} />
               </button>
@@ -318,7 +318,7 @@ const AdvancedMatchCard = React.memo(function AdvancedMatchCard({
                 onClick={onNextDate}
                 disabled={!hasNextDate}
                 aria-label="다음 날짜 보기"
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white/80 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 text-white/80 transition-colors hover:bg-black/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
               >
                 <PredictionChevronRightIcon size={32} />
               </button>

@@ -1,5 +1,7 @@
 // src/utils/mate.ts
 import { BadgeType, MateHistoryTab, MateParty, MatePartySeed, MateRouteLocationState, Party, PartyStatus } from '../types/mate';
+import { getViewerQueryScope } from './viewerQueryScope';
+import type { ViewerQueryScope } from './viewerQueryScope';
 import { getMateStatusBadgeMeta, getStatusBadgeToneColor } from './statusBadgeMeta';
 
 interface BackendLocalTime {
@@ -218,22 +220,30 @@ export const normalizeMateListReturnTo = (value: unknown): string => {
 export const buildMateRouteLocationState = (
   partySeed: MatePartySeed,
   returnTo = '/mate',
+  viewerScope: ViewerQueryScope = getViewerQueryScope(),
 ): MateRouteLocationState => ({
   partySeed,
   returnTo: normalizeMateListReturnTo(returnTo),
+  viewerScope,
 });
 
 export const getMateRoutePlaceholderParty = (
   state: unknown,
   routePartyId: number | null,
+  viewerScope: ViewerQueryScope = getViewerQueryScope(),
 ): Party | undefined => {
   if (!state || typeof state !== 'object' || !('partySeed' in state)) {
     return undefined;
   }
 
-  const placeholderParty = normalizeMatePartySeed(
-    (state as MateRouteLocationState).partySeed,
-  );
+  const routeState = state as MateRouteLocationState;
+  if (
+    !routeState.viewerScope
+    || routeState.viewerScope.viewerId !== viewerScope.viewerId
+    || routeState.viewerScope.sessionEpoch !== viewerScope.sessionEpoch
+  ) return undefined;
+
+  const placeholderParty = normalizeMatePartySeed(routeState.partySeed);
 
   if (!placeholderParty) {
     return undefined;

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { ReactNode } from 'react';
 
 import { buildPredictionRecoveryPath } from '../../utils/predictionDeepLink';
 import type { PredictionTopNoticeKind } from './PredictionTopNotice';
@@ -19,6 +20,8 @@ type PredictionMatchScheduleTopNoticeRuntimeProps = {
   deepLinkNotice: string | null;
   onRetryLoadMorePastMatches: () => void;
   onRetryLoadMoreFutureMatches: () => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchScheduleTopNoticeRuntime({
@@ -36,7 +39,18 @@ export default function PredictionMatchScheduleTopNoticeRuntime({
   deepLinkNotice,
   onRetryLoadMorePastMatches,
   onRetryLoadMoreFutureMatches,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchScheduleTopNoticeRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-top-notice-runtime-fallback">일정 안내를 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const predictionRecoveryPath = useMemo(() => buildPredictionRecoveryPath({
     currentDate,
     currentGameId,

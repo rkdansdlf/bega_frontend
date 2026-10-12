@@ -8,7 +8,7 @@ import { cn } from '../lib/utils';
 import { mateSectionCardClass } from '../utils/mateFlowUi';
 import type { MateManageEditFormState } from './MateManageContentRuntime';
 
-type MateManageEditPanelProps = {
+export type MateManageEditPanelProps = {
   editForm: MateManageEditFormState;
   descriptionError: string;
   onSaveEdit: () => void;
@@ -47,7 +47,7 @@ export default function MateManageEditPanel({
   onEditDescriptionBlur,
 }: MateManageEditPanelProps) {
   return (
-    <Card className={`p-6 ${mateSectionCardClass}`}>
+    <Card data-testid="mate-manage-edit-panel" className={`p-6 ${mateSectionCardClass}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-body font-semibold uppercase tracking-[0.16em] text-gray-400 dark:text-white">
@@ -111,7 +111,7 @@ export default function MateManageEditPanel({
             id="manage-max-participants"
             value={editForm.maxParticipants}
             onChange={(event) => onEditMaxParticipantsChange(parseInt(event.target.value, 10))}
-            className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-body dark:border-border dark:bg-input/30"
+            className="min-h-11 w-full rounded-md border border-gray-300 bg-white px-3 text-body dark:border-border dark:bg-input/30"
           >
             <option value={2}>2명</option>
             <option value={3}>3명</option>
@@ -135,10 +135,10 @@ export default function MateManageEditPanel({
       </div>
 
       <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-        <Button onClick={onSaveEdit} className="bg-primary text-white">
+        <Button data-testid="mate-manage-content-save" onClick={onSaveEdit} className="bg-primary text-white">
           저장
         </Button>
-        <Button onClick={onCancelEdit} variant="outline">
+        <Button data-testid="mate-manage-content-cancel-edit" onClick={onCancelEdit} variant="outline">
           취소
         </Button>
       </div>

@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import type { ReactNode } from 'react';
 import type { CheerPost } from '../../api/cheerApi';
 import EndOfFeed from '../EndOfFeed';
 import { Button } from '../ui/button';
@@ -15,6 +16,8 @@ interface UserProfilePostsSectionProps {
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
     onRetryPosts: () => void;
+    visualQaPhase?: 'fallback' | 'resolved';
+    visualQaRuntimeOverride?: ReactNode;
 }
 
 export default function UserProfilePostsSection({
@@ -25,7 +28,18 @@ export default function UserProfilePostsSection({
     hasNextPage,
     isFetchingNextPage,
     onRetryPosts,
+    visualQaPhase: requestedVisualQaPhase,
+    visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: UserProfilePostsSectionProps) {
+    const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+    const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+    if (visualQaPhase === 'fallback') {
+        return <div data-testid="user-profile-posts-section-fallback">게시글을 불러오는 중입니다.</div>;
+    }
+    if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+        return <>{visualQaRuntimeOverride}</>;
+    }
+
     if (isPostsLoading) {
         return (
             <div className="flex justify-center py-8 sm:py-10">

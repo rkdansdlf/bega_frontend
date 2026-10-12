@@ -115,6 +115,8 @@ test('password reset confirmation keeps visibility controls mobile-sized and foc
 
   assert.match(html, /type="text"[^>]*data-testid="password-reset-confirm-new-password"/);
   assert.match(html, /type="text"[^>]*data-testid="password-reset-confirm-confirm-password"/);
+  assert.match(html, /placeholder="새 비밀번호 입력"/);
+  assert.match(html, /placeholder="비밀번호 재입력"/);
   assert.match(html, /data-vqa-overlap="allowed"/);
   const visibilityButtons = html.match(/data-testid="password-reset-confirm-[^"]+-visibility"/g) ?? [];
   assert.equal(visibilityButtons.length, 2);

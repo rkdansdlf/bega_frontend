@@ -172,6 +172,7 @@ export function TicketUploadModal({
                         <Button
                             variant="outline"
                             onClick={() => handleOpenChange(false)}
+                            style={{ minHeight: 44 }}
                             data-testid="ticket-upload-cancel"
                         >
                             취소
@@ -180,6 +181,7 @@ export function TicketUploadModal({
                             <Button
                                 onClick={handleConfirm}
                                 className="bg-primary hover:bg-primary/90 text-white font-bold"
+                                style={{ minHeight: 44 }}
                                 data-testid="ticket-upload-confirm"
                             >
                                 기록하러 가기
@@ -189,6 +191,7 @@ export function TicketUploadModal({
                                 disabled={!previewUrl || isLoading}
                                 onClick={() => fileInputRef.current?.click()}
                                 className="bg-primary hover:bg-primary/90 text-white font-bold"
+                                style={{ minHeight: 44 }}
                                 data-testid="ticket-upload-analyze"
                             >
                                 이미지 분석하기

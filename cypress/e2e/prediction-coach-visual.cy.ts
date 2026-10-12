@@ -87,29 +87,43 @@ const liveCardEntries = viewports.flatMap((viewport) => themes.flatMap((theme) =
   }))
 )));
 
-const liveDialogEntries = viewports.flatMap((viewport) => themes.flatMap((theme) => [
-  {
-    label: `Live dialog full ${theme} ${viewport.id}`,
-    group: 'live dialog',
-    live: `live/${viewport.id}-${theme}-dialog-full.png`,
-    classification: 'intentional divergence' as const,
-    note: 'Live capture is the product dialog viewport, while C1Refined is a full reference artboard; section captures cover memo and risk surfaces.',
-  },
-  {
-    label: `Live verdict memo ${theme} ${viewport.id}`,
-    group: 'live dialog',
-    live: `live/${viewport.id}-${theme}-dialog-verdict.png`,
-    classification: 'intentional divergence' as const,
-    note: 'Memo surface geometry matches the reference family; fixture copy and optional timestamp/highlight content differ.',
-  },
-  {
-    label: `Live risk timeline plus versus ${theme} ${viewport.id}`,
-    group: 'live dialog',
-    live: `live/${viewport.id}-${theme}-dialog-risks.png`,
-    classification: 'intentional divergence' as const,
-    note: 'Risk surfaces render without horizontal overflow; fixture risk text and product dialog footer differ from isolated reference artboards.',
-  },
-]));
+const liveDialogEntries = viewports.flatMap((viewport) => themes.flatMap((theme) => {
+  const entries: ReportEntry[] = [
+    {
+      label: `Live dialog overview ${theme} ${viewport.id}`,
+      group: 'live dialog',
+      live: `live/${viewport.id}-${theme}-dialog-overview.png`,
+      classification: 'intentional divergence',
+      note: 'Desktop captures the dialog element; mobile captures the actual first viewport. Neither is a full-page acceptance capture.',
+    },
+    {
+      label: `Live verdict memo ${theme} ${viewport.id}`,
+      group: 'live dialog',
+      live: `live/${viewport.id}-${theme}-dialog-verdict.png`,
+      classification: 'intentional divergence',
+      note: 'Section-aligned capture with deterministic fixture copy; the live/reference classifications are capture metadata, not independent visual sign-off.',
+    },
+    {
+      label: `Live risk timeline plus versus ${theme} ${viewport.id}`,
+      group: 'live dialog',
+      live: `live/${viewport.id}-${theme}-dialog-risks.png`,
+      classification: 'intentional divergence',
+      note: 'Section-aligned capture with deterministic fixture data; mobile risk content may continue below this viewport.',
+    },
+  ];
+
+  if (viewport.id === 'mobile') {
+    entries.push({
+      label: `Live risk lower section ${theme} mobile`,
+      group: 'live dialog',
+      live: `live/mobile-${theme}-dialog-risks-continuation.png`,
+      classification: 'intentional divergence',
+      note: 'Mobile viewport aligned to the lower risk-versus detail; this supplements, but does not replace, whole-page review.',
+    });
+  }
+
+  return entries;
+}));
 
 const reportEntries: ReportEntry[] = [
   ...referenceArtboards.map((artboard) => ({
@@ -508,8 +522,8 @@ const openPredictionPage = ({
     onBeforeLoad: (win) => seedThemeAndMedia(win, theme),
   });
 
-  advanceTime(100);
   cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
+  cy.clock(fixedNow).as('appClock');
   advanceTime(100);
   cy.wait('@getPredictionBootstrapCoachVisual');
   advanceTime(100);
@@ -546,11 +560,48 @@ const captureElement = (selector: string, folder: 'reference' | 'live', id: stri
   cy.get(selector).screenshot(screenshotName(folder, id), { overwrite: true });
 };
 
+const captureViewportScreenshot = (viewport: ViewportCase, id: string) => {
+  cy.window().then((win) => {
+    expect(win.innerWidth, `${id} window width`).to.eq(viewport.width);
+    expect(win.innerHeight, `${id} window height`).to.eq(viewport.height);
+    return win.devicePixelRatio || 1;
+  }).then((devicePixelRatio) => {
+    cy.screenshot(screenshotName('live', id), {
+      capture: 'viewport',
+      overwrite: true,
+      onAfterScreenshot(_document, details) {
+        expect(details.dimensions.width, `${id} screenshot width`).to.eq(
+          Math.round(viewport.width * devicePixelRatio),
+        );
+        expect(details.dimensions.height, `${id} screenshot height`).to.eq(
+          Math.round(viewport.height * devicePixelRatio),
+        );
+      },
+    });
+  });
+};
+
+const captureViewportElement = (selector: string, viewport: ViewportCase, id: string) => {
+  cy.get(selector, { timeout: 60000 })
+    .scrollIntoView({ duration: 0 })
+    .should('be.visible');
+  captureViewportScreenshot(viewport, id);
+};
+
+const captureViewportText = (selector: string, expectedText: string, viewport: ViewportCase, id: string) => {
+  cy.contains(selector, expectedText, { timeout: 60000 })
+    .scrollIntoView({ duration: 0 })
+    .should('be.visible');
+  captureViewportScreenshot(viewport, id);
+};
+
 const mountReferenceArtboardForCapture = (artboard: typeof referenceArtboards[number]) => {
-  const sourceSelector = `[data-dc-slot="${artboard.id}"] .dc-card`;
+  const slotSelector = `[data-dc-slot="${artboard.id}"]`;
   const captureSelector = `[data-testid="reference-artboard-${artboard.id}"]`;
 
-  cy.get(sourceSelector, { timeout: 120000 })
+  cy.get(slotSelector, { timeout: 120000 })
+    .scrollIntoView({ duration: 0 })
+    .find('.dc-card', { timeout: 120000 })
     .should('exist')
     .then(($source) => {
       const source = $source[0] as HTMLElement;
@@ -689,17 +740,33 @@ const openAndCaptureDialog = (theme: ThemeMode, viewport: ViewportCase) => {
   assertNoHorizontalOverflow('[data-testid="coach-c1-versus-hero"]');
   assertNoHorizontalOverflow('[data-testid="coach-risk-versus"]');
 
-  // Cypress's element-screenshot stitching crashes (RangeError: offset out of
-  // range) when the target sits inside a nested scrollable container (the
-  // mobile sheet's own overflow-y-auto body) and is taller than the browser
-  // viewport. Growing the viewport height here removes the need for any
-  // internal scroll/stitch pass — h-[100dvh] grows with it, so the dialog
-  // renders its full content in one frame. This spec has no pixel-diff
-  // assertions, only capture-for-review, so the taller frame is harmless.
   if (viewport.id === 'mobile') {
-    cy.viewport(viewport.width, 2600);
+    captureViewportElement(
+      '[data-testid="coach-analysis-dialog"]',
+      viewport,
+      `${viewport.id}-${theme}-dialog-overview`,
+    );
+    captureViewportText(
+      '[data-testid="coach-section-verdict"]',
+      '한화는 선발 안정감과 불펜 회복일에서 앞서지만',
+      viewport,
+      `${viewport.id}-${theme}-dialog-verdict`,
+    );
+    captureViewportText(
+      '[data-testid="coach-section-risks"]',
+      '초반 선발 제구',
+      viewport,
+      `${viewport.id}-${theme}-dialog-risks`,
+    );
+    captureViewportText(
+      '[data-testid="coach-section-risks"]',
+      '원정팀은 최근 3경기 불펜 투구 수가 많아 접전 후반 운영 폭이 좁습니다.',
+      viewport,
+      `${viewport.id}-${theme}-dialog-risks-continuation`,
+    );
+    return;
   }
-  captureElement('[data-testid="coach-analysis-dialog"]', 'live', `${viewport.id}-${theme}-dialog-full`);
+  captureElement('[data-testid="coach-analysis-dialog"]', 'live', `${viewport.id}-${theme}-dialog-overview`);
   captureElement('[data-testid="coach-section-verdict"]', 'live', `${viewport.id}-${theme}-dialog-verdict`);
   captureElement('[data-testid="coach-section-risks"]', 'live', `${viewport.id}-${theme}-dialog-risks`);
 };
@@ -720,7 +787,6 @@ describe('Prediction coach visual reference capture', () => {
 
 describe('Prediction coach live visual capture', () => {
   beforeEach(() => {
-    cy.clock(fixedNow).as('appClock');
     cy.visit('about:blank');
     cy.window().then((win) => {
       win.sessionStorage.clear();

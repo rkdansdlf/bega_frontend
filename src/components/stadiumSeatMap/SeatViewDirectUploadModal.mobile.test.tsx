@@ -14,6 +14,7 @@ const entryPath = '/__seat-view-direct-upload-modal-test.tsx';
 const entryModuleId = '\0virtual:seat-view-direct-upload-modal-test';
 const seatViewsModuleId = '\0virtual:seat-view-direct-upload-api-test';
 const lockMutation = process.env.SEAT_VIEW_DIRECT_UPLOAD_MUTATE_LOCK === '1';
+const focusMutation = process.env.SEAT_VIEW_DIRECT_UPLOAD_MUTATE_FOCUS === '1';
 const packageMutation = process.env.SEAT_VIEW_DIRECT_UPLOAD_MUTATE_PACKAGE ?? '';
 
 const createSeatViewDirectUploadPlugin = (): Plugin => ({
@@ -49,8 +50,19 @@ const createSeatViewDirectUploadPlugin = (): Plugin => ({
     return undefined;
   },
   transform(code, id) {
-    if (!lockMutation || !id.split('?')[0].endsWith('/SeatViewDirectUploadModal.tsx')) return undefined;
-    return code.replace('if (submissionInFlightRef.current) return;', '');
+    if (!id.split('?')[0].endsWith('/SeatViewDirectUploadModal.tsx')) return undefined;
+    let transformed = code;
+    if (lockMutation) {
+      transformed = transformed.replace('if (submissionInFlightRef.current) return;', '');
+    }
+    if (focusMutation) {
+      transformed = transformed.replace('focus-within:border-primary', '');
+    }
+    if (focusMutation) {
+      assert.notEqual(transformed, code, 'SeatViewDirectUploadModal focus mutation target missing');
+    }
+    if (transformed === code) return undefined;
+    return transformed;
   },
   load(id) {
     if (id === seatViewsModuleId) {
@@ -376,12 +388,14 @@ test('actual modal exposes visible keyboard focus and announces validation error
 }, async () => {
   const { diagnostics, page } = await openPage();
   try {
+    await settle(page);
     const close = page.getByRole('button', { name: '닫기' });
     const fileInput = page.getByTestId('seat-view-direct-upload-file');
     const fileSurface = page.getByTestId('seat-view-direct-upload-file-surface');
     assert.equal(await close.evaluate((node) => node === document.activeElement), true, 'initial close focus');
     const restingBorderColor = await readSettledBorderColor(fileSurface);
     await page.keyboard.press('Tab');
+    await settle(page);
     assert.equal(await fileInput.evaluate((node) => node === document.activeElement), true, 'Tab close→file');
     const focusedBorderColor = await readSettledBorderColor(fileSurface);
     assert.notEqual(focusedBorderColor, restingBorderColor, 'hidden file input must expose a visible focus border');

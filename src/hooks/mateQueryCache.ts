@@ -19,6 +19,12 @@ import {
   updateMatePartyArray,
   updateMatePartyListResponse,
 } from './internal/mateQueryCacheUtils';
+import {
+  getViewerQueryScope,
+  isViewerQueryScopeCurrent,
+  matchesViewerQueryScope,
+} from '../utils/viewerQueryScope';
+import type { ViewerQueryScope } from '../utils/viewerQueryScope';
 
 const settleMateQueryInvalidations = (tasks: Array<Promise<unknown>>) =>
   Promise.allSettled(tasks);
@@ -35,6 +41,7 @@ export const invalidateMatePartyQueries = (
   queryClient: QueryClient,
   partyId: number | string,
   options: InvalidateMatePartyQueriesOptions = {},
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ) => {
   const {
     includeParty = true,
@@ -50,21 +57,21 @@ export const invalidateMatePartyQueries = (
   const tasks: Array<Promise<unknown>> = [];
 
   if (includeParty) {
-    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.party(partyId) }));
+    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.party(partyId, scope) }));
   }
 
   if (includeApplications) {
-    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyApplications(partyId) }));
+    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyApplications(partyId, scope) }));
   }
 
   if (includeMyApplications) {
-    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyMyApplications(partyId) }));
+    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyMyApplications(partyId, scope) }));
   } else if (userId !== undefined && userId !== null) {
-    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyMyApplication(partyId, userId) }));
+    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyMyApplication(partyId, userId, scope) }));
   }
 
   if (includeCheckIns) {
-    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyCheckIns(partyId) }));
+    tasks.push(queryClient.invalidateQueries({ queryKey: MATE_KEYS.partyCheckIns(partyId, scope) }));
   }
 
   if (includeMessages) {
@@ -89,8 +96,10 @@ export const invalidateMatePartyQueries = (
 export const setMatePartyDetailQueryData = (
   queryClient: QueryClient,
   party: Party,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
-  queryClient.setQueryData<Party>(MATE_KEYS.party(party.id), party);
+  if (!isViewerQueryScopeCurrent(scope)) return;
+  queryClient.setQueryData<Party>(MATE_KEYS.party(party.id, scope), party);
 };
 
 export const updateMatePartyCollectionQueryData = (
@@ -98,7 +107,9 @@ export const updateMatePartyCollectionQueryData = (
   partyId: number | string,
   updater: MatePartyUpdater,
   options: MatePartyCollectionsUpdateOptions = {},
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
+  if (!isViewerQueryScopeCurrent(scope)) return;
   const {
     includeParty = true,
     includePartyLists = true,
@@ -107,7 +118,7 @@ export const updateMatePartyCollectionQueryData = (
 
   if (includeParty) {
     queryClient.setQueryData<Party | undefined>(
-      MATE_KEYS.party(partyId),
+      MATE_KEYS.party(partyId, scope),
       (current) => (current ? updater(current) ?? undefined : current),
     );
   }
@@ -116,7 +127,7 @@ export const updateMatePartyCollectionQueryData = (
     queryClient
       .getQueriesData<PaginatedResponse<Party>>({ queryKey: MATE_KEYS.partyLists() })
       .forEach(([queryKey, current]) => {
-        if (!current || !Array.isArray(queryKey)) {
+        if (!current || !Array.isArray(queryKey) || !matchesViewerQueryScope(queryKey, scope)) {
           return;
         }
 
@@ -133,19 +144,16 @@ export const updateMatePartyCollectionQueryData = (
   }
 
   if (includeMyParties) {
-    queryClient
-      .getQueriesData<Party[]>({ queryKey: MATE_KEYS.myParties() })
-      .forEach(([queryKey, current]) => {
-        if (!current || !Array.isArray(queryKey)) {
-          return;
-        }
-
-        queryClient.setQueryData<Party[]>(
-          queryKey,
-          (parties) => (parties ? updateMatePartyArray(parties, partyId, updater) : parties),
-        );
+    if (scope.viewerId !== null) {
+      const myPartiesKey = MATE_KEYS.myParties(scope.viewerId, scope);
+      queryClient.setQueryData<Party[]>(
+        myPartiesKey,
+        (parties) => (parties ? updateMatePartyArray(parties, partyId, updater) : parties),
+      );
+      void queryClient.invalidateQueries({
+        queryKey: MATE_KEYS.myPartyHistory(scope.viewerId, {}, scope),
       });
-    void queryClient.invalidateQueries({ queryKey: MATE_KEYS.myPartyHistories() });
+    }
   }
 };
 
@@ -153,33 +161,37 @@ export const syncMatePartyQueryData = (
   queryClient: QueryClient,
   party: Party,
   options: MatePartyCollectionsUpdateOptions = {},
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
-  setMatePartyDetailQueryData(queryClient, party);
+  setMatePartyDetailQueryData(queryClient, party, scope);
   updateMatePartyCollectionQueryData(queryClient, party.id, () => party, {
     ...options,
     includeParty: false,
-  });
+  }, scope);
 };
 
 export const removeMatePartyFromCollections = (
   queryClient: QueryClient,
   partyId: number | string,
   options: MatePartyCollectionsRemoveOptions = {},
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
   updateMatePartyCollectionQueryData(queryClient, partyId, () => null, {
     includeParty: false,
     includePartyLists: options.includePartyLists,
     includeMyParties: options.includeMyParties,
-  });
+  }, scope);
 };
 
 export const updateMatePartyApplicationsQueryData = (
   queryClient: QueryClient,
   partyId: number | string,
   updater: MatePartyApplicationsUpdater,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
+  if (!isViewerQueryScopeCurrent(scope)) return;
   queryClient.setQueryData<Application[] | undefined>(
-    MATE_KEYS.partyApplications(partyId),
+    MATE_KEYS.partyApplications(partyId, scope),
     (current) => (current ? updater(current) : current),
   );
 };
@@ -189,9 +201,13 @@ export const updateMatePartyApplicationQueryData = (
   partyId: number | string,
   applicationId: number | string,
   updater: MatePartyApplicationUpdater,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
-  updateMatePartyApplicationsQueryData(queryClient, partyId, (applications) =>
-    updateMatePartyApplicationsArray(applications, applicationId, updater),
+  updateMatePartyApplicationsQueryData(
+    queryClient,
+    partyId,
+    (applications) => updateMatePartyApplicationsArray(applications, applicationId, updater),
+    scope,
   );
 };
 
@@ -200,9 +216,11 @@ export const setMatePartyMyApplicationQueryData = (
   partyId: number | string,
   userId: number | null | undefined,
   application: Application | null,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
+  if (!isViewerQueryScopeCurrent(scope)) return;
   queryClient.setQueryData<Application | null>(
-    MATE_KEYS.partyMyApplication(partyId, userId),
+    MATE_KEYS.partyMyApplication(partyId, userId, scope),
     application,
   );
 };
@@ -211,36 +229,42 @@ export const appendMatePartyCheckInQueryData = (
   queryClient: QueryClient,
   partyId: number | string,
   checkIn: CheckIn,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): CheckIn[] => {
+  if (!isViewerQueryScopeCurrent(scope)) return [];
   queryClient.setQueryData<CheckIn[]>(
-    MATE_KEYS.partyCheckIns(partyId),
+    MATE_KEYS.partyCheckIns(partyId, scope),
     (current) => {
       const existing = current ?? [];
       return appendMatePartyCheckIns(existing, checkIn);
     },
   );
 
-  return queryClient.getQueryData<CheckIn[]>(MATE_KEYS.partyCheckIns(partyId)) ?? [];
+  return queryClient.getQueryData<CheckIn[]>(MATE_KEYS.partyCheckIns(partyId, scope)) ?? [];
 };
 
 export const removeMatePartyQueries = (
   queryClient: QueryClient,
   partyId: number | string,
+  _scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
-  queryClient.removeQueries({ queryKey: MATE_KEYS.party(partyId) });
+  const normalizedPartyId = typeof partyId === 'number' ? partyId : partyId.trim();
+  queryClient.removeQueries({ queryKey: [...MATE_KEYS.parties(), normalizedPartyId] });
 };
 
 export const seedMatePartyQueryData = (
   queryClient: QueryClient,
   partySeed: MatePartySeed,
+  scope: ViewerQueryScope = getViewerQueryScope(),
 ): void => {
+  if (!isViewerQueryScopeCurrent(scope)) return;
   const placeholderParty = normalizeMatePartySeed(partySeed);
   if (!placeholderParty) {
     return;
   }
 
   queryClient.setQueryData<Party | undefined>(
-    MATE_KEYS.party(placeholderParty.id),
+    MATE_KEYS.party(placeholderParty.id, scope),
     (current) => current ?? placeholderParty,
   );
 };

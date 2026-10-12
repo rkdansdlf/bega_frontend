@@ -8,6 +8,7 @@ import test from 'node:test';
 import {
   DEFAULT_ROUTES,
   DEFAULT_STATE_SCENARIOS,
+  DEFAULT_VIEWPORTS,
   DEFAULT_WIDTHS,
   buildVisualQaScenarioRuns,
   closeVisualQaResources,
@@ -15,8 +16,10 @@ import {
   createVisualQaOutputStage,
   discardVisualQaOutputStage,
   issueSignature,
+  installLocalOnlyRoutes,
   launchVisualQaBrowser,
   parseArguments,
+  parseViewportSpecs,
   resolveRouteUrl,
   routeWasReached,
   shouldFailReport,
@@ -26,12 +29,100 @@ import {
 import { DEFAULT_ROUTES as REFLOW_DEFAULT_ROUTES } from './reflow-320-audit.mjs';
 import { findFixture } from './reflow-320-fixtures.mjs';
 
+test('synthetic scan blocks external HTTP origins while allowing its local preview', async () => {
+  let matches;
+  let handler;
+  await installLocalOnlyRoutes({
+    route: async (matcher, routeHandler) => {
+      matches = matcher;
+      handler = routeHandler;
+    },
+  }, 'http://127.0.0.1:5180');
+
+  assert.equal(matches(new URL('http://127.0.0.1:5180/home')), false);
+  assert.equal(matches(new URL('https://example.invalid/image.png')), true);
+  assert.equal(matches(new URL('https://example.invalid/api/players')), true);
+  assert.equal(matches(new URL('data:image/png;base64,AAAA')), false);
+  let aborted = false;
+  await handler({ abort: async () => { aborted = true; } });
+  assert.equal(aborted, true);
+});
+
 test('default coverage targets every auditable user route and breakpoint edge', () => {
   assert.deepEqual(DEFAULT_ROUTES, REFLOW_DEFAULT_ROUTES);
-  assert.equal(DEFAULT_ROUTES.length, 33);
+  assert.equal(DEFAULT_ROUTES.length, 35);
+  assert.ok(DEFAULT_ROUTES.includes('/password/reset/confirm'));
+  assert.ok(DEFAULT_ROUTES.includes('/account/deletion/recovery'));
   for (const width of [320, 390, 430, 600, 767, 768, 1024, 1040, 1160, 1280, 1440]) {
     assert.ok(DEFAULT_WIDTHS.includes(width), `${width}px must be sampled`);
   }
+});
+
+test('default viewport coverage matches all dimensions in the normative visual QA contract', () => {
+  const coverageContract = JSON.parse(readFileSync(
+    new URL('../contracts/visual-qa-coverage-v1.json', import.meta.url),
+    'utf8',
+  ));
+  const expectedViewports = coverageContract.environmentCatalog.viewports
+    .map(({ width, height }) => ({ width, height }));
+  const options = parseArguments([], {});
+
+  assert.deepEqual(DEFAULT_VIEWPORTS, expectedViewports);
+  assert.deepEqual(options.viewports, expectedViewports);
+
+  const runs = buildVisualQaScenarioRuns({ routes: DEFAULT_ROUTES, viewports: options.viewports });
+  const routeRuns = runs.filter((run) => run.state === null);
+  assert.equal(routeRuns.length, DEFAULT_ROUTES.length * expectedViewports.length);
+  for (const viewport of expectedViewports) {
+    assert.ok(routeRuns.some((run) => run.viewport.width === viewport.width
+      && run.viewport.height === viewport.height));
+  }
+});
+
+test('shared mobile navigation stays compact and accessibly labeled in short landscape viewports', () => {
+  const styles = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
+  const publicNavbar = readFileSync(new URL('../src/components/PublicNavbar.tsx', import.meta.url), 'utf8');
+  const authNavbar = readFileSync(new URL('../src/components/Navbar.tsx', import.meta.url), 'utf8');
+  const cheerNavbar = readFileSync(new URL('../src/components/CheerMobileBottomNav.tsx', import.meta.url), 'utf8');
+
+  assert.match(styles, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*430px\)[\s\S]{0,240}--mobile-chrome-height:\s*3\.5rem/);
+  assert.match(styles, /\.mobile-chrome-label[\s\S]{0,220}clip:\s*rect\(0,\s*0,\s*0,\s*0\)/);
+  assert.match(styles, /data-testid=["']cheer-mobile-bottom-nav["'][\s\S]{0,120}padding-top:\s*0/);
+  assert.match(styles, /button\[data-testid=["']chatbot-request-launcher["']\]\s*\{[^}]*width:\s*44px[^}]*height:\s*44px[^}]*right:\s*calc\(env\(safe-area-inset-right\)\s*\+\s*4px\)/);
+  for (const [name, source] of [
+    ['public navigation', publicNavbar],
+    ['authenticated navigation', authNavbar],
+    ['cheer navigation', cheerNavbar],
+  ]) {
+    assert.match(source, /data-mobile-chrome-label/, `${name} labels remain available to assistive technology`);
+  }
+});
+
+test('explicit viewport specs preserve landscape heights and apply states by width', () => {
+  const options = parseArguments([
+    '--routes', '/home,/mate',
+    '--viewports', '568x320,667x375,844x390,932x430',
+  ], {});
+
+  assert.deepEqual(options.viewports, [
+    { width: 568, height: 320 },
+    { width: 667, height: 375 },
+    { width: 844, height: 390 },
+    { width: 932, height: 430 },
+  ]);
+  assert.deepEqual(options.widths, [568, 667, 844, 932]);
+
+  const runs = buildVisualQaScenarioRuns({ routes: options.routes, viewports: options.viewports });
+  assert.ok(runs.some((run) => run.route === '/home'
+    && run.width === 568
+    && run.viewport.height === 320
+    && run.state?.id === 'public-mobile-menu'));
+  assert.ok(runs.some((run) => run.route === '/mate'
+    && run.width === 844
+    && run.viewport.height === 390
+    && run.state?.id === 'mate-filter-sheet'));
+  assert.throws(() => parseViewportSpecs('568x320,invalid'), /Viewport must use widthxheight/);
+  assert.throws(() => parseViewportSpecs('568x320,568x375'), /Viewport widths must be unique/);
 });
 
 test('default state coverage opens non-route UI surfaces at their responsive widths', () => {
@@ -61,9 +152,9 @@ test('scenario expansion combines every route-width pair with applicable interac
   const routeRuns = runs.filter((run) => run.state === null);
   const stateRuns = runs.filter((run) => run.state !== null);
 
-  assert.equal(routeRuns.length, 33 * 14);
+  assert.equal(routeRuns.length, 35 * 14);
   assert.equal(stateRuns.length, 57);
-  assert.equal(runs.length, 519);
+  assert.equal(runs.length, 547);
   assert.ok(stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 834));
   assert.ok(!stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 1024));
   assert.ok(!stateRuns.some((run) => run.state.id === 'public-mobile-menu' && run.width === 768));
@@ -389,11 +480,17 @@ test('probe keeps late DOM controls and fixed-to-content overlap in scope', () =
   const source = VISUAL_QA_PROBE.toString();
   assert.doesNotMatch(source, /\.slice\(0,\s*140\)/);
   assert.doesNotMatch(source, /Boolean\(firstFixedLayer\)\s*!==\s*Boolean\(secondFixedLayer\)/);
-  assert.match(source, /rect\.width < 40 \|\| rect\.height < 40/);
+  assert.match(source, /rawRect\.width < 40 \|\| rawRect\.height < 40/);
   assert.match(source, /focusObscured/);
   assert.match(source, /focusPartiallyObscured/);
   assert.match(source, /elementFromPoint/);
   assert.match(source, /rectUnionRatio/);
+  assert.match(source, /visibleRectOf/);
+  assert.match(source, /style\.overflowY/);
+  assert.match(source, /ancestor\.clientHeight/);
+  assert.match(source, /rawRect:\s*rectData\(effectiveTouchTarget\(element\)\)/);
+  assert.match(source, /\.map\(\(\{ element, rect, rawRect \}\)\s*=>/);
+  assert.match(source, /rawRect\.width < 24 \|\| rawRect\.height < 24/);
   assert.match(source, /pointerEvents/);
   assert.match(source, /Sticky headers remain in normal document flow/);
 });

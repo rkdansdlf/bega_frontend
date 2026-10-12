@@ -45,9 +45,13 @@ export type AutomaticComponentStateScenario = {
   states: ComponentStateValues;
   variants: ComponentVariantValues;
   interactionPlan?: {
-    action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'fill' | 'press-key';
+    action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'drag' | 'fill' | 'press-key';
     selector: string;
     targetId?: string;
+    dragOffset?: {
+      x: number;
+      y: number;
+    };
     clickPosition?: {
       x: number;
       y: number;
@@ -83,8 +87,12 @@ type StateManifestEntry = {
     }>;
   };
   interactionPlans?: Record<string, {
-    action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'fill' | 'press-key';
+    action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'drag' | 'fill' | 'press-key';
     selector?: string;
+    dragOffset?: {
+      x: number;
+      y: number;
+    };
     value?: string;
     key?: string;
     setup?: InteractionStep[];
@@ -109,6 +117,10 @@ type InteractionStep = {
 type InteractionTarget = {
   id: string;
   selector: string;
+  dragOffset?: {
+    x: number;
+    y: number;
+  };
   clickPosition?: {
     x: number;
     y: number;
@@ -259,10 +271,23 @@ export const resolveInteractionPlan = (
     ) {
       throw new Error('clickPosition requires finite nonnegative coordinates on click action');
     }
+    const dragOffset = interactionTarget.dragOffset ?? plan.dragOffset;
+    if (
+      dragOffset !== undefined
+      && (
+        resolvedPlan.action !== 'drag'
+        || !Number.isFinite(dragOffset.x)
+        || !Number.isFinite(dragOffset.y)
+        || (dragOffset.x === 0 && dragOffset.y === 0)
+      )
+    ) {
+      throw new Error('dragOffset requires a non-zero finite offset on drag action');
+    }
     return {
       action: resolvedPlan.action,
       selector: interactionTarget.selector,
       targetId: interactionTarget.id,
+      ...(dragOffset ? { dragOffset } : {}),
       ...(interactionTarget.clickPosition
         ? { clickPosition: interactionTarget.clickPosition }
         : {}),
@@ -282,9 +307,21 @@ export const resolveInteractionPlan = (
     };
   }
   if (!plan.selector) throw new Error(`missing executable interaction target for ${interaction}`);
+  if (
+    plan.dragOffset !== undefined
+    && (
+      resolvedPlan.action !== 'drag'
+      || !Number.isFinite(plan.dragOffset.x)
+      || !Number.isFinite(plan.dragOffset.y)
+      || (plan.dragOffset.x === 0 && plan.dragOffset.y === 0)
+    )
+  ) {
+    throw new Error('dragOffset requires a non-zero finite offset on drag action');
+  }
   return {
     action: resolvedPlan.action,
     selector: plan.selector,
+    ...(plan.dragOffset ? { dragOffset: plan.dragOffset } : {}),
     ...(plan.value !== undefined ? { value: plan.value } : {}),
     ...(plan.key ? { key: plan.key } : {}),
     ...(resolvedPlan.setup.length > 0 ? { setup: resolvedPlan.setup } : {}),

@@ -1,11 +1,9 @@
-import { requestAuthReissue } from './authReissue';
 import {
   DEFAULT_API_TIMEOUT_MS,
   buildDevProxyUnavailableErrorData,
   buildApiRequestHeaders,
   buildApiUrl,
   createTimeoutController,
-  isAbortError,
   parseResponseBody,
   toRequestBody,
 } from './httpClientCore';
@@ -13,6 +11,9 @@ import type { ApiClientErrorData, ApiParamValue } from './httpClientCore';
 import {
   claimAuthSessionExpiry,
   getAuthSessionGeneration,
+  getAuthOperationRevision,
+  assertAuthOperationCurrent,
+  AuthOperationSupersededError,
 } from './authSessionGeneration';
 
 type PrivateApiParamValue = ApiParamValue;
@@ -38,7 +39,7 @@ interface PrivateRequestOptions {
   params?: Record<string, PrivateApiParamValue>;
   signal?: AbortSignal;
   skipAuthSessionHandling?: boolean;
-  timeoutMs?: number;
+  timeoutMs?: number | null;
 }
 
 const dispatchAuthSessionExpired = (
@@ -57,8 +58,9 @@ const dispatchAuthSessionExpired = (
   window.dispatchEvent(new CustomEvent('auth-session-expired', { detail }));
 };
 
-export const requestPrivateReissue = async (): Promise<boolean> => {
-  return requestAuthReissue();
+export const requestPrivateReissue = async (revision = getAuthOperationRevision()): Promise<boolean> => {
+  const { requestAuthReissue } = await import('./authReissue');
+  return requestAuthReissue(revision);
 };
 
 const privateRequest = async <T>(
@@ -66,8 +68,11 @@ const privateRequest = async <T>(
   options: PrivateRequestOptions = {},
   hasRetried = false,
   sessionGeneration = getAuthSessionGeneration(),
+  operationRevision = getAuthOperationRevision(),
 ): Promise<T> => {
-  const timeout = createTimeoutController(options.timeoutMs ?? DEFAULT_API_TIMEOUT_MS, options.signal);
+  const timeout = options.timeoutMs === null
+    ? { signal: options.signal, timeoutMs: null, cleanup: () => {}, isTimedOut: () => false }
+    : createTimeoutController(options.timeoutMs ?? DEFAULT_API_TIMEOUT_MS, options.signal);
   const method = options.method ?? 'GET';
   const url = buildApiUrl(endpoint, options.params);
   const requestBody = toRequestBody(options.body);
@@ -84,9 +89,12 @@ const privateRequest = async <T>(
 
     if (response.status === 401 && !hasRetried && !options.skipAuthSessionHandling) {
       try {
-        await requestPrivateReissue();
-        return privateRequest<T>(endpoint, options, true, getAuthSessionGeneration());
+        await requestPrivateReissue(operationRevision);
+        assertAuthOperationCurrent(operationRevision);
+        return privateRequest<T>(endpoint, options, true, getAuthSessionGeneration(), operationRevision);
       } catch (reissueError) {
+        if (reissueError instanceof AuthOperationSupersededError) throw reissueError;
+        assertAuthOperationCurrent(operationRevision);
         dispatchAuthSessionExpired({
           cause: 'reissue_failed',
           requestUrl: endpoint,
@@ -99,6 +107,7 @@ const privateRequest = async <T>(
         }, options.skipAuthSessionHandling, sessionGeneration);
       }
     } else if (response.status === 401 && !options.skipAuthSessionHandling) {
+      assertAuthOperationCurrent(operationRevision);
       dispatchAuthSessionExpired({
         cause: 'request_unauthorized',
         requestUrl: endpoint,
@@ -121,7 +130,7 @@ const privateRequest = async <T>(
 
     return responseBody as T;
   } catch (error) {
-    if (isAbortError(error)) {
+    if (timeout.isTimedOut()) {
       throw new Error(`Request timed out after ${timeout.timeoutMs}ms`);
     }
 

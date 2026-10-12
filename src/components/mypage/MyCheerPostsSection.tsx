@@ -1,10 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 
-import { useMyCheerPosts } from '../../hooks/useMyCheerPosts';
+import {
+  useMyCheerPosts,
+  type MyCheerPostsVisualQaStateOverride,
+} from '../../hooks/useMyCheerPosts';
 import CheerCard from '../CheerCard';
 import LoadingSpinner from '../LoadingSpinner';
 
-function MyCheerPostsContent() {
+function MyCheerPostsContent({ visualQaStateOverride }: {
+  visualQaStateOverride?: MyCheerPostsVisualQaStateOverride;
+}) {
   const navigate = useNavigate();
   const {
     posts,
@@ -17,7 +22,7 @@ function MyCheerPostsContent() {
     isEmpty,
     emptyMessage,
     errorMessage,
-  } = useMyCheerPosts();
+  } = useMyCheerPosts(visualQaStateOverride);
 
   if (isLoading) {
     return (
@@ -80,7 +85,16 @@ function MyCheerPostsContent() {
   );
 }
 
-export default function MyCheerPostsSection() {
+export interface MyCheerPostsSectionProps {
+  visualQaStateOverride?: MyCheerPostsVisualQaStateOverride;
+}
+
+export default function MyCheerPostsSection({
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: MyCheerPostsSectionProps = {}) {
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   return (
     <section data-screen-label="응원석 글">
       <div className="mypage-season-head">
@@ -91,7 +105,7 @@ export default function MyCheerPostsSection() {
       </div>
 
       <div className="mypage-season-panel">
-        <MyCheerPostsContent />
+        <MyCheerPostsContent visualQaStateOverride={visualQaStateOverride} />
       </div>
     </section>
   );

@@ -5,6 +5,7 @@ import {
   forceProductionBuildNodeEnv,
   isProductionBuildCommand,
   resolveBuildOutDirFromArgs,
+  resolvePreviewProxyTarget,
   shouldEnableCloudflarePlugin,
   validateProductionPublicEnv,
 } from '../vite.config.ts';
@@ -75,4 +76,26 @@ test('loopback production-like builds may use an absolute loopback API origin', 
     VITE_SITE_URL: 'http://localhost:5176',
     VITE_API_BASE_URL: 'http://localhost:8080',
   }));
+});
+
+test('preview proxy accepts only explicit local targets', () => {
+  assert.equal(resolvePreviewProxyTarget(undefined), undefined);
+  assert.equal(resolvePreviewProxyTarget('http://127.0.0.1:8080'), 'http://127.0.0.1:8080');
+  assert.equal(resolvePreviewProxyTarget('http://backend:8080'), 'http://backend:8080');
+  assert.equal(resolvePreviewProxyTarget('http://host.docker.internal:8080'), 'http://host.docker.internal:8080');
+});
+
+test('preview proxy rejects remote, malformed, and credential-bearing targets', () => {
+  assert.throws(
+    () => resolvePreviewProxyTarget('https://api.begabaseball.xyz'),
+    /must be local during preview/,
+  );
+  assert.throws(
+    () => resolvePreviewProxyTarget('not-a-url'),
+    /absolute local URL/,
+  );
+  assert.throws(
+    () => resolvePreviewProxyTarget('http://user:password@127.0.0.1:8080'),
+    /must not contain credentials/,
+  );
 });

@@ -17,6 +17,7 @@ import { ThemeProvider } from '../hooks/useTheme';
 import { ConfirmDialogProvider } from '../components/contexts/ConfirmDialogContext';
 import { cn } from '../lib/utils';
 import { useAuthStore } from '../store/authStore';
+import { resolveDesignIntent } from './designIntent';
 import { installHarnessBrowserState } from './harnessBrowserState';
 import { resolveHarnessScenario } from './harnessCatalog';
 import { renderInSemanticHost } from './semanticHost';
@@ -177,6 +178,7 @@ export default function VisualQaHarnessApp() {
   const [{ selectionId, scenario }, setSelection] = useState(scenarioFromLocation);
   const [LoadedComponent, setLoadedComponent] = useState<ComponentType<Record<string, unknown>> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const designIntent = scenario ? resolveDesignIntent(scenario.componentId) : null;
 
   useEffect(() => {
     window.__BEGA_VISUAL_QA_RENDER_COMPONENT__ = (nextSelectionId: string) => {
@@ -306,6 +308,8 @@ export default function VisualQaHarnessApp() {
                         data-vqa-harness-surface
                         data-vqa-rendered-component-id={scenario.componentId}
                         data-vqa-rendered-scenario-id={scenario.id}
+                        data-vqa-design-profile={designIntent?.profileId}
+                        data-vqa-design-rule-ids={designIntent?.ruleIds.join(' ')}
                       >
                         <HarnessRouterLocationProbe />
                         {renderInSemanticHost(

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "masterProfile": {
+    "id": "bega",
+    "file": "design-system/bega/MASTER.md",
+    "recommendationQuery": "baseball fan companion sports community stadium guide mobile-first",
+    "tokenAuthority": "src/index.css",
+    "guidelinesAuthority": "src/guidelines/Guidelines.md"
+  },
+  "profiles": [
+    {
+      "id": "landing",
+      "label": "Landing",
+      "owner": "frontend-ui",
+      "representativeRoute": "/",
+      "file": "design-system/bega/pages/landing.md",
+      "match": ["src/components/Landing*.tsx", "src/components/landing/**"],
+      "recommendationQuery": "baseball fan companion landing community mobile-first",
+      "dials": { "variance": 6, "motion": 4, "density": 3 },
+      "representativeComponents": ["src/components/landing/LandingHero.tsx#LandingHero"]
+    },
+    {
+      "id": "auth",
+      "label": "Authentication",
+      "owner": "frontend-ui",
+      "representativeRoute": "/login",
+      "file": "design-system/bega/pages/auth.md",
+      "match": ["src/components/Login.tsx", "src/components/SignUp.tsx", "src/components/PasswordReset*.tsx", "src/components/AccountDeletionRecovery.tsx", "src/components/auth/**"],
+      "recommendationQuery": "sports community secure account sign-in accessible form",
+      "dials": { "variance": 3, "motion": 1, "density": 4 },
+      "representativeComponents": ["src/components/Login.tsx#Login"]
+    },
+    {
+      "id": "home",
+      "label": "Home",
+      "owner": "frontend-ui",
+      "representativeRoute": "/home",
+      "file": "design-system/bega/pages/home.md",
+      "match": ["src/components/Home*.tsx", "src/components/OffSeasonHome*.tsx", "src/components/home/**", "src/components/ScheduledGameCard.tsx", "src/components/GameCard.tsx"],
+      "recommendationQuery": "baseball fan home feed games community content discovery",
+      "dials": { "variance": 4, "motion": 2, "density": 5 },
+      "representativeComponents": ["src/components/Home.tsx#Home"]
+    },
+    {
+      "id": "mate",
+      "label": "Mate and Chat",
+      "owner": "frontend-ui",
+      "representativeRoute": "/mate",
+      "file": "design-system/bega/pages/mate.md",
+      "match": ["src/components/Mate*.tsx", "src/components/mate/**", "src/components/dm/**"],
+      "recommendationQuery": "baseball fan meetup social matching messaging mobile workflow",
+      "dials": { "variance": 4, "motion": 2, "density": 7 },
+      "representativeComponents": ["src/components/MateChatComposerPanel.tsx#MateChatComposerPanel"]
+    },
+    {
+      "id": "stadium",
+      "label": "Stadium Guide",
+      "owner": "frontend-ui",
+      "representativeRoute": "/stadium",
+      "file": "design-system/bega/pages/stadium.md",
+      "match": ["src/components/Stadium*.tsx", "src/components/stadiumSeatMap/**", "src/components/*SeatMap*.tsx"],
+      "recommendationQuery": "baseball stadium guide seat map venue places mobile information",
+      "dials": { "variance": 3, "motion": 2, "density": 6 },
+      "representativeComponents": ["src/components/stadiumSeatMap/SeatMapSectionFinder.tsx#SeatMapSectionFinder"]
+    },
+    {
+      "id": "prediction",
+      "label": "Prediction and Statistics",
+      "owner": "frontend-ui",
+      "representativeRoute": "/prediction",
+      "file": "design-system/bega/pages/prediction.md",
+      "match": ["src/components/Prediction*.tsx", "src/components/prediction/**", "src/components/RankingPrediction*.tsx"],
+      "recommendationQuery": "baseball prediction statistics data dense sports dashboard",
+      "dials": { "variance": 3, "motion": 1, "density": 8 },
+      "representativeComponents": ["src/components/prediction/PredictionMatchesErrorView.tsx#PredictionMatchesErrorView"]
+    },
+    {
+      "id": "mypage",
+      "label": "My Page and Diary",
+      "owner": "frontend-ui",
+      "representativeRoute": "/mypage",
+      "file": "design-system/bega/pages/mypage.md",
+      "match": ["src/components/MyPage*.tsx", "src/components/mypage/**", "src/components/Diary*.tsx"],
+      "recommendationQuery": "baseball fan personal profile diary season history",
+      "dials": { "variance": 4, "motion": 2, "density": 6 },
+      "representativeComponents": ["src/components/mypage/PasswordChangeSection.tsx#PasswordChangeSection"]
+    },
+    {
+      "id": "admin",
+      "label": "Admin",
+      "owner": "frontend-ui",
+      "representativeRoute": "/admin",
+      "file": "design-system/bega/pages/admin.md",
+      "match": ["src/components/admin/**", "src/components/Admin*.tsx"],
+      "recommendationQuery": "sports community administration operational data dashboard",
+      "dials": { "variance": 2, "motion": 1, "density": 8 },
+      "representativeComponents": ["src/components/admin/AdminAiOperationsRuntime.tsx#AdminAiOperationsRuntime"]
+    }
+  ]
+}

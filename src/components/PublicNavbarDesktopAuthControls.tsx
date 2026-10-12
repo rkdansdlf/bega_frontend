@@ -137,8 +137,13 @@ export default function PublicNavbarDesktopAuthControls({
           style={profileLabelStyle(92)}
           aria-hidden={isCompact}
         >
-          <span className="absolute inset-y-0 left-0 flex w-full min-w-0 max-w-full items-center justify-center overflow-hidden text-ellipsis transition-[opacity,transform] duration-150 ease-out group-hover:-translate-y-full group-hover:opacity-0">
-            {displayName} 님
+          <span className="absolute inset-y-0 left-0 flex w-full min-w-0 max-w-full items-center justify-center overflow-hidden transition-[opacity,transform] duration-150 ease-out group-hover:-translate-y-full group-hover:opacity-0">
+            <span
+              data-testid={import.meta.env?.DEV ? 'public-navbar-desktop-profile-name' : undefined}
+              className="block w-full min-w-0 truncate text-center"
+            >
+              {displayName} 님
+            </span>
           </span>
           <span className="absolute inset-y-0 left-0 flex w-full items-center justify-center translate-y-full opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100">
             마이페이지

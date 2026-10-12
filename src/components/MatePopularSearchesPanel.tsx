@@ -1,13 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getMatePopularSearchTermsQueryOptions } from '../hooks/mateQueryOptions';
+import type { MatePopularSearchTerm } from '../types/mate';
 import { normalizeMateSearchText } from '../utils/mateSearchTerms';
 import { MateFlameIcon as FlameIcon } from './icons/MateFlowIcons';
 
-interface MatePopularSearchesPanelProps {
+export interface MatePopularSearchesPanelVisualQaStateOverride {
+  popularTerms: MatePopularSearchTerm[];
+  queryState: 'loading' | 'success';
+}
+
+export interface MatePopularSearchesPanelProps {
   limit?: number;
   onTermClick: (term: string) => void;
   onTermSelect?: () => void;
+  visualQaStateOverride?: MatePopularSearchesPanelVisualQaStateOverride;
 }
 
 const cardClass =
@@ -17,8 +24,17 @@ export default function MatePopularSearchesPanel({
   limit = 5,
   onTermClick,
   onTermSelect,
+  visualQaStateOverride,
 }: MatePopularSearchesPanelProps) {
-  const { data: popularTerms = [], isLoading } = useQuery(getMatePopularSearchTermsQueryOptions(limit));
+  const effectiveVisualQaStateOverride = import.meta.env.DEV ? visualQaStateOverride : undefined;
+  const { data: queriedPopularTerms = [], isLoading: queriedIsLoading } = useQuery({
+    ...getMatePopularSearchTermsQueryOptions(limit),
+    enabled: effectiveVisualQaStateOverride === undefined,
+  });
+  const popularTerms = effectiveVisualQaStateOverride?.popularTerms ?? queriedPopularTerms;
+  const isLoading = effectiveVisualQaStateOverride
+    ? effectiveVisualQaStateOverride.queryState === 'loading'
+    : queriedIsLoading;
 
   const handleTermClick = (term: string) => {
     const normalizedTerm = normalizeMateSearchText(term);
@@ -31,7 +47,7 @@ export default function MatePopularSearchesPanel({
   };
 
   return (
-    <section className={cardClass}>
+    <section className={cardClass} data-testid="mate-popular-searches-panel">
       <h2 className="mb-2.5 flex items-center gap-1.5 text-13 font-black text-gray-900 dark:text-white">
         <FlameIcon className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
         인기 검색어
@@ -53,8 +69,9 @@ export default function MatePopularSearchesPanel({
             <li key={`${item.rank}-${item.term}`} className="pl-1 marker:text-gray-400 marker:font-black">
               <button
                 type="button"
+                data-testid={`mate-popular-search-term-${item.rank}`}
                 onClick={() => handleTermClick(item.term)}
-                className="inline-flex max-w-full items-center gap-1 text-left transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000]"
+                className="inline-flex min-h-11 max-w-full items-center gap-1 text-left transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000]"
               >
                 <span className="min-w-0 truncate">{item.term}</span>
                 {item.rank === 1 ? (

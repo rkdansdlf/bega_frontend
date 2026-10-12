@@ -34,11 +34,11 @@ interface ChatBotConversationRuntimeProps {
   setInputMessage: (next: string) => void;
   messagesEndRef: RefObject<HTMLDivElement>;
   messagesContainerRef: RefObject<HTMLDivElement>;
-  handleSendMessage: (event: FormEvent) => Promise<void>;
-  handleRetrySend: () => Promise<void>;
+  handleSendMessage: (event: FormEvent) => Promise<void> | void;
+  handleRetrySend: () => Promise<void> | void;
   handleRestorePendingMessage: () => void;
   handleCancelStream: () => void;
-  handleToggleFavorite: (message: Message) => Promise<void>;
+  handleToggleFavorite: (message: Message) => Promise<void> | void;
   onRequestClose: () => void;
 }
 

@@ -216,7 +216,7 @@ export function SeatMapTemplateShell({
                 data-testid={fullscreenCloseTestId}
                 aria-label={`${fullscreenTitle} 전체화면 닫기`}
                 onClick={onFullscreenClose}
-                className="shrink-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-700 text-slate-200 transition-colors hover:bg-slate-800"
+                className="shrink-0 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-slate-700 text-slate-200 transition-colors hover:bg-slate-800 sm:h-8 sm:w-8"
                 style={{
                   borderColor: isDark ? STADIUM_SEATMAP_DARK_COLORS.borderStrong : undefined,
                   color: isDark ? STADIUM_SEATMAP_DARK_COLORS.text : undefined,

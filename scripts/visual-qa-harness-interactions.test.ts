@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { AUTOMATIC_COMPONENT_STATE_SCENARIOS } from '../src/visual-qa/harnessCatalog';
+
 const loadSubject = async () => {
   try {
     return await import('./visual-qa-harness-interactions');
@@ -80,6 +82,43 @@ const createPage = (focusAt = 2) => {
   };
 };
 
+const createHomeNavigationPage = (noOpInteraction?: 'next-date' | 'cta') => {
+  let pathname = '/home?date=2026-09-10';
+  const page = {
+    locator: (selector: string) => ({
+      first: () => ({
+        waitFor: async () => {},
+        hover: async () => {},
+        click: async () => {
+          if (noOpInteraction === 'next-date' && selector.includes('home-date-next')) return;
+          if (noOpInteraction === 'cta' && selector.includes('home-game-card')) return;
+          if (selector.includes('home-date-next')) pathname = '/home?date=2026-09-11';
+          if (selector.includes('home-game-card')) pathname = '/prediction/matches/HOME-A-20260910?date=2026-09-10';
+        },
+        fill: async () => {},
+        selectOption: async () => [],
+        inputValue: async () => '',
+        scrollIntoViewIfNeeded: async () => {},
+        boundingBox: async () => ({ x: 0, y: 0, width: 44, height: 44 }),
+      }),
+    }),
+    keyboard: { press: async () => {} },
+    mouse: {
+      move: async () => {},
+      down: async () => {},
+      up: async () => {},
+    },
+    evaluate: async (_fn: unknown, arg?: { mode?: string }) => (
+      arg?.mode === 'frames' ? true : true
+    ),
+  };
+  return { page, readPathname: () => pathname };
+};
+
+const assertHomeNavigation = (actual: string, expected: string) => {
+  assert.equal(actual, expected, `expected navigation ${expected} but received ${actual}`);
+};
+
 test('hover interaction verifies the real hover pseudo-state', async () => {
   const subject = await loadSubject();
   assert.ok(subject, 'visual QA interaction executor must exist');
@@ -134,6 +173,59 @@ test('click interaction waits for visible and hidden result selectors before cap
     'move:-1,-1',
     'frames',
   ]);
+});
+
+test('HomeRuntime next-date and cta mappings use the common runner and detect target-preserving no-op mutations', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+  const nextDateScenario = AUTOMATIC_COMPONENT_STATE_SCENARIOS.find((scenario) => (
+    scenario.componentId === 'src/components/HomeRuntime.tsx#HomeRuntime'
+      && scenario.states.data === 'date-a'
+      && scenario.states.interactions === 'next-date'
+  ));
+  const ctaScenario = AUTOMATIC_COMPONENT_STATE_SCENARIOS.find((scenario) => (
+    scenario.componentId === 'src/components/HomeRuntime.tsx#HomeRuntime'
+      && scenario.states.data === 'date-a'
+      && scenario.states.interactions === 'cta'
+  ));
+  const nextDatePlan = nextDateScenario?.interactionPlan;
+  const ctaPlan = ctaScenario?.interactionPlan;
+  assert.ok(nextDatePlan);
+  assert.ok(ctaPlan);
+  assert.equal(nextDatePlan.targetId, 'date-next');
+  assert.equal(ctaPlan.targetId, 'primary-cta');
+
+  const nextDate = createHomeNavigationPage();
+  await subject.executeHarnessInteractionPlan(nextDate.page, nextDatePlan);
+  assertHomeNavigation(nextDate.readPathname(), '/home?date=2026-09-11');
+
+  const cta = createHomeNavigationPage();
+  await subject.executeHarnessInteractionPlan(cta.page, ctaPlan);
+  assertHomeNavigation(cta.readPathname(), '/prediction/matches/HOME-A-20260910?date=2026-09-10');
+
+  const mutatedNextDate = createHomeNavigationPage('next-date');
+  await subject.executeHarnessInteractionPlan(
+    mutatedNextDate.page,
+    nextDatePlan,
+  );
+  await assert.rejects(
+    async () => assertHomeNavigation(mutatedNextDate.readPathname(), '/home?date=2026-09-11'),
+    /expected navigation \/home\?date=2026-09-11/,
+  );
+
+  const mutatedCta = createHomeNavigationPage('cta');
+  await subject.executeHarnessInteractionPlan(mutatedCta.page, ctaPlan);
+  await assert.rejects(
+    async () => assertHomeNavigation(
+      mutatedCta.readPathname(),
+      '/prediction/matches/HOME-A-20260910?date=2026-09-10',
+    ),
+    /expected navigation \/prediction\/matches\/HOME-A-20260910\?date=2026-09-10/,
+  );
+
+  const restoredCta = createHomeNavigationPage();
+  await subject.executeHarnessInteractionPlan(restoredCta.page, ctaPlan);
+  assertHomeNavigation(restoredCta.readPathname(), '/prediction/matches/HOME-A-20260910?date=2026-09-10');
 });
 
 test('click interaction can target an explicit safe point without changing default clicks', async () => {
@@ -267,6 +359,39 @@ test('pressed interaction holds the pointer through capture and releases during 
     'move:-1,-1',
     'up',
   ]);
+});
+
+test('drag interaction performs a real pointer movement and requires a non-zero offset', async () => {
+  const subject = await loadSubject();
+  assert.ok(subject, 'visual QA interaction executor must exist');
+  const { page, events } = createPage();
+
+  await subject.executeHarnessInteractionPlan(page, {
+    action: 'drag',
+    selector: '[data-testid="home-pull-to-refresh"]',
+    dragOffset: { x: 0, y: 140 },
+    waitForSelector: '[data-testid="refresh-complete"]',
+  });
+  assert.deepEqual(events, [
+    'visible',
+    'scroll-into-view',
+    'move:30,42',
+    'down',
+    'move:30,182',
+    'up',
+    'visible',
+    'frames',
+  ]);
+
+  await assert.rejects(
+    subject.executeHarnessInteractionPlan(createPage().page, {
+      action: 'drag',
+      selector: 'button',
+      dragOffset: { x: 0, y: 0 },
+      waitForSelector: '[data-testid="refresh-complete"]',
+    }),
+    /dragOffset requires a non-zero finite offset/,
+  );
 });
 
 test('post-expansion hover and focus evidence is re-established before capture', async () => {

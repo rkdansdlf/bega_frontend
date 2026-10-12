@@ -30,6 +30,15 @@ test('admin seat-view detail drawer keeps pressure data readable and distinguish
   assert.match(source, /aspect-video[^"]*object-contain/);
 });
 
+test('admin seat-view detail drawer renders an accessible fallback for missing or failed photos', async () => {
+  const source = await readSource();
+
+  assert.match(source, /selectedSeatViewDetail\?\.photoUrl\?\.trim\(\) \?\? ''/);
+  assert.match(source, /onError=\{\(\) => setFailedPhotoUrl\(normalizedPhotoUrl\)\}/);
+  assert.match(source, /data-testid=\{`admin-seat-view-detail-photo-fallback-\$\{selectedSeatViewDetail\.id\}`\}/);
+  assert.match(source, /role="img"[\s\S]*시야뷰 후보 \$\{selectedSeatViewDetail\.id\}번 사진을 불러올 수 없습니다/);
+});
+
 test('admin seat-view detail drawer labels its memo and keeps four actions reachable in a mobile footer', async () => {
   const source = await readSource();
 

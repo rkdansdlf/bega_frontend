@@ -24,6 +24,7 @@ import { getMatePartyListQueryOptions } from './mateQueryOptions';
 import { seedMatePartyQueryData, updateMatePartyCollectionQueryData } from './mateQueryCache';
 import { useDebounce } from './useDebounce';
 import { useMediaQuery } from './useMediaQuery';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
 const PAGE_SIZE = 9;
 
@@ -51,6 +52,7 @@ export function useMateListController() {
   const rawLegacyPartyId = searchParams.get('party');
   const legacyPartyId = normalizeLegacyPartyId(rawLegacyPartyId);
   const { userFavoriteTeam: favoriteTeam, userId: authUserId } = useAuthProfileSnapshot();
+  const viewerScope = useViewerQueryScope();
   const favoriteTeamId = favoriteTeam && favoriteTeam !== '없음' ? favoriteTeam : null;
   const urlState = useMemo(
     () => parseMateListUrlState(searchParams, { favoriteTeamId }),
@@ -131,7 +133,7 @@ export function useMateListController() {
       gameDate: dateKey || undefined,
       sortBy: activeSortOption.sortBy,
       sortDir: activeSortOption.sortDir,
-    }),
+    }, viewerScope),
   });
 
   const parties = useMemo(
@@ -155,14 +157,14 @@ export function useMateListController() {
   }, [partyListQuery.data?.totalPages, partyListQuery.isSuccess, queryPage, updateUrlState]);
 
   const handlePartyClick = useCallback((party: Party) => {
-    seedMatePartyQueryData(queryClient, party);
+    seedMatePartyQueryData(queryClient, party, viewerScope);
     const returnTo = buildMateListReturnPath(
       canonicalizeMateListSearchParams(searchParams, { favoriteTeamId }),
     );
     navigate(`/mate/${party.id}`, {
       state: buildMateRouteLocationState(party, returnTo),
     });
-  }, [favoriteTeamId, navigate, queryClient, searchParams]);
+  }, [favoriteTeamId, navigate, queryClient, searchParams, viewerScope]);
 
   const handleFavoriteToggle = useCallback(async (party: Party) => {
     if (favoriteUpdatingPartyId !== null) {
@@ -179,7 +181,7 @@ export function useMateListController() {
       updateMatePartyCollectionQueryData(queryClient, party.id, (currentParty) => ({
         ...currentParty,
         favorited,
-      }));
+      }), {}, viewerScope);
     };
 
     setFavoriteUpdatingPartyId(party.id);
@@ -194,7 +196,7 @@ export function useMateListController() {
     } finally {
       setFavoriteUpdatingPartyId(null);
     }
-  }, [authUserId, favoriteUpdatingPartyId, queryClient]);
+  }, [authUserId, favoriteUpdatingPartyId, queryClient, viewerScope]);
 
   useEffect(() => {
     if (rawLegacyPartyId !== null && legacyPartyId === null) {

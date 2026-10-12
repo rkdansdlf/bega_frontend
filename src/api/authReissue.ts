@@ -3,31 +3,63 @@ import {
   buildApiUrl,
   toJsonRequestBody,
 } from './httpClientCore';
-import { markAuthSessionEstablished } from './authSessionGeneration';
+import {
+  assertAuthOperationCurrent, AuthOperationSupersededError,
+  getAuthLogoutCompletion, getAuthOperationRevision, markAuthSessionRefreshed,
+} from './authSessionGeneration';
 
-let reissueInFlight: Promise<boolean> | null = null;
+let reissueInFlight: { revision: number; result: Promise<boolean> } | null = null;
+let uncertainTransport = false;
+const unresolvedTransport = new Promise<void>(() => {});
 
-export const requestAuthReissue = async (): Promise<boolean> => {
+export const waitForAuthReissue = async (): Promise<void> => {
+  if (reissueInFlight) await reissueInFlight.result.catch(() => {});
+  // A rejected transport cannot prove that the server stopped mutating cookies.
+  if (uncertainTransport) await unresolvedTransport;
+};
+
+export const requestAuthReissue = async (revision = getAuthOperationRevision()): Promise<boolean> => {
+  assertAuthOperationCurrent(revision);
+  const logout = getAuthLogoutCompletion();
+  if (logout) {
+    await logout;
+    assertAuthOperationCurrent(revision);
+  }
+  if (uncertainTransport) throw new AuthOperationSupersededError();
+  if (reissueInFlight && reissueInFlight.revision !== revision) {
+    await waitForAuthReissue();
+    assertAuthOperationCurrent(revision);
+  }
   if (!reissueInFlight) {
-    reissueInFlight = (async () => {
+    const result = (async () => {
       const requestBody = toJsonRequestBody({});
-      const response = await fetch(buildApiUrl('/auth/reissue'), {
-        credentials: 'include',
-        method: 'POST',
-        headers: buildApiRequestHeaders(requestBody),
-        body: requestBody,
-      });
+      let response: Response;
+      try {
+        response = await fetch(buildApiUrl('/auth/reissue'), {
+          credentials: 'include',
+          method: 'POST',
+          headers: buildApiRequestHeaders(requestBody),
+          body: requestBody,
+        });
+      } catch {
+        uncertainTransport = true;
+        throw new AuthOperationSupersededError();
+      }
 
+      assertAuthOperationCurrent(revision);
       if (!response.ok) {
         throw new Error(`Reissue failed with status ${response.status}`);
       }
 
-      markAuthSessionEstablished();
+      markAuthSessionRefreshed();
       return true;
     })().finally(() => {
-      reissueInFlight = null;
+      if (reissueInFlight?.result === result) reissueInFlight = null;
     });
+    reissueInFlight = { revision, result };
   }
 
-  return reissueInFlight;
+  const result = await reissueInFlight.result;
+  assertAuthOperationCurrent(revision);
+  return result;
 };

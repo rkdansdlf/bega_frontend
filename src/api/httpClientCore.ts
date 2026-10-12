@@ -143,6 +143,7 @@ export const buildApiRequestHeaders = (
 
 export interface TimeoutController {
   cleanup: () => void;
+  isTimedOut: () => boolean;
   signal: AbortSignal;
   timeoutMs: number;
 }
@@ -162,6 +163,7 @@ export const createTimeoutController = (
 
   return {
     cleanup: () => {},
+    isTimedOut: () => signal.aborted && signal.reason === timeoutSignal.reason,
     signal,
     timeoutMs,
   };

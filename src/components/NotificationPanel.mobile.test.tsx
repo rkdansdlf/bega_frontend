@@ -14,6 +14,26 @@ test('notification panel accepts deterministic data, tab, permission, time, and 
   assert.match(source, /notificationsOverride \?\? liveNotifications/);
 });
 
+test('bulk read sends a timestamp captured when the action is invoked', async () => {
+  const source = await readFile(new URL('./NotificationPanel.tsx', import.meta.url), 'utf8');
+
+  assert.match(source, /const requestStartedAt = Date\.now\(\);[\s\S]*await markAllAsReadRequest\(requestStartedAt\);[\s\S]*markAllAsRead\(requestStartedAt\);/);
+});
+
+test('account-deletion mate notifications stay filterable and open their party', async () => {
+  const source = await readFile(new URL('./NotificationPanel.tsx', import.meta.url), 'utf8');
+  const mateTypes = source.match(/const MATE_NOTIFICATION_TYPES: NotificationType\[\] = \[([\s\S]*?)\];/)?.[1];
+
+  assert.ok(mateTypes, 'mate notification category should be defined');
+  assert.match(mateTypes, /'PARTY_CANCELLED_HOST_DELETED'/);
+  assert.match(mateTypes, /'PARTY_PARTICIPANT_LEFT'/);
+  assert.ok(
+    (source.match(/MATE_NOTIFICATION_TYPES\.includes\(notification\.type\)/g) ?? []).length >= 2,
+    'the mate category filter and click routing should share the complete mate notification types',
+  );
+  assert.match(source, /navigate\(`\/mate\/\$\{notification\.relatedId\}`\)/);
+});
+
 test('notification panel keeps every mobile action reachable without overlap', async () => {
   const source = await readFile(new URL('./NotificationPanel.tsx', import.meta.url), 'utf8');
 

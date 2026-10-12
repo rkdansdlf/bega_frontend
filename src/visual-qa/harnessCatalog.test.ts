@@ -192,6 +192,19 @@ test('HomeRuntime catalog covers route-owned bootstrap phases, transitions, and 
     cta: ['primary-cta'],
   });
   const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  const nextDateScenario = scenarios.find(({ states }) => states.interactions === 'next-date');
+  assert.ok(nextDateScenario?.interactionPlan);
+  assert.deepEqual(nextDateScenario?.interactionPlan, {
+    action: 'click',
+    selector: '[data-testid="home-date-next"]',
+    targetId: 'date-next',
+    waitForSelector: '[data-testid="home-match-priority-panel"]',
+  });
+  const ctaScenario = scenarios.find(({ states }) => states.interactions === 'cta');
+  assert.ok(ctaScenario?.interactionPlan);
+  assert.equal(ctaScenario?.interactionPlan?.action, 'click');
+  assert.equal(ctaScenario?.interactionPlan?.targetId, 'primary-cta');
+  assert.match(ctaScenario?.interactionPlan?.selector ?? '', /home-(secondary-prediction-cta|offseason-cta|game-card)/);
   assert.equal(scenarios.length, 50);
   assert.deepEqual(new Set(scenarios.map(({ states }) => states.data)), new Set(['normal', 'empty', 'date-a', 'date-b', 'long-korean', 'manual']));
   assert.deepEqual(new Set(scenarios.map(({ states }) => states.system)), new Set(['loading', 'ready', 'empty', 'request-failed', 'manual-data-required']));
@@ -202,6 +215,181 @@ test('HomeRuntime catalog covers route-owned bootstrap phases, transitions, and 
       && moduleKey === '../components/HomeRuntime.tsx'
       && exportName === 'default'
       && adapterId === 'home.runtime'
+  )));
+});
+
+test('Home wrapper catalog covers only its production lazy boundary phases', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: {
+        data?: { notApplicable?: unknown };
+        permissions?: { notApplicable?: unknown };
+        interactions?: { notApplicable?: unknown };
+        system?: { notApplicable?: unknown };
+      };
+      variants?: { dimensions?: Array<{ name?: string; values?: string[] }> };
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/Home.tsx#Home';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'home.wrapper');
+  assert.ok(component.axes?.data?.notApplicable);
+  assert.ok(component.axes?.permissions?.notApplicable);
+  assert.ok(component.axes?.interactions?.notApplicable);
+  assert.ok(component.axes?.system?.notApplicable);
+  assert.deepEqual(component.variants?.dimensions?.find(({ name }) => name === 'phase')?.values, [
+    'fallback',
+    'resolved',
+  ]);
+  assert.deepEqual(component.constraints, []);
+
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 2);
+  assert.deepEqual(scenarios.map(({ variants }) => variants.phase), ['fallback', 'resolved']);
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, adapterId }) => (
+    file === 'src/components/Home.tsx'
+      && moduleKey === '../components/Home.tsx'
+      && exportName === 'default'
+      && adapterId === 'home.wrapper'
+  )));
+  assert.ok(scenarios.every(({ states, interactionPlan }) => (
+    Object.keys(states).length === 0 && interactionPlan === undefined
+  )));
+});
+
+test('DirectMessageRuntime catalog covers the authenticated compose, send, and retry contract', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string };
+      axes?: Record<string, { values?: string[]; notApplicable?: unknown }>;
+      variants?: { dimensions?: Array<{ name?: string; values?: string[] }> };
+      interactionPlans?: Record<string, { targets?: Array<{ id?: string }> }>;
+      constraints?: unknown[];
+    }>;
+  };
+  const componentId = 'src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime';
+  const component = contract.components.find(({ id }) => id === componentId);
+  assert.ok(component);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'dm.runtime');
+  assert.deepEqual(component.axes?.data?.values, ['populated']);
+  assert.deepEqual(component.axes?.permissions?.values, ['user']);
+  assert.deepEqual(component.axes?.interactions?.values, ['default', 'input', 'submitting', 'retry']);
+  assert.deepEqual(component.axes?.system?.values, ['online', 'request-failed']);
+  assert.deepEqual(component.variants?.dimensions?.find(({ name }) => name === 'theme')?.values, ['light', 'dark']);
+  assert.deepEqual(Object.fromEntries(
+    Object.entries(component.interactionPlans ?? {}).map(([key, plan]) => [key, plan.targets?.map(({ id }) => id)]),
+  ), {
+    input: ['composer'],
+    submitting: ['send'],
+    retry: ['retry'],
+  });
+  assert.equal(component.constraints?.length, 2);
+
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 8);
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.interactions)), new Set(['default', 'input', 'submitting', 'retry']));
+  assert.deepEqual(new Set(scenarios.map(({ states }) => states.system)), new Set(['online', 'request-failed']));
+  assert.deepEqual(new Set(scenarios.map(({ variants }) => variants.theme)), new Set(['light', 'dark']));
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, adapterId }) => (
+    file === 'src/components/dm/DirectMessageRuntime.tsx'
+      && moduleKey === '../components/dm/DirectMessageRuntime.tsx'
+      && exportName === 'default'
+      && adapterId === 'dm.runtime'
+  )));
+});
+
+test('MyPage password-change catalog keeps the direct credential surface separate from its hosted alias', async () => {
+  const contract = JSON.parse(
+    await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
+  ) as {
+    components: Array<{
+      id: string;
+      status: string;
+      renderAccess: string;
+      render?: { mode?: string; adapterId?: string; hostScenarioIds?: string[] };
+      axes?: Record<string, { values?: string[]; notApplicable?: unknown }>;
+      variants?: { dimensions?: Array<{ name?: string; values?: string[] }> };
+    }>;
+  };
+  const componentId = 'src/components/mypage/PasswordChangeSection.tsx#PasswordChangeSection';
+  const hostedAliasId = 'src/components/mypage/MyPageViewRuntime.tsx#PasswordChangeSection';
+  const component = contract.components.find(({ id }) => id === componentId);
+  const hostedAlias = contract.components.find(({ id }) => id === hostedAliasId);
+  assert.ok(component);
+  assert.ok(hostedAlias);
+  assert.equal(component.status, 'registered');
+  assert.equal(component.renderAccess, 'module-export');
+  assert.equal(component.render?.mode, 'direct');
+  assert.equal(component.render?.adapterId, 'mypage.password-change');
+  assert.equal(hostedAlias.status, 'registered');
+  assert.equal(hostedAlias.render?.mode, 'hosted');
+  assert.ok((hostedAlias.render?.hostScenarioIds?.length ?? 0) > 0);
+  assert.deepEqual(component.axes?.data?.values, [
+    'empty',
+    'interaction-check',
+    'request-error-recovery',
+    'request-pending',
+    'request-success',
+    'validation-error',
+  ]);
+  assert.deepEqual(component.axes?.permissions?.values, ['user']);
+  assert.deepEqual(component.axes?.interactions?.values, [
+    'default',
+    'click',
+    'hover',
+    'focus-visible',
+    'pressed',
+    'submit',
+  ]);
+  assert.deepEqual(component.variants?.dimensions?.map(({ name, values }) => ({ name, values })), [
+    { name: 'has-password', values: ['false', 'true'] },
+    { name: 'theme', values: ['light', 'dark'] },
+  ]);
+
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId: id }) => id === componentId);
+  assert.equal(scenarios.length, 106);
+  assert.equal(scenarios.filter(({ states }) => states.interactions === 'default').length, 4);
+  assert.equal(scenarios.filter(({ states }) => states.interactions === 'click').length, 14);
+  assert.equal(scenarios.filter(({ states }) => states.interactions === 'submit').length, 16);
+  assert.equal(scenarios.filter(({ states }) => !['default', 'click', 'submit'].includes(states.interactions ?? '')).length, 72);
+  assert.ok(scenarios.every(({ file, moduleKey, exportName, renderAccess, adapterId }) => (
+    file === 'src/components/mypage/PasswordChangeSection.tsx'
+      && moduleKey === '../components/mypage/PasswordChangeSection.tsx'
+      && exportName === 'default'
+      && renderAccess === 'module-export'
+      && adapterId === 'mypage.password-change'
+  )));
+  assert.ok(scenarios.some(({ interactionPlan }) => interactionPlan?.targetId === 'current-password'));
+  assert.ok(scenarios.some(({ states, interactionPlan }) => (
+    states.interactions === 'click' && states.data === 'interaction-check'
+      && interactionPlan?.targetId === 'cancel'
+  )));
+  assert.ok(scenarios.some(({ states, interactionPlan }) => (
+    states.interactions === 'submit' && states.data === 'request-success'
+      && interactionPlan?.targetId === 'submit-success-has-password'
+  )));
+  assert.ok(!scenarios.some(({ states, variants, interactionPlan }) => (
+    states.interactions !== 'default' && variants['has-password'] === 'false'
+      && interactionPlan?.targetId === 'current-password'
   )));
 });
 
@@ -889,7 +1077,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 72021);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 95666);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -902,7 +1090,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    294,
+    519,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1765,7 +1953,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ states }) => states.data === 'manual-required').length,
-    12,
+    40,
   );
   const stadiumError = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId.endsWith('StadiumSeatMapStates.tsx#StadiumSeatMapErrorFallback')
@@ -2647,6 +2835,7 @@ test('ranking prediction save dialog resolves the exact 25-state direct matrix o
     render?: {
       adapterId?: string;
       exportName?: string;
+      hostScenarioIds?: string[];
       mode?: string;
       moduleFile?: string;
     };
@@ -2660,7 +2849,9 @@ test('ranking prediction save dialog resolves the exact 25-state direct matrix o
   assert.equal(entry?.render?.adapterId, 'ranking.save-dialog');
   assert.equal(entry?.render?.exportName, 'rankingPredictionSaveDialogVisualQaHarness');
   assert.equal(entry?.render?.moduleFile, moduleFile);
-  assert.equal(hosted?.status, 'pending');
+  assert.equal(hosted?.status, 'registered');
+  assert.equal(hosted?.render?.mode, 'hosted');
+  assert.ok((hosted?.render?.hostScenarioIds?.length ?? 0) > 0);
   assert.equal(scenarios.length, 25);
   assert.equal(new Set(scenarios.map(({ id }) => id)).size, 25);
   assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 25);
@@ -2724,7 +2915,7 @@ test('ImageLightbox resolves exactly 42 legal direct states without a hosted occ
     'utf8',
   )) as { components: Array<{
     id: string;
-    render?: { adapterId?: string; exportName?: string; mode?: string; moduleFile?: string };
+    render?: { adapterId?: string; exportName?: string; mode?: string; moduleFile?: string; hostScenarioIds?: string[] };
     status: string;
   }> };
   const entry = manifest.components.find(({ id }) => id === componentId);
@@ -2813,7 +3004,13 @@ test('ranking completion panel resolves exactly 44 legal direct states and keeps
     'utf8',
   )) as { components: Array<{
     id: string;
-    render?: { adapterId?: string; exportName?: string; mode?: string; moduleFile?: string };
+    render?: {
+      adapterId?: string;
+      exportName?: string;
+      mode?: string;
+      moduleFile?: string;
+      hostScenarioIds?: string[];
+    };
     status: string;
   }> };
   const entry = manifest.components.find(({ id }) => id === componentId);
@@ -2824,7 +3021,9 @@ test('ranking completion panel resolves exactly 44 legal direct states and keeps
   assert.equal(entry?.render?.adapterId, 'ranking.completion-panel');
   assert.equal(entry?.render?.exportName, 'rankingPredictionCompletionPanelVisualQaHarness');
   assert.equal(entry?.render?.moduleFile, moduleFile);
-  assert.equal(hosted?.status, 'pending');
+  assert.equal(hosted?.status, 'registered');
+  assert.equal(hosted?.render?.mode, 'hosted');
+  assert.ok((hosted?.render?.hostScenarioIds?.length ?? 0) > 0);
   assert.equal(scenarios.length, 44);
   assert.equal(new Set(scenarios.map(({ id }) => id)).size, 44);
   assert.equal(new Set(scenarios.map(({ stateCombinationId }) => stateCombinationId)).size, 44);
@@ -3894,15 +4093,9 @@ test('public landing tree classifies every visual symbol and reports new pending
   ));
 
   assert.equal(publicLandingVisualIds.length, 20);
-  assert.deepEqual(pending.map(({ id }) => id), [
-    'src/components/landing/LandingFooter.tsx#LandingFooter',
-    'src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection',
-    'src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen',
-    'src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen',
-    'src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen',
-  ]);
-  assert.equal(scenarios.length, 322);
-  assert.equal(new Set(scenarios.map(({ componentId }) => componentId)).size, 14);
+  assert.deepEqual(pending.map(({ id }) => id), []);
+  assert.equal(scenarios.length, 344);
+  assert.equal(new Set(scenarios.map(({ componentId }) => componentId)).size, 19);
   const heroOpen = scenarios.find(({ stateCombinationId }) => (
     stateCombinationId === 'data=populated|interactions=open|variant.theme=light|interactionTarget=home'
   ));

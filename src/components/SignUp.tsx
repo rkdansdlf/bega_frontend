@@ -395,7 +395,7 @@ export default function SignUp(props: SignUpProps) {
             <button
               type="button"
               onClick={() => navigate(loginPath)}
-              className="auth-link inline-flex min-h-11 items-center"
+              className="auth-link inline-flex min-h-11 min-w-11 items-center justify-center"
               disabled={isFormLocked}
               data-testid="signup-login-link"
             >

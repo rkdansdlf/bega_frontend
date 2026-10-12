@@ -124,3 +124,15 @@ test('admin seat-view row actions have explicit names and 44px mobile targets', 
   assert.ok((html.match(/min-h-11/g) ?? []).length >= 8);
   assert.ok((html.match(/min-w-11/g) ?? []).length >= 2);
 });
+
+test('admin seat-view rows show an accessible placeholder when a photo URL is missing', () => {
+  for (const photoUrl of ['', null]) {
+    const html = renderPanel({
+      seatViews: [{ ...baseSeatView, photoUrl }],
+    });
+
+    assert.doesNotMatch(html, /<img/);
+    assert.match(html, /data-testid="admin-seat-view-photo-fallback-42"/);
+    assert.match(html, /role="img"[^>]*aria-label="시야뷰 후보 42번 사진을 불러올 수 없습니다"/);
+  }
+});

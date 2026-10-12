@@ -27,6 +27,7 @@ import type AdminRoleChangeDialogContentComponent from './AdminRoleChangeDialogC
 import type { MatesAdminPanel as MatesAdminPanelComponent } from './MatesAdminPanel';
 import type { PostsAdminPanel as PostsAdminPanelComponent } from './PostsAdminPanel';
 import type { UsersAdminPanel as UsersAdminPanelComponent } from './UsersAdminPanel';
+import { isAdminUserDeletionBlocked } from './adminUserDeletionPolicy';
 
 const UsersAdminPanel = lazy(() =>
   import('./UsersAdminPanel').then((module) => ({ default: module.UsersAdminPanel })),
@@ -209,6 +210,11 @@ export default function AdminCommunityRuntime({
   };
 
   const handleDeleteUser = async (userId: number) => {
+    const targetUser = users.find((user) => user.id === userId);
+    if (targetUser && isAdminUserDeletionBlocked(userId, targetUser.role, currentUserId)) {
+      onErrorChange('일반 사용자로 확인되고 현재 계정이 아닌 경우에만 삭제할 수 있습니다.');
+      return;
+    }
     if (visualQaStateOverride) {
       setUsers((current) => current.filter((user) => user.id !== userId));
       return;
@@ -256,7 +262,11 @@ export default function AdminCommunityRuntime({
       clearSuccessMessageLater();
     } catch (error) {
       console.error('메이트 삭제 오류:', error);
-      onErrorChange('메이트 삭제에 실패했습니다.');
+      onErrorChange(
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : '메이트 삭제에 실패했습니다.',
+      );
     }
   };
 

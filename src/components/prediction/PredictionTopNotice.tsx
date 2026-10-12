@@ -84,6 +84,7 @@ export default function PredictionTopNotice({
             <Button
               size="sm"
               variant="outline"
+              data-testid="prediction-top-notice-dismiss-run"
               className={`${noticeActionClass} min-h-11 border-emerald-300/70 hover:bg-emerald-100 dark:border-emerald-600/70 dark:hover:bg-emerald-900/40`}
               onClick={onDismissRunProgressBanner}
             >
@@ -91,6 +92,7 @@ export default function PredictionTopNotice({
             </Button>
             <Button
               size="sm"
+              data-testid="prediction-top-notice-resume-run"
               className={`${noticeActionClass} min-h-11 bg-emerald-900 text-white hover:bg-emerald-800 dark:bg-emerald-500 dark:text-emerald-950 dark:hover:bg-emerald-400`}
               onClick={onResumeRunProgressBanner}
             >
@@ -123,6 +125,7 @@ export default function PredictionTopNotice({
           <Button
             size="sm"
             disabled={isFutureRetryLoading}
+            data-testid="prediction-top-notice-retry-future"
             className={`${noticeActionClass} min-h-11 bg-rose-900 text-white hover:bg-rose-800 dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-300`}
             onClick={onRetryLoadMoreFutureMatches}
           >
@@ -130,6 +133,7 @@ export default function PredictionTopNotice({
           </Button>
           <Link
             to={predictionRecoveryPath}
+            data-testid="prediction-top-notice-return-future"
             className={`${noticeActionClass} inline-flex min-h-11 min-w-0 items-center justify-center rounded-md border border-rose-300/70 px-3 text-center text-rose-900 hover:bg-rose-100 dark:border-rose-300/60 dark:text-rose-100 dark:hover:bg-rose-800/30`}
           >
             예측으로 돌아가기
@@ -148,6 +152,7 @@ export default function PredictionTopNotice({
             <Button
               size="sm"
               disabled={isVoteRetryLoading}
+              data-testid="prediction-top-notice-retry-vote"
               className={`${noticeActionClass} min-h-11 bg-rose-900 text-white hover:bg-rose-800 dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-300`}
               onClick={onRetryVoteStatus}
             >
@@ -155,6 +160,7 @@ export default function PredictionTopNotice({
             </Button>
             <Link
               to={predictionRecoveryPath}
+              data-testid="prediction-top-notice-return-vote"
               className={`${noticeActionClass} inline-flex min-h-11 min-w-0 items-center justify-center rounded-md border border-rose-200 px-3 text-center text-rose-900 hover:bg-rose-100 dark:border-rose-300/70 dark:text-rose-100 dark:hover:bg-rose-900/40`}
             >
               예측으로 돌아가기
@@ -170,17 +176,19 @@ export default function PredictionTopNotice({
           이전 경기 조회 실패: {pastRangeLoadErrorMessage || '잠시 후 다시 시도해 주세요.'}
         </p>
         <div className={noticeActionsClass}>
-          <Button
-            size="sm"
-            disabled={isPastRetryLoading}
-            className={`${noticeActionClass} min-h-11 bg-rose-900 text-white hover:bg-rose-800 dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-300`}
+            <Button
+              size="sm"
+              disabled={isPastRetryLoading}
+              data-testid="prediction-top-notice-retry-past"
+              className={`${noticeActionClass} min-h-11 bg-rose-900 text-white hover:bg-rose-800 dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-300`}
             onClick={onRetryLoadMorePastMatches}
           >
             {renderRetryLabel(isPastRetryLoading, '이전 경기 다시 불러오기')}
           </Button>
-          <Link
-            to={predictionRecoveryPath}
-            className={`${noticeActionClass} inline-flex min-h-11 min-w-0 items-center justify-center rounded-md border border-rose-300/70 px-3 text-center text-rose-900 hover:bg-rose-100 dark:border-rose-300/60 dark:text-rose-100 dark:hover:bg-rose-800/30`}
+            <Link
+              to={predictionRecoveryPath}
+              data-testid="prediction-top-notice-return-past"
+              className={`${noticeActionClass} inline-flex min-h-11 min-w-0 items-center justify-center rounded-md border border-rose-300/70 px-3 text-center text-rose-900 hover:bg-rose-100 dark:border-rose-300/60 dark:text-rose-100 dark:hover:bg-rose-800/30`}
           >
             예측으로 돌아가기
           </Link>

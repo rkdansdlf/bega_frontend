@@ -629,14 +629,16 @@ describe('Admin page coverage', () => {
             body: ok(superAdminProfile),
         }).as('getSuperAdminMe');
 
-        cy.intercept('GET', '**/api/admin/stats*', () => ({
-            statusCode: 200,
-            body: ok({
-                totalUsers: users.length,
-                totalPosts: 0,
-                totalMates: 0,
-            }),
-        })).as('getAdminStats');
+        cy.intercept('GET', '**/api/admin/stats*', (req) => {
+            req.reply({
+                statusCode: 200,
+                body: ok({
+                    totalUsers: users.length,
+                    totalPosts: 0,
+                    totalMates: 0,
+                }),
+            });
+        }).as('getAdminStats');
 
         cy.intercept('GET', '**/api/admin/users*', (req) => {
             const search = readQuery(req.url, 'search').trim().toLowerCase();
@@ -1289,6 +1291,193 @@ describe('Admin page coverage', () => {
         cy.wait('@getAdminUsers');
     });
 
+    it('captures desktop and mobile layout without document overflow', () => {
+        cy.getBySel('admin-stat-users').should('contain.text', String(users.length));
+        cy.getBySel('admin-error-message').should('not.exist');
+
+        const layouts: Array<{
+            viewport: string;
+            viewportWidth: number;
+            documentWidth: number;
+            documentScrollWidth: number;
+            bodyScrollWidth: number;
+        }> = [];
+
+        const captureLayout = (viewport: string, width: number, height: number) => {
+            cy.viewport(width, height);
+            cy.get('body').should('be.visible');
+            cy.document().then((document) => {
+                const documentWidth = document.documentElement.clientWidth;
+                const documentScrollWidth = document.documentElement.scrollWidth;
+                const bodyScrollWidth = document.body.scrollWidth;
+
+                layouts.push({
+                    viewport,
+                    viewportWidth: width,
+                    documentWidth,
+                    documentScrollWidth,
+                    bodyScrollWidth,
+                });
+                expect(Math.max(documentScrollWidth, bodyScrollWidth))
+                    .to.be.at.most(documentWidth + 1);
+            });
+            cy.screenshot(`admin-route-${viewport}`, { capture: 'viewport' });
+        };
+
+        captureLayout('desktop', 1400, 900);
+        captureLayout('mobile', 390, 844);
+
+        cy.then(() => {
+            const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
+            cy.writeFile(`${screenshotsFolder}/admin-layout-metrics.json`, layouts);
+        });
+    });
+
+    it('captures every admin tab on desktop and mobile with synthetic responses', () => {
+        const tabs: Array<{
+            key: string;
+            testId: string;
+            panel: string;
+            waits: Array<`@${string}`>;
+        }> = [
+            { key: 'users', testId: 'admin-tab-users', panel: 'admin-users-panel', waits: [] },
+            { key: 'posts', testId: 'admin-tab-posts', panel: 'admin-posts-panel', waits: ['@getAdminPosts'] },
+            { key: 'parties', testId: 'admin-tab-parties', panel: 'admin-mates-panel', waits: ['@getAdminMates'] },
+            { key: 'reports', testId: 'admin-tab-reports', panel: 'admin-reports-panel', waits: ['@getAdminReports'] },
+            {
+                key: 'game-status',
+                testId: 'admin-tab-game-status',
+                panel: 'admin-game-status-panel',
+                waits: ['@getAdminGameStatusMismatches', '@getAdminGameStatusRecommendationWindow', '@getAdminNonCanonicalCleanupTrackers'],
+            },
+            {
+                key: 'client-errors',
+                testId: 'admin-tab-client-errors',
+                panel: 'admin-client-error-panel',
+                waits: ['@getClientErrorDashboard', '@getClientErrorEvents'],
+            },
+            { key: 'seat-views', testId: 'admin-tab-seat-views', panel: 'admin-seat-views-panel', waits: ['@getAdminSeatViews'] },
+            { key: 'offseason', testId: 'admin-tab-offseason', panel: 'admin-offseason-movement-panel', waits: ['@getOffseasonMovements'] },
+            { key: 'stadiums', testId: 'admin-tab-stadiums', panel: 'admin-stadiums-panel', waits: ['@getAdminStadiums', '@getStadiumPlaces'] },
+            {
+                key: 'ai',
+                testId: 'admin-tab-ai',
+                panel: 'admin-ai-operations-panel',
+                waits: ['@getCoachAutoBriefOpsHealth', '@getReleasePresets', '@getReleaseEvalCases', '@getReleaseArtifacts'],
+            },
+        ];
+        const layouts: Array<{
+            viewport: string;
+            tab: string;
+            viewportWidth: number;
+            documentScrollWidth: number;
+            bodyScrollWidth: number;
+            panelClientWidth: number;
+            panelScrollWidth: number;
+        }> = [];
+
+        const captureTabs = (viewport: string, width: number, height: number, revisit: boolean) => {
+            cy.viewport(width, height);
+            if (revisit) {
+                visitAdminPage();
+                cy.getBySel('admin-tab-users').should('be.visible');
+                cy.wait('@getAdminStats');
+                cy.getBySel('admin-stat-users').should('contain.text', String(users.length));
+                cy.getBySel('admin-error-message').should('not.exist');
+                cy.wait('@getAdminUsers');
+            }
+
+            tabs.forEach((tab) => {
+                cy.getBySel(tab.testId).click({ force: true });
+                cy.getBySel(tab.testId).should('have.attr', 'aria-selected', 'true');
+                tab.waits.forEach((alias) => cy.wait(alias));
+                cy.getBySel(tab.panel).should('be.visible').scrollIntoView().then(($panel) => {
+                    const panel = $panel[0] as HTMLElement;
+                    const document = panel.ownerDocument;
+                    const documentWidth = document.documentElement.clientWidth;
+                    const documentScrollWidth = document.documentElement.scrollWidth;
+                    const bodyScrollWidth = document.body.scrollWidth;
+
+                    expect(Math.max(documentScrollWidth, bodyScrollWidth)).to.be.at.most(documentWidth + 1);
+                    layouts.push({
+                        viewport,
+                        tab: tab.key,
+                        viewportWidth: width,
+                        documentScrollWidth,
+                        bodyScrollWidth,
+                        panelClientWidth: panel.clientWidth,
+                        panelScrollWidth: panel.scrollWidth,
+                    });
+
+                    if (viewport === 'desktop' && tab.key === 'ai') {
+                        cy.getBySel('admin-ai-auto-brief-summary-grid')
+                            .should('be.visible')
+                            .children()
+                            .each(($card) => {
+                                expect(($card[0] as HTMLElement).getBoundingClientRect().width)
+                                    .to.be.at.least(130);
+                            });
+                    }
+                });
+                cy.screenshot(`admin-tab-${viewport}-${tab.key}`, { capture: 'viewport' });
+            });
+        };
+
+        captureTabs('desktop', 1400, 900, false);
+        captureTabs('mobile', 390, 844, true);
+
+        cy.then(() => {
+            const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
+            cy.writeFile(`${screenshotsFolder}/admin-tab-layout-metrics.json`, layouts);
+        });
+    });
+
+    it('keeps final site-footer content clear of the mobile navigation at page end', () => {
+        cy.viewport(390, 844);
+        cy.get('[data-testid="site-footer"]', { timeout: 15000 }).should('be.visible');
+        cy.document().then((document) => {
+            document.documentElement.style.scrollBehavior = 'auto';
+            const scroller = document.scrollingElement ?? document.documentElement;
+            scroller.scrollTop = scroller.scrollHeight;
+        });
+        cy.document().then((document) => {
+            const win = document.defaultView;
+            const scroller = document.scrollingElement ?? document.documentElement;
+            const footer = document.querySelector<HTMLElement>('[data-testid="site-footer"]');
+            const nav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+            expect(win).not.to.equal(null);
+            expect(footer).not.to.equal(null);
+            expect(nav).not.to.equal(null);
+            if (!win || !footer || !nav) return;
+
+            const navRect = nav.getBoundingClientRect();
+            const visibleFooterContent = Array.from(footer.querySelectorAll<HTMLElement>('h3, h4, a, p'))
+                .map((element) => ({ element, rect: element.getBoundingClientRect() }))
+                .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < win.innerHeight);
+            const overlaps = visibleFooterContent
+                .filter(({ rect }) => rect.bottom > navRect.top && rect.top < navRect.bottom)
+                .map(({ element }) => element.textContent?.trim() ?? element.tagName);
+            const maxScroll = scroller.scrollHeight - win.innerHeight;
+
+            expect(scroller.scrollTop).to.be.at.least(maxScroll - 2);
+            expect(overlaps, 'visible footer content under fixed mobile nav').to.deep.equal([]);
+            cy.writeFile(`${Cypress.config('screenshotsFolder')}/admin-mobile-footer-metrics.json`, {
+                scrollTop: scroller.scrollTop,
+                maxScroll,
+                navTop: navRect.top,
+                navBottom: navRect.bottom,
+                visibleFooterContent: visibleFooterContent.map(({ element, rect }) => ({
+                    text: element.textContent?.trim() ?? element.tagName,
+                    top: rect.top,
+                    bottom: rect.bottom,
+                })),
+                overlaps,
+            });
+        });
+        cy.screenshot('admin-mobile-footer-at-page-end', { capture: 'viewport' });
+        cy.viewport(1400, 900);
+    });
+
     it('covers users search, role changes, and permission failures', () => {
         cy.contains('FanUser').should('be.visible');
 
@@ -1519,6 +1708,42 @@ describe('Admin page coverage', () => {
         cy.contains('TypeError: Gateway timeout').should('be.visible');
     });
 
+    it('shows a designed fallback when an admin seat-view photo cannot load', () => {
+        cy.intercept('GET', '**/seat-view-701.png', {
+            statusCode: 404,
+            body: '',
+        }).as('missingAdminSeatViewPhoto');
+
+        cy.getBySel('admin-tab-seat-views').click();
+        cy.wait('@getAdminSeatViews');
+        cy.wait('@missingAdminSeatViewPhoto');
+
+        cy.getBySel('admin-seat-view-photo-fallback-701')
+            .should('be.visible')
+            .and('have.attr', 'role', 'img')
+            .and('have.attr', 'aria-label', '시야뷰 후보 701번 사진을 불러올 수 없습니다');
+        cy.get('img[alt="시야뷰 후보 701번"]').should('not.exist');
+    });
+
+    it('shows an accessible detail fallback when an admin seat-view photo cannot load', () => {
+        cy.intercept('GET', '**/seat-view-701.png', {
+            statusCode: 404,
+            body: '',
+        }).as('missingAdminSeatViewDetailPhoto');
+
+        cy.getBySel('admin-tab-seat-views').click();
+        cy.wait('@getAdminSeatViews');
+        cy.getBySel('admin-seat-view-detail-701').click({ force: true });
+        cy.wait('@getAdminSeatViewDetail');
+
+        cy.getBySel('admin-seat-view-detail-photo-fallback-701')
+            .should('be.visible')
+            .and('have.attr', 'role', 'img')
+            .and('have.attr', 'aria-label', '시야뷰 후보 701번 사진을 불러올 수 없습니다');
+        cy.get('@missingAdminSeatViewDetailPhoto.all').should('have.length.at.least', 1);
+        cy.get('img[alt="시야뷰 후보 701번 좌석 시야"]').should('not.exist');
+    });
+
     it('covers seat views and offseason management', () => {
         cy.getBySel('admin-tab-seat-views').click();
         cy.wait('@getAdminSeatViews');
@@ -1676,7 +1901,7 @@ describe('Admin page coverage', () => {
         cy.wait('@getReleaseArtifactDetail');
         cy.getBySel('admin-ai-download-json-artifact-hotfix-001').click();
         cy.wait('@getReleaseArtifactDetail');
-        cy.wrap(null).then(() => {
+        cy.wrap(null).should(() => {
             expect(createObjectUrlStub.callCount).to.eq(2);
         });
     });

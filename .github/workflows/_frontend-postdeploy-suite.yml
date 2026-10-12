@@ -28,11 +28,44 @@ on:
         required: false
         type: boolean
         default: true
-      env_exports:
-        description: "Optional KEY=value lines to append to GITHUB_ENV"
+      api_base_url:
+        description: "API base URL passed as data"
         required: false
         type: string
         default: ""
+      frontend_origin:
+        description: "Frontend origin passed as data"
+        required: false
+        type: string
+        default: ""
+      timeout_ms:
+        required: false
+        type: string
+        default: "15000"
+      run_dm_smoke:
+        required: false
+        type: string
+        default: "false"
+      base_url:
+        required: false
+        type: string
+        default: ""
+      expected_site_url:
+        required: false
+        type: string
+        default: ""
+      date:
+        required: false
+        type: string
+        default: ""
+      skip_signup:
+        required: false
+        type: string
+        default: "false"
+      verify_unfollow_reuse:
+        required: false
+        type: string
+        default: "true"
       validate_script:
         description: "Input and secret validation script"
         required: true
@@ -75,6 +108,20 @@ jobs:
       name: ${{ inputs.environment_name }}
       url: ${{ inputs.environment_url }}
     env:
+      # Keep dispatch data out of shell source and GITHUB_ENV file commands.
+      API_BASE_URL: ${{ inputs.api_base_url }}
+      FRONTEND_ORIGIN: ${{ inputs.frontend_origin }}
+      TIMEOUT_MS: ${{ inputs.timeout_ms }}
+      RUN_DM_SMOKE: ${{ inputs.run_dm_smoke }}
+      BASE_URL: ${{ inputs.base_url }}
+      EXPECTED_SITE_URL: ${{ inputs.expected_site_url }}
+      DATE_INPUT: ${{ inputs.date }}
+      SKIP_SIGNUP_INPUT: ${{ inputs.skip_signup }}
+      SMOKE_API_BASE_URL: ${{ inputs.api_base_url }}
+      SMOKE_FRONTEND_ORIGIN: ${{ inputs.frontend_origin }}
+      DM_API_BASE_URL: ${{ inputs.api_base_url }}
+      DM_FRONTEND_ORIGIN: ${{ inputs.frontend_origin }}
+      VERIFY_UNFOLLOW_REUSE: ${{ inputs.verify_unfollow_reuse }}
       FRONTEND_REAL_DM_TARGET_EMAIL: ${{ secrets.FRONTEND_REAL_DM_TARGET_EMAIL }}
       FRONTEND_REAL_DM_TARGET_PASSWORD: ${{ secrets.FRONTEND_REAL_DM_TARGET_PASSWORD }}
       FRONTEND_REAL_DM_TARGET_HANDLE: ${{ secrets.FRONTEND_REAL_DM_TARGET_HANDLE }}
@@ -91,15 +138,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Export suite environment
-        if: ${{ inputs.env_exports != '' }}
-        shell: bash
-        env:
-          ENV_EXPORTS: ${{ inputs.env_exports }}
-        run: |
-          set -euo pipefail
-          printf '%s\n' "${ENV_EXPORTS}" >> "${GITHUB_ENV}"
 
       - name: Validate workflow inputs
         working-directory: ${{ inputs.working_directory }}

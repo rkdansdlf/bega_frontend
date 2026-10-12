@@ -121,7 +121,7 @@ function IncheonCompareAction({
           onAdd(section);
         }}
         disabled={disabled}
-        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-black transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-black transition-colors disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-9"
         style={{
           borderColor: isCompared ? `${accent}66` : disabled ? '#cbd5e1' : accent,
           background: isCompared ? 'transparent' : disabled ? '#f1f5f9' : `${accent}14`,
@@ -267,7 +267,7 @@ function IncheonCompareTray({
           data-testid="incheon-compare-clear"
           onClick={onClear}
           disabled={comparisonBlocks.length === 0}
-          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-11 font-black text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800"
+          className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-11 font-black text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:min-h-0"
           style={{ borderColor }}
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -335,7 +335,7 @@ function IncheonCompareTray({
                     type="button"
                     data-testid="incheon-compare-view"
                     onClick={() => onView(block)}
-                    className="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black text-slate-600 transition-colors hover:bg-white dark:text-white dark:hover:bg-slate-800"
+                    className="flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black text-slate-600 transition-colors hover:bg-white dark:text-white dark:hover:bg-slate-800 sm:min-h-0"
                     style={{ borderColor }}
                   >
                     <Eye className="h-3.5 w-3.5" />
@@ -345,7 +345,7 @@ function IncheonCompareTray({
                     type="button"
                     data-testid="incheon-compare-remove"
                     onClick={() => onRemove(block.id)}
-                    className="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black transition-colors hover:bg-white dark:hover:bg-slate-800"
+                    className="flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border text-11 font-black transition-colors hover:bg-white dark:hover:bg-slate-800 sm:min-h-0"
                     style={{ borderColor: accent ? `${accent}66` : borderColor, color: accent ?? '#C8102E' }}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -382,7 +382,7 @@ function IncheonCompareTray({
                       type="button"
                       data-testid="incheon-recent-view"
                       onClick={() => onView(block)}
-                      className="h-7 cursor-pointer rounded-lg border text-10 font-black text-slate-600 dark:text-white"
+                      className="min-h-11 cursor-pointer rounded-lg border text-10 font-black text-slate-600 dark:text-white sm:min-h-0"
                       style={{ borderColor }}
                     >
                       보기
@@ -392,7 +392,7 @@ function IncheonCompareTray({
                       data-testid="incheon-recent-add"
                       onClick={() => onAdd(block)}
                       disabled={isFull}
-                      className="h-7 cursor-pointer rounded-lg border text-10 font-black disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-11 cursor-pointer rounded-lg border text-10 font-black disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0"
                       style={{ borderColor: accent ? `${accent}66` : borderColor, color: accent ?? '#C8102E' }}
                     >
                       {isFull ? '3개까지' : '담기'}
@@ -447,7 +447,7 @@ function IncheonFirstVisitGuide({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="블록/좌석 검색"
-            className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-slate-500 sm:w-56"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:bg-white dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-slate-500 sm:h-9 sm:w-56"
           />
         </div>
       </div>
@@ -462,7 +462,7 @@ function IncheonFirstVisitGuide({
               data-testid={`incheon-guide-intent-${option.testId}`}
               onClick={() => onIntentChange(option.id)}
               aria-pressed={active}
-              className="shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-all"
+            className="min-h-11 shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-bold transition-all sm:min-h-0"
               style={{
                 background: active ? '#C8102E' : 'transparent',
                 borderColor: active ? '#C8102E' : (isDark ? '#334155' : '#e2e8f0'),
@@ -530,7 +530,7 @@ function ZoomControls({
   onFullscreen?: () => void;
   mode: 'light' | 'dark';
 }) {
-  const buttonClass = 'flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800';
+  const buttonClass = 'flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8 sm:w-8';
   const borderColor = mode === 'dark' ? '#334155' : '#e2e8f0';
 
   return (
@@ -552,7 +552,7 @@ function ZoomControls({
         aria-label="인천 좌석도 초기화"
         onClick={onReset}
         disabled={zoom === MIN_ZOOM}
-        className="h-8 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800"
+        className="h-11 min-w-14 cursor-pointer rounded-lg border px-2 text-11 font-black text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white dark:hover:bg-slate-800 sm:h-8"
         style={{ borderColor }}
       >
         {zoom.toFixed(2)}x
@@ -622,7 +622,7 @@ function IncheonMobileSecondaryPanel({
               aria-selected={active}
               data-testid={`incheon-mobile-tool-tab-${tab.testId}`}
               onClick={() => onTabChange(tab.id)}
-              className="h-9 cursor-pointer rounded-lg text-sm font-black transition-colors"
+              className="h-11 cursor-pointer rounded-lg text-sm font-black transition-colors sm:h-9"
               style={{
                 background: active ? '#C8102E' : 'transparent',
                 color: active ? '#fff' : (mode === 'dark' ? '#cbd5e1' : '#334155'),
@@ -640,9 +640,18 @@ function IncheonMobileSecondaryPanel({
   );
 }
 
-export default function IncheonSeatMap() {
+export interface IncheonSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface IncheonSeatMapProps {
+  stateOverride?: IncheonSeatMapStateOverride;
+}
+
+export default function IncheonSeatMap({ stateOverride }: IncheonSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride ? () => stateOverride.isLoggedIn : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });

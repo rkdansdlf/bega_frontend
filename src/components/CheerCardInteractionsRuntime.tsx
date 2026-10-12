@@ -22,19 +22,39 @@ import PlainMenu from './ui/plain-menu';
 const LazyCommentModal = lazy(() => import('./CommentModal'));
 const LazyQuoteRepostEditor = lazy(() => import('./QuoteRepostEditor'));
 
-export type CheerCardInteractionIntent = 'like' | 'bookmark' | 'comment' | 'repost';
+export type CheerCardInteractionIntent =
+    | 'like'
+    | 'bookmark'
+    | 'comment'
+    | 'repost'
+    | 'repost-simple'
+    | 'repost-quote'
+    | 'repost-cancel';
 
-interface CheerCardInteractionsRuntimeProps {
+export type CheerCardInteractionsRuntimeVisualQaStateOverride = {
+    isLoggedIn?: boolean;
+    currentUserId?: number | null;
+    currentUserHandle?: string | null;
+    initialRepostMenuOpen?: boolean;
+    onInteraction?: (intent: CheerCardInteractionIntent) => void;
+};
+
+export interface CheerCardInteractionsRuntimeProps {
     post: CheerPost;
     initialInteractionIntent?: CheerCardInteractionIntent | null;
     onInitialInteractionHandled: () => void;
+    visualQaStateOverride?: CheerCardInteractionsRuntimeVisualQaStateOverride;
 }
 
 export default function CheerCardInteractionsRuntime({
     post,
     initialInteractionIntent,
     onInitialInteractionHandled,
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerCardInteractionsRuntimeProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const navigate = useNavigate();
     const { toggleLikeMutation, toggleBookmarkMutation, repostMutation, cancelRepostMutation } = useCheerMutations();
     const {
@@ -42,9 +62,14 @@ export default function CheerCardInteractionsRuntime({
         userHandle: currentUserHandle,
     } = useAuthProfileSnapshot();
     const { isLoggedIn } = useAuthSession();
+    const effectiveCurrentUserId = visualQaStateOverride?.currentUserId ?? currentUserId;
+    const effectiveCurrentUserHandle = visualQaStateOverride?.currentUserHandle ?? currentUserHandle;
+    const effectiveIsLoggedIn = visualQaStateOverride?.isLoggedIn ?? isLoggedIn;
     const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
     const [isQuoteEditorOpen, setIsQuoteEditorOpen] = useState(false);
-    const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(false);
+    const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(
+        Boolean(visualQaStateOverride?.initialRepostMenuOpen),
+    );
     const [hasMountedCommentModal, setHasMountedCommentModal] = useState(false);
     const [hasMountedQuoteEditor, setHasMountedQuoteEditor] = useState(false);
     const [likeAnimating, setLikeAnimating] = useState(false);
@@ -68,8 +93,8 @@ export default function CheerCardInteractionsRuntime({
         isPostOwner: post.isOwner,
         isRepostTarget: isRepost,
         targetAuthorHandle: repostTargetAuthorHandle,
-        currentUserId,
-        currentUserHandle,
+        currentUserId: effectiveCurrentUserId,
+        currentUserHandle: effectiveCurrentUserHandle,
     });
     const canSimpleRepost = repostPolicy.canSimpleRepost;
     const canQuoteRepost = repostPolicy.canQuoteRepost;
@@ -79,6 +104,11 @@ export default function CheerCardInteractionsRuntime({
     const repostButtonActive = canCancelRepost ? true : post.repostedByMe;
     const likeActive = Boolean(post.liked);
     const bookmarkActive = Boolean(post.bookmarked);
+    const notifyVisualQaInteraction = (intent: CheerCardInteractionIntent) => {
+        if (!visualQaStateOverride?.onInteraction) return false;
+        visualQaStateOverride.onInteraction(intent);
+        return true;
+    };
 
     useEffect(() => {
         return () => {
@@ -130,11 +160,12 @@ export default function CheerCardInteractionsRuntime({
 
     const handleLikeClick = async (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
 
+        if (notifyVisualQaInteraction('like')) return;
         setLikeAnimating(true);
         toggleLikeMutation.mutate(actionPostId);
         if (likeTimerRef.current) window.clearTimeout(likeTimerRef.current);
@@ -145,21 +176,23 @@ export default function CheerCardInteractionsRuntime({
 
     const handleBookmarkClick = async (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
 
+        if (notifyVisualQaInteraction('bookmark')) return;
         toggleBookmarkMutation.mutate(actionPostId);
     };
 
     const handleCommentClick = async (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
 
+        if (notifyVisualQaInteraction('comment')) return;
         setCommentAnimating(true);
         setIsCommentModalOpen(true);
         if (commentTimerRef.current) window.clearTimeout(commentTimerRef.current);
@@ -170,7 +203,7 @@ export default function CheerCardInteractionsRuntime({
 
     const handleSimpleRepost = (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
@@ -179,6 +212,7 @@ export default function CheerCardInteractionsRuntime({
             return;
         }
 
+        if (notifyVisualQaInteraction('repost-simple')) return;
         setRepostAnimating(true);
         repostMutation.mutate(actionPostId);
         setIsRepostMenuOpen(false);
@@ -190,7 +224,7 @@ export default function CheerCardInteractionsRuntime({
 
     const handleQuoteRepost = (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
@@ -199,17 +233,19 @@ export default function CheerCardInteractionsRuntime({
             return;
         }
 
+        if (notifyVisualQaInteraction('repost-quote')) return;
         setIsRepostMenuOpen(false);
         setIsQuoteEditorOpen(true);
     };
 
     const handleCancelRepost = (event?: MouseEvent) => {
         event?.stopPropagation();
-        if (!isLoggedIn) {
+        if (!effectiveIsLoggedIn) {
             redirectToLogin();
             return;
         }
 
+        if (notifyVisualQaInteraction('repost-cancel')) return;
         setIsRepostMenuOpen(false);
         cancelRepostMutation.mutate(post.id);
     };
@@ -219,9 +255,13 @@ export default function CheerCardInteractionsRuntime({
     };
 
     return (
-        <div className="mt-1.5 flex max-w-[420px] items-center justify-between text-body font-semibold text-[#536471] dark:text-white">
+        <div
+            data-testid="cheer-card-interactions"
+            className="mt-1.5 flex max-w-[420px] items-center justify-between gap-x-2 text-body font-semibold text-[#536471] dark:text-white"
+        >
             <button
                 type="button"
+                data-testid="cheer-card-comment"
                 className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-sky-500 sm:gap-1.5"
                 onClick={handleCommentClick}
                 aria-label={`댓글 ${commentCount}개`}
@@ -245,10 +285,12 @@ export default function CheerCardInteractionsRuntime({
                 trigger={(
                     <button
                         type="button"
+                        data-testid="cheer-card-repost"
                         className={`group/repost flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${repostButtonActive ? 'text-emerald-500' : 'hover:text-emerald-500'}`}
                         onClick={(event) => {
                             event.stopPropagation();
                             setIsRepostMenuOpen((prev) => !prev);
+                            notifyVisualQaInteraction('repost');
                         }}
                         aria-label={repostButtonActive ? `리포스트 취소 (현재 ${repostCount}회)` : `리포스트 (현재 ${repostCount}회)`}
                         aria-pressed={repostButtonActive}
@@ -276,6 +318,7 @@ export default function CheerCardInteractionsRuntime({
                     {canCancelRepost ? (
                         <button
                             type="button"
+                            data-testid="cheer-card-repost-cancel"
                             role="menuitem"
                             onClick={handleCancelRepost}
                             className="flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -303,6 +346,7 @@ export default function CheerCardInteractionsRuntime({
                             {canSimpleRepost ? (
                                 <button
                                     type="button"
+                                    data-testid="cheer-card-repost-simple"
                                     role="menuitem"
                                     onClick={handleSimpleRepost}
                                     className="flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -327,6 +371,7 @@ export default function CheerCardInteractionsRuntime({
                             {canQuoteRepost ? (
                                 <button
                                     type="button"
+                                    data-testid="cheer-card-repost-quote"
                                     role="menuitem"
                                     onClick={handleQuoteRepost}
                                     className="flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -354,6 +399,7 @@ export default function CheerCardInteractionsRuntime({
 
             <button
                 type="button"
+                data-testid="cheer-card-like"
                 className={`group/like flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${likeActive ? 'text-rose-500' : 'hover:text-rose-500'}`}
                 onClick={handleLikeClick}
                 aria-label={likeActive ? `좋아요 취소 (현재 ${likeCount}개)` : `좋아요 (현재 ${likeCount}개)`}
@@ -377,6 +423,7 @@ export default function CheerCardInteractionsRuntime({
 
             <button
                 type="button"
+                data-testid="cheer-card-bookmark"
                 className={`group/bookmark flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors sm:gap-1.5 ${bookmarkActive ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
                 onClick={handleBookmarkClick}
                 aria-label={bookmarkActive ? '북마크 취소' : '북마크'}

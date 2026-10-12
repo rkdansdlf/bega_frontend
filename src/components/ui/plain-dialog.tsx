@@ -113,12 +113,12 @@ export default function PlainDialog({
         >
           {!hideHeader && (title || !hideCloseButton) && (
             <div
-              className="relative flex max-h-[35dvh] shrink-0 items-start justify-between gap-3 overflow-hidden border-b border-gray-100 px-5 py-4 dark:border-border"
+              className="flex max-h-[35dvh] shrink-0 items-start gap-3 overflow-hidden border-b border-gray-100 px-5 py-4 dark:border-border"
               style={{ gap: 12, paddingLeft: 20, paddingRight: 20, paddingTop: 16, paddingBottom: 16 }}
             >
               <div
                 className="min-h-0 max-h-[calc(35dvh-2rem)] min-w-0 flex-1 overflow-y-auto overscroll-contain"
-                style={{ maxHeight: 'calc(35dvh - 32px)', paddingRight: 44 }}
+                style={{ maxHeight: 'calc(35dvh - 32px)' }}
               >
                 {title ? (
                   <h2 id={titleId} className="break-keep text-lg font-semibold text-gray-900 dark:text-white" style={{ overflowWrap: 'break-word' }}>
@@ -137,7 +137,8 @@ export default function PlainDialog({
                   aria-label="닫기"
                   variant="ghost"
                   size="iconTouch"
-                  className="absolute right-5 top-4 shrink-0 p-0 text-gray-400 hover:text-gray-500"
+                  className="ml-auto shrink-0 p-0 text-gray-400 hover:text-gray-500"
+                  style={{ width: 44, height: 44, minWidth: 44, minHeight: 44 }}
                   onClick={onClose}
                 >
                   <span className="text-xl font-semibold leading-none" aria-hidden="true">×</span>

@@ -13,6 +13,7 @@ import {
   fetchPartyReviews,
   recordMateSearchTerm,
   setPartyFavorite,
+  updateChatReadTimestamp,
 } from './mate';
 import {
   buildSeatViewSectionQueries,
@@ -26,6 +27,21 @@ const resolveRequestUrl = (input: string | URL | Request): string =>
     : input instanceof URL
       ? input.toString()
       : input.url;
+
+test('updateChatReadTimestamp는 API 실패를 호출자에게 전달한다', async (t) => {
+  const requestedUrls: string[] = [];
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+    requestedUrls.push(resolveRequestUrl(input));
+    return new Response(JSON.stringify({ message: 'temporary failure' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 500,
+    });
+  });
+
+  await assert.rejects(updateChatReadTimestamp(17), PrivateApiError);
+  assert.deepEqual(requestedUrls, ['/api/chat/party/17/read']);
+});
 
 test('fetchPartyMyApplication은 404를 null로 정규화하고 전용 endpoint만 호출한다', async (t) => {
   const requestedUrls: string[] = [];

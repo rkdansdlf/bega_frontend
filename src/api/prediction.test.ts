@@ -14,6 +14,7 @@ import {
 import {
   clearPredictionBootstrapCacheForTests,
   fetchPredictionBootstrap,
+  getPredictionBootstrapCacheSizeForTests,
   invalidatePredictionBootstrapCache,
 } from './predictionBootstrap';
 
@@ -162,6 +163,88 @@ test('fetchPredictionBootstrap는 요청을 dedupe하고 gameId invalidation을 
 
   invalidatePredictionBootstrapCache('20260607HHLT0');
   const refreshed = await fetchPredictionBootstrap('2026-06-07', '20260607HHLT0');
+  assert.equal(refreshed.ok, true);
+  assert.equal(requestCount, 2);
+});
+
+test('fetchPredictionBootstrap는 새 날짜 조회 때 TTL 만료 캐시를 정리한다', async (t) => {
+  clearPredictionBootstrapCacheForTests();
+  let now = 1_800_000_000_000;
+  let requestCount = 0;
+  t.mock.method(Date, 'now', () => now);
+  t.mock.method(globalThis, 'fetch', async () => {
+    requestCount += 1;
+    return new Response(JSON.stringify({
+      schedule: {
+        date: '2026-06-07',
+        games: [],
+        prevDate: null,
+        nextDate: null,
+        hasPrev: false,
+        hasNext: false,
+      },
+      selectedGameId: null,
+      selectedGameFound: false,
+      detail: null,
+      voteStatus: null,
+    }), {
+      headers: { 'content-type': 'application/json' },
+      status: 200,
+    });
+  });
+
+  await fetchPredictionBootstrap('2026-06-07');
+  assert.equal(getPredictionBootstrapCacheSizeForTests(), 1);
+
+  now += 30_000;
+  await fetchPredictionBootstrap('2026-06-08');
+
+  assert.equal(requestCount, 2);
+  assert.equal(getPredictionBootstrapCacheSizeForTests(), 1);
+});
+
+test('game invalidation prevents an older in-flight bootstrap response from repopulating the cache', async (t) => {
+  clearPredictionBootstrapCacheForTests();
+  let requestCount = 0;
+  let resolveInitialResponse!: (response: Response) => void;
+  const initialResponse = new Promise<Response>((resolve) => {
+    resolveInitialResponse = resolve;
+  });
+  const makeResponse = () => new Response(JSON.stringify({
+    schedule: {
+      date: '2099-01-01',
+      games: [],
+      prevDate: null,
+      nextDate: null,
+      hasPrev: false,
+      hasNext: false,
+    },
+    selectedGameId: null,
+    selectedGameFound: false,
+    detail: null,
+    voteStatus: null,
+  }), {
+    headers: { 'content-type': 'application/json' },
+    status: 200,
+  });
+
+  t.mock.method(globalThis, 'fetch', async () => {
+    requestCount += 1;
+    return requestCount === 1 ? initialResponse : makeResponse();
+  });
+
+  const pending = fetchPredictionBootstrap('2099-01-01', 'fixture-game');
+  await Promise.resolve();
+  assert.equal(requestCount, 1);
+
+  invalidatePredictionBootstrapCache('fixture-game');
+  resolveInitialResponse(makeResponse());
+  const invalidatedResult = await pending;
+
+  assert.equal(invalidatedResult.ok, true);
+  assert.equal(getPredictionBootstrapCacheSizeForTests(), 0);
+
+  const refreshed = await fetchPredictionBootstrap('2099-01-01', 'fixture-game');
   assert.equal(refreshed.ok, true);
   assert.equal(requestCount, 2);
 });

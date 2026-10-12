@@ -4,6 +4,8 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "!./src/**/*.test.{js,ts,jsx,tsx}",
+    "!./src/**/*.spec.{js,ts,jsx,tsx}",
   ],
   theme: {
     screens: {

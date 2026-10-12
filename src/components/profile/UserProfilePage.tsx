@@ -1,9 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType, type ReactNode } from 'react';
 
 const UserProfileRuntime = lazy(() => import('./UserProfile'));
 
 const UserProfileFallback = () => (
-  <div className="mx-auto max-w-2xl pb-8">
+  <div className="mx-auto max-w-2xl pb-8" data-testid="user-profile-route-loading">
     <div className="flex items-center px-4 py-4">
       <div className="h-5 w-16 rounded bg-gray-200 dark:bg-secondary" />
     </div>
@@ -26,10 +26,17 @@ const UserProfileFallback = () => (
   </div>
 );
 
-export default function UserProfilePage() {
+export type UserProfilePageProps = {
+  runtimeLoader?: () => Promise<{ default: ComponentType<Record<string, never>> }>;
+  runtimeOverride?: ReactNode;
+};
+
+export default function UserProfilePage({ runtimeLoader, runtimeOverride }: UserProfilePageProps = {}) {
+  const Runtime = runtimeLoader ? lazy(runtimeLoader) : UserProfileRuntime;
+
   return (
     <Suspense fallback={<UserProfileFallback />}>
-      <UserProfileRuntime />
+      {runtimeOverride !== undefined ? runtimeOverride : <Runtime />}
     </Suspense>
   );
 }

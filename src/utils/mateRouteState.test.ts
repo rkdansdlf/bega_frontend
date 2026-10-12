@@ -96,6 +96,28 @@ test('buildMateRouteLocationState carries a canonical filtered-list return path'
   assert.equal(state.returnTo, '/mate?tab=matched&page=2');
 });
 
+test('route party placeholder is not reused after the viewer session changes', () => {
+  const state = buildMateRouteLocationState({
+    id: 11,
+    hostHandle: '@host-a',
+    teamId: 'LG',
+    stadium: '잠실',
+    gameDate: '2026-07-18',
+    gameTime: '18:30',
+    section: '응원석',
+    currentParticipants: 1,
+    maxParticipants: 4,
+    status: 'PENDING',
+    homeTeam: 'LG',
+    awayTeam: 'OB',
+  }, '/mate', { viewerId: 101, sessionEpoch: 4 });
+
+  assert.equal(
+    getMateRoutePlaceholderParty(state, 11, { viewerId: 202, sessionEpoch: 6 }),
+    undefined,
+  );
+});
+
 test('normalizeMateListReturnTo accepts only a relative exact /mate pathname', () => {
   assert.equal(normalizeMateListReturnTo('/mate?q=%EC%9E%A0%EC%8B%A4'), '/mate?q=%EC%9E%A0%EC%8B%A4');
   assert.equal(normalizeMateListReturnTo('/mate/42?q=x'), '/mate');

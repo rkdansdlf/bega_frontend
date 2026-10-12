@@ -8,7 +8,10 @@ interface MateGuidePanelRuntimeProps {
 
 export default function MateGuidePanelRuntime({ onClose }: MateGuidePanelRuntimeProps) {
   return (
-    <Card className="mb-7 animate-in slide-in-from-top-2 border border-gray-200/80 bg-white p-4 shadow-lg dark:border-white/10 dark:bg-[#000000] sm:p-5">
+    <Card
+      className="mb-7 animate-in slide-in-from-top-2 border border-gray-200/80 bg-white p-4 shadow-lg dark:border-white/10 dark:bg-[#000000] sm:p-5"
+      data-testid="mate-guide-panel-runtime"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-gray-900 dark:text-white">

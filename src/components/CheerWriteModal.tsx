@@ -29,6 +29,20 @@ export interface CheerWritePayload {
     sourceSnapshotType?: string;
 }
 
+export interface CheerWriteModalVisualQaStateOverride {
+    content?: string;
+    isSubmitting?: boolean;
+    shareMode?: ShareMode;
+    sourceUrl?: string;
+    sourceTitle?: string;
+    sourceAuthor?: string;
+    sourceLicense?: string;
+    sourceLicenseUrl?: string;
+    sourceChangedNote?: string;
+    sourceSnapshotType?: string;
+    showEmojiPicker?: boolean;
+}
+
 type LinkedCheerPostType = Extract<CheerPostType, 'CHECKIN' | 'RECRUITMENT'>;
 
 export interface CheerWriteModalProps {
@@ -42,9 +56,10 @@ export interface CheerWriteModalProps {
     teamId?: string;
     linkedContent?: LinkedContent;
     linkedPostType?: LinkedCheerPostType;
+    visualQaStateOverride?: CheerWriteModalVisualQaStateOverride;
 }
 
-interface CheerWriteModalContentProps extends Omit<CheerWriteModalProps, 'isOpen'> {
+export interface CheerWriteModalContentProps extends Omit<CheerWriteModalProps, 'isOpen'> {
     isOpen?: boolean;
     contentOnly?: boolean;
 }
@@ -111,7 +126,11 @@ export function CheerWriteModalContent({
     teamId,
     linkedContent,
     linkedPostType,
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerWriteModalContentProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const {
         userName,
         userProfileImageUrl,
@@ -123,19 +142,19 @@ export function CheerWriteModalContent({
         && linkedPostType
         && linkedContent.kind === linkedPostType
     );
-    const [content, setContent] = useState('');
+    const [content, setContent] = useState(visualQaStateOverride?.content ?? '');
     const [files, setFiles] = useState<File[]>([]);
     const [previews, setPreviews] = useState<{ file: File; url: string }[]>([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [shareMode, setShareMode] = useState<ShareMode>('INTERNAL_REPOST');
-    const [sourceUrl, setSourceUrl] = useState('');
-    const [sourceTitle, setSourceTitle] = useState('');
-    const [sourceAuthor, setSourceAuthor] = useState('');
-    const [sourceLicense, setSourceLicense] = useState('');
-    const [sourceLicenseUrl, setSourceLicenseUrl] = useState('');
-    const [sourceChangedNote, setSourceChangedNote] = useState('');
-    const [sourceSnapshotType, setSourceSnapshotType] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(visualQaStateOverride?.isSubmitting ?? false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(visualQaStateOverride?.showEmojiPicker ?? false);
+    const [shareMode, setShareMode] = useState<ShareMode>(visualQaStateOverride?.shareMode ?? 'INTERNAL_REPOST');
+    const [sourceUrl, setSourceUrl] = useState(visualQaStateOverride?.sourceUrl ?? '');
+    const [sourceTitle, setSourceTitle] = useState(visualQaStateOverride?.sourceTitle ?? '');
+    const [sourceAuthor, setSourceAuthor] = useState(visualQaStateOverride?.sourceAuthor ?? '');
+    const [sourceLicense, setSourceLicense] = useState(visualQaStateOverride?.sourceLicense ?? '');
+    const [sourceLicenseUrl, setSourceLicenseUrl] = useState(visualQaStateOverride?.sourceLicenseUrl ?? '');
+    const [sourceChangedNote, setSourceChangedNote] = useState(visualQaStateOverride?.sourceChangedNote ?? '');
+    const [sourceSnapshotType, setSourceSnapshotType] = useState(visualQaStateOverride?.sourceSnapshotType ?? '');
     const { theme, resolvedTheme } = useTheme();
     const isDarkMode = resolvedTheme === 'dark' || theme === 'dark';
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -265,7 +284,7 @@ export function CheerWriteModalContent({
     const isExternalShareMode = !isLinkedComposer && shareMode.startsWith('EXTERNAL_');
 
     const modalBody = (
-                    <div className="flex gap-3 sm:gap-4">
+                    <div data-testid="cheer-write-modal-content" className="flex gap-3 sm:gap-4">
                         {userProfileImageUrl ? (
                             <ProfileAvatar
                                 src={resolveProfileImage(userProfileImageUrl) || undefined}
@@ -308,6 +327,7 @@ export function CheerWriteModalContent({
                                 </label>
                                 <select
                                     id="cheer-write-share-mode"
+                                    data-testid="cheer-write-share-mode"
                                     value={shareMode}
                                     onChange={(e) => setShareMode(e.target.value as ShareMode)}
                                     className="w-full rounded-md border border-[var(--cheer-line-10)] bg-[var(--cheer-chip-bg)] px-3 py-2 text-body text-slate-900 dark:text-white"
@@ -410,6 +430,7 @@ export function CheerWriteModalContent({
                                 maxRows={15}
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
+                                data-testid="cheer-write-content"
                             />
 
                             {previews.length > 0 && (
@@ -433,6 +454,7 @@ export function CheerWriteModalContent({
                                 <div className="flex items-center gap-1">
                                     <button
                                         type="button"
+                                        data-testid="cheer-write-attach"
                                         onClick={() => fileInputRef.current?.click()}
                                         className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
                                         aria-label="이미지 첨부"
@@ -442,6 +464,7 @@ export function CheerWriteModalContent({
                                     <div className="relative" ref={emojiPickerRef}>
                                         <button
                                             type="button"
+                                            data-testid="cheer-write-emoji"
                                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                                             className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
                                             aria-label="이모지 선택"
@@ -467,6 +490,7 @@ export function CheerWriteModalContent({
                                     />
                                 </div>
                                 <Button
+                                    data-testid="cheer-write-submit"
                                     onClick={handleSubmit}
                                     disabled={!content.trim() || isSubmitting}
                                     className="rounded-full px-6 font-bold shadow-md hover:shadow-lg transition-all"
@@ -486,6 +510,7 @@ export function CheerWriteModalContent({
             open={isOpen}
             onClose={onClose}
             title="새 응원글 작성"
+            contentTestId="cheer-write-modal"
             className="max-w-[95%] sm:max-w-[600px] lg:max-w-[800px] max-h-[90vh] overflow-hidden border-none rounded-2xl bg-[var(--cheer-card-bg)]"
             bodyClassName="p-4 sm:p-6 lg:p-8"
         >

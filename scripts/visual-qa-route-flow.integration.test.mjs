@@ -21,6 +21,7 @@ import {
   resolveRouteFlowStatus,
   routeFlowLabel,
   routeFlowContextOptions,
+  screenshotEvidenceFilename,
   stadiumAssertions,
 } from './visual-qa-route-flow.integration.mjs';
 
@@ -78,6 +79,7 @@ test('200% product assertions fail on the known navbar and ticket modal countere
     },
     ticketModal: {
       title: { lineCount: 8 },
+      titleCloseOverlap: { width: 12, height: 20 },
       dropzone: { visibleRatio: 0.25 },
       actualInteractiveOverlap: { width: 174, height: 88 },
     },
@@ -86,6 +88,7 @@ test('200% product assertions fail on the known navbar and ticket modal countere
   assert.deepEqual(failures.map((failure) => failure.id), [
     'navbar-interactive-overlap',
     'ticket-modal-title-overflow',
+    'ticket-modal-title-close-overlap',
     'ticket-modal-dropzone-clipped',
     'ticket-modal-interactive-overlap',
   ]);
@@ -94,15 +97,27 @@ test('200% product assertions fail on the known navbar and ticket modal countere
 test('100% and non-zoom route evidence does not report product defects', () => {
   assert.deepEqual(productDefectAssertions({
     navbar: { actualInteractiveOverlaps: [] },
-    ticketModal: { title: { lineCount: 8 }, dropzone: { visibleRatio: 0.1 } },
+    ticketModal: { title: { lineCount: 8 }, titleCloseOverlap: null, dropzone: { visibleRatio: 0.1 } },
   }, { zoom: 1 }), []);
+});
+
+test('route-flow screenshot filenames are unique per browser', () => {
+  const label = 'home-content-and-navigation-390-200';
+  const chromium = screenshotEvidenceFilename('chromium', label);
+  const webkit = screenshotEvidenceFilename('webkit', label);
+
+  assert.equal(chromium, `chromium-${label}.png`);
+  assert.equal(webkit, `webkit-${label}.png`);
+  assert.notEqual(chromium, webkit);
 });
 
 test('product evidence keeps source identifiers and real interaction selectors explicit', () => {
   assert.equal(PRODUCT_DEFECT_SOURCES.navbar.source, 'src/components/PublicNavbar.tsx');
   assert.equal(PRODUCT_DEFECT_SOURCES.ticketModal.source, 'src/components/ticket/TicketUploadModal.tsx');
   assert.ok(PRODUCT_DEFECT_SOURCES.navbar.selectors.includes('[data-testid="navbar-dm-icon"]'));
+  assert.ok(PRODUCT_DEFECT_SOURCES.navbar.selectors.includes('a[aria-label="BEGA 홈"]'));
   assert.ok(PRODUCT_DEFECT_SOURCES.ticketModal.selectors.includes('[data-testid="ticket-upload-dropzone"]'));
+  assert.ok(PRODUCT_DEFECT_SOURCES.ticketModal.selectors.includes('[data-testid="ticket-upload-dialog"] button[aria-label="닫기"]'));
 });
 
 test('home assertions require fixture-backed content and a primary interaction', () => {
@@ -140,6 +155,80 @@ test('home negative control fails when the real panel body is removed', () => {
   ]);
 });
 
+test('home route flags the sticky navbar when it overlaps the page title at the top', () => {
+  const failures = homeAssertions({
+    priorityPanelVisible: true,
+    priorityHeadingVisible: true,
+    gameCardCount: 1,
+    fixtureTeamsVisible: true,
+    primaryActionVisible: true,
+    dateNextVisible: true,
+    dateNextDisabled: false,
+    dateNavigationChecked: true,
+    dateNavigationUpdated: true,
+    scrollY: 0,
+    homeTitleHeaderOverlap: { x: 40, y: 104, width: 230, height: 10 },
+  });
+
+  assert.deepEqual(failures.map(({ id }) => id), ['home-title-header-overlap']);
+});
+
+test('home route does not flag a non-interactive title passing under the navbar while scrolled', () => {
+  const failures = homeAssertions({
+    priorityPanelVisible: true,
+    priorityHeadingVisible: true,
+    gameCardCount: 1,
+    fixtureTeamsVisible: true,
+    primaryActionVisible: true,
+    dateNextVisible: true,
+    dateNextDisabled: false,
+    dateNavigationChecked: true,
+    dateNavigationUpdated: true,
+    scrollY: 120,
+    homeTitleHeaderOverlap: { x: 40, y: 40, width: 230, height: 10 },
+    navbarInteractiveOverlaps: [],
+  });
+
+  assert.deepEqual(failures, []);
+});
+
+test('home route flags an initial title overlap even when focus later scrolls the page', () => {
+  const failures = homeAssertions({
+    priorityPanelVisible: true,
+    priorityHeadingVisible: true,
+    gameCardCount: 1,
+    fixtureTeamsVisible: true,
+    primaryActionVisible: true,
+    dateNextVisible: true,
+    dateNextDisabled: false,
+    dateNavigationChecked: true,
+    dateNavigationUpdated: true,
+    scrollY: 2,
+    homeTitleHeaderOverlap: null,
+    homeTitleHeaderOverlapAtTop: { x: 40, y: 104, width: 230, height: 50 },
+  });
+
+  assert.deepEqual(failures.map(({ id }) => id), ['home-title-header-overlap']);
+});
+
+test('home route flags visible navbar children outside their capsule', () => {
+  const failures = homeAssertions({
+    priorityPanelVisible: true,
+    priorityHeadingVisible: true,
+    gameCardCount: 1,
+    fixtureTeamsVisible: true,
+    primaryActionVisible: true,
+    dateNextVisible: true,
+    dateNextDisabled: false,
+    dateNavigationChecked: true,
+    dateNavigationUpdated: true,
+    scrollY: 0,
+    navbarContentOverflows: [{ className: 'navbar controls' }],
+  });
+
+  assert.deepEqual(failures.map(({ id }) => id), ['home-navbar-content-overflow']);
+});
+
 test('home evidence names the actual source and stable interaction selectors', () => {
   assert.equal(HOME_FLOW_SOURCE.source, 'src/components/HomeRuntime.tsx');
   assert.equal(HOME_FLOW_SOURCE.symbol, 'HomeRuntime');
@@ -168,6 +257,7 @@ test('MyPage evidence names the runtime source and requires each child flow', ()
 test('Home evidence exposes the complete assertion vocabulary for evidence linking', () => {
   assert.ok(HOME_ASSERTION_IDS.includes('home-fixture-content-missing'));
   assert.ok(HOME_ASSERTION_IDS.includes('home-date-navigation-not-updated'));
+  assert.ok(HOME_ASSERTION_IDS.includes('home-title-header-overlap'));
 });
 
 test('stadium and ticket evidence retain their owning source identities', () => {
@@ -177,7 +267,10 @@ test('stadium and ticket evidence retain their owning source identities', () => 
     'StadiumGuideRuntime',
   ]);
   assert.ok(STADIUM_ASSERTION_IDS.includes('stadium-guide-select-focus-missing'));
-  assert.equal(TICKET_MODAL_FLOW_SOURCE_IDENTITIES[0].source, 'src/components/ticket/TicketUploadModal.tsx');
+  assert.deepEqual(TICKET_MODAL_FLOW_SOURCE_IDENTITIES.map(({ source, symbol }) => ({ source, symbol })), [
+    { source: 'src/components/ticket/TicketUploadModal.tsx', symbol: 'TicketUploadModal' },
+    { source: 'src/components/ui/plain-dialog.tsx', symbol: 'PlainDialog' },
+  ]);
   assert.deepEqual(TICKET_MODAL_ASSERTION_IDS, [
     'mypage-ticket-flow-missing',
     'mypage-ticket-escape-missing',

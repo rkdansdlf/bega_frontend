@@ -6,6 +6,8 @@ import {
     FollowToggleResponse,
 } from '../../api/followApi';
 import { useAuthProfileSnapshot } from '../../store/authStore';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
+import { isViewerQueryScopeCurrent } from '../../utils/viewerQueryScope';
 import { Button } from '../ui/button';
 import {
     UserProfileBellIcon as ProfileBellIcon,
@@ -26,6 +28,8 @@ interface FollowButtonProps {
     showNotifyOption?: boolean;
     className?: string;
     style?: CSSProperties;
+    visualQaFollowToggle?: () => Promise<FollowToggleResponse>;
+    visualQaNotifyToggle?: () => Promise<FollowToggleResponse>;
 }
 
 export default function FollowButton({
@@ -39,21 +43,32 @@ export default function FollowButton({
     showNotifyOption = true,
     className,
     style,
+    visualQaFollowToggle,
+    visualQaNotifyToggle,
 }: FollowButtonProps) {
     const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
+    const viewerScope = useViewerQueryScope();
     const [isFollowing, setIsFollowing] = useState(initialFollowing);
     const [notifyNewPosts, setNotifyNewPosts] = useState(initialNotify);
+    const [stateViewerScope, setStateViewerScope] = useState(viewerScope);
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const isStateForCurrentViewer = stateViewerScope.viewerId === viewerScope.viewerId
+        && stateViewerScope.sessionEpoch === viewerScope.sessionEpoch;
+    const visibleIsFollowing = isStateForCurrentViewer ? isFollowing : initialFollowing;
+    const visibleNotifyNewPosts = isStateForCurrentViewer ? notifyNewPosts : initialNotify;
 
     useEffect(() => {
+        setStateViewerScope(viewerScope);
         setIsFollowing(initialFollowing);
-    }, [initialFollowing]);
+        setIsLoading(false);
+        setIsMenuOpen(false);
+    }, [initialFollowing, viewerScope]);
 
     useEffect(() => {
         setNotifyNewPosts(initialNotify);
-    }, [initialNotify]);
+    }, [initialNotify, viewerScope]);
 
     useEffect(() => {
         if (!isMenuOpen) {
@@ -81,14 +96,6 @@ export default function FollowButton({
         };
     }, [isMenuOpen]);
 
-    if (currentUserHandle && currentUserHandle === handle) {
-        return null;
-    }
-
-    if (initialBlocked || initialBlocking) {
-        return null;
-    }
-
     const handleToggleFollow = useCallback(async () => {
         if (isLoading) {
             return;
@@ -97,44 +104,75 @@ export default function FollowButton({
         setIsLoading(true);
         setIsMenuOpen(false);
         try {
-            const response = await toggleFollowByHandle(handle);
+            const response = await (
+                import.meta.env.DEV && visualQaFollowToggle
+                    ? visualQaFollowToggle()
+                    : toggleFollowByHandle(handle)
+            );
+            if (!isViewerQueryScopeCurrent(viewerScope)) return;
             setIsFollowing(response.following);
             setNotifyNewPosts(response.notifyNewPosts);
             onFollowChange?.(response);
         } catch (error) {
-            console.error('Failed to toggle follow:', error);
-            toast.error('팔로우 처리에 실패했습니다.');
+            if (isViewerQueryScopeCurrent(viewerScope)) {
+                console.error('Failed to toggle follow:', error);
+                toast.error('팔로우 처리에 실패했습니다.');
+            }
         } finally {
-            setIsLoading(false);
+            if (isViewerQueryScopeCurrent(viewerScope)) setIsLoading(false);
         }
-    }, [handle, isLoading, onFollowChange]);
+    }, [handle, isLoading, onFollowChange, visualQaFollowToggle, viewerScope]);
 
     const handleToggleNotify = useCallback(async () => {
-        if (isLoading || !isFollowing) {
+        if (isLoading || !visibleIsFollowing) {
             return;
         }
 
         setIsLoading(true);
         setIsMenuOpen(false);
         try {
-            const response = await updateFollowNotifyByHandle(handle, !notifyNewPosts);
+            const response = await (
+                import.meta.env.DEV && visualQaNotifyToggle
+                    ? visualQaNotifyToggle()
+                    : updateFollowNotifyByHandle(handle, !visibleNotifyNewPosts)
+            );
+            if (!isViewerQueryScopeCurrent(viewerScope)) return;
             setNotifyNewPosts(response.notifyNewPosts);
             onFollowChange?.(response);
         } catch (error) {
-            console.error('Failed to toggle notify:', error);
-            toast.error('알림 설정 변경에 실패했습니다.');
+            if (isViewerQueryScopeCurrent(viewerScope)) {
+                console.error('Failed to toggle notify:', error);
+                toast.error('알림 설정 변경에 실패했습니다.');
+            }
         } finally {
-            setIsLoading(false);
+            if (isViewerQueryScopeCurrent(viewerScope)) setIsLoading(false);
         }
-    }, [handle, isLoading, isFollowing, notifyNewPosts, onFollowChange]);
+    }, [
+        handle,
+        isLoading,
+        visibleIsFollowing,
+        visibleNotifyNewPosts,
+        onFollowChange,
+        visualQaNotifyToggle,
+        viewerScope,
+    ]);
 
-    const buttonSize = size === 'sm' ? 'h-8 px-3 text-body' : size === 'lg' ? 'h-11 px-6' : 'h-9 px-4';
+    if (currentUserHandle && currentUserHandle === handle) {
+        return null;
+    }
 
-    if (!isFollowing) {
+    if (initialBlocked || initialBlocking) {
+        return null;
+    }
+
+    const buttonSize = size === 'sm' ? 'h-auto min-h-11 px-3 text-body' : size === 'lg' ? 'h-11 px-6' : 'h-auto min-h-11 px-4';
+
+    if (!visibleIsFollowing) {
         return (
             <Button
                 onClick={handleToggleFollow}
                 disabled={isLoading}
+                data-testid="profile-follow-button"
                 className={`${buttonSize} bg-primary text-white hover:bg-primary-hover ${className || ''}`}
                 style={style}
             >
@@ -157,6 +195,7 @@ export default function FollowButton({
                 variant="outline"
                 disabled={isLoading}
                 className={`${buttonSize} border-primary text-primary hover:bg-primary/10 ${className || ''}`}
+                data-testid="profile-following-button"
                 style={style}
             >
                 {isLoading ? (
@@ -178,6 +217,7 @@ export default function FollowButton({
                 disabled={isLoading}
                 onClick={() => setIsMenuOpen((prev) => !prev)}
                 className={`${buttonSize} border-primary text-primary hover:bg-primary/10`}
+                data-testid="profile-following-button"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="menu"
             >
@@ -200,9 +240,10 @@ export default function FollowButton({
                         type="button"
                         role="menuitem"
                         onClick={handleToggleNotify}
+                        data-testid="profile-follow-notify"
                         className="flex w-full items-center rounded-sm px-3 py-2 text-body text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
                     >
-                        {notifyNewPosts ? (
+                        {visibleNotifyNewPosts ? (
                             <>
                                 <ProfileBellOffIcon className="mr-2 h-4 w-4" />
                                 알림 끄기
@@ -218,6 +259,7 @@ export default function FollowButton({
                         type="button"
                         role="menuitem"
                         onClick={handleToggleFollow}
+                        data-testid="profile-unfollow"
                         className="flex w-full items-center rounded-sm px-3 py-2 text-body text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                     >
                         <ProfileUserMinusIcon className="mr-2 h-4 w-4" />
