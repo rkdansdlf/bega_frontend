@@ -184,7 +184,9 @@
     --primitive-color-green-700: 164 40% 42%;
     --primitive-color-green-600: 164 41% 46%;
     --primitive-color-green-500: 162 37% 52%;
-    --primitive-color-red-500: 0 62.8% 30.6%;
+    /* Same hue as light mode: the previous 30.6% lightness was only 2.1:1 on the black dark
+       surface, so text-destructive / border-destructive / invalid rings were unreadable. */
+    --primitive-color-red-500: 0 84.2% 60.2%;
 
     --surface-default: var(--surface-app-dark);
     --surface-subtle: var(--surface-panel-dark);

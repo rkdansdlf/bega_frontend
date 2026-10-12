@@ -18,7 +18,7 @@ test('form controls emit a supported light surface utility and keep dark/focus/i
   assert.doesNotMatch(html, /bg-input-background/);
   assert.equal((html.match(/(?:\s|\")bg-background(?:\s|\")/g) ?? []).length, 2);
   assert.equal((html.match(/dark:bg-input\/30/g) ?? []).length, 2);
-  assert.equal((html.match(/aria-invalid:border-destructive/g) ?? []).length, 2);
+  assert.equal((html.match(/aria-\[invalid=true\]:border-destructive/g) ?? []).length, 2);
   const generated = await postcss([tailwindcss({ ...config, content: [{ raw: html }] })])
     .process('@tailwind utilities;', { from: undefined });
   assert.match(generated.css, /\.bg-background\s*\{[^}]*background-color:\s*hsl\(var\(--background\)\)/s);

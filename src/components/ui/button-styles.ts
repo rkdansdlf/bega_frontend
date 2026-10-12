@@ -1,4 +1,4 @@
-export const buttonBaseClass = "bf rounded-md text-15 font-semibold outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
+export const buttonBaseClass = "bf rounded-md text-15 font-semibold outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring aria-[invalid=true]:ring-destructive/20 dark:aria-[invalid=true]:ring-destructive/40 aria-[invalid=true]:border-destructive";
 
 export const buttonVariantClasses = {
   default: "bg-primary text-primary-foreground hover:bg-primary/90",
