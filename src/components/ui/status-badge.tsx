@@ -124,7 +124,7 @@ export function StatusBadge({
         lineVariant
           ? cn('border border-transparent bg-transparent px-0 py-0 text-slate-600 shadow-none dark:text-white', lineSizeClass[size])
           : filledVariant
-            ? cn('border border-transparent bg-[#173b34] shadow-none', sizeClass[size])
+            ? cn('border border-transparent bg-primary-deep shadow-none', sizeClass[size])
             : cn(
               'border border-slate-200 bg-slate-50 text-slate-800 shadow-none dark:border-slate-700 dark:bg-slate-900/70 dark:text-white',
               sizeClass[size],

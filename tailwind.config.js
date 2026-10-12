@@ -72,6 +72,7 @@ export default {
           hover: 'rgb(var(--brand-primary-hover) / <alpha-value>)',
           light: 'rgb(var(--brand-primary-light) / <alpha-value>)',
           dark: 'rgb(var(--brand-primary-rest) / <alpha-value>)',
+          deep: 'rgb(var(--brand-primary-deep) / <alpha-value>)',
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
