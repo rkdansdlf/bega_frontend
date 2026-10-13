@@ -27895,7 +27895,7 @@ const resolveConfirmDialogRendererAdapter = (
         onNearestNavigation: () => emit('nearest-date'),
         reloadCurrentGameDetail: () => emit('retry-detail'),
       },
-      captureSelector: '[data-testid="prediction-match-detail-root"], [data-testid="prediction-empty-nearest-date-btn"], button[aria-label="이전 날짜 보기"]',
+      captureSelector: '[data-vqa-harness-surface]',
       companion: createElement(VisualQaInteractionMarker, {
         eventName: PREDICTION_MATCH_TAB_INTERACTION_EVENT,
         testId: 'visual-qa-prediction-match-tab-interaction',
