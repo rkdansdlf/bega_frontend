@@ -7,6 +7,16 @@ import {
   findUiUxVendorRuntimeReferences,
 } from './uiux-policy-check.mjs';
 
+test('existing UI UX policy rejects new source-level style drift', () => {
+  const failures = collectUiUxPolicyFailures({
+    styleDrift: {
+      sources: { 'src/Injected.tsx': 'export const View = () => <div className="bg-input-background w-[137px]" />;' },
+    },
+  });
+  assert.ok(failures.some((failure) => failure.includes('unsupported-semantic-color') && failure.includes('src/Injected.tsx')));
+  assert.ok(failures.some((failure) => failure.includes('arbitrary-dimension-spacing') && failure.includes('src/Injected.tsx')));
+});
+
 const readPolicySource = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const cloneIntentContract = () => JSON.parse(readPolicySource('../contracts/ui-ux-design-intent-v1.json'));

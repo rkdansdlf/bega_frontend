@@ -3,6 +3,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { collectUiStyleDriftFailures } from './ui-style-drift.mjs';
 
 const normalizeDeclaredVersion = (value) => String(value ?? '').replace(/^[~^]/, '');
 
@@ -91,7 +92,7 @@ export const findUiUxVendorRuntimeReferences = (sourceRoot) => {
   return references;
 };
 
-export const collectUiUxPolicyFailures = ({ root = process.cwd(), overrides = {} } = {}) => {
+export const collectUiUxPolicyFailures = ({ root = process.cwd(), overrides = {}, styleDrift = {} } = {}) => {
   const failures = [];
   const read = (key, path) => overrides[key] ?? readJson(root, path);
 
@@ -400,6 +401,7 @@ export const collectUiUxPolicyFailures = ({ root = process.cwd(), overrides = {}
     failures.push('BEGA Guidelines and CSS must remain authoritative ahead of the Design Intent mirror and Pro Max recommendations.');
   }
 
+  failures.push(...collectUiStyleDriftFailures({ root, ...styleDrift }));
   return failures;
 };
 
