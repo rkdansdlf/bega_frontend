@@ -1,0 +1,133 @@
+{
+  "nativeZoom": false,
+  "nativeSafeArea": false,
+  "source": "existing registered current-source QA fixtures",
+  "results": [
+    {
+      "scenario": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+      "width": 768,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+        "componentId": "src/components/Login.tsx#Login",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "auth",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/login-timeout-recheck/0/login-login-data-single-permissions-anonymous-interactions-default-variant-remem-c32d4838066d.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/login",
+          "actualSearch": "?redirect=%2Fmate",
+          "expectedSearch": "?redirect=%2Fmate",
+          "expectedPathname": "/login",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "scenario": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+      "width": 768,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+        "componentId": "src/components/Login.tsx#Login",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "auth",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/login-timeout-recheck/1/login-login-data-single-permissions-anonymous-interactions-default-variant-remem-c32d4838066d.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/login",
+          "actualSearch": "?redirect=%2Fmate",
+          "expectedSearch": "?redirect=%2Fmate",
+          "expectedPathname": "/login",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "scenario": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+      "width": 1440,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/Login.tsx#Login:data=single|permissions=anonymous|interactions=default|variant.remember-email=checked|variant.visibility=hidden|variant.theme=light",
+        "componentId": "src/components/Login.tsx#Login",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "auth",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/login-timeout-recheck/2/login-login-data-single-permissions-anonymous-interactions-default-variant-remem-c32d4838066d.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/login",
+          "actualSearch": "?redirect=%2Fmate",
+          "expectedSearch": "?redirect=%2Fmate",
+          "expectedPathname": "/login",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    }
+  ]
+}
