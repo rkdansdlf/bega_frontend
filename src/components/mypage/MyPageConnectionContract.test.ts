@@ -7,7 +7,8 @@ const readSource = (relativePath: string) =>
   readFileSync(resolve(process.cwd(), relativePath), 'utf8');
 
 // The backend sources live next to the frontend in the monorepo (../bega_backend). Standalone
-// frontend CI checks the backend repository out under backend/ and points BEGA_BACKEND_ROOT at it.
+// frontend CI checks the backend repository out under backend/ and sets BEGA_BACKEND_ROOT=backend
+// (relative to the workspace; the github context is empty in a reusable-workflow call's with:).
 const backendRoot = process.env.BEGA_BACKEND_ROOT ?? '../bega_backend';
 const readBackendSource = (relativePath: string) =>
   readFileSync(resolve(process.cwd(), backendRoot, relativePath), 'utf8');

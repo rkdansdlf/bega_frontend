@@ -160,7 +160,7 @@ jobs:
       install_playwright: true
       checkout_backend: true
       env_exports: |
-        BEGA_BACKEND_ROOT=${{ github.workspace }}/backend
+        BEGA_BACKEND_ROOT=backend
       run_script: |
         npm run test:unit
         npm run visual-qa:contract:test
