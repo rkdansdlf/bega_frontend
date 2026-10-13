@@ -222,3 +222,22 @@ Before/QA-prototype After and report are curated in
 a fixed release defect. Applying a new focus handler awaits explicit user
 confirmation under AGENTS.md behavior-change rule. Independent E2E/WebKit
 and final gates continue meanwhile; overall NOT READY.
+
+Existing production-preview Cypress flows:35/36 pass. Auth route acceptance9/9,
+MyPage keyboard focus8/8, Cheer mobile navigation5/5 and Mate URL state9/9
+passed. Home→Prediction4/5: scheduled-date navigation button stayed disabled
+because the test lacked the current `/api/home/navigation?scope=scheduled`
+fixture. The product uses scoped navigation separately from bootstrap for that
+tab. A wire-compatible internal test response and explicit wait/enable assertion
+were added; no force-click, route behavior or product API change. Recheck runs
+all five Home→Prediction cases; original failure log remains preserved.
+
+WebKit reflow completed **40/40 pass,0 fail,0 untrusted**, normal exit.
+`reflow/webkit-r1.json` records engine=webkit. Existing offline fixture/trust,
+route identity, loading, overlay and keyboard criteria were reused; no package
+installation or external service request. This is desktop WebKit, not a claim
+of real iOS soft-keyboard/device safe-area validation.
+
+Concurrent modifications to reflow main-document HTTP status validation were
+observed and preserved as another task's changes; not reverted or committed
+with this task's engine selection patch.
