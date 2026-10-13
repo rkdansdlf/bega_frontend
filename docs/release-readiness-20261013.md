@@ -169,3 +169,11 @@ That claim is withdrawn pending a corrected run. Production 320px DM reflow
 and the before/after clipping fix remain verified. MyPage breakpoint probe
 explicitly sets viewport before both captures, so its width evidence remains
 valid. No prior report or failed capture was overwritten.
+
+Current-source equivalence audit compared 1,385 tracked frontend source and
+major config/package files with the passing unit snapshot: **0 mismatches**.
+Evidence: `unit/current-source-equivalence.json`. This verifies that the full
+unit result applies to current code, rather than merely a similar checkout.
+Verified gate commands and raw log SHA-256 hashes are curated in
+`docs/release-readiness-evidence/20261013/gates/verified-gates.json`.
+They explicitly leave releaseReady false while remaining P2 work runs.
