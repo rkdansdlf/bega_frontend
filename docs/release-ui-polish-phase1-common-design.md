@@ -55,7 +55,7 @@ All run in the isolated worktree (`node_modules` cloned). Baseline = `cadaa985` 
 | `uiux:policy:check`, `visual-qa:inventory:check`, `visual-qa:skeleton:check` | pass / 3 unclassified (pre-existing, per the other audit) / 0 missing. |
 | Browser rendering | Real components + real `index.css` on a Vite dev server, light and dark, 800px and 320px: [before](qa/release-ui-polish-phase1/before-desktop-light-dark.jpg), [after](qa/release-ui-polish-phase1/after-desktop-light-dark.jpg), [after alerts/badges](qa/release-ui-polish-phase1/after-desktop-alerts-badges.jpg), [after 320px](qa/release-ui-polish-phase1/after-320px-light.jpg). Real-route Alert on `/mate/create`: [identical before/after](qa/release-ui-polish-phase1/real-route-mate-create-alert-before-and-after-identical.png) (also `/mate/1/chat`, light and dark). StatusBadge unchanged. |
 
-## Status: all required gates pass except where noted; one policy decision remains
+## Status: Phase 1 complete — all required gates pass; deferred items (X-1…X-8) are intentionally left for a separately scoped next phase
 
 1. `test:unit` — **resolved** in follow-up commits (test-only; see the verification table):
    - `privateClient`/`publicClient` (11 tests): **fixed**. Root cause: `AbortSignal.timeout()` timers are unref'd, so the deadline tests left the event loop idle and the runner cancelled them and every later test in the file. The two tests now hold a ref'd keep-alive timer (test-only change).
@@ -63,7 +63,7 @@ All run in the isolated worktree (`node_modules` cloned). Baseline = `cadaa985` 
    - `authStore.test.ts`: **fixed** (64/64; was a load crash, then 12 failures). All test-side timing/import-order problems: `authSessionSyncRuntime` imported `authStore` before `localStorage` existed (now imported after setup); the flush helpers waited one `setImmediate` for state the store reaches through dynamic `import()` (now 40 turns); and three tests rejected the deferred logout before the store had attached its handler, producing an `unhandledRejection` (they now flush first). No store code changed.
    - Browser-driven tests (`GlobalErrorDialog`, `SeatMapHoverPreview`, …) time out or hang when the machine is loaded; one full re-run hung for 29 minutes at load average 20–60 and was killed; the final run above completed in about four minutes at load ≈ 10.
 2. `visual-qa:states` — **resolved** (`2338c50f`). The harness gained an optional `queryData` result field that seeds the harness QueryClient before render, so hook-backed components can be rendered with deterministic data; the component got an adapter (4 inventory variants × light/dark) and the lazy alias is hosted by those direct scenarios. Locked scenario counts in `harnessCatalog.test.ts` were updated (+8 scenarios, +1 component).
-3. `build` — passes only with the budget change in `897774af`; whether to raise budgets or trim code is a policy call.
+3. `build` — passes with the budget change in `897774af`. Decision (owner, 2026-10-13): keep the raise; no code trimming in this phase.
 
 ## Not verified
 
