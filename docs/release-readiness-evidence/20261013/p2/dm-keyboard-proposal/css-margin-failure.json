@@ -1,0 +1,134 @@
+{
+  "nativeKeyboard": false,
+  "checks": "real Tab focus and center-point occlusion",
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "fullTarget": true,
+          "tag": "BUTTON",
+          "label": "메시지 삭제",
+          "top": 543.875,
+          "bottom": 565.875,
+          "height": 22,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgb(0, 95, 204) auto 1px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px"
+        },
+        {
+          "fullTarget": false,
+          "tag": "TEXTAREA",
+          "label": null,
+          "top": 724.875,
+          "bottom": 796.875,
+          "height": 72,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgba(0, 0, 0, 0) solid 2px",
+          "boxShadow": "none"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "fullTarget": true,
+          "tag": "BUTTON",
+          "label": "메시지 삭제",
+          "top": 543.875,
+          "bottom": 565.875,
+          "height": 22,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgb(153, 200, 255) auto 1px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px"
+        },
+        {
+          "fullTarget": false,
+          "tag": "TEXTAREA",
+          "label": null,
+          "top": 724.875,
+          "bottom": 796.875,
+          "height": 72,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgba(0, 0, 0, 0) solid 2px",
+          "boxShadow": "none"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "fullTarget": true,
+          "tag": "BUTTON",
+          "label": "메시지 삭제",
+          "top": 495.875,
+          "bottom": 517.875,
+          "height": 22,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgb(0, 95, 204) auto 1px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px"
+        },
+        {
+          "fullTarget": false,
+          "tag": "TEXTAREA",
+          "label": null,
+          "top": 724.875,
+          "bottom": 796.875,
+          "height": 72,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgba(0, 0, 0, 0) solid 2px",
+          "boxShadow": "none"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "fullTarget": true,
+          "tag": "BUTTON",
+          "label": "메시지 삭제",
+          "top": 495.875,
+          "bottom": 517.875,
+          "height": 22,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgb(153, 200, 255) auto 1px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px"
+        },
+        {
+          "fullTarget": false,
+          "tag": "TEXTAREA",
+          "label": null,
+          "top": 724.875,
+          "bottom": 796.875,
+          "height": 72,
+          "visible": true,
+          "unobscured": true,
+          "focusVisible": true,
+          "outline": "rgba(0, 0, 0, 0) solid 2px",
+          "boxShadow": "none"
+        }
+      ]
+    }
+  ]
+}

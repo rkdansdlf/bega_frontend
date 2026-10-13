@@ -204,3 +204,21 @@ viewport overflow0. This supersedes the earlier invalid multi-width claim.
 Curated report: `p2/dm-widths-corrected.json`. A production DM real-Tab keyboard
 probe is now running to check delete/composer visibility and occlusion by the
 fixed mobile navigation. Native soft-keyboard behavior is not implied.
+
+## Open issue: DM keyboard input occlusion
+
+Confirmed at320/390px in light/dark: a real Tab focus reaches the composer,
+but its lower area sits behind the fixed bottom tab bar. A center-point-only
+probe passed and was insufficient; visual inspection and expanded hit checks
+prove the issue. CSS margin-only and existing safe-bottom-token root padding
+prototypes do not expose the whole target. Failure evidence is preserved.
+
+A QA-only focus prototype detects intersection with a visible bottom tab bar
+and scrolls only the affected textarea into the center (instant, without motion).
+No layout/breakpoint/send/URL/auth behavior changes. Real Tab verification:
+**8/8 controls**, full-target hit checks and focus-visible,320/390 light/dark.
+Before/QA-prototype After and report are curated in
+`p2/dm-keyboard-proposal/`. It is **not applied to product** and not counted as
+a fixed release defect. Applying a new focus handler awaits explicit user
+confirmation under AGENTS.md behavior-change rule. Independent E2E/WebKit
+and final gates continue meanwhile; overall NOT READY.
