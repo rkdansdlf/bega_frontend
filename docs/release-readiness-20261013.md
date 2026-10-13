@@ -309,3 +309,22 @@ Mate edits without committing those changes. Curated result:
 Final assessment remains **NOT READY** because DM keyboard input occlusion
 is confirmed and its product fix is pending explicit approval. MyPage
 loading/resolved breakpoint shift remains a separate issue, as requested.
+
+## 2026-10-14 DM follow-up
+
+HEAD at start: `82be2da263181adb207aaa62cab64e545934dcd6`; product source unchanged.
+An executable existing-QA companion now reproduces the occlusion using real Tab,
+viewport equality and five interior hit points: product4/8 pass,4/8 fail,exit1;
+QA-only prototype8/8 pass,exit0. It is not included as a green release gate until
+an approved product fix passes without prototype injection. No full-suite rerun
+was needed for this QA-only addition; previous full-unit/build results stand.
+
+Replay script: `scripts/visual-qa-dm-keyboard.integration.mjs`.
+Reviewable unapplied patch and fresh reports/screenshots:
+`docs/release-readiness-evidence/20261013/p2/dm-keyboard-proposal/README.md`.
+`git apply --check` and script syntax check pass. Product focus changes still
+await explicit confirmation under AGENTS.md:37. Final verdict remains NOT READY.
+
+A later concurrent edit to `src/visual-qa/stateAdapters.test.ts` was observed
+and preserved, excluded from this task. The2515-test pass remains timestamped
+r3 evidence; it does not claim coverage of that later edit.

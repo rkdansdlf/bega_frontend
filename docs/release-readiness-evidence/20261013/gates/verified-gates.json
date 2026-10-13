@@ -109,7 +109,10 @@
       "overageJsGzipBytes": 0,
       "budgetSkipped": false,
       "ok": true
-    }
+    },
+    "laterUnvalidatedConcurrentChanges": [
+      "src/visual-qa/stateAdapters.test.ts"
+    ]
   },
   "openProductIssue": {
     "id": "DM-KEYBOARD-OCCLUSION",
@@ -123,6 +126,22 @@
     ],
     "productFixed": false,
     "proposalOnly": "real Tab and five interior hit points,8/8 controls pass",
-    "evidence": "docs/release-readiness-evidence/20261013/p2/dm-keyboard-proposal/"
+    "evidence": "docs/release-readiness-evidence/20261013/p2/dm-keyboard-proposal/",
+    "latestReproduction": {
+      "date": "2026-10-14",
+      "product": {
+        "pass": 4,
+        "fail": 4,
+        "total": 8
+      },
+      "prototypeOnly": {
+        "pass": 8,
+        "fail": 0,
+        "total": 8
+      },
+      "script": "scripts/visual-qa-dm-keyboard.integration.mjs",
+      "productFixApplied": false,
+      "patchCheck": "git apply --check passed"
+    }
   }
 }
