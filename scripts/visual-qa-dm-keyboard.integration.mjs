@@ -9,6 +9,7 @@ const prototype = process.env.DM_KEYBOARD_PROTOTYPE === '1';
 const output = resolve(process.env.DM_KEYBOARD_OUTPUT ?? `/private/tmp/bega-dm-keyboard-${prototype ? 'prototype' : 'product'}`);
 const { chromium } = await loadPlaywright();
 const results = [];
+const noScrollResults = [];
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 
@@ -86,6 +87,23 @@ try {
           results.push({ width, theme, target, ...check, pass: check.visible && check.unobscured && check.focusVisible });
           await page.screenshot({ path: resolve(output, `${width}-${theme}-${target}.png`) });
         }
+        for (const visibleWidth of [width, 1440]) {
+          await page.setViewportSize({ width: visibleWidth, height: 844 });
+          await settle(page);
+          const check = await page.evaluate(() => {
+            const input = document.querySelector('textarea');
+            if (!(input instanceof HTMLTextAreaElement)) throw new Error('DM composer missing');
+            input.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+            input.blur();
+            const before = scrollY;
+            input.focus({ preventScroll: true });
+            const bar = document.querySelector('nav[aria-label="하단 탭바"]')?.getBoundingClientRect();
+            return { before, after: scrollY, actualWidth: innerWidth, navVisible: Boolean(bar?.height && bar?.width) };
+          });
+          noScrollResults.push({ width: visibleWidth, theme, ...check, pass: check.before === check.after });
+          assert.equal(check.actualWidth, visibleWidth);
+          if (visibleWidth === 1440) assert.equal(check.navVisible, false, 'desktop bottom bar is hidden');
+        }
       } finally {
         await context.close();
       }
@@ -97,10 +115,12 @@ try {
   await writeFile(resolve(output, 'report.json'), `${JSON.stringify({
     baseUrl, prototype, nativeKeyboard: false, offlineFixtures: true,
     checks: 'real Tab, viewport bounds, focus-visible and five interior hit points',
-    summary: { pass, fail: results.length - pass, total: results.length }, results,
+    summary: { pass, fail: results.length - pass, total: results.length }, results, noScrollResults,
   }, null, 2)}\n`);
 }
 
 assert.equal(results.length, 8, 'all width/theme/control combinations must execute');
 assert.ok(results.every((result) => result.pass), `DM keyboard controls obscured; see ${output}/report.json`);
-console.log(`[dm-keyboard] 8/8 pass; prototype=${prototype}; ${output}/report.json`);
+assert.equal(noScrollResults.length, 8, 'visible mobile and hidden desktop bar cases must execute');
+assert.ok(noScrollResults.every((result) => result.pass), 'visible composer must retain scroll position');
+console.log(`[dm-keyboard] 8/8 pass; no-scroll=8/8; prototype=${prototype}; ${output}/report.json`);
