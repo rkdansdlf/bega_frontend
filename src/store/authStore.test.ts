@@ -17,7 +17,14 @@ import {
   publishAuthSessionChanged,
   subscribeToAuthSessionChanges,
 } from '../utils/authSessionEvents';
-import { refreshSessionFromSharedCookie } from '../utils/authSessionSyncRuntime';
+
+// The store reaches its async collaborators through dynamic import(), which resolves over several
+// event-loop turns under the tsx loader; a single setImmediate is not enough to observe it.
+const nextTurns = async (turns = 40) => {
+  for (let turn = 0; turn < turns; turn += 1) {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+  }
+};
 
 const createStorage = () => {
   const values = new Map<string, string>();
@@ -53,6 +60,7 @@ installGlobalLocalStorage(initialStorage);
 
 const { queryClient } = await import('../lib/queryClient');
 const { authStoreApi, useAuthStore } = await import('./authStore');
+const { refreshSessionFromSharedCookie } = await import('../utils/authSessionSyncRuntime');
 
 const installPersistStorage = (storage: ReturnType<typeof createStorage>) => {
   useAuthStore.persist.setOptions({
@@ -156,7 +164,7 @@ test('a successful login clears a stale login-required dialog from the previous 
     undefined,
     202,
   );
-  await new Promise<void>((resolve) => setImmediate(resolve));
+  await nextTurns();
 
   assert.equal(useAuthStore.getState().user?.id, 202);
   assert.equal(useAuthStore.getState().showLoginRequiredDialog, false);
@@ -330,8 +338,8 @@ const hasAuthBootstrapHint = (storage: ReturnType<typeof createStorage>) => stor
 
 const getAuthBootstrapMeta = () => getPersistedAuthBootstrapMeta();
 
-const flushLogoutRequest = () => new Promise<void>((resolve) => setImmediate(resolve));
-const flushAuthSessionSignal = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushLogoutRequest = () => nextTurns();
+const flushAuthSessionSignal = () => nextTurns();
 
 const installLogoutSession = () => {
   const storage = createStorage();
@@ -656,6 +664,8 @@ for (const order of ['profile-first', 'logout-first'] as const) {
       assert.equal(isCurrentRequest?.(), true);
       const logoutResult = useAuthStore.getState().logout();
       assert.equal(isCurrentRequest?.(), false);
+      // logoutUser is dispatched after an async import; reject only once a handler is attached.
+      await flushLogoutRequest();
       if (order === 'profile-first') {
         profile.resolve(user!);
         assert.equal(await profileResult, false);
@@ -741,6 +751,7 @@ test('profile race: same-session fetch is blocked while logout is pending and re
   const result = useAuthStore.getState().logout();
   assert.equal(await useAuthStore.getState().fetchProfileAndAuthenticate(), false);
   assert.equal(profile.mock.callCount(), 0);
+  await flushLogoutRequest();
   logout.reject(logoutUnavailable);
   assert.equal(await result, false);
   assert.equal(await useAuthStore.getState().fetchProfileAndAuthenticate(), true);
