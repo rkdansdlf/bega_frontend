@@ -1,0 +1,368 @@
+{
+  "baseUrl": "http://127.0.0.1:5186",
+  "browser": "chromium",
+  "viewport": {
+    "width": 320,
+    "height": 800
+  },
+  "apiStubbed": true,
+  "authFixture": "existing Cypress injected profile contract; layout audit, not server authentication",
+  "externalNetworkBlocked": true,
+  "summary": {
+    "counts": {
+      "pass": 40,
+      "fail": 0,
+      "untrusted": 0
+    },
+    "ok": true,
+    "total": 40
+  },
+  "results": [
+    {
+      "route": "/",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/home",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/login",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/signup",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/password/reset",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/password/reset/confirm",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/account/deletion/recovery",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/oauth/email/confirm",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/prediction",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/cheer",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/stadium",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/leaderboard",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/offseason",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/offseason/list",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/notice",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/terms",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/privacy",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mypage",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/messages",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/messages/@testuser",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [
+        {
+          "selector": "[data-testid=\"dm-message-viewport\"]",
+          "normal": 0,
+          "zoomed": 0
+        }
+      ],
+      "offenders": []
+    },
+    {
+      "route": "/mate/create",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate/1",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate/1/apply",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate/1/chat",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate/1/manage",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/mate/1/checkin",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/cheer/bookmarks",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/cheer/1",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/cheer/write",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/cheer/edit/1",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/profile/@testuser",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/prediction/matches/20260726KTLT0",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/predictions/ranking/share/abc/2026",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/admin",
+      "status": "pass",
+      "measuredState": "loaded",
+      "overflowNormal": 0,
+      "overflowZoomed": 0,
+      "contentOverflows": [],
+      "offenders": []
+    },
+    {
+      "route": "/home (mobile nav drawer)",
+      "status": "pass",
+      "offenders": []
+    },
+    {
+      "route": "/mypage (authenticated nav drawer)",
+      "status": "pass",
+      "offenders": []
+    },
+    {
+      "route": "/login (login submit vs keyboard)",
+      "status": "pass",
+      "offenders": []
+    },
+    {
+      "route": "/signup (signup submit vs keyboard)",
+      "status": "pass",
+      "offenders": []
+    },
+    {
+      "route": "/password/reset (password reset submit vs keyboard)",
+      "status": "pass",
+      "offenders": []
+    }
+  ]
+}

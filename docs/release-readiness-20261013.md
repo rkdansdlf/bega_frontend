@@ -1,5 +1,44 @@
 # BEGA frontend release readiness — 2026-10-13
 
+## Latest checkpoint (current source)
+
+**NOT READY.** Product DM composer focus is partly hidden behind the fixed
+mobile navigation at 320/390px, light/dark. The QA-only scrolling prototype
+passes 8/8 real-Tab target checks; no product focus handler has been applied.
+Explicit behavior-change approval remains pending. Screenshots and prototype
+results: `docs/release-readiness-evidence/20261013/p2/dm-keyboard-proposal/`.
+
+Starting HEAD: `c698fd7e77b0c2638c1bf8659003a184d961d5b6`.
+Current implementation HEAD: `5ab8439d6ae7baa36da94df02f5c1078730eeea9`.
+Concurrent Mate/reflow/security-test edits are preserved and excluded from this
+task's commits. The fresh immutable full-unit run includes the current Mate and
+Prediction QA edits: **2,515/2,515 passed**, exit0, fail/cancel/skip0,199.4s.
+Comparison: 1,593 files, no unit-relevant difference, one unrelated scripts
+security-test difference. Manifest: `unit/immutable-source-r3.json` under raw
+evidence. Node 22.23.3; existing dependencies only.
+
+| Verification | Confirmed evidence | Limitation |
+| --- | --- | --- |
+| `npm run build` | Current r3 full build passed; Cheer119,788B < unchanged121,600B | No budget change; worker/client/SEO/sitemap exit0 |
+| `npm run test:unit` | Current r3:2,515/2,515, normal exit0, fail/cancel/skip0 | Current source includes concurrent Mate edits; unrelated script excluded |
+| Contract | Fresh `visual-qa:contract:check` passed | Registration is not all-state browser coverage |
+| Inventory / states | 0 unclassified; 1,017/1,017 registered, 0 pending | Executable registration probes 9/9 |
+| Policy / mutation | Policy passed; 24/24 mutation tests passed | Existing drift baseline is retained |
+| Chromium / WebKit reflow | Current Chromium r3:40/40; previous WebKit40/40; 0 failed/untrusted | Desktop engines with offline fixtures |
+| User flows | 36 distinct Cypress cases verified, including 5/5 Home recheck | Original 35/36 failure retained; APIs mocked |
+| Environment probes | Existing matrix120/120; Prediction30/30; MyPage28/28; DM20/20 | Requested/actual widths checked; root font scaling, not native zoom |
+| Login timeout recovery | Original27 pass/3 timeout, exact recheck3/3 pass | Original failures remain visible |
+| MyPage breakpoint | 8 screenshots confirm loading/resolved layout shift | Responsive behavior unchanged; separate issue |
+
+`gates/verified-gates.json` contains raw-evidence hashes. Before/After files and
+failed probes are preserved rather than replacing image baselines. Desktop
+WebKit, simulated safe-area and root text enlargement do not establish native
+iOS keyboard, device safe-area or browser zoom behavior. No external baseball
+requests or scraping were introduced; Priority 0 policy check passed.
+
+The chronological investigation below includes superseded statuses. Use this
+checkpoint and the evidence ledger for the latest assessment.
+
 Status: **NOT READY — verification in progress**. No required gate is waived.
 
 Starting HEAD: `c698fd7e77b0c2638c1bf8659003a184d961d5b6` on
@@ -253,3 +292,20 @@ They are preserved and excluded from this task's commits. Earlier full unit
 source-equivalence result predates these and the Prediction QA capture repair;
 final current-source verification must include the current worktree rather
 than assuming the previous snapshot still matches.
+
+Fresh current-source full build completed normally (exit0). Cheer119,788B,
+unchanged121,600B limit, overage0. Strict inventory/states/policy checks also
+exit0. Reflow-script tests26/26, fail/cancel/skip0. Full-unit r3:2,515/2,515,
+normal exit0,199.4s. `gates/current-unit-summary.json` records snapshot matching
+and final counts; source manifest and raw full logs are preserved. AST-only
+`graphify update .` completed; SQL parser unavailable and partial extraction
+warnings are graph limitations, not a claim of full code semantic coverage.
+
+Latest production reflow r3 completed normally:40/40,0 failed/untrusted.
+The current run also includes the concurrent main-document HTTP guard and
+Mate edits without committing those changes. Curated result:
+`gates/current-reflow-report.json`; screenshots:
+`artifacts/release-readiness-20261013/reflow/current-r3/`.
+Final assessment remains **NOT READY** because DM keyboard input occlusion
+is confirmed and its product fix is pending explicit approval. MyPage
+loading/resolved breakpoint shift remains a separate issue, as requested.
