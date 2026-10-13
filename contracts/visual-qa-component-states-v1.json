@@ -98440,6 +98440,72 @@
       ]
     },
     {
+      "id": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "prediction.game-powerup-inventory"
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The inventory and active power-up payloads are the component's only data; they are modeled by the inventory variant, which seeds both hook queries.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#prediction-game-powerup-inventory-adapter"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The component receives only a game id and makes no authorization decision; PredictionMatchTabDetailSection mounts it only for a logged-in viewer while voting is open.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Card hover, focus, press and the confirmation modal are owned by PowerUpInventory, which remains its own required component-state entry.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Fetch loading and failure fall back to an empty disabled inventory and are not modeled here; the seeded queries keep the scenario free of transport. Query binding and the active-game filter are covered by PredictionGamePowerupInventory.test.tsx.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.test.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "inventory",
+            "values": [
+              "empty",
+              "available",
+              "active",
+              "maximum-supported"
+            ],
+            "reason": "Empty, available, active and maximum-count inventories exercise the disabled, actionable, active and numeric-pressure presentations the hook data produces.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#prediction-game-powerup-inventory-adapter"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The inventory renders inside both application themes.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#prediction-game-powerup-inventory-adapter"
+          }
+        ]
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView",
       "status": "registered",
       "renderAccess": "module-export",
@@ -101021,6 +101087,56 @@
           "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
         }
       ]
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The lazy alias resolves to PredictionGamePowerupInventory; payload coverage remains with that direct component's scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy alias does not make an independent authorization decision.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the referenced direct component.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The lazy alias performs no independent transport request.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and inventory dimensions are covered by the referenced direct scenarios.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState",

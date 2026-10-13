@@ -106,6 +106,8 @@ import {
 } from '../components/StadiumSeatMapStates';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
 import PredictionMatchTabEmptyState from '../components/prediction/PredictionMatchTabEmptyState';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { getViewerQueryScope } from '../utils/viewerQueryScope';
 import type { SeatViewDirectUploadVisualQaStateOverride } from '../components/stadiumSeatMap/SeatViewDirectUploadModal';
 import type { SeatMapFilterGroup } from '../components/stadiumSeatMap/seatMapCommonTypes';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
@@ -416,6 +418,8 @@ export type ComponentStateAdapterResult = {
     } | null;
   };
   initialPathname?: string;
+  /** Seeded into the harness QueryClient before render, for components that read hook-backed data. */
+  queryData?: ReadonlyArray<{ queryKey: readonly unknown[]; data: unknown }>;
   semanticHost?: VisualQaSemanticHost;
   surfaceClassName?: string;
   theme?: 'light' | 'dark';
@@ -33898,6 +33902,28 @@ const resolveConfirmDialogRendererAdapter = (
       },
       captureSelector: '[data-testid="retro-pixel-progress-bar"]',
       surfaceClassName: 'block min-h-20 w-full max-w-[288px] overflow-visible bg-[#1a1a2e] p-4',
+    };
+  },
+  'prediction.game-powerup-inventory': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory') {
+      throw new Error('prediction.game-powerup-inventory only supports PredictionGamePowerupInventory');
+    }
+    const gameId = 'visual-qa-game';
+    const inventory = resolveDeclaredVariant(context, 'inventory', retroFooterInventories);
+    const viewerScope = getViewerQueryScope();
+    return {
+      props: { gameId },
+      // usePowerups reads these two queries; seeding them keeps the scenario free of transport.
+      queryData: [
+        { queryKey: PRIVATE_QUERY_KEYS.powerupInventory(viewerScope), data: inventory.powerups },
+        {
+          queryKey: PRIVATE_QUERY_KEYS.activePowerups(viewerScope),
+          data: inventory.activePowerups.map((type) => ({ type, gameId })),
+        },
+      ],
+      captureSelector: '[data-testid="prediction-game-powerup-inventory"]',
+      surfaceClassName: 'block w-full max-w-[320px] overflow-visible bg-[#1a1a2e] p-0',
+      theme: resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', { dark: 'dark', light: 'light' }),
     };
   },
   'retro.power-up-inventory': (context) => {

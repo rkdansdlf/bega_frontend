@@ -2209,6 +2209,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'prediction.coach-verdict-memo',
     'prediction.combo-animation-runtime',
     'prediction.error-overlay',
+    'prediction.game-powerup-inventory',
     'prediction.game-summary-timeline',
     'prediction.live-relay-timeline',
     'prediction.loading-view',
@@ -15957,4 +15958,44 @@ test('SeatMapFilterBar adapter covers flat and dimensional filter surfaces with 
     states: { data: 'not-declared', interactions: 'default' },
     variants: { layout: 'flat', theme: 'light' },
   }));
+});
+
+// prediction-game-powerup-inventory-adapter
+test('PredictionGamePowerupInventory seeds both hook queries per inventory variant and fails closed', () => {
+  const componentId = 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory';
+  const resolve = (inventory: string, theme = 'light') => resolveComponentStateAdapter(
+    'prediction.game-powerup-inventory',
+    { componentId, states: {}, variants: { inventory, theme } },
+  );
+
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('prediction.game-powerup-inventory'));
+
+  const active = resolve('active', 'dark');
+  assert.deepEqual(active.props, { gameId: 'visual-qa-game' });
+  assert.equal(active.theme, 'dark');
+  assert.equal(active.captureSelector, '[data-testid="prediction-game-powerup-inventory"]');
+  assert.equal(active.queryData?.length, 2);
+  assert.deepEqual(active.queryData?.[0].data, { GOLDEN_GLOVE: 2, MAGIC_BAT: 1, SCOUTER: 3 });
+  assert.deepEqual(active.queryData?.[1].data, [{ type: 'MAGIC_BAT', gameId: 'visual-qa-game' }]);
+
+  assert.deepEqual(resolve('empty').queryData?.[1].data, []);
+  assert.deepEqual(
+    resolve('maximum-supported').queryData?.[0].data,
+    {
+      GOLDEN_GLOVE: Number.MAX_SAFE_INTEGER,
+      MAGIC_BAT: Number.MAX_SAFE_INTEGER,
+      SCOUTER: Number.MAX_SAFE_INTEGER,
+    },
+  );
+
+  assert.throws(() => resolve('unknown'), /지원하지 않는 Visual QA variant: inventory=unknown/);
+  assert.throws(() => resolve('empty', 'sepia'), /지원하지 않는 Visual QA variant: theme=sepia/);
+  assert.throws(
+    () => resolveComponentStateAdapter('prediction.game-powerup-inventory', {
+      componentId: 'src/components/retro/PowerUpInventory.tsx#PowerUpInventory',
+      states: {},
+      variants: { inventory: 'empty', theme: 'light' },
+    }),
+    /only supports PredictionGamePowerupInventory/,
+  );
 });
