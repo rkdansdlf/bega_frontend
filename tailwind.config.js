@@ -40,6 +40,12 @@ export default {
         '14': '14px', '18': '18px', '20': '20px', '22': '22px', '26': '26px',
         '28': '28px', '30': '30px', '32': '32px', '40': '40px', '56': '56px',
       },
+      // Opacity steps the default 5-step scale lacks. Components already ask for them
+      // (bg-white/72, dark:border-white/8, ...); without an entry Tailwind 3.4 emits nothing.
+      opacity: {
+        '8': '0.08', '12': '0.12', '18': '0.18',
+        '72': '0.72', '78': '0.78', '82': '0.82', '88': '0.88', '92': '0.92',
+      },
       boxShadow: {
         'cheer-mobile-chrome': 'var(--shadow-cheer-mobile-chrome)',
         'cheer-mobile-chrome-dark': 'var(--shadow-cheer-mobile-chrome-dark)',

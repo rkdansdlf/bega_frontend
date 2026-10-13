@@ -66,6 +66,11 @@ KBO Platform 프론트엔드의 브랜드 색상은 **[src/index.css](../src/ind
 ### codemod
 - 임의값 치환은 [scripts/codemod-arbitrary-classes.mjs](../scripts/codemod-arbitrary-classes.mjs)(매핑 테이블 + `--dry-run`/`--dir`/`--kind`)로 수행. 새 크기 추가 시 이 매핑과 위 토큰을 함께 갱신.
 
+### 투명도 단계 ([tailwind.config.js](../tailwind.config.js) `theme.extend.opacity`)
+- Tailwind 3.4는 `theme.opacity`에 없는 단계(`bg-white/72`, `dark:border-white/8` 등)를 **오류 없이 아무 CSS도 만들지 않습니다.** 그래서 요소가 배경·테두리를 조용히 잃습니다.
+- 기본 단계(0, 5, 10, 15 … 100)에 더해 `8 · 12 · 18 · 72 · 78 · 82 · 88 · 92`를 정의했습니다. 새 단계가 필요하면 여기에 추가하거나 `bg-white/[0.72]` 임의값을 쓰세요.
+- [opacity-scale.test.ts](../src/components/ui/opacity-scale.test.ts)가 소스의 모든 `색상/NN` 유틸리티가 실제 CSS를 만드는지 검사합니다.
+
 ## 6. 로드맵 (Phase 3, 예정)
 - 비-팀 하드코딩 hex(className 212곳) + 인라인 `fontSize`(88곳) → 토큰 치환 (구단색 `TEAM_COLORS_MAP`은 제외).
 - 드리프트 재발 방지: 신규 `text-[NNpx]`/`rounded-[NNpx]`/비-팀 hex를 차단하는 grep/lint 가드.
