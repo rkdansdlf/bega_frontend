@@ -8,6 +8,11 @@ on:
         required: false
         type: string
         default: "."
+      checkout_backend:
+        description: "Also check out rkdansdlf/bega_backend@main under backend/ for tests that read backend sources"
+        required: false
+        type: boolean
+        default: false
       timeout_minutes:
         description: "Job timeout in minutes"
         required: false
@@ -100,6 +105,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout backend sources
+        if: ${{ inputs.checkout_backend }}
+        uses: actions/checkout@v4
+        with:
+          repository: rkdansdlf/bega_backend
+          ref: main
+          path: backend
 
       - name: Export suite environment
         if: ${{ inputs.env_exports != '' }}

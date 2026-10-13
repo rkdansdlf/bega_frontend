@@ -158,6 +158,9 @@ jobs:
     with:
       timeout_minutes: 25
       install_playwright: true
+      checkout_backend: true
+      env_exports: |
+        BEGA_BACKEND_ROOT=${{ github.workspace }}/backend
       run_script: |
         npm run test:unit
         npm run visual-qa:contract:test
