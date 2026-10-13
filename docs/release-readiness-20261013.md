@@ -150,3 +150,22 @@ Additional Login, Prediction match-tab and MyPage profile specimens are now
 running through the same registered-scenario probe helpers. Existing Cypress
 flow specs will then run with unmatched external requests blocked. No new QA
 framework or product behavior is introduced.
+
+## P2 evidence correction
+
+The existing 120-case environment matrix sets and verifies its requested
+viewport correctly and remains valid. An additional one-off extended probe
+initially omitted `VISUAL_QA_HARNESS_VIEWPORT`; the common probe reset widths
+to 320px. Its partial results are **invalid as multi-width evidence** and retained
+in `flows/extended-environments.log` plus its report. Fixed 320px auth specimen
+width plus QA-page padding also inflated document overflow; this is a QA host
+candidate, not a confirmed production bug (production route reflow passed).
+The corrected companion explicitly sets each requested width, fits only the
+QA surface to its host, and requires actual `window.innerWidth` equality.
+
+The earlier DM companion also lacked the viewport override, so its 20 cases
+prove repeated 320px theme/text conditions but **do not prove five widths**.
+That claim is withdrawn pending a corrected run. Production 320px DM reflow
+and the before/after clipping fix remain verified. MyPage breakpoint probe
+explicitly sets viewport before both captures, so its width evidence remains
+valid. No prior report or failed capture was overwritten.
