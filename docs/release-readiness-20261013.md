@@ -177,3 +177,13 @@ unit result applies to current code, rather than merely a similar checkout.
 Verified gate commands and raw log SHA-256 hashes are curated in
 `docs/release-readiness-evidence/20261013/gates/verified-gates.json`.
 They explicitly leave releaseReady false while remaining P2 work runs.
+
+P2 current report audit found Login 27 pass / 3 infrastructure timeouts
+(768px light 1x/2x,1440px light1x; asset quiet/readiness), correcting the
+intermediate 30-pass statement. These failures are preserved and the exact
+three cases will be rechecked. MyPage28/28 has actual width equality, root
+font16/32px and overflow0. Prediction's old capture selector matched three
+nodes; the QA-only adapter now captures the unique full harness surface,
+including date controls and detail, without dropping scope. Adapter tests
+299/299 pass; actual Prediction30-case verification is running. Final full
+unit verification must include this QA-source change before completion.
