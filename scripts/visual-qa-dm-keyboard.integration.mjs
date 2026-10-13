@@ -2,16 +2,16 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { AUDIT_USER, installOfflineBoundary, loadPlaywright, settle, stubApi } from './reflow-320-audit.mjs';
+import { AUDIT_USER, installOfflineBoundary, loadPlaywright, resolveReflowBrowser, settle, stubApi } from './reflow-320-audit.mjs';
 
 const baseUrl = process.env.DM_KEYBOARD_BASE_URL ?? 'http://127.0.0.1:5186';
 const prototype = process.env.DM_KEYBOARD_PROTOTYPE === '1';
 const output = resolve(process.env.DM_KEYBOARD_OUTPUT ?? `/private/tmp/bega-dm-keyboard-${prototype ? 'prototype' : 'product'}`);
-const { chromium } = await loadPlaywright();
+const engine = resolveReflowBrowser(process.env.DM_KEYBOARD_BROWSER ?? 'chromium');
 const results = [];
 const noScrollResults = [];
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await (await loadPlaywright())[engine].launch({ headless: true });
 
 try {
   for (const width of [320, 390]) {
@@ -113,7 +113,7 @@ try {
   await browser.close();
   const pass = results.filter((result) => result.pass).length;
   await writeFile(resolve(output, 'report.json'), `${JSON.stringify({
-    baseUrl, prototype, nativeKeyboard: false, offlineFixtures: true,
+    baseUrl, browser: engine, prototype, nativeKeyboard: false, offlineFixtures: true,
     checks: 'real Tab, viewport bounds, focus-visible and five interior hit points',
     summary: { pass, fail: results.length - pass, total: results.length }, results, noScrollResults,
   }, null, 2)}\n`);

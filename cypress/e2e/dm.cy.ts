@@ -331,7 +331,7 @@ describe('Direct Message v1', () => {
         const expectComposerClearOfNav = () => {
             cy.get('textarea[placeholder="메시지를 입력하세요"]')
                 .then(($input) => $input[0].blur())
-                .click()
+                .focus()
                 .should('have.focus');
             cy.get('[data-testid="auth-mobile-bottom-nav"]').should('be.visible');
             cy.contains('button', '메시지 보내기').should(($sendButton) => {
