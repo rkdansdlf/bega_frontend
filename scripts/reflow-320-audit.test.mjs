@@ -3,6 +3,14 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { findFixture } from './reflow-320-fixtures.mjs';
+import { resolveReflowBrowser } from './reflow-320-audit.mjs';
+
+test('reflow browser selection preserves Chromium default and rejects unsupported engines', () => {
+  assert.equal(resolveReflowBrowser(), 'chromium');
+  assert.equal(resolveReflowBrowser('chromium'), 'chromium');
+  assert.equal(resolveReflowBrowser('webkit'), 'webkit');
+  assert.throws(() => resolveReflowBrowser('unknown'), /Unsupported reflow browser/);
+});
 
 import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, activateDeferredSurfaces, evaluateKeyboard, evaluateRoute, isApiRequestUrl, isExpectedRoutePath, installOfflineBoundary, stubApi, summarize } from './reflow-320-audit.mjs';
 

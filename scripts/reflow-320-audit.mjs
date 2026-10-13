@@ -451,19 +451,26 @@ export const installOfflineBoundary = async (context, baseUrl) => {
   await context.routeWebSocket(/.*/, (socket) => socket.close());
 };
 
+export const resolveReflowBrowser = (name = 'chromium') => {
+  if (name !== 'chromium' && name !== 'webkit') throw new Error(`Unsupported reflow browser: ${name}`);
+  return name;
+};
+
 export const runReflowAudit = async ({
   baseUrl = process.env.REFLOW_BASE_URL ?? 'http://127.0.0.1:5180',
   routes = DEFAULT_ROUTES,
   reportPath = process.env.REFLOW_REPORT_PATH ?? resolve(PROJECT_ROOT, 'reports/reflow-320-report.json'),
   screenshotDir = process.env.REFLOW_SCREENSHOT_DIR,
   allowApi = process.env.REFLOW_ALLOW_API === '1',
+  browserName = process.env.REFLOW_BROWSER ?? 'chromium',
 } = {}) => {
-  const { chromium } = await loadPlaywright();
+  const engine = resolveReflowBrowser(browserName);
+  const browserType = (await loadPlaywright())[engine];
   let browser;
   try {
-    browser = await chromium.launch({ channel: 'chrome', headless: true });
+    browser = await browserType.launch({ ...(engine === 'chromium' ? { channel: 'chrome' } : {}), headless: true });
   } catch {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
   }
 
   const results = [];
@@ -640,7 +647,7 @@ export const runReflowAudit = async ({
 
   const summary = summarize(results);
   await mkdir(dirname(reportPath), { recursive: true });
-  await writeFile(reportPath, `${JSON.stringify({ baseUrl, viewport: VIEWPORT, apiStubbed: !allowApi,
+  await writeFile(reportPath, `${JSON.stringify({ baseUrl, browser: engine, viewport: VIEWPORT, apiStubbed: !allowApi,
     authFixture: !allowApi ? 'existing Cypress injected profile contract; layout audit, not server authentication' : null,
     externalNetworkBlocked: !allowApi, summary, results }, null, 2)}\n`, 'utf8');
 
