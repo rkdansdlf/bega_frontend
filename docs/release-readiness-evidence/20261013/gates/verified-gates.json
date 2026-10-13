@@ -1,0 +1,48 @@
+{
+  "releaseReady": false,
+  "remaining": "P2 extended environments, corrected DM widths, Cypress user flows and final audit",
+  "sourceEquivalence": {
+    "checkedFiles": 1385,
+    "mismatches": [],
+    "currentHead": "b37d54d7cda7bae5514612d5a349430e5c5092b4",
+    "snapshot": "/private/tmp/bega-release-unit-20261013-r1"
+  },
+  "gates": [
+    {
+      "command": "npm run build",
+      "result": "PASS: worker/client, bundle, SEO prerender, sitemap",
+      "rawEvidence": "artifacts/release-readiness-20261013/build/after-r2.log",
+      "sha256": "0f9c6bd288cdabce15c5bbad526d7c356bdb92044e04009fc6f7e1663e18ff5f"
+    },
+    {
+      "command": "npm run test:unit",
+      "result": "PASS: 2514/2514, 0 fail/cancel/skip, normal exit",
+      "rawEvidence": "artifacts/release-readiness-20261013/unit/full-immutable-r2.log",
+      "sha256": "21f7c435eddcd0854644c4e866c66c3a8953994ba025c7a7a1622a7bba2dc22e"
+    },
+    {
+      "command": "npm run qa:reflow:320",
+      "result": "PASS:40/40,0 fail/untrusted",
+      "rawEvidence": "artifacts/release-readiness-20261013/reflow/current-full-final.json",
+      "sha256": "4189dbfb43993bf949e44a9b7f9bf745d3e0ee49cb8a0f8c1a64835a2d10db9b"
+    },
+    {
+      "command": "npm run visual-qa:inventory:reviewed-check",
+      "result": "PASS:0 unclassified/stale/provisional/errors",
+      "rawEvidence": "artifacts/release-readiness-20261013/registration/inventory-final-report.json",
+      "sha256": "f450d133c89abd3f6513b42bc63c2631b8c27e73554ada8747b5c8478bda0e21"
+    },
+    {
+      "command": "npm run visual-qa:states:check",
+      "result": "PASS:1017/1017,0 missing/pending/errors",
+      "rawEvidence": "artifacts/release-readiness-20261013/registration/states-settled-final-report.json",
+      "sha256": "6e7a00c93362f77a9cfcd3b42d78e70c8686cf1493b9cc07f4e6199d0cdc7cba"
+    },
+    {
+      "command": "existing design environment harness",
+      "result": "PASS:120/120,0 failure",
+      "rawEvidence": "artifacts/release-readiness-20261013/environment-matrix/report.json",
+      "sha256": "bba3cc4ab6973907e3178602a2f29274415afa635efacb5bc3cbe3e3c545290c"
+    }
+  ]
+}
