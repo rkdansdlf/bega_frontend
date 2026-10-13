@@ -852,6 +852,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -1978,6 +1987,15 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/auth/AuthLayout.tsx#AuthLayout",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -2175,6 +2193,16 @@
       "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/AuthSessionSync.tsx#AuthSessionSync",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Subscribes to cross-tab auth session signals and returns null without producing DOM.",
+      "owner": "frontend-platform",
+      "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "renderAccess": "module-export",
+      "exportName": "default"
     },
     {
       "id": "src/components/changwon/ChangwonSeatMap.tsx#BlockSearch",

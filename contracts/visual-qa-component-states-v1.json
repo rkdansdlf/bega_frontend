@@ -7043,6 +7043,56 @@
       ]
     },
     {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+          "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.filters=active|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The hosted leaf is mounted by direct parent src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel for every row; photo payload coverage remains with the parent contract.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the direct parent; the leaf only swaps to its fallback when the image fails to load.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The hosted leaf performs no independent transport request.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
       "status": "registered",
       "renderAccess": "module-export",
@@ -27943,6 +27993,56 @@
           "testEvidence": "src/components/AuthSessionBoundary.tsx"
         }
       ]
+    },
+    {
+      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AppShellRuntime.tsx#AppShellRuntime:data=single|variant.phase=resolved|variant.theme=light",
+          "state:src/components/AppShellRuntime.tsx#AppShellRuntime:data=single|variant.phase=resolved|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The lazy binding mounts a component that renders nothing; shell content states are covered by the referenced direct parent scenarios.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AppShellRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The binding makes no authorization decision; it only listens for cross-tab session signals.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AppShellRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The component has no interactive surface; its behaviour is covered by the auth-session-cross-tab integration script and AppShellBoundaries.test.tsx.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AppShellRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The binding performs no transport request until a session signal arrives from another tab.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AppShellRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The component renders no DOM, so theme and phase variants are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppShellRuntime.tsx"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/auth/AuthLayout.tsx#AuthLayout",
