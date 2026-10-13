@@ -1,10 +1,18 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 
 const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
+const fixtureCacheDir = await mkdtemp(join(tmpdir(), 'global-error-dialog-vite-'));
+const browserDiagnostics = new WeakMap<Page, string[]>();
+const browserRequestCounts = new WeakMap<Page, { total: number; phosphor: number }>();
+const browserPendingRequests = new WeakMap<Page, Set<string>>();
+test.after(() => rm(fixtureCacheDir, { recursive: true, force: true }));
 const testPagePath = '/__global-error-dialog-test.html';
 const testEntryPath = '/__global-error-dialog-test.tsx';
 const testModuleId = '\0virtual:global-error-dialog-test';
@@ -298,11 +306,15 @@ const readCalls = (page: Page) => page.evaluate(() => (
 ).__GLOBAL_ERROR_DIALOG_TEST__.calls);
 
 const openPage = async (page: Page, port: number, query = '') => {
-  const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`);
-  assert.equal(response?.status(), 200);
-  await page.waitForFunction(() => Boolean((window as unknown as {
-    __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
-  }).__GLOBAL_ERROR_DIALOG_TEST__));
+  try {
+    const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`);
+    assert.equal(response?.status(), 200);
+    await page.waitForFunction(() => Boolean((window as unknown as {
+      __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
+    }).__GLOBAL_ERROR_DIALOG_TEST__));
+  } catch (error) {
+    throw new Error(`Global error harness did not mount: ${JSON.stringify({ messages: browserDiagnostics.get(page) ?? [], requests: browserRequestCounts.get(page), pending: [...(browserPendingRequests.get(page) ?? [])] })}`, { cause: error });
+  }
 };
 
 const withActualBrowser = async (
@@ -310,23 +322,59 @@ const withActualBrowser = async (
 ) => {
   let server: ViteDevServer | undefined;
   let browser: Browser | undefined;
+  const startedAt = Date.now();
+  const stages: string[] = [];
+  const diagnostic = (stage: string) => stages.push(`${stage}: ${Date.now() - startedAt}ms`);
   try {
+    diagnostic('create-server');
     server = await createServer({
       configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
       logLevel: 'silent',
+      cacheDir: fixtureCacheDir,
       plugins: [createGlobalErrorDialogTestPlugin()],
       root: frontendRoot,
       server: { host: '127.0.0.1', port: 0, strictPort: false },
     });
+    diagnostic('server-created');
     await server.listen();
+    diagnostic('server-listening');
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
+    diagnostic('browser-launched');
     const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const diagnostics: string[] = [];
+    const record = (message: string) => { if (diagnostics.length < 20) diagnostics.push(message); };
+    browserDiagnostics.set(page, diagnostics);
+    const requestCounts = { total: 0, phosphor: 0 };
+    browserRequestCounts.set(page, requestCounts);
+    const pendingRequests = new Set<string>();
+    browserPendingRequests.set(page, pendingRequests);
+    page.on('requestfinished', (request) => pendingRequests.delete(request.url()));
+    page.on('request', (request) => {
+      requestCounts.total += 1;
+      pendingRequests.add(request.url());
+      if (request.url().includes('@phosphor-icons')) requestCounts.phosphor += 1;
+    });
+    page.on('pageerror', (error) => record(error.message));
+    page.on('requestfailed', (request) => {
+      pendingRequests.delete(request.url());
+      record(`${request.url()}: ${request.failure()?.errorText}`);
+    });
+    page.on('response', (response) => {
+      if (response.status() >= 400) record(`${response.status()} ${response.url()}`);
+    });
+    diagnostic('page-created');
     await run({ browser, page, port: address.port });
+  } catch (error) {
+    console.info(`[global-error-fixture] ${stages.join(', ')}`);
+    throw error;
   } finally {
-    await browser?.close();
-    await server?.close();
+    try {
+      await browser?.close();
+    } finally {
+      await server?.close();
+    }
   }
 };
 

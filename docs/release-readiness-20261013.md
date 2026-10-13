@@ -89,3 +89,12 @@ build must establish its size effect. Original failure logs are retained.
   Visual QA contract passed (2 browsers, 18 viewports, 4 axes).
 - Overall status remains NOT READY: immutable-source full unit execution and
   remaining representative interaction/flow evidence are still required.
+
+Full unit snapshot attempt r1 is running with bounded concurrency 2 and no
+forced exit. It has passed the earlier GlobalError browser failures. Two
+MyPage contract assertions failed because the snapshot initially omitted
+sibling backend Java source files; the ENOENT logs are retained. Both referenced
+files were copied unchanged with hashes in `unit/backend-contract-source.json`.
+A fresh full run with that complete environment is required; focused passes
+will not be substituted for full success. Immutable frontend source hashes
+are recorded in `unit/immutable-source-r1.json`; no env/secrets were copied.

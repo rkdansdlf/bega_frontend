@@ -74,7 +74,7 @@ test('privateGet preserves caller cancellation while reading a response body', a
   });
 });
 
-test('privateGet still reports an internal deadline as a timeout', async (t) => {
+test('privateGet still reports an internal deadline as a timeout', { timeout: 5_000 }, async (t) => {
   // Native AbortSignal deadlines do not keep Node alive; real fetch owns a socket.
   const requestHandle = setInterval(() => {}, 1_000);
   t.after(() => clearInterval(requestHandle));
