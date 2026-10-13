@@ -298,11 +298,15 @@ const readCalls = (page: Page) => page.evaluate(() => (
 ).__GLOBAL_ERROR_DIALOG_TEST__.calls);
 
 const openPage = async (page: Page, port: number, query = '') => {
-  const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`);
+  const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`, {
+    timeout: scaledTimeout(30_000),
+  });
   assert.equal(response?.status(), 200);
+  // Playwright's default 30 s wait is not load-tolerant: the first request after a cold Vite start
+  // transforms the whole module graph. Use the same scale as the per-test timeouts.
   await page.waitForFunction(() => Boolean((window as unknown as {
     __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
-  }).__GLOBAL_ERROR_DIALOG_TEST__));
+  }).__GLOBAL_ERROR_DIALOG_TEST__), undefined, { timeout: scaledTimeout(30_000) });
 };
 
 const withActualBrowser = async (

@@ -184,7 +184,8 @@ test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard
       if (message.type() === 'error') diagnostics.push(message.text());
     });
     page.on('pageerror', (error) => diagnostics.push(error.message));
-    const response = await page.goto(`http://127.0.0.1:${address.port}${pagePath}`);
+    // The first request after a cold Vite start transforms the module graph; 30 s is too tight on a loaded runner.
+    const response = await page.goto(`http://127.0.0.1:${address.port}${pagePath}`, { timeout: 90_000 });
     assert.equal(response?.status(), 200);
 
     const mount = (mode: string, initial = '') => page.evaluate(({ nextMode, nextInitial }) => {
@@ -231,7 +232,14 @@ test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard
     await mount('status');
     await page.getByRole('button', { name: '전체' }).focus();
     await page.keyboard.press('Tab');
-    if (!await page.getByRole('button', { name: '모집 중' }).evaluate((node) => node.matches(':focus-visible'))) {
+    // :focus-visible lands a frame after the key press on a loaded runner, so poll briefly.
+    const recruiting = page.getByRole('button', { name: '모집 중' });
+    let recruitingFocusVisible = false;
+    for (let attempt = 0; attempt < 20 && !recruitingFocusVisible; attempt += 1) {
+      recruitingFocusVisible = await recruiting.evaluate((node) => node.matches(':focus-visible'));
+      if (!recruitingFocusVisible) await page.waitForTimeout(50);
+    }
+    if (!recruitingFocusVisible) {
       problems.push('status Tab did not move focus-visible to recruiting');
     }
 
