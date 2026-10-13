@@ -98,3 +98,12 @@ files were copied unchanged with hashes in `unit/backend-contract-source.json`.
 A fresh full run with that complete environment is required; focused passes
 will not be substituted for full success. Immutable frontend source hashes
 are recorded in `unit/immutable-source-r1.json`; no env/secrets were copied.
+
+Immutable full unit r1 later recorded an additional browser navigation timeout
+in `StadiumSeatMapErrorBoundary.mobile.test.tsx:190` (local page.goto, 30s,
+DOMContentLoaded). Its fallback-removal mutation and evidence checks passed.
+This is unresolved; classify via focused isolated browser diagnostics before
+changing code or timeout limits. Normal full termination is still required.
+Current implementation HEAD is `a49a8a5c`; generated reports and unrelated
+postdeploy security test changes remain excluded. Full-run handle is retained
+for continuation, not restarted on observation timeout.
