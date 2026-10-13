@@ -285,7 +285,7 @@ describe('Direct Message v1', () => {
         cy.contains('상대방이 보낸 메시지입니다.').should('not.exist');
     });
 
-    it('keeps the mobile message composer clear of the fixed bottom navigation', () => {
+    it('keeps the focused mobile message composer clear of the fixed bottom navigation', () => {
         cy.viewport(390, 844);
         cy.login('user');
         cy.mockAPI();
@@ -329,6 +329,10 @@ describe('Direct Message v1', () => {
         cy.wait('@getDmMessages');
         cy.contains('모바일 화면 합성 fixture입니다.').should('be.visible');
         const expectComposerClearOfNav = () => {
+            cy.get('textarea[placeholder="메시지를 입력하세요"]')
+                .then(($input) => $input[0].blur())
+                .click()
+                .should('have.focus');
             cy.get('[data-testid="auth-mobile-bottom-nav"]').should('be.visible');
             cy.contains('button', '메시지 보내기').should(($sendButton) => {
                 const send = $sendButton[0].getBoundingClientRect();
