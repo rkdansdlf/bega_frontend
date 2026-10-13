@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from './viteTestCacheDir';
 
 const statusSource = readFileSync(new URL('./MateStatusTabs.tsx', import.meta.url), 'utf8');
 const sortSource = readFileSync(new URL('./MateSortDropdown.tsx', import.meta.url), 'utf8');
@@ -166,6 +167,7 @@ test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard
   timeout: 90_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('mate-list-control-leaves'),
     configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createLeavesPlugin()],

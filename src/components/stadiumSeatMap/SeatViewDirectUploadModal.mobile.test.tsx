@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 import { chromium, type Browser, type Locator, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { createViteCacheDir } from '../viteTestCacheDir';
 
 const packageManifest = JSON.parse(
   readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'),
@@ -231,6 +232,7 @@ let baseUrl: string;
 
 before(async () => {
   server = await createServer({
+    cacheDir: createViteCacheDir('seat-view-upload'),
     configFile: fileURLToPath(new URL('../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createSeatViewDirectUploadPlugin()],

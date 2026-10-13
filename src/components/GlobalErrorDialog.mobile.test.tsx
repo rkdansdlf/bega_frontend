@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { createViteCacheDir } from './viteTestCacheDir';
 
 const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
 const testPagePath = '/__global-error-dialog-test.html';
@@ -327,6 +328,7 @@ const withActualBrowser = async (
   let browser: Browser | undefined;
   try {
     server = await createServer({
+      cacheDir: createViteCacheDir('global-error-dialog'),
       configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
       logLevel: 'silent',
       plugins: [createGlobalErrorDialogTestPlugin()],

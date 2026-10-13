@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from './viteTestCacheDir';
 
 const componentSource = readFileSync(
   new URL('./RankingPredictionSaveDialog.tsx', import.meta.url),
@@ -179,6 +180,7 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
   timeout: 90_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('ranking-save-dialog'),
     configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createSaveDialogPlugin()],
