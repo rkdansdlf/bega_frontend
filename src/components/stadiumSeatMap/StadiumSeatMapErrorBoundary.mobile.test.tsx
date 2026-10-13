@@ -133,10 +133,12 @@ const startServer = async (mutate = false) => {
     appType: 'custom',
     cacheDir,
     plugins: [createBoundaryPlugin(mutate)],
-    server: { host: '127.0.0.1', port: 5191, strictPort: true },
+    server: { host: '127.0.0.1', port: 0, watch: null },
   });
   try {
     await server.listen();
+    await server.transformRequest('/src/index.css');
+    await server.transformRequest(entryPath);
   } catch (error) {
     await server.close().catch(() => {});
     await rm(cacheDir, { recursive: true, force: true }).catch(() => {});
