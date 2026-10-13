@@ -61,3 +61,31 @@ than duplicating 8-bit transfer/luminance code. Its regression verifies all
 768 channel basis cases and 4,096 RGB grid colors, including shorthand,
 unprefixed/uppercase and invalid inputs. Tests passed 7/7; the next complete
 build must establish its size effect. Original failure logs are retained.
+
+## Current production and mobile results
+
+- Full `npm run build` completed normally (exit 0): worker/client compilation,
+  unchanged bundle guards, SEO prerender and sitemap. Evidence:
+  `build/after-r2.log`, `build/final-bundle.json`. Cheer gzip closure is
+  **119,783B / 121,600B**. No size budget was increased or disabled.
+- Strengthened `qa:reflow:320` on the resulting production preview completed
+  **40/40 pass, 0 fail, 0 untrusted**, exit 0. Report:
+  `reflow/current-full-final.json`. Auth fixtures prove layout reachability,
+  not backend auth correctness; all external HTTP/WebSocket requests blocked.
+- Populated DM messages previously overflowed internally by 171px/617px at
+  100%/200% root text size despite zero document overflow. The flex wrapper now
+  shrinks within 80% and its bubble uses the wrapper width. No breakpoint,
+  policy, message handler or URL changed. Existing registered states after
+  the fix: 20/20 across five widths, both themes and root text scales, internal
+  overflow 0. Root text scaling is not native browser zoom.
+- Curated DM Before/After and reports:
+  `docs/release-readiness-evidence/20261013/reflow/`.
+- MyPage: 8/8 captures at 1024/1440, light/dark, loading/resolved prove the
+  existing lg/2xl discrepancy: loading two columns, card height 156px;
+  resolved one column, 394px. **238px height change**. Follow-up issue:
+  align loading/resolved layout only after explicit responsive-change approval.
+  Product breakpoints remain unchanged.
+- Design policy passed; policy/mutation tests **24/24**, failure/cancel/skip 0.
+  Visual QA contract passed (2 browsers, 18 viewports, 4 axes).
+- Overall status remains NOT READY: immutable-source full unit execution and
+  remaining representative interaction/flow evidence are still required.
