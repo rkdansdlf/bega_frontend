@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+  "sourceSha256": "e5de0c2b9b8122205b7c8238d672c8c19d4e9cd4a3a3c81a096133070e9b2483",
+  "apiSourceSha256": "6e121929bc803f0631bf1c2d87103bf04c0446ae2120a52e7c2dbca4cdf1300a",
+  "baseUrl": "http://127.0.0.1:5183",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "externalRequests": "blocked",
+  "realUserMessageSent": false,
+  "chromium": {
+    "flows": [
+      {
+        "browser": "chromium",
+        "interaction": "default",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "chromium",
+        "interaction": "input",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "chromium",
+        "interaction": "submitting",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 1,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "chromium",
+        "interaction": "retry",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 3,
+        "failedBootstraps": 2
+      }
+    ],
+    "mutations": [
+      {
+        "browser": "chromium",
+        "mutation": "send-noop",
+        "red": true,
+        "restoredGreen": true,
+        "targetPreserved": true
+      },
+      {
+        "browser": "chromium",
+        "mutation": "retry-noop",
+        "red": true,
+        "restoredGreen": true,
+        "targetPreserved": true
+      }
+    ]
+  },
+  "webkit": {
+    "flows": [
+      {
+        "browser": "webkit",
+        "interaction": "default",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "webkit",
+        "interaction": "input",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "webkit",
+        "interaction": "submitting",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 1,
+        "bootstrapAttempts": 2,
+        "failedBootstraps": 0
+      },
+      {
+        "browser": "webkit",
+        "interaction": "retry",
+        "mutation": null,
+        "status": "PASS",
+        "requestCount": 0,
+        "bootstrapAttempts": 3,
+        "failedBootstraps": 2
+      }
+    ],
+    "mutations": [
+      {
+        "browser": "webkit",
+        "mutation": "send-noop",
+        "red": true,
+        "restoredGreen": true,
+        "targetPreserved": true
+      },
+      {
+        "browser": "webkit",
+        "mutation": "retry-noop",
+        "red": true,
+        "restoredGreen": true,
+        "targetPreserved": true
+      }
+    ]
+  },
+  "summary": {
+    "flowPassCount": 8,
+    "flowCount": 8,
+    "mutationRedCount": 4,
+    "mutationRestoredGreenCount": 4
+  }
+}

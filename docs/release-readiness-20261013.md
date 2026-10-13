@@ -1,5 +1,8 @@
 # BEGA frontend release readiness — 2026-10-13
 
+Follow-up on 2026-10-14: see [current release verification](release-readiness-20261014.md).
+The former pending DM proposal is now applied; statuses below are historical.
+
 ## Latest checkpoint (current source)
 
 **NOT READY.** Product DM composer focus is partly hidden behind the fixed
