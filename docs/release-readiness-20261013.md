@@ -107,3 +107,23 @@ changing code or timeout limits. Normal full termination is still required.
 Current implementation HEAD is `a49a8a5c`; generated reports and unrelated
 postdeploy security test changes remain excluded. Full-run handle is retained
 for continuation, not restarted on observation timeout.
+
+## Full unit follow-up
+
+R1 completed its assertions with 2,514 tests: 2,511 pass, 3 fail, 0 cancelled,
+0 skipped. Its only remaining child retained watcher/esbuild handles after all
+four assertions, so termination is recorded as failed verification, not success.
+Failure evidence remains unchanged in `unit/full-immutable-r1.log` and
+`unit/r1-open-handle-stop.json`.
+
+The static boundary fixture now disables file watching, uses an OS-assigned
+port and completes initial CSS/entry transforms before browser navigation.
+No timeout was increased and DOM/error-recovery/mutation assertions remain.
+Focused real browser verification: **4/4 pass, 0 fail/cancel/skip**, normal exit
+in 47.9s (`unit/boundary-isolated-r2.log`). Commit: `6352a320`.
+
+R2 full `npm run test:unit` is running from the fixed source snapshot with both
+sibling backend contracts present. Source hashes:
+`unit/immutable-source-r2.json`; log: `unit/full-immutable-r2.log`.
+The source and test counts are frozen throughout this run. Full-suite success
+still requires its normal completion with zero failures/cancellations.
