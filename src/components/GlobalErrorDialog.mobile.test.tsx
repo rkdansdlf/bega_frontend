@@ -298,15 +298,26 @@ const readCalls = (page: Page) => page.evaluate(() => (
 ).__GLOBAL_ERROR_DIALOG_TEST__.calls);
 
 const openPage = async (page: Page, port: number, query = '') => {
+  const diagnostics: string[] = [];
+  const note = (message: string) => { if (diagnostics.length < 20) diagnostics.push(message.slice(0, 300)); };
+  page.on('console', (message) => { if (message.type() === 'error' || message.type() === 'warning') note(`console.${message.type()}: ${message.text()}`); });
+  page.on('pageerror', (error) => note(`pageerror: ${error.message}`));
+  page.on('requestfailed', (request) => note(`requestfailed: ${request.url()} ${request.failure()?.errorText ?? ''}`));
   const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`, {
     timeout: scaledTimeout(30_000),
   });
   assert.equal(response?.status(), 200);
-  // Playwright's default 30 s wait is not load-tolerant: the first request after a cold Vite start
-  // transforms the whole module graph. Use the same scale as the per-test timeouts.
-  await page.waitForFunction(() => Boolean((window as unknown as {
-    __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
-  }).__GLOBAL_ERROR_DIALOG_TEST__), undefined, { timeout: scaledTimeout(30_000) });
+  try {
+    // Playwright's default 30 s wait is not load-tolerant: the first request after a cold Vite start
+    // transforms the whole module graph. Use the same scale as the per-test timeouts.
+    await page.waitForFunction(() => Boolean((window as unknown as {
+      __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
+    }).__GLOBAL_ERROR_DIALOG_TEST__), undefined, { timeout: scaledTimeout(30_000) });
+  } catch (error) {
+    // frontend-unit fails here on CI only; surface what the page saw so the cause is in the log.
+    const state = await page.evaluate(() => `${document.readyState} root=${document.getElementById('root')?.innerHTML.slice(0, 200) ?? '<none>'}`).catch(() => '<page unavailable>');
+    throw new Error(`${(error as Error).message}\npage ${page.url()} state=${state}\ndiagnostics=${JSON.stringify(diagnostics)}`);
+  }
 };
 
 const withActualBrowser = async (
