@@ -2485,7 +2485,7 @@ test('static mobile leaves resolve repository-owned props and interaction bounda
     interactionTargetId: 'retry-detail',
   });
   assert.equal(predictionMatchTab.theme, 'dark');
-  assert.match(String(predictionMatchTab.captureSelector), /prediction-match-detail-root/);
+  assert.equal(predictionMatchTab.captureSelector, '[data-vqa-harness-surface]');
   assert.equal((predictionMatchTab.props.currentDateGames as unknown[]).length, 1);
   assert.equal(predictionMatchTab.props.currentGameDetailErrorCode, 'UPSTREAM_ERROR');
   assert.equal(typeof predictionMatchTab.props.reloadCurrentGameDetail, 'function');
@@ -2498,6 +2498,7 @@ test('static mobile leaves resolve repository-owned props and interaction bounda
   assert.deepEqual(predictionMatchTabEmpty.props.currentDateGames, []);
   assert.equal(predictionMatchTabEmpty.props.currentGame, null);
   assert.equal(predictionMatchTabEmpty.props.isToday, true);
+  assert.equal(predictionMatchTabEmpty.captureSelector, predictionMatchTab.captureSelector);
 
   const predictionMatchDetail = resolveComponentStateAdapter('prediction.match-detail-panel', {
     componentId: 'src/components/prediction/PredictionMatchDetailPanel.tsx#PredictionMatchDetailPanel',
