@@ -8,6 +8,7 @@ import {
   ChatBotSessionSpinnerIcon as SpinnerIcon,
 } from './chatbot/ChatBotSessionIcons';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
 import ChatBotFloatingButton from './ChatBotFloatingButton';
 
@@ -16,9 +17,10 @@ const ChatBotAuthenticatedPanel = lazy(() => import('./ChatBotAuthenticatedPanel
 interface ChatBotProps {
   autoOpen?: boolean;
   onClosed?: () => void;
+  returnFocusTo?: HTMLElement | null;
 }
 
-export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotProps) {
+export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocusTo }: ChatBotProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,6 +29,22 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
   const [isClosing, setIsClosing] = useState(false);
   const [hasMountedAuthenticatedPanel, setHasMountedAuthenticatedPanel] = useState(autoOpen && !isPublicHomeRoute);
   const closeTimerRef = useRef<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(returnFocusTo ?? null);
+  const isMobileModal = isOpen && isMobile && !isPublicHomeRoute;
+
+  useEffect(() => {
+    if (returnFocusTo) {
+      openerRef.current = returnFocusTo;
+    }
+  }, [returnFocusTo]);
+
+  useFocusTrap(dialogRef, {
+    active: isMobileModal,
+    initialFocus: 'container',
+    restoreFocusTo: openerRef.current,
+    listenOnDocument: true,
+  });
 
   useEffect(() => {
     if (autoOpen) {
@@ -75,6 +93,19 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
       onClosed?.();
     }, 300);
   };
+
+  useEffect(() => {
+    if (!isMobileModal) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || isClosing) return;
+      event.preventDefault();
+      handleClose();
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [isMobileModal, isClosing]);
 
   useEffect(() => {
     return () => {
@@ -146,7 +177,14 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
   );
 
   return (
-    <div className="fixed z-[9999]">
+    <div
+      ref={dialogRef}
+      className={isMobileModal ? 'fixed inset-0 z-[9999]' : 'fixed z-[9999]'}
+      role={isMobileModal ? 'dialog' : undefined}
+      aria-modal={isMobileModal ? true : undefined}
+      aria-label={isMobileModal ? 'BEGA 야구 가이드 챗봇' : undefined}
+      tabIndex={isMobileModal ? -1 : undefined}
+    >
       {isPublicHomeRoute && isOpen && (
         <div data-testid="chatbot-panel" className={panelClassName}>
           <div className="p-3 md:p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-primary">
@@ -195,7 +233,7 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
                   <button
                     type="button"
                     onClick={handleNavigateToLogin}
-                    className="inline-block py-2.5 px-6 rounded-xl text-gray-900 dark:text-white bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 no-underline font-semibold hover:bg-gray-300 dark:hover:bg-white/20 transition-colors"
+                    className="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-300 bg-gray-200 px-6 py-2.5 font-semibold text-gray-900 no-underline transition-colors hover:bg-gray-300 dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
                   >
                     로그인하러 가기
                   </button>
@@ -207,7 +245,7 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
                 type="button"
                 data-testid="chatbot-login-cta-footer"
                 onClick={handleNavigateToLogin}
-                className="flex w-full items-center justify-center rounded-2xl bg-primary px-4 py-3 text-body font-semibold text-white transition-colors hover:bg-[#3d7f6f]"
+                className="flex min-h-11 w-full items-center justify-center rounded-2xl bg-primary px-4 py-3 text-body font-semibold text-white transition-colors hover:bg-[#3d7f6f]"
               >
                 로그인 후 질문하기
               </button>
@@ -233,7 +271,12 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed }: ChatBotPr
       {!isOpen && !autoOpen && (
         <ChatBotFloatingButton
           testId="chatbot-launcher"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            openerRef.current = document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
+            setIsOpen(true);
+          }}
           compactOnMobile
           className={`${launcherOffsetClass} right-[calc(1rem+env(safe-area-inset-right))]
                      sm:right-[calc(1.125rem+env(safe-area-inset-right))]

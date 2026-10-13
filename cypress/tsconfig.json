@@ -1,4 +1,5 @@
 {
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "target": "ES2020",
         "lib": [
@@ -9,14 +10,13 @@
         "module": "ESNext",
         "skipLibCheck": true,
         "ignoreDeprecations": "5.0",
-        "types": [
-            "cypress"
-        ],
         "moduleResolution": "bundler",
         "isolatedModules": true,
         "noEmit": true
     },
     "include": [
-        "**/*.ts"
+        "**/*.ts",
+        "**/*.tsx",
+        "../src/vite-env.d.ts"
     ]
 }

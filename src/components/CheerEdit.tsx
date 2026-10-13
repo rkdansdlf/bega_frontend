@@ -3,17 +3,25 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getTeamNameById } from '../api/cheerApi';
 import { ArrowLeftIcon, ImageIcon, MessageSquareIcon, UploadIcon, XIcon } from './icons/CheerFlowIcons';
 import { useAuthProfileSnapshot } from '../store/authStore';
-import { useCheerEdit } from '../hooks/useCheerEdit';
+import { useCheerEdit, type CheerEditVisualQaStateOverride } from '../hooks/useCheerEdit';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 
-export default function CheerEdit() {
+export type { CheerEditVisualQaStateOverride } from '../hooks/useCheerEdit';
+
+export default function CheerEdit({
+  visualQaStateOverride,
+}: {
+  visualQaStateOverride?: CheerEditVisualQaStateOverride;
+}) {
   const navigate = useNavigate();
   const { postId: postIdParam } = useParams();
-  const postId = Number(postIdParam);
+  const postId = visualQaStateOverride?.postId ?? Number(postIdParam);
   const { userFavoriteTeam } = useAuthProfileSnapshot();
-  const favoriteTeam = userFavoriteTeam ?? null;
+  const favoriteTeam = visualQaStateOverride
+    ? visualQaStateOverride.favoriteTeam
+    : userFavoriteTeam ?? null;
 
   const {
     post,
@@ -35,7 +43,7 @@ export default function CheerEdit() {
     handleDragOver,
     handleDragLeave,
     handleDrop,
-  } = useCheerEdit(postId, favoriteTeam);
+  } = useCheerEdit(postId, favoriteTeam, visualQaStateOverride);
 
   // Redirect if invalid postId
   if (isNaN(postId) || postId === 0) {
@@ -45,7 +53,7 @@ export default function CheerEdit() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-white dark:bg-background">
+      <div data-testid="cheer-edit-route" className="min-h-screen bg-white dark:bg-background">
         <div className="mx-auto max-w-3xl px-4 py-12 text-center text-red-600 dark:text-red-400">
           게시글 정보를 불러오는 중 문제가 발생했습니다.
         </div>
@@ -54,7 +62,7 @@ export default function CheerEdit() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background transition-colors duration-200">
+    <div data-testid="cheer-edit-route" className="min-h-screen bg-white dark:bg-background transition-colors duration-200">
       {/* Header */}
       <div className="border-b bg-gray-50 dark:bg-secondary">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 sm:px-6 lg:px-8">

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import {
+  findVisualQaEndpointIsolationViolations,
   findVisualQaProductionIsolationViolations,
 } from './visual-qa-production-isolation.mjs';
 
@@ -60,4 +61,39 @@ test('the production bundle guard enforces visual QA isolation violations', asyn
   assert.match(bundleGuardSource, /findVisualQaProductionIsolationViolations/);
   assert.match(bundleGuardSource, /visualQaProductionIsolationViolations/);
   assert.match(bundleGuardSource, /type: 'visual_qa_production_isolation'/);
+});
+
+test('local visual QA rejects production API/WS origins in executable artifacts', () => {
+  assert.deepEqual(findVisualQaEndpointIsolationViolations({
+    artifacts: [
+      { file: 'dist/_headers', content: 'connect-src https://api.begabaseball.xyz wss://api.begabaseball.xyz' },
+      { file: 'dist/index.html', content: '<link rel="preconnect" href="https://api.begabaseball.xyz">' },
+      { file: 'dist/assets/home.js', content: 'const api = "https://api.begabaseball.xyz";' },
+    ],
+  }), [
+    {
+      location: 'artifact-content',
+      file: 'dist/index.html',
+      marker: 'https://api.begabaseball.xyz',
+      type: 'production_endpoint',
+    },
+    {
+      location: 'artifact-content',
+      file: 'dist/assets/home.js',
+      marker: 'https://api.begabaseball.xyz',
+      type: 'production_endpoint',
+    },
+  ]);
+});
+
+test('visual QA build is pinned to the local API boundary', async () => {
+  const packageJson = JSON.parse(
+    await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
+  );
+  const buildCommand = packageJson.scripts['visual-qa:build'];
+
+  assert.match(buildCommand, /VITE_API_BASE_URL=\/api/);
+  assert.match(buildCommand, /VITE_SITE_URL=http:\/\/127\.0\.0\.1:5180/);
+  assert.match(buildCommand, /VITE_PROXY_TARGET=http:\/\/127\.0\.0\.1:8080/);
+  assert.doesNotMatch(buildCommand, /api\.begabaseball\.xyz/);
 });

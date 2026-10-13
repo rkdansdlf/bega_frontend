@@ -28,6 +28,15 @@ test('mates admin panel exposes named stable touch-safe delete controls and dial
   assert.ok((source.match(/min-h-11/g) ?? []).length >= 2);
 });
 
+test('mates delete dialog explains that linked records block deletion instead of promising data removal', async () => {
+  const source = await readSource();
+
+  assert.match(source, /연결된 신청·결제·대화·체크인 등의 기록이 있으면 삭제가 차단됩니다/);
+  assert.match(source, /연결 기록은 자동 삭제·환불되지 않으며 별도 정리 절차가 필요합니다/);
+  assert.match(source, /모임은 연결 기록이 없는 경우에만 삭제됩니다/);
+  assert.doesNotMatch(source, /모임과 관련된 모든 데이터가 영구적으로 삭제됩니다/);
+});
+
 test('mates admin panel remains a pure prop and callback surface without API calls', async () => {
   const source = await readSource();
 

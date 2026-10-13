@@ -153,13 +153,13 @@ export default function VerificationRequiredDialog({
                         <Button
                             variant="outline"
                             onClick={onClose}
-                            className={`h-auto min-h-9 flex-1 !whitespace-normal [overflow-wrap:anywhere] ${isSecurityMode ? 'border-slate-500 text-slate-200 hover:text-white' : ''}`}
+                            className={`h-auto min-h-11 flex-1 !whitespace-normal [overflow-wrap:anywhere] sm:min-h-9 ${isSecurityMode ? 'border-slate-500 text-slate-200 hover:text-white' : ''}`}
                         >
                             나중에 하기
                         </Button>
                         <Button
                             onClick={handleAction}
-                            className={`h-auto min-h-9 flex-1 !whitespace-normal [overflow-wrap:anywhere] ${isSecurityMode ? 'bg-amber-500 text-black hover:bg-amber-500/90' : 'bg-primary text-white'}`}
+                            className={`h-auto min-h-11 flex-1 !whitespace-normal [overflow-wrap:anywhere] sm:min-h-9 ${isSecurityMode ? 'bg-amber-500 text-black hover:bg-amber-500/90' : 'bg-primary text-white'}`}
                         >
                             {actionLabel}
                         </Button>

@@ -1,5 +1,10 @@
 import { Suspense, lazy } from 'react';
 import type { CheerPost } from '../api/cheerApi';
+import type { QuoteRepostEditorVisualQaStateOverride } from './QuoteRepostEditor';
+import type { ReportModalVisualQaStateOverride } from './ReportModal';
+import type {
+    CheerDetailCommentsPanelVisualQaStateOverride,
+} from './CheerDetailCommentsPanel';
 import { TEAM_DATA } from '../constants/teams';
 import {
     getReadableAccent,
@@ -33,7 +38,13 @@ const createMutedTeamAccent = (teamHex: string) => {
     return getReadableAccent(slateMixed);
 };
 
-interface CheerDetailContentProps {
+export interface CheerDetailContentVisualQaStateOverride {
+    comments?: CheerDetailCommentsPanelVisualQaStateOverride;
+    quoteRepostEditor?: QuoteRepostEditorVisualQaStateOverride;
+    reportModal?: ReportModalVisualQaStateOverride;
+}
+
+export interface CheerDetailContentProps {
     parsedPostId: number;
     resolvedPostId: number;
     selectedPost: CheerPost;
@@ -72,6 +83,7 @@ interface CheerDetailContentProps {
     onToggleBookmark: () => void;
     onToggleLike: () => void;
     onCancelRepost: () => void;
+    visualQaStateOverride?: CheerDetailContentVisualQaStateOverride;
 }
 
 export default function CheerDetailContent({
@@ -113,7 +125,11 @@ export default function CheerDetailContent({
     onToggleBookmark,
     onToggleLike,
     onCancelRepost,
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerDetailContentProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const isSimpleRepost = selectedPost.repostType === 'SIMPLE' && Boolean(selectedPost.originalPost);
     const displayAuthorTeamId = isSimpleRepost && selectedPost.originalPost
         ? selectedPost.originalPost.teamId
@@ -206,7 +222,7 @@ export default function CheerDetailContent({
     );
 
     return (
-        <>
+        <div data-testid="cheer-detail-content" className="contents">
             <Suspense fallback={articleFallback}>
                 <LazyCheerDetailArticleRuntime
                     selectedPost={selectedPost}
@@ -260,6 +276,7 @@ export default function CheerDetailContent({
                             surfaceTintStyle={surfaceTintStyle}
                             onRedirectToLogin={onRedirectToLogin}
                             confirm={confirm}
+                            visualQaStateOverride={visualQaStateOverride?.comments}
                         />
                     </Suspense>
                 </ViewportDeferred>
@@ -278,9 +295,10 @@ export default function CheerDetailContent({
                         detailAccent={detailAccent}
                         primaryBorderStyle={primaryBorderStyle}
                         surfaceTintStyle={surfaceTintStyle}
-                        onRedirectToLogin={onRedirectToLogin}
-                        confirm={confirm}
-                    />
+                            onRedirectToLogin={onRedirectToLogin}
+                            confirm={confirm}
+                            visualQaStateOverride={visualQaStateOverride?.comments}
+                        />
                 </Suspense>
             )}
             {hasMountedReportModal ? (
@@ -291,11 +309,12 @@ export default function CheerDetailContent({
                         </div>
                     ) : null}
                 >
-                    <LazyReportModal
-                        postId={parsedPostId}
-                        isOpen={isReportModalOpen}
-                        onClose={() => onReportModalOpenChange(false)}
-                    />
+                        <LazyReportModal
+                            postId={parsedPostId}
+                            isOpen={isReportModalOpen}
+                            onClose={() => onReportModalOpenChange(false)}
+                            visualQaStateOverride={visualQaStateOverride?.reportModal}
+                        />
                 </Suspense>
             ) : null}
             {hasMountedQuoteEditor ? (
@@ -310,9 +329,10 @@ export default function CheerDetailContent({
                         isOpen={isQuoteEditorOpen}
                         onClose={() => onQuoteEditorOpenChange(false)}
                         post={selectedPost}
+                        visualQaStateOverride={visualQaStateOverride?.quoteRepostEditor}
                     />
                 </Suspense>
             ) : null}
-        </>
+        </div>
     );
 }

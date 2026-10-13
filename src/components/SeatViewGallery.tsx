@@ -4,7 +4,10 @@ import { type SeatViewPhoto } from '../api/diary';
 import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
 import { CameraIcon, XIcon } from './icons/StadiumGuideIcons';
 import { Button } from './ui/plain-button';
-import { useSeatViewPhotos } from '../hooks/useSeatViewPhotos';
+import {
+  useSeatViewPhotos,
+  type SeatViewPhotosVisualQaStateOverride,
+} from '../hooks/useSeatViewPhotos';
 
 export { buildSeatViewSectionQueries, dedupeSeatViewPhotos } from '../hooks/useSeatViewPhotos';
 
@@ -13,15 +16,38 @@ interface SeatViewGalleryProps {
   section: string;
   sectionAliases?: string[];
   compact?: boolean;
+  visualQaStateOverride?: SeatViewPhotosVisualQaStateOverride & {
+    lightboxPhoto?: SeatViewPhoto | null;
+  };
 }
 
-export default function SeatViewGallery({ stadium, section, sectionAliases = [], compact = false }: SeatViewGalleryProps) {
-  const [lightboxPhoto, setLightboxPhoto] = useState<SeatViewPhoto | null>(null);
-  const { photos, isLoading } = useSeatViewPhotos(stadium, section, sectionAliases);
+export default function SeatViewGallery({
+  stadium,
+  section,
+  sectionAliases = [],
+  compact = false,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: SeatViewGalleryProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const [lightboxPhoto, setLightboxPhoto] = useState<SeatViewPhoto | null>(
+    visualQaStateOverride?.lightboxPhoto ?? null,
+  );
+  const { photos, isLoading } = useSeatViewPhotos(
+    stadium,
+    section,
+    sectionAliases,
+    9,
+    visualQaStateOverride,
+  );
 
   if (isLoading) {
     return (
-      <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-3'}`}>
+      <div
+        className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-3'}`}
+        data-testid="seat-view-gallery"
+      >
         {Array.from({ length: compact ? 2 : 3 }).map((_, i) => (
           <div
             key={i}
@@ -34,7 +60,10 @@ export default function SeatViewGallery({ stadium, section, sectionAliases = [],
 
   if (photos.length === 0) {
     return (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-300 dark:border-border bg-gray-50 dark:bg-secondary/50 py-6 px-4 text-center">
+        <div
+          className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-300 dark:border-border bg-gray-50 dark:bg-secondary/50 py-6 px-4 text-center"
+          data-testid="seat-view-gallery"
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-border">
           <CameraIcon className="h-5 w-5 text-gray-400 dark:text-white" />
         </div>
@@ -47,8 +76,8 @@ export default function SeatViewGallery({ stadium, section, sectionAliases = [],
             <span className="font-bold text-primary">+50 포인트</span>를 받아요!
           </p>
         </div>
-        <Button asChild size="sm" variant="outline" className="rounded-full text-body min-h-9">
-          <Link to="/mypage">다이어리에서 공유하기</Link>
+        <Button asChild size="sm" variant="outline" className="rounded-full text-body min-h-11 sm:min-h-9">
+          <Link to="/mypage" data-testid="seat-view-share-link">다이어리에서 공유하기</Link>
         </Button>
       </div>
     );
@@ -56,12 +85,16 @@ export default function SeatViewGallery({ stadium, section, sectionAliases = [],
 
   return (
     <>
-      <div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-3'}`}>
+      <div
+        className={`grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-3'}`}
+        data-testid="seat-view-gallery"
+      >
         {photos.map((photo, idx) => (
           <button
             type="button"
             key={idx}
             onClick={() => setLightboxPhoto(photo)}
+            data-testid={`seat-view-photo-${idx}`}
             className="group overflow-hidden rounded-xl bg-gray-100 dark:bg-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <img
@@ -84,11 +117,13 @@ export default function SeatViewGallery({ stadium, section, sectionAliases = [],
       {lightboxPhoto && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          data-testid="seat-view-lightbox"
           onClick={() => setLightboxPhoto(null)}
         >
           <button
             type="button"
-            className="absolute right-4 top-4 rounded-full bg-white/20 p-2 text-white hover:bg-white/30"
+            data-testid="seat-view-lightbox-close"
+            className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/20 p-2 text-white hover:bg-white/30 sm:h-9 sm:w-8"
             onClick={() => setLightboxPhoto(null)}
             aria-label="닫기"
           >

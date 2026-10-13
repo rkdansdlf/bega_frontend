@@ -88,13 +88,11 @@ jobs:
       working_directory: .
       timeout_minutes: 20
       environment_url: ${{ inputs.frontend_origin }}
-      env_exports: |
-        # Credentials are passed through the reusable workflow secrets contract.
+      api_base_url: ${{ inputs.api_base_url }}
+      frontend_origin: ${{ inputs.frontend_origin }}
+      timeout_ms: ${{ inputs.timeout_ms }}
+      run_dm_smoke: ${{ inputs.run_dm_smoke }}
       validate_script: |
-        API_BASE_URL="${{ inputs.api_base_url }}"
-        FRONTEND_ORIGIN="${{ inputs.frontend_origin }}"
-        TIMEOUT_MS="${{ inputs.timeout_ms }}"
-
         if ! [[ "${API_BASE_URL}" =~ ^https:// ]]; then
           echo "api_base_url must start with https:// : ${API_BASE_URL}" >&2
           exit 1
@@ -115,7 +113,7 @@ jobs:
           exit 1
         fi
 
-        if [[ "${{ inputs.run_dm_smoke }}" == "true" ]]; then
+        if [[ "${RUN_DM_SMOKE}" == "true" ]]; then
           for key in SMOKE_LOGIN_EMAIL SMOKE_LOGIN_PASSWORD DM_TARGET_EMAIL DM_TARGET_PASSWORD DM_TARGET_HANDLE; do
             if [[ -z "${!key:-}" ]]; then
               echo "run_dm_smoke=true requires repository secret ${key}" >&2
@@ -125,13 +123,13 @@ jobs:
         fi
       run_script: |
         npm run smoke:auth:public:prod -- \
-          --api-base-url "${{ inputs.api_base_url }}" \
-          --frontend-origin "${{ inputs.frontend_origin }}" \
-          --timeout-ms "${{ inputs.timeout_ms }}"
+          --api-base-url "${API_BASE_URL}" \
+          --frontend-origin "${FRONTEND_ORIGIN}" \
+          --timeout-ms "${TIMEOUT_MS}"
 
-        if [[ "${{ inputs.run_dm_smoke }}" == "true" ]]; then
-          DM_API_BASE_URL="${{ inputs.api_base_url }}" \
-          DM_FRONTEND_ORIGIN="${{ inputs.frontend_origin }}" \
+        if [[ "${RUN_DM_SMOKE}" == "true" ]]; then
+          DM_API_BASE_URL="${API_BASE_URL}" \
+          DM_FRONTEND_ORIGIN="${FRONTEND_ORIGIN}" \
           SMOKE_LOGIN_EMAIL="${SMOKE_LOGIN_EMAIL}" \
           SMOKE_LOGIN_PASSWORD="${SMOKE_LOGIN_PASSWORD}" \
           DM_TARGET_EMAIL="${DM_TARGET_EMAIL}" \
@@ -141,9 +139,9 @@ jobs:
         fi
       summary_script: |
         echo "### Frontend Auth Postdeploy Smoke" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- API base URL: ${{ inputs.api_base_url }}" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- Frontend origin: ${{ inputs.frontend_origin }}" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- run_dm_smoke: ${{ inputs.run_dm_smoke }}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- API base URL: ${API_BASE_URL}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- Frontend origin: ${FRONTEND_ORIGIN}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- run_dm_smoke: ${RUN_DM_SMOKE}" >> "${GITHUB_STEP_SUMMARY}"
         if [[ -f "reports/auth-public-postdeploy-smoke.json" ]]; then
           node -e 'const fs=require("fs"); const p="reports/auth-public-postdeploy-smoke.json"; const r=JSON.parse(fs.readFileSync(p,"utf8")); console.log(`Result: ${r.ok ? "PASS" : "FAIL"}`); if(Array.isArray(r.failures)&&r.failures.length){console.log("Failures:"); for(const f of r.failures){console.log(`- ${f}`);} } if(Array.isArray(r.warnings)&&r.warnings.length){console.log("Warnings:"); for(const w of r.warnings){console.log(`- ${w}`);} }' >> "${GITHUB_STEP_SUMMARY}"
           echo '```json' >> "${GITHUB_STEP_SUMMARY}"
@@ -183,11 +181,10 @@ jobs:
       working_directory: .
       timeout_minutes: 20
       environment_url: ${{ inputs.base_url }}
+      base_url: ${{ inputs.base_url }}
+      expected_site_url: ${{ inputs.expected_site_url }}
+      timeout_ms: ${{ inputs.timeout_ms }}
       validate_script: |
-        BASE_URL="${{ inputs.base_url }}"
-        EXPECTED_SITE_URL="${{ inputs.expected_site_url }}"
-        TIMEOUT_MS="${{ inputs.timeout_ms }}"
-
         if ! [[ "${BASE_URL}" =~ ^https:// ]]; then
           echo "base_url must start with https:// : ${BASE_URL}" >&2
           exit 1
@@ -213,14 +210,14 @@ jobs:
         fi
       run_script: |
         npm run seo:smoke:prod -- \
-          --base-url "${{ inputs.base_url }}" \
-          --expected-site-url "${{ inputs.expected_site_url }}" \
-          --timeout-ms "${{ inputs.timeout_ms }}"
+          --base-url "${BASE_URL}" \
+          --expected-site-url "${EXPECTED_SITE_URL}" \
+          --timeout-ms "${TIMEOUT_MS}"
       summary_script: |
         echo "### Frontend SEO Postdeploy Smoke" >> "${GITHUB_STEP_SUMMARY}"
         echo "- Environment: production" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- Base URL: ${{ inputs.base_url }}" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- Expected Site URL: ${{ inputs.expected_site_url }}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- Base URL: ${BASE_URL}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- Expected Site URL: ${EXPECTED_SITE_URL}" >> "${GITHUB_STEP_SUMMARY}"
         if [[ -f "reports/seo-postdeploy-smoke.json" ]]; then
           node -e 'const fs=require("fs"); const p="reports/seo-postdeploy-smoke.json"; const r=JSON.parse(fs.readFileSync(p,"utf8")); console.log(`Result: ${r.ok ? "PASS" : "FAIL"}`); if(Array.isArray(r.failures)&&r.failures.length){console.log("Failures:"); for(const f of r.failures){console.log(`- ${f}`);} } if(Array.isArray(r.warnings)&&r.warnings.length){console.log("Warnings:"); for(const w of r.warnings){console.log(`- ${w}`);} }' >> "${GITHUB_STEP_SUMMARY}"
           echo '```json' >> "${GITHUB_STEP_SUMMARY}"
@@ -244,10 +241,9 @@ jobs:
       working_directory: .
       timeout_minutes: 15
       environment_url: ${{ inputs.api_base_url }}
+      api_base_url: ${{ inputs.api_base_url }}
+      date: ${{ inputs.date }}
       validate_script: |
-        API_BASE_URL="${{ inputs.api_base_url }}"
-        DATE_INPUT="${{ inputs.date }}"
-
         if ! [[ "${API_BASE_URL}" =~ ^https:// ]]; then
           echo "api_base_url must start with https:// : ${API_BASE_URL}" >&2
           exit 1
@@ -258,17 +254,17 @@ jobs:
           exit 1
         fi
       run_script: |
-        if [[ -n "${{ inputs.date }}" ]]; then
-          npm run smoke:home:contract:prod -- --api-base-url "${{ inputs.api_base_url }}" --date "${{ inputs.date }}"
+        if [[ -n "${DATE_INPUT}" ]]; then
+          npm run smoke:home:contract:prod -- --api-base-url "${API_BASE_URL}" --date "${DATE_INPUT}"
         else
-          npm run smoke:home:contract:prod -- --api-base-url "${{ inputs.api_base_url }}"
+          npm run smoke:home:contract:prod -- --api-base-url "${API_BASE_URL}"
         fi
       summary_script: |
         echo "### Home Widgets Postdeploy Smoke" >> "${GITHUB_STEP_SUMMARY}"
         echo "- Environment: production" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- API base URL: ${{ inputs.api_base_url }}" >> "${GITHUB_STEP_SUMMARY}"
-        if [[ -n "${{ inputs.date }}" ]]; then
-          echo "- Requested date: ${{ inputs.date }}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- API base URL: ${API_BASE_URL}" >> "${GITHUB_STEP_SUMMARY}"
+        if [[ -n "${DATE_INPUT}" ]]; then
+          echo "- Requested date: ${DATE_INPUT}" >> "${GITHUB_STEP_SUMMARY}"
         fi
         if [[ -f "reports/home-widgets-contract-smoke.json" ]]; then
           node -e 'const fs=require("fs"); const p="reports/home-widgets-contract-smoke.json"; const r=JSON.parse(fs.readFileSync(p,"utf8")); console.log(`Result: ${r.ok ? "PASS" : "FAIL"}`); if(Array.isArray(r.failures)&&r.failures.length){console.log("Failures:"); for(const f of r.failures){console.log(`- ${f}`);} } if(Array.isArray(r.warnings)&&r.warnings.length){console.log("Warnings:"); for(const w of r.warnings){console.log(`- ${w}`);} }' >> "${GITHUB_STEP_SUMMARY}"
@@ -290,13 +286,13 @@ jobs:
       working_directory: .
       timeout_minutes: 30
       environment_url: ${{ inputs.frontend_origin }}
-      env_exports: |
-        SMOKE_API_BASE_URL=${{ inputs.api_base_url }}
-        SMOKE_FRONTEND_ORIGIN=${{ inputs.frontend_origin }}
+      api_base_url: ${{ inputs.api_base_url }}
+      frontend_origin: ${{ inputs.frontend_origin }}
+      skip_signup: ${{ inputs.skip_signup }}
+      run_dm_smoke: ${{ inputs.run_dm_smoke }}
       validate_script: |
         API_BASE_URL="${SMOKE_API_BASE_URL}"
         FRONTEND_ORIGIN="${SMOKE_FRONTEND_ORIGIN}"
-        SKIP_SIGNUP_INPUT="${{ inputs.skip_signup }}"
 
         if ! [[ "${API_BASE_URL}" =~ ^https?:// ]]; then
           echo "api_base_url must start with http:// or https:// : ${API_BASE_URL}" >&2
@@ -320,7 +316,7 @@ jobs:
           fi
         fi
 
-        if [[ "${{ inputs.run_dm_smoke }}" == "true" ]]; then
+        if [[ "${RUN_DM_SMOKE}" == "true" ]]; then
           for key in SMOKE_LOGIN_EMAIL SMOKE_LOGIN_PASSWORD DM_TARGET_EMAIL DM_TARGET_PASSWORD DM_TARGET_HANDLE; do
             if [[ -z "${!key:-}" ]]; then
               echo "run_dm_smoke=true requires repository secret ${key}" >&2
@@ -329,7 +325,7 @@ jobs:
           done
         fi
       run_script: |
-        if [[ "${{ inputs.skip_signup }}" == "true" ]]; then
+        if [[ "${SKIP_SIGNUP_INPUT}" == "true" ]]; then
           export SMOKE_SKIP_SIGNUP=1
         else
           export SMOKE_SKIP_SIGNUP=0
@@ -337,7 +333,7 @@ jobs:
 
         npm run test:integration:real
 
-        if [[ "${{ inputs.run_dm_smoke }}" == "true" ]]; then
+        if [[ "${RUN_DM_SMOKE}" == "true" ]]; then
           DM_API_BASE_URL="${SMOKE_API_BASE_URL}" \
           DM_FRONTEND_ORIGIN="${SMOKE_FRONTEND_ORIGIN}" \
           SMOKE_LOGIN_EMAIL="${SMOKE_LOGIN_EMAIL}" \
@@ -353,8 +349,8 @@ jobs:
         if [[ -n "${SMOKE_FRONTEND_ORIGIN}" ]]; then
           echo "- Frontend origin: ${SMOKE_FRONTEND_ORIGIN}" >> "${GITHUB_STEP_SUMMARY}"
         fi
-        echo "- skip_signup: ${{ inputs.skip_signup }}" >> "${GITHUB_STEP_SUMMARY}"
-        echo "- run_dm_smoke: ${{ inputs.run_dm_smoke }}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- skip_signup: ${SKIP_SIGNUP_INPUT}" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- run_dm_smoke: ${RUN_DM_SMOKE}" >> "${GITHUB_STEP_SUMMARY}"
 
         if [[ -f "reports/real-integration-smoke-latest.json" ]]; then
           node - <<'NODE' >> "${GITHUB_STEP_SUMMARY}"
@@ -386,7 +382,7 @@ jobs:
           }
 
           console.log(lines.join('\n'));
-          NODE
+        NODE
 
           echo '```json' >> "${GITHUB_STEP_SUMMARY}"
           cat "reports/real-integration-smoke-latest.json" >> "${GITHUB_STEP_SUMMARY}"
@@ -423,11 +419,10 @@ jobs:
       working_directory: .
       timeout_minutes: 20
       environment_url: ${{ inputs.frontend_origin }}
+      api_base_url: ${{ inputs.api_base_url }}
+      frontend_origin: ${{ inputs.frontend_origin }}
+      verify_unfollow_reuse: ${{ inputs.verify_unfollow_reuse }}
       setup_node: false
-      env_exports: |
-        DM_API_BASE_URL=${{ inputs.api_base_url }}
-        DM_FRONTEND_ORIGIN=${{ inputs.frontend_origin }}
-        VERIFY_UNFOLLOW_REUSE=${{ inputs.verify_unfollow_reuse }}
       validate_script: |
         if ! [[ "${DM_API_BASE_URL}" =~ ^https?:// ]]; then
           echo "api_base_url must start with http:// or https:// : ${DM_API_BASE_URL}" >&2

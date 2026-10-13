@@ -350,8 +350,8 @@ export function MateDetailHostBlock({ party, onOpenHostProfile, onOpenChat }: { 
 
   return (
     <MateDetailReferenceCard>
-      <div data-testid="mate-detail-host-block" className="min-w-0">
-      <div className="mb-3.5 flex min-w-0 items-start gap-3.5">
+      <div data-testid="mate-detail-host-block" className="flex min-w-0 flex-col gap-3.5">
+      <div className="order-1 flex min-w-0 items-start gap-3.5">
         <div className="relative shrink-0">
           <ProfileAvatar
             src={party.hostProfileImageUrl ?? undefined}
@@ -381,12 +381,12 @@ export function MateDetailHostBlock({ party, onOpenHostProfile, onOpenChat }: { 
           </div>
         </div>
       </div>
-      <div className="mb-3.5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="order-3 grid grid-cols-1 gap-2 sm:grid-cols-3 md:order-2">
         <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-amber-100 bg-amber-50 p-2.5 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/35 dark:text-amber-200"><MateZapIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostResponseLabel}</p></div>
         <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-emerald-100 bg-emerald-50 p-2.5 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200"><MatePulseIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostActivityLabel}</p></div>
         <div className="flex min-w-0 flex-col items-start gap-1 rounded-11 border border-blue-100 bg-blue-50 p-2.5 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/35 dark:text-blue-200"><MateShieldIcon className="h-3.5 w-3.5" /><p data-testid="mate-detail-host-stat" className="min-w-0 text-[11.5px] font-bold leading-[1.3] [overflow-wrap:anywhere]">{view.hostNoShowLabel}</p></div>
       </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="order-2 flex flex-col gap-2 md:order-3 sm:flex-row">
         <Button data-testid="mate-open-host-chat" type="button" size="touch" className="h-auto min-h-11 w-full flex-1 whitespace-normal rounded-9 border border-[#cce8dd] bg-[#f0f9f6] px-3 py-2.5 text-13 font-bold text-primary [overflow-wrap:anywhere] hover:bg-[#e7f5ef] dark:border-emerald-400/20 dark:bg-emerald-950/35 dark:text-emerald-200 dark:hover:bg-emerald-900/40 sm:w-auto" onClick={onOpenChat}>
           <MateMessageSquareIcon className="h-3.5 w-3.5" /> 호스트에게 문의
         </Button>

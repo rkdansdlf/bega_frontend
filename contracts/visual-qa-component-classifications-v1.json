@@ -852,6 +852,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -1978,6 +1987,15 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/auth/AuthLayout.tsx#AuthLayout",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -2175,6 +2193,16 @@
       "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/AuthSessionSync.tsx#AuthSessionSync",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Subscribes to cross-tab auth session signals and returns null without producing DOM.",
+      "owner": "frontend-platform",
+      "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "renderAccess": "module-export",
+      "exportName": "default"
     },
     {
       "id": "src/components/changwon/ChangwonSeatMap.tsx#BlockSearch",
@@ -2913,11 +2941,11 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/Cheer.tsx#CheerRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "id": "src/components/Cheer.tsx#Cheer.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -3155,6 +3183,16 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/CheerComposerLoginPrompt.tsx#CheerComposerLoginPrompt",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
       "id": "src/components/CheerComposerRuntime.tsx#CheerComposerRuntime",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -3361,6 +3399,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/CheerDetailPage.tsx#CheerDetailPage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/CheerDetailPage.tsx#CheerDetailRuntime",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -3426,6 +3473,15 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/CheerEditPage.tsx#CheerEditPage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
     },
     {
       "id": "src/components/CheerEditPage.tsx#CheerEditRuntime",
@@ -4127,6 +4183,43 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/common/SwipeToRevealRow.tsx#ACTION_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/common/SwipeToRevealRow.tsx#DIRECTION_LOCK_PX",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/common/SwipeToRevealRow.tsx#OPEN_THRESHOLD",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
       "id": "src/components/contexts/ConfirmDialogContext.tsx#ConfirmDialogProvider",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -4443,15 +4536,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/DirectMessagePage.tsx#DirectMessageRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/dm/DirectMessageIcons.tsx#DirectMessageArrowLeftIcon",
       "classification": "grouped-gallery",
       "galleryId": "src/components/dm/DirectMessageIcons.tsx#icon-gallery",
@@ -4527,24 +4611,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/dm/DirectMessageRuntime.tsx#DM_QUERY_KEYS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/dm/DmInboxRuntime.tsx#DM_INBOX_QUERY_KEY",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/dm/DmInboxRuntime.tsx#DmInboxRuntime",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -4592,11 +4658,11 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/DmInboxPage.tsx#DmInboxRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "id": "src/components/DmInboxPage.tsx#DmInboxPage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -5553,6 +5619,52 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/home/HomePullToRefresh.tsx#DIRECTION_LOCK_PX",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomePullToRefresh.tsx#HomePullToRefresh",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/home/HomePullToRefresh.tsx#MAX_PULL",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomePullToRefresh.tsx#RESISTANCE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomePullToRefresh.tsx#THRESHOLD",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/home/HomeQueryProvider.tsx#HomeQueryProvider",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -6038,15 +6150,6 @@
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
       "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/HomeRuntime.tsx#EMPTY_SCOPED_NAVIGATION",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -7571,6 +7674,17 @@
       "exportName": "LandingArrowRightIcon"
     },
     {
+      "id": "src/components/icons/LandingIcons.tsx#LandingBellIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingBellIcon"
+    },
+    {
       "id": "src/components/icons/LandingIcons.tsx#LandingBookOpenIcon",
       "classification": "grouped-gallery",
       "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
@@ -7602,6 +7716,50 @@
       "testEvidence": "visual-qa icon gallery exact symbol coverage",
       "renderAccess": "module-export",
       "exportName": "LandingChevronDownIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingChevronLeftIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingChevronLeftIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingChevronRightIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingChevronRightIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingClockIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingClockIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingEditIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingEditIcon"
     },
     {
       "id": "src/components/icons/LandingIcons.tsx#LandingHeartIcon",
@@ -7668,6 +7826,50 @@
       "testEvidence": "visual-qa icon gallery exact symbol coverage",
       "renderAccess": "module-export",
       "exportName": "LandingMessageCircleIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingMessageSquareIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingMessageSquareIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingPlusIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingPlusIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingRefreshIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingRefreshIcon"
+    },
+    {
+      "id": "src/components/icons/LandingIcons.tsx#LandingSearchIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "LandingSearchIcon"
     },
     {
       "id": "src/components/icons/LandingIcons.tsx#LandingSvgIcon",
@@ -11002,6 +11204,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/landing/LandingAppPreview.tsx#AUTO_ADVANCE_MS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/landing/LandingAppPreview.tsx#LandingAppPreview",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -11010,6 +11221,15 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/landing/LandingAppPreview.tsx#SCREEN_COUNT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
     },
     {
       "id": "src/components/landing/LandingClosing.tsx#LandingClosing",
@@ -11023,6 +11243,25 @@
     },
     {
       "id": "src/components/landing/LandingFeatureSection.tsx#LandingFeatureSection",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/landing/LandingFooter.tsx#LANDING_FOOTER_GROUPS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/landing/LandingFooter.tsx#LandingFooter",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -11089,6 +11328,16 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
       "id": "src/components/landing/LandingStartGuide.tsx#LandingStartGuide",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -11116,6 +11365,63 @@
       "testEvidence": "visual-qa-component-inventory containsJsx=true",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneBoardScreen.tsx#DATA",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneHomeScreen.tsx#DATA",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneMateScreen.tsx#DATA",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
     },
     {
       "id": "src/components/landing/vignettes/LandingCheerVignette.tsx#LandingCheerVignette",
@@ -13381,6 +13687,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/MateManagePage.tsx#MateManagePage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/MateManagePage.tsx#MateManageRuntime",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -13833,11 +14148,20 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/MyPage.tsx#MyPageRuntime",
+      "id": "src/components/MyPage.tsx#MyPage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/MyPage.tsx#MyPageFallback",
       "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -17096,6 +17420,16 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
       "id": "src/components/prediction/PredictionMatchScheduleReadyView.tsx#PredictionMatchScheduleReadyView",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -17202,6 +17536,15 @@
     },
     {
       "id": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTabEmptyState",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
       "reason": "The declaration is created with the React lazy component wrapper.",
@@ -18420,6 +18763,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/profile/UserProfilePage.tsx#UserProfilePage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/profile/UserProfilePage.tsx#UserProfileRuntime",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -18829,6 +19181,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/RankingPredictionSharePage.tsx#RankingPredictionShareFallback",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/RankingPredictionSharePage.tsx#RankingPredictionSharePage",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -18837,6 +19198,15 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/RankingPredictionSharePage.tsx#RankingPredictionSharePage.Runtime",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
     },
     {
       "id": "src/components/RankingPredictionSharePage.tsx#RankingPredictionShareRuntime",
@@ -19563,6 +19933,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -20284,33 +20663,6 @@
       "exportName": "Button"
     },
     {
-      "id": "src/components/ui/button.tsx#BUTTON_BASE_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/ui/button.tsx#BUTTON_SIZE_CLASSES",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/ui/button.tsx#BUTTON_VARIANT_CLASSES",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/ui/calendar.tsx#Calendar",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -20788,292 +21140,6 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingBellIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingBellIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingChevronLeftIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingChevronLeftIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingChevronRightIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingChevronRightIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingClockIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingClockIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingEditIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingEditIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingMessageSquareIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingMessageSquareIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingPlusIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingPlusIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingRefreshIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingRefreshIcon"
-    },
-    {
-      "id": "src/components/icons/LandingIcons.tsx#LandingSearchIcon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/icons/LandingIcons.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "module-export",
-      "exportName": "LandingSearchIcon"
-    },
-    {
-      "id": "src/components/landing/LandingAppPreview.tsx#AUTO_ADVANCE_MS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/LandingAppPreview.tsx#SCREEN_COUNT",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/LandingFooter.tsx#LANDING_FOOTER_GROUPS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/LandingFooter.tsx#LandingFooter",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneBoardScreen.tsx#DATA",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneHomeScreen.tsx#DATA",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneMateScreen.tsx#DATA",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable alias, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/common/SwipeToRevealRow.tsx#ACTION_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/common/SwipeToRevealRow.tsx#DIRECTION_LOCK_PX",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/common/SwipeToRevealRow.tsx#OPEN_THRESHOLD",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/home/HomePullToRefresh.tsx#DIRECTION_LOCK_PX",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomePullToRefresh.tsx#HomePullToRefresh",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/home/HomePullToRefresh.tsx#MAX_PULL",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomePullToRefresh.tsx#RESISTANCE",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomePullToRefresh.tsx#THRESHOLD",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
     }
   ]
 }

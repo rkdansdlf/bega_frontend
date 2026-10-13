@@ -199,6 +199,87 @@ describe('MateDetail state coverage', () => {
     });
   };
 
+  it('keeps host contact actions above the fixed bottom navigation at the tablet-mobile boundary', () => {
+    const party = { ...baseParty, hostHandle: 'anotherhost' };
+    cy.viewport(767, 844);
+    setupDetailMocks({ party });
+
+    visitWithAuth(`/mate/${party.id}`);
+    cy.wait('@getPartyById');
+    cy.get('[data-testid="mate-detail-host-block"]').should('be.visible');
+    cy.get('[data-testid="auth-mobile-bottom-nav"]').should('be.visible');
+
+    cy.window().then((win) => {
+      const nav = win.document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+      const navTop = nav?.getBoundingClientRect().top;
+      expect(navTop, 'mobile bottom navigation top').to.be.a('number');
+
+      ['mate-open-host-chat', 'mate-open-host-profile'].forEach((testId) => {
+        const action = win.document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+        expect(action, `${testId} exists`).not.to.equal(null);
+        const actionRect = action!.getBoundingClientRect();
+        expect(actionRect.bottom, `${testId} bottom`).to.be.at.most(navTop as number);
+      });
+    });
+  });
+
+  it('removes the follow control after blocking a followed host from the profile modal', () => {
+    let isBlocked = false;
+    setupDetailMocks({ party: baseParty });
+
+    cy.intercept('GET', '**/api/users/profile/statehost', {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {
+          name: baseParty.hostName,
+          handle: baseParty.hostHandle,
+          favoriteTeam: baseParty.hostFavoriteTeam,
+          profileImageUrl: baseParty.hostProfileImageUrl,
+          bio: null,
+        },
+      },
+    }).as('getHostProfile');
+    cy.intercept(
+      { method: 'GET', pathname: '/api/users/profile/statehost/follow-counts' },
+      (request) => {
+        request.reply({
+          statusCode: 200,
+          body: {
+            followerCount: isBlocked ? 7 : 8,
+            followingCount: 4,
+            isFollowedByMe: !isBlocked,
+            notifyNewPosts: !isBlocked,
+            blockedByMe: isBlocked,
+            blockingMe: false,
+          },
+        });
+      },
+    ).as('getHostFollowCounts');
+    cy.intercept('POST', '**/api/users/profile/statehost/block', (request) => {
+      isBlocked = true;
+      request.reply({
+        statusCode: 200,
+        body: { blocked: true, blockedCount: 1 },
+      });
+    }).as('blockHost');
+
+    visitWithAuth(`/mate/${baseParty.id}`);
+    cy.wait('@getPartyById');
+    cy.get('[data-testid="mate-open-host-profile"]').click();
+    cy.wait('@getHostProfile');
+    cy.wait('@getHostFollowCounts');
+    cy.get('[data-testid="profile-following-button"]').should('be.visible');
+
+    cy.get('[data-testid="profile-block-button"]').click();
+    cy.get('[data-testid="profile-block-confirm"]').click();
+    cy.wait('@blockHost');
+    cy.wait('@getHostFollowCounts');
+
+    cy.get('[data-testid="profile-unblock-button"]').should('be.visible');
+    cy.get('[data-testid="profile-following-button"]').should('not.exist');
+  });
+
   it('shows host management CTA when the current user is the host', () => {
     const party = { ...baseParty, hostHandle: 'testuser' };
     setupDetailMocks({

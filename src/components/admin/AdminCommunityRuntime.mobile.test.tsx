@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
   createElement,
@@ -197,6 +198,13 @@ test('community runtime gives every resolved data table a reusable mobile scroll
   assert.match(usersHtml, /community-users-probe[^>]*>[^<]+:min-w-\[860px\]/);
   assert.match(postsHtml, /community-posts-probe[^>]*>[^<]+:min-w-\[860px\]/);
   assert.match(partiesHtml, /community-parties-probe[^>]*>[^<]+:min-w-\[860px\]/);
+});
+
+test('community runtime surfaces the backend reason when mate deletion is blocked', async () => {
+  const source = await readFile(new URL('./AdminCommunityRuntime.tsx', import.meta.url), 'utf8');
+
+  assert.match(source, /onErrorChange\(\s*error instanceof Error && error\.message\.trim\(\)[\s\S]*메이트 삭제에 실패했습니다\./);
+  assert.doesNotMatch(source, /onErrorChange\('메이트 삭제에 실패했습니다\.'\)/);
 });
 
 test('community runtime renders an announced modal shell while the role dialog chunk loads', () => {

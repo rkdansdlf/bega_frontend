@@ -27,11 +27,12 @@ test('users admin panel announces the polite busy loading state', async () => {
   assert.match(source, /사용자 목록을 불러오는 중/);
 });
 
-test('users admin panel preserves current delete and role restrictions while exposing touch-safe actions', async () => {
+test('users admin panel disables self and administrator deletion while exposing touch-safe actions', async () => {
   const source = await readSource();
 
   assert.match(source, /user\.id === currentUserId \|\| user\.role === 'ROLE_SUPER_ADMIN'/);
-  assert.match(source, /disabled=\{user\.role === 'ROLE_ADMIN'\}/);
+  assert.match(source, /isAdminUserDeletionBlocked\(user\.id, user\.role, currentUserId\)/);
+  assert.match(source, /disabled=\{isAdminUserDeletionBlocked\(user\.id, user\.role, currentUserId\)\}/);
   assert.match(source, /data-testid=\{`admin-user-delete-\$\{user\.id\}`\}/);
   assert.match(source, /aria-label=\{`사용자 \$\{user\.name\} 삭제`\}/);
   assert.match(source, /min-w-11[^'"\n]*sm:min-w-8/);
@@ -39,6 +40,13 @@ test('users admin panel preserves current delete and role restrictions while exp
   assert.match(source, /data-testid="admin-user-delete-cancel"/);
   assert.match(source, /data-testid="admin-user-delete-confirm"/);
   assert.ok((source.match(/min-h-11/g) ?? []).length >= 2);
+});
+
+test('users admin delete dialog explains immediate anonymization and retained records', async () => {
+  const source = await readSource();
+
+  assert.match(source, /description="[^"]*즉시 비식별 처리[^"]*결제·지급 및 감사 기록[^"]*보존 대상 콘텐츠[^"]*"/);
+  assert.doesNotMatch(source, /유저의 모든 데이터가 영구적으로 삭제됩니다/);
 });
 
 test('users admin panel remains a pure prop and callback surface without API calls', async () => {
@@ -49,6 +57,19 @@ test('users admin panel remains a pure prop and callback surface without API cal
   assert.doesNotMatch(source, /useEffect|useQuery|useMutation/);
   assert.match(source, /handleDeleteUser\(pendingDeleteUser\.id\)/);
   assert.match(source, /setPendingRoleChange\(\{/);
+});
+
+test('community runtime repeats the deletion guard before sending the request', async () => {
+  const source = await readFile(
+    new URL('./AdminCommunityRuntime.tsx', import.meta.url),
+    'utf8',
+  );
+  const guardIndex = source.indexOf('if (targetUser && isAdminUserDeletionBlocked(userId, targetUser.role, currentUserId))');
+  const requestIndex = source.indexOf('await deleteAdminUser(userId)');
+
+  assert.ok(guardIndex >= 0);
+  assert.ok(requestIndex > guardIndex);
+  assert.match(source.slice(guardIndex, requestIndex), /return;/);
 });
 
 test('users admin panel permits deterministic controlled search input only outside production', async () => {

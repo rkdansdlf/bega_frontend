@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
 
 import type { DateGames, Game, MatchBounds } from '../../types/prediction';
 import type { RangeLoadState } from '../../hooks/predictionHookShared';
@@ -35,6 +36,8 @@ type PredictionMatchSchedulePreviewRuntimeProps = {
   retryLoadMorePastMatches: () => void;
   retryLoadMoreFutureMatches: () => void;
   onEnterMatchDetail: (game: Game) => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchSchedulePreviewRuntime({
@@ -59,7 +62,18 @@ export default function PredictionMatchSchedulePreviewRuntime({
   retryLoadMorePastMatches,
   retryLoadMoreFutureMatches,
   onEnterMatchDetail,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchSchedulePreviewRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-preview-runtime-fallback">경기 목록을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const todayKey = useTodayKey();
   const canMovePrevDate = currentDateIndex > 0 || canLoadMorePast;
   const canMoveNextDate = currentDateIndex < allDatesData.length - 1 || canLoadMoreFuture;

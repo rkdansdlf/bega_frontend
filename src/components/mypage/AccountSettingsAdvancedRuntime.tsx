@@ -13,7 +13,7 @@ import {
   MyPageTrashIcon,
 } from './MyPageFlowIcons';
 
-interface AccountSettingsAdvancedRuntimeProps {
+export interface AccountSettingsAdvancedRuntimeProps {
   showAdvancedSettingsDialog: boolean;
   showDeleteDialog: boolean;
   onAdvancedDialogClose: () => void;
@@ -77,11 +77,12 @@ export default function AccountSettingsAdvancedRuntime({
       <PlainDialog
         open={showAdvancedSettingsDialog}
         onClose={onAdvancedDialogClose}
+        contentTestId="account-settings-advanced-dialog"
         title="고급 설정"
         description="평소에는 자주 쓰지 않지만, 계정 보호나 정리가 필요할 때 사용하는 기능입니다. 일부 작업은 현재 로그인 상태와 다른 기기에 영향을 줄 수 있습니다."
         className="sm:max-w-2xl"
         footer={(
-          <Button variant="outline" className="w-full sm:w-auto" onClick={onAdvancedDialogClose}>
+          <Button data-testid="account-settings-advanced-close" variant="outline" className="w-full sm:w-auto" onClick={onAdvancedDialogClose}>
             닫기
           </Button>
         )}
@@ -161,6 +162,7 @@ export default function AccountSettingsAdvancedRuntime({
                       </div>
 
                       <Button
+                        data-testid={`account-settings-trusted-device-remove-${device.id}`}
                         variant="outline"
                         size="sm"
                         onClick={() => onTrustedDeviceRemove(device.id)}
@@ -208,6 +210,7 @@ export default function AccountSettingsAdvancedRuntime({
               정말 필요한 경우에만 진행하세요. 예약 즉시 로그아웃되며, 7일 동안은 이메일 복구 링크로 취소할 수 있습니다. 유예 기간이 지나면 최종 삭제 절차가 진행됩니다.
             </p>
             <Button
+              data-testid="account-settings-open-delete"
               variant="destructive"
               size="sm"
               onClick={onOpenDeleteDialog}
@@ -224,6 +227,7 @@ export default function AccountSettingsAdvancedRuntime({
       <PlainDialog
         open={showDeleteDialog}
         onClose={onDeleteDialogClose}
+        contentTestId="account-settings-delete-dialog"
         title={(
           <span className="flex items-center gap-2 text-destructive">
             <MyPageAlertTriangleIcon className="w-5 h-5" />
@@ -238,6 +242,7 @@ export default function AccountSettingsAdvancedRuntime({
               취소
             </Button>
             <Button
+              data-testid="account-settings-delete-confirm"
               variant="destructive"
               onClick={onDeleteConfirm}
               disabled={isDeletePending || !isDeleteConfirmMatched}
@@ -283,7 +288,7 @@ export default function AccountSettingsAdvancedRuntime({
               <button
                 type="button"
                 onClick={onToggleShowPassword}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
               </button>

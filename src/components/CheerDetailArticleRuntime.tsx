@@ -1,4 +1,4 @@
-import { Suspense, lazy, Fragment } from 'react';
+import { Suspense, lazy, Fragment, useEffect, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CheerPost, CheerPostType } from '../api/cheerApi';
@@ -14,6 +14,7 @@ import TeamLogo from './TeamLogo';
 import CheerLinkedContentCard from './cheer/CheerLinkedContentCard';
 
 const HASHTAG_PATTERN = /(#[^\s#.,!?]+)/g;
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 const renderCheerContent = (
     content: string,
@@ -104,7 +105,7 @@ const detailDateFormatter = new Intl.DateTimeFormat('ko-KR', {
     timeStyle: 'short',
 });
 
-interface CheerDetailArticleRuntimeProps {
+export interface CheerDetailArticleRuntimeProps {
     selectedPost: CheerPost;
     authUserId?: number | null;
     authUserHandle?: string | null;
@@ -179,6 +180,11 @@ export default function CheerDetailArticleRuntime({
 }: CheerDetailArticleRuntimeProps) {
     const navigate = useNavigate();
     const { resolvedTheme } = useTheme();
+
+    useIsomorphicLayoutEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [selectedPost.id]);
+
     const hashtagAccentText = resolvedTheme === 'dark' ? getDarkModeAccentText(detailAccent) : detailAccent;
     const handleTagClick = (tag: string) => {
         navigate(`/cheer?q=${encodeURIComponent(tag)}`);
@@ -306,6 +312,7 @@ export default function CheerDetailArticleRuntime({
 
     return (
         <article
+            data-testid="cheer-detail-article"
             className="relative mt-4 overflow-hidden rounded-3xl border bg-[var(--cheer-card-bg)] font-sans shadow-lg"
             style={primaryBorderStyle}
         >
@@ -321,6 +328,7 @@ export default function CheerDetailArticleRuntime({
                                     onClick={onGoBack}
                                     className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
                                     aria-label="이전으로"
+                                    data-testid="cheer-detail-back"
                                 >
                                     <ArrowLeftIcon className="h-5 w-5" />
                                 </button>
@@ -362,6 +370,7 @@ export default function CheerDetailArticleRuntime({
                                 <div
                                     className="relative h-12 w-12 flex-shrink-0 cursor-pointer rounded-full"
                                     onClick={() => onNavigateToProfile(displayAuthorHandle)}
+                                    data-testid="cheer-detail-profile-avatar"
                                 >
                                     <ProfileAvatar
                                         src={resolveProfileImage(displayAuthorProfileImageUrl) || undefined}
@@ -391,19 +400,20 @@ export default function CheerDetailArticleRuntime({
                                     <button
                                         type="button"
                                         onClick={() => onNavigateToProfile(displayAuthorHandle)}
-                                        className="truncate text-left text-body font-bold text-slate-950 transition-colors hover:underline dark:text-white sm:text-body"
+                                        className="block min-w-0 max-w-full break-words text-left text-body font-bold text-slate-950 transition-colors [overflow-wrap:anywhere] hover:underline dark:text-white sm:text-body"
+                                        data-testid="cheer-detail-profile-name"
                                     >
                                         {displayAuthor}
                                     </button>
-                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-body font-bold text-slate-500 dark:text-white">
-                                        <span>{displayAuthorHandleLabel}</span>
+                                    <div className="mt-0.5 flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 text-body font-bold text-slate-500 dark:text-white">
+                                        <span className="min-w-0 max-w-full break-words [overflow-wrap:anywhere]">{displayAuthorHandleLabel}</span>
                                         <span className="mx-0.5 h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-500" />
-                                        <span className="flex items-center gap-1">
+                                        <span className="flex min-w-0 max-w-full items-center gap-1 break-words [overflow-wrap:anywhere]">
                                             <ClockIcon className="h-3 w-3" />
                                             {displayTimeAgo}
                                         </span>
                                         <span className="mx-0.5 h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-500" />
-                                        <span className="flex items-center gap-1">
+                                        <span className="flex min-w-0 max-w-full items-center gap-1 break-words [overflow-wrap:anywhere]">
                                             <EyeIcon className="h-3 w-3" />
                                             조회 {selectedPost.views.toLocaleString()}
                                         </span>
@@ -427,6 +437,7 @@ export default function CheerDetailArticleRuntime({
                                             aria-label="게시물 메뉴"
                                             aria-expanded={isOwnerMenuOpen}
                                             aria-haspopup="menu"
+                                            data-testid="cheer-detail-owner-menu"
                                         >
                                             <MoreVerticalIcon className="h-5 w-5" />
                                         </button>
@@ -439,7 +450,8 @@ export default function CheerDetailArticleRuntime({
                                             onOwnerMenuOpenChange(false);
                                             onDisplayEdit();
                                         }}
-                                        className="flex w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                                        className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                                        data-testid="cheer-detail-owner-edit"
                                     >
                                         <EditIcon className="mr-2 h-4 w-4" />
                                         수정하기
@@ -451,7 +463,8 @@ export default function CheerDetailArticleRuntime({
                                             onOwnerMenuOpenChange(false);
                                             onDeleteRequested();
                                         }}
-                                        className="flex w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                                        className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                                        data-testid="cheer-detail-owner-delete"
                                     >
                                         <TrashIcon className="mr-2 h-4 w-4" />
                                         삭제하기
@@ -461,9 +474,10 @@ export default function CheerDetailArticleRuntime({
                                 <button
                                     type="button"
                                     onClick={() => onReportModalOpenChange(true)}
-                                    className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 sm:p-2 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                                    className="flex h-11 w-11 items-center justify-center rounded-full p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 sm:h-8 sm:w-8 sm:p-2 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                                     title="신고하기"
                                     aria-label="신고하기"
+                                    data-testid="cheer-detail-report"
                                 >
                                     <FlagIcon className="h-5 w-5" />
                                 </button>

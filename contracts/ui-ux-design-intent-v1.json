@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "contractId": "bega-ui-ux-design-intent-v1",
+  "authorityOrder": [
+    "src/guidelines/Guidelines.md",
+    "src/index.css",
+    "design-system/bega/MASTER.md",
+    "design-system/bega/pages/*.md",
+    "this contract (machine-checked mirror; drift fails CI)",
+    "pinned UI UX Pro Max recommendations"
+  ],
+  "rules": [
+    {
+      "id": "interaction.touch-target",
+      "status": "required",
+      "severity": "error",
+      "profiles": ["*"],
+      "scope": ["interactive"],
+      "assertion": { "type": "minimum-target-size", "width": 44, "height": 44, "token": "--touch-target-min" },
+      "evidence": { "provider": "visual-qa-harness", "marker": "data-vqa-min-touch", "coverage": "marked-targets-only" },
+      "source": {
+        "local": ["src/guidelines/Guidelines.md", "contracts/visual-qa-coverage-v1.json"],
+        "proMax": { "domain": "ux", "query": "mobile touch target accessibility", "disposition": "advisory" }
+      }
+    },
+    {
+      "id": "interaction.focus-visible",
+      "status": "required",
+      "severity": "error",
+      "profiles": ["*"],
+      "scope": ["keyboard-operable"],
+      "assertion": { "type": "visible-focus" },
+      "evidence": { "provider": "visual-qa-harness", "scenarioInteraction": "focus-visible", "coverage": "registered-representatives" },
+      "source": {
+        "local": ["src/guidelines/Guidelines.md", "contracts/visual-qa-coverage-v1.json"],
+        "proMax": { "domain": "ux", "query": "visible keyboard focus", "disposition": "advisory" }
+      }
+    },
+    {
+      "id": "layout.text-scale",
+      "status": "required",
+      "severity": "error",
+      "profiles": ["*"],
+      "scope": ["route", "responsive"],
+      "assertion": { "type": "reflow", "scale": 2 },
+      "evidence": { "provider": "existing-visual-qa", "contract": "contracts/visual-qa-coverage-v1.json", "coverage": "global-gate-is-partial" },
+      "source": {
+        "local": ["src/guidelines/Guidelines.md", "contracts/visual-qa-coverage-v1.json"],
+        "proMax": { "domain": "ux", "query": "text zoom reflow responsive layout", "disposition": "advisory" }
+      }
+    },
+    {
+      "id": "motion.reduced",
+      "status": "required",
+      "severity": "error",
+      "profiles": ["*"],
+      "scope": ["interaction", "route"],
+      "assertion": { "type": "reduced-motion" },
+      "evidence": { "provider": "existing-visual-qa", "contract": "contracts/visual-qa-coverage-v1.json", "coverage": "route-specific-checks" },
+      "source": {
+        "local": ["src/guidelines/Guidelines.md", "contracts/visual-qa-coverage-v1.json"],
+        "proMax": { "domain": "ux", "query": "prefers reduced motion", "disposition": "advisory" }
+      }
+    },
+    {
+      "id": "tokens.semantic-colors",
+      "status": "required",
+      "severity": "error",
+      "profiles": ["*"],
+      "scope": ["all-ui"],
+      "assertion": {
+        "type": "semantic-token-source",
+        "sourceOfTruth": "src/index.css",
+        "tokens": [
+          "surface-default", "surface-subtle", "surface-raised",
+          "text-primary", "text-secondary", "text-tertiary", "text-inverse",
+          "border-subtle", "border-default", "border-strong",
+          "action-primary-bg", "action-primary-bg-hover", "action-primary-bg-active", "action-primary-text",
+          "action-disabled-bg", "action-disabled-text", "focus-ring"
+        ]
+      },
+      "evidence": { "provider": "review-and-contract", "coverage": "all-page-profiles" },
+      "source": {
+        "local": ["src/guidelines/Guidelines.md", "src/index.css"],
+        "proMax": { "domain": "color", "query": "semantic design tokens", "disposition": "advisory" }
+      }
+    },
+    {
+      "id": "framework.react-stack-guidance",
+      "status": "advisory",
+      "severity": "info",
+      "profiles": ["*"],
+      "scope": ["implementation-guidance"],
+      "assertion": { "type": "stack-applicability", "projectVersion": "18.3.1", "recommendationVersion": "19.2.x" },
+      "evidence": { "provider": "uiux-policy-check", "coverage": "all-recommendations" },
+      "source": {
+        "local": ["package.json", "contracts/ui-ux-pro-max-lock.json"],
+        "proMax": { "domain": "react", "query": "react stack guidance", "disposition": "advisory-incompatible" }
+      }
+    }
+  ]
+}

@@ -93,24 +93,31 @@ const createPreviewPlugin = (): Plugin => ({
   },
 });
 
-const startServer = async () => {
+type SeatMapHoverPreviewTestResources = {
+  browser?: Browser;
+  server?: ViteDevServer;
+  cacheDir?: string;
+};
+
+const startServer = async (
+  resources: SeatMapHoverPreviewTestResources,
+  createViteServer: typeof createServer = createServer,
+) => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-hover-preview-vite-'));
-  const server = await createServer({
+  resources.cacheDir = cacheDir;
+  const server = await createViteServer({
     root: process.cwd(),
     appType: 'custom',
     cacheDir,
     plugins: [createPreviewPlugin()],
     server: { host: '127.0.0.1', port: 0 },
   });
+  resources.server = server;
   await server.listen();
   return { cacheDir, server };
 };
 
-const closeResources = async (resources: {
-  browser?: Browser;
-  server?: ViteDevServer;
-  cacheDir?: string;
-}) => {
+const closeResources = async (resources: SeatMapHoverPreviewTestResources) => {
   const errors: unknown[] = [];
   for (const close of [
     resources.browser ? () => resources.browser?.close() : undefined,
@@ -146,6 +153,27 @@ test('SeatMapHoverPreview cleanup removes cache after a server close failure', a
     cacheDir,
   }), /server close/);
   await assert.rejects(() => access(cacheDir));
+});
+
+test('SeatMapHoverPreview can clean up resources when Vite startup fails', async () => {
+  const resources: SeatMapHoverPreviewTestResources = {};
+  const startupError = new Error('Vite listen failed');
+  const server = {
+    listen: async () => { throw startupError; },
+    close: async () => undefined,
+  } as unknown as ViteDevServer;
+
+  await assert.rejects(async () => {
+    try {
+      await startServer(resources, async () => server);
+    } finally {
+      await closeResources(resources);
+    }
+  }, /Vite listen failed/);
+
+  assert.equal(resources.server, server);
+  assert.ok(resources.cacheDir);
+  await assert.rejects(() => access(resources.cacheDir as string));
 });
 
 test('SeatMapHoverPreview package gates include the focused test exactly once', async () => {
@@ -233,14 +261,12 @@ const assertConstrainedBadge = async (page: Page, address: string, width: number
 };
 
 test('SeatMapHoverPreview constrains an unbroken badge at mobile widths in a real browser', async () => {
-  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  const resources: SeatMapHoverPreviewTestResources = {};
   try {
-    const started = await startServer();
-    resources.server = started.server;
-    resources.cacheDir = started.cacheDir;
+    const started = await startServer(resources);
     resources.browser = await chromium.launch({ headless: true });
     const page = await resources.browser.newPage();
-    const address = serverAddress(resources.server);
+    const address = serverAddress(started.server);
     const externalRequests: string[] = [];
     const harnessOrigin = new URL(address).origin;
     page.on('request', (request) => {
@@ -255,14 +281,12 @@ test('SeatMapHoverPreview constrains an unbroken badge at mobile widths in a rea
 });
 
 test('SeatMapHoverPreview renders every adapter-backed semantic state across both themes', async () => {
-  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  const resources: SeatMapHoverPreviewTestResources = {};
   try {
-    const started = await startServer();
-    resources.server = started.server;
-    resources.cacheDir = started.cacheDir;
+    const started = await startServer(resources);
     resources.browser = await chromium.launch({ headless: true });
     const page = await resources.browser.newPage();
-    const address = serverAddress(resources.server);
+    const address = serverAddress(started.server);
     const externalRequests: string[] = [];
     const themeBackgrounds = new Map<string, string>();
     const harnessOrigin = new URL(address).origin;

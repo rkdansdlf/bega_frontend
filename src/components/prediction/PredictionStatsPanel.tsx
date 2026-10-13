@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../ui/card';
 import { fetchMyPredictionStats } from '../../api/prediction';
+import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import {
   PredictionCheckCircleIcon,
   PredictionFlameIcon,
@@ -15,9 +18,27 @@ import {
 
 const ACCURACY_GAUGE_CIRCUMFERENCE = 2 * Math.PI * 56;
 
-export default function PredictionStatsPanel() {
+export interface PredictionStatsPanelProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function PredictionStatsPanel({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionStatsPanelProps = {}) {
+  const viewerScope = useViewerQueryScope();
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-stats-panel-fallback">예측 통계를 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const { data: predictionStats } = useQuery({
-    queryKey: ['prediction-stats-me'],
+    queryKey: PRIVATE_QUERY_KEYS.predictionStats(viewerScope),
     queryFn: fetchMyPredictionStats,
     staleTime: 5 * 60 * 1000,
   });

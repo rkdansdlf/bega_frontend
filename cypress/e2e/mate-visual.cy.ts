@@ -177,6 +177,15 @@ describe('Mate Visual QA', () => {
     });
   };
 
+  const assertViewport = (width: number, height: number) => {
+    cy.window().its('innerWidth').should('eq', width);
+    cy.window().its('innerHeight').should('eq', height);
+  };
+
+  const captureViewport = (name: string) => {
+    cy.screenshot(name, { capture: 'viewport' });
+  };
+
   const visitWithTheme = (path: string, theme: 'light' | 'dark') => {
     cy.visit(path, {
       onBeforeLoad(win) {
@@ -192,6 +201,11 @@ describe('Mate Visual QA', () => {
   };
 
   const setupMateMocks = () => {
+    cy.intercept('GET', 'https://cdn.example.com/**', {
+      statusCode: 404,
+      body: '',
+    }).as('blockedExampleCdnImage');
+
     cy.intercept('GET', '**/auth/mypage*', {
       statusCode: 200,
       body: {
@@ -326,33 +340,84 @@ describe('Mate Visual QA', () => {
     cy.viewport(1440, 900);
     visitWithTheme('/mate', 'light');
     cy.wait('@getMateParties');
+    assertViewport(1440, 900);
     cy.contains('직관 메이트 찾기').should('be.visible');
     cy.contains('비주얼 호스트').should('be.visible');
     cy.contains('4.7').should('be.visible');
     cy.contains(/2\s*\/\s*4명/).should('be.visible');
-    cy.screenshot('mate-visual-list-desktop-light');
+    captureViewport('mate-visual-list-desktop-light');
   });
 
   it('captures the list page in desktop dark mode', () => {
     cy.viewport(1440, 900);
     visitWithTheme('/mate', 'dark');
     cy.wait('@getMateParties');
+    assertViewport(1440, 900);
     cy.contains('직관 메이트 찾기').should('be.visible');
     cy.contains('판매 호스트').should('be.visible');
     cy.contains('판매 중').should('be.visible');
     cy.contains('54,000').should('be.visible');
-    cy.screenshot('mate-visual-list-desktop-dark');
+    captureViewport('mate-visual-list-desktop-dark');
+  });
+
+  it('captures the list page in mobile light mode', () => {
+    cy.viewport(390, 844);
+    visitWithTheme('/mate', 'light');
+    cy.wait('@getMateParties');
+    assertViewport(390, 844);
+    cy.contains('직관 메이트 찾기').should('be.visible');
+    cy.contains('비주얼 호스트').should('be.visible');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-list-mobile-light');
+  });
+
+  [
+    { name: '844x390-light', width: 844, height: 390, theme: 'light' as const },
+    { name: '844x390-dark', width: 844, height: 390, theme: 'dark' as const },
+    { name: '932x430-light', width: 932, height: 430, theme: 'light' as const },
+    { name: '932x430-dark', width: 932, height: 430, theme: 'dark' as const },
+  ].forEach(({ name, width, height, theme }) => {
+    it(`keeps Mate list controls clear of the fixed nav at ${name}`, () => {
+      cy.viewport(width, height);
+      visitWithTheme('/mate', theme);
+      cy.wait('@getMateParties');
+
+      cy.get('[data-testid="public-mobile-bottom-nav"], [data-testid="auth-mobile-bottom-nav"]').then(($nav) => {
+        const navTop = $nav[0].getBoundingClientRect().top;
+
+        ['#mate-search', '[data-testid="mate-status-tabs"]'].forEach((selector) => {
+          cy.get(selector).then(($control) => {
+            const controlBottom = $control[0].getBoundingClientRect().bottom;
+            expect(controlBottom, `${selector} clears the mobile nav`).to.be.lessThan(navTop - 4);
+          });
+        });
+      });
+
+      cy.get('[data-testid="mate-mobile-date-filter"]')
+        .invoke('outerHeight')
+        .should('be.lte', 64);
+      cy.get('[data-testid="mate-team-filter-button"]').should('not.be.visible');
+      captureViewport(`mate-landscape-list-${name}`);
+      cy.get('[data-testid="mate-mobile-filter-open"]').click();
+      cy.get('[data-testid="mate-filter-team-toggle"]')
+        .should('be.visible')
+        .click()
+        .should('have.attr', 'aria-pressed', 'true');
+      cy.get('[data-testid="mate-filter-apply"]').click();
+      cy.get('[data-testid="mate-filter-sheet"]').should('not.exist');
+    });
   });
 
   it('captures the detail page in desktop dark mode', () => {
     cy.viewport(1440, 900);
     visitWithTheme('/mate/777', 'dark');
     cy.wait('@getMateDetailParty');
+    assertViewport(1440, 900);
     revealDeferredMateDetailContent();
     cy.contains('좌석 · 시야').should('be.visible');
     cy.contains('호스트에게 문의').should('be.visible');
     cy.contains('참여 현황').should('be.visible');
-    cy.screenshot('mate-visual-detail-desktop-dark');
+    captureViewport('mate-visual-detail-desktop-dark');
   });
 
   it('captures the detail page in mobile dark mode', () => {
@@ -360,11 +425,12 @@ describe('Mate Visual QA', () => {
     visitWithTheme('/mate/777', 'dark');
     cy.wait('@getMateDetailParty');
     cy.viewport(390, 844);
+    assertViewport(390, 844);
     revealDeferredMateDetailContent();
     cy.contains('좌석 · 시야').should('be.visible');
     cy.contains('파티 소개').should('be.visible');
     cy.get('[data-testid="mate-mobile-action-bar"]').should('be.visible');
-    cy.screenshot('mate-visual-detail-mobile-dark');
+    captureViewport('mate-visual-detail-mobile-dark');
   });
 
   it('keeps the detail page responsive across target breakpoints', () => {
@@ -380,6 +446,7 @@ describe('Mate Visual QA', () => {
       cy.viewport(width, height);
       visitWithTheme('/mate/777', theme);
       cy.wait('@getMateDetailParty');
+      assertViewport(width, height);
       cy.contains('좌석 · 시야').should('be.visible');
       cy.contains('호스트에게 문의').should('be.visible');
       cy.contains('파티 소개').scrollIntoView().should('be.visible');
@@ -402,6 +469,7 @@ describe('Mate Visual QA', () => {
     cy.viewport(390, 844);
     visitWithTheme('/mate/777/apply', 'light');
     cy.wait('@getMateDetailParty');
+    assertViewport(390, 844);
     cy.contains('파티 참여 신청').should('be.visible');
     cy.contains('정책 안내').should('be.visible');
     cy.get('textarea#message').type('시각 QA를 위한 신청 메시지입니다.');
@@ -410,7 +478,24 @@ describe('Mate Visual QA', () => {
       .first()
       .scrollIntoView()
       .should('be.visible');
-    cy.screenshot('mate-visual-apply-mobile-light');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-apply-mobile-light');
+  });
+
+  it('captures the apply page in desktop dark mode', () => {
+    cy.viewport(1440, 900);
+    visitWithTheme('/mate/777/apply', 'dark');
+    cy.wait('@getMateDetailParty');
+    assertViewport(1440, 900);
+    cy.contains('파티 참여 신청').should('be.visible');
+    cy.contains('정책 안내').should('be.visible');
+    cy.get('button:visible')
+      .filter((_, button) => /결제하기|신청하기/.test(button.textContent ?? ''))
+      .first()
+      .scrollIntoView()
+      .should('be.visible');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-apply-desktop-dark');
   });
 
   it('captures the manage page in desktop dark mode', () => {
@@ -418,9 +503,23 @@ describe('Mate Visual QA', () => {
     visitWithTheme('/mate/779/manage', 'dark');
     cy.wait('@getMateManageParty');
     cy.wait('@getMateManageApplications');
+    assertViewport(1440, 900);
     cy.contains('Host Control').should('be.visible');
     cy.contains('응답 필요').should('be.visible');
-    cy.screenshot('mate-visual-manage-desktop-dark');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-manage-desktop-dark');
+  });
+
+  it('captures the manage page in mobile light mode', () => {
+    cy.viewport(390, 844);
+    visitWithTheme('/mate/779/manage', 'light');
+    cy.wait('@getMateManageParty');
+    cy.wait('@getMateManageApplications');
+    assertViewport(390, 844);
+    cy.contains('Host Control').should('be.visible');
+    cy.contains('응답 필요').should('be.visible');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-manage-mobile-light');
   });
 
   it('captures the chat page in desktop light mode', () => {
@@ -429,9 +528,24 @@ describe('Mate Visual QA', () => {
     cy.wait('@getMateChatParty');
     cy.wait('@getMateChatApplication');
     cy.wait('@getMateChatMessages');
+    assertViewport(1440, 900);
     cy.contains('대화 기록').should('be.visible');
     cy.get('[data-testid="chat-summary-strip"]').should('be.visible');
-    cy.screenshot('mate-visual-chat-desktop-light');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-chat-desktop-light');
+  });
+
+  it('captures the chat page in mobile dark mode', () => {
+    cy.viewport(390, 844);
+    visitWithTheme('/mate/780/chat', 'dark');
+    cy.wait('@getMateChatParty');
+    cy.wait('@getMateChatApplication');
+    cy.wait('@getMateChatMessages');
+    assertViewport(390, 844);
+    cy.contains('대화 기록').should('be.visible');
+    cy.get('[data-testid="chat-summary-strip"]').should('be.visible');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-chat-mobile-dark');
   });
 
   it('captures the check-in page in mobile dark mode', () => {
@@ -440,8 +554,40 @@ describe('Mate Visual QA', () => {
     cy.wait('@getMateCheckInParty');
     cy.wait('@getMateCheckIns');
     cy.viewport(390, 844);
+    assertViewport(390, 844);
     cy.contains('체크인').should('be.visible');
     cy.contains('QR 세션').should('be.visible');
-    cy.screenshot('mate-visual-checkin-mobile-dark');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-checkin-mobile-dark');
+  });
+
+  it('captures the check-in page in desktop light mode', () => {
+    cy.viewport(1440, 900);
+    visitWithTheme('/mate/781/checkin?sessionId=session-781', 'light');
+    cy.wait('@getMateCheckInParty');
+    cy.wait('@getMateCheckIns');
+    assertViewport(1440, 900);
+    cy.contains('체크인').should('be.visible');
+    cy.contains('QR 세션').should('be.visible');
+    assertNoHorizontalOverflow();
+    captureViewport('mate-visual-checkin-desktop-light');
+  });
+
+  [
+    { name: 'mobile-light', width: 390, height: 844, theme: 'light' as const },
+    { name: 'mobile-dark', width: 390, height: 844, theme: 'dark' as const },
+    { name: 'desktop-light', width: 1440, height: 900, theme: 'light' as const },
+    { name: 'desktop-dark', width: 1440, height: 900, theme: 'dark' as const },
+  ].forEach(({ name, width, height, theme }) => {
+    it(`captures the initial create page in ${name}`, () => {
+      cy.viewport(width, height);
+      visitWithTheme('/mate/create', theme);
+      assertViewport(width, height);
+      cy.contains('직관메이트 파티 만들기').should('be.visible');
+      cy.get('[data-testid="mate-create-ticket-picker"]').should('be.visible');
+      cy.get('[data-testid="mate-create-next"]').should('be.disabled');
+      assertNoHorizontalOverflow();
+      captureViewport(`mate-visual-create-${name}`);
+    });
   });
 });

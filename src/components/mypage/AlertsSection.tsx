@@ -1,6 +1,17 @@
 import NotificationPanel from '../NotificationPanel';
+import type { NotificationPanelProps } from '../NotificationPanel';
 
-export default function AlertsSection() {
+export type AlertsSectionProps = {
+  notificationPanelPropsOverride?: NotificationPanelProps;
+};
+
+export default function AlertsSection({
+  notificationPanelPropsOverride: requestedNotificationPanelPropsOverride,
+}: AlertsSectionProps = {}) {
+  const notificationPanelPropsOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedNotificationPanelPropsOverride;
+
   return (
     <section data-screen-label="알림" data-testid="mypage-alerts-section">
       <div className="mypage-season-head">
@@ -11,7 +22,7 @@ export default function AlertsSection() {
       </div>
 
       <div className="mypage-season-panel p-0">
-        <NotificationPanel />
+        <NotificationPanel {...notificationPanelPropsOverride} />
       </div>
     </section>
   );

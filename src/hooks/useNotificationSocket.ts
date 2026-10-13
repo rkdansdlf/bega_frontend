@@ -7,6 +7,7 @@ import { isIgnorableNotificationError, notificationApi } from '../utils/notifica
 import { ensureRealtimeAuthSession } from '../utils/realtimeAuth';
 import { NOTIFICATION_SOCKET_DESTINATION } from '../utils/socketDestinations';
 import { loadStompModule, resolveStompBrokerUrl, type StompClient } from '../utils/stomp';
+import { getViewerQueryScope, isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
 
 export const reloadNotificationSnapshot = async (
     fetchNotifications: () => Promise<NotificationData[]>,
@@ -24,9 +25,11 @@ export const useNotificationSocket = (enabled = true) => {
     const addNotification = useNotificationStore((state) => state.addNotification);
     const setNotifications = useNotificationStore((state) => state.setNotifications);
     const clientRef = useRef<StompClient | null>(null);
+    const viewerScope = getViewerQueryScope();
 
     useEffect(() => {
         let disposed = false;
+        const isCurrentSession = () => !disposed && isViewerQueryScopeCurrent(viewerScope);
         let reloadGeneration = 0;
         const disconnect = () => {
             if (clientRef.current) {
@@ -53,12 +56,12 @@ export const useNotificationSocket = (enabled = true) => {
 
         void (async () => {
             const isAuthReady = await ensureRealtimeAuthSession();
-            if (disposed || !enabled || !isLoggedIn || clientRef.current?.active || !isAuthReady) {
+            if (!isCurrentSession() || !enabled || !isLoggedIn || clientRef.current?.active || !isAuthReady) {
                 return;
             }
 
             const { Client } = await loadStompModule();
-            if (disposed || !enabled || !isLoggedIn || clientRef.current?.active) {
+            if (!isCurrentSession() || !enabled || !isLoggedIn || clientRef.current?.active) {
                 return;
             }
 
@@ -71,20 +74,20 @@ export const useNotificationSocket = (enabled = true) => {
                 heartbeatOutgoing: 4000,
 
                 onConnect: () => {
-                    if (disposed) {
+                    if (!isCurrentSession()) {
                         return;
                     }
 
                     const currentReloadGeneration = ++reloadGeneration;
                     const isCurrentReload = () => (
-                        !disposed && currentReloadGeneration === reloadGeneration
+                        isCurrentSession() && currentReloadGeneration === reloadGeneration
                     );
                     const receivedDuringReload: NotificationData[] = [];
                     let snapshotReloaded = false;
 
                     // 개인 알림 구독
                     client.subscribe(NOTIFICATION_SOCKET_DESTINATION, (message) => {
-                        if (disposed) {
+                        if (!isCurrentReload()) {
                             return;
                         }
 
@@ -149,5 +152,5 @@ export const useNotificationSocket = (enabled = true) => {
             // 컴포넌트 언마운트 시 연결 해제
             disconnect();
         };
-    }, [enabled, isLoggedIn, userId, addNotification, setNotifications]); // isLoggedIn/userId 변경 시(로그인/로그아웃) 재실행
+    }, [enabled, isLoggedIn, userId, viewerScope.sessionEpoch, addNotification, setNotifications]); // 로그인 세대 변경 시 이전 연결을 폐기
 };

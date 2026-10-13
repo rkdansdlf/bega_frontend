@@ -3,6 +3,7 @@ export type HarnessInteractionAction =
   | 'hover'
   | 'focus-visible'
   | 'pressed'
+  | 'drag'
   | 'fill'
   | 'select-option'
   | 'press-key';
@@ -19,6 +20,10 @@ export type HarnessInteractionStep = {
 export type HarnessInteractionPlan = {
   action: HarnessInteractionAction;
   selector: string;
+  dragOffset?: {
+    x: number;
+    y: number;
+  };
   clickPosition?: {
     x: number;
     y: number;
@@ -151,6 +156,18 @@ const focusVisibleTarget = async (page: HarnessInteractionPage, plan: HarnessInt
     if (activeElement && 'blur' in activeElement && typeof activeElement.blur === 'function') {
       activeElement.blur();
     }
+    // Chromium can retain the sequential-focus starting point that was
+    // displaced by scrollIntoView even after the active element is blurred.
+    // Reset that starting point to the document body so the following Tab
+    // sequence represents a real keyboard traversal from the page start.
+    const previousBodyTabIndex = document.body.getAttribute('tabindex');
+    document.body.setAttribute('tabindex', '-1');
+    document.body.focus({ preventScroll: true });
+    if (previousBodyTabIndex === null) {
+      document.body.removeAttribute('tabindex');
+    } else {
+      document.body.setAttribute('tabindex', previousBodyTabIndex);
+    }
     return true;
   }, { selector: plan.selector, mode: 'reset-focus', scrollBlock: 'nearest' });
 
@@ -179,6 +196,17 @@ export const executeHarnessInteractionPlan = async (
     )
   ) {
     throw new Error('clickPosition requires finite nonnegative coordinates on click action');
+  }
+  if (
+    plan.dragOffset !== undefined
+    && (
+      plan.action !== 'drag'
+      || !Number.isFinite(plan.dragOffset.x)
+      || !Number.isFinite(plan.dragOffset.y)
+      || (plan.dragOffset.x === 0 && plan.dragOffset.y === 0)
+    )
+  ) {
+    throw new Error('dragOffset requires a non-zero finite offset on drag action');
   }
   for (const step of plan.setup ?? []) {
     await executeSetupStep(page, step);
@@ -231,6 +259,24 @@ export const executeHarnessInteractionPlan = async (
         await page.mouse.move(-1, -1);
         await page.mouse.up();
       };
+    } else if (plan.action === 'drag') {
+      if (!plan.dragOffset
+        || !Number.isFinite(plan.dragOffset.x)
+        || !Number.isFinite(plan.dragOffset.y)
+        || (plan.dragOffset.x === 0 && plan.dragOffset.y === 0)) {
+        throw new Error(`interaction drag requires a non-zero finite dragOffset: ${plan.selector}`);
+      }
+      await target.scrollIntoViewIfNeeded();
+      const box = await target.boundingBox();
+      if (!box || box.width <= 0 || box.height <= 0) {
+        throw new Error(`interaction drag target is not measurable: ${plan.selector}`);
+      }
+      const startX = box.x + box.width / 2;
+      const startY = box.y + box.height / 2;
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(startX + plan.dragOffset.x, startY + plan.dragOffset.y);
+      await page.mouse.up();
     }
 
     await waitForResult(page, plan.waitForSelector, plan.waitForHiddenSelector);
@@ -259,7 +305,9 @@ export const revalidateHarnessInteractionPlan = async (
   plan: HarnessInteractionPlan,
   previousCleanup: () => Promise<void>,
 ): Promise<() => Promise<void>> => {
-  const resultOnlyAction = plan.action === 'click' || plan.action === 'press-key';
+  const resultOnlyAction = plan.action === 'click'
+    || plan.action === 'press-key'
+    || plan.action === 'drag';
   if (resultOnlyAction && !plan.waitForSelector && !plan.waitForHiddenSelector) {
     throw new Error(
       `post-expansion ${plan.action} requires waitForSelector or waitForHiddenSelector: ${plan.selector}`,

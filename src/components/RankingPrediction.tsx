@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import TeamLogo from './TeamLogo';
@@ -8,7 +9,7 @@ import { RankingLogInIcon, RankingRotateCcwIcon } from './ranking/RankingPredict
 import RankingItem from './ranking/RankingItem';
 import RankingPredictionResultPanel from './ranking/RankingPredictionResultPanel';
 import { useRankingPrediction } from '../hooks/useRankingPrediction';
-import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
+import { buildLoginPath } from '../utils/loginRedirect';
 import {
   PREDICTION_BRAND_TEXT_CLASS,
   PREDICTION_SOFT_CHIP_CLASS,
@@ -23,7 +24,25 @@ type RankingPredictionSmokeWindow = Window & {
   __BEGA_PREDICTION_MOBILE_SMOKE_RANKING_SAVE_DIALOG__?: boolean;
 };
 
-export default function RankingPrediction() {
+export interface RankingPredictionProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function RankingPrediction({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: RankingPredictionProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="ranking-prediction-fallback">순위 예측을 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
+  const location = useLocation();
   const navigate = useNavigate();
   const [draggedTeamId, setDraggedTeamId] = useState<string | null>(null);
   const [lastMovedTeamId, setLastMovedTeamId] = useState<string | null>(null);
@@ -136,7 +155,7 @@ export default function RankingPrediction() {
         </p>
         <Button
           variant="brand"
-          onClick={() => navigate(buildLoginPath(getCurrentRelativeUrl()))}
+          onClick={() => navigate(buildLoginPath(`${location.pathname}${location.search}${location.hash}`))}
           className="px-6 py-2"
         >
           로그인하기

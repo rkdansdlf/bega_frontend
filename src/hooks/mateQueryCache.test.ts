@@ -1,6 +1,10 @@
+import './mateQueryCacheTestStorage';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { QueryClient } from '@tanstack/react-query';
+import { createJSONStorage } from 'zustand/middleware';
+import { useAuthStore } from '../store/authStore';
+import { getViewerQueryScope } from '../utils/viewerQueryScope';
 
 import type {
   InvalidateMatePartyQueriesOptions,
@@ -50,6 +54,18 @@ const createInvalidateRecorder = () => {
     removeCalls,
   };
 };
+
+const authStorageValues = new Map<string, string>();
+const authStorage = {
+  getItem: (key: string) => authStorageValues.get(key) ?? null,
+  setItem: (key: string, value: string) => { authStorageValues.set(key, value); },
+  removeItem: (key: string) => { authStorageValues.delete(key); },
+};
+useAuthStore.persist.setOptions({ storage: createJSONStorage(() => authStorage) });
+
+test.beforeEach(() => {
+  useAuthStore.setState({ user: null });
+});
 
 const createParty = (overrides: Partial<{
   id: number;
@@ -287,6 +303,7 @@ test('seedMatePartyQueryData는 이미 있는 상세 cache를 placeholder로 덮
 });
 
 test('mate query cache helper는 승인 후 detail/list/myParties를 직접 갱신한다', () => {
+  useAuthStore.setState({ user: { id: 99, email: 'viewer@example.invalid', name: 'Viewer' } });
   const queryClient = new QueryClient();
   const party = createParty();
 
@@ -325,6 +342,7 @@ test('mate query cache helper는 승인 후 detail/list/myParties를 직접 갱�
 });
 
 test('mate query cache helper는 승인 취소 후 myApplication과 myParties를 직접 정리한다', () => {
+  useAuthStore.setState({ user: { id: 99, email: 'viewer@example.invalid', name: 'Viewer' } });
   const queryClient = new QueryClient();
   const party = createParty({
     id: 21,
@@ -369,6 +387,7 @@ test('mate query cache helper는 승인 취소 후 myApplication과 myParties를
 });
 
 test('mate query cache helper는 마지막 체크인 후 public list에서 파티를 숨긴다', () => {
+  useAuthStore.setState({ user: { id: 77, email: 'viewer@example.invalid', name: 'Viewer' } });
   const queryClient = new QueryClient();
   const party = createParty({
     id: 31,
@@ -411,6 +430,7 @@ test('mate query cache helper는 마지막 체크인 후 public list에서 파�
 });
 
 test('syncMatePartyQueryData는 기존 collection cache에 최신 party를 반영한다', () => {
+  useAuthStore.setState({ user: { id: 1, email: 'viewer@example.invalid', name: 'Viewer' } });
   const queryClient = new QueryClient();
   const initialParty = createParty({ id: 41, description: 'before' });
   const updatedParty = createParty({ id: 41, description: 'after', status: 'MATCHED' });
@@ -434,4 +454,25 @@ test('syncMatePartyQueryData는 기존 collection cache에 최신 party를 반�
     (queryClient.getQueryData(getMateMyPartiesQueryOptions(1).queryKey) as Array<ReturnType<typeof createParty>>)[0]?.description,
     'after',
   );
+});
+
+test('계정 전환 뒤 늦게 끝난 A의 optimistic 결과는 B의 캐시를 쓰거나 A의 롤백 값을 되살리지 않는다', () => {
+  useAuthStore.setState({ user: { id: 101, email: 'a@example.invalid', name: 'A' } });
+  const queryClient = new QueryClient();
+  const scopeA = getViewerQueryScope();
+  const party = { ...createParty({ id: 51, status: 'PENDING' }), favorited: true };
+  setMatePartyDetailQueryData(queryClient, party, scopeA);
+
+  useAuthStore.setState({ user: { id: 202, email: 'b@example.invalid', name: 'B' } });
+  const scopeB = getViewerQueryScope();
+  updateMatePartyCollectionQueryData(queryClient, party.id, (currentParty) => ({
+    ...currentParty,
+    favorited: false,
+  }), {}, scopeA);
+
+  assert.equal(
+    (queryClient.getQueryData(getMatePartyQueryOptions(party.id, scopeA).queryKey) as { favorited: boolean }).favorited,
+    true,
+  );
+  assert.equal(queryClient.getQueryData(getMatePartyQueryOptions(party.id, scopeB).queryKey), undefined);
 });

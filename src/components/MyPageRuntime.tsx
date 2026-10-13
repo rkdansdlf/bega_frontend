@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import { TicketInfo } from '../api/ticket';
 import { useMyPage } from '../hooks/useMyPage';
@@ -12,7 +13,37 @@ const TicketUploadModal = lazy(() =>
   import('./ticket/TicketUploadModal').then((module) => ({ default: module.TicketUploadModal })),
 );
 
-export default function MyPageRuntime() {
+export interface MyPageRuntimeProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+const myPageRuntimeFallback = (
+  <div
+    className="min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]"
+    data-testid="mypage-runtime-fallback"
+  >
+    마이페이지를 불러오는 중입니다.
+  </div>
+);
+
+export default function MyPageRuntime({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: MyPageRuntimeProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true
+    ? undefined
+    : visualQaRuntimeOverrideProp;
+
+  if (visualQaPhase === 'fallback') {
+    return myPageRuntimeFallback;
+  }
+
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const {
     isLoggedIn,
     user,

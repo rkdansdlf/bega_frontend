@@ -5,6 +5,7 @@ import {
   requestPrivateReissue,
 } from './privateClient';
 import { getLogoutXsrfToken } from './csrf';
+import { assertAuthOperationCurrent, AuthOperationSupersededError, AuthRequestNotDispatchedError, getAuthOperationRevision } from './authSessionGeneration';
 
 export interface LoginRequest {
   email: string;
@@ -136,15 +137,24 @@ const fetchCurrentUserProfileResponse = async (): Promise<RawAuthProfileResponse
   skipAuthSessionHandling: true,
 });
 
+export { waitForAuthReissue } from './authReissue';
+
 export interface FetchCurrentUserProfileOptions {
   retryOn401?: boolean;
   useInjectedProfile?: boolean;
+  isCurrentRequest?: () => boolean;
 }
 
 export const fetchCurrentUserProfile = async (
   options: FetchCurrentUserProfileOptions = {},
 ): Promise<AuthProfile> => {
-  const { retryOn401 = true, useInjectedProfile = true } = options;
+  const { retryOn401 = true, useInjectedProfile = true, isCurrentRequest } = options;
+  const revision = getAuthOperationRevision();
+  const ensureCurrentRequest = () => {
+    assertAuthOperationCurrent(revision);
+    if (isCurrentRequest && !isCurrentRequest()) throw new AuthOperationSupersededError();
+  };
+  ensureCurrentRequest();
   const injectedResponse = useInjectedProfile ? getInjectedAuthProfileResponse() : null;
   if (injectedResponse) {
     return normalizeAuthProfile(injectedResponse);
@@ -152,19 +162,25 @@ export const fetchCurrentUserProfile = async (
 
   try {
     const response = await fetchCurrentUserProfileResponse();
+    ensureCurrentRequest();
     return normalizeAuthProfile(response);
   } catch (error) {
+    ensureCurrentRequest();
     if (!(error instanceof PrivateApiError) || error.status !== 401 || !retryOn401) {
       throw error;
     }
 
     try {
-      await requestPrivateReissue();
-    } catch {
+      await requestPrivateReissue(revision);
+    } catch (reissueError) {
+      if (reissueError instanceof AuthOperationSupersededError) throw reissueError;
+      ensureCurrentRequest();
       throw error;
     }
 
+    ensureCurrentRequest();
     const response = await fetchCurrentUserProfileResponse();
+    ensureCurrentRequest();
     return normalizeAuthProfile(response);
   }
 };
@@ -223,10 +239,14 @@ export interface PasswordResetConfirmResponse {
   message: string;
 }
 
-export const logoutUser = async (): Promise<void> => {
-  const xsrfToken = getLogoutXsrfToken();
+export const logoutUser = async (isCurrentRequest?: () => boolean): Promise<void> => {
+  if (isCurrentRequest && !isCurrentRequest()) throw new AuthOperationSupersededError();
+  let xsrfToken: string | null;
+  try { xsrfToken = getLogoutXsrfToken(); } catch {
+    throw new AuthRequestNotDispatchedError('로그아웃 CSRF 보호 토큰을 읽을 수 없습니다.');
+  }
   if (!xsrfToken) {
-    throw new Error('로그아웃 CSRF 보호 토큰을 찾을 수 없습니다.');
+    throw new AuthRequestNotDispatchedError('로그아웃 CSRF 보호 토큰을 찾을 수 없습니다.');
   }
 
   await privatePost<void, undefined>('/auth/logout', undefined, {
@@ -234,6 +254,7 @@ export const logoutUser = async (): Promise<void> => {
       'X-XSRF-TOKEN': xsrfToken,
     },
     skipAuthSessionHandling: true,
+    timeoutMs: null,
   });
 };
 

@@ -305,7 +305,7 @@ export default function PredictionMatchDetailPanel({
         variant="outline"
         disabled={isDetailRetryLoading}
         data-testid="prediction-detail-error-retry-btn"
-        className="min-h-10 border-amber-300 text-amber-900 hover:bg-amber-100 dark:border-amber-400/60 dark:text-amber-100 dark:hover:bg-amber-800/30"
+        className="min-h-11 border-amber-300 text-amber-900 hover:bg-amber-100 dark:border-amber-400/60 dark:text-amber-100 dark:hover:bg-amber-800/30"
         onClick={() => reloadCurrentGameDetail({ emitRetryEvent: true })}
       >
         <span className="inline-flex items-center gap-1.5">
@@ -315,7 +315,7 @@ export default function PredictionMatchDetailPanel({
       </Button>
       <Link
         to={predictionRecoveryPath}
-        className="min-h-10 px-3 inline-flex items-center justify-center rounded-md border border-amber-300/70 text-amber-900 hover:bg-amber-100 dark:border-amber-300/60 dark:text-amber-100 dark:hover:bg-amber-800/30"
+        className="min-h-11 px-3 inline-flex items-center justify-center rounded-md border border-amber-300/70 text-amber-900 hover:bg-amber-100 dark:border-amber-300/60 dark:text-amber-100 dark:hover:bg-amber-800/30"
       >
         예측으로 돌아가기
       </Link>

@@ -285,6 +285,70 @@ describe('Direct Message v1', () => {
         cy.contains('상대방이 보낸 메시지입니다.').should('not.exist');
     });
 
+    it('keeps the mobile message composer clear of the fixed bottom navigation', () => {
+        cy.viewport(390, 844);
+        cy.login('user');
+        cy.mockAPI();
+
+        cy.intercept('POST', '**/api/dm/rooms', {
+            statusCode: 200,
+            body: {
+                success: true,
+                data: {
+                    ...bootstrapResponse,
+                    targetUser: {
+                        ...bootstrapResponse.targetUser,
+                        name: 'Visual QA 상대',
+                        handle: '@visual-qa-target',
+                    },
+                },
+            },
+        }).as('bootstrapDmRoom');
+        cy.intercept('GET', '**/api/dm/rooms/901/messages', {
+            statusCode: 200,
+            body: {
+                success: true,
+                data: [{
+                    id: 30,
+                    roomId: 901,
+                    senderId: 456,
+                    content: '모바일 화면 합성 fixture입니다.',
+                    clientMessageId: null,
+                    createdAt: '2026-04-15T12:00:00.000Z',
+                }],
+            },
+        }).as('getDmMessages');
+
+        cy.visit(messageRoute, {
+            onBeforeLoad(win) {
+                installDmSocketFactory(win);
+            },
+        });
+
+        cy.wait('@bootstrapDmRoom');
+        cy.wait('@getDmMessages');
+        cy.contains('모바일 화면 합성 fixture입니다.').should('be.visible');
+        const expectComposerClearOfNav = () => {
+            cy.get('[data-testid="auth-mobile-bottom-nav"]').should('be.visible');
+            cy.contains('button', '메시지 보내기').should(($sendButton) => {
+                const send = $sendButton[0].getBoundingClientRect();
+                const nav = Cypress.$('[data-testid="auth-mobile-bottom-nav"]')[0].getBoundingClientRect();
+                const overlaps = send.left < nav.right
+                    && send.right > nav.left
+                    && send.top < nav.bottom
+                    && send.bottom > nav.top;
+
+                expect(overlaps, 'send button does not intersect the fixed mobile navigation').to.equal(false);
+                expect(nav.top - send.bottom, 'send button has at least 8px clearance from the mobile navigation')
+                    .to.be.at.least(8);
+            });
+        };
+
+        expectComposerClearOfNav();
+        cy.viewport(320, 844);
+        expectComposerClearOfNav();
+    });
+
     it('keeps guest access behind the existing protected route login dialog', () => {
         cy.intercept('GET', '**/auth/mypage*', {
             statusCode: 401,

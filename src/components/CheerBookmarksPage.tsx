@@ -1,6 +1,14 @@
 import { lazy, Suspense } from 'react';
+import type { CheerBookmarksVisualQaStateOverride } from './CheerBookmarks';
 
 const CheerBookmarksRuntime = lazy(() => import('./CheerBookmarks'));
+
+export type CheerBookmarksPageVisualQaPhase = 'fallback' | 'runtime';
+
+export interface CheerBookmarksPageProps {
+  visualQaStateOverride?: CheerBookmarksVisualQaStateOverride;
+  visualQaPhase?: CheerBookmarksPageVisualQaPhase;
+}
 
 const CheerBookmarksFallback = () => (
   <div className="min-h-screen bg-[var(--cheer-page-bg)] transition-colors duration-200">
@@ -12,10 +20,14 @@ const CheerBookmarksFallback = () => (
   </div>
 );
 
-export default function CheerBookmarksPage() {
+export default function CheerBookmarksPage({ visualQaStateOverride, visualQaPhase }: CheerBookmarksPageProps) {
   return (
-    <Suspense fallback={<CheerBookmarksFallback />}>
-      <CheerBookmarksRuntime />
-    </Suspense>
+    import.meta.env?.PROD !== true && visualQaPhase === 'fallback'
+      ? <div data-testid="cheer-bookmarks-page-fallback"><CheerBookmarksFallback /></div>
+      : (
+        <Suspense fallback={<CheerBookmarksFallback />}>
+          <CheerBookmarksRuntime visualQaStateOverride={visualQaStateOverride} />
+        </Suspense>
+      )
   );
 }

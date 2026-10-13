@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildPendingEvidenceMap } from './visual-qa-pending-evidence-map.mjs';
+import {
+  buildPendingEvidenceMap,
+  requireRouteFlowForActiveCandidates,
+  validateRouteFlowReference,
+} from './visual-qa-pending-evidence-map.mjs';
 
 test('maps real route-flow evidence without promoting pending entries', () => {
   const links = buildPendingEvidenceMap({
@@ -101,4 +105,143 @@ test('preserves multiple source identities and assertion IDs for a shared route 
     { source: 'src/components/StadiumGuide.tsx', symbol: 'StadiumGuideRuntime' },
   ]);
   assert.deepEqual(links[0].evidence[0].assertionIds, ['stadium-seat-map-missing']);
+});
+
+const homeClassification = {
+  entries: [{
+    id: 'src/components/AppRoutes.tsx#Home',
+    reason: 'hosted-route-evidence-required',
+    source: { path: 'src/components/AppRoutes.tsx', symbol: 'Home' },
+  }],
+};
+
+const homeResult = (overrides = {}) => ({
+  browser: 'chromium',
+  width: 320,
+  zoom: 2,
+  status: 'PASS',
+  flows: {
+    home: {
+      normal: {
+        flow: 'home-content-and-navigation',
+        route: '/home',
+        issues: [],
+        focusObscured: [],
+        focusPartiallyObscured: [],
+        homeEvidence: {
+          source: { source: 'src/components/HomeRuntime.tsx', symbol: 'HomeRuntime', route: '/home' },
+        },
+        homeAssertionIds: ['home-priority-panel-missing'],
+        homeAssertionFailures: [],
+        productEvidence: { assertionFailures: [], screenshot: null },
+      },
+    },
+  },
+  ...overrides,
+});
+
+test('rejects evidence with missing assertions, wrong scope, browser, or phase', () => {
+  const cases = [
+    homeResult({ flows: { home: { normal: { ...homeResult().flows.home.normal, homeAssertionIds: [] } } } }),
+    homeResult({ flows: { home: { normal: { ...homeResult().flows.home.normal, route: '/mypage' } } } }),
+    homeResult({ browser: 'firefox' }),
+    homeResult({ flows: { home: { fallback: homeResult().flows.home.normal } } }),
+    homeResult({ status: 'FAIL' }),
+  ];
+  for (const routeFlowResult of cases) {
+    assert.deepEqual(
+      buildPendingEvidenceMap({ classification: homeClassification, routeFlow: { results: [routeFlowResult] } }),
+      [],
+    );
+  }
+});
+
+test('rejects evidence whose embedded source or validator hashes do not match the current context', () => {
+  const routeFlowResult = homeResult({
+    evidenceManifest: [{
+      contractComponentIds: ['src/components/AppRoutes.tsx#Home'],
+      sources: [{ source: 'src/components/HomeRuntime.tsx', sourceSnapshotSha256: '1'.repeat(64) }],
+      validator: 'homeAssertions',
+      validatorScriptSha256: '2'.repeat(64),
+      fixtureRegistrySha256: '3'.repeat(64),
+      execution: {
+        browser: 'chromium',
+        viewport: { width: 320, height: 844 },
+        requestedZoom: 2,
+        zoomMethod: 'document.documentElement.style.fontSize',
+      },
+    }],
+  });
+  assert.deepEqual(
+    buildPendingEvidenceMap({
+      classification: homeClassification,
+      routeFlow: { results: [routeFlowResult] },
+      evidenceContext: {
+        validatorScriptSha256: '4'.repeat(64),
+        fixtureRegistrySha256: '5'.repeat(64),
+        sourceSnapshots: { 'src/components/HomeRuntime.tsx': '6'.repeat(64) },
+      },
+    }),
+    [],
+  );
+});
+
+test('requires route-flow output when an active candidate exists', () => {
+  assert.throws(
+    () => requireRouteFlowForActiveCandidates({
+      activeCandidateCount: 1,
+      routeFlowExists: false,
+      routeFlowPath: '/private/tmp/kbo-visual-qa-route-flow/final.json',
+    }),
+    /active evidence-map candidates require route-flow output/,
+  );
+  assert.doesNotThrow(() => requireRouteFlowForActiveCandidates({
+    activeCandidateCount: 0,
+    routeFlowExists: false,
+    routeFlowPath: '/private/tmp/kbo-visual-qa-route-flow/final.json',
+  }));
+});
+
+test('does not treat malformed route-flow references as valid evidence', () => {
+  const baseResult = homeResult({
+    evidenceManifest: [{
+      contractComponentIds: ['src/components/AppRoutes.tsx#Home'],
+      sources: [{ source: 'src/components/HomeRuntime.tsx', sourceSnapshotSha256: '1'.repeat(64) }],
+      validator: 'homeAssertions',
+      validatorScriptSha256: '2'.repeat(64),
+      fixtureRegistrySha256: '3'.repeat(64),
+      assertionIds: ['home-priority-panel-missing'],
+      execution: {
+        browser: 'chromium',
+        viewport: { width: 320, height: 844 },
+        requestedZoom: 2,
+        zoomMethod: 'document.documentElement.style.fontSize',
+      },
+    }],
+  });
+  const context = {
+    validatorScriptSha256: '2'.repeat(64),
+    fixtureRegistrySha256: '3'.repeat(64),
+    sourceSnapshots: { 'src/components/HomeRuntime.tsx': '1'.repeat(64) },
+  };
+  assert.deepEqual(validateRouteFlowReference({
+    routeFlow: { results: [baseResult] },
+    evidenceContext: context,
+  }), {
+    valid: true,
+    caseCount: 1,
+    passCaseCount: 1,
+    manifestEntryCount: 1,
+    invalidCaseCount: 0,
+    matrixComplete: false,
+  });
+  assert.equal(validateRouteFlowReference({
+    routeFlow: { results: [{ ...baseResult, status: 'FAIL' }] },
+    evidenceContext: context,
+  }).valid, false);
+  assert.equal(validateRouteFlowReference({
+    routeFlow: { results: [baseResult] },
+    evidenceContext: context,
+    requireCompleteMatrix: true,
+  }).valid, false);
 });

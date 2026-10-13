@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from '../../viteTestCacheDir';
 
 const buttonSource = readFileSync(new URL('./Button.tsx', import.meta.url), 'utf8');
 const modalSource = readFileSync(new URL('./Modal.tsx', import.meta.url), 'utf8');
@@ -283,6 +284,7 @@ test('actual fallback Button contains every mobile presentation and isolates nat
   timeout: 90_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('fallback-controls'),
     configFile: fileURLToPath(new URL('../../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createFallbackControlsPlugin()],
@@ -428,6 +430,7 @@ test('actual fallback Modal applies one close branch and preserves portal lifecy
   timeout: 120_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('fallback-controls'),
     configFile: fileURLToPath(new URL('../../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createFallbackControlsPlugin()],

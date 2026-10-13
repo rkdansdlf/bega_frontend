@@ -250,8 +250,8 @@ export default function GwangjuSeatMapEditor() {
         </div>
       </header>
 
-      <main className="grid gap-0 lg:grid-cols-[320px_minmax(0,1fr)_420px]">
-        <aside className="border-b border-slate-800 p-4 lg:border-b-0 lg:border-r">
+      <main className="min-w-0 grid gap-0 lg:grid-cols-[320px_minmax(0,1fr)_420px]">
+        <aside className="min-w-0 border-b border-slate-800 p-4 lg:border-b-0 lg:border-r">
           <label className="text-xs font-black uppercase text-slate-400" htmlFor="gwangju-editor-search">
             section search
           </label>
@@ -260,7 +260,7 @@ export default function GwangjuSeatMapEditor() {
             data-testid="gwangju-editor-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="mt-2 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-white outline-none focus:border-sky-400"
+            className="mt-2 min-h-11 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-white outline-none focus:border-sky-400"
             placeholder="121, L, S-329, five-table..."
           />
           <div className="mt-4 max-h-[calc(100vh-180px)] space-y-1 overflow-auto pr-1">
@@ -291,11 +291,11 @@ export default function GwangjuSeatMapEditor() {
           </div>
         </aside>
 
-        <section className="min-h-[680px] bg-slate-900 p-4">
+        <section className="min-w-0 min-h-[680px] bg-slate-900 p-4">
           <svg
             data-testid="gwangju-editor-svg"
             viewBox={dataset.image.viewBox}
-            className="h-full max-h-[calc(100vh-120px)] min-h-[640px] w-full rounded-md bg-white"
+            className="h-full max-h-[calc(100vh-120px)] min-h-[640px] min-w-0 w-full rounded-md bg-white"
             role="img"
             aria-label="Gwangju precision v1 editor overlay"
           >
@@ -371,7 +371,7 @@ export default function GwangjuSeatMapEditor() {
           </svg>
         </section>
 
-        <aside className="border-t border-slate-800 p-4 lg:border-l lg:border-t-0">
+        <aside className="min-w-0 border-t border-slate-800 p-4 lg:border-l lg:border-t-0">
           <div className="rounded-md border border-slate-800 bg-slate-900 p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -401,14 +401,14 @@ export default function GwangjuSeatMapEditor() {
               <button
                 type="button"
                 onClick={() => setEditablePathKind('visual')}
-                className={`rounded-md px-3 py-2 text-xs font-black ${editablePathKind === 'visual' ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-300'}`}
+                className={`min-h-11 rounded-md px-3 py-2 text-xs font-black ${editablePathKind === 'visual' ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-300'}`}
               >
                 visual
               </button>
               <button
                 type="button"
                 onClick={() => setEditablePathKind('hit')}
-                className={`rounded-md px-3 py-2 text-xs font-black ${editablePathKind === 'hit' ? 'bg-orange-500 text-white' : 'bg-slate-800 text-slate-300'}`}
+                className={`min-h-11 rounded-md px-3 py-2 text-xs font-black ${editablePathKind === 'hit' ? 'bg-orange-500 text-white' : 'bg-slate-800 text-slate-300'}`}
               >
                 hit
               </button>
@@ -426,7 +426,7 @@ export default function GwangjuSeatMapEditor() {
                     setSelectedPolygonIndex(Math.max(0, Math.min(editablePolygons.length - 1, Number(event.target.value) || 0)));
                     setSelectedPointIndex(0);
                   }}
-                  className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1"
+                  className="mt-1 min-h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1"
                 />
               </label>
               <label>
@@ -437,47 +437,47 @@ export default function GwangjuSeatMapEditor() {
                   max={Math.max(0, selectedPolygon.length - 1)}
                   type="number"
                   onChange={(event) => setSelectedPointIndex(Math.max(0, Math.min(selectedPolygon.length - 1, Number(event.target.value) || 0)))}
-                  className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1"
+                  className="mt-1 min-h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-1"
                 />
               </label>
             </div>
 
             <div className="mt-3 grid grid-cols-3 gap-2">
-              <button type="button" onClick={() => nudgeSelectedPoint(0, -1)} className="rounded-md bg-slate-800 px-3 py-2 text-xs font-black">up</button>
-              <button type="button" onClick={() => nudgeSelectedPoint(-1, 0)} className="rounded-md bg-slate-800 px-3 py-2 text-xs font-black">left</button>
-              <button type="button" onClick={() => nudgeSelectedPoint(1, 0)} className="rounded-md bg-slate-800 px-3 py-2 text-xs font-black">right</button>
-              <button type="button" onClick={() => nudgeSelectedPoint(0, 1)} className="rounded-md bg-slate-800 px-3 py-2 text-xs font-black">down</button>
-              <button type="button" onClick={addVertex} className="rounded-md bg-blue-600 px-3 py-2 text-xs font-black">add</button>
-              <button type="button" onClick={deleteVertex} className="rounded-md bg-rose-600 px-3 py-2 text-xs font-black">delete</button>
+              <button type="button" onClick={() => nudgeSelectedPoint(0, -1)} className="min-h-11 rounded-md bg-slate-800 px-3 py-2 text-xs font-black">up</button>
+              <button type="button" onClick={() => nudgeSelectedPoint(-1, 0)} className="min-h-11 rounded-md bg-slate-800 px-3 py-2 text-xs font-black">left</button>
+              <button type="button" onClick={() => nudgeSelectedPoint(1, 0)} className="min-h-11 rounded-md bg-slate-800 px-3 py-2 text-xs font-black">right</button>
+              <button type="button" onClick={() => nudgeSelectedPoint(0, 1)} className="min-h-11 rounded-md bg-slate-800 px-3 py-2 text-xs font-black">down</button>
+              <button type="button" onClick={addVertex} className="min-h-11 rounded-md bg-blue-600 px-3 py-2 text-xs font-black">add</button>
+              <button type="button" onClick={deleteVertex} className="min-h-11 rounded-md bg-rose-600 px-3 py-2 text-xs font-black">delete</button>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <button type="button" onClick={syncHitToVisual} className="rounded-md bg-orange-600 px-3 py-2 text-xs font-black">sync hit to visual</button>
-              <button type="button" onClick={resetSelectedDraft} className="rounded-md bg-slate-800 px-3 py-2 text-xs font-black">reset section</button>
+              <button type="button" onClick={syncHitToVisual} className="min-h-11 rounded-md bg-orange-600 px-3 py-2 text-xs font-black">sync hit to visual</button>
+              <button type="button" onClick={resetSelectedDraft} className="min-h-11 rounded-md bg-slate-800 px-3 py-2 text-xs font-black">reset section</button>
             </div>
 
             <div className="mt-3 grid grid-cols-4 gap-2">
-              <button type="button" onClick={() => nudgeLabelPoint(0, -1)} className="rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label up</button>
-              <button type="button" onClick={() => nudgeLabelPoint(-1, 0)} className="rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label left</button>
-              <button type="button" onClick={() => nudgeLabelPoint(1, 0)} className="rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label right</button>
-              <button type="button" onClick={() => nudgeLabelPoint(0, 1)} className="rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label down</button>
+              <button type="button" onClick={() => nudgeLabelPoint(0, -1)} className="min-h-11 rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label up</button>
+              <button type="button" onClick={() => nudgeLabelPoint(-1, 0)} className="min-h-11 rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label left</button>
+              <button type="button" onClick={() => nudgeLabelPoint(1, 0)} className="min-h-11 rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label right</button>
+              <button type="button" onClick={() => nudgeLabelPoint(0, 1)} className="min-h-11 rounded-md bg-emerald-700 px-3 py-2 text-xs font-black">label down</button>
             </div>
           </div>
 
           <div className="mt-4 rounded-md border border-slate-800 bg-slate-900 p-4">
             <div className="flex gap-2">
-              <button type="button" onClick={() => copyToClipboard(selectedPatchJson, setCopyStatus)} className="rounded-md bg-sky-600 px-3 py-2 text-xs font-black">
+              <button type="button" onClick={() => copyToClipboard(selectedPatchJson, setCopyStatus)} className="min-h-11 rounded-md bg-sky-600 px-3 py-2 text-xs font-black">
                 copy JSON patch
               </button>
-              <button type="button" onClick={() => copyToClipboard(selectedPatchTs, setCopyStatus)} className="rounded-md bg-violet-600 px-3 py-2 text-xs font-black">
+              <button type="button" onClick={() => copyToClipboard(selectedPatchTs, setCopyStatus)} className="min-h-11 rounded-md bg-violet-600 px-3 py-2 text-xs font-black">
                 copy TS patch
               </button>
             </div>
             <p className="mt-2 min-h-4 text-xs font-bold text-slate-400">{copyStatus}</p>
-            <pre data-testid="gwangju-editor-dataset-json" className="mt-3 max-h-52 overflow-auto rounded-md bg-slate-950 p-3 text-11 text-slate-300">
+            <pre data-testid="gwangju-editor-dataset-json" className="mt-3 min-w-0 max-w-full max-h-52 overflow-auto whitespace-pre-wrap break-words rounded-md bg-slate-950 p-3 text-11 text-slate-300">
               {selectedPatchJson}
             </pre>
-            <pre data-testid="gwangju-editor-ts-patch" className="mt-3 max-h-52 overflow-auto rounded-md bg-slate-950 p-3 text-11 text-slate-300">
+            <pre data-testid="gwangju-editor-ts-patch" className="mt-3 min-w-0 max-w-full max-h-52 overflow-auto whitespace-pre-wrap break-words rounded-md bg-slate-950 p-3 text-11 text-slate-300">
               {selectedPatchTs}
             </pre>
           </div>

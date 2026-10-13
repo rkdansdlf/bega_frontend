@@ -125,7 +125,7 @@ function SectionFinder({
             onChange={(event) => onSearchChange(event.target.value)}
             autoFocus={autoFocusInput}
             placeholder="블록, 구역명 검색 (예: 1-1, 블루존)"
-            className="h-10 w-full rounded-xl border bg-slate-50 pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#074CA1] focus:bg-white dark:bg-slate-800 dark:text-white dark:focus:bg-slate-900"
+            className="h-11 w-full rounded-xl border bg-slate-50 pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#074CA1] focus:bg-white dark:bg-slate-800 dark:text-white dark:focus:bg-slate-900 sm:h-10"
             style={{ borderColor }}
           />
         </label>
@@ -147,7 +147,7 @@ function SectionFinder({
                   onClick={() => onSelect(block)}
                   onMouseEnter={() => onHover(block.id)}
                   onMouseLeave={() => onHover(null)}
-                  className="w-full cursor-pointer rounded-xl border px-3 py-3 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="min-h-11 w-full cursor-pointer rounded-xl border px-3 py-3 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800 sm:min-h-0"
                   style={{
                     borderColor: active ? accent : 'transparent',
                     background: active ? `${accent}14` : 'transparent',
@@ -230,7 +230,7 @@ function DetailPanel({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
+          className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800 sm:h-8 sm:w-8"
         >
           ×
         </button>
@@ -350,9 +350,20 @@ function DaeguExtraMeta({ section, accent }: { section: DaeguCanonicalBlock; acc
   );
 }
 
-export default function DaeguSeatMap() {
+export interface DaeguSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface DaeguSeatMapProps {
+  stateOverride?: DaeguSeatMapStateOverride;
+}
+
+export default function DaeguSeatMap({ stateOverride }: DaeguSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });

@@ -1,0 +1,67 @@
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 430px) {
+  .mate-list-page__content {
+    padding-top: 0.75rem;
+    padding-bottom: var(--mobile-content-safe-bottom);
+  }
+
+  .mate-list-controls-heading {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .mate-list-controls-heading > div:first-child > p {
+    display: none;
+  }
+
+  .mate-list-controls-toolbar {
+    margin-bottom: 0.5rem !important;
+    padding-block: 0.5rem !important;
+  }
+
+  .mate-list-controls-toolbar > div {
+    gap: 0.5rem;
+  }
+
+  [data-testid="mate-mobile-date-filter"] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem !important;
+    padding-block: 0.5rem;
+  }
+
+  [data-testid="mate-mobile-date-filter"] > div:first-child {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+  }
+
+  [data-testid="mate-mobile-date-filter"] > div:last-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-inline: 0;
+  }
+
+  [data-testid="mate-mobile-date-filter-scroller"] {
+    padding-inline: 0;
+    padding-bottom: 0;
+  }
+
+  [data-testid="mate-mobile-date-filter-scroller"] [role="group"] {
+    gap: 0.375rem;
+  }
+
+  [data-testid="mate-mobile-date-filter-all"] {
+    height: 2.25rem;
+    min-width: 3.5rem;
+    padding-inline: 0.5rem;
+  }
+
+  [data-testid^="mate-mobile-date-filter-date-"] {
+    height: 2.25rem;
+    min-width: 3.25rem;
+    padding-inline: 0.5rem;
+  }
+
+  [data-testid="mate-team-filter-button"] {
+    display: none;
+  }
+}

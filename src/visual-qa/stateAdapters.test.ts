@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+import type { CheerPost, Comment as CheerComment } from '../api/cheerApi';
 import { FRANCHISE_TEAM_IDS } from '../constants/teams';
 import type { AdminCoachAutoBriefOpsHealth } from '../types/admin';
 import { MANUAL_BASEBALL_DATA_REQUIRED_CODE } from '../utils/manualBaseballDataContract';
@@ -181,6 +182,436 @@ test('HomeMatchPanel adapter keeps schedule data local and exposes callback evid
   }));
 });
 
+test('HomeMatchPanelErrorState adapter preserves compact recovery and manual-data copy branches', () => {
+  const retryable = resolveComponentStateAdapter('home.match-error-state', {
+    componentId: 'src/components/home/HomeMatchPanelErrorState.tsx#HomeMatchPanelErrorState',
+    states: { data: 'long-korean', interactions: 'click', system: 'error-503' },
+    variants: { compact: 'compact', recovery: 'enabled', theme: 'dark' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(retryable.captureSelector, '[data-testid="home-match-priority-panel"]');
+  assert.equal(retryable.theme, 'dark');
+  assert.equal(retryable.props.compact, true);
+  assert.equal(retryable.props.suppressRecoveryActions, false);
+  assert.match(String(retryable.props.description), /모바일/);
+
+  const manual = resolveComponentStateAdapter('home.match-error-state', {
+    componentId: 'src/components/home/HomeMatchPanelErrorState.tsx#HomeMatchPanelErrorState',
+    states: { data: 'single', interactions: 'default', system: 'manual-required' },
+    variants: { compact: 'regular', recovery: 'suppressed', theme: 'light' },
+  });
+  assert.equal(manual.props.suppressRecoveryActions, true);
+  assert.match(String(manual.props.title), /데이터/);
+  assert.equal(manual.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('home.match-error-state', {
+    componentId: 'src/components/home/HomeMatchPanelErrorState.tsx#HomeMatchPanelErrorState',
+    states: { data: 'single', interactions: 'click', system: 'error-503' },
+    variants: { compact: 'compact', recovery: 'suppressed', theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /requires enabled recovery/);
+});
+
+test('HomePullToRefresh adapter binds the resting content and threshold-crossing drag callback', () => {
+  const componentId = 'src/components/home/HomePullToRefresh.tsx#HomePullToRefresh';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.pull-to-refresh'), true);
+
+  const resting = resolveComponentStateAdapter('home.pull-to-refresh', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="home-pull-to-refresh"]');
+  assert.equal(resting.props.lastRefreshedLabel, '오후 6:42 마지막 동기화 완료 안내');
+  assert.equal(typeof resting.props.onRefresh, 'function');
+  assert.ok(resting.props.children);
+
+  const dragging = resolveComponentStateAdapter('home.pull-to-refresh', {
+    componentId,
+    states: { data: 'single', interactions: 'drag' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'refresh',
+  });
+  assert.equal(typeof dragging.props.onRefresh, 'function');
+  assert.ok(dragging.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('home.pull-to-refresh', {
+    componentId,
+    states: { data: 'single', interactions: 'drag' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'refresh',
+  }), /지원하지 않는 HomePullToRefresh state/);
+});
+
+test('CoachAnalysisDialog adapter binds the lazy dialog to local cancelled-game fixtures', () => {
+  const componentId = 'src/components/CoachAnalysisDialog.tsx#CoachAnalysisDialog';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('coach-analysis.dialog'), true);
+
+  const resting = resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="coach-analysis-dialog"]');
+  assert.equal(resting.props.defaultOpen, true);
+  assert.equal(resting.props.gameStatusBucket, 'CANCELLED');
+  assert.ok(resting.props.trigger);
+
+  const clickable = resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'trigger',
+  });
+  assert.ok(clickable.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'trigger',
+  }), /지원하지 않는 CoachAnalysisDialog state/);
+});
+
+test('CoachAnalysisDialogRuntime adapter binds the direct runtime to local cancelled-game fixtures', () => {
+  const componentId = 'src/components/CoachAnalysisDialogRuntime.tsx#CoachAnalysisDialogRuntime';
+  const resting = resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="coach-analysis-dialog"]');
+  assert.equal(resting.props.isOpen, true);
+  assert.equal(typeof resting.props.onRequestClose, 'function');
+
+  const clickable = resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'close',
+  });
+  assert.ok(clickable.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('coach-analysis.dialog', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'trigger',
+  }), /지원하지 않는 CoachAnalysisDialog state/);
+});
+
+test('CoachAnalysisDialogResultRuntime adapter binds local result, loading, pressure, and retry branches', () => {
+  const componentId = 'src/components/CoachAnalysisDialogResultRuntime.tsx#CoachAnalysisDialogResultRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('coach-analysis.result-runtime'), true);
+
+  const result = resolveComponentStateAdapter('coach-analysis.result-runtime', {
+    componentId,
+    states: { data: 'single', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(result.theme, 'dark');
+  assert.equal(result.captureSelector, '[data-testid^="coach-analysis-result-"]');
+  assert.equal(result.props.loading, false);
+  assert.ok(result.props.result);
+
+  const loading = resolveComponentStateAdapter('coach-analysis.result-runtime', {
+    componentId,
+    states: { data: 'loading', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.loading, true);
+  assert.equal(loading.props.result, null);
+
+  const retry = resolveComponentStateAdapter('coach-analysis.result-runtime', {
+    componentId,
+    states: { data: 'error-503', interactions: 'retry' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal((retry.props.result as { error?: string }).error, '분석 결과를 불러오지 못했습니다.');
+  assert.equal(typeof retry.props.onRetry, 'function');
+  assert.ok(retry.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('coach-analysis.result-runtime', {
+    componentId,
+    states: { data: 'single', interactions: 'retry' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /지원하지 않는 CoachAnalysisDialogResultRuntime state/);
+});
+
+test('CoachBriefing adapter binds local manual-preview fixtures without activating AI transport', () => {
+  const componentId = 'src/components/CoachBriefing.tsx#CoachBriefing';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('coach-briefing'), true);
+
+  const anonymous = resolveComponentStateAdapter('coach-briefing', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'anonymous', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(anonymous.theme, 'dark');
+  assert.equal(anonymous.captureSelector, '[data-testid="coach-briefing-card"]');
+  assert.equal(anonymous.props.isLoggedIn, false);
+  assert.equal(anonymous.props.autoEnabled, false);
+
+  const loading = resolveComponentStateAdapter('coach-briefing', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.theme, 'light');
+  assert.equal(loading.props.isAuthLoading, true);
+  assert.equal(loading.props.isLoggedIn, true);
+
+  assert.throws(() => resolveComponentStateAdapter('coach-briefing', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+  }), /지원하지 않는|state axes/);
+});
+
+test('ConfirmDialogRenderer adapter binds local copy pressure and both footer actions', () => {
+  const componentId = 'src/components/contexts/ConfirmDialogRenderer.tsx#ConfirmDialogRenderer';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('common.confirm-dialog-renderer'), true);
+
+  const resting = resolveComponentStateAdapter('common.confirm-dialog-renderer', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="confirm-dialog"]');
+  assert.equal(resting.props.open, true);
+  assert.ok(resting.props.options);
+
+  const confirm = resolveComponentStateAdapter('common.confirm-dialog-renderer', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'confirm',
+  });
+  assert.equal(typeof confirm.props.onResult, 'function');
+  assert.ok(confirm.companion);
+
+  const cancel = resolveComponentStateAdapter('common.confirm-dialog-renderer', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'cancel',
+  });
+  assert.equal(typeof cancel.props.onResult, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('common.confirm-dialog-renderer', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'confirm',
+  }), /지원하지 않는 ConfirmDialogRenderer state/);
+});
+
+test('ConfirmDialogProvider adapter exercises the real context consumer and lazy renderer', () => {
+  const componentId = 'src/components/contexts/ConfirmDialogContext.tsx#ConfirmDialogProvider';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('common.confirm-dialog-provider'), true);
+
+  const resting = resolveComponentStateAdapter('common.confirm-dialog-provider', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="confirm-dialog-provider-surface"]');
+  assert.ok(resting.props.children);
+  assert.ok(resting.companion);
+
+  const confirm = resolveComponentStateAdapter('common.confirm-dialog-provider', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'confirm',
+  });
+  assert.ok(confirm.props.children);
+
+  const cancel = resolveComponentStateAdapter('common.confirm-dialog-provider', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'cancel',
+  });
+  assert.ok(cancel.props.children);
+
+  assert.throws(() => resolveComponentStateAdapter('common.confirm-dialog-provider', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'confirm',
+  }), /지원하지 않는 ConfirmDialogProvider state/);
+});
+
+test('ErrorModalProvider adapter exercises context mutation and global-error guards', () => {
+  const componentId = 'src/components/contexts/ErrorModalContext.tsx#ErrorModalProvider';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('common.error-modal-provider'), true);
+
+  const resting = resolveComponentStateAdapter('common.error-modal-provider', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="error-modal-provider-surface"]');
+  assert.ok(resting.props.children);
+  assert.ok(resting.companion);
+
+  for (const target of ['open', 'global-event', 'ignored-event', 'close', 'retry']) {
+    const result = resolveComponentStateAdapter('common.error-modal-provider', {
+      componentId,
+      states: { data: 'single', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.props.children);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('common.error-modal-provider', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'open',
+  }), /지원하지 않는 ErrorModalProvider state/);
+});
+
+test('static image, embedded-post, ranking-row, and landing-footer adapters preserve their production branches', () => {
+  const embedded = resolveComponentStateAdapter('embedded-post', {
+    componentId: 'src/components/EmbeddedPost.tsx#EmbeddedPost',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { post: 'active', variant: 'detail', theme: 'dark' },
+    interactionTargetId: 'embedded-post',
+  });
+  assert.equal(embedded.captureSelector, '[data-testid="cheer-embedded-post"]');
+  assert.equal(embedded.props.linkedContentVariant, 'detail');
+  assert.equal(typeof embedded.props.onClick, 'function');
+  assert.equal(embedded.theme, 'dark');
+
+  const deletedEmbedded = resolveComponentStateAdapter('embedded-post', {
+    componentId: 'src/components/EmbeddedPost.tsx#EmbeddedPost',
+    states: { data: 'single', interactions: 'default' },
+    variants: { post: 'deleted', variant: 'compact', theme: 'light' },
+  });
+  assert.equal(deletedEmbedded.captureSelector, undefined);
+  assert.equal((deletedEmbedded.props.post as { deleted: boolean }).deleted, true);
+  assert.equal(deletedEmbedded.theme, 'light');
+  assert.throws(() => resolveComponentStateAdapter('embedded-post', {
+    componentId: 'src/components/EmbeddedPost.tsx#EmbeddedPost',
+    states: { data: 'single', interactions: 'click' },
+    variants: { post: 'deleted', variant: 'compact', theme: 'light' },
+    interactionTargetId: 'embedded-post',
+  }), /requires an active post/);
+
+  const imageGrid = resolveComponentStateAdapter('image.grid', {
+    componentId: 'src/components/ImageGrid.tsx#ImageGrid',
+    states: { data: 'maximum-supported', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'image',
+  });
+  assert.equal((imageGrid.props.images as string[]).length, 6);
+  assert.equal(imageGrid.captureSelector, '[data-skip-cheer-card-nav]');
+  const emptyImageGrid = resolveComponentStateAdapter('image.grid', {
+    componentId: 'src/components/ImageGrid.tsx#ImageGrid',
+    states: { data: 'empty', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(emptyImageGrid.props.images, []);
+  assert.equal(emptyImageGrid.captureSelector, undefined);
+
+  const richRankRow = resolveComponentStateAdapter('home.team-rank-row', {
+    componentId: 'src/components/home/TeamRankRow.tsx#TeamRankRow',
+    states: { data: 'maximum-supported', interactions: 'hover' },
+    variants: { row: 'rich', sparkline: 'recent', theme: 'dark' },
+    interactionTargetId: 'row',
+  });
+  assert.equal(richRankRow.props.variant, 'rich');
+  assert.equal((richRankRow.props.team as { rank: number }).rank, 4);
+  assert.deepEqual(richRankRow.props.sparkline, ['W', 'D', 'L', 'W', 'W']);
+  const zeroRankRow = resolveComponentStateAdapter('home.team-rank-row', {
+    componentId: 'src/components/home/TeamRankRow.tsx#TeamRankRow',
+    states: { data: 'zero', interactions: 'default' },
+    variants: { row: 'compact', sparkline: 'none', theme: 'light' },
+  });
+  assert.equal((zeroRankRow.props.team as { wins: number }).wins, 0);
+  assert.equal(zeroRankRow.props.sparkline, undefined);
+
+  const landingFooter = resolveComponentStateAdapter('landing.footer', {
+    componentId: 'src/components/landing/LandingFooter.tsx#LandingFooter',
+    states: { data: 'single', interactions: 'pressed' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(landingFooter.captureSelector, '[data-testid="landing-footer"]');
+  assert.equal(landingFooter.theme, 'dark');
+
+  const mateViewToggle = resolveComponentStateAdapter('mate.view-toggle', {
+    componentId: 'src/components/MateViewToggle.tsx#MateViewToggle',
+    states: { interactions: 'selected' },
+    variants: { activeView: 'grid', theme: 'dark' },
+    interactionTargetId: 'list',
+  });
+  assert.equal(mateViewToggle.props.viewModeOverride, 'grid');
+  assert.equal(mateViewToggle.props.forceVisible, true);
+  assert.equal(mateViewToggle.captureSelector, '[data-testid="mate-view-toggle"]');
+  assert.equal(mateViewToggle.theme, 'dark');
+
+  const blockButton = resolveComponentStateAdapter('profile.block-button', {
+    componentId: 'src/components/profile/BlockButton.tsx#BlockButton',
+    states: { data: 'populated', interactions: 'selected' },
+    variants: { relation: 'blocked', size: 'lg', theme: 'light' },
+    interactionTargetId: 'blocked',
+  });
+  assert.equal(blockButton.props.initialBlocked, true);
+  assert.equal(blockButton.props.size, 'lg');
+  assert.equal(typeof blockButton.props.visualQaToggleBlock, 'function');
+  assert.equal(blockButton.theme, 'light');
+
+  const followButton = resolveComponentStateAdapter('profile.follow-button', {
+    componentId: 'src/components/profile/FollowButton.tsx#FollowButton',
+    states: { data: 'populated', interactions: 'default' },
+    variants: { relation: 'following', size: 'default', theme: 'dark' },
+  });
+  assert.equal(followButton.props.initialFollowing, true);
+  assert.equal(followButton.props.initialNotify, true);
+  assert.equal(followButton.props.showNotifyOption, true);
+  assert.equal(typeof followButton.props.visualQaNotifyToggle, 'function');
+  assert.equal(followButton.theme, 'dark');
+
+  const landingPhone = resolveComponentStateAdapter('landing.static-leaf', {
+    componentId: 'src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen',
+    states: { data: 'populated', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(landingPhone.captureSelector, '.landing-phone-home-screen');
+  assert.equal(landingPhone.theme, 'light');
+
+  const gameCard = resolveComponentStateAdapter('home.game-card-default', {
+    componentId: 'src/components/GameCard.tsx#GameCard',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { featured: 'yes', variant: 'home', theme: 'dark' },
+    interactionTargetId: 'card',
+  });
+  assert.equal((gameCard.props.game as { homeScore: number }).homeScore, 4);
+  assert.equal(gameCard.props.featured, true);
+  assert.equal(typeof gameCard.props.onSelectPrediction, 'function');
+
+  const scheduledCard = resolveComponentStateAdapter('home.scheduled-game-card', {
+    componentId: 'src/components/ScheduledGameCard.tsx#ScheduledGameCard',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { league: 'postseason', status: 'postponed', theme: 'light' },
+    interactionTargetId: 'cta',
+  });
+  assert.equal((scheduledCard.props.game as { gameStatus: string }).gameStatus, 'POSTPONED');
+  assert.equal((scheduledCard.props.game as { leagueType: string }).leagueType, 'POSTSEASON');
+  assert.equal(scheduledCard.captureSelector, '[role="button"]');
+});
+
 test('HomeRuntime adapter is fail-closed and binds the real route-owned runtime surface', () => {
   const componentId = 'src/components/HomeRuntime.tsx#HomeRuntime';
   assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.runtime'), true);
@@ -193,6 +624,38 @@ test('HomeRuntime adapter is fail-closed and binds the real route-owned runtime 
   assert.equal(ready.initialPathname, '/home?date=2026-09-10');
   assert.equal(ready.theme, 'light');
 
+  const nextDate = resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'date-a', system: 'ready', interactions: 'next-date' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'date-next',
+  });
+  assert.equal(nextDate.initialPathname, '/home?date=2026-09-10');
+  assert.equal(nextDate.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(nextDate.theme, 'dark');
+
+  const cta = resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'date-b', system: 'ready', interactions: 'cta' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'primary-cta',
+  });
+  assert.equal(cta.initialPathname, '/home?date=2026-09-11');
+  assert.equal(cta.captureSelector, '[data-vqa-harness-surface]');
+
+  assert.throws(() => resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'date-a', system: 'ready', interactions: 'next-date' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'primary-cta',
+  }), /expected date-next target/);
+  assert.throws(() => resolveComponentStateAdapter('home.runtime', {
+    componentId,
+    states: { data: 'date-b', system: 'ready', interactions: 'cta' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'date-next',
+  }), /expected primary-cta target/);
+
   assert.throws(() => resolveComponentStateAdapter('home.runtime', {
     componentId: 'src/components/Home.tsx#Home',
     states: { data: 'normal', system: 'ready', interactions: 'default' },
@@ -203,6 +666,1180 @@ test('HomeRuntime adapter is fail-closed and binds the real route-owned runtime 
     states: { data: 'normal', system: 'ready', interactions: 'retry' },
     variants: { theme: 'light' },
   }));
+});
+
+test('HomeSecondaryPanels adapter binds local widgets, failures, calendar, and controls', () => {
+  const componentId = 'src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels';
+  const populated = resolveComponentStateAdapter('home.secondary-panels', {
+    componentId,
+    states: { data: 'populated', interactions: 'click', system: 'idle' },
+    variants: { calendar: 'closed', recovery: 'enabled', theme: 'light' },
+    interactionTargetId: 'featured-mate',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="home-secondary-panels"]');
+  assert.equal(populated.theme, 'light');
+  assert.equal(populated.props.loggedIn, true);
+  assert.equal((populated.props.featuredMates as Array<{ id: number }>)[0]?.id, 9301);
+  assert.equal(typeof populated.props.onSelectFeaturedMate, 'function');
+
+  const calendar = resolveComponentStateAdapter('home.secondary-panels', {
+    componentId,
+    states: { data: 'populated', interactions: 'click', system: 'idle' },
+    variants: { calendar: 'open', recovery: 'enabled', theme: 'light' },
+    interactionTargetId: 'calendar-close',
+  });
+  assert.equal(calendar.props.showCalendar, true);
+  assert.equal(calendar.theme, 'light');
+
+  const failure = resolveComponentStateAdapter('home.secondary-panels', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default', system: 'manual-required' },
+    variants: { calendar: 'closed', recovery: 'suppressed', theme: 'dark' },
+  });
+  assert.equal(failure.props.rankingsError, true);
+  assert.equal(failure.props.suppressRecoveryActions, true);
+  assert.equal((failure.props.hotCheerPosts as unknown[]).length, 2);
+
+  assert.throws(() => resolveComponentStateAdapter('home.secondary-panels', {
+    componentId,
+    states: { data: 'empty', interactions: 'click', system: 'idle' },
+    variants: { calendar: 'closed', recovery: 'enabled', theme: 'light' },
+    interactionTargetId: 'featured-mate',
+  }), /click requires a canonical target/);
+});
+
+test('HomeDeferredSurfaces adapter preserves lazy composition without live transport', () => {
+  const componentId = 'src/components/home/HomeDeferredSurfaces.tsx#HomeDeferredSurfaces';
+  const open = resolveComponentStateAdapter('home.deferred-surfaces', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { calendar: 'open', theme: 'dark' },
+  });
+  assert.equal(open.captureSelector, '[data-testid="home-secondary-panels"]');
+  assert.equal(open.initialPathname, '/home');
+  assert.equal(open.theme, 'dark');
+  assert.equal(open.props.showCalendar, true);
+  assert.equal(open.props.loggedIn, true);
+  assert.equal(open.props.visualQaDisableAdSlot, true);
+  assert.equal(open.props.visualQaDisableAuthBridge, true);
+  assert.equal(open.props.visualQaStateOverride.status, 'success');
+
+  const loading = resolveComponentStateAdapter('home.deferred-surfaces', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'loading' },
+    variants: { calendar: 'closed', theme: 'light' },
+  });
+  assert.equal(loading.props.showCalendar, false);
+  assert.equal(loading.props.loggedIn, false);
+  assert.equal(loading.props.visualQaStateOverride.status, 'loading');
+  assert.deepEqual(loading.harnessAuthState?.user, null);
+});
+
+test('HomeSecondaryPanelsContainer adapter isolates query phases without live transport', () => {
+  const componentId = 'src/components/home/HomeSecondaryPanelsContainer.tsx#HomeSecondaryPanelsContainer';
+  const success = resolveComponentStateAdapter('home.secondary-panels-container', {
+    componentId,
+    states: { data: 'populated', system: 'idle' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(success.captureSelector, '[data-testid="home-secondary-panels"]');
+  assert.equal(success.theme, 'light');
+  assert.equal(success.props.visualQaStateOverride.status, 'success');
+  assert.equal(success.props.visualQaStateOverride.data.rankingSnapshot.rankings[0].teamId, 'LG');
+
+  const loading = resolveComponentStateAdapter('home.secondary-panels-container', {
+    componentId,
+    states: { data: 'empty', system: 'loading' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(loading.props.visualQaStateOverride.status, 'loading');
+  assert.equal(loading.props.visualQaStateOverride.data, undefined);
+  assert.equal(loading.theme, 'dark');
+
+  const failed = resolveComponentStateAdapter('home.secondary-panels-container', {
+    componentId,
+    states: { data: 'long-korean', system: 'manual-required' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(failed.props.visualQaStateOverride.status, 'error');
+  assert.equal(typeof failed.props.visualQaStateOverride.onRetry, 'function');
+});
+
+test('Home wrapper adapter isolates its own lazy boundary without duplicating Runtime state', () => {
+  const componentId = 'src/components/Home.tsx#Home';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('home.wrapper'), true);
+
+  const fallback = resolveComponentStateAdapter('home.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="home-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.props.runtimeOverride, undefined);
+
+  const resolved = resolveComponentStateAdapter('home.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="home-wrapper-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('home.wrapper', {
+    componentId: 'src/components/HomeRuntime.tsx#HomeRuntime',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('home.wrapper', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('Cheer wrapper adapter isolates its own lazy boundary without duplicating Runtime state', () => {
+  const componentId = 'src/components/Cheer.tsx#Cheer';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.wrapper'), true);
+
+  const fallback = resolveComponentStateAdapter('cheer.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="cheer-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.props.runtimeOverride, undefined);
+
+  const resolved = resolveComponentStateAdapter('cheer.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="cheer-wrapper-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.wrapper', {
+    componentId: 'src/components/CheerRuntime.tsx#CheerRuntime',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('cheer.wrapper', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('CheerDetailPage adapter isolates its own lazy boundary without duplicating detail state', () => {
+  const componentId = 'src/components/CheerDetailPage.tsx#CheerDetailPage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.detail-page'), true);
+
+  const fallback = resolveComponentStateAdapter('cheer.detail-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="cheer-detail-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.props.runtimeOverride, undefined);
+
+  const resolved = resolveComponentStateAdapter('cheer.detail-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="cheer-detail-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-page', {
+    componentId: 'src/components/CheerDetail.tsx#CheerDetail',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('CheerDetail adapter isolates query phases with a local post override', () => {
+  const componentId = 'src/components/CheerDetail.tsx#CheerDetail';
+  const populated = resolveComponentStateAdapter('cheer.detail', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-detail-route"]');
+  assert.equal(populated.initialPathname, '/cheer/904');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.visualQaStateOverride.loading, false);
+  assert.equal(populated.props.visualQaStateOverride.selectedPost.id, 904);
+  assert.equal(populated.props.visualQaStateOverride.isLoggedIn, true);
+
+  const loading = resolveComponentStateAdapter('cheer.detail', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.visualQaStateOverride.loading, true);
+  assert.equal(loading.props.visualQaStateOverride.selectedPost, null);
+  assert.equal(loading.props.visualQaStateOverride.isLoggedIn, false);
+
+  const unavailable = resolveComponentStateAdapter('cheer.detail', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'manual-required' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(unavailable.props.visualQaStateOverride.selectedPost, null);
+  assert.match(unavailable.props.visualQaStateOverride.error.message, /unavailable/);
+});
+
+test('CheerEdit adapter isolates edit query, permission, and copy-pressure branches', () => {
+  const componentId = 'src/components/CheerEdit.tsx#CheerEdit';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.edit'), true);
+
+  const populated = resolveComponentStateAdapter('cheer.edit', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-edit-route"]');
+  assert.equal(populated.initialPathname, '/cheer/edit/904');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.visualQaStateOverride.isLoading, false);
+  assert.equal(populated.props.visualQaStateOverride.isError, false);
+  assert.equal(populated.props.visualQaStateOverride.hasAccess, true);
+  assert.match(populated.props.visualQaStateOverride.content, /긴 한국어/);
+
+  const anonymous = resolveComponentStateAdapter('cheer.edit', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(anonymous.props.visualQaStateOverride.hasAccess, false);
+  assert.equal(anonymous.props.visualQaStateOverride.favoriteTeam, null);
+  assert.equal(anonymous.props.visualQaStateOverride.post?.isOwner, false);
+
+  const loading = resolveComponentStateAdapter('cheer.edit', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.visualQaStateOverride.isLoading, true);
+  assert.equal(loading.props.visualQaStateOverride.post, null);
+
+  const unavailable = resolveComponentStateAdapter('cheer.edit', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'default', system: 'manual-required' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(unavailable.props.visualQaStateOverride.isError, true);
+  assert.equal(unavailable.props.visualQaStateOverride.post, null);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.edit', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('cheer.edit', {
+    componentId: 'src/components/CheerDetail.tsx#CheerDetail',
+    states: { data: 'single', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  }));
+});
+
+test('CheerEditPage adapter isolates its own lazy boundary without duplicating edit state', () => {
+  const componentId = 'src/components/CheerEditPage.tsx#CheerEditPage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.edit-page'), true);
+
+  const fallback = resolveComponentStateAdapter('cheer.edit-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="cheer-edit-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.props.runtimeOverride, undefined);
+
+  const resolved = resolveComponentStateAdapter('cheer.edit-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="cheer-edit-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.edit-page', {
+    componentId: 'src/components/CheerEdit.tsx#CheerEdit',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('cheer.edit-page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('DirectMessagePage adapter isolates its own lazy boundary without duplicating Runtime state', () => {
+  const componentId = 'src/components/DirectMessagePage.tsx#DirectMessagePage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('dm.page'), true);
+
+  const fallback = resolveComponentStateAdapter('dm.page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="dm-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.props.runtimeOverride, undefined);
+
+  const resolved = resolveComponentStateAdapter('dm.page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="dm-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('dm.page', {
+    componentId: 'src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('dm.page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('DmInboxPage adapter isolates its own lazy boundary without duplicating inbox state', () => {
+  const componentId = 'src/components/DmInboxPage.tsx#DmInboxPage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('dm.inbox-page'), true);
+
+  const fallback = resolveComponentStateAdapter('dm.inbox-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="dm-inbox-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.initialPathname, '/messages');
+
+  const resolved = resolveComponentStateAdapter('dm.inbox-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="dm-inbox-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('dm.inbox-page', {
+    componentId: 'src/components/dm/DmInboxRuntime.tsx#DmInboxRuntime',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('dm.inbox-page', {
+    componentId,
+    states: { data: 'populated' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('DmInboxRuntime adapter binds local room, auth, loading, and navigation states', () => {
+  const componentId = 'src/components/dm/DmInboxRuntime.tsx#DmInboxRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('dm.inbox-runtime'), true);
+
+  const emptyGuest = resolveComponentStateAdapter('dm.inbox-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(emptyGuest.initialPathname, '/messages');
+  assert.equal(emptyGuest.expectedPathname, '/messages');
+  assert.equal(emptyGuest.theme, 'dark');
+  assert.equal(emptyGuest.harnessAuthState?.user, null);
+
+  const loading = resolveComponentStateAdapter('dm.inbox-runtime', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.visualQaStateOverride != null, true);
+  assert.equal((loading.props.visualQaStateOverride as { isLoading: boolean }).isLoading, true);
+  assert.equal(loading.harnessAuthState?.user?.handle, 'visual-qa-dm-inbox');
+
+  const click = resolveComponentStateAdapter('dm.inbox-runtime', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'room',
+  });
+  assert.equal(click.captureSelector, '[data-testid="dm-inbox-runtime"]');
+  assert.equal(typeof (click.props.visualQaStateOverride as { onRoomClick?: unknown }).onRoomClick, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('dm.inbox-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'room',
+  }), /dm\.inbox-runtime click requires/);
+});
+
+test('MateGuidePanelRuntime adapter preserves its static guide and close boundary', () => {
+  const componentId = 'src/components/MateGuidePanelRuntime.tsx#MateGuidePanelRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.guide-panel'), true);
+
+  const resting = resolveComponentStateAdapter('mate.guide-panel', {
+    componentId,
+    states: { interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="mate-guide-panel-runtime"]');
+  assert.equal(typeof resting.props.onClose, 'function');
+  assert.ok(resting.companion);
+
+  const close = resolveComponentStateAdapter('mate.guide-panel', {
+    componentId,
+    states: { interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'close',
+  });
+  assert.equal(close.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('mate.guide-panel', {
+    componentId,
+    states: { interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'other',
+  }), /mate\.guide-panel expected close target/);
+});
+
+test('MyPageSidebarMoreRuntime adapter preserves active views and all navigation targets', () => {
+  const componentId = 'src/components/mypage/MyPageSidebarMoreRuntime.tsx#MyPageSidebarMoreRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.sidebar-more'), true);
+
+  const resting = resolveComponentStateAdapter('mypage.sidebar-more', {
+    componentId,
+    states: { interactions: 'default' },
+    variants: { theme: 'dark', view: 'mateHistory' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="mypage-season-sidebar-more"]');
+  assert.equal(resting.expectedPathname, '/mypage');
+  assert.equal(resting.props.viewMode, 'mateHistory');
+  assert.equal(typeof resting.props.onSetViewMode, 'function');
+
+  for (const target of ['diary', 'mate-history', 'cheer-posts', 'stadium', 'alerts', 'badges', 'stats']) {
+    const result = resolveComponentStateAdapter('mypage.sidebar-more', {
+      componentId,
+      states: { interactions: 'click' },
+      variants: { theme: 'light', view: 'diaryEditor' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.sidebar-more', {
+    componentId,
+    states: { interactions: 'click' },
+    variants: { theme: 'light', view: 'diaryEditor' },
+    interactionTargetId: 'unknown',
+  }), /mypage\.sidebar-more expected one of/);
+});
+
+test('MyPageProfileCardRuntime adapter preserves copy pressure, loading, and actions', () => {
+  const componentId = 'src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.profile-card'), true);
+
+  const resting = resolveComponentStateAdapter('mypage.profile-card', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="mypage-profile-card-runtime"]');
+  assert.equal(resting.expectedPathname, '/mypage');
+  assert.equal(resting.props.isProfileLoading, false);
+  assert.equal(resting.props.currentUserId, null);
+  assert.ok(resting.companion);
+
+  const loading = resolveComponentStateAdapter('mypage.profile-card', {
+    componentId,
+    states: { data: 'single', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.isProfileLoading, true);
+
+  for (const target of ['followers', 'following', 'mate-history', 'stats', 'ticket', 'edit']) {
+    const result = resolveComponentStateAdapter('mypage.profile-card', {
+      componentId,
+      states: { data: 'single', interactions: 'click', system: 'idle' },
+      variants: { theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.profile-card', {
+    componentId,
+    states: { data: 'single', interactions: 'click', system: 'loading' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'edit',
+  }), /mypage\.profile-card loading state only supports default interaction/);
+});
+
+test('MyPageSidebarRuntime adapter preserves primary and nested navigation states', () => {
+  const componentId = 'src/components/mypage/MyPageSidebarRuntime.tsx#MyPageSidebarRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.sidebar'), true);
+
+  const resting = resolveComponentStateAdapter('mypage.sidebar', {
+    componentId,
+    states: { data: 'unbroken-token', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark', view: 'accountSettings' },
+  });
+  assert.equal(resting.theme, 'dark');
+  assert.equal(resting.captureSelector, '[data-testid="mypage-season-sidebar"]');
+  assert.equal(resting.expectedPathname, '/mypage');
+  assert.equal(resting.props.viewMode, 'accountSettings');
+  assert.equal(typeof resting.props.onSetViewMode, 'function');
+
+  const loading = resolveComponentStateAdapter('mypage.sidebar', {
+    componentId,
+    states: { data: 'single', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light', view: 'diary' },
+  });
+  assert.equal(loading.props.isProfileLoading, true);
+
+  for (const target of [
+    'followers',
+    'following',
+    'diary',
+    'stats',
+    'settings',
+    'today',
+    'mate-history',
+    'cheer-posts',
+    'stadium',
+    'alerts',
+    'badges',
+    'season-stats',
+  ]) {
+    const result = resolveComponentStateAdapter('mypage.sidebar', {
+      componentId,
+      states: { data: 'single', interactions: 'click', system: 'idle' },
+      variants: { theme: 'light', view: 'diary' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.sidebar', {
+    componentId,
+    states: { data: 'single', interactions: 'click', system: 'loading' },
+    variants: { theme: 'light', view: 'diary' },
+    interactionTargetId: 'settings',
+  }), /mypage\.sidebar loading state only supports default interaction/);
+});
+
+test('DirectMessageRuntime adapter binds the real private-room flow and fails closed', () => {
+  const componentId = 'src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('dm.runtime'), true);
+
+  const populated = resolveComponentStateAdapter('dm.runtime', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'online' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(populated.initialPathname, '/messages/otheruser');
+  assert.equal(populated.expectedPathname, '/messages/otheruser');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.harnessAuthState?.user?.handle, 'visual-qa-dm');
+
+  const send = resolveComponentStateAdapter('dm.runtime', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'submitting', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'send',
+  });
+  assert.equal(send.expectedSearch, '');
+
+  const retry = resolveComponentStateAdapter('dm.runtime', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'retry', system: 'request-failed' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(retry.initialPathname, '/messages/otheruser');
+
+  assert.throws(() => resolveComponentStateAdapter('dm.runtime', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'retry', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /request-failed/);
+  assert.throws(() => resolveComponentStateAdapter('dm.runtime', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'input', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'send',
+  }), /expected composer target/);
+  assert.throws(() => resolveComponentStateAdapter('dm.runtime', {
+    componentId: 'src/components/DirectMessagePage.tsx#DirectMessagePage',
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  }));
+});
+
+test('MyPage wrapper adapter isolates its own lazy boundary without duplicating runtime state', () => {
+  const componentId = 'src/components/MyPage.tsx#MyPage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.wrapper'), true);
+
+  const fallback = resolveComponentStateAdapter('mypage.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="mypage-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.initialPathname, '/mypage');
+
+  const resolved = resolveComponentStateAdapter('mypage.wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="mypage-wrapper-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.wrapper', {
+    componentId: 'src/components/MyPageRuntime.tsx#MyPageRuntime',
+    states: {},
+    variants: { phase: 'resolved' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('mypage.wrapper', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved' },
+  }));
+});
+
+test('MyPage password-change adapter maps the authenticated initial form and password variants', () => {
+  const componentId = 'src/components/mypage/PasswordChangeSection.tsx#PasswordChangeSection';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.password-change'), true);
+
+  const existingPassword = resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'default' },
+    variants: { 'has-password': 'true', theme: 'dark' },
+  });
+  assert.equal(existingPassword.props.hasPassword, true);
+  assert.equal(typeof existingPassword.props.onCancel, 'function');
+  assert.equal(typeof existingPassword.props.onSuccess, 'function');
+  assert.equal(existingPassword.captureSelector, '[data-testid="mypage-password-change-section"]');
+  assert.equal(existingPassword.initialPathname, '/mypage?view=changePassword');
+  assert.equal(existingPassword.expectedPathname, '/mypage');
+  assert.equal(existingPassword.expectedSearch, '?view=changePassword');
+  assert.equal(existingPassword.theme, 'dark');
+  assert.equal(existingPassword.harnessAuthState?.user?.hasPassword, true);
+
+  const setPassword = resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'focus-visible' },
+    variants: { 'has-password': 'false', theme: 'light' },
+    interactionTargetId: 'new-password',
+  });
+  assert.equal(setPassword.props.hasPassword, false);
+  assert.equal(setPassword.harnessAuthState?.user?.hasPassword, false);
+  assert.equal(setPassword.theme, 'light');
+
+  const submit = resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'request-success', permissions: 'user', interactions: 'submit' },
+    variants: { 'has-password': 'true', theme: 'dark' },
+    interactionTargetId: 'submit-success-has-password',
+  });
+  assert.equal(submit.props.hasPassword, true);
+  assert.equal(submit.expectedPathname, '/mypage');
+
+  const interaction = resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'interaction-check', permissions: 'user', interactions: 'click' },
+    variants: { 'has-password': 'false', theme: 'light' },
+    interactionTargetId: 'cancel',
+  });
+  assert.equal(interaction.props.hasPassword, false);
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'request-success', permissions: 'user', interactions: 'submit' },
+    variants: { 'has-password': 'true', theme: 'light' },
+    interactionTargetId: 'cancel',
+  }), /submit target/);
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'hover' },
+    variants: { 'has-password': 'false', theme: 'light' },
+    interactionTargetId: 'current-password',
+  }), /password-change target/);
+  assert.throws(() => resolveComponentStateAdapter('mypage.password-change', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'default' },
+    variants: { 'has-password': 'true', theme: 'light' },
+  }), /지원하지 않는 Visual QA state/);
+});
+
+test('mypage account-settings advanced adapter preserves both dialogs and device pressure', () => {
+  const componentId = 'src/components/mypage/AccountSettingsAdvancedRuntime.tsx#AccountSettingsAdvancedRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.account-settings-advanced'), true);
+
+  const advanced = resolveComponentStateAdapter('mypage.account-settings-advanced', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default' },
+    variants: { dialog: 'advanced', theme: 'dark' },
+  });
+  assert.equal(advanced.captureSelector, '[data-testid="account-settings-advanced-dialog"]');
+  assert.equal(advanced.theme, 'dark');
+  assert.equal((advanced.props as { showAdvancedSettingsDialog: boolean }).showAdvancedSettingsDialog, true);
+  assert.equal((advanced.props as { trustedDevices: unknown[] }).trustedDevices.length, 1);
+
+  const maximum = resolveComponentStateAdapter('mypage.account-settings-advanced', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user-social-no-password', interactions: 'default' },
+    variants: { dialog: 'delete', theme: 'light' },
+  });
+  assert.equal(maximum.captureSelector, '[data-testid="account-settings-delete-dialog"]');
+  assert.equal((maximum.props as { isLocalUser: boolean }).isLocalUser, false);
+  assert.equal((maximum.props as { trustedDevices: unknown[] }).trustedDevices.length, 8);
+
+  for (const [target, dialog] of [
+    ['advanced-close', 'advanced'],
+    ['open-delete', 'advanced'],
+    ['remove-device', 'advanced'],
+    ['confirm-delete', 'delete'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mypage.account-settings-advanced', {
+      componentId,
+      states: { data: 'single', permissions: 'user', interactions: 'click' },
+      variants: { dialog, theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.account-settings-advanced', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'click' },
+    variants: { dialog: 'advanced', theme: 'light' },
+    interactionTargetId: 'remove-device',
+  }), /unsupported click target or state/);
+});
+
+test('mypage account-settings security adapter preserves session and query phases', () => {
+  const componentId = 'src/components/mypage/AccountSettingsSecurityRuntime.tsx#AccountSettingsSecurityRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.account-settings-security'), true);
+
+  const populated = resolveComponentStateAdapter('mypage.account-settings-security', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="account-settings-security-runtime"]');
+  assert.equal(populated.theme, 'dark');
+  const populatedOverride = (populated.props as { visualQaStateOverride: { deviceSessions: unknown[]; securityEvents: unknown[] } }).visualQaStateOverride;
+  assert.equal(populatedOverride.deviceSessions.length, 4);
+  assert.equal(populatedOverride.securityEvents.length, 4);
+
+  const socialError = resolveComponentStateAdapter('mypage.account-settings-security', {
+    componentId,
+    states: { data: 'single', permissions: 'user-social-no-password', interactions: 'default', system: 'error-503' },
+    variants: { theme: 'light' },
+  });
+  const socialProps = socialError.props as { userProvider: string; visualQaStateOverride: { isSessionError: boolean } };
+  assert.equal(socialProps.userProvider, 'google');
+  assert.equal(socialProps.visualQaStateOverride.isSessionError, true);
+
+  for (const target of ['session-end', 'other-sessions', 'advanced-open']) {
+    const result = resolveComponentStateAdapter('mypage.account-settings-security', {
+      componentId,
+      states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+      variants: { theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.account-settings-security', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'click', system: 'loading' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'advanced-open',
+  }), /unsupported click target or state/);
+});
+
+test('mypage account-settings section adapter preserves provider and logout surfaces', () => {
+  const componentId = 'src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.account-settings-section'), true);
+
+  const empty = resolveComponentStateAdapter('mypage.account-settings-section', {
+    componentId,
+    states: { data: 'empty', permissions: 'user-social-no-password', interactions: 'default', system: 'loading' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(empty.captureSelector, '[data-testid="account-settings-section"]');
+  assert.equal(empty.theme, 'dark');
+  const emptyProps = empty.props as { visualQaStateOverride: { connectedProviders: unknown[]; isProvidersLoading: boolean } };
+  assert.equal(emptyProps.visualQaStateOverride.connectedProviders.length, 0);
+  assert.equal(emptyProps.visualQaStateOverride.isProvidersLoading, true);
+
+  const populated = resolveComponentStateAdapter('mypage.account-settings-section', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  });
+  const populatedProps = populated.props as { visualQaStateOverride: { connectedProviders: unknown[]; securityRuntime: unknown } };
+  assert.equal(populatedProps.visualQaStateOverride.connectedProviders.length, 3);
+  assert.ok(populatedProps.visualQaStateOverride.securityRuntime);
+
+  for (const target of ['provider-google', 'provider-kakao', 'logout']) {
+    const result = resolveComponentStateAdapter('mypage.account-settings-section', {
+      componentId,
+      states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+      variants: { theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mypage.account-settings-section', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'click', system: 'loading' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'logout',
+  }), /unsupported click target or state/);
+});
+
+test('mypage stat card adapter preserves numeric, copy, color, and theme pressure', () => {
+  const componentId = 'src/components/mypage/StatCard.tsx#StatCard';
+  const maximum = resolveComponentStateAdapter('mypage.stat-card', {
+    componentId,
+    states: { data: 'maximum-supported' },
+    variants: { color: 'green', theme: 'dark' },
+  });
+  assert.equal(maximum.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(maximum.props.value, Number.MAX_SAFE_INTEGER);
+  assert.equal(maximum.props.color, '#2d5f4f');
+  assert.equal(maximum.theme, 'dark');
+
+  const pressure = resolveComponentStateAdapter('mypage.stat-card', {
+    componentId,
+    states: { data: 'long-korean' },
+    variants: { color: 'amber', theme: 'light' },
+  });
+  assert.equal(pressure.props.value, '1,234,567');
+  assert.match(String(pressure.props.label), /모바일/);
+  assert.equal(pressure.props.color, '#b7791f');
+  assert.equal(pressure.theme, 'light');
+});
+
+test('mypage win-rate chart adapter preserves empty, numeric, and mobile pressure', () => {
+  const componentId = 'src/components/mypage/WinRateChart.tsx#WinRateChart';
+  const empty = resolveComponentStateAdapter('mypage.win-rate-chart', {
+    componentId,
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual(empty.props, { wins: 0, draws: 0, losses: 0, winRate: 0 });
+  assert.equal(empty.theme, 'light');
+
+  const pressure = resolveComponentStateAdapter('mypage.win-rate-chart', {
+    componentId,
+    states: { data: 'long-korean' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(pressure.props, { wins: 123456, draws: 23456, losses: 3456, winRate: 84.6 });
+  assert.equal(pressure.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(pressure.theme, 'dark');
+
+  const maximum = resolveComponentStateAdapter('mypage.win-rate-chart', {
+    componentId,
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(maximum.props.wins, Number.MAX_SAFE_INTEGER);
+  assert.equal(maximum.props.losses, 1);
+});
+
+test('mypage diary chart adapters preserve empty, density, and numeric pressure', () => {
+  const monthly = resolveComponentStateAdapter('mypage.monthly-stats-chart', {
+    componentId: 'src/components/mypage/MonthlyStatsChart.tsx#MonthlyStatsChart',
+    states: { data: 'long-korean' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal((monthly.props.data as Array<unknown>).length, 3);
+  assert.match(String((monthly.props.data as Array<{ month: string }>)[0].month), /정규시즌/);
+  assert.equal(monthly.theme, 'dark');
+
+  const dayOfWeek = resolveComponentStateAdapter('mypage.day-of-week-chart', {
+    componentId: 'src/components/mypage/DayOfWeekChart.tsx#DayOfWeekChart',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(Object.keys(dayOfWeek.props.dayOfWeekStats as Record<string, unknown>).length, 7);
+  assert.equal(
+    (dayOfWeek.props.dayOfWeekStats as Record<string, { count: number }>).월.count,
+    Number.MAX_SAFE_INTEGER,
+  );
+
+  const opponent = resolveComponentStateAdapter('mypage.opponent-win-rate-chart', {
+    componentId: 'src/components/mypage/OpponentWinRateChart.tsx#OpponentWinRateChart',
+    states: { data: 'unbroken-token' },
+    variants: { theme: 'dark' },
+  });
+  const opponentNames = Object.keys(opponent.props.opponentStats as Record<string, unknown>);
+  assert.equal(opponentNames.length, 8);
+  assert.match(opponentNames[0], /^OPPONENT-X/);
+
+  const emoji = resolveComponentStateAdapter('mypage.emoji-stats-card', {
+    componentId: 'src/components/mypage/EmojiStatsCard.tsx#EmojiStatsCard',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((emoji.props.stats as Array<{ count: number }>)[0].count, Number.MAX_SAFE_INTEGER);
+
+  const badges = resolveComponentStateAdapter('mypage.badge-showcase', {
+    componentId: 'src/components/mypage/BadgeShowcase.tsx#BadgeShowcase',
+    states: { data: 'partial' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(badges.props.earnedBadges, ['ticket', 'sparkles']);
+  assert.equal(badges.captureSelector, '[data-testid="mypage-badge-showcase"]');
+});
+
+test('mypage badges section composes deterministic statistics into the real catalog view', () => {
+  const full = resolveComponentStateAdapter('mypage.badges-section', {
+    componentId: 'src/components/mypage/BadgesSection.tsx#BadgesSection',
+    states: { data: 'full' },
+    variants: { theme: 'dark' },
+  });
+  const fullOverride = full.props.visualQaStateOverride as {
+    statistics: { earnedBadges: string[]; totalCount: number; stadiumVisitCounts?: Record<string, number> };
+    isLoading: boolean;
+  };
+  assert.deepEqual(fullOverride.statistics.earnedBadges, ['ticket', 'flame', 'map-pin', 'sparkles', 'crown']);
+  assert.equal(fullOverride.statistics.totalCount, 50);
+  assert.equal(Object.keys(fullOverride.statistics.stadiumVisitCounts ?? {}).length, 3);
+  assert.equal(fullOverride.isLoading, false);
+  assert.equal(full.captureSelector, '[data-testid="mypage-badge-catalog"]');
+  assert.equal(full.theme, 'dark');
+
+  const maximum = resolveComponentStateAdapter('mypage.badges-section', {
+    componentId: 'src/components/mypage/BadgesSection.tsx#BadgesSection',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'light' },
+  });
+  const maximumStatistics = (maximum.props.visualQaStateOverride as { statistics: { totalCount: number } }).statistics;
+  assert.equal(maximumStatistics.totalCount, Number.MAX_SAFE_INTEGER);
+});
+
+test('mypage diary charts section adapter composes all child charts from local statistics', () => {
+  const populated = resolveComponentStateAdapter('mypage.diary-charts-section', {
+    componentId: 'src/components/mypage/DiaryChartsSection.tsx#DiaryChartsSection',
+    states: { data: 'populated' },
+    variants: { theme: 'dark' },
+  });
+  const statistics = populated.props.statistics as {
+    totalWins: number;
+    opponentWinRates: Record<string, unknown>;
+    dayOfWeekStats: Record<string, unknown>;
+  };
+  assert.equal(statistics.totalWins, 24);
+  assert.equal(Object.keys(statistics.opponentWinRates).length, 3);
+  assert.equal(Object.keys(statistics.dayOfWeekStats).length, 7);
+  assert.equal((populated.props.monthlyData as Array<unknown>).length, 3);
+  assert.equal(populated.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(populated.theme, 'dark');
+
+  const empty = resolveComponentStateAdapter('mypage.diary-charts-section', {
+    componentId: 'src/components/mypage/DiaryChartsSection.tsx#DiaryChartsSection',
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+  });
+  const emptyStatistics = empty.props.statistics as {
+    totalWins: number;
+    opponentWinRates: Record<string, unknown>;
+    dayOfWeekStats: Record<string, unknown>;
+  };
+  assert.equal(emptyStatistics.totalWins, 0);
+  assert.deepEqual(empty.props.monthlyData, []);
+  assert.deepEqual(emptyStatistics.opponentWinRates, {});
+  assert.deepEqual(emptyStatistics.dayOfWeekStats, {});
+});
+
+test('mypage diary statistics adapter maps loading, error, empty, and populated local fixtures', () => {
+  const populated = resolveComponentStateAdapter('mypage.diary-statistics', {
+    componentId: 'src/components/mypage/Diarystatistics.tsx#DiaryStatistics',
+    states: { data: 'populated' },
+    variants: { theme: 'dark' },
+  });
+  const populatedOverride = populated.props.visualQaStateOverride as {
+    statistics: { totalCount: number; opponentWinRates: Record<string, unknown> };
+    emojiStats: Array<{ count: number }>;
+    diaryEntries: Array<unknown>;
+    isLoading: boolean;
+    isError: boolean;
+  };
+  assert.equal(populatedOverride.statistics.totalCount, 42);
+  assert.equal(Object.keys(populatedOverride.statistics.opponentWinRates).length, 4);
+  assert.equal(populatedOverride.emojiStats.length, 3);
+  assert.equal(populatedOverride.diaryEntries.length, 1);
+  assert.equal(populatedOverride.isLoading, false);
+  assert.equal(populatedOverride.isError, false);
+  assert.equal(populated.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(populated.theme, 'dark');
+
+  const loading = resolveComponentStateAdapter('mypage.diary-statistics', {
+    componentId: 'src/components/mypage/Diarystatistics.tsx#DiaryStatistics',
+    states: { data: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((loading.props.visualQaStateOverride as { isLoading: boolean }).isLoading, true);
+
+  const error = resolveComponentStateAdapter('mypage.diary-statistics', {
+    componentId: 'src/components/mypage/Diarystatistics.tsx#DiaryStatistics',
+    states: { data: 'error-503' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((error.props.visualQaStateOverride as { isError: boolean }).isError, true);
+
+  const empty = resolveComponentStateAdapter('mypage.diary-statistics', {
+    componentId: 'src/components/mypage/Diarystatistics.tsx#DiaryStatistics',
+    states: { data: 'empty' },
+    variants: { theme: 'light' },
+  });
+  const emptyOverride = empty.props.visualQaStateOverride as {
+    statistics: { totalCount: number; dayOfWeekStats: Record<string, unknown> };
+    diaryEntries: Array<unknown>;
+  };
+  assert.equal(emptyOverride.statistics.totalCount, 0);
+  assert.deepEqual(emptyOverride.statistics.dayOfWeekStats, {});
+  assert.deepEqual(emptyOverride.diaryEntries, []);
+});
+
+test('mypage stadium visit list adapter maps empty, dense, and copy-pressure entries', () => {
+  const populated = resolveComponentStateAdapter('mypage.stadium-visit-list', {
+    componentId: 'src/components/mypage/StadiumVisitList.tsx#StadiumVisitList',
+    states: { data: 'populated' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal((populated.props.entries as Array<unknown>).length, 12);
+  assert.equal(populated.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(populated.theme, 'dark');
+
+  const longKorean = resolveComponentStateAdapter('mypage.stadium-visit-list', {
+    componentId: 'src/components/mypage/StadiumVisitList.tsx#StadiumVisitList',
+    states: { data: 'long-korean' },
+    variants: { theme: 'light' },
+  });
+  assert.match(String((longKorean.props.entries as Array<{ stadium: string }>)[0].stadium), /모바일 줄바꿈/);
+
+  const maximum = resolveComponentStateAdapter('mypage.stadium-visit-list', {
+    componentId: 'src/components/mypage/StadiumVisitList.tsx#StadiumVisitList',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((maximum.props.entries as Array<unknown>).length, 48);
+
+  const empty = resolveComponentStateAdapter('mypage.stadium-visit-list', {
+    componentId: 'src/components/mypage/StadiumVisitList.tsx#StadiumVisitList',
+    states: { data: 'empty' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(empty.props.entries, []);
+});
+
+test('mypage mate history card adapter maps status notes, pressure copy, and click targets', () => {
+  const completed = resolveComponentStateAdapter('mypage.mate-history-card', {
+    componentId: 'src/components/mypage/MateHistoryCard.tsx#MateHistoryCard',
+    states: { data: 'unbroken-token', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'party-card',
+  });
+  const completedParty = completed.props.party as { status: string; stadium: string; section: string };
+  assert.equal(completedParty.status, 'COMPLETED');
+  assert.match(completedParty.stadium, /^STADIUM-X/);
+  assert.match(completedParty.section, /^SECTION-Y/);
+  assert.equal(completed.captureSelector, '[data-testid="mypage-mate-card"]');
+  assert.equal(completed.initialPathname, '/mypage');
+  assert.equal(completed.theme, 'dark');
+
+  const checkedIn = resolveComponentStateAdapter('mypage.mate-history-card', {
+    componentId: 'src/components/mypage/MateHistoryCard.tsx#MateHistoryCard',
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  const checkedInParty = checkedIn.props.party as { status: string; stadium: string };
+  assert.equal(checkedInParty.status, 'CHECKED_IN');
+  assert.match(checkedInParty.stadium, /줄바꿈/);
+
+  const maximum = resolveComponentStateAdapter('mypage.mate-history-card', {
+    componentId: 'src/components/mypage/MateHistoryCard.tsx#MateHistoryCard',
+    states: { data: 'maximum-supported', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((maximum.props.party as { currentParticipants: number }).currentParticipants, Number.MAX_SAFE_INTEGER - 1);
+});
+
+test('mypage mate history section adapter composes tabs, loading, empty, cards, and pagination', () => {
+  const populated = resolveComponentStateAdapter('mypage.mate-history-section', {
+    componentId: 'src/components/mypage/MateHistorySection.tsx#MateHistorySection',
+    states: { data: 'populated', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'completed-tab',
+  });
+  const override = populated.props.visualQaStateOverride as {
+    tabStates: Record<string, { parties: unknown[]; hasNextPage: boolean }>;
+  };
+  assert.equal(override.tabStates.all.parties.length, 2);
+  assert.equal(override.tabStates.completed.parties.length, 1);
+  assert.equal(override.tabStates.all.hasNextPage, true);
+  assert.equal(populated.captureSelector, '[data-testid="mypage-mate-history-section"]');
+  assert.equal(populated.initialPathname, '/mypage');
+  assert.equal(populated.theme, 'dark');
+
+  const loading = resolveComponentStateAdapter('mypage.mate-history-section', {
+    componentId: 'src/components/mypage/MateHistorySection.tsx#MateHistorySection',
+    states: { data: 'loading', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((loading.props.visualQaStateOverride as { tabStates: { all: { isLoading: boolean } } }).tabStates.all.isLoading, true);
+
+  const empty = resolveComponentStateAdapter('mypage.mate-history-section', {
+    componentId: 'src/components/mypage/MateHistorySection.tsx#MateHistorySection',
+    states: { data: 'empty', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual((empty.props.visualQaStateOverride as { tabStates: { all: { parties: unknown[] } } }).tabStates.all.parties, []);
+
+  const pagination = resolveComponentStateAdapter('mypage.mate-history-section', {
+    componentId: 'src/components/mypage/MateHistorySection.tsx#MateHistorySection',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'load-more',
+  });
+  assert.equal((pagination.props.visualQaStateOverride as { tabStates: { all: { hasNextPage: boolean } } }).tabStates.all.hasNextPage, true);
 });
 
 type VisualQaReleaseDecisionState = {
@@ -242,6 +1879,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'admin.delete-place-dialog',
     'admin.game-status-repair-panel',
     'admin.mates-panel',
+    'admin.moderation-runtime',
     'admin.offseason-movement-content',
     'admin.offseason-movement-dialogs',
     'admin.offseason-movement-panel',
@@ -284,28 +1922,112 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'auth.signup',
     'authenticated-layout.chrome',
     'authenticated-layout.toaster',
+    'changwon.seat-map',
+    'changwon.seat-map-svg',
+    'chatbot.conversation-panel',
+    'chatbot.conversation-runtime',
+    'chatbot.favorites-tab',
     'chatbot.floating-button',
+    'chatbot.history-tab',
+    'chatbot.runtime',
+    'chatbot.session',
+    'chatbot.wrapper',
     'cheer-feed.empty',
     'cheer-feed.error',
     'cheer-feed.login-required',
+    'cheer.bookmarks',
+    'cheer.bookmarks-page',
+    'cheer.card',
+    'cheer.card-interactions',
+    'cheer.comment-item',
+    'cheer.comment-modal',
+    'cheer.community-pulse',
+    'cheer.composer-login-prompt',
+    'cheer.composer-runtime',
+    'cheer.detail',
+    'cheer.detail-action-bar',
+    'cheer.detail-article',
+    'cheer.detail-comments',
+    'cheer.detail-content',
+    'cheer.detail-embedded-post',
+    'cheer.detail-page',
+    'cheer.detail-stats-aside',
+    'cheer.detail-stats-body',
+    'cheer.edit',
+    'cheer.edit-page',
+    'cheer.feed-runtime',
+    'cheer.hot',
+    'cheer.linked-content-card',
+    'cheer.live-event-summary',
+    'cheer.live-panel',
+    'cheer.mobile-bottom-nav',
+    'cheer.runtime',
+    'cheer.sidebar-panels',
     'cheer.theme-control',
+    'cheer.wrapper',
+    'cheer.write-modal',
+    'coach-analysis.dialog',
+    'coach-analysis.launcher',
+    'coach-analysis.result-runtime',
+    'coach-briefing',
+    'coach.briefing-content-card-runtime',
+    'coach.briefing-content-runtime',
     'common.coach-markdown',
+    'common.confirm-dialog-provider',
+    'common.confirm-dialog-renderer',
+    'common.deferred-markdown',
     'common.empty-state',
     'common.end-of-feed',
     'common.error-boundary',
     'common.error-boundary-fallback',
     'common.error-feedback-panel',
+    'common.error-modal-provider',
     'common.lazy-emoji-picker',
     'common.optimized-image',
     'common.profile-image',
     'common.qr-code',
+    'common.swipe-to-reveal-row',
+    'daegu.seat-map',
+    'daegu.seat-map-svg',
+    'daejeon.seat-map',
+    'daejeon.seat-map-svg',
+    'dm.inbox-page',
+    'dm.inbox-runtime',
+    'dm.page',
+    'dm.runtime',
+    'embedded-post',
     'figma.image-with-fallback',
     'global-error.content',
     'global-error.root',
+    'gocheok.facility-guide',
+    'gocheok.seat-map',
+    'gocheok.seat-map-svg',
+    'gwangju.seat-map',
+    'gwangju.seat-map-editor',
+    'gwangju.seat-map-svg',
+    'home.deferred-surfaces',
     'home.game-card',
+    'home.game-card-default',
+    'home.match-error-state',
     'home.match-panel',
+    'home.pull-to-refresh',
+    'home.recovery-banner',
     'home.runtime',
+    'home.scheduled-game-card',
+    'home.scheduled-match-panel',
+    'home.secondary-panels',
+    'home.secondary-panels-container',
+    'home.team-rank-row',
+    'home.wrapper',
+    'image.grid',
     'image.lightbox',
+    'incheon.operator-visit-guide',
+    'incheon.seat-map',
+    'incheon.seat-map-svg',
+    'jamsil.baseball-field',
+    'jamsil.seat-map',
+    'jamsil.seat-map-svg',
+    'jamsil.sun-overlay',
     'landing.app-preview',
     'landing.capability-showcase',
     'landing.cheer-vignette',
@@ -314,6 +2036,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'landing.feature-card',
     'landing.feature-section',
     'landing.features-runtime',
+    'landing.footer',
     'landing.game-data-vignette',
     'landing.hero',
     'landing.laptop-mockup',
@@ -325,6 +2048,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'landing.stadium-chips',
     'landing.stadium-vignette',
     'landing.start-guide',
+    'landing.static-leaf',
     'landing.ticker',
     'layout.footer',
     'leaderboard-page',
@@ -361,32 +2085,91 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'mate.date-rail-filter',
     'mate.detail-action-dialog',
     'mate.detail-action-section',
+    'mate.detail-content',
     'mate.detail-hero-block',
     'mate.detail-host-block',
+    'mate.detail-info-sections',
     'mate.detail-intro-block',
     'mate.detail-page',
     'mate.detail-participation-block',
     'mate.detail-price-box',
     'mate.detail-qr-hint',
+    'mate.detail-qr-panel',
+    'mate.detail-qr-runtime',
     'mate.detail-reference-card',
     'mate.detail-review-block',
     'mate.detail-reviews-section',
+    'mate.detail-runtime',
+    'mate.detail-seat-panel',
     'mate.detail-seat-view',
+    'mate.filter-bottom-sheet',
     'mate.guest-sample-list',
+    'mate.guide-panel',
     'mate.host-reviews-modal',
+    'mate.list-controls-runtime',
+    'mate.manage',
+    'mate.manage-applications',
+    'mate.manage-content',
+    'mate.manage-edit-panel',
+    'mate.manage-overview',
+    'mate.manage-page',
     'mate.mobile-date-filter',
+    'mate.my-parties-panel',
     'mate.page',
+    'mate.page-wrapper',
     'mate.party-card',
     'mate.party-compact',
     'mate.party-row',
+    'mate.popular-searches-panel',
+    'mate.recent-searches-panel',
+    'mate.results',
     'mate.seat-filter-buttons',
     'mate.sort-dropdown',
     'mate.status-tabs',
+    'mate.team-filter-button',
     'mate.ticket-verification',
     'mate.today-count-badge',
+    'mate.view-toggle',
     'mf-fallback.button',
     'mf-fallback.modal',
+    'module-federation.design-system-probe',
+    'module-federation.theme-provider',
+    'mypage.account-settings-advanced',
+    'mypage.account-settings-section',
+    'mypage.account-settings-security',
+    'mypage.alerts-section',
+    'mypage.badge-showcase',
+    'mypage.badges-section',
+    'mypage.blocked-users-section',
+    'mypage.cheer-posts-section',
+    'mypage.day-of-week-chart',
+    'mypage.diary-charts-section',
+    'mypage.diary-edit-mode',
+    'mypage.diary-read-mode',
+    'mypage.diary-statistics',
+    'mypage.diary-view-runtime',
+    'mypage.diary-view-section',
+    'mypage.emoji-stats-card',
+    'mypage.mate-history-card',
+    'mypage.mate-history-section',
+    'mypage.monthly-stats-chart',
+    'mypage.opponent-win-rate-chart',
+    'mypage.password-change',
+    'mypage.profile-card',
+    'mypage.profile-edit-profile-runtime',
+    'mypage.profile-edit-section',
+    'mypage.profile-edit-section-runtime',
+    'mypage.runtime',
     'mypage.season-empty',
+    'mypage.season-log-runtime',
+    'mypage.season-timeline-runtime',
+    'mypage.sidebar',
+    'mypage.sidebar-more',
+    'mypage.stadium-visit-list',
+    'mypage.stat-card',
+    'mypage.view-runtime',
+    'mypage.win-rate-chart',
+    'mypage.wrapper',
     'navbar.notification-controls',
     'navbar.shell',
     'notice.page',
@@ -408,22 +2191,80 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'offseason.list.page',
     'offseason.pill',
     'offseason.section-pill',
+    'prediction.advanced-match-card',
+    'prediction.advanced-match-card-content',
+    'prediction.advanced-match-card-supplementary',
+    'prediction.animated-sections',
+    'prediction.coach-analysis-result-view',
+    'prediction.coach-briefing-runtime',
+    'prediction.coach-verdict-memo',
+    'prediction.combo-animation-runtime',
+    'prediction.error-overlay',
+    'prediction.game-powerup-inventory',
+    'prediction.game-summary-timeline',
+    'prediction.live-relay-timeline',
     'prediction.loading-view',
+    'prediction.match-detail-panel',
+    'prediction.match-interactive-content-runtime',
+    'prediction.match-interactive-data-runtime',
+    'prediction.match-interactive-runtime',
+    'prediction.match-interactive-view',
+    'prediction.match-preview-tab',
+    'prediction.match-runtime',
+    'prediction.match-runtime-content',
+    'prediction.match-schedule-data-content',
+    'prediction.match-schedule-data-runtime',
+    'prediction.match-schedule-preview-runtime',
+    'prediction.match-schedule-ready-view',
+    'prediction.match-schedule-resolved-data-runtime',
+    'prediction.match-schedule-resolved-runtime',
+    'prediction.match-schedule-runtime',
+    'prediction.match-schedule-top-notice-runtime',
+    'prediction.match-tab',
+    'prediction.match-tab-detail-section',
+    'prediction.match-tab-empty-state',
+    'prediction.match-vote-controller',
     'prediction.matches-error',
+    'prediction.page',
+    'prediction.ranking-tab',
+    'prediction.risk-timeline',
+    'prediction.risk-versus',
+    'prediction.runtime',
+    'prediction.schedule-provider',
+    'prediction.scoreboard-section',
+    'prediction.stats-panel',
+    'prediction.top-notice',
+    'prediction.user-votes-provider',
+    'prediction.vote-panel',
     'privacy-policy.page',
+    'profile.block-button',
+    'profile.follow-button',
+    'profile.page',
+    'profile.user-list-modal',
+    'profile.user-profile',
+    'profile.user-profile-modal',
+    'profile.user-profile-posts-section',
     'public-navbar.desktop-auth-controls',
     'public-navbar.dm-unread-badge',
     'public-navbar.menu-panel',
     'public-navbar.shell',
+    'quote-repost.editor',
     'ranking.completion-panel',
     'ranking.item',
+    'ranking.prediction',
     'ranking.result-panel',
     'ranking.save-dialog',
+    'ranking.share',
+    'ranking.share-page',
+    'report.modal',
+    'repost.modal',
     'retro.animated-crown',
+    'retro.authenticated-leaderboard',
     'retro.combo-animation',
     'retro.dot-matrix-text',
     'retro.flicker-text',
     'retro.glitch-wrapper',
+    'retro.leaderboard',
     'retro.leaderboard-decorations',
     'retro.leaderboard-footer-panels',
     'retro.leaderboard-row',
@@ -454,22 +2295,32 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'sajik.seat-map',
     'sajik.seat-map-editor',
     'sajik.seat-map-svg',
+    'seat-map-attribution',
+    'seat-map-bottom-sheet',
+    'seat-map-detail-panel',
+    'seat-map-filter-bar',
     'seat-map-hover-preview',
     'seat-map-legend',
     'seat-map-runtime-shell',
     'seat-map-section-finder',
     'seat-map-template-shell',
     'seat-view-direct-upload-modal',
+    'seat-view.gallery',
     'simple-markdown.content',
+    'stadium-guide-places',
+    'stadium-guide-runtime',
     'stadium-seat-map-error-boundary',
     'stadium-seatmap.error',
     'stadium-seatmap.loading',
     'stadium-seatmap.manual-required',
     'stadium.favorite-toggle',
     'stadium.guide',
+    'suwon.seat-map',
+    'suwon.seat-map-svg',
     'team-recommendation.test',
     'team.logo',
     'terms-of-service.page',
+    'test-error.page',
     'theme-toggle.button',
     'ticket.upload-modal',
     'ui.alert',
@@ -531,6 +2382,318 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     }),
     /등록되지 않은 Visual QA state adapter/,
   );
+});
+
+test('static mobile leaves resolve repository-owned props and interaction boundaries', () => {
+  const deferred = resolveComponentStateAdapter('common.deferred-markdown', {
+    componentId: 'src/components/DeferredMarkdown.tsx#DeferredMarkdown',
+    states: { data: 'long-korean' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(deferred.theme, 'dark');
+  assert.match(String(deferred.props.content), /좁은 화면/);
+
+  const facility = resolveComponentStateAdapter('gocheok.facility-guide', {
+    componentId: 'src/components/gocheok/GocheokFacilityGuide.tsx#GocheokFacilityGuide',
+    states: { data: 'overview', interactions: 'tab-change' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'operations-tab',
+  });
+  assert.equal(facility.props.defaultTab, 'overview');
+  assert.equal(facility.props.mode, 'light');
+  assert.equal(typeof facility.props.onTabChange, 'function');
+  assert.equal(facility.companion != null, true);
+
+  const field = resolveComponentStateAdapter('jamsil.baseball-field', {
+    componentId: 'src/components/jamsil/JamsilBaseballField.tsx#JamsilBaseballField',
+    states: { data: 'single' },
+    variants: { mode: 'dark', scale: 'compact' },
+  });
+  assert.equal(field.semanticHost, 'svg');
+  assert.equal(field.props.mode, 'dark');
+  assert.equal(field.props.scale, 0.82);
+
+  const sun = resolveComponentStateAdapter('jamsil.sun-overlay', {
+    componentId: 'src/components/jamsil/JamsilSunOverlay.tsx#JamsilSunOverlay',
+    states: { data: 'boundary-angle' },
+    variants: { mode: 'light', radius: 'regular' },
+  });
+  assert.equal(sun.semanticHost, 'svg');
+  assert.equal(sun.props.sunAngle, 180);
+  assert.equal(sun.props.radius, 120);
+
+  const attribution = resolveComponentStateAdapter('seat-map-attribution', {
+    componentId: 'src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution',
+    states: { data: 'secondary-source', interactions: 'focus-visible' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'source-link',
+  });
+  assert.equal((attribution.props.secondarySources as unknown[]).length, 1);
+  assert.equal((attribution.props.source as { sourceUrl: string }).sourceUrl, '#visual-qa-source');
+
+  const swipe = resolveComponentStateAdapter('common.swipe-to-reveal-row', {
+    componentId: 'src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow',
+    states: { data: 'single', interactions: 'delete' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'delete',
+  });
+  assert.equal(swipe.theme, 'dark');
+  assert.match(String(swipe.surfaceClassName), /--cheer-card-bg/);
+  assert.equal(typeof swipe.props.onDelete, 'function');
+
+  const predictionEmpty = resolveComponentStateAdapter('prediction.match-tab-empty-state', {
+    componentId: 'src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'nearest-date',
+  });
+  assert.equal(predictionEmpty.theme, 'dark');
+  assert.equal((predictionEmpty.props.nearestNavigationDate as { isPast: boolean }).isPast, false);
+  assert.equal(predictionEmpty.companion != null, true);
+
+  const predictionPreview = resolveComponentStateAdapter('prediction.match-preview-tab', {
+    componentId: 'src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'match-detail',
+  });
+  assert.equal(predictionPreview.theme, 'dark');
+  assert.equal(predictionPreview.captureSelector, '[data-testid="prediction-schedule-preview"]');
+  assert.equal((predictionPreview.props.currentDateGames as unknown[]).length, 1);
+  assert.match(
+    String((predictionPreview.props.currentDateGames as Array<{ stadium: string }>)[0]?.stadium),
+    /모바일 줄바꿈/,
+  );
+  assert.equal(typeof predictionPreview.props.onEnterMatchDetail, 'function');
+
+  const predictionPreviewEmpty = resolveComponentStateAdapter('prediction.match-preview-tab', {
+    componentId: 'src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab',
+    states: { data: 'empty', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((predictionPreviewEmpty.props.currentDateGames as unknown[]).length, 0);
+  assert.equal(predictionPreviewEmpty.props.isToday, true);
+  assert.deepEqual(predictionPreviewEmpty.props.nearestNavigationDate, {
+    date: '2099-05-02',
+    isPast: false,
+  });
+
+  const predictionMatchTab = resolveComponentStateAdapter('prediction.match-tab', {
+    componentId: 'src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab',
+    states: { data: 'error-503', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'retry-detail',
+  });
+  assert.equal(predictionMatchTab.theme, 'dark');
+  assert.match(String(predictionMatchTab.captureSelector), /prediction-match-detail-root/);
+  assert.equal((predictionMatchTab.props.currentDateGames as unknown[]).length, 1);
+  assert.equal(predictionMatchTab.props.currentGameDetailErrorCode, 'UPSTREAM_ERROR');
+  assert.equal(typeof predictionMatchTab.props.reloadCurrentGameDetail, 'function');
+
+  const predictionMatchTabEmpty = resolveComponentStateAdapter('prediction.match-tab', {
+    componentId: 'src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab',
+    states: { data: 'empty', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual(predictionMatchTabEmpty.props.currentDateGames, []);
+  assert.equal(predictionMatchTabEmpty.props.currentGame, null);
+  assert.equal(predictionMatchTabEmpty.props.isToday, true);
+
+  const predictionMatchDetail = resolveComponentStateAdapter('prediction.match-detail-panel', {
+    componentId: 'src/components/prediction/PredictionMatchDetailPanel.tsx#PredictionMatchDetailPanel',
+    states: { data: 'error-503', permissions: 'user', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry-detail',
+  });
+  assert.equal(predictionMatchDetail.theme, 'light');
+  assert.equal(predictionMatchDetail.captureSelector, '[data-testid="prediction-match-detail-root"]');
+  assert.equal(predictionMatchDetail.props.gameDetailErrorCode, 'UPSTREAM_ERROR');
+  assert.equal(predictionMatchDetail.props.isLoggedIn, true);
+  assert.equal(typeof predictionMatchDetail.props.onNextDate, 'function');
+
+  const predictionDetailSection = resolveComponentStateAdapter('prediction.match-tab-detail-section', {
+    componentId: 'src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionMatchTabDetailSection',
+    states: { data: 'long-korean', permissions: 'anonymous', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'vote-home',
+  });
+  assert.equal(predictionDetailSection.theme, 'dark');
+  assert.equal(predictionDetailSection.captureSelector, '[data-testid="prediction-match-detail-root"]');
+  assert.match(String((predictionDetailSection.props.currentGame as { stadium: string }).stadium), /모바일 줄바꿈/);
+  assert.equal(predictionDetailSection.props.isLoggedIn, false);
+
+  const incheonGuide = resolveComponentStateAdapter('incheon.operator-visit-guide', {
+    componentId: 'src/components/incheon/IncheonSeatMap.tsx#IncheonOperatorVisitGuidePanel',
+    states: { data: 'long-korean' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(incheonGuide.theme, 'dark');
+  assert.equal(incheonGuide.captureSelector, '[data-testid="incheon-operator-visit-guide"]');
+  assert.match(
+    String((incheonGuide.props.section as { name: string }).name),
+    /모바일 화면에서 여러 줄/,
+  );
+  assert.equal(incheonGuide.props.accent, '#78B9BE');
+
+  const homeRecovery = resolveComponentStateAdapter('home.recovery-banner', {
+    componentId: 'src/components/home/HomeRecoveryBanner.tsx#HomeRecoveryBanner',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(homeRecovery.props.loadFailureReason, 'manual-data-required');
+  assert.match(String((homeRecovery.props.manualDataRequest as { operatorMessage: string }).operatorMessage), /모바일/);
+  assert.equal(homeRecovery.captureSelector, '[data-testid="home-global-recovery"]');
+
+  const comboRuntime = resolveComponentStateAdapter('prediction.combo-animation-runtime', {
+    componentId: 'src/components/prediction/PredictionComboAnimationRuntime.tsx#PredictionComboAnimationRuntime',
+    states: { data: 'single' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(comboRuntime.props, {});
+  assert.equal(comboRuntime.theme, 'dark');
+
+  const predictionErrorOverlay = resolveComponentStateAdapter('prediction.error-overlay', {
+    componentId: 'src/components/prediction/PredictionErrorOverlay.tsx#PredictionErrorOverlay',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { error: 'partial', theme: 'light' },
+    interactionTargetId: 'action-fallback_simple',
+  });
+  assert.equal(predictionErrorOverlay.props.isOpen, true);
+  assert.equal(predictionErrorOverlay.props.errorCode, 'PARTIAL_DATA');
+  assert.match(String(predictionErrorOverlay.props.message), /모바일/);
+  assert.equal(predictionErrorOverlay.captureSelector, '[data-testid="prediction-error-overlay"]');
+
+  const predictionTopNotice = resolveComponentStateAdapter('prediction.top-notice', {
+    componentId: 'src/components/prediction/PredictionTopNotice.tsx#PredictionTopNotice',
+    states: { data: 'error-503', interactions: 'click' },
+    variants: { kind: 'ERROR', theme: 'light' },
+    interactionTargetId: 'retry-past',
+  });
+  assert.equal(predictionTopNotice.props.kind, 'ERROR');
+  assert.equal(predictionTopNotice.props.voteStatusError, null);
+  assert.equal(predictionTopNotice.props.pastRangeLoadState, 'error');
+  assert.equal(
+    predictionTopNotice.captureSelector,
+    '[data-testid="prediction-top-notice"], [data-testid="prediction-partial-result-notice"]',
+  );
+
+  const predictionScoreboard = resolveComponentStateAdapter('prediction.scoreboard-section', {
+    componentId: 'src/components/prediction/PredictionScoreboardSection.tsx#PredictionScoreboardSection',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'extra-innings',
+  });
+  assert.equal(predictionScoreboard.theme, 'dark');
+  assert.equal(predictionScoreboard.props.shouldShowManualScoreboardState, false);
+  assert.equal(Object.keys(predictionScoreboard.props.inningRows as Record<number, unknown>).length, 11);
+  assert.equal(predictionScoreboard.captureSelector, '[data-testid="prediction-scoreboard"]');
+
+  const predictionVotePanel = resolveComponentStateAdapter('prediction.vote-panel', {
+    componentId: 'src/components/prediction/PredictionVotePanel.tsx#PredictionVotePanel',
+    states: { data: 'maximum-supported', interactions: 'click' },
+    variants: { selection: 'away', theme: 'light' },
+    interactionTargetId: 'cancel',
+  });
+  assert.equal(predictionVotePanel.props.userVote, 'away');
+  const votePercentages = predictionVotePanel.props.votePercentages;
+  assert.ok(votePercentages && typeof votePercentages === 'object' && 'totalVotes' in votePercentages);
+  assert.equal(votePercentages.totalVotes, 999999999);
+  assert.equal(predictionVotePanel.props.isVoteActionLocked, false);
+  assert.equal(predictionVotePanel.captureSelector, '[data-testid="prediction-vote-panel"]');
+
+  const coachLauncher = resolveComponentStateAdapter('coach-analysis.launcher', {
+    componentId: 'src/components/CoachAnalysisDialogLauncher.tsx#CoachAnalysisDialogLauncher',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'open',
+  });
+  assert.equal(coachLauncher.theme, 'dark');
+  assert.equal(coachLauncher.props.fullWidth, true);
+  assert.match(String(coachLauncher.props.buttonLabel), /모바일/);
+  assert.equal(
+    coachLauncher.captureSelector,
+    '[data-testid="coach-analysis-open"], [data-testid="coach-analysis-dialog-loading"]',
+  );
+
+  const scheduledPanel = resolveComponentStateAdapter('home.scheduled-match-panel', {
+    componentId: 'src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel',
+    states: { data: 'long-korean', interactions: 'open' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'secondary-toggle',
+  });
+  assert.equal(scheduledPanel.props.isScheduledError, false);
+  assert.equal(scheduledPanel.props.isSecondarySectionExpanded, true);
+  assert.equal((scheduledPanel.props.scheduledSecondaryGames as unknown[]).length, 1);
+  assert.equal(scheduledPanel.captureSelector, '[data-testid="home-match-priority-panel"]');
+
+  const verdictMemo = resolveComponentStateAdapter('prediction.coach-verdict-memo', {
+    componentId: 'src/components/prediction/CoachVerdictMemo.tsx#CoachVerdictMemo',
+    states: { data: 'long-korean' },
+    variants: { mode: 'review', result: 'fallback', theme: 'dark' },
+  });
+  assert.equal(verdictMemo.props.isReviewMode, true);
+  assert.equal(verdictMemo.props.isFallback, true);
+  assert.match(String(verdictMemo.props.verdict), /모바일/);
+
+  const riskTimeline = resolveComponentStateAdapter('prediction.risk-timeline', {
+    componentId: 'src/components/prediction/RiskTimeline.tsx#RiskTimeline',
+    states: { data: 'maximum-supported' },
+    variants: { polarity: 'positive', theme: 'light' },
+  });
+  assert.equal((riskTimeline.props.risks as unknown[]).length, 6);
+  assert.equal(riskTimeline.props.isPositive, true);
+
+  const riskVersus = resolveComponentStateAdapter('prediction.risk-versus', {
+    componentId: 'src/components/prediction/RiskVersus.tsx#RiskVersus',
+    states: { data: 'single' },
+    variants: { polarity: 'negative', teams: 'with-teams', theme: 'light' },
+  });
+  assert.equal(riskVersus.props.homeTeamId, 'LG');
+  assert.equal(riskVersus.props.awayTeamId, 'KIA');
+  assert.equal(riskVersus.props.isPositive, false);
+
+  const gameSummaryTimeline = resolveComponentStateAdapter('prediction.game-summary-timeline', {
+    componentId: 'src/components/prediction/GameSummaryTimeline.tsx#GameSummaryTimeline',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal((gameSummaryTimeline.props.timelineEntries as unknown[]).length, 8);
+  assert.equal(gameSummaryTimeline.props.awayColor, '#2563eb');
+
+  const liveRelayTimeline = resolveComponentStateAdapter('prediction.live-relay-timeline', {
+    componentId: 'src/components/prediction/LiveRelayTimeline.tsx#LiveRelayTimeline',
+    states: { data: 'manual-required' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual(liveRelayTimeline.props.events, []);
+  assert.equal(liveRelayTimeline.props.errorCode, 'MANUAL_BASEBALL_DATA_REQUIRED');
+
+  const testError = resolveComponentStateAdapter('test-error.page', {
+    componentId: 'src/components/TestError.tsx#TestError',
+    states: { interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'server-error',
+  });
+  assert.equal(testError.theme, 'light');
+  assert.deepEqual(testError.props, {});
+
+  assert.throws(() => resolveComponentStateAdapter('jamsil.baseball-field', {
+    componentId: 'src/components/jamsil/JamsilBaseballField.tsx#JamsilBaseballField',
+    states: { data: 'single', interactions: 'click' },
+    variants: { mode: 'light', scale: 'regular' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('common.swipe-to-reveal-row', {
+    componentId: 'src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow',
+    states: { data: 'single', interactions: 'delete' },
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('prediction.match-tab-empty-state', {
+    componentId: 'src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState',
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'nearest-date',
+  }));
 });
 
 test('SeatMapHoverPreview adapter resolves every declared prop shape in both themes', () => {
@@ -609,6 +2772,54 @@ test('SeatMapRuntimeShell adapter resolves all 72 direct runtime combinations', 
     }
   }
   assert.equal(count, 72);
+});
+
+test('SeatMapBottomSheet adapter resolves local section pressure and mobile snap interactions', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapBottomSheet.tsx#SeatMapBottomSheet';
+  for (const data of ['single', 'populated', 'long-korean', 'unbroken-token', 'maximum-supported'] as const) {
+    for (const theme of ['light', 'dark'] as const) {
+      const result = resolveComponentStateAdapter('seat-map-bottom-sheet', {
+        componentId,
+        states: { data, interactions: 'open' },
+        variants: { theme },
+      });
+      assert.equal(result.props.testId, 'visual-qa-seat-map-bottom-sheet');
+      assert.equal(result.props.mode, theme);
+      assert.deepEqual(result.props.visualQaStateOverride, { photos: [], isLoading: false });
+      assert.equal(result.captureSelector, '[data-testid="visual-qa-seat-map-bottom-sheet"]');
+      assert.equal(result.theme, theme);
+    }
+  }
+});
+
+test('SeatMapDetailPanel adapter resolves empty and selected local section surfaces', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapDetailPanel.tsx#SeatMapDetailPanel';
+  const empty = resolveComponentStateAdapter('seat-map-detail-panel', {
+    componentId,
+    states: { data: 'empty', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(empty.props.section, null);
+  assert.equal(empty.props.testId, 'visual-qa-seat-map-detail-panel');
+  assert.equal(empty.captureSelector, '[data-testid="visual-qa-seat-map-detail-panel"]');
+
+  const selected = resolveComponentStateAdapter('seat-map-detail-panel', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'pressed' },
+    variants: { theme: 'dark' },
+  });
+  assert.ok(selected.props.section);
+  assert.equal(selected.props.mode, 'dark');
+  assert.equal(selected.props.searchAction.testId, 'visual-qa-seat-map-detail-panel-search');
+  assert.deepEqual(selected.props.visualQaStateOverride, { photos: [], isLoading: false });
+  assert.throws(
+    () => resolveComponentStateAdapter('seat-map-detail-panel', {
+      componentId,
+      states: { data: 'empty', interactions: 'pressed' },
+      variants: { theme: 'light' },
+    }),
+    /empty state only supports the default interaction/,
+  );
 });
 
 test('SeatMapRuntimeShell adapter fails closed outside its exact matrix', () => {
@@ -1537,6 +3748,1376 @@ test('floating chatbot and DM badge adapters preserve bounded mobile surfaces', 
   assert.equal(badge.theme, 'light');
 });
 
+test('chatbot runtime adapter preserves real anonymous launcher and login panel paths', () => {
+  const componentId = 'src/components/ChatBotRuntime.tsx#ChatBotRuntime';
+  const launcher = resolveComponentStateAdapter('chatbot.runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'focus-visible' },
+    variants: { theme: 'dark', visibility: 'closed' },
+    interactionTargetId: 'launcher',
+  });
+  assert.equal(launcher.props.autoOpen, false);
+  assert.equal(launcher.initialPathname, '/home');
+  assert.equal(launcher.captureSelector, '[data-testid="chatbot-launcher"]');
+  assert.equal(launcher.theme, 'dark');
+
+  const panel = resolveComponentStateAdapter('chatbot.runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'cta' },
+    variants: { theme: 'light', visibility: 'open' },
+    interactionTargetId: 'login-cta',
+  });
+  assert.equal(panel.props.autoOpen, true);
+  assert.equal(typeof panel.props.onClosed, 'function');
+  assert.equal(panel.captureSelector, '[data-testid="chatbot-panel"]');
+  assert.equal(panel.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('chatbot.runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'cta' },
+    variants: { theme: 'light', visibility: 'open' },
+    interactionTargetId: 'close',
+  }), /expected login-cta target/);
+});
+
+test('chatbot conversation panel adapter preserves message, loading, queue, and retry states', () => {
+  const componentId = 'src/components/chatbot/ChatBotConversationPanel.tsx#ChatBotConversationPanel';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('chatbot.conversation-panel'), true);
+
+  const populated = resolveComponentStateAdapter('chatbot.conversation-panel', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(populated.captureSelector, '[role="log"]');
+  assert.equal((populated.props.messages as unknown[]).length, 2);
+  assert.equal(populated.props.isLoadingMessages, false);
+  assert.equal(populated.theme, 'light');
+
+  const queue = resolveComponentStateAdapter('chatbot.conversation-panel', {
+    componentId,
+    states: { data: 'request-pending', permissions: 'user', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.deepEqual(queue.props.queueStatus, {
+    state: 'queued',
+    queuePosition: 2,
+    estimatedWaitTime: 8,
+    rpmLimit: 10,
+  });
+  assert.equal(queue.props.isTyping, true);
+  assert.equal(queue.theme, 'dark');
+
+  const retry = resolveComponentStateAdapter('chatbot.conversation-panel', {
+    componentId,
+    states: { data: 'error-429', permissions: 'user', interactions: 'retry' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'rate-limit-retry',
+  });
+  assert.equal(retry.props.rateLimitActive, true);
+  assert.equal(retry.props.isSendDisabled, true);
+  assert.equal(typeof retry.props.onRetrySend, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('chatbot.conversation-panel', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'input' },
+    variants: { theme: 'light' },
+  }), /expected input target/);
+});
+
+test('chatbot history and favorites adapters use local session fixtures and real tab controls', () => {
+  const historyComponentId = 'src/components/chatbot/ChatBotHistoryTab.tsx#ChatBotHistoryTab';
+  const favoritesComponentId = 'src/components/chatbot/ChatBotFavoritesTab.tsx#ChatBotFavoritesTab';
+
+  const history = resolveComponentStateAdapter('chatbot.history-tab', {
+    componentId: historyComponentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'new-session',
+  });
+  assert.equal(history.captureSelector, '[data-testid="chatbot-history-tab"]');
+  assert.equal(history.theme, 'dark');
+  assert.equal(history.props.currentSessionId, null);
+  assert.equal(
+    (history.props.visualQaStateOverride as { sessions: unknown[] }).sessions.length,
+    1,
+  );
+
+  const favorites = resolveComponentStateAdapter('chatbot.favorites-tab', {
+    componentId: favoritesComponentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'open-session',
+  });
+  assert.equal(favorites.captureSelector, '[data-testid="chatbot-favorites-tab"]');
+  assert.equal(favorites.theme, 'light');
+  assert.equal(
+    (favorites.props.visualQaStateOverride as { favorites: unknown[] }).favorites.length,
+    1,
+  );
+  assert.equal(typeof favorites.props.onOpenFavoriteSession, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('chatbot.history-tab', {
+    componentId: historyComponentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'session-open',
+  }), /expected new-session target/);
+});
+
+test('chatbot conversation runtime and wrapper adapters preserve lazy boundaries and route-owned props', () => {
+  const runtime = resolveComponentStateAdapter('chatbot.conversation-runtime', {
+    componentId: 'src/components/chatbot/ChatBotConversationRuntime.tsx#ChatBotConversationRuntime',
+    states: { data: 'request-pending', permissions: 'user', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(runtime.props.isPanelOpen, true);
+  assert.equal(runtime.props.isTyping, true);
+  assert.deepEqual(runtime.props.queueStatus, {
+    state: 'queued',
+    queuePosition: 2,
+    estimatedWaitTime: 8,
+    rpmLimit: 10,
+  });
+  assert.equal(runtime.captureSelector, '[role="log"]');
+  assert.equal(runtime.theme, 'dark');
+
+  const submitting = resolveComponentStateAdapter('chatbot.conversation-runtime', {
+    componentId: 'src/components/chatbot/ChatBotConversationRuntime.tsx#ChatBotConversationRuntime',
+    states: { data: 'populated', permissions: 'user', interactions: 'submitting' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'cancel',
+  });
+  assert.equal(submitting.props.isProcessing, true);
+  assert.equal(typeof submitting.props.handleCancelStream, 'function');
+
+  const wrapper = resolveComponentStateAdapter('chatbot.wrapper', {
+    componentId: 'src/components/ChatBot.tsx#ChatBot',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default' },
+    variants: { theme: 'light', visibility: 'open' },
+  });
+  assert.equal(wrapper.props.autoOpen, true);
+  assert.equal(wrapper.initialPathname, '/home');
+  assert.equal(wrapper.captureSelector, '[data-testid="chatbot-panel"]');
+
+  assert.throws(() => resolveComponentStateAdapter('chatbot.wrapper', {
+    componentId: 'src/components/ChatBot.tsx#ChatBot',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'hover' },
+    variants: { theme: 'light', visibility: 'closed' },
+  }), /interactions=hover/);
+});
+
+test('chatbot session adapter preserves tab shells, queue states, and executable actions', () => {
+  const stateComponentId = 'src/components/chatbot/ChatBotSessionStateRuntime.tsx#ChatBotSessionStateRuntime';
+  const runtimeComponentId = 'src/components/chatbot/ChatBotSessionRuntime.tsx#ChatBotSessionRuntime';
+  const panelComponentId = 'src/components/ChatBotAuthenticatedPanel.tsx#ChatBotAuthenticatedPanel';
+
+  const conversation = resolveComponentStateAdapter('chatbot.session', {
+    componentId: stateComponentId,
+    states: { data: 'request-pending', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { tab: 'conversation', theme: 'dark' },
+    interactionTargetId: 'cancel',
+  });
+  const conversationOverride = conversation.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(conversation.captureSelector, '[data-testid="chatbot-session-state"]');
+  assert.equal(conversation.theme, 'dark');
+  assert.equal(conversationOverride.isProcessing, true);
+  assert.deepEqual(conversationOverride.queueStatus, {
+    state: 'queued',
+    queuePosition: 2,
+    estimatedWaitTime: 8,
+    rpmLimit: 10,
+  });
+  assert.equal(typeof conversationOverride.handleCancelStream, 'function');
+
+  const history = resolveComponentStateAdapter('chatbot.session', {
+    componentId: runtimeComponentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'focus-visible', system: 'online' },
+    variants: { tab: 'history', theme: 'light' },
+    interactionTargetId: 'history-session-open',
+  });
+  const historyOverride = history.props.visualQaStateOverride as {
+    activeTab: string;
+    historyStateOverride: { sessions: unknown[]; isLoadingSessions: boolean };
+  };
+  assert.equal(historyOverride.activeTab, 'history');
+  assert.equal(historyOverride.historyStateOverride.sessions.length, 1);
+  assert.equal(historyOverride.historyStateOverride.isLoadingSessions, false);
+  assert.equal(history.theme, 'light');
+
+  const favorites = resolveComponentStateAdapter('chatbot.session', {
+    componentId: stateComponentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { tab: 'favorites', theme: 'dark' },
+    interactionTargetId: 'favorite-reask',
+  });
+  const favoritesOverride = favorites.props.visualQaStateOverride as {
+    favoritesStateOverride: { favorites: unknown[]; isLoadingFavorites: boolean };
+  };
+  assert.equal(favoritesOverride.favoritesStateOverride.favorites.length, 1);
+  assert.equal(favoritesOverride.favoritesStateOverride.isLoadingFavorites, false);
+
+  const panel = resolveComponentStateAdapter('chatbot.session', {
+    componentId: panelComponentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'online' },
+    variants: { tab: 'conversation', theme: 'light' },
+  });
+  assert.equal(panel.props.isOpen, true);
+  assert.equal(panel.props.isClosing, false);
+  assert.equal(panel.props.isMobile, false);
+  assert.equal(panel.captureSelector, '[data-testid="chatbot-session-state"]');
+
+  assert.throws(() => resolveComponentStateAdapter('chatbot.session', {
+    componentId: stateComponentId,
+    states: { data: 'error-429', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { tab: 'history', theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /expected one of/);
+  assert.throws(() => resolveComponentStateAdapter('chatbot.session', {
+    componentId: stateComponentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'input', system: 'online' },
+    variants: { tab: 'favorites', theme: 'light' },
+    interactionTargetId: 'conversation-input',
+  }), /input state requires the conversation tab/);
+});
+
+test('cheer composer login prompt adapter preserves team contrast and login touch target', () => {
+  const result = resolveComponentStateAdapter('cheer.composer-login-prompt', {
+    componentId: 'src/components/CheerComposerLoginPrompt.tsx#CheerComposerLoginPrompt',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { team: 'navy', theme: 'dark' },
+    interactionTargetId: 'login',
+  });
+  assert.equal(result.captureSelector, '[data-testid="cheer-composer-login-required"]');
+  assert.equal(result.props.teamColor, '#17365d');
+  assert.equal(result.props.teamContrastText, '#ffffff');
+  assert.equal(typeof result.props.onRequireLogin, 'function');
+  assert.equal(result.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.composer-login-prompt', {
+    componentId: 'src/components/CheerComposerLoginPrompt.tsx#CheerComposerLoginPrompt',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { team: 'green', theme: 'light' },
+    interactionTargetId: 'composer',
+  }), /expected login target/);
+});
+
+test('cheer composer runtime adapter preserves auth branches, draft pressure, and executable controls', () => {
+  const componentId = 'src/components/CheerComposerRuntime.tsx#CheerComposerRuntime';
+  const anonymous = resolveComponentStateAdapter('cheer.composer-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'click', system: 'online' },
+    variants: { feed: 'all', theme: 'light' },
+    interactionTargetId: 'login',
+  });
+  assert.equal(anonymous.props.isLoggedIn, false);
+  assert.equal(anonymous.captureSelector, '[data-testid="cheer-composer-runtime"]');
+  assert.equal(anonymous.theme, 'light');
+
+  const populated = resolveComponentStateAdapter('cheer.composer-runtime', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { feed: 'following', theme: 'dark' },
+    interactionTargetId: 'submit',
+  });
+  assert.equal(populated.props.isLoggedIn, true);
+  assert.equal(populated.props.hasFavoriteTeam, true);
+  assert.equal(populated.props.activeFeedTab, 'following');
+  assert.equal(populated.theme, 'dark');
+  const populatedOverride = populated.props.visualQaStateOverride as {
+    initialContent: string;
+    isSubmitting: boolean;
+    onSubmit: () => void;
+  };
+  assert.match(populatedOverride.initialContent, /모바일 응원 작성/);
+  assert.equal(populatedOverride.isSubmitting, false);
+  assert.equal(typeof populatedOverride.onSubmit, 'function');
+
+  const pending = resolveComponentStateAdapter('cheer.composer-runtime', {
+    componentId,
+    states: { data: 'request-pending', permissions: 'user', interactions: 'default', system: 'online' },
+    variants: { feed: 'popular', theme: 'light' },
+  });
+  assert.equal((pending.props.visualQaStateOverride as { isSubmitting: boolean }).isSubmitting, true);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.composer-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'input', system: 'online' },
+    variants: { feed: 'all', theme: 'light' },
+    interactionTargetId: 'composer-input',
+  }), /input state requires an authenticated user/);
+});
+
+test('cheer write modal adapter preserves draft, source, linked, and pending branches', () => {
+  const content = resolveComponentStateAdapter('cheer.write-modal', {
+    componentId: 'src/components/CheerWriteModal.tsx#CheerWriteModalContent',
+    states: { data: 'empty', permissions: 'user', interactions: 'input', system: 'ready' },
+    variants: { mode: 'external', theme: 'light' },
+    interactionTargetId: 'content',
+  });
+  assert.equal(content.captureSelector, '[data-testid="cheer-write-modal-content"]');
+  assert.equal(content.theme, 'light');
+  assert.equal(content.props.isOpen, true);
+  assert.equal(
+    (content.props.visualQaStateOverride as { shareMode: string }).shareMode,
+    'EXTERNAL_LINK',
+  );
+
+  const linked = resolveComponentStateAdapter('cheer.write-modal', {
+    componentId: 'src/components/CheerWriteModal.tsx#CheerWriteModal',
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'retrying' },
+    variants: { mode: 'linked-recruitment', theme: 'dark' },
+  });
+  assert.equal(linked.theme, 'dark');
+  assert.equal(linked.props.linkedPostType, 'RECRUITMENT');
+  assert.equal((linked.props.visualQaStateOverride as { isSubmitting: boolean }).isSubmitting, true);
+  assert.equal(linked.captureSelector, '[data-testid="cheer-write-modal-content"]');
+
+  const populated = resolveComponentStateAdapter('cheer.write-modal', {
+    componentId: 'src/components/CheerWriteModal.tsx#CheerWriteModalContent',
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click', system: 'ready' },
+    variants: { mode: 'internal', theme: 'dark' },
+    interactionTargetId: 'submit',
+  });
+  assert.match(String((populated.props.visualQaStateOverride as { content: string }).content), /모바일 응원글 작성/);
+  assert.equal(typeof populated.props.onSubmit, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.write-modal', {
+    componentId: 'src/components/CheerWriteModal.tsx#CheerWriteModalContent',
+    states: { data: 'populated', permissions: 'user', interactions: 'input', system: 'ready' },
+    variants: { mode: 'internal', theme: 'light' },
+    interactionTargetId: 'content',
+  }), /input state requires an empty ready draft/);
+});
+
+test('cheer comment modal adapter preserves anonymous, draft, pressure, and pending branches', () => {
+  const componentId = 'src/components/CommentModal.tsx#CommentModal';
+  const draft = resolveComponentStateAdapter('cheer.comment-modal', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'input', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'content',
+  });
+  assert.equal(draft.captureSelector, '[data-testid="comment-modal"]');
+  assert.equal(draft.theme, 'light');
+  assert.equal(draft.props.isOpen, true);
+  assert.equal((draft.props.visualQaStateOverride as { content: string }).content, '');
+
+  const pending = resolveComponentStateAdapter('cheer.comment-modal', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'retrying' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(pending.theme, 'dark');
+  assert.equal((pending.props.visualQaStateOverride as { isSubmitting: boolean }).isSubmitting, true);
+
+  const anonymous = resolveComponentStateAdapter('cheer.comment-modal', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'anonymous', interactions: 'click', system: 'online' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'emoji',
+  });
+  assert.deepEqual(anonymous.harnessAuthState, { user: null });
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.comment-modal', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'input', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'content',
+  }), /input state requires an empty ready content target/);
+});
+
+test('cheer linked content adapter covers check-in, recruitment, unavailable, and mobile link states', () => {
+  const componentId = 'src/components/cheer/CheerLinkedContentCard.tsx#CheerLinkedContentCard';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.linked-content-card'), true);
+
+  const recruitment = resolveComponentStateAdapter('cheer.linked-content-card', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { content: 'recruitment', layout: 'detail', theme: 'dark' },
+    interactionTargetId: 'party-link',
+  });
+  assert.equal(recruitment.captureSelector, '[data-vqa-harness-surface] > section');
+  assert.equal(recruitment.theme, 'dark');
+  assert.equal(recruitment.props.variant, 'detail');
+  assert.equal((recruitment.props.linkedContent as { kind: string }).kind, 'RECRUITMENT');
+  assert.match(
+    String((recruitment.props.linkedContent as { recruitment: { description: string } }).recruitment.description),
+    /모바일 화면에서도/,
+  );
+
+  const unavailable = resolveComponentStateAdapter('cheer.linked-content-card', {
+    componentId,
+    states: { data: 'manual-required', interactions: 'default' },
+    variants: { content: 'checkin', layout: 'compact', theme: 'light' },
+  });
+  const unavailableContent = unavailable.props.linkedContent as { available: boolean; unavailableReason: string };
+  assert.equal(unavailableContent.available, false);
+  assert.equal(unavailableContent.unavailableReason, 'MANUAL_BASEBALL_DATA_REQUIRED');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.linked-content-card', {
+    componentId,
+    states: { data: 'empty', interactions: 'click' },
+    variants: { content: 'recruitment', layout: 'compact', theme: 'light' },
+    interactionTargetId: 'party-link',
+  }), /click is only available/);
+});
+
+test('cheer live-event and mobile navigation adapters preserve local states and touch targets', () => {
+  const liveEvent = resolveComponentStateAdapter('cheer.live-event-summary', {
+    componentId: 'src/components/CheerLiveEventSummary.tsx#CheerLiveEventSummary',
+    states: { data: 'long-korean', system: 'idle' },
+    variants: { density: 'expanded', theme: 'dark' },
+  });
+  assert.equal(liveEvent.captureSelector, '[data-testid="cheer-live-event-summary"]');
+  assert.equal(liveEvent.theme, 'dark');
+  assert.equal(liveEvent.props.maxEvents, 8);
+  assert.equal((liveEvent.props.snapshot as { events: unknown[] }).events.length, 3);
+
+  const manual = resolveComponentStateAdapter('cheer.live-event-summary', {
+    componentId: 'src/components/CheerLiveEventSummary.tsx#CheerLiveEventSummary',
+    states: { data: 'empty', system: 'manual-required' },
+    variants: { density: 'compact', theme: 'light' },
+  });
+  assert.equal(manual.props.snapshot, null);
+  assert.equal(manual.props.errorCode, 'MANUAL_BASEBALL_DATA_REQUIRED');
+  assert.equal(manual.theme, 'light');
+
+  const nav = resolveComponentStateAdapter('cheer.mobile-bottom-nav', {
+    componentId: 'src/components/CheerMobileBottomNav.tsx#CheerMobileBottomNav',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { active: 'team', chatbot: 'on', team: 'navy', theme: 'dark' },
+    interactionTargetId: 'chatbot',
+  });
+  assert.equal(nav.captureSelector, '[data-testid="cheer-mobile-bottom-nav"]');
+  assert.equal(nav.initialPathname, '/cheer');
+  assert.equal(nav.props.activeItem, 'team');
+  assert.equal(nav.props.userProfilePath, '/login?redirect=%2Fmypage');
+  assert.equal(typeof nav.props.onChatBotClick, 'function');
+  assert.equal(nav.props.teamAccent, '#17365d');
+  assert.equal(nav.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.mobile-bottom-nav', {
+    componentId: 'src/components/CheerMobileBottomNav.tsx#CheerMobileBottomNav',
+    states: { data: 'single', permissions: 'user', interactions: 'click' },
+    variants: { active: 'home', chatbot: 'off', team: 'green', theme: 'light' },
+    interactionTargetId: 'chatbot',
+  }), /expected one of/);
+});
+
+test('cheer live panel adapter preserves loading, schedule, recovery, and live game branches', () => {
+  const componentId = 'src/components/CheerLivePanel.tsx#CheerLivePanel';
+  const live = resolveComponentStateAdapter('cheer.live-panel', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'focus-visible', system: 'online' },
+    variants: { team: 'green', theme: 'dark' },
+    interactionTargetId: 'detail',
+  });
+  assert.equal(live.captureSelector, '[data-testid="cheer-live-panel"]');
+  assert.equal(live.theme, 'dark');
+  assert.equal((live.props.visualQaStateOverride as { games: unknown[] }).games.length, 1);
+  assert.equal(live.props.favoriteTeamId, 'LG');
+
+  const empty = resolveComponentStateAdapter('cheer.live-panel', {
+    componentId,
+    states: { data: 'empty', interactions: 'click', system: 'online' },
+    variants: { team: 'navy', theme: 'light' },
+    interactionTargetId: 'schedule',
+  });
+  assert.equal((empty.props.visualQaStateOverride as { games: unknown[] }).games.length, 0);
+  assert.equal(empty.props.teamAccent, '#17365d');
+
+  const error = resolveComponentStateAdapter('cheer.live-panel', {
+    componentId,
+    states: { data: 'error-503', interactions: 'click', system: 'online' },
+    variants: { team: 'green', theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal((error.props.visualQaStateOverride as { gamesState: string }).gamesState, 'error');
+  assert.equal(typeof (error.props.visualQaStateOverride as { onRetry: () => void }).onRetry, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.live-panel', {
+    componentId,
+    states: { data: 'loading', interactions: 'click', system: 'online' },
+    variants: { team: 'green', theme: 'light' },
+    interactionTargetId: 'schedule',
+  }), /expected target/);
+});
+
+test('cheer community pulse adapter preserves query branches, long copy, and tag navigation', () => {
+  const componentId = 'src/components/CheerCommunityPulse.tsx#CheerCommunityPulse';
+  const populated = resolveComponentStateAdapter('cheer.community-pulse', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'focus-visible', system: 'online' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'tag',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-community-pulse"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal((populated.props.visualQaStateOverride as { hotPosts: unknown[] }).hotPosts.length, 2);
+  assert.equal(typeof (populated.props.visualQaStateOverride as { onNavigate: () => void }).onNavigate, 'function');
+
+  const empty = resolveComponentStateAdapter('cheer.community-pulse', {
+    componentId,
+    states: { data: 'empty', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual((empty.props.visualQaStateOverride as { hotPosts: unknown[] }).hotPosts, []);
+
+  const error = resolveComponentStateAdapter('cheer.community-pulse', {
+    componentId,
+    states: { data: 'error-503', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((error.props.visualQaStateOverride as { hotPostsState: string }).hotPostsState, 'error');
+  assert.equal((error.props.visualQaStateOverride as { weeklyLeaderboardState: string }).weeklyLeaderboardState, 'error');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.community-pulse', {
+    componentId,
+    states: { data: 'loading', interactions: 'click', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'tag',
+  }), /expected populated tag target/);
+});
+
+test('cheer hot adapter preserves query branches, long copy, and retry/card targets', () => {
+  const componentId = 'src/components/CheerHot.tsx#CheerHot';
+  const populated = resolveComponentStateAdapter('cheer.hot', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'focus-visible', system: 'online' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'post',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-hot"]');
+  assert.equal(populated.initialPathname, '/cheer');
+  assert.equal(populated.theme, 'dark');
+  assert.equal((populated.props.visualQaStateOverride as { hotPosts: unknown[] }).hotPosts.length, 1);
+
+  const empty = resolveComponentStateAdapter('cheer.hot', {
+    componentId,
+    states: { data: 'empty', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  });
+  assert.deepEqual((empty.props.visualQaStateOverride as { hotPosts: unknown[] }).hotPosts, []);
+
+  const error = resolveComponentStateAdapter('cheer.hot', {
+    componentId,
+    states: { data: 'error-503', interactions: 'click', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal((error.props.visualQaStateOverride as { hotPostsState: string }).hotPostsState, 'error');
+  assert.equal(typeof (error.props.visualQaStateOverride as { onRetry: () => void }).onRetry, 'function');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.hot', {
+    componentId,
+    states: { data: 'loading', interactions: 'click', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'post',
+  }), /expected target/);
+});
+
+test('cheer sidebar panels adapter preserves team, game, and child-panel branches', () => {
+  const componentId = 'src/components/CheerSidebarPanels.tsx#CheerSidebarPanels';
+  const populated = resolveComponentStateAdapter('cheer.sidebar-panels', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'focus-visible', system: 'online' },
+    variants: { team: 'selected', theme: 'dark' },
+    interactionTargetId: 'detail',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-sidebar-panels"]');
+  assert.equal(populated.initialPathname, '/cheer');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.teamId, 'lg');
+  assert.equal((populated.props.visualQaStateOverride as { games: unknown[] }).games.length, 1);
+
+  const empty = resolveComponentStateAdapter('cheer.sidebar-panels', {
+    componentId,
+    states: { data: 'empty', interactions: 'default', system: 'online' },
+    variants: { team: 'all', theme: 'light' },
+  });
+  assert.equal(empty.props.teamId, 'all');
+  assert.deepEqual((empty.props.visualQaStateOverride as { games: unknown[] }).games, []);
+
+  const error = resolveComponentStateAdapter('cheer.sidebar-panels', {
+    componentId,
+    states: { data: 'error-503', interactions: 'click', system: 'online' },
+    variants: { team: 'selected', theme: 'light' },
+    interactionTargetId: 'games-retry',
+  });
+  assert.equal((error.props.visualQaStateOverride as { gamesState: string }).gamesState, 'error');
+  assert.equal(typeof (error.props.visualQaStateOverride as { onRetryGames: () => void }).onRetryGames, 'function');
+
+  const teamError = resolveComponentStateAdapter('cheer.sidebar-panels', {
+    componentId,
+    states: { data: 'empty', interactions: 'click', system: 'online' },
+    variants: { team: 'error', theme: 'light' },
+    interactionTargetId: 'team-retry',
+  });
+  assert.equal(teamError.props.isTeamMetadataError, true);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.sidebar-panels', {
+    componentId,
+    states: { data: 'loading', interactions: 'click', system: 'online' },
+    variants: { team: 'selected', theme: 'light' },
+    interactionTargetId: 'detail',
+  }), /expected target/);
+});
+
+test('cheer feed runtime adapter preserves search, login, pagination, and post branches', () => {
+  const componentId = 'src/components/CheerFeedRuntimeContent.tsx#CheerFeedRuntimeContent';
+  const populated = resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'focus-visible', system: 'online' },
+    variants: { feedTab: 'popular', theme: 'dark' },
+    interactionTargetId: 'post',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-feed-section"]');
+  assert.equal(populated.initialPathname, '/cheer');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.activeFeedTab, 'popular');
+  assert.equal((populated.props.visualQaStateOverride as { posts: unknown[] }).posts.length, 1);
+
+  const search = resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'zero', permissions: 'anonymous', interactions: 'default', system: 'online' },
+    variants: { feedTab: 'all', theme: 'light' },
+  });
+  assert.equal(search.props.searchQuery, 'LG');
+
+  const login = resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'click', system: 'online' },
+    variants: { feedTab: 'following', theme: 'light' },
+    interactionTargetId: 'login',
+  });
+  assert.equal(login.props.isLoggedIn, false);
+  assert.equal(login.props.activeFeedTab, 'following');
+
+  const pagination = resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'request-error-recovery', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { feedTab: 'all', theme: 'light' },
+    interactionTargetId: 'next-retry',
+  });
+  assert.equal((pagination.props.visualQaStateOverride as { nextPageState: string }).nextPageState, 'error');
+  assert.equal(typeof (pagination.props.visualQaStateOverride as { onNextPage: () => void }).onNextPage, 'function');
+
+  const emptyFollowing = resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'default', system: 'online' },
+    variants: { feedTab: 'following', theme: 'dark' },
+  });
+  assert.equal(emptyFollowing.props.activeFeedTab, 'following');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.feed-runtime', {
+    componentId,
+    states: { data: 'loading', permissions: 'anonymous', interactions: 'click', system: 'online' },
+    variants: { feedTab: 'all', theme: 'light' },
+    interactionTargetId: 'post',
+  }), /expected target/);
+});
+
+test('cheer runtime adapter composes auth, URL surface, lazy children, and recovery branches', () => {
+  const componentId = 'src/components/CheerRuntime.tsx#CheerRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('cheer.runtime'), true);
+
+  const ready = resolveComponentStateAdapter('cheer.runtime', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { surface: 'feed', theme: 'dark' },
+  });
+  assert.equal(ready.captureSelector, '[data-testid="cheer-runtime-route"]');
+  assert.equal(ready.initialPathname, '/cheer');
+  assert.equal(ready.theme, 'dark');
+  assert.equal((ready.props.visualQaStateOverride as { isLoggedIn: boolean }).isLoggedIn, true);
+  assert.equal((ready.props.visualQaStateOverride as { shouldRenderFeedRuntime: boolean }).shouldRenderFeedRuntime, true);
+  assert.equal(typeof (ready.props.visualQaStateOverride as { feed: { onRetry: () => void } }).feed.onRetry, 'function');
+
+  const search = resolveComponentStateAdapter('cheer.runtime', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'focus-visible', system: 'idle' },
+    variants: { surface: 'search', theme: 'light' },
+    interactionTargetId: 'search-input',
+  });
+  assert.equal(search.initialPathname, '/cheer?q=LG');
+  assert.deepEqual(search.harnessAuthState, { user: null });
+  assert.equal((search.props.visualQaStateOverride as { isLoggedIn: boolean }).isLoggedIn, false);
+
+  const live = resolveComponentStateAdapter('cheer.runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'tab-change', system: 'idle' },
+    variants: { surface: 'live', theme: 'light' },
+    interactionTargetId: 'popular-tab',
+  });
+  assert.equal(live.initialPathname, '/cheer?tab=live');
+  assert.equal(typeof (live.props.visualQaStateOverride as { live: { onRetry: () => void } }).live.onRetry, 'function');
+
+  const manual = resolveComponentStateAdapter('cheer.runtime', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'manual-required' },
+    variants: { surface: 'feed', theme: 'light' },
+  });
+  const manualOverride = manual.props.visualQaStateOverride as { teamMetadataState: string; feed: { queryState: string } };
+  assert.equal(manualOverride.teamMetadataState, 'error');
+  assert.equal(manualOverride.feed.queryState, 'error');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'tab-change', system: 'idle' },
+    variants: { surface: 'feed', theme: 'light' },
+    interactionTargetId: 'search-input',
+  }), /expected popular-tab target/);
+  assert.throws(() => resolveComponentStateAdapter('cheer.runtime', {
+    componentId: 'src/components/Cheer.tsx#Cheer',
+    states: { data: 'single', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { surface: 'feed', theme: 'light' },
+  }));
+});
+
+test('cheer bookmarks adapter preserves loading, error, empty, and saved-post branches', () => {
+  const componentId = 'src/components/CheerBookmarks.tsx#CheerBookmarks';
+  const populated = resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'click', system: 'online' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'write',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-bookmarks"]');
+  assert.equal(populated.initialPathname, '/cheer/bookmarks');
+  assert.equal(populated.theme, 'dark');
+  assert.equal((populated.props.visualQaStateOverride as { posts: unknown[] }).posts.length, 1);
+  assert.equal(typeof (populated.props.visualQaStateOverride as { onNavigate: () => void }).onNavigate, 'function');
+
+  const loading = resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'loading', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((loading.props.visualQaStateOverride as { queryState: string }).queryState, 'loading');
+
+  const error = resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'error-503', interactions: 'click', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal((error.props.visualQaStateOverride as { queryState: string }).queryState, 'error');
+  assert.equal(typeof (error.props.visualQaStateOverride as { onRetry: () => void }).onRetry, 'function');
+
+  const empty = resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'empty', interactions: 'click', system: 'online' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'empty-cta',
+  });
+  assert.equal((empty.props.visualQaStateOverride as { posts: unknown[] }).posts.length, 0);
+
+  const maximum = resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'maximum-supported', interactions: 'default', system: 'online' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((maximum.props.visualQaStateOverride as { posts: Array<{ likeCount: number }> }).posts[0]?.likeCount, Number.MAX_SAFE_INTEGER);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.bookmarks', {
+    componentId,
+    states: { data: 'loading', interactions: 'click', system: 'online' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /expected target/);
+
+  const page = resolveComponentStateAdapter('cheer.bookmarks-page', {
+    componentId: 'src/components/CheerBookmarksPage.tsx#CheerBookmarksPage',
+    states: { data: 'single' },
+    variants: { phase: 'runtime', theme: 'light' },
+  });
+  assert.equal(page.captureSelector, '[data-testid="cheer-bookmarks"]');
+  assert.equal((page.props.visualQaStateOverride as { posts: unknown[] }).posts.length, 1);
+
+  const fallback = resolveComponentStateAdapter('cheer.bookmarks-page', {
+    componentId: 'src/components/CheerBookmarksPage.tsx#CheerBookmarksPage',
+    states: { data: 'single' },
+    variants: { phase: 'fallback', theme: 'dark' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="cheer-bookmarks-page-fallback"]');
+});
+
+test('cheer card adapter preserves post type, owner menu, hot layout, and copy pressure', () => {
+  const ownerCard = resolveComponentStateAdapter('cheer.card', {
+    componentId: 'src/components/CheerCard.tsx#CheerCard',
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click' },
+    variants: { layout: 'default', 'post-type': 'recruitment', theme: 'dark' },
+    interactionTargetId: 'owner-menu',
+  });
+  assert.equal(ownerCard.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(ownerCard.initialPathname, '/cheer/902');
+  assert.equal(ownerCard.theme, 'dark');
+  assert.equal((ownerCard.props.post as { postType: string }).postType, 'RECRUITMENT');
+  assert.equal((ownerCard.props.post as { isOwner: boolean }).isOwner, true);
+
+  const hotCard = resolveComponentStateAdapter('cheer.card', {
+    componentId: 'src/components/CheerCard.tsx#CheerCard',
+    states: { data: 'maximum-supported', permissions: 'anonymous', interactions: 'default' },
+    variants: { layout: 'hot', 'post-type': 'notice', theme: 'light' },
+  });
+  const hotPost = hotCard.props.post as { isHot: boolean; likeCount: number; postType: string };
+  assert.equal(hotCard.props.isHotItem, true);
+  assert.equal(hotPost.isHot, true);
+  assert.equal(hotPost.likeCount, Number.MAX_SAFE_INTEGER);
+  assert.equal(hotPost.postType, 'NOTICE');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.card', {
+    componentId: 'src/components/CheerCard.tsx#CheerCard',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { layout: 'default', 'post-type': 'normal', theme: 'light' },
+    interactionTargetId: 'owner-menu',
+  }), /owner-menu interaction requires/);
+});
+
+test('cheer card interactions adapter preserves auth, repost menu, and action targets', () => {
+  const componentId = 'src/components/CheerCardInteractionsRuntime.tsx#CheerCardInteractionsRuntime';
+  const quote = resolveComponentStateAdapter('cheer.card-interactions', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'focus-visible', system: 'online' },
+    variants: { menu: 'open', post: 'normal', theme: 'dark' },
+    interactionTargetId: 'repost-quote',
+  });
+  assert.equal(quote.captureSelector, '[data-testid="cheer-card-interactions"]');
+  assert.equal(quote.initialPathname, '/cheer/904');
+  assert.equal(quote.theme, 'dark');
+  assert.equal((quote.props.visualQaStateOverride as { initialRepostMenuOpen: boolean }).initialRepostMenuOpen, true);
+  assert.equal(typeof (quote.props.visualQaStateOverride as { onInteraction: () => void }).onInteraction, 'function');
+
+  const cancel = resolveComponentStateAdapter('cheer.card-interactions', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'click', system: 'online' },
+    variants: { menu: 'open', post: 'repost', theme: 'light' },
+    interactionTargetId: 'repost-cancel',
+  });
+  const cancelPost = cancel.props.post as CheerPost;
+  assert.equal(cancelPost.isOwner, true);
+  assert.equal(cancelPost.repostType, 'SIMPLE');
+  assert.equal(cancelPost.originalPost?.id, 903);
+  assert.equal(cancelPost.originalPost?.deleted, false);
+
+  const anonymous = resolveComponentStateAdapter('cheer.card-interactions', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default', system: 'online' },
+    variants: { menu: 'open', post: 'owner', theme: 'light' },
+  });
+  const anonymousOverride = anonymous.props.visualQaStateOverride;
+  assert.ok(anonymousOverride && typeof anonymousOverride === 'object' && 'isLoggedIn' in anonymousOverride);
+  assert.equal(anonymousOverride.isLoggedIn, false);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.card-interactions', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click', system: 'online' },
+    variants: { menu: 'closed', post: 'normal', theme: 'light' },
+    interactionTargetId: 'like',
+  }), /expected one of <none>/);
+});
+
+test('cheer comment item adapter preserves replies, pending copy, permissions, and touch targets', () => {
+  const nested = resolveComponentStateAdapter('cheer.comment-item', {
+    componentId: 'src/components/cheer/CommentItem.tsx#CommentItem',
+    states: { data: 'populated', permissions: 'user', interactions: 'click' },
+    variants: { depth: 'root', replies: 'enabled', theme: 'dark' },
+    interactionTargetId: 'reply',
+  });
+  assert.equal(nested.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(nested.initialPathname, '/cheer/902#comments');
+  assert.equal(nested.theme, 'dark');
+  assert.equal(nested.props.canInteract, true);
+  assert.equal((nested.props.comment as { replies: unknown[] }).replies.length, 1);
+
+  const pending = resolveComponentStateAdapter('cheer.comment-item', {
+    componentId: 'src/components/cheer/CommentItem.tsx#CommentItem',
+    states: { data: 'pending', permissions: 'anonymous', interactions: 'default' },
+    variants: { depth: 'reply', replies: 'coming-soon', theme: 'light' },
+  });
+  assert.equal((pending.props.comment as { isPending: boolean }).isPending, true);
+  assert.equal(pending.props.canLike, false);
+  assert.equal(pending.props.repliesComingSoon, true);
+  assert.equal(pending.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.comment-item', {
+    componentId: 'src/components/cheer/CommentItem.tsx#CommentItem',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { depth: 'root', replies: 'enabled', theme: 'light' },
+    interactionTargetId: 'reply',
+  }), /expected one of like/);
+});
+
+test('cheer detail statistics adapters preserve metric pressure and disclosure interaction', () => {
+  const body = resolveComponentStateAdapter('cheer.detail-stats-body', {
+    componentId: 'src/components/CheerDetailStatsBody.tsx#CheerDetailStatsBody',
+    states: { data: 'maximum-supported' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(body.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(body.theme, 'dark');
+  assert.equal(body.props.commentCount, Number.MAX_SAFE_INTEGER);
+  assert.equal(body.props.views, Number.MAX_SAFE_INTEGER);
+
+  const aside = resolveComponentStateAdapter('cheer.detail-stats-aside', {
+    componentId: 'src/components/CheerDetailStatsAsideRuntime.tsx#CheerDetailStatsAsideRuntime',
+    states: { data: 'long-korean', interactions: 'click' },
+    variants: { team: 'green', theme: 'light' },
+    interactionTargetId: 'toggle',
+  });
+  assert.equal(aside.captureSelector, '[data-vqa-harness-surface] > aside');
+  assert.equal(aside.theme, 'light');
+  assert.equal(aside.props.detailAccent, '#2b8a6e');
+  assert.deepEqual(aside.props.primaryBorderStyle, { borderColor: '#2b8a6e40' });
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-stats-aside', {
+    componentId: 'src/components/CheerDetailStatsAsideRuntime.tsx#CheerDetailStatsAsideRuntime',
+    states: { data: 'single', interactions: 'click' },
+    variants: { team: 'navy', theme: 'dark' },
+  }), /expected toggle target/);
+});
+
+test('cheer detail article adapter preserves owner, repost, menu, and action branches', () => {
+  const owner = resolveComponentStateAdapter('cheer.detail-article', {
+    componentId: 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime',
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click' },
+    variants: { menu: 'owner-open', post: 'owner', theme: 'dark' },
+    interactionTargetId: 'owner-edit',
+  });
+  assert.equal(owner.captureSelector, '[data-testid="cheer-detail-article"]');
+  assert.equal(owner.theme, 'dark');
+  assert.equal((owner.props.selectedPost as CheerPost).isOwner, true);
+  assert.equal(owner.props.isOwnerMenuOpen, true);
+  assert.equal(owner.props.isRepostMenuOpen, false);
+
+  const quote = resolveComponentStateAdapter('cheer.detail-article', {
+    componentId: 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime',
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'click' },
+    variants: { menu: 'repost-open', post: 'quote-repost', theme: 'light' },
+    interactionTargetId: 'repost-quote',
+  });
+  assert.equal(quote.theme, 'light');
+  assert.equal(quote.props.isRepostMenuOpen, true);
+  assert.equal((quote.props.selectedPost as CheerPost).repostType, 'QUOTE');
+  assert.equal((quote.props.selectedPost as CheerPost).originalPost?.id, 903);
+  assert.equal(quote.props.interactionLikeCount, Number.MAX_SAFE_INTEGER);
+
+  const anonymous = resolveComponentStateAdapter('cheer.detail-article', {
+    componentId: 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'focus-visible' },
+    variants: { menu: 'closed', post: 'normal', theme: 'light' },
+    interactionTargetId: 'back',
+  });
+  assert.equal(anonymous.props.isLoggedIn, false);
+  assert.equal(anonymous.props.authUserId, null);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-article', {
+    componentId: 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default' },
+    variants: { menu: 'owner-open', post: 'owner', theme: 'light' },
+  }), /owner branches require/);
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-article', {
+    componentId: 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime',
+    states: { data: 'single', permissions: 'user', interactions: 'default' },
+    variants: { menu: 'closed', post: 'normal', theme: 'light' },
+    interactionTargetId: 'back',
+  }), /default state does not accept/);
+});
+
+test('cheer detail comments adapter preserves auth, query phases, replies, and action targets', () => {
+  const populated = resolveComponentStateAdapter('cheer.detail-comments', {
+    componentId: 'src/components/CheerDetailCommentsPanel.tsx#CheerDetailCommentsPanel',
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click', system: 'ready' },
+    variants: { replies: 'enabled', theme: 'dark' },
+    interactionTargetId: 'reply-toggle',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="cheer-detail-comments-panel"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.isLoggedIn, true);
+  assert.equal(populated.props.areCommentRepliesAvailable, true);
+  assert.equal((populated.props.visualQaStateOverride as { comments: CheerComment[] }).comments.length, 2);
+
+  const maximum = resolveComponentStateAdapter('cheer.detail-comments', {
+    componentId: 'src/components/CheerDetailCommentsPanel.tsx#CheerDetailCommentsPanel',
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'click', system: 'ready' },
+    variants: { replies: 'coming-soon', theme: 'light' },
+    interactionTargetId: 'show-more',
+  });
+  assert.equal(maximum.theme, 'light');
+  assert.equal(maximum.props.commentCount, Number.MAX_SAFE_INTEGER);
+  assert.equal(maximum.props.areCommentRepliesAvailable, false);
+  assert.equal((maximum.props.visualQaStateOverride as { hasNextPage: boolean }).hasNextPage, true);
+
+  const anonymousError = resolveComponentStateAdapter('cheer.detail-comments', {
+    componentId: 'src/components/CheerDetailCommentsPanel.tsx#CheerDetailCommentsPanel',
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'click', system: 'error-503' },
+    variants: { replies: 'coming-soon', theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(anonymousError.props.isLoggedIn, false);
+  assert.equal((anonymousError.props.visualQaStateOverride as { phase: string }).phase, 'error');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-comments', {
+    componentId: 'src/components/CheerDetailCommentsPanel.tsx#CheerDetailCommentsPanel',
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'ready' },
+    variants: { replies: 'enabled', theme: 'light' },
+    interactionTargetId: 'login',
+  }), /default state does not accept/);
+});
+
+test('cheer detail content adapter composes article, comments, and modal branches', () => {
+  const owner = resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'long-korean', permissions: 'user', interactions: 'click' },
+    variants: {
+      menu: 'owner-open',
+      overlay: 'closed',
+      post: 'owner',
+      replies: 'enabled',
+      theme: 'dark',
+    },
+    interactionTargetId: 'owner-edit',
+  });
+  assert.equal(owner.captureSelector, '[data-testid="cheer-detail-content"]');
+  assert.equal(owner.theme, 'dark');
+  assert.equal(owner.props.isOwnerMenuOpen, true);
+  assert.equal(owner.props.hasMountedQuoteEditor, false);
+  assert.equal((owner.props.selectedPost as CheerPost).isOwner, true);
+
+  const quote = resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'click' },
+    variants: {
+      menu: 'closed',
+      overlay: 'quote-open',
+      post: 'quote-repost',
+      replies: 'coming-soon',
+      theme: 'light',
+    },
+    interactionTargetId: 'quote-submit',
+  });
+  assert.equal(quote.props.isQuoteEditorOpen, true);
+  assert.equal(quote.props.hasMountedQuoteEditor, true);
+  assert.equal(quote.props.hasMountedReportModal, false);
+  assert.equal(quote.theme, 'light');
+  assert.equal(
+    typeof (quote.props.visualQaStateOverride as { quoteRepostEditor?: { onSubmit?: unknown } }).quoteRepostEditor?.onSubmit,
+    'function',
+  );
+  assert.equal(
+    (quote.props.visualQaStateOverride as { comments: { hasNextPage?: boolean } }).comments.hasNextPage,
+    true,
+  );
+
+  const reportPending = resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'single', permissions: 'user', interactions: 'default' },
+    variants: {
+      menu: 'closed',
+      overlay: 'report-submitting',
+      post: 'normal',
+      replies: 'enabled',
+      theme: 'light',
+    },
+  });
+  assert.equal(reportPending.props.isReportModalOpen, true);
+  assert.equal(reportPending.props.hasMountedReportModal, true);
+  assert.equal(
+    (reportPending.props.visualQaStateOverride as { reportModal: { isSubmitting?: boolean } }).reportModal.isSubmitting,
+    true,
+  );
+
+  const anonymous = resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: {
+      menu: 'closed',
+      overlay: 'closed',
+      post: 'simple-repost',
+      replies: 'coming-soon',
+      theme: 'light',
+    },
+    interactionTargetId: 'login',
+  });
+  assert.equal(anonymous.props.isLoggedIn, false);
+  assert.equal(anonymous.props.authUserId, null);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default' },
+    variants: {
+      menu: 'closed',
+      overlay: 'report-open',
+      post: 'normal',
+      replies: 'coming-soon',
+      theme: 'light',
+    },
+  }), /overlays require the user permission/);
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-content', {
+    componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+    states: { data: 'single', permissions: 'user', interactions: 'click' },
+    variants: {
+      menu: 'closed',
+      overlay: 'report-submitting',
+      post: 'normal',
+      replies: 'coming-soon',
+      theme: 'light',
+    },
+    interactionTargetId: 'report-submit',
+  }), /submitting overlays only support/);
+});
+
+test('cheer detail action bar adapter preserves login, repost policy, count pressure, and touch targets', () => {
+  const user = resolveComponentStateAdapter('cheer.detail-action-bar', {
+    componentId: 'src/components/CheerDetailActionBarRuntime.tsx#CheerDetailActionBarRuntime',
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'click' },
+    variants: { repost: 'quote', theme: 'dark' },
+    interactionTargetId: 'repost',
+  });
+  assert.equal(user.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(user.theme, 'dark');
+  assert.equal(user.props.canQuoteRepost, true);
+  assert.equal(user.props.canSimpleRepost, true);
+  assert.equal(user.props.commentCount, Number.MAX_SAFE_INTEGER);
+  assert.equal(user.props.interactionBookmarked, true);
+  assert.equal(user.props.repostButtonActive, false);
+
+  const anonymous = resolveComponentStateAdapter('cheer.detail-action-bar', {
+    componentId: 'src/components/CheerDetailActionBarRuntime.tsx#CheerDetailActionBarRuntime',
+    states: { data: 'long-korean', permissions: 'anonymous', interactions: 'default' },
+    variants: { repost: 'unavailable', theme: 'light' },
+  });
+  assert.equal(anonymous.props.isLoggedIn, false);
+  assert.ok(typeof anonymous.props.repostUnavailableMessage === 'string');
+  assert.match(anonymous.props.repostUnavailableMessage, /정책상/);
+  assert.equal(anonymous.theme, 'light');
+
+  assert.throws(() => resolveComponentStateAdapter('cheer.detail-action-bar', {
+    componentId: 'src/components/CheerDetailActionBarRuntime.tsx#CheerDetailActionBarRuntime',
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default' },
+    variants: { repost: 'quote', theme: 'light' },
+  }), /only supports unavailable repost/);
+});
+
+test('cheer detail embedded post adapter preserves repost and deleted-source branches', () => {
+  const quote = resolveComponentStateAdapter('cheer.detail-embedded-post', {
+    componentId: 'src/components/CheerDetailEmbeddedPostRuntime.tsx#CheerDetailEmbeddedPostRuntime',
+    states: { data: 'long-korean' },
+    variants: { variant: 'repost-banner', theme: 'dark' },
+  });
+  assert.equal(quote.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(quote.initialPathname, '/cheer/901');
+  assert.equal(quote.theme, 'dark');
+  assert.equal(quote.props.isQuoteRepost, true);
+  assert.equal(quote.props.isSimpleRepost, false);
+  const quoteEmbeddedPost = quote.props.originalEmbeddedPost;
+  assert.ok(quoteEmbeddedPost && typeof quoteEmbeddedPost === 'object' && 'deleted' in quoteEmbeddedPost);
+  assert.equal(quoteEmbeddedPost.deleted, false);
+
+  const deleted = resolveComponentStateAdapter('cheer.detail-embedded-post', {
+    componentId: 'src/components/CheerDetailEmbeddedPostRuntime.tsx#CheerDetailEmbeddedPostRuntime',
+    states: { data: 'unbroken-token' },
+    variants: { variant: 'simple-deleted', theme: 'light' },
+  });
+  assert.equal(deleted.theme, 'light');
+  assert.equal(deleted.props.isQuoteRepost, false);
+  assert.equal(deleted.props.isSimpleRepost, true);
+  const deletedEmbeddedPost = deleted.props.originalEmbeddedPost;
+  assert.ok(deletedEmbeddedPost && typeof deletedEmbeddedPost === 'object' && 'deleted' in deletedEmbeddedPost);
+  assert.equal(deletedEmbeddedPost.deleted, true);
+  assert.equal(deleted.props.detailAccent, '#17365d');
+
+  const empty = resolveComponentStateAdapter('cheer.detail-embedded-post', {
+    componentId: 'src/components/CheerDetailEmbeddedPostRuntime.tsx#CheerDetailEmbeddedPostRuntime',
+    states: { data: 'empty' },
+    variants: { variant: 'repost-banner', theme: 'light' },
+  });
+  assert.equal(empty.props.originalEmbeddedPost, null);
+});
+
+test('repost modal adapter preserves policy modes and every executable action target', () => {
+  const available = resolveComponentStateAdapter('repost.modal', {
+    componentId: 'src/components/RepostModal.tsx#RepostModal',
+    states: { data: 'single', interactions: 'click', permissions: 'user' },
+    variants: { mode: 'available', theme: 'dark' },
+    interactionTargetId: 'quote',
+  });
+  assert.equal(available.props.isOpen, true);
+  assert.equal((available.props.post as { repostType?: string }).repostType, undefined);
+  assert.equal(available.captureSelector, '[data-testid="repost-modal-content"]');
+  assert.equal(typeof available.props.onQuoteRepost, 'function');
+  assert.equal(available.theme, 'dark');
+
+  const ownedRepost = resolveComponentStateAdapter('repost.modal', {
+    componentId: 'src/components/RepostModal.tsx#RepostModal',
+    states: { data: 'single', interactions: 'click', permissions: 'user' },
+    variants: { mode: 'owned-repost', theme: 'light' },
+    interactionTargetId: 'cancel-repost',
+  });
+  assert.equal(ownedRepost.props.isOwner, true);
+  assert.equal((ownedRepost.props.post as { repostType?: string }).repostType, 'SIMPLE');
+  assert.equal(typeof ownedRepost.props.onCancelRepost, 'function');
+  assert.equal(ownedRepost.theme, 'light');
+
+  const unavailable = resolveComponentStateAdapter('repost.modal', {
+    componentId: 'src/components/RepostModal.tsx#RepostModal',
+    states: { data: 'single', interactions: 'default', permissions: 'anonymous' },
+    variants: { mode: 'blocked-repost', theme: 'dark' },
+  });
+  assert.equal(unavailable.props.isOwner, false);
+  assert.equal(typeof unavailable.props.onCancelRepost, 'undefined');
+  assert.throws(() => resolveComponentStateAdapter('repost.modal', {
+    componentId: 'src/components/RepostModal.tsx#RepostModal',
+    states: { data: 'single', interactions: 'click', permissions: 'anonymous' },
+    variants: { mode: 'blocked-repost', theme: 'dark' },
+    interactionTargetId: 'quote',
+  }), /expected one of close/);
+});
+
+test('report modal adapter maps local form pressure and safe executable actions', () => {
+  const submit = resolveComponentStateAdapter('report.modal', {
+    componentId: 'src/components/ReportModal.tsx#ReportModal',
+    states: { data: 'long-korean', interactions: 'click', permissions: 'user' },
+    variants: { reason: 'copyright', theme: 'dark' },
+    interactionTargetId: 'submit',
+  });
+  const submitOverride = submit.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(submit.props.postId, 904);
+  assert.equal(submit.props.isOpen, true);
+  assert.equal(submitOverride.reason, 'COPYRIGHT_INFRINGEMENT');
+  assert.match(String(submitOverride.description), /모바일 화면/);
+  assert.equal(typeof submitOverride.onSubmit, 'function');
+  assert.equal(submit.captureSelector, '[data-testid="report-modal"]');
+  assert.equal(submit.theme, 'dark');
+
+  const input = resolveComponentStateAdapter('report.modal', {
+    componentId: 'src/components/ReportModal.tsx#ReportModal',
+    states: { data: 'empty', interactions: 'input', permissions: 'user' },
+    variants: { reason: 'spam', theme: 'light' },
+    interactionTargetId: 'description',
+  });
+  const inputOverride = input.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(inputOverride.description, '');
+  assert.equal(inputOverride.onSubmit, undefined);
+  assert.equal(input.theme, 'light');
+
+  const defaultState = resolveComponentStateAdapter('report.modal', {
+    componentId: 'src/components/ReportModal.tsx#ReportModal',
+    states: { data: 'unbroken-token', interactions: 'default', permissions: 'user' },
+    variants: { reason: 'other', theme: 'light' },
+  });
+  const defaultOverride = defaultState.props.visualQaStateOverride as Record<string, unknown>;
+  assert.match(String(defaultOverride.sourceUrl), /^https:\/\/example\.com\//);
+  assert.equal(defaultOverride.reason, 'OTHER');
+  assert.throws(() => resolveComponentStateAdapter('report.modal', {
+    componentId: 'src/components/ReportModal.tsx#ReportModal',
+    states: { data: 'single', interactions: 'default', permissions: 'user' },
+    variants: { reason: 'spam', theme: 'light' },
+    interactionTargetId: 'submit',
+  }), /does not accept interaction targets/);
+});
+
+test('quote repost editor adapter maps local content pressure and executable actions', () => {
+  const submit = resolveComponentStateAdapter('quote-repost.editor', {
+    componentId: 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor',
+    states: { data: 'single', interactions: 'click', permissions: 'user', system: 'online' },
+    variants: { transport: 'ready', theme: 'dark' },
+    interactionTargetId: 'submit',
+  });
+  const submitOverride = submit.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(submit.props.isOpen, true);
+  assert.equal(submitOverride.content, '인용 리포스트 의견을 확인합니다.');
+  assert.equal(typeof submitOverride.onSubmit, 'function');
+  assert.equal(submit.captureSelector, '[data-testid="quote-repost-editor"]');
+  assert.equal(submit.theme, 'dark');
+
+  const input = resolveComponentStateAdapter('quote-repost.editor', {
+    componentId: 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor',
+    states: { data: 'empty', interactions: 'input', permissions: 'user', system: 'online' },
+    variants: { transport: 'ready', theme: 'light' },
+    interactionTargetId: 'content',
+  });
+  const inputOverride = input.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(inputOverride.content, '');
+  assert.equal(inputOverride.onSubmit, undefined);
+  assert.equal(input.theme, 'light');
+
+  const pending = resolveComponentStateAdapter('quote-repost.editor', {
+    componentId: 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor',
+    states: { data: 'maximum-supported', interactions: 'default', permissions: 'user', system: 'online' },
+    variants: { transport: 'pending', theme: 'light' },
+  });
+  const pendingOverride = pending.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(pendingOverride.isSubmitting, true);
+  assert.equal(String(pendingOverride.content).length, 500);
+
+  assert.throws(() => resolveComponentStateAdapter('quote-repost.editor', {
+    componentId: 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor',
+    states: { data: 'single', interactions: 'input', permissions: 'user', system: 'online' },
+    variants: { transport: 'ready', theme: 'light' },
+    interactionTargetId: 'content',
+  }), /input state requires empty data/);
+  assert.throws(() => resolveComponentStateAdapter('quote-repost.editor', {
+    componentId: 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor',
+    states: { data: 'single', interactions: 'click', permissions: 'user', system: 'online' },
+    variants: { transport: 'pending', theme: 'light' },
+    interactionTargetId: 'submit',
+  }), /pending state only supports default/);
+});
+
+test('seat view gallery adapter isolates loading, photo, lightbox, and empty actions', () => {
+  const loading = resolveComponentStateAdapter('seat-view.gallery', {
+    componentId: 'src/components/SeatViewGallery.tsx#SeatViewGallery',
+    states: { data: 'loading', interactions: 'default', permissions: 'anonymous', system: 'online' },
+    variants: { compact: 'compact', presentation: 'gallery', theme: 'dark' },
+  });
+  const loadingOverride = loading.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(loadingOverride.isLoading, true);
+  assert.deepEqual(loadingOverride.photos, []);
+  assert.equal(loading.captureSelector, '[data-testid="seat-view-gallery"]');
+  assert.equal(loading.theme, 'dark');
+
+  const gallery = resolveComponentStateAdapter('seat-view.gallery', {
+    componentId: 'src/components/SeatViewGallery.tsx#SeatViewGallery',
+    states: { data: 'maximum-supported', interactions: 'click', permissions: 'anonymous', system: 'online' },
+    variants: { compact: 'expanded', presentation: 'gallery', theme: 'light' },
+    interactionTargetId: 'photo-0',
+  });
+  const galleryOverride = gallery.props.visualQaStateOverride as { photos: unknown[]; lightboxPhoto: unknown };
+  assert.equal(gallery.props.compact, false);
+  assert.equal(galleryOverride.photos.length, 9);
+  assert.equal(galleryOverride.lightboxPhoto, null);
+  assert.equal(gallery.theme, 'light');
+
+  const lightbox = resolveComponentStateAdapter('seat-view.gallery', {
+    componentId: 'src/components/SeatViewGallery.tsx#SeatViewGallery',
+    states: { data: 'single', interactions: 'focus-visible', permissions: 'anonymous', system: 'online' },
+    variants: { compact: 'compact', presentation: 'lightbox', theme: 'dark' },
+    interactionTargetId: 'close',
+  });
+  const lightboxOverride = lightbox.props.visualQaStateOverride as { photos: unknown[]; lightboxPhoto: unknown };
+  assert.equal(lightboxOverride.photos.length, 1);
+  assert.ok(lightboxOverride.lightboxPhoto);
+
+  const empty = resolveComponentStateAdapter('seat-view.gallery', {
+    componentId: 'src/components/SeatViewGallery.tsx#SeatViewGallery',
+    states: { data: 'empty', interactions: 'click', permissions: 'anonymous', system: 'online' },
+    variants: { compact: 'compact', presentation: 'gallery', theme: 'light' },
+    interactionTargetId: 'share',
+  });
+  const emptyOverride = empty.props.visualQaStateOverride as Record<string, unknown>;
+  assert.deepEqual(emptyOverride.photos, []);
+  assert.equal(emptyOverride.isLoading, false);
+  assert.throws(() => resolveComponentStateAdapter('seat-view.gallery', {
+    componentId: 'src/components/SeatViewGallery.tsx#SeatViewGallery',
+    states: { data: 'loading', interactions: 'click', permissions: 'anonymous', system: 'online' },
+    variants: { compact: 'compact', presentation: 'gallery', theme: 'light' },
+    interactionTargetId: 'photo-0',
+  }), /loading state only supports default/);
+});
+
 test('public navbar menu panel adapter maps identity, permission, route, auth, and theme states', () => {
   const menu = resolveComponentStateAdapter('public-navbar.menu-panel', {
     componentId: 'src/components/PublicNavbarMenuPanel.tsx#PublicNavbarMenuPanel',
@@ -1669,6 +5250,28 @@ test('notification adapters cover compact badges, deterministic permissions, and
   assert.equal(panel.props.browserPermissionOverride, 'default');
   assert.equal(panel.props.nowOverride, '2026-08-23T12:00:00+09:00');
   assert.match(String(panel.surfaceClassName), /w-\[320px\]/);
+});
+
+test('mypage alerts section delegates deterministic notification states to the real panel', () => {
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mypage.alerts-section'), true);
+  const alerts = resolveComponentStateAdapter('mypage.alerts-section', {
+    componentId: 'src/components/mypage/AlertsSection.tsx#AlertsSection',
+    states: { data: 'long-korean', interactions: 'click', permissions: 'user' },
+    variants: { 'browser-permission': 'default', tab: 'all', theme: 'dark' },
+    interactionTargetId: 'browser-permission',
+  });
+  const props = alerts.props.notificationPanelPropsOverride as {
+    browserPermissionOverride: string;
+    initialActiveTabOverride: string;
+    notificationsOverride: Array<{ title: string }>;
+  };
+  assert.equal(props.browserPermissionOverride, 'default');
+  assert.equal(props.initialActiveTabOverride, 'ALL');
+  assert.match(props.notificationsOverride[0].title, /모바일 알림 목록/);
+  assert.equal(alerts.captureSelector, '[data-testid="mypage-alerts-section"]');
+  assert.equal(alerts.expectedPathname, '/mypage');
+  assert.equal(alerts.expectedSearch, '?view=alerts');
+  assert.equal(alerts.theme, 'dark');
 });
 
 test('account deletion recovery adapter covers initial transport states and mutation outcomes', async () => {
@@ -3622,7 +7225,7 @@ test('admin client-error detail adapter covers data pressure, badge variants, li
   assert.equal(maximumDetail.feedback.length, 50);
   assert.equal(maximumDetail.sameFingerprintRecentEvents.length, 50);
 
-  for (const interactions of ['hover', 'focus-visible', 'pressed']) {
+  for (const interactions of ['hover', 'focus-visible', 'pressed', 'cta']) {
     for (const interactionTargetId of ['close', 'recent']) {
       const result = resolveComponentStateAdapter('admin.client-error-detail', {
         ...baseContext,
@@ -4699,8 +8302,8 @@ test('app routes adapter renders the authenticated MyPage route with a real sess
   assert.equal(myPage.initialPathname, '/mypage');
   assert.equal(myPage.semanticHost, 'suspense');
   assert.equal(myPage.theme, 'light');
-  assert.equal(myPage.harnessAuthState?.user.email, 'visual-qa-mypage@example.com');
-  assert.equal(myPage.harnessAuthState?.user.role, 'ROLE_USER');
+  assert.equal(myPage.harnessAuthState?.user?.email, 'visual-qa-mypage@example.com');
+  assert.equal(myPage.harnessAuthState?.user?.role, 'ROLE_USER');
 });
 
 test('app routes adapter renders the public Home route without inventing route-owned controls', () => {
@@ -7304,6 +10907,81 @@ test('stadium guide adapter resolves the real wrapper fallback and runtime phase
   );
 });
 
+test('stadium guide places adapter maps local list, loading, error, and control fixtures', () => {
+  const componentId = 'src/components/StadiumGuidePlacesRuntime.tsx#StadiumGuidePlacesRuntime';
+  const populated = resolveComponentStateAdapter('stadium-guide-places', {
+    componentId,
+    states: { data: 'populated', system: 'idle', interactions: 'input' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'search',
+  });
+  assert.equal(populated.captureSelector, '[data-testid="visual-qa-stadium-guide-places"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.selectedStadiumName, '합성 구장');
+  assert.equal((populated.props.places as unknown[]).length, 3);
+  assert.equal(populated.props.testId, 'visual-qa-stadium-guide-places');
+
+  const loading = resolveComponentStateAdapter('stadium-guide-places', {
+    componentId,
+    states: { data: 'maximum-supported', system: 'loading', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.props.listStatus, 'loading');
+  assert.equal((loading.props.places as unknown[]).length, 10);
+
+  const error = resolveComponentStateAdapter('stadium-guide-places', {
+    componentId,
+    states: { data: 'empty', system: 'error-503', interactions: 'retry' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(error.props.listStatus, 'error');
+  assert.equal(error.props.listError, '합성 장소 목록을 불러오지 못했습니다.');
+  assert.throws(
+    () => resolveComponentStateAdapter('stadium-guide-places', {
+      componentId,
+      states: { data: 'empty', system: 'idle', interactions: 'selected' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'card',
+    }),
+    /empty state only supports/,
+  );
+});
+
+test('stadium guide runtime adapter maps local parent map and guide boundaries', () => {
+  const componentId = 'src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime';
+  const resolved = resolveComponentStateAdapter('stadium-guide-runtime', {
+    componentId,
+    states: { data: 'long-korean', system: 'idle', interactions: 'hover' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'category',
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="stadium-guide-runtime"]');
+  assert.equal(resolved.theme, 'dark');
+  const resolvedOverride = resolved.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal((resolvedOverride.stadiums as unknown[]).length, 2);
+  assert.equal(resolvedOverride.placesStatus, 'success');
+
+  const loading = resolveComponentStateAdapter('stadium-guide-runtime', {
+    componentId,
+    states: { data: 'single', system: 'loading', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  const loadingOverride = loading.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(loadingOverride.stadiumsStatus, 'loading');
+  assert.equal(loadingOverride.selectedStadium, null);
+
+  const manual = resolveComponentStateAdapter('stadium-guide-runtime', {
+    componentId,
+    states: { data: 'maximum-supported', system: 'manual-required', interactions: 'retry' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'map-retry',
+  });
+  const manualOverride = manual.props.visualQaStateOverride as Record<string, unknown>;
+  assert.equal(manualOverride.mapStatus, 'error');
+  assert.equal((manualOverride.places as unknown[]).length, 10);
+});
+
 test('sajik-seatmap-scenarios map every declared guide and auth state without network data', () => {
   const emptyGuide = resolveComponentStateAdapter('sajik.first-visit-guide', {
     componentId: 'src/components/sajik/SajikSeatMap.tsx#SajikFirstVisitGuide',
@@ -7357,6 +11035,239 @@ test('sajik-seatmap-scenarios map every declared guide and auth state without ne
       componentId: 'src/components/sajik/SajikSeatMap.tsx#SajikSeatMap',
       states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
       variants: {},
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('changwon-seatmap adapter binds local auth, theme, and upload-selection boundaries', () => {
+  const componentId = 'src/components/changwon/ChangwonSeatMap.tsx#ChangwonSeatMap';
+  const anonymous = resolveComponentStateAdapter('changwon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userUpload = resolveComponentStateAdapter('changwon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'open' },
+    variants: { mode: 'dark' },
+    interactionTargetId: 'upload-modal',
+  });
+  assert.deepEqual(userUpload.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userUpload.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('changwon.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('daegu-seatmap adapter binds local auth and composed interaction boundaries', () => {
+  const componentId = 'src/components/daegu/DaeguSeatMap.tsx#DaeguSeatMap';
+  const anonymous = resolveComponentStateAdapter('daegu.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userOpen = resolveComponentStateAdapter('daegu.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'open' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userOpen.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userOpen.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('daegu.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('gwangju-seatmap adapter binds local auth, theme, and composed interaction boundaries', () => {
+  const componentId = 'src/components/gwangju/GwangjuSeatMap.tsx#GwangjuSeatMap';
+  const anonymous = resolveComponentStateAdapter('gwangju.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userOpen = resolveComponentStateAdapter('gwangju.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'open' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userOpen.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userOpen.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('gwangju.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('daejeon-seatmap adapter binds local auth, theme, search, and composed interaction boundaries', () => {
+  const componentId = 'src/components/daejeon/DaejeonSeatMap.tsx#DaejeonSeatMap';
+  const anonymous = resolveComponentStateAdapter('daejeon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userInput = resolveComponentStateAdapter('daejeon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'input' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userInput.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userInput.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('daejeon.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('gocheok-seatmap adapter binds local auth, theme, facility mode, and composed interaction boundaries', () => {
+  const componentId = 'src/components/gocheok/GocheokSeatMap.tsx#GocheokSeatMap';
+  const anonymous = resolveComponentStateAdapter('gocheok.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userFacility = resolveComponentStateAdapter('gocheok.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'tab-change' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userFacility.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userFacility.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('gocheok.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('incheon-seatmap adapter binds local auth, theme, guide tabs, and composed interaction boundaries', () => {
+  const componentId = 'src/components/incheon/IncheonSeatMap.tsx#IncheonSeatMap';
+  const anonymous = resolveComponentStateAdapter('incheon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userTabChange = resolveComponentStateAdapter('incheon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'tab-change' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userTabChange.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userTabChange.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('incheon.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('jamsil-seatmap adapter binds local auth, theme, source tabs, and composed interaction boundaries', () => {
+  const componentId = 'src/components/jamsil/JamsilSeatMap.tsx#JamsilSeatMap';
+  const anonymous = resolveComponentStateAdapter('jamsil.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userTabChange = resolveComponentStateAdapter('jamsil.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'tab-change' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userTabChange.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userTabChange.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('jamsil.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+});
+
+test('suwon-seatmap adapter binds local auth, theme, finder tabs, and composed interaction boundaries', () => {
+  const componentId = 'src/components/suwon/SuwonSeatMap.tsx#SuwonSeatMap';
+  const anonymous = resolveComponentStateAdapter('suwon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'anonymous', interactions: 'default' },
+    variants: { mode: 'light' },
+  });
+  assert.deepEqual(anonymous.props.stateOverride, { isLoggedIn: false });
+  assert.equal(anonymous.theme, 'light');
+  assert.equal(anonymous.captureSelector, '[data-vqa-harness-surface]');
+
+  const userTabChange = resolveComponentStateAdapter('suwon.seat-map', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'tab-change' },
+    variants: { mode: 'dark' },
+  });
+  assert.deepEqual(userTabChange.props.stateOverride, { isLoggedIn: true });
+  assert.equal(userTabChange.theme, 'dark');
+
+  assert.throws(
+    () => resolveComponentStateAdapter('suwon.seat-map', {
+      componentId,
+      states: { data: 'empty', permissions: 'anonymous', interactions: 'default' },
+      variants: { mode: 'light' },
     }),
     /지원하지 않는 Visual QA state/,
   );
@@ -7418,6 +11329,160 @@ test('sajik SVG and editor adapters reproduce every declared local state without
     selectedSectionId: '323',
   });
   assert.equal(editor.captureSelector, '[data-testid="sajik-seatmap-editor"]');
+});
+
+test('gwangju editor adapter reproduces the fixed dark internal editor surface', () => {
+  const editor = resolveComponentStateAdapter('gwangju.seat-map-editor', {
+    componentId: 'src/components/gwangju/GwangjuSeatMapEditor.tsx#GwangjuSeatMapEditor',
+    states: { data: 'single', interactions: 'selected' },
+    variants: { theme: 'dark' },
+  });
+
+  assert.deepEqual(editor.props, {});
+  assert.equal(editor.captureSelector, '[data-testid="gwangju-seatmap-editor"]');
+  assert.equal(editor.theme, 'dark');
+  assert.match(editor.surfaceClassName ?? '', /max-w-\[1680px\]/);
+});
+
+test('gwangju SVG adapter reproduces controlled map, filter, zoom, and selection states', () => {
+  const map = resolveComponentStateAdapter('gwangju.seat-map-svg', {
+    componentId: 'src/components/gwangju/GwangjuSeatMapSvg.tsx#GwangjuSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: {
+      filter: 'category-filtered',
+      fullscreen: 'present',
+      mode: 'dark',
+      selection: 'selected',
+      zoom: 'maximum',
+    },
+  });
+
+  assert.equal(map.props.mode, 'dark');
+  assert.equal((map.props.selected as { id?: string }).id, 'k7-121');
+  assert.deepEqual(map.props.filterCats, ['K7']);
+  assert.equal(map.props.activeFilterId, 'k7');
+  assert.equal(map.props.zoom, 3);
+  assert.equal(typeof map.props.onFullscreen, 'function');
+  assert.equal(map.captureSelector, '[data-testid="gwangju-seatmap-viewport"]');
+});
+
+test('changwon SVG adapter reproduces controlled map, filter, zoom, and selection states', () => {
+  const map = resolveComponentStateAdapter('changwon.seat-map-svg', {
+    componentId: 'src/components/changwon/ChangwonSeatMapSvg.tsx#ChangwonSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: {
+      filter: 'category-filtered',
+      fullscreen: 'present',
+      mode: 'dark',
+      selection: 'selected',
+      zoom: 'maximum',
+    },
+  });
+
+  assert.equal(map.props.mode, 'dark');
+  assert.equal((map.props.selected as { id?: string }).id, 'changwon-block-121');
+  assert.deepEqual(map.props.filterCats, ['TABLE']);
+  assert.equal(map.props.zoom, 3);
+  assert.equal(map.props.enableAutoCenter, false);
+  assert.equal(typeof map.props.onFullscreen, 'function');
+  assert.equal(map.captureSelector, '[data-testid="changwon-seatmap-viewport"]');
+});
+
+test('daejeon SVG adapter reproduces controlled map, filter, zoom, and selection states', () => {
+  const map = resolveComponentStateAdapter('daejeon.seat-map-svg', {
+    componentId: 'src/components/daejeon/DaejeonSeatMapSvg.tsx#DaejeonSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: {
+      filter: 'category-filtered',
+      mode: 'dark',
+      selection: 'selected',
+      zoom: 'maximum',
+    },
+  });
+
+  assert.equal(map.props.mode, 'dark');
+  assert.equal((map.props.selected as { id?: string }).id, 'central-table-100__100a');
+  assert.deepEqual(map.props.filterCats, ['TABLE']);
+  assert.equal(map.props.zoom, 2.5);
+  assert.equal((map.props.visibleBlockIds as string[]).length, 33);
+  assert.deepEqual((map.props.visibleBlockIds as string[]).slice(0, 3), [
+    'central-table-100__100a',
+    'central-table-100__100b',
+    'central-table-100__100c',
+  ]);
+  assert.equal(map.props.minZoom, 0.9);
+  assert.equal(map.props.maxZoom, 2.5);
+  assert.equal(map.captureSelector, '[data-testid="daejeon-seatmap-transform-layer"]');
+});
+
+test('Daegu, Incheon, Jamsil, and Suwon SVG adapters preserve their production prop contracts', () => {
+  const daegu = resolveComponentStateAdapter('daegu.seat-map-svg', {
+    componentId: 'src/components/daegu/DaeguSeatMapSvg.tsx#DaeguSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { filter: 'category-filtered', fullscreen: 'present', mode: 'dark', selection: 'selected', zoom: 'maximum' },
+  });
+  assert.equal((daegu.props.selected as { id?: string }).id, 'daegu-away-cheering-1-1');
+  assert.equal((daegu.props.blocks as unknown[]).length, 130);
+  assert.deepEqual(daegu.props.filterCats, ['AWAY']);
+  assert.equal(daegu.props.zoom, 3);
+  assert.equal(typeof daegu.props.onFullscreen, 'function');
+  assert.equal(daegu.captureSelector, '[data-testid="daegu-seatmap-viewport"]');
+
+  const incheon = resolveComponentStateAdapter('incheon.seat-map-svg', {
+    componentId: 'src/components/incheon/IncheonSeatMapSvg.tsx#IncheonSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { filter: 'side-filtered', mode: 'dark', selection: 'selected', zoom: 'maximum' },
+  });
+  assert.equal((incheon.props.selected as { id?: string }).id, 'incheon-114b');
+  assert.deepEqual(incheon.props.filterSides, ['FIRST_BASE']);
+  assert.deepEqual(incheon.props.comparisonIds, ['incheon-114b']);
+  assert.equal(incheon.props.zoom, 2.5);
+  assert.equal(incheon.captureSelector, '[data-testid="incheon-seatmap-viewport"]');
+
+  const jamsil = resolveComponentStateAdapter('jamsil.seat-map-svg', {
+    componentId: 'src/components/jamsil/JamsilSeatMapSvg.tsx#JamsilSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { filter: 'category', fullscreen: 'present', granularity: 'high', mode: 'dark', selection: 'selected', zoom: 'maximum' },
+  });
+  assert.equal((jamsil.props.selected as { id?: string }).id, 'block-101');
+  assert.equal(jamsil.props.filterId, 'premium');
+  assert.equal(jamsil.props.officialSource, 'LG');
+  assert.equal(jamsil.props.zoom, 2.5);
+  assert.equal(typeof jamsil.props.onFullscreen, 'function');
+  assert.equal(jamsil.captureSelector, '[data-testid="jamsil-seatmap-viewport"]');
+
+  const suwon = resolveComponentStateAdapter('suwon.seat-map-svg', {
+    componentId: 'src/components/suwon/SuwonSeatMapSvg.tsx#SuwonSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: { filter: 'category-filtered', fullscreen: 'present', selection: 'selected', zoom: 'maximum' },
+  });
+  assert.equal(suwon.props.selectedId, 'suwon-101');
+  assert.deepEqual(suwon.props.filterCats, ['INFIELD_RED']);
+  assert.equal(suwon.props.zoom, 2.5);
+  assert.equal(typeof suwon.props.onFullscreen, 'function');
+  assert.equal(suwon.captureSelector, '[data-testid="suwon-seatmap-viewport"]');
+});
+
+test('gocheok SVG adapter reproduces controlled map, filter, zoom, and selection states', () => {
+  const map = resolveComponentStateAdapter('gocheok.seat-map-svg', {
+    componentId: 'src/components/gocheok/GocheokSeatMapSvg.tsx#GocheokSeatMapSvg',
+    states: { data: 'populated', interactions: 'keyboard-navigation' },
+    variants: {
+      filter: 'category-filtered',
+      fullscreen: 'present',
+      mode: 'dark',
+      selection: 'selected',
+      zoom: 'maximum',
+    },
+  });
+
+  assert.equal(map.props.mode, 'dark');
+  assert.equal((map.props.selected as { id?: string }).id, 'gocheok-d07');
+  assert.deepEqual(map.props.filterCats, ['TABLE']);
+  assert.equal(map.props.zoom, 2.5);
+  assert.equal(map.props.enableAutoCenter, false);
+  assert.equal(typeof map.props.onFullscreen, 'function');
+  assert.equal(map.captureSelector, '[data-testid="gocheok-seatmap-viewport"]');
 });
 
 test('prediction-matches-error-scenarios', () => {
@@ -7778,6 +11843,545 @@ test('mate page adapter isolates both lazy boundaries and the resolved handoff',
   );
 });
 
+test('MateResultsRuntime adapter preserves result phases, layouts, and executable actions', () => {
+  const componentId = 'src/components/MateResultsRuntime.tsx#$default';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.results'), true);
+
+  const populated = resolveComponentStateAdapter('mate.results', {
+    componentId,
+    states: { data: 'populated', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { tab: 'matched', view: 'compact', theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-results-runtime"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.activeTab, 'matched');
+  assert.equal(populated.props.viewMode, 'compact');
+  assert.equal((populated.props.parties as unknown[]).length, 2);
+
+  const loading = resolveComponentStateAdapter('mate.results', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default', system: 'loading' },
+    variants: { tab: 'all', view: 'grid', theme: 'light' },
+  });
+  assert.equal(loading.props.isLoading, true);
+
+  for (const [target, data, permission, system] of [
+    ['create', 'empty', 'anonymous', 'idle'],
+    ['reset', 'long-korean', 'user', 'idle'],
+    ['party', 'single', 'user', 'idle'],
+    ['favorite', 'single', 'user', 'idle'],
+    ['next', 'single', 'user', 'idle'],
+    ['retry', 'single', 'user', 'error-503'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mate.results', {
+      componentId,
+      states: { data, permissions: permission, interactions: 'click', system },
+      variants: { tab: 'all', view: 'grid', theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mate.results', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { tab: 'selling', view: 'list', theme: 'dark' },
+    interactionTargetId: 'party',
+  }), /mate\.results received an unsupported click target or state/);
+});
+
+test('MateManageApplicationsRuntime adapter preserves tabs, density, and host actions', () => {
+  const componentId = 'src/components/MateManageApplicationsRuntime.tsx#MateManageApplicationsRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage-applications'), true);
+
+  const populated = resolveComponentStateAdapter('mate.manage-applications', {
+    componentId,
+    states: { data: 'populated', interactions: 'default' },
+    variants: { tab: 'approved', theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-manage-applications-runtime"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.selectedApplicationTab, 'approved');
+  assert.equal((populated.props.approvedApplications as unknown[]).length, 3);
+
+  for (const [target, tab] of [
+    ['tab-pending', 'pending'],
+    ['tab-approved', 'approved'],
+    ['tab-rejected', 'rejected'],
+    ['approve', 'pending'],
+    ['reject', 'pending'],
+    ['chat', 'approved'],
+    ['checkin', 'approved'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mate.manage-applications', {
+      componentId,
+      states: { data: 'single', interactions: 'click' },
+      variants: { tab, theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-applications', {
+    componentId,
+    states: { data: 'empty', interactions: 'click' },
+    variants: { tab: 'pending', theme: 'dark' },
+    interactionTargetId: 'approve',
+  }), /mate\.manage-applications received an unsupported click target or state/);
+});
+
+test('MateManageOverviewRuntime adapter preserves host review composition and recovery states', () => {
+  const componentId = 'src/components/MateManageOverviewRuntime.tsx#MateManageOverviewRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage-overview'), true);
+
+  const populated = resolveComponentStateAdapter('mate.manage-overview', {
+    componentId,
+    states: { data: 'populated', permissions: 'host', interactions: 'default', system: 'retrying' },
+    variants: { tab: 'pending', theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-manage-overview-runtime"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal(populated.props.isPartyRevalidating, true);
+  assert.equal((populated.props.pendingApplications as unknown[]).length, 3);
+  assert.equal((populated.props.contentProps as { canEdit: boolean }).canEdit, true);
+
+  for (const [target, tab] of [
+    ['back', 'pending'],
+    ['tab-pending', 'pending'],
+    ['tab-approved', 'approved'],
+    ['tab-rejected', 'rejected'],
+    ['approve', 'pending'],
+    ['reject', 'pending'],
+    ['chat', 'approved'],
+    ['checkin', 'approved'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mate.manage-overview', {
+      componentId,
+      states: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle' },
+      variants: { tab, theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+    assert.ok(result.companion);
+  }
+
+  const readOnly = resolveComponentStateAdapter('mate.manage-overview', {
+    componentId,
+    states: { data: 'empty', permissions: 'non-owner', interactions: 'default', system: 'error-503' },
+    variants: { tab: 'rejected', theme: 'light' },
+  });
+  assert.equal((readOnly.props.contentProps as { canEdit: boolean }).canEdit, false);
+  assert.match(String(readOnly.props.applicationActionError), /합성 관리 요청 오류/);
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-overview', {
+    componentId,
+    states: { data: 'empty', permissions: 'non-owner', interactions: 'click', system: 'idle' },
+    variants: { tab: 'pending', theme: 'dark' },
+    interactionTargetId: 'approve',
+  }), /mate\.manage-overview received an unsupported click target or state/);
+});
+
+test('MateManageContentRuntime adapter preserves edit, review, and destructive branches', () => {
+  const componentId = 'src/components/MateManageContentRuntime.tsx#MateManageContentRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage-content'), true);
+
+  const edit = resolveComponentStateAdapter('mate.manage-content', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'host', interactions: 'default', system: 'idle' },
+    variants: { mode: 'edit', tab: 'pending', theme: 'dark' },
+  });
+  assert.equal(edit.captureSelector, '[data-testid="mate-manage-content-runtime"]');
+  assert.equal(edit.theme, 'dark');
+  assert.equal((edit.props as { isEditing: boolean }).isEditing, true);
+  assert.equal((edit.props as { pendingApplications: unknown[] }).pendingApplications.length, 1);
+
+  for (const [target, mode, tab] of [
+    ['tab-pending', 'view', 'pending'],
+    ['tab-approved', 'view', 'approved'],
+    ['tab-rejected', 'view', 'rejected'],
+    ['approve', 'view', 'pending'],
+    ['reject', 'view', 'pending'],
+    ['chat', 'view', 'approved'],
+    ['checkin', 'view', 'approved'],
+    ['edit', 'view', 'pending'],
+    ['delete', 'view', 'pending'],
+    ['save', 'edit', 'pending'],
+    ['cancel-edit', 'edit', 'pending'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mate.manage-content', {
+      componentId,
+      states: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle' },
+      variants: { mode, tab, theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+    assert.ok(result.companion);
+  }
+
+  const failure = resolveComponentStateAdapter('mate.manage-content', {
+    componentId,
+    states: { data: 'empty', permissions: 'non-owner', interactions: 'default', system: 'error-503' },
+    variants: { mode: 'view', tab: 'rejected', theme: 'light' },
+  });
+  assert.equal((failure.props as { isDeleting: boolean }).isDeleting, true);
+  assert.match(String((failure.props as { descriptionError: string }).descriptionError), /소개글/);
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-content', {
+    componentId,
+    states: { data: 'single', permissions: 'non-owner', interactions: 'click', system: 'idle' },
+    variants: { mode: 'view', tab: 'pending', theme: 'dark' },
+    interactionTargetId: 'edit',
+  }), /mate\.manage-content received an unsupported click target or state/);
+});
+
+test('MateManageEditPanel adapter preserves edit form pressure and save controls', () => {
+  const componentId = 'src/components/MateManageEditPanel.tsx#MateManageEditPanel';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage-edit-panel'), true);
+
+  const longCopy = resolveComponentStateAdapter('mate.manage-edit-panel', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(longCopy.captureSelector, '[data-testid="mate-manage-edit-panel"]');
+  assert.equal(longCopy.theme, 'dark');
+  assert.match(String((longCopy.props as { editForm: { description: string } }).editForm.description), /모바일/);
+
+  const maximum = resolveComponentStateAdapter('mate.manage-edit-panel', {
+    componentId,
+    states: { data: 'maximum-supported', interactions: 'default' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((maximum.props as { editForm: { ticketPrice: number } }).editForm.ticketPrice, Number.MAX_SAFE_INTEGER);
+
+  for (const target of ['save', 'cancel-edit']) {
+    const result = resolveComponentStateAdapter('mate.manage-edit-panel', {
+      componentId,
+      states: { data: 'single', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-edit-panel', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'delete',
+  }), /unsupported click target/);
+});
+
+test('MateManage adapter preserves page composition, access, loading, and error branches', () => {
+  const componentId = 'src/components/MateManage.tsx#MateManage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage'), true);
+
+  const resolved = resolveComponentStateAdapter('mate.manage', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'host', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="mate-manage-overview-runtime"]');
+  assert.equal(resolved.expectedPathname, '/mate/8801/manage');
+  assert.equal(resolved.theme, 'dark');
+  assert.equal((resolved.props.visualQaStateOverride as { party: { id: number } }).party.id, 8801);
+
+  const nonOwner = resolveComponentStateAdapter('mate.manage', {
+    componentId,
+    states: { data: 'single', permissions: 'non-owner', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(nonOwner.captureSelector, '[data-testid="mate-manage-runtime-access"]');
+
+  const loading = resolveComponentStateAdapter('mate.manage', {
+    componentId,
+    states: { data: 'single', permissions: 'host', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(loading.captureSelector, '[data-testid="mate-manage-runtime-loading"]');
+  assert.equal((loading.props.visualQaStateOverride as { isPartyLoading: boolean }).isPartyLoading, true);
+
+  const error = resolveComponentStateAdapter('mate.manage', {
+    componentId,
+    states: { data: 'empty', permissions: 'host', interactions: 'default', system: 'error-503' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(error.captureSelector, '[data-testid="mate-manage-runtime-error"]');
+  assert.match(String((error.props.visualQaStateOverride as { partyError: string }).partyError), /불러오지 못했습니다/);
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage', {
+    componentId,
+    states: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'manage',
+  }), /지원하지 않는 Visual QA state: interactions=click/);
+});
+
+test('MateMyPartiesPanel adapter preserves hosted-party density, loading, and navigation', () => {
+  const componentId = 'src/components/MateMyPartiesPanel.tsx#MateMyPartiesPanel';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.my-parties-panel'), true);
+
+  const populated = resolveComponentStateAdapter('mate.my-parties-panel', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-my-parties-panel"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal((populated.props.visualQaStateOverride as { parties: unknown[] }).parties.length, 1);
+
+  const loading = resolveComponentStateAdapter('mate.my-parties-panel', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'default', system: 'loading' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((loading.props.visualQaStateOverride as { isLoading: boolean }).isLoading, true);
+
+  const anonymous = resolveComponentStateAdapter('mate.my-parties-panel', {
+    componentId,
+    states: { data: 'empty', permissions: 'anonymous', interactions: 'default', system: 'idle' },
+    variants: { theme: 'light' },
+  });
+  assert.equal((anonymous.props.visualQaStateOverride as { userId: number | null }).userId, null);
+
+  const click = resolveComponentStateAdapter('mate.my-parties-panel', {
+    componentId,
+    states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'party',
+  });
+  assert.ok(click.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('mate.my-parties-panel', {
+    componentId,
+    states: { data: 'empty', permissions: 'user', interactions: 'click', system: 'idle' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'party',
+  }), /unsupported click target or state/);
+});
+
+test('MateDetailContentRuntime adapter preserves identity, action, and copy-pressure branches', () => {
+  const componentId = 'src/components/MateDetailContentRuntime.tsx#MateDetailContentRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.detail-content'), true);
+
+  const completed = resolveComponentStateAdapter('mate.detail-content', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'approved-member', interactions: 'default' },
+    variants: { status: 'completed', theme: 'dark' },
+  });
+  assert.equal(completed.captureSelector, '[data-testid="mate-detail-content-runtime"]');
+  assert.equal(completed.theme, 'dark');
+  assert.equal((completed.props as { isApproved: boolean }).isApproved, true);
+  assert.equal((completed.props as { visualQaStateOverride: { infoSections: { reviewsPhase: string } } }).visualQaStateOverride.infoSections.reviewsPhase, 'runtime');
+
+  for (const [target, permission, status] of [
+    ['apply', 'user', 'pending'],
+    ['manage', 'host', 'pending'],
+    ['chat', 'approved-member', 'matched'],
+    ['checkin', 'approved-member', 'matched'],
+    ['cancel', 'mate-applicant-pending', 'pending'],
+    ['browse', 'mate-applicant-rejected', 'pending'],
+    ['seat-guide', 'user', 'pending'],
+    ['host-chat', 'user', 'pending'],
+    ['qr', 'approved-member', 'matched'],
+    ['share', 'user', 'pending'],
+    ['cheer-share', 'host', 'pending'],
+  ] as const) {
+    const result = resolveComponentStateAdapter('mate.detail-content', {
+      componentId,
+      states: { data: 'single', permissions: permission, interactions: 'click' },
+      variants: { status, theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.equal(result.theme, 'light');
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mate.detail-content', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click' },
+    variants: { status: 'pending', theme: 'dark' },
+    interactionTargetId: 'manage',
+  }), /mate\.detail-content received an unsupported click target or state/);
+});
+
+test('MateDetailRuntime adapter preserves controller loading, retrying, and error phases', () => {
+  const componentId = 'src/components/MateDetailRuntime.tsx#MateDetailRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.detail-runtime'), true);
+
+  const populated = resolveComponentStateAdapter('mate.detail-runtime', {
+    componentId,
+    states: {
+      data: 'long-korean',
+      permissions: 'approved-member',
+      interactions: 'default',
+      system: 'idle',
+    },
+    variants: { status: 'completed', surface: 'page', theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-detail-runtime"]');
+  assert.equal(populated.expectedPathname, '/mate/8801');
+  assert.equal(populated.props.variant, 'page');
+  assert.equal(populated.theme, 'dark');
+  assert.ok((populated.props.visualQaStateOverride as { controller: { party: unknown } }).controller.party);
+
+  const loading = resolveComponentStateAdapter('mate.detail-runtime', {
+    componentId,
+    states: {
+      data: 'single',
+      permissions: 'user',
+      interactions: 'default',
+      system: 'loading',
+    },
+    variants: { status: 'pending', surface: 'panel', theme: 'light' },
+  });
+  const loadingController = (loading.props.visualQaStateOverride as { controller: { party: unknown; isLoading: boolean } }).controller;
+  assert.equal(loading.props.variant, 'panel');
+  assert.equal(loadingController.party, null);
+  assert.equal(loadingController.isLoading, true);
+
+  const retrying = resolveComponentStateAdapter('mate.detail-runtime', {
+    componentId,
+    states: {
+      data: 'populated',
+      permissions: 'host',
+      interactions: 'default',
+      system: 'retrying',
+    },
+    variants: { status: 'selling', surface: 'page', theme: 'light' },
+  });
+  assert.equal(
+    (retrying.props.visualQaStateOverride as { controller: { isRevalidating: boolean } }).controller.isRevalidating,
+    true,
+  );
+
+  const error = resolveComponentStateAdapter('mate.detail-runtime', {
+    componentId,
+    states: {
+      data: 'empty',
+      permissions: 'anonymous',
+      interactions: 'default',
+      system: 'error-503',
+    },
+    variants: { status: 'pending', surface: 'page', theme: 'dark' },
+  });
+  assert.match(
+    String((error.props.visualQaStateOverride as { controller: { partyError: string } }).controller.partyError),
+    /합성 상세 데이터를 불러오지 못했습니다/,
+  );
+
+  assert.throws(() => resolveComponentStateAdapter('mate.detail-runtime', {
+    componentId,
+    states: {
+      data: 'single',
+      permissions: 'user',
+      interactions: 'click',
+      system: 'idle',
+    },
+    variants: { status: 'pending', surface: 'page', theme: 'light' },
+  }), /지원하지 않는 Visual QA state: interactions=click/);
+});
+
+test('MateListControlsRuntime adapter preserves filter copy, transport phases, and mobile controls', () => {
+  const componentId = 'src/components/MateListControlsRuntime.tsx#MateListControlsRuntime';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.list-controls-runtime'), true);
+
+  const populated = resolveComponentStateAdapter('mate.list-controls-runtime', {
+    componentId,
+    states: { data: 'long-korean', permissions: 'user', interactions: 'default', system: 'idle' },
+    variants: { tab: 'matched', layout: 'mobile', theme: 'dark' },
+  });
+  assert.equal(populated.captureSelector, '[data-testid="mate-list-controls-runtime"]');
+  assert.equal(populated.theme, 'dark');
+  assert.equal((populated.props.controller as { activeTab: string }).activeTab, 'matched');
+  assert.equal((populated.props.controller as { isDesktopListLayout: boolean }).isDesktopListLayout, false);
+  assert.equal((populated.props.visualQaStateOverride as { suppressNetworkChildren: boolean }).suppressNetworkChildren, true);
+
+  const loading = resolveComponentStateAdapter('mate.list-controls-runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'default', system: 'loading' },
+    variants: { tab: 'all', layout: 'desktop', theme: 'light' },
+  });
+  assert.equal((loading.props.controller as { isLoading: boolean }).isLoading, true);
+  assert.equal((loading.props.controller as { fetchError: boolean }).fetchError, false);
+
+  const error = resolveComponentStateAdapter('mate.list-controls-runtime', {
+    componentId,
+    states: { data: 'maximum-supported', permissions: 'user', interactions: 'default', system: 'error-503' },
+    variants: { tab: 'selling', layout: 'mobile', theme: 'light' },
+  });
+  assert.equal((error.props.controller as { fetchError: boolean }).fetchError, true);
+  assert.equal((error.props.controller as { activeMobileFilterCount: number }).activeMobileFilterCount, 4);
+
+  for (const target of ['guide', 'create', 'mobile-filter']) {
+    const result = resolveComponentStateAdapter('mate.list-controls-runtime', {
+      componentId,
+      states: { data: 'single', permissions: 'user', interactions: 'click', system: 'idle' },
+      variants: { tab: 'all', layout: 'mobile', theme: 'light' },
+      interactionTargetId: target,
+    });
+    assert.ok(result.companion);
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('mate.list-controls-runtime', {
+    componentId,
+    states: { data: 'single', permissions: 'anonymous', interactions: 'click', system: 'idle' },
+    variants: { tab: 'all', layout: 'mobile', theme: 'light' },
+    interactionTargetId: 'create',
+  }), /unsupported click target or state/);
+});
+
+test('MatePage wrapper adapter isolates auth bootstrap, guest, and runtime phases', () => {
+  const componentId = 'src/components/MatePage.tsx#MatePage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.page-wrapper'), true);
+
+  const loading = resolveComponentStateAdapter('mate.page-wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'auth-loading', theme: 'light' },
+  });
+  assert.equal(loading.captureSelector, '[data-testid="mate-page-route-loading"]');
+  assert.equal(
+    (loading.props.visualQaStateOverride as { isLoggedIn: boolean }).isLoggedIn,
+    false,
+  );
+
+  const guest = resolveComponentStateAdapter('mate.page-wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'logged-out', theme: 'dark' },
+  });
+  assert.equal(guest.captureSelector, '[data-testid="mate-logged-out-entry"]');
+  assert.equal(guest.theme, 'dark');
+
+  const runtime = resolveComponentStateAdapter('mate.page-wrapper', {
+    componentId,
+    states: {},
+    variants: { phase: 'runtime', theme: 'light' },
+  });
+  assert.equal(runtime.captureSelector, '[data-testid="mate-page-runtime-probe"]');
+  assert.ok(runtime.props.runtimeOverride);
+
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.page-wrapper', {
+      componentId: 'src/components/Mate.tsx#Mate',
+      states: {},
+      variants: { phase: 'runtime', theme: 'light' },
+    }),
+    /mate.page-wrapper only supports its declared phase and theme variants/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.page-wrapper', {
+      componentId,
+      states: { data: 'single' },
+      variants: { phase: 'runtime', theme: 'light' },
+    }),
+    /mate.page-wrapper only supports its declared phase and theme variants/,
+  );
+});
+
 test('mate list leaf adapters expose exact stateful wrapper inputs and fail closed', () => {
   const status = resolveComponentStateAdapter('mate.status-tabs', {
     componentId: 'src/components/MateStatusTabs.tsx#MateStatusTabs',
@@ -7816,6 +12420,131 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
     scenarioKey: 'maximum-supported:selected:orange:toolbar:light',
   });
 
+  const teamFilter = resolveComponentStateAdapter('mate.team-filter-button', {
+    componentId: 'src/components/MateTeamFilterButton.tsx#$default',
+    states: { data: 'single', interactions: 'click' },
+    variants: { layout: 'rail', selection: 'active', theme: 'dark' },
+    interactionTargetId: 'team-filter',
+  });
+  assert.equal(teamFilter.captureSelector, '[data-testid="mate-team-filter-button"]');
+  assert.equal(teamFilter.theme, 'dark');
+  assert.equal(teamFilter.props.favoriteTeamId, 'lg');
+  assert.equal(teamFilter.props.myTeamOnly, true);
+  assert.equal(typeof teamFilter.props.onClick, 'function');
+
+  const popularSearches = resolveComponentStateAdapter('mate.popular-searches-panel', {
+    componentId: 'src/components/MatePopularSearchesPanel.tsx#MatePopularSearchesPanel',
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'term-1',
+  });
+  assert.equal(popularSearches.captureSelector, '[data-testid="mate-popular-searches-panel"]');
+  assert.equal(popularSearches.theme, 'light');
+  assert.deepEqual(popularSearches.props.visualQaStateOverride, {
+    popularTerms: [{ term: '잠실', count: 42, rank: 1 }],
+    queryState: 'success',
+  });
+  assert.equal(typeof popularSearches.props.onTermClick, 'function');
+
+  const recentSearches = resolveComponentStateAdapter('mate.recent-searches-panel', {
+    componentId: 'src/components/MateRecentSearchesPanel.tsx#MateRecentSearchesPanel',
+    states: { data: 'maximum-supported', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'deleted',
+  });
+  assert.equal(recentSearches.captureSelector, '[data-testid="mate-recent-searches-panel"]');
+  assert.deepEqual(recentSearches.props.visualQaStateOverride, {
+    recentSearches: ['잠실', '문학', '수원', '사직', '고척', '대전'],
+    onRemoveRecentSearch: recentSearches.props.visualQaStateOverride.onRemoveRecentSearch,
+    onClearRecentSearches: recentSearches.props.visualQaStateOverride.onClearRecentSearches,
+  });
+  assert.equal(typeof recentSearches.props.onTermClick, 'function');
+
+  const filterSheet = resolveComponentStateAdapter('mate.filter-bottom-sheet', {
+    componentId: 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet',
+    states: { data: 'single', interactions: 'click' },
+    variants: { favoriteTeam: 'with-team', selection: 'idle', theme: 'light' },
+    interactionTargetId: 'team',
+  });
+  assert.equal(filterSheet.captureSelector, '[data-testid="mate-filter-sheet"]');
+  assert.equal(filterSheet.theme, 'light');
+  assert.equal(filterSheet.props.open, true);
+  assert.equal(filterSheet.props.favoriteTeamId, 'lg');
+  assert.equal(filterSheet.props.inputValue, '응원석');
+  assert.deepEqual(filterSheet.props.visualQaStateOverride, {
+    recentSearches: {
+      recentSearches: ['잠실'],
+      onRemoveRecentSearch: filterSheet.props.visualQaStateOverride.recentSearches.onRemoveRecentSearch,
+      onClearRecentSearches: filterSheet.props.visualQaStateOverride.recentSearches.onClearRecentSearches,
+    },
+    popularSearches: {
+      popularTerms: [{ term: '잠실', count: 42, rank: 1 }],
+      queryState: 'success',
+    },
+  });
+
+  const filterSheetEmpty = resolveComponentStateAdapter('mate.filter-bottom-sheet', {
+    componentId: 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet',
+    states: { data: 'empty', interactions: 'default' },
+    variants: { favoriteTeam: 'without-team', selection: 'idle', theme: 'dark' },
+  });
+  assert.equal(filterSheetEmpty.theme, 'dark');
+  assert.equal(filterSheetEmpty.props.favoriteTeamId, null);
+  assert.equal(filterSheetEmpty.props.inputValue, '');
+
+  const detailSeatPanel = resolveComponentStateAdapter('mate.detail-seat-panel', {
+    componentId: 'src/components/MateDetailSeatPanel.tsx#MateDetailSeatPanel',
+    states: { data: 'single', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'photo-0',
+  });
+  assert.equal(detailSeatPanel.captureSelector, '[data-testid="mate-seat-panel"]');
+  assert.equal(detailSeatPanel.props.open, true);
+  assert.equal(detailSeatPanel.props.stadium, '잠실야구장');
+  assert.equal(detailSeatPanel.theme, 'light');
+  assert.equal((detailSeatPanel.props.visualQaStateOverride as { photos: unknown[] }).photos.length, 1);
+
+  const detailQrPanel = resolveComponentStateAdapter('mate.detail-qr-panel', {
+    componentId: 'src/components/MateDetailQrPanel.tsx#MateDetailQrPanel',
+    states: { data: 'manual', interactions: 'default' },
+    variants: { theme: 'dark' },
+  });
+  assert.equal(detailQrPanel.captureSelector, '[data-testid="mate-qr-panel"]');
+  assert.equal(detailQrPanel.props.open, true);
+  assert.equal(detailQrPanel.props.manualCode, 'ABCD-1234');
+  assert.equal(detailQrPanel.props.qrSessionExpiresAt, '2099-05-01T19:30:00+09:00');
+  assert.equal(detailQrPanel.theme, 'dark');
+
+  const detailQrRuntime = resolveComponentStateAdapter('mate.detail-qr-runtime', {
+    componentId: 'src/components/MateDetailQrRuntime.tsx#MateDetailQrRuntime',
+    states: { data: 'available', interactions: 'click' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'open-check-in',
+  });
+  assert.equal(detailQrRuntime.captureSelector, '[data-testid="mate-qr-panel"]');
+  assert.equal(detailQrRuntime.props.partyId, 77);
+  assert.equal(detailQrRuntime.props.canAccessCheckIn, true);
+  assert.equal(
+    (detailQrRuntime.props.visualQaStateOverride as { qrCodeValue: string }).qrCodeValue,
+    'VISUAL-QA-CHECKIN-SESSION',
+  );
+  assert.equal(detailQrRuntime.theme, 'light');
+
+  const detailInfoSections = resolveComponentStateAdapter('mate.detail-info-sections', {
+    componentId: 'src/components/MateDetailInfoSections.tsx#MateDetailInfoSections',
+    states: { data: 'status-completed', interactions: 'click', permissions: 'approved-member' },
+    variants: { phase: 'runtime', theme: 'light' },
+    interactionTargetId: 'write-review',
+  });
+  assert.equal(detailInfoSections.captureSelector, '[data-testid="mate-detail-seat-view-block"]');
+  assert.equal((detailInfoSections.props.party as { status: string }).status, 'COMPLETED');
+  assert.equal(detailInfoSections.props.isApproved, true);
+  assert.equal(
+    (detailInfoSections.props.visualQaStateOverride as { reviewsPhase: string }).reviewsPhase,
+    'runtime',
+  );
+  assert.equal(detailInfoSections.theme, 'light');
+
   assert.throws(
     () => resolveComponentStateAdapter('mate.status-tabs', {
       componentId: 'src/components/MateStatusTabs.tsx#MateStatusTabs',
@@ -7841,6 +12570,86 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
       variants: { layout: 'rail', theme: 'dark' },
     }),
     /지원하지 않는 MateSeatFilterButtons state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.team-filter-button', {
+      componentId: 'src/components/MateTeamFilterButton.tsx#$default',
+      states: { data: 'single', interactions: 'click' },
+      variants: { layout: 'toolbar', selection: 'idle', theme: 'light' },
+      interactionTargetId: 'wrong-target',
+    }),
+    /expected team-filter target/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.popular-searches-panel', {
+      componentId: 'src/components/MatePopularSearchesPanel.tsx#MatePopularSearchesPanel',
+      states: { data: 'empty', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'term-1',
+    }),
+    /지원하지 않는 MatePopularSearchesPanel state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.recent-searches-panel', {
+      componentId: 'src/components/MateRecentSearchesPanel.tsx#MateRecentSearchesPanel',
+      states: { data: 'empty', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'deleted',
+    }),
+    /지원하지 않는 MateRecentSearchesPanel state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.filter-bottom-sheet', {
+      componentId: 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet',
+      states: { data: 'empty', interactions: 'default' },
+      variants: { favoriteTeam: 'without-team', selection: 'active', theme: 'light' },
+    }),
+    /지원하지 않는 MateFilterBottomSheet state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.filter-bottom-sheet', {
+      componentId: 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet',
+      states: { data: 'single', interactions: 'click' },
+      variants: { favoriteTeam: 'with-team', selection: 'idle', theme: 'light' },
+      interactionTargetId: 'unknown',
+    }),
+    /지원하지 않는 MateFilterBottomSheet state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.detail-seat-panel', {
+      componentId: 'src/components/MateDetailSeatPanel.tsx#MateDetailSeatPanel',
+      states: { data: 'empty', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'photo-0',
+    }),
+    /지원하지 않는 MateDetailSeatPanel state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.detail-qr-panel', {
+      componentId: 'src/components/MateDetailQrPanel.tsx#MateDetailQrPanel',
+      states: { data: 'error', interactions: 'click' },
+      variants: { theme: 'light' },
+      interactionTargetId: 'open-check-in',
+    }),
+    /지원하지 않는 Visual QA state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.detail-qr-runtime', {
+      componentId: 'src/components/MateDetailQrRuntime.tsx#MateDetailQrRuntime',
+      states: { data: 'available', interactions: 'click' },
+      variants: { theme: 'dark' },
+      interactionTargetId: 'unknown',
+    }),
+    /지원하지 않는 MateDetailQrRuntime state/,
+  );
+  assert.throws(
+    () => resolveComponentStateAdapter('mate.detail-info-sections', {
+      componentId: 'src/components/MateDetailInfoSections.tsx#MateDetailInfoSections',
+      states: { data: 'single', interactions: 'click', permissions: 'anonymous' },
+      variants: { phase: 'fallback', theme: 'dark' },
+      interactionTargetId: 'write-review',
+    }),
+    /지원하지 않는 MateDetailInfoSections state/,
   );
 });
 
@@ -7994,6 +12803,135 @@ test('module federation fallback control adapters map exact stateful inputs and 
       message,
     );
   }
+});
+
+test('RankingPredictionSharePage adapter isolates its own lazy boundary without duplicating share state', () => {
+  const componentId = 'src/components/RankingPredictionSharePage.tsx#RankingPredictionSharePage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('ranking.share-page'), true);
+
+  const fallback = resolveComponentStateAdapter('ranking.share-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback', theme: 'light' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="ranking-share-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.initialPathname, '/predictions/ranking/share/visual-qa-share/2026');
+  assert.equal(fallback.theme, 'light');
+
+  const resolved = resolveComponentStateAdapter('ranking.share-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved', theme: 'dark' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="ranking-share-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+  assert.equal(resolved.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('ranking.share-page', {
+    componentId: 'src/components/RankingPredictionShare.tsx#RankingPredictionShare',
+    states: {},
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('ranking.share-page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+});
+
+test('UserProfilePage adapter isolates its own lazy boundary without duplicating profile state', () => {
+  const componentId = 'src/components/profile/UserProfilePage.tsx#UserProfilePage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('profile.page'), true);
+
+  const fallback = resolveComponentStateAdapter('profile.page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback', theme: 'light' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="user-profile-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.initialPathname, '/profile/@visual-qa-profile');
+  assert.equal(fallback.theme, 'light');
+
+  const resolved = resolveComponentStateAdapter('profile.page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved', theme: 'dark' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="user-profile-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+  assert.equal(resolved.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('profile.page', {
+    componentId: 'src/components/profile/UserProfile.tsx#UserProfile',
+    states: {},
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('profile.page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+});
+
+test('Prediction page adapter isolates its direct runtime delegation boundary', () => {
+  const componentId = 'src/components/Prediction.tsx#Prediction';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('prediction.page'), true);
+
+  const light = resolveComponentStateAdapter('prediction.page', {
+    componentId,
+    states: {},
+    variants: { theme: 'light' },
+  });
+  assert.equal(light.captureSelector, '[data-testid="prediction-page-runtime-probe"]');
+  assert.ok(light.props.runtimeOverride);
+  assert.equal(light.initialPathname, '/prediction');
+  assert.equal(light.theme, 'light');
+
+  const dark = resolveComponentStateAdapter('prediction.page', {
+    componentId,
+    states: {},
+    variants: { theme: 'dark' },
+  });
+  assert.equal(dark.captureSelector, '[data-testid="prediction-page-runtime-probe"]');
+  assert.equal(dark.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('prediction.page', {
+    componentId: 'src/components/prediction/PredictionRuntime.tsx#PredictionRuntime',
+    states: {},
+    variants: { theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('prediction.page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { theme: 'light' },
+  }));
+});
+
+test('PredictionAnimatedSections adapter binds both tab slots to a deterministic local surface', () => {
+  const componentId = 'src/components/PredictionAnimatedSections.tsx#PredictionAnimatedSections';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('prediction.animated-sections'), true);
+
+  const resolved = resolveComponentStateAdapter('prediction.animated-sections', {
+    componentId,
+    states: {},
+    variants: { theme: 'dark' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="prediction-animated-sections"]');
+  assert.equal(resolved.props.activeTab, 'match');
+  assert.ok(resolved.props.topNotice);
+  assert.ok(resolved.props.matchChildren);
+  assert.ok(resolved.props.rankingChildren);
+  assert.equal(resolved.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('prediction.animated-sections', {
+    componentId,
+    states: { data: 'single' },
+    variants: { theme: 'light' },
+  }));
 });
 
 test('ranking prediction save dialog adapter maps the exact controlled matrix and fails closed', () => {
@@ -9572,6 +14510,42 @@ test('mate create page adapter isolates fallback and resolved runtime fail close
   );
 });
 
+test('MateManagePage adapter isolates its own lazy boundary without duplicating manage state', () => {
+  const componentId = 'src/components/MateManagePage.tsx#MateManagePage';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('mate.manage-page'), true);
+
+  const fallback = resolveComponentStateAdapter('mate.manage-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'fallback', theme: 'light' },
+  });
+  assert.equal(fallback.captureSelector, '[data-testid="mate-manage-route-loading"]');
+  assert.equal(typeof fallback.props.runtimeLoader, 'function');
+  assert.equal(fallback.initialPathname, '/mate/visual-qa-missing-id/manage');
+  assert.equal(fallback.theme, 'light');
+
+  const resolved = resolveComponentStateAdapter('mate.manage-page', {
+    componentId,
+    states: {},
+    variants: { phase: 'resolved', theme: 'dark' },
+  });
+  assert.equal(resolved.captureSelector, '[data-testid="mate-manage-page-runtime-probe"]');
+  assert.ok(resolved.props.runtimeOverride);
+  assert.equal(resolved.props.runtimeLoader, undefined);
+  assert.equal(resolved.theme, 'dark');
+
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-page', {
+    componentId: 'src/components/MateManage.tsx#MateManage',
+    states: {},
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+  assert.throws(() => resolveComponentStateAdapter('mate.manage-page', {
+    componentId,
+    states: { data: 'single' },
+    variants: { phase: 'resolved', theme: 'light' },
+  }));
+});
+
 test('mate detail page adapter isolates fallback and resolved runtime fail closed', () => {
   const componentId = 'src/components/MateDetail.tsx#MateDetail';
   const fallback = resolveComponentStateAdapter('mate.detail-page', {
@@ -10889,5 +15863,85 @@ test('global error root and content adapters fail closed outside the exact stati
       interactionTargetId: 'feedback-failure',
     }),
     /지원하지 않는 GlobalErrorDialogContent state/,
+  );
+});
+
+test('SeatMapFilterBar adapter covers flat and dimensional filter surfaces with executable toggle evidence', () => {
+  const componentId = 'src/components/stadiumSeatMap/SeatMapFilterBar.tsx#SeatMapFilterBar';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('seat-map-filter-bar'), true);
+
+  const flat = resolveComponentStateAdapter('seat-map-filter-bar', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'default' },
+    variants: { layout: 'flat', theme: 'dark' },
+  });
+  assert.equal(flat.theme, 'dark');
+  assert.equal(flat.captureSelector, '[data-vqa-harness-surface]');
+  assert.equal(flat.props.mode, 'dark');
+  assert.equal(flat.props.testIdPrefix, 'visual-qa-seat-map');
+  assert.equal((flat.props.groups as unknown[]).length, 3);
+
+  const dimensional = resolveComponentStateAdapter('seat-map-filter-bar', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { layout: 'dimensional', theme: 'light' },
+    interactionTargetId: 'secondary-toggle',
+  });
+  const groups = dimensional.props.groups as Array<{ filterDimension?: string }>;
+  assert.equal(groups.some((group) => group.filterDimension === 'level'), true);
+  assert.equal(groups.some((group) => group.filterDimension === 'grade'), true);
+  assert.equal(typeof dimensional.props.onChange, 'function');
+  assert.ok(dimensional.companion);
+
+  assert.throws(() => resolveComponentStateAdapter('seat-map-filter-bar', {
+    componentId,
+    states: { data: 'single', interactions: 'click' },
+    variants: { layout: 'flat', theme: 'light' },
+    interactionTargetId: 'secondary-toggle',
+  }), /지원하지 않는 SeatMapFilterBar state/);
+  assert.throws(() => resolveComponentStateAdapter('seat-map-filter-bar', {
+    componentId,
+    states: { data: 'not-declared', interactions: 'default' },
+    variants: { layout: 'flat', theme: 'light' },
+  }));
+});
+
+// prediction-game-powerup-inventory-adapter
+test('PredictionGamePowerupInventory seeds both hook queries per inventory variant and fails closed', () => {
+  const componentId = 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory';
+  const resolve = (inventory: string, theme = 'light') => resolveComponentStateAdapter(
+    'prediction.game-powerup-inventory',
+    { componentId, states: {}, variants: { inventory, theme } },
+  );
+
+  assert.ok(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('prediction.game-powerup-inventory'));
+
+  const active = resolve('active', 'dark');
+  assert.deepEqual(active.props, { gameId: 'visual-qa-game' });
+  assert.equal(active.theme, 'dark');
+  assert.equal(active.captureSelector, '[data-testid="prediction-game-powerup-inventory"]');
+  assert.equal(active.queryData?.length, 2);
+  assert.deepEqual(active.queryData?.[0].data, { GOLDEN_GLOVE: 2, MAGIC_BAT: 1, SCOUTER: 3 });
+  assert.deepEqual(active.queryData?.[1].data, [{ type: 'MAGIC_BAT', gameId: 'visual-qa-game' }]);
+
+  assert.deepEqual(resolve('empty').queryData?.[1].data, []);
+  assert.deepEqual(
+    resolve('maximum-supported').queryData?.[0].data,
+    {
+      GOLDEN_GLOVE: Number.MAX_SAFE_INTEGER,
+      MAGIC_BAT: Number.MAX_SAFE_INTEGER,
+      SCOUTER: Number.MAX_SAFE_INTEGER,
+    },
+  );
+
+  assert.throws(() => resolve('unknown'), /지원하지 않는 Visual QA variant: inventory=unknown/);
+  assert.throws(() => resolve('empty', 'sepia'), /지원하지 않는 Visual QA variant: theme=sepia/);
+  assert.throws(
+    () => resolveComponentStateAdapter('prediction.game-powerup-inventory', {
+      componentId: 'src/components/retro/PowerUpInventory.tsx#PowerUpInventory',
+      states: {},
+      variants: { inventory: 'empty', theme: 'light' },
+    }),
+    /only supports PredictionGamePowerupInventory/,
   );
 });

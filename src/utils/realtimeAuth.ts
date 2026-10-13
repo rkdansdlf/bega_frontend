@@ -1,3 +1,5 @@
+import { AuthOperationSupersededError, assertAuthOperationCurrent, getAuthOperationRevision } from '../api/authSessionGeneration';
+
 type RealtimeAuthExpiredDetail = {
   cause: 'realtime_auth_failed';
   requestUrl: '/ws';
@@ -73,10 +75,16 @@ export const ensureRealtimeAuthSession = async (
   const preflightKey: RealtimeAuthPreflightKey = useInjectedProfile ? 'default' : 'network';
 
   if (!realtimeAuthPreflightRequests[preflightKey]) {
+    const revision = getAuthOperationRevision();
     realtimeAuthPreflightRequests[preflightKey] = loadAuthModule()
-      .then(({ fetchCurrentUserProfile }) => fetchCurrentUserProfile({ useInjectedProfile }))
-      .then(() => true)
+      .then(({ fetchCurrentUserProfile }) => {
+        assertAuthOperationCurrent(revision);
+        return fetchCurrentUserProfile({ useInjectedProfile });
+      })
+      .then(() => { assertAuthOperationCurrent(revision); return true; })
       .catch((error: unknown) => {
+        if (error instanceof AuthOperationSupersededError) return false;
+        try { assertAuthOperationCurrent(revision); } catch { return false; }
         if (getErrorStatus(error) === 401) {
           dispatchRealtimeAuthExpired(buildExpiredDetail(error));
           return false;

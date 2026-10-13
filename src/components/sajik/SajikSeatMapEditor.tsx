@@ -695,7 +695,7 @@ export default function SajikSeatMapEditor({ stateOverride }: SajikSeatMapEditor
                   data-testid="sajik-editor-section-search"
                   value={query}
                   onChange={(event) => handleQueryChange(event.target.value)}
-                  className="h-10 w-full border border-zinc-300 bg-white pl-9 pr-3 text-sm font-semibold outline-none ring-cyan-500 focus:ring-2"
+                  className="h-11 w-full border border-zinc-300 bg-white pl-9 pr-3 text-sm font-semibold outline-none ring-cyan-500 focus:ring-2 sm:h-10"
                   placeholder="sectionId, category, marker"
                 />
               </div>

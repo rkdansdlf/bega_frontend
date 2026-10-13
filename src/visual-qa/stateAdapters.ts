@@ -6,11 +6,83 @@ import {
   useEffect,
   useState,
   type ComponentProps,
+  type FormEvent,
   type ReactNode,
 } from 'react';
+import type { UseMutationResult } from '@tanstack/react-query';
 import { toast, type ToastOptions } from 'sonner';
 
 import type { AdminStadium, Place, PlaceFormData } from '../api/admin';
+import type { CheerPost, Comment as CheerComment, EmbeddedPost, LinkedContent } from '../api/cheerApi';
+import type { SeatViewPhoto } from '../api/diary';
+import type { SeatViewPhotosVisualQaStateOverride } from '../hooks/useSeatViewPhotos';
+import type { CoachAnalyzeResponse, CoachRiskItem } from '../api/coach';
+import type { CheerCommunityPulseVisualQaStateOverride } from '../components/CheerCommunityPulse';
+import type { CheerComposerRuntimeVisualQaStateOverride } from '../components/CheerComposerRuntime';
+import type { CheerHotVisualQaStateOverride } from '../components/CheerHot';
+import type { CheerSidebarPanelsVisualQaStateOverride } from '../components/CheerSidebarPanels';
+import type { CheerFeedRuntimeContentVisualQaStateOverride } from '../components/CheerFeedRuntimeContent';
+import type { CheerLivePanelVisualQaStateOverride } from '../components/CheerLivePanel';
+import type { CheerCardInteractionsRuntimeVisualQaStateOverride } from '../components/CheerCardInteractionsRuntime';
+import type { CheerBookmarksVisualQaStateOverride } from '../components/CheerBookmarks';
+import type { CheerBookmarksPageProps } from '../components/CheerBookmarksPage';
+import { useConfirmDialog } from '../components/contexts/confirmDialogCore';
+import { useErrorModal } from '../components/contexts/ErrorModalContext';
+import type { ConfirmOptions } from '../components/contexts/confirmDialogCore';
+import type { CheerDetailArticleRuntimeProps } from '../components/CheerDetailArticleRuntime';
+import type {
+  CheerDetailContentProps,
+  CheerDetailContentVisualQaStateOverride,
+} from '../components/CheerDetailContent';
+import type { CheerDetailVisualQaStateOverride } from '../components/CheerDetail';
+import type { CheerEditVisualQaStateOverride } from '../components/CheerEdit';
+import type { CheerRuntimeVisualQaStateOverride } from '../components/CheerRuntime';
+import type { DmInboxRuntimeVisualQaStateOverride } from '../components/dm/DmInboxRuntime';
+import type { MateManageContentRuntimeProps } from '../components/MateManageContentRuntime';
+import type { MateManageEditFormState } from '../components/MateManageContentRuntime';
+import type { MateManageEditPanelProps } from '../components/MateManageEditPanel';
+import type { MateManageVisualQaStateOverride } from '../components/MateManage';
+import type { MateMyPartiesPanelVisualQaStateOverride } from '../components/MateMyPartiesPanel';
+import type { AccountSettingsAdvancedRuntimeProps } from '../components/mypage/AccountSettingsAdvancedRuntime';
+import type { AlertsSectionProps } from '../components/mypage/AlertsSection';
+import type {
+  AccountSettingsSectionProps,
+  AccountSettingsSectionVisualQaStateOverride,
+} from '../components/mypage/AccountSettingsSection';
+import type { BlockedUsersSectionVisualQaStateOverride } from '../components/mypage/BlockedUsersSection';
+import type { DiaryEditModeRuntimeProps } from '../components/mypage/DiaryEditModeRuntime';
+import type {
+  DiaryReadModeProps,
+  DiaryViewSectionProps,
+} from '../components/mypage/DiaryformRuntime';
+import type {
+  AccountSettingsSecurityRuntimeProps,
+  AccountSettingsSecurityRuntimeVisualQaStateOverride,
+} from '../components/mypage/AccountSettingsSecurityRuntime';
+import type {
+  MateDetailContentRuntimeProps,
+  MateDetailContentRuntimeVisualQaStateOverride,
+} from '../components/MateDetailContentRuntime';
+import type { MateDetailRuntimeVisualQaStateOverride } from '../components/MateDetailRuntime';
+import type {
+  MateListControlsRuntimeController,
+  MateListControlsRuntimeProps,
+} from '../components/MateListControlsRuntime';
+import type {
+  CheerDetailCommentsPanelProps,
+  CheerDetailCommentsPanelVisualQaStateOverride,
+} from '../components/CheerDetailCommentsPanel';
+import type {
+  CheerWriteModalProps,
+  CheerWriteModalVisualQaStateOverride,
+  CheerWritePayload,
+} from '../components/CheerWriteModal';
+import type { CommentModalProps, CommentModalVisualQaStateOverride } from '../components/CommentModal';
+import type { QuoteRepostEditorVisualQaStateOverride } from '../components/QuoteRepostEditor';
+import type { ReportModalVisualQaStateOverride } from '../components/ReportModal';
+import type { MateDetailQrRuntimeVisualQaStateOverride } from '../components/MateDetailQrRuntime';
+import type { MateDetailInfoSectionsVisualQaStateOverride } from '../components/MateDetailInfoSections';
+import type { LeaderboardEntry } from '../api/leaderboard';
 import { AdminCoachAutoBriefOpsPanel } from '../components/admin/AdminCoachAutoBriefOpsPanel';
 import type AdminDeletePlaceDialogContentComponent from '../components/admin/AdminDeletePlaceDialogContent';
 import type AdminPlaceDialogContentComponent from '../components/admin/AdminPlaceDialogContent';
@@ -33,7 +105,11 @@ import {
   StadiumSeatMapErrorFallback,
 } from '../components/StadiumSeatMapStates';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
+import PredictionMatchTabEmptyState from '../components/prediction/PredictionMatchTabEmptyState';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { getViewerQueryScope } from '../utils/viewerQueryScope';
 import type { SeatViewDirectUploadVisualQaStateOverride } from '../components/stadiumSeatMap/SeatViewDirectUploadModal';
+import type { SeatMapFilterGroup } from '../components/stadiumSeatMap/seatMapCommonTypes';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
 import {
   CardAction,
@@ -53,7 +129,25 @@ import {
 } from '../components/ui/table';
 import { FRANCHISE_TEAM_IDS } from '../constants/teams';
 import { TEAM_DATA_BASE } from '../constants/teamIdentity';
+import { CHANGWON_BLOCKS } from '../data/changwonSeatData';
+import type { ChangwonSeatMapStateOverride } from '../components/changwon/ChangwonSeatMap';
+import { DAEGU_CANONICAL_BLOCKS } from '../data/daeguCanonicalSeatMap';
+import type { DaeguSeatMapStateOverride } from '../components/daegu/DaeguSeatMap';
+import { DAEJEON_BLOCKS } from '../data/daejeonSeatData';
+import type { DaejeonSeatMapStateOverride } from '../components/daejeon/DaejeonSeatMap';
+import { GWANGJU_BLOCKS } from '../data/gwangjuSeatData';
+import type { GwangjuSeatMapStateOverride } from '../components/gwangju/GwangjuSeatMap';
+import { GOCHEOK_BLOCKS } from '../data/gocheokSeatData';
+import type { GocheokSeatMapStateOverride } from '../components/gocheok/GocheokSeatMap';
+import { INCHEON_BLOCKS } from '../data/incheonSeatData';
+import type { IncheonSeatMapStateOverride } from '../components/incheon/IncheonSeatMap';
+import { JAMSIL_BLOCKS } from '../data/jamsilSeatData';
+import type { JamsilSeatMapStateOverride } from '../components/jamsil/JamsilSeatMap';
 import { SAJIK_CANONICAL_BLOCKS } from '../data/sajikCanonicalSeatMap';
+import { SUWON_BLOCKS } from '../data/suwonSeatData';
+import type { SuwonSeatMapStateOverride } from '../components/suwon/SuwonSeatMap';
+import type { CategoryType, Place as StadiumPlace, Stadium } from '../types/stadium';
+import type { StadiumGuideRuntimeVisualQaStateOverride } from '../components/StadiumGuideRuntime';
 import type {
   AdminClientErrorAlertNotification,
   AdminClientErrorDashboard,
@@ -79,7 +173,45 @@ import type {
   AdminUser,
 } from '../types/admin';
 import type { NotificationData, NotificationType } from '../types/notification';
-import type { Game } from '../types/home';
+import type { FeaturedMateCard, Game } from '../types/home';
+import type { Application, MateParty, MatePopularSearchTerm, Party, PartyReview } from '../types/mate';
+import type {
+  DiaryEntry,
+  DiaryFormData,
+  DiaryPhotoFile,
+  DiaryScopedStatistics,
+  DiaryStatistics,
+  Game as DiaryGame,
+  SaveDiaryRequest,
+  SeatViewCandidate,
+} from '../types/diary';
+import type { BrowserNotificationPermission } from '../utils/browserNotificationPermission';
+import type { UserFollowSummary } from '../api/followShared';
+import type { DiaryViewVisualQaStateOverride } from '../hooks/useDiaryView';
+import type { MyCheerPostsVisualQaStateOverride } from '../hooks/useMyCheerPosts';
+import type { DiaryStatisticsVisualQaStateOverride } from '../hooks/useDiaryStatistics';
+import type MyPageSeasonTimelineRuntimeComponent from '../components/mypage/MyPageSeasonTimelineRuntime';
+import type { MyPageViewRuntimeProps } from '../components/mypage/MyPageViewRuntime';
+import type { ProfileEditProfileRuntimeProps } from '../components/mypage/ProfileEditProfileRuntime';
+import type { ProfileEditSectionRuntimeProps } from '../components/mypage/ProfileEditSectionRuntime';
+import type {
+  DeviceSessionItem,
+  NicknameCheckState,
+  SecurityEventItem,
+  TrustedDeviceItem,
+  UserProviderDto,
+} from '../types/profile';
+import type { Game as PredictionGame, GameDetail, GameLiveSnapshot, GameRelayEvent } from '../types/prediction';
+import type { ErrorData } from '../types/error';
+import type { DmInboxRoom } from '../types/dm';
+import type { ViewMode } from '../types/profile';
+import TestError from '../components/TestError';
+import type {
+  ChatFavoriteItem,
+  ChatQueueStatus,
+  ChatSessionSummary,
+  Message,
+} from '../types/chatbot';
 import { MANUAL_BASEBALL_DATA_REQUIRED_CODE } from '../utils/manualBaseballDataContract';
 import skeletonUsageContract from '../../contracts/visual-qa-skeleton-usages-v1.json';
 import type { VisualQaSemanticHost } from './semanticHost';
@@ -261,7 +393,9 @@ export type ComponentStateAdapterContext = {
 };
 
 export type ComponentStateAdapterResult = {
-  props: Record<string, unknown>;
+  // Adapter props intentionally vary by component; concrete builders retain
+  // the component prop type before crossing the dynamic harness boundary.
+  props: any;
   captureSelector?: string;
   companion?: ReactNode;
   expectedHash?: string;
@@ -281,9 +415,11 @@ export type ComponentStateAdapterResult = {
       bio?: string | null;
       cheerPoints?: number;
       hasPassword?: boolean;
-    };
+    } | null;
   };
   initialPathname?: string;
+  /** Seeded into the harness QueryClient before render, for components that read hook-backed data. */
+  queryData?: ReadonlyArray<{ queryKey: readonly unknown[]; data: unknown }>;
   semanticHost?: VisualQaSemanticHost;
   surfaceClassName?: string;
   theme?: 'light' | 'dark';
@@ -1749,6 +1885,97 @@ const sajikSeatMapInteractions = {
   selected: true,
 };
 
+const changwonSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+};
+
+const daeguSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+};
+
+const gwangjuSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+};
+
+const daejeonSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+};
+
+const gocheokSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+  'tab-change': true,
+};
+
+const incheonSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+  'tab-change': true,
+};
+
+const jamsilSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+  'tab-change': true,
+};
+
+const suwonSeatMapInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  'keyboard-navigation': true,
+  open: true,
+  pressed: true,
+  selected: true,
+  'tab-change': true,
+};
+
 const sajikSeatMapSvgInteractions = {
   default: true,
   'focus-visible': true,
@@ -1756,6 +1983,47 @@ const sajikSeatMapSvgInteractions = {
   'keyboard-navigation': true,
   pressed: true,
 };
+
+const gwangjuSeatMapSvgInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  pressed: true,
+  selected: true,
+  'keyboard-navigation': true,
+};
+
+const changwonSeatMapSvgInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  pressed: true,
+  selected: true,
+  'keyboard-navigation': true,
+};
+
+const gocheokSeatMapSvgInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  pressed: true,
+  selected: true,
+  'keyboard-navigation': true,
+};
+
+const daejeonSeatMapSvgInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  pressed: true,
+  selected: true,
+  'keyboard-navigation': true,
+};
+
+const daeguSeatMapSvgInteractions = daejeonSeatMapSvgInteractions;
+const incheonSeatMapSvgInteractions = daejeonSeatMapSvgInteractions;
+const jamsilSeatMapSvgInteractions = daejeonSeatMapSvgInteractions;
+const suwonSeatMapSvgInteractions = daejeonSeatMapSvgInteractions;
 
 const sajikSeatMapEditorInteractions = {
   default: true,
@@ -1766,8 +2034,41 @@ const sajikSeatMapEditorInteractions = {
   selected: true,
 };
 
+const gwangjuSeatMapEditorInteractions = {
+  default: true,
+  'focus-visible': true,
+  hover: true,
+  input: true,
+  pressed: true,
+  selected: true,
+};
+
 const sajikSvgReferenceBlock = SAJIK_CANONICAL_BLOCKS.find((block) => block.id === 'sajik-canonical-322')
   ?? SAJIK_CANONICAL_BLOCKS[0];
+
+const gwangjuSvgReferenceBlock = GWANGJU_BLOCKS.find((block) => block.id === 'k7-121')
+  ?? GWANGJU_BLOCKS[0];
+
+const changwonSvgReferenceBlock = CHANGWON_BLOCKS.find((block) => block.id === 'changwon-block-121')
+  ?? CHANGWON_BLOCKS[0];
+
+const gocheokSvgReferenceBlock = GOCHEOK_BLOCKS.find((block) => block.id === 'gocheok-d07')
+  ?? GOCHEOK_BLOCKS[0];
+
+const daejeonSvgReferenceBlock = DAEJEON_BLOCKS.find((block) => block.category === 'TABLE')
+  ?? DAEJEON_BLOCKS[0];
+
+const daeguSvgReferenceBlock = DAEGU_CANONICAL_BLOCKS.find((block) => block.id === 'daegu-away-cheering-1-1')
+  ?? DAEGU_CANONICAL_BLOCKS[0];
+
+const incheonSvgReferenceBlock = INCHEON_BLOCKS.find((block) => block.id === 'incheon-114b')
+  ?? INCHEON_BLOCKS[0];
+
+const jamsilSvgReferenceBlock = JAMSIL_BLOCKS.find((block) => block.id === 'block-101')
+  ?? JAMSIL_BLOCKS[0];
+
+const suwonSvgReferenceBlock = SUWON_BLOCKS.find((block) => block.id === 'suwon-101')
+  ?? SUWON_BLOCKS[0];
 
 const retroPowerupCountValues = {
   0: 0,
@@ -3013,6 +3314,163 @@ const adSlotContent = {
     { className: 'min-w-0 break-all text-body text-foreground' },
     `AD-CONTENT-${'X'.repeat(200)}`,
   ),
+};
+
+const deferredMarkdownCopy = {
+  empty: '',
+  'long-korean': '# 모바일 안내\n\n좁은 화면에서도 제목과 본문이 자연스럽게 줄바꿈되고, 긴 한국어 설명이 카드 밖으로 넘치지 않아야 합니다.',
+  single: '## 경기 안내\n\n오늘의 경기와 응원 정보를 확인하세요.',
+  'unbroken-token': `VISUAL-QA-MARKDOWN-${'X'.repeat(180)}`,
+} as const;
+
+const swipeToRevealCopy = {
+  'long-korean': '모바일 저장 목록에서 여러 줄로 표시되는 긴 응원글 제목과 보조 설명입니다.',
+  single: '저장된 응원글',
+  'unbroken-token': `SAVED-POST-${'X'.repeat(180)}`,
+} as const;
+
+const coachVerdictCopy = {
+  empty: '',
+  single: '수비 간격을 먼저 안정시키면 경기 후반의 실점을 줄일 수 있습니다.',
+  'long-korean': '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 코치 메모입니다. 경기 흐름과 다음 행동을 함께 설명해 카드 밖으로 넘치지 않는지 확인합니다.',
+} as const;
+
+const coachRiskFixtures: Record<string, CoachRiskItem[]> = {
+  empty: [],
+  single: [
+    {
+      area: '수비',
+      description: '내야 수비 간격을 좁혀야 합니다.',
+      impact: '수비 집중력',
+      impact_to: 'home',
+      inning_start: 3,
+      inning_end: 4,
+      level: 0,
+    },
+    {
+      area: '주루',
+      description: '상대의 빠른 주자를 견제해야 합니다.',
+      impact: '도루 시도',
+      impact_to: 'away',
+      inning_label: '5회',
+      level: 1,
+    },
+  ],
+  'long-korean': [
+    {
+      area: '선발 투구',
+      description: '긴 설명이 들어간 위험도 상태에서도 회차와 영향 대상이 안전하게 줄바꿈되어야 합니다.',
+      impact: '긴 이닝 운영 설명',
+      impact_to: 'both',
+      inning_start: 1,
+      inning_end: 6,
+      level: 0,
+    },
+    {
+      area: '불펜 운용',
+      description: '모바일 카드에서 긴 한국어 위험 설명이 영역 밖으로 넘치지 않아야 합니다.',
+      impact: '교체 타이밍',
+      impact_to: 'home',
+      inning_label: '7회 이후',
+      level: 1,
+    },
+  ],
+  'maximum-supported': Array.from({ length: 6 }, (_, index) => ({
+    area: `최대 지원 위험 ${index + 1}`,
+    description: `최대 지원 상태에서 표시되는 위험 설명 ${index + 1}`,
+    impact: index % 2 === 0 ? '홈 변수' : '원정 변수',
+    impact_to: index % 3 === 0 ? 'home' : index % 3 === 1 ? 'away' : 'both',
+    inning_label: `${index + 1}회`,
+    level: (index % 3) as 0 | 1 | 2,
+  })),
+};
+
+const gameSummaryTimelineFixtures = {
+  empty: [],
+  single: [
+    {
+      type: '결승타',
+      playerName: '합성 타자',
+      detail: '7회 결승타로 경기 흐름이 바뀌었습니다.',
+      groupTitle: '7회',
+      _index: 0,
+      _inning: 7,
+    },
+    {
+      type: '호수비',
+      playerName: '합성 수비수',
+      detail: '위기 상황에서 실점을 막았습니다.',
+      groupTitle: '8회',
+      _index: 1,
+      _inning: 8,
+    },
+  ],
+  'long-korean': [
+    {
+      type: '결승타',
+      playerName: '모바일 화면에서 여러 줄로 표시되어야 하는 합성 타자 이름',
+      detail: '긴 한국어 경기 기록 설명이 카드와 타임라인 밖으로 넘치지 않아야 합니다.',
+      groupTitle: '10회',
+      _index: 0,
+      _inning: 10,
+    },
+  ],
+  'maximum-supported': Array.from({ length: 8 }, (_, index) => ({
+    type: index === 0 ? '결승타' : '주요 기록',
+    playerName: `합성 선수 ${index + 1}`,
+    detail: `밀집 상태의 주요 기록 설명 ${index + 1}`,
+    groupTitle: `${index + 1}회`,
+    _index: index,
+    _inning: index + 1,
+  })),
+} as const;
+
+const liveRelayTimelineFixtures: Record<string, GameRelayEvent[]> = {
+  empty: [],
+  single: [{
+    relayId: 1,
+    inning: 3,
+    inningHalf: 'TOP',
+    pitcherName: '합성 투수',
+    batterName: '합성 타자',
+    playDescription: '볼넷으로 주자가 출루했습니다.',
+    eventType: '주자 출루',
+    result: '볼넷',
+    createdAt: '2026-09-19T18:30:00+09:00',
+  }],
+  'long-korean': [{
+    relayId: 2,
+    inning: 9,
+    inningHalf: 'BOTTOM',
+    pitcherName: '모바일 화면에서 줄바꿈되어야 하는 긴 합성 투수 이름',
+    batterName: '모바일 화면에서 줄바꿈되어야 하는 긴 합성 타자 이름',
+    playDescription: '긴 한국어 문자중계 설명이 작은 화면에서도 영역 밖으로 넘치지 않아야 합니다.',
+    eventType: '경기 흐름 안내',
+    result: '합성 결과',
+    updatedAt: '2026-09-19T20:45:00+09:00',
+  }],
+  'maximum-supported': Array.from({ length: 12 }, (_, index) => ({
+    relayId: index + 10,
+    inning: (index % 9) + 1,
+    inningHalf: index % 2 === 0 ? 'TOP' : 'BOTTOM',
+    pitcherName: `합성 투수 ${index + 1}`,
+    batterName: `합성 타자 ${index + 1}`,
+    playDescription: `밀집 상태 문자중계 설명 ${index + 1}`,
+    eventType: index % 2 === 0 ? '투구 결과' : '타격 결과',
+    result: index % 2 === 0 ? '스트라이크' : '안타',
+    createdAt: '2026-09-19T19:00:00+09:00',
+  })),
+  'manual-required': [],
+};
+
+const homeRecoveryManualRequest = {
+  scope: 'home-bootstrap',
+  missingItems: [
+    { key: 'games', label: '오늘 경기' },
+    { key: 'scheduled-games', label: '예정 경기' },
+  ],
+  operatorMessage: '운영자가 내부 기준 자료를 확인한 뒤 다시 제공해야 합니다.',
+  blocking: true,
 };
 
 const ticketPreviewDataUrl = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"%3E%3Crect width="640" height="360" rx="24" fill="%23f1f5f9"/%3E%3Cpath d="M48 72h544v216H48z" fill="%23ffffff" stroke="%231f5c4a" stroke-width="8"/%3E%3Ctext x="320" y="180" text-anchor="middle" dominant-baseline="middle" font-size="42" font-family="sans-serif" fill="%231f5c4a"%3EVISUAL QA TICKET%3C/text%3E%3C/svg%3E';
@@ -4845,9 +5303,318 @@ const buildVisualQaGlobalErrorProps = (
 
 const HOME_GAME_CARD_COMPONENT_ID = 'src/components/home/HomeGameCard.tsx#HomeGameCard';
 const HOME_MATCH_PANEL_COMPONENT_ID = 'src/components/home/HomeMatchPanel.tsx#HomeMatchPanel';
+const HOME_SECONDARY_PANELS_COMPONENT_ID = 'src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels';
+const HOME_SECONDARY_PANELS_CONTAINER_COMPONENT_ID = 'src/components/home/HomeSecondaryPanelsContainer.tsx#HomeSecondaryPanelsContainer';
 const HOME_RUNTIME_COMPONENT_ID = 'src/components/HomeRuntime.tsx#HomeRuntime';
+const HOME_WRAPPER_COMPONENT_ID = 'src/components/Home.tsx#Home';
+const CHEER_WRAPPER_COMPONENT_ID = 'src/components/Cheer.tsx#Cheer';
+const CHEER_RUNTIME_COMPONENT_ID = 'src/components/CheerRuntime.tsx#CheerRuntime';
+const CHEER_DETAIL_COMPONENT_ID = 'src/components/CheerDetail.tsx#CheerDetail';
+const CHEER_DETAIL_PAGE_COMPONENT_ID = 'src/components/CheerDetailPage.tsx#CheerDetailPage';
+const CHEER_EDIT_COMPONENT_ID = 'src/components/CheerEdit.tsx#CheerEdit';
+const CHEER_EDIT_PAGE_COMPONENT_ID = 'src/components/CheerEditPage.tsx#CheerEditPage';
+const DM_PAGE_COMPONENT_ID = 'src/components/DirectMessagePage.tsx#DirectMessagePage';
+const DIRECT_MESSAGE_RUNTIME_COMPONENT_ID = 'src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime';
+const DM_INBOX_PAGE_COMPONENT_ID = 'src/components/DmInboxPage.tsx#DmInboxPage';
+const DM_INBOX_RUNTIME_COMPONENT_ID = 'src/components/dm/DmInboxRuntime.tsx#DmInboxRuntime';
+const MATE_GUIDE_PANEL_COMPONENT_ID = 'src/components/MateGuidePanelRuntime.tsx#MateGuidePanelRuntime';
+const MY_PAGE_SIDEBAR_MORE_COMPONENT_ID = 'src/components/mypage/MyPageSidebarMoreRuntime.tsx#MyPageSidebarMoreRuntime';
+const MY_PAGE_PROFILE_CARD_COMPONENT_ID = 'src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime';
+const MY_PAGE_SIDEBAR_COMPONENT_ID = 'src/components/mypage/MyPageSidebarRuntime.tsx#MyPageSidebarRuntime';
+const MATE_RESULTS_COMPONENT_ID = 'src/components/MateResultsRuntime.tsx#$default';
+const MATE_MANAGE_APPLICATIONS_COMPONENT_ID = 'src/components/MateManageApplicationsRuntime.tsx#MateManageApplicationsRuntime';
+const MATE_MANAGE_OVERVIEW_COMPONENT_ID = 'src/components/MateManageOverviewRuntime.tsx#MateManageOverviewRuntime';
+const MATE_MANAGE_CONTENT_COMPONENT_ID = 'src/components/MateManageContentRuntime.tsx#MateManageContentRuntime';
+const MATE_MANAGE_EDIT_PANEL_COMPONENT_ID = 'src/components/MateManageEditPanel.tsx#MateManageEditPanel';
+const MATE_MANAGE_COMPONENT_ID = 'src/components/MateManage.tsx#MateManage';
+const MATE_MY_PARTIES_PANEL_COMPONENT_ID = 'src/components/MateMyPartiesPanel.tsx#MateMyPartiesPanel';
+const ACCOUNT_SETTINGS_ADVANCED_RUNTIME_COMPONENT_ID = 'src/components/mypage/AccountSettingsAdvancedRuntime.tsx#AccountSettingsAdvancedRuntime';
+const ACCOUNT_SETTINGS_SECURITY_RUNTIME_COMPONENT_ID = 'src/components/mypage/AccountSettingsSecurityRuntime.tsx#AccountSettingsSecurityRuntime';
+const ACCOUNT_SETTINGS_SECTION_COMPONENT_ID = 'src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection';
+const MATE_DETAIL_CONTENT_COMPONENT_ID = 'src/components/MateDetailContentRuntime.tsx#MateDetailContentRuntime';
+const MATE_DETAIL_RUNTIME_COMPONENT_ID = 'src/components/MateDetailRuntime.tsx#MateDetailRuntime';
+const MATE_LIST_CONTROLS_RUNTIME_COMPONENT_ID = 'src/components/MateListControlsRuntime.tsx#MateListControlsRuntime';
+const COACH_BRIEFING_COMPONENT_ID = 'src/components/CoachBriefing.tsx#CoachBriefing';
+const MATE_PAGE_WRAPPER_COMPONENT_ID = 'src/components/MatePage.tsx#MatePage';
+const MYPAGE_WRAPPER_COMPONENT_ID = 'src/components/MyPage.tsx#MyPage';
+const MATE_MANAGE_PAGE_COMPONENT_ID = 'src/components/MateManagePage.tsx#MateManagePage';
+const RANKING_SHARE_PAGE_COMPONENT_ID = 'src/components/RankingPredictionSharePage.tsx#RankingPredictionSharePage';
+const USER_PROFILE_PAGE_COMPONENT_ID = 'src/components/profile/UserProfilePage.tsx#UserProfilePage';
+const PREDICTION_PAGE_COMPONENT_ID = 'src/components/Prediction.tsx#Prediction';
+const PREDICTION_ANIMATED_SECTIONS_COMPONENT_ID = 'src/components/PredictionAnimatedSections.tsx#PredictionAnimatedSections';
+const MATE_PARTY_CARD_COMPONENT_ID = 'src/components/MatePartyCard.tsx#$default';
+const HOME_DEFERRED_SURFACES_COMPONENT_ID = 'src/components/home/HomeDeferredSurfaces.tsx#HomeDeferredSurfaces';
 const HOME_GAME_CARD_INTERACTION_EVENT = 'visual-qa:home-game-card-interaction';
 const HOME_MATCH_PANEL_INTERACTION_EVENT = 'visual-qa:home-match-panel-interaction';
+const HOME_SECONDARY_PANELS_INTERACTION_EVENT = 'visual-qa:home-secondary-panels-interaction';
+const HOME_PULL_TO_REFRESH_INTERACTION_EVENT = 'visual-qa:home-pull-to-refresh-interaction';
+const COACH_ANALYSIS_DIALOG_INTERACTION_EVENT = 'visual-qa:coach-analysis-dialog-interaction';
+const COACH_ANALYSIS_RESULT_RUNTIME_INTERACTION_EVENT = 'visual-qa:coach-analysis-result-runtime-interaction';
+const CONFIRM_DIALOG_PROVIDER_INTERACTION_EVENT = 'visual-qa:confirm-dialog-provider-interaction';
+const CONFIRM_DIALOG_RENDERER_INTERACTION_EVENT = 'visual-qa:confirm-dialog-renderer-interaction';
+const ERROR_MODAL_PROVIDER_INTERACTION_EVENT = 'visual-qa:error-modal-provider-interaction';
+const DM_INBOX_RUNTIME_INTERACTION_EVENT = 'visual-qa:dm-inbox-runtime-interaction';
+const MATE_GUIDE_PANEL_INTERACTION_EVENT = 'visual-qa:mate-guide-panel-interaction';
+const MY_PAGE_SIDEBAR_MORE_INTERACTION_EVENT = 'visual-qa:mypage-sidebar-more-interaction';
+const MY_PAGE_PROFILE_CARD_INTERACTION_EVENT = 'visual-qa:mypage-profile-card-interaction';
+const MY_PAGE_SIDEBAR_INTERACTION_EVENT = 'visual-qa:mypage-sidebar-interaction';
+const MATE_RESULTS_INTERACTION_EVENT = 'visual-qa:mate-results-interaction';
+const MATE_MANAGE_APPLICATIONS_INTERACTION_EVENT = 'visual-qa:mate-manage-applications-interaction';
+const MATE_MANAGE_OVERVIEW_INTERACTION_EVENT = 'visual-qa:mate-manage-overview-interaction';
+const MATE_MANAGE_CONTENT_INTERACTION_EVENT = 'visual-qa:mate-manage-content-interaction';
+const MATE_MANAGE_EDIT_PANEL_INTERACTION_EVENT = 'visual-qa:mate-manage-edit-panel-interaction';
+const MATE_MANAGE_INTERACTION_EVENT = 'visual-qa:mate-manage-interaction';
+const MATE_MY_PARTIES_PANEL_INTERACTION_EVENT = 'visual-qa:mate-my-parties-panel-interaction';
+const ACCOUNT_SETTINGS_ADVANCED_RUNTIME_INTERACTION_EVENT = 'visual-qa:account-settings-advanced-runtime-interaction';
+const ACCOUNT_SETTINGS_SECURITY_RUNTIME_INTERACTION_EVENT = 'visual-qa:account-settings-security-runtime-interaction';
+const ACCOUNT_SETTINGS_SECTION_INTERACTION_EVENT = 'visual-qa:account-settings-section-interaction';
+const MATE_DETAIL_CONTENT_INTERACTION_EVENT = 'visual-qa:mate-detail-content-interaction';
+const MATE_LIST_CONTROLS_RUNTIME_INTERACTION_EVENT = 'visual-qa:mate-list-controls-runtime-interaction';
+const MATE_VIEW_TOGGLE_INTERACTION_EVENT = 'visual-qa:mate-view-toggle-interaction';
+const MATE_TEAM_FILTER_INTERACTION_EVENT = 'visual-qa:mate-team-filter-interaction';
+const MATE_POPULAR_SEARCHES_INTERACTION_EVENT = 'visual-qa:mate-popular-searches-interaction';
+const MATE_RECENT_SEARCHES_INTERACTION_EVENT = 'visual-qa:mate-recent-searches-interaction';
+const MATE_PARTY_CARD_INTERACTION_EVENT = 'visual-qa:mate-party-card-interaction';
+const MATE_FILTER_BOTTOM_SHEET_INTERACTION_EVENT = 'visual-qa:mate-filter-bottom-sheet-interaction';
+const EMBEDDED_POST_INTERACTION_EVENT = 'visual-qa:embedded-post-interaction';
+const REPOST_MODAL_INTERACTION_EVENT = 'visual-qa:repost-modal-interaction';
+const REPORT_MODAL_INTERACTION_EVENT = 'visual-qa:report-modal-interaction';
+const QUOTE_REPOST_EDITOR_INTERACTION_EVENT = 'visual-qa:quote-repost-editor-interaction';
+const CHATBOT_SESSION_INTERACTION_EVENT = 'visual-qa:chatbot-session-interaction';
+const CHEER_COMPOSER_INTERACTION_EVENT = 'visual-qa:cheer-composer-interaction';
+const CHEER_WRITE_MODAL_INTERACTION_EVENT = 'visual-qa:cheer-write-modal-interaction';
+const CHEER_COMMENT_MODAL_INTERACTION_EVENT = 'visual-qa:cheer-comment-modal-interaction';
+const CHEER_LIVE_PANEL_INTERACTION_EVENT = 'visual-qa:cheer-live-panel-interaction';
+const CHEER_COMMUNITY_PULSE_INTERACTION_EVENT = 'visual-qa:cheer-community-pulse-interaction';
+const CHEER_HOT_INTERACTION_EVENT = 'visual-qa:cheer-hot-interaction';
+const CHEER_SIDEBAR_PANELS_INTERACTION_EVENT = 'visual-qa:cheer-sidebar-panels-interaction';
+const CHEER_FEED_RUNTIME_INTERACTION_EVENT = 'visual-qa:cheer-feed-runtime-interaction';
+const CHEER_RUNTIME_INTERACTION_EVENT = 'visual-qa:cheer-runtime-interaction';
+const CHEER_BOOKMARKS_INTERACTION_EVENT = 'visual-qa:cheer-bookmarks-interaction';
+const CHEER_CARD_INTERACTIONS_INTERACTION_EVENT = 'visual-qa:cheer-card-interactions-interaction';
+const CHEER_DETAIL_ARTICLE_INTERACTION_EVENT = 'visual-qa:cheer-detail-article-interaction';
+const CHEER_DETAIL_COMMENTS_INTERACTION_EVENT = 'visual-qa:cheer-detail-comments-interaction';
+const CHEER_DETAIL_CONTENT_INTERACTION_EVENT = 'visual-qa:cheer-detail-content-interaction';
+const MATE_DETAIL_QR_PANEL_INTERACTION_EVENT = 'visual-qa:mate-detail-qr-panel-interaction';
+const MATE_DETAIL_SEAT_PANEL_INTERACTION_EVENT = 'visual-qa:mate-detail-seat-panel-interaction';
+const MATE_DETAIL_QR_RUNTIME_INTERACTION_EVENT = 'visual-qa:mate-detail-qr-runtime-interaction';
+const MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT = 'visual-qa:mate-detail-info-sections-interaction';
+const SEAT_MAP_FILTER_BAR_INTERACTION_EVENT = 'visual-qa:seat-map-filter-bar-interaction';
+const SEAT_VIEW_GALLERY_INTERACTION_EVENT = 'visual-qa:seat-view-gallery-interaction';
+const GAME_CARD_INTERACTION_EVENT = 'visual-qa:game-card-interaction';
+const SCHEDULED_GAME_CARD_INTERACTION_EVENT = 'visual-qa:scheduled-game-card-interaction';
+const GOCHEOK_FACILITY_INTERACTION_EVENT = 'visual-qa:gocheok-facility-interaction';
+const SWIPE_TO_REVEAL_INTERACTION_EVENT = 'visual-qa:swipe-to-reveal-interaction';
+const PREDICTION_EMPTY_INTERACTION_EVENT = 'visual-qa:prediction-empty-interaction';
+const PREDICTION_MATCH_PREVIEW_INTERACTION_EVENT = 'visual-qa:prediction-match-preview-interaction';
+const PREDICTION_MATCH_TAB_INTERACTION_EVENT = 'visual-qa:prediction-match-tab-interaction';
+
+const createPredictionMatchPreviewGames = (data: string): PredictionGame[] => {
+  if (data === 'empty') return [];
+
+  const base: PredictionGame = {
+    gameId: `visual-qa-prediction-preview-${data}`,
+    gameDate: '2099-05-01',
+    awayTeam: 'LG',
+    homeTeam: 'KT',
+    stadium: '잠실야구장',
+    startTime: '18:30',
+    gameStatus: 'SCHEDULED',
+    awayScore: null,
+    homeScore: null,
+    winner: null,
+    awayPitcher: { name: '임시 선발 투수' },
+    homePitcher: { name: '임시 홈 선발 투수' },
+  };
+
+  if (data === 'populated') {
+    return [{
+      ...base,
+      gameStatus: 'COMPLETED',
+      awayScore: 7,
+      homeScore: 4,
+      winner: 'away',
+    }];
+  }
+
+  if (data === 'in-progress') {
+    return [{
+      ...base,
+      gameStatus: 'LIVE',
+      awayScore: 2,
+      homeScore: 3,
+      startTime: null,
+    }];
+  }
+
+  if (data === 'long-korean') {
+    return [{
+      ...base,
+      stadium: '서울특별시 종합운동장 야구장 공식 좌석 안내 구역과 모바일 줄바꿈 확인용 긴 구장 이름',
+      awayPitcher: { name: '모바일 화면에서 여러 줄로 표시되는 매우 긴 원정 선발 투수 이름' },
+      homePitcher: { name: '모바일 화면에서 여러 줄로 표시되는 매우 긴 홈 선발 투수 이름' },
+    }];
+  }
+
+  if (data === 'unbroken-token') {
+    return [{
+      ...base,
+      gameId: `PREDICTION-PREVIEW-${'X'.repeat(180)}`,
+      stadium: `STADIUM-${'X'.repeat(180)}`,
+    }];
+  }
+
+  return [base];
+};
+
+const createPredictionMatchTabDetail = (
+  game: PredictionGame,
+  data: string,
+): GameDetail | null => {
+  if (data === 'empty' || data === 'loading') return null;
+
+  const isCompleted = data === 'populated';
+  return {
+    gameId: game.gameId,
+    gameDate: game.gameDate,
+    stadium: game.stadium,
+    homeTeam: game.homeTeam,
+    awayTeam: game.awayTeam,
+    homeScore: game.homeScore,
+    awayScore: game.awayScore,
+    homePitcher: game.homePitcher?.name ?? null,
+    awayPitcher: game.awayPitcher?.name ?? null,
+    gameStatus: isCompleted ? 'COMPLETED' : game.gameStatus,
+    liveStatusError: data === 'error-503' ? '경기 상세 정보를 불러오지 못했습니다.' : null,
+    liveStatusErrorCode: data === 'error-503' ? 'UPSTREAM_ERROR' : null,
+  };
+};
+
+const createPredictionMatchDetailPanelProps = (data: string, isLoggedIn: boolean) => {
+  const games = createPredictionMatchPreviewGames(data === 'error-503' ? 'single' : data);
+  const game = games[0] ?? createPredictionMatchPreviewGames('single')[0];
+  const isCompleted = data === 'populated';
+  const isLive = data === 'long-korean';
+  const statusCode = isCompleted ? 'COMPLETED' : isLive ? 'LIVE' : 'SCHEDULED';
+  const gameDetail = createPredictionMatchTabDetail(game, data === 'error-503' ? 'single' : data);
+
+  return {
+    game,
+    gameDetail,
+    gameDetailLoading: data === 'loading',
+    gameDetailRefreshing: false,
+    gameDetailError: data === 'error-503' ? '경기 상세 정보를 불러오지 못했습니다.' : null,
+    gameDetailErrorCode: data === 'error-503' ? 'UPSTREAM_ERROR' : null,
+    isDetailRetryLoading: false,
+    predictionRecoveryPath: '/prediction',
+    userVote: isLoggedIn && data === 'populated' ? 'home' : null,
+    userVoteResolutionState: 'resolved',
+    votePercentages: {
+      homePercentage: data === 'unbroken-token' ? 99 : 60,
+      awayPercentage: data === 'unbroken-token' ? 1 : 40,
+      totalVotes: data === 'maximum-supported' ? 999999999 : 5,
+    },
+    isVoteOpen: !isCompleted && data !== 'error-503',
+    isVoteActionLocked: false,
+    statusLabel: isCompleted ? '경기 종료' : isLive ? '경기 진행 중' : '경기 예정',
+    statusCode,
+    isPastGame: isCompleted,
+    isFutureGame: !isCompleted && !isLive,
+    hasPrevDate: true,
+    hasNextDate: true,
+    isLoggedIn,
+    isAuthLoading: false,
+  };
+};
+
+const createAdvancedMatchCardFixture = (data: string) => {
+  const panelData = data === 'error' ? 'error-503' : data === 'completed' ? 'populated' : data === 'manual' ? 'long-korean' : data;
+  const panel = createPredictionMatchDetailPanelProps(panelData, true);
+  const gameDetailErrorCode = data === 'manual'
+    ? MANUAL_BASEBALL_DATA_REQUIRED_CODE
+    : panel.gameDetailErrorCode;
+  const statusCode = data === 'completed'
+    ? 'COMPLETED'
+    : data === 'long-korean' || data === 'manual'
+      ? 'LIVE'
+      : 'SCHEDULED';
+  const inningRows = data === 'completed'
+    ? { 1: { away: 1, home: 0 }, 2: { away: 2, home: 1 }, 3: { away: 4, home: 3 } }
+    : {};
+  return {
+    ...panel,
+    gameDetailErrorCode,
+    statusCode,
+    statusLabel: data === 'completed' ? '경기 종료' : statusCode === 'LIVE' ? '경기 진행 중' : '경기 예정',
+    gameDetailError: data === 'error' ? '경기 상세를 불러오지 못했습니다.' : null,
+    gameDetailLoading: data === 'loading',
+    gameDetailRefreshing: false,
+    isPostponedOrCancelled: false,
+    isCancelledStatus: false,
+    shouldHideResultSections: false,
+    isScoreboardLoading: data === 'loading',
+    inningRows,
+    awayColor: '#c30452',
+    homeColor: '#000000',
+    awayTeamName: 'LG 트윈스',
+    homeTeamName: 'KT 위즈',
+    awayPitcherName: panel.game.awayPitcher?.name ?? '발표 전',
+    homePitcherName: panel.game.homePitcher?.name ?? '발표 전',
+    awayScoreForDisplay: data === 'completed' ? 7 : '-',
+    homeScoreForDisplay: data === 'completed' ? 4 : '-',
+  };
+};
+
+const resolvePredictionRuntimeBoundary = (
+  context: ComponentStateAdapterContext,
+  componentId: string,
+  adapterId: string,
+  fallbackTestId: string,
+  resolvedTestId: string,
+  fallbackCopy: string,
+  resolvedCopy: string,
+) => {
+  if (context.componentId !== componentId
+    || Object.keys(context.states).length > 0
+    || Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+    throw new Error(`${adapterId} only supports its declared phase and theme variants`);
+  }
+  const phase = resolveDeclaredVariant(context, 'phase', {
+    fallback: 'fallback',
+    resolved: 'resolved',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  return {
+    props: {
+      visualQaPhase: phase,
+      visualQaRuntimeOverride: phase === 'resolved'
+        ? createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': resolvedTestId,
+          },
+          resolvedCopy,
+        )
+        : undefined,
+    },
+    captureSelector: `[data-testid="${phase === 'fallback' ? fallbackTestId : resolvedTestId}"]`,
+    surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+    fallbackCopy,
+  };
+};
+
+const IMAGE_GRID_LOCAL_ASSETS = [
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"%3E%3Crect width="640" height="640" fill="%232d5f4f"/%3E%3Ccircle cx="320" cy="320" r="180" fill="%23d8b36a"/%3E%3C/svg%3E',
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"%3E%3Crect width="640" height="640" fill="%2317355d"/%3E%3Cpath d="M0 520L240 260L400 420L640 100V640H0Z" fill="%23f1c27d"/%3E%3C/svg%3E',
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"%3E%3Crect width="640" height="640" fill="%23c05640"/%3E%3Crect x="120" y="120" width="400" height="400" rx="40" fill="%23fff7ed" opacity=".88"/%3E%3C/svg%3E',
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"%3E%3Crect width="640" height="640" fill="%237c3aed"/%3E%3Cpath d="M320 80L390 250L570 270L430 390L470 570L320 475L170 570L210 390L70 270L250 250Z" fill="%23fef08a"/%3E%3C/svg%3E',
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"%3E%3Crect width="640" height="640" fill="%230f766e"/%3E%3Ccircle cx="180" cy="180" r="110" fill="%23fef3c7"/%3E%3Ccircle cx="460" cy="460" r="150" fill="%2399f6e4" opacity=".8"/%3E%3C/svg%3E',
+] as const;
 
 const HOME_RUNTIME_DATA_DATES = {
   normal: '2026-09-10',
@@ -4964,7 +5731,3781 @@ const createHomeMatchPanelFixtures = (data: string) => {
   };
 };
 
-const adapters: Record<string, ComponentStateAdapter> = {
+const createMatePartyCardFixture = (
+  data: string,
+  status: Party['status'],
+  favorited: boolean,
+): Party => {
+  const base: Party = {
+    id: 7201,
+    hostId: 1001,
+    hostHandle: 'visual-host',
+    hostName: '시각 정합성 호스트',
+    hostFavoriteTeam: 'LG',
+    hostBadge: 'VERIFIED',
+    hostAverageRating: 4.8,
+    hostReviewCount: 24,
+    teamId: 'LG',
+    cheeringSide: 'HOME',
+    gameDate: '2099-05-01',
+    gameTime: '18:30',
+    stadium: '잠실야구장',
+    homeTeam: 'LG',
+    awayTeam: 'KT',
+    section: '1루 응원석',
+    seatDetail: '1루 응원석',
+    maxParticipants: 4,
+    currentParticipants: 2,
+    description: '잠실에서 함께 응원할 메이트를 찾습니다.',
+    ticketVerified: true,
+    status,
+    ticketPrice: 15000,
+    favorited,
+    createdAt: '2099-04-01T00:00:00Z',
+  };
+
+  switch (data) {
+    case 'maximum-supported':
+      return {
+        ...base,
+        maxParticipants: 999,
+        currentParticipants: 999,
+        ticketPrice: Number.MAX_SAFE_INTEGER,
+      };
+    case 'long-korean':
+      return {
+        ...base,
+        hostName: '가장 좁은 모바일 화면에서도 줄바꿈되어야 하는 메이트 호스트 이름',
+        section: '1루 응원석 가족 동반 장거리 설명 좌석',
+        description: '모바일 카드 안에서 여러 줄로 자연스럽게 줄바꿈되어야 하는 긴 한글 파티 소개입니다. '.repeat(4),
+      };
+    case 'unbroken-token':
+      return {
+        ...base,
+        hostName: `MATE_HOST_${'UNBROKEN'.repeat(18)}`,
+        section: `SECTION_${'UNBROKEN'.repeat(18)}`,
+        description: `MATE_PARTY_${'UNBROKEN'.repeat(28)}`,
+      };
+    case 'single':
+    default:
+      return base;
+  }
+};
+
+const resolveMateResultsAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_RESULTS_COMPONENT_ID) {
+    throw new Error('mate.results only supports MateResultsRuntime default export');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => !['theme', 'tab', 'view'].includes(key))) {
+    throw new Error('mate.results only supports data, permissions, interactions, system, tab, view, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    'error-503': 'error-503',
+  });
+  const activeTab = resolveDeclaredVariant<'all' | 'recruiting' | 'matched' | 'selling'>(context, 'tab', {
+    all: 'all',
+    recruiting: 'recruiting',
+    matched: 'matched',
+    selling: 'selling',
+  });
+  const viewMode = resolveDeclaredVariant<'grid' | 'list' | 'compact'>(context, 'view', {
+    grid: 'grid',
+    list: 'list',
+    compact: 'compact',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const canonical = (expected: Record<string, string>) => Object.entries(expected).every(([key, value]) => {
+    const actual = key.startsWith('variant.')
+      ? context.variants[key.slice('variant.'.length)]
+      : context.states[key as keyof ComponentStateValues];
+    return actual === value;
+  });
+  const targetConditions: Record<string, Record<string, string>> = {
+    create: {
+      data: 'empty', permissions: 'anonymous', system: 'idle', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+    reset: {
+      data: 'long-korean', permissions: 'user', system: 'idle', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+    party: {
+      data: 'single', permissions: 'user', system: 'idle', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+    favorite: {
+      data: 'single', permissions: 'user', system: 'idle', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+    next: {
+      data: 'single', permissions: 'user', system: 'idle', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+    retry: {
+      data: 'single', permissions: 'user', system: 'error-503', 'variant.tab': 'all', 'variant.view': 'grid', 'variant.theme': 'light',
+    },
+  };
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.results default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!target || !targetConditions[target] || !canonical(targetConditions[target]))) {
+    throw new Error(`mate.results received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const baseParty = (fixtureData: string, index: number): Party => ({
+    ...createMatePartyCardFixture(fixtureData, 'PENDING', false),
+    id: 7201 + index,
+  });
+  const parties = data === 'empty' || data === 'long-korean'
+    ? []
+    : data === 'populated'
+      ? [baseParty('single', 0), baseParty('long-korean', 1)]
+      : data === 'maximum-supported'
+        ? Array.from({ length: 4 }, (_, index) => baseParty('maximum-supported', index))
+        : [baseParty(data, 0)];
+  const emit = (value: string) => () => emitVisualQaInteraction(MATE_RESULTS_INTERACTION_EVENT, { value });
+
+  return {
+    props: {
+      activeTab,
+      authUserId: permission === 'user' ? 1001 : null,
+      fetchError: system === 'error-503',
+      favoriteUpdatingPartyId: null,
+      hasActiveFilters: data === 'long-korean',
+      isLoading: system === 'loading',
+      onCreateParty: emit('create'),
+      onFavoriteToggle: (party: Party) => emit(`favorite:${party.id}`)(),
+      onPageChange: (page: number) => emit(`page:${page}`)(),
+      onPartyClick: (party: Party) => emit(`party:${party.id}`)(),
+      onResetFilters: emit('reset'),
+      onRetry: emit('retry'),
+      parties,
+      queryPage: 0,
+      totalPages: data === 'single' ? 2 : 1,
+      viewMode,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_RESULTS_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-results-interaction',
+    }),
+    captureSelector: '[data-testid="mate-results-runtime"]',
+    surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateManageApplicationsAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MANAGE_APPLICATIONS_COMPONENT_ID) {
+    throw new Error('mate.manage-applications only supports MateManageApplicationsRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))
+    || Object.keys(context.variants).some((key) => !['tab', 'theme'].includes(key))) {
+    throw new Error('mate.manage-applications only supports data, interactions, tab, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const selectedTab = resolveDeclaredVariant<'pending' | 'approved' | 'rejected'>(context, 'tab', {
+    pending: 'pending',
+    approved: 'approved',
+    rejected: 'rejected',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const expectedByTarget: Record<string, Record<string, string>> = {
+    'tab-pending': { data: 'single', interactions: 'click', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    'tab-approved': { data: 'single', interactions: 'click', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    'tab-rejected': { data: 'single', interactions: 'click', 'variant.tab': 'rejected', 'variant.theme': 'light' },
+    approve: { data: 'single', interactions: 'click', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    reject: { data: 'single', interactions: 'click', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    chat: { data: 'single', interactions: 'click', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    checkin: { data: 'single', interactions: 'click', 'variant.tab': 'approved', 'variant.theme': 'light' },
+  };
+  const matches = (expected: Record<string, string>) => Object.entries(expected).every(([key, value]) => {
+    const actual = key.startsWith('variant.')
+      ? context.variants[key.slice('variant.'.length)]
+      : context.states[key as keyof ComponentStateValues];
+    return actual === value;
+  });
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.manage-applications default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!target || !expectedByTarget[target] || !matches(expectedByTarget[target]))) {
+    throw new Error(`mate.manage-applications received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const createApplication = (id: number, tab: 'pending' | 'approved' | 'rejected'): Application => ({
+    id,
+    partyId: 8801,
+    applicantHandle: `applicant-${id}`,
+    applicantName: data === 'long-korean'
+      ? '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 신청자 이름'
+      : data === 'unbroken-token'
+        ? `APPLICANT_${'UNBROKEN'.repeat(16)}`
+        : data === 'maximum-supported'
+          ? `최대 지원 신청자 ${id}`
+          : `신청자 ${id}`,
+    applicantBadge: id % 2 === 0 ? 'TRUSTED' : 'VERIFIED',
+    applicantRating: 4.2 + (id % 8) / 10,
+    message: data === 'long-korean'
+      ? '모바일 카드에서도 여러 줄로 안전하게 표시되어야 하는 긴 신청 메시지입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `MESSAGE_${'UNBROKEN'.repeat(24)}`
+        : `${tab} 신청 메시지 ${id}`,
+    isApproved: tab === 'approved',
+    isRejected: tab === 'rejected',
+    ticketVerified: id % 2 === 1,
+    createdAt: '2026-09-19T10:00:00+09:00',
+    responseDeadline: tab === 'pending' ? '2099-09-20T18:00:00+09:00' : undefined,
+  });
+  const count = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1;
+  const applications = (tab: 'pending' | 'approved' | 'rejected') => (
+    Array.from({ length: count }, (_, index) => createApplication(index + 1, tab))
+  );
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_MANAGE_APPLICATIONS_INTERACTION_EVENT,
+    { value },
+  );
+
+  return {
+    props: {
+      approvedApplications: applications('approved'),
+      onApprove: (id: string | number) => emit(`approve:${id}`)(),
+      onOpenChat: emit('chat'),
+      onOpenCheckIn: emit('checkin'),
+      onReject: (id: string | number) => emit(`reject:${id}`)(),
+      onSelectApplicationTab: (tab: 'pending' | 'approved' | 'rejected') => emit(`tab:${tab}`)(),
+      pendingApplications: applications('pending'),
+      rejectedApplications: applications('rejected'),
+      selectedApplicationTab: selectedTab,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_MANAGE_APPLICATIONS_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-manage-applications-interaction',
+    }),
+    captureSelector: '[data-testid="mate-manage-applications-runtime"]',
+    surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateManageOverviewAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MANAGE_OVERVIEW_COMPONENT_ID) {
+    throw new Error('mate.manage-overview only supports MateManageOverviewRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'tab' && key !== 'theme')) {
+    throw new Error('mate.manage-overview only supports data, permissions, interactions, system, tab, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    host: 'host',
+    'non-owner': 'non-owner',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    retrying: 'retrying',
+    'error-503': 'error-503',
+  });
+  const selectedTab = resolveDeclaredVariant<'pending' | 'approved' | 'rejected'>(context, 'tab', {
+    pending: 'pending',
+    approved: 'approved',
+    rejected: 'rejected',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targetConditions: Record<string, Record<string, string>> = {
+    back: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    'tab-pending': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    'tab-approved': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    'tab-rejected': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'rejected', 'variant.theme': 'light' },
+    approve: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    reject: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    chat: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    checkin: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.tab': 'approved', 'variant.theme': 'light' },
+  };
+  const matches = (expected: Record<string, string>) => Object.entries(expected).every(([key, value]) => {
+    const actual = key.startsWith('variant.')
+      ? context.variants[key.slice('variant.'.length)]
+      : context.states[key as keyof ComponentStateValues];
+    return actual === value;
+  });
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.manage-overview default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!target || !targetConditions[target] || !matches(targetConditions[target]))) {
+    throw new Error(`mate.manage-overview received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const createApplication = (id: number, tab: 'pending' | 'approved' | 'rejected'): Application => ({
+    id,
+    partyId: 8801,
+    applicantHandle: `overview-applicant-${id}`,
+    applicantName: data === 'long-korean'
+      ? '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 신청자 이름'
+      : data === 'unbroken-token'
+        ? `OVERVIEW_APPLICANT_${'UNBROKEN'.repeat(14)}`
+        : data === 'maximum-supported'
+          ? `최대 지원 신청자 ${id}`
+          : `신청자 ${id}`,
+    applicantBadge: id % 2 === 0 ? 'TRUSTED' : 'VERIFIED',
+    applicantRating: 4.2 + (id % 8) / 10,
+    message: data === 'long-korean'
+      ? '관리 화면에서도 여러 줄로 안전하게 표시되어야 하는 긴 신청 메시지입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `OVERVIEW_MESSAGE_${'UNBROKEN'.repeat(20)}`
+        : `${tab} 신청 메시지 ${id}`,
+    isApproved: tab === 'approved',
+    isRejected: tab === 'rejected',
+    ticketVerified: id % 2 === 1,
+    createdAt: '2026-09-19T10:00:00+09:00',
+    responseDeadline: tab === 'pending' ? '2099-09-20T18:00:00+09:00' : undefined,
+  });
+  const count = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1;
+  const applications = (tab: 'pending' | 'approved' | 'rejected') => (
+    Array.from({ length: count }, (_, index) => createApplication(index + 1, tab))
+  );
+  const pendingApplications = applications('pending');
+  const approvedApplications = applications('approved');
+  const rejectedApplications = applications('rejected');
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_MANAGE_OVERVIEW_INTERACTION_EVENT,
+    { value },
+  );
+  const hostCanReview = permission === 'host' && approvedApplications.length > 0;
+  const contentProps: MateManageContentRuntimeProps = {
+    isEditing: false,
+    editForm: {
+      section: '1루 응원석',
+      seatDetail: data === 'long-korean' ? '모바일에서도 자연스럽게 줄바꿈되는 좌석 설명' : '응원석 중앙',
+      maxParticipants: 4,
+      ticketPrice: 15000,
+      reservationDepositAmount: 0,
+      description: '관리 화면에서 수정 가능한 합성 파티 설명입니다.',
+    },
+    descriptionError: '',
+    pendingApplications,
+    approvedApplications,
+    rejectedApplications,
+    selectedApplicationTab: selectedTab,
+    canEdit: permission === 'host',
+    canReviewCheckIn: hostCanReview,
+    isDeleting: false,
+    nextStepSummary: pendingApplications.length > 0 ? '신청을 검토해 주세요.' : '다음 참여자 안내를 준비해 주세요.',
+    primaryMobileAction: null,
+    secondaryMobileAction: null,
+    onSelectApplicationTab: (tab) => emit(`tab:${tab}`)(),
+    onStartEdit: emit('edit'),
+    onSaveEdit: emit('save'),
+    onCancelEdit: emit('cancel-edit'),
+    onDeleteParty: emit('delete'),
+    onApprove: (id) => emit(`approve:${id}`)(),
+    onReject: (id) => emit(`reject:${id}`)(),
+    onOpenChat: emit('chat'),
+    onOpenCheckIn: emit('checkin'),
+    onEditSectionChange: emit('edit-section'),
+    onEditSeatDetailChange: emit('edit-seat'),
+    onEditTicketPriceChange: emit('edit-price'),
+    onEditReservationDepositAmountChange: emit('edit-deposit'),
+    onEditMaxParticipantsChange: emit('edit-capacity'),
+    onEditDescriptionChange: emit('edit-description'),
+    onEditDescriptionBlur: emit('edit-description-blur'),
+  };
+  const party = {
+    ...createMatePartyCardFixture(data === 'empty' ? 'single' : data, 'PENDING', false),
+    id: 8801,
+    description: data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 호스트 관리 설명입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `MANAGE_${'UNBROKEN'.repeat(18)}`
+        : '신청 검토와 체크인을 한 흐름으로 관리하는 합성 파티입니다.',
+  } satisfies Party;
+
+  return {
+    props: {
+      party,
+      approvedApplications,
+      pendingApplications,
+    isPartyRevalidating: system === 'retrying',
+      applicationActionError: system === 'error-503' ? '합성 관리 요청 오류입니다. 잠시 후 다시 시도해 주세요.' : '',
+      contentProps,
+      onNavigateBack: emit('back'),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_MANAGE_OVERVIEW_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-manage-overview-interaction',
+    }),
+    captureSelector: '[data-testid="mate-manage-overview-runtime"]',
+    initialPathname: '/mate/manage/8801',
+    expectedPathname: '/mate/manage/8801',
+    surfaceClassName: 'block min-h-0 w-full max-w-[1100px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateManageContentAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MANAGE_CONTENT_COMPONENT_ID) {
+    throw new Error('mate.manage-content only supports MateManageContentRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => !['mode', 'tab', 'theme'].includes(key))) {
+    throw new Error('mate.manage-content only supports data, permissions, interactions, system, mode, tab, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    host: 'host',
+    'non-owner': 'non-owner',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    'error-503': 'error-503',
+  });
+  const mode = resolveDeclaredVariant<'view' | 'edit'>(context, 'mode', {
+    view: 'view',
+    edit: 'edit',
+  });
+  const selectedTab = resolveDeclaredVariant<'pending' | 'approved' | 'rejected'>(context, 'tab', {
+    pending: 'pending',
+    approved: 'approved',
+    rejected: 'rejected',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targetConditions: Record<string, Record<string, string>> = {
+    'tab-pending': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    'tab-approved': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    'tab-rejected': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'rejected', 'variant.theme': 'light' },
+    approve: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    reject: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    chat: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    checkin: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'approved', 'variant.theme': 'light' },
+    edit: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    delete: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'view', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    save: { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'edit', 'variant.tab': 'pending', 'variant.theme': 'light' },
+    'cancel-edit': { data: 'single', permissions: 'host', interactions: 'click', system: 'idle', 'variant.mode': 'edit', 'variant.tab': 'pending', 'variant.theme': 'light' },
+  };
+  const matches = (expected: Record<string, string>) => Object.entries(expected).every(([key, value]) => {
+    const actual = key.startsWith('variant.')
+      ? context.variants[key.slice('variant.'.length)]
+      : context.states[key as keyof ComponentStateValues];
+    return actual === value;
+  });
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.manage-content default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!target || !targetConditions[target] || !matches(targetConditions[target]))) {
+    throw new Error(`mate.manage-content received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const createApplication = (id: number, tab: 'pending' | 'approved' | 'rejected'): Application => ({
+    id,
+    partyId: 8801,
+    applicantHandle: `content-applicant-${id}`,
+    applicantName: data === 'long-korean'
+      ? '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 신청자 이름'
+      : data === 'unbroken-token'
+        ? `CONTENT_APPLICANT_${'UNBROKEN'.repeat(14)}`
+        : data === 'maximum-supported'
+          ? `최대 지원 신청자 ${id}`
+          : `신청자 ${id}`,
+    applicantBadge: id % 2 === 0 ? 'TRUSTED' : 'VERIFIED',
+    applicantRating: 4.2 + (id % 8) / 10,
+    message: data === 'long-korean'
+      ? '관리 화면에서도 여러 줄로 안전하게 표시되어야 하는 긴 신청 메시지입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `CONTENT_MESSAGE_${'UNBROKEN'.repeat(20)}`
+        : `${tab} 신청 메시지 ${id}`,
+    isApproved: tab === 'approved',
+    isRejected: tab === 'rejected',
+    ticketVerified: id % 2 === 1,
+    createdAt: '2026-09-19T10:00:00+09:00',
+    responseDeadline: tab === 'pending' ? '2099-09-20T18:00:00+09:00' : undefined,
+  });
+  const count = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1;
+  const applications = (tab: 'pending' | 'approved' | 'rejected') => (
+    Array.from({ length: count }, (_, index) => createApplication(index + 1, tab))
+  );
+  const pendingApplications = applications('pending');
+  const approvedApplications = applications('approved');
+  const rejectedApplications = applications('rejected');
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_MANAGE_CONTENT_INTERACTION_EVENT,
+    { value },
+  );
+  const hostCanReview = permission === 'host' && approvedApplications.length > 0;
+  const primaryMobileAction = target === 'chat'
+    ? { label: '채팅방 입장', onClick: emit('chat'), className: 'bg-primary text-white', testId: 'mate-manage-content-mobile-primary' }
+    : target === 'checkin'
+      ? { label: '체크인 현황', onClick: emit('checkin'), variant: 'outline' as const, className: 'border-violet-300 text-violet-700', testId: 'mate-manage-content-mobile-primary' }
+      : target === 'edit'
+        ? { label: '정보 수정', onClick: emit('edit'), variant: 'outline' as const, className: 'border-primary text-primary', testId: 'mate-manage-content-mobile-primary' }
+        : target === 'delete'
+          ? { label: '파티 삭제', onClick: emit('delete'), variant: 'outline' as const, className: 'border-red-200 text-red-600', testId: 'mate-manage-content-mobile-primary' }
+          : null;
+  const contentProps: MateManageContentRuntimeProps = {
+    isEditing: mode === 'edit',
+    editForm: {
+      section: '1루 응원석',
+      seatDetail: data === 'long-korean' ? '모바일에서도 자연스럽게 줄바꿈되는 좌석 설명' : '응원석 중앙',
+      maxParticipants: 4,
+      ticketPrice: 15000,
+      reservationDepositAmount: 0,
+      description: data === 'unbroken-token' ? `CONTENT_${'DESCRIPTION'.repeat(16)}` : '관리 화면에서 수정 가능한 합성 파티 설명입니다.',
+    },
+    descriptionError: system === 'error-503' ? '소개글을 확인해 주세요.' : '',
+    pendingApplications,
+    approvedApplications,
+    rejectedApplications,
+    selectedApplicationTab: selectedTab,
+    canEdit: permission === 'host',
+    canReviewCheckIn: hostCanReview,
+    isDeleting: system === 'error-503',
+    nextStepSummary: pendingApplications.length > 0 ? '신청을 검토해 주세요.' : '다음 참여자 안내를 준비해 주세요.',
+    primaryMobileAction,
+    secondaryMobileAction: null,
+    onSelectApplicationTab: (tab) => emit(`tab:${tab}`)(),
+    onStartEdit: emit('edit'),
+    onSaveEdit: emit('save'),
+    onCancelEdit: emit('cancel-edit'),
+    onDeleteParty: emit('delete'),
+    onApprove: (id) => emit(`approve:${id}`)(),
+    onReject: (id) => emit(`reject:${id}`)(),
+    onOpenChat: emit('chat'),
+    onOpenCheckIn: emit('checkin'),
+    onEditSectionChange: emit('edit-section'),
+    onEditSeatDetailChange: emit('edit-seat'),
+    onEditTicketPriceChange: emit('edit-price'),
+    onEditReservationDepositAmountChange: emit('edit-deposit'),
+    onEditMaxParticipantsChange: emit('edit-capacity'),
+    onEditDescriptionChange: emit('edit-description'),
+    onEditDescriptionBlur: emit('edit-description-blur'),
+  };
+
+  return {
+    props: contentProps,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_MANAGE_CONTENT_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-manage-content-interaction',
+    }),
+    captureSelector: '[data-testid="mate-manage-content-runtime"]',
+    initialPathname: '/mate/manage/8801',
+    expectedPathname: '/mate/manage/8801',
+    surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateManageEditPanelAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MANAGE_EDIT_PANEL_COMPONENT_ID) {
+    throw new Error('mate.manage-edit-panel only supports MateManageEditPanel');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mate.manage-edit-panel only supports data, interactions, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.manage-edit-panel default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && !new Set(['save', 'cancel-edit']).has(target ?? '')) {
+    throw new Error(`mate.manage-edit-panel received an unsupported click target: ${target ?? '<missing>'}`);
+  }
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_MANAGE_EDIT_PANEL_INTERACTION_EVENT,
+    { value },
+  );
+  const editForm: MateManageEditFormState = {
+    section: data === 'long-korean' ? '1루 응원석 가족 동반 장거리 설명 좌석' : '1루 응원석',
+    seatDetail: data === 'unbroken-token' ? `SEAT_${'UNBROKEN'.repeat(18)}` : '응원석 중앙',
+    ticketPrice: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER : 15000,
+    reservationDepositAmount: data === 'empty' ? 0 : 5000,
+    maxParticipants: data === 'maximum-supported' ? 4 : 3,
+    description: data === 'long-korean'
+      ? '모바일에서도 자연스럽게 줄바꿈되어야 하는 긴 합성 파티 소개입니다. '.repeat(4)
+      : data === 'unbroken-token'
+        ? `DESCRIPTION_${'UNBROKEN'.repeat(22)}`
+        : '관리 화면에서 수정 가능한 합성 파티 설명입니다.',
+  };
+  const props: MateManageEditPanelProps = {
+    editForm,
+    descriptionError: data === 'empty' ? '소개글을 확인해 주세요.' : '',
+    onSaveEdit: emit('save'),
+    onCancelEdit: emit('cancel-edit'),
+    onEditSectionChange: emit('section'),
+    onEditSeatDetailChange: emit('seat-detail'),
+    onEditTicketPriceChange: emit('ticket-price'),
+    onEditReservationDepositAmountChange: emit('deposit'),
+    onEditMaxParticipantsChange: emit('max-participants'),
+    onEditDescriptionChange: emit('description'),
+    onEditDescriptionBlur: emit('description-blur'),
+  };
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_MANAGE_EDIT_PANEL_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-manage-edit-panel-interaction',
+    }),
+    captureSelector: '[data-testid="mate-manage-edit-panel"]',
+    initialPathname: '/mate/manage/8801',
+    expectedPathname: '/mate/manage/8801',
+    surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateManageAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MANAGE_COMPONENT_ID) {
+    throw new Error('mate.manage only supports MateManage');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mate.manage only supports data, permissions, interactions, system, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    host: 'host',
+    'non-owner': 'non-owner',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    'error-503': 'error-503',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  if (interaction !== 'default' || context.interactionTargetId !== undefined) {
+    throw new Error(`mate.manage only supports the default interaction: ${context.interactionTargetId ?? interaction}`);
+  }
+
+  const party = {
+    ...createMatePartyCardFixture(data === 'empty' ? 'single' : data, data === 'maximum-supported' ? 'MATCHED' : 'PENDING', false),
+    id: 8801,
+    hostId: 1001,
+    ...(data === 'empty' ? { currentParticipants: 0, description: '', section: '' } : {}),
+  } satisfies Party;
+  const makeApplication = (id: number, tab: 'pending' | 'approved' | 'rejected'): Application => ({
+    id,
+    partyId: party.id,
+    applicantHandle: `manage-applicant-${id}`,
+    applicantName: data === 'long-korean'
+      ? '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 관리 신청자 이름'
+      : data === 'unbroken-token'
+        ? `MANAGE_APPLICANT_${'UNBROKEN'.repeat(14)}`
+        : `관리 신청자 ${id}`,
+    applicantBadge: id % 2 === 0 ? 'TRUSTED' : 'VERIFIED',
+    applicantRating: 4.2 + (id % 7) / 10,
+    message: data === 'long-korean'
+      ? '관리 화면에서도 여러 줄로 안전하게 표시되어야 하는 긴 신청 메시지입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `MANAGE_MESSAGE_${'UNBROKEN'.repeat(18)}`
+        : `${tab} 관리 신청 메시지 ${id}`,
+    isApproved: tab === 'approved',
+    isRejected: tab === 'rejected',
+    ticketVerified: id % 2 === 1,
+    createdAt: '2099-04-01T00:00:00Z',
+    responseDeadline: tab === 'pending' ? '2099-05-01T18:00:00+09:00' : undefined,
+  });
+  const applicationCount = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1;
+  const applications: Application[] = [
+    ...Array.from({ length: applicationCount }, (_, index) => makeApplication(index + 1, 'pending')),
+    ...(data === 'populated' ? [makeApplication(11, 'approved'), makeApplication(12, 'rejected')] : []),
+  ];
+  const isLoading = system === 'loading';
+  const isError = system === 'error-503';
+  const stateOverride: MateManageVisualQaStateOverride = {
+    party: isLoading || isError ? null : party,
+    applications: permission === 'host' && !isLoading && !isError ? applications : [],
+    currentUserId: permission === 'host' ? 1001 : 2002,
+    currentUserHandle: permission === 'host' ? 'visual-host' : 'visual-member',
+    isPartyLoading: isLoading,
+    isPartyRevalidating: false,
+    partyError: isError ? '관리 화면 데이터를 불러오지 못했습니다.' : null,
+    applicationsLoading: false,
+    applicationsErrorStatus: null,
+  };
+
+  return {
+    props: { visualQaStateOverride: stateOverride },
+    captureSelector: isLoading
+      ? '[data-testid="mate-manage-runtime-loading"]'
+      : isError
+        ? '[data-testid="mate-manage-runtime-error"]'
+        : permission === 'non-owner'
+          ? '[data-testid="mate-manage-runtime-access"]'
+          : '[data-testid="mate-manage-overview-runtime"]',
+    initialPathname: '/mate/8801/manage',
+    expectedPathname: '/mate/8801/manage',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateMyPartiesPanelAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_MY_PARTIES_PANEL_COMPONENT_ID) {
+    throw new Error('mate.my-parties-panel only supports MateMyPartiesPanel');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mate.my-parties-panel only supports data, permissions, interactions, system, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single'
+    && permission === 'user'
+    && system === 'idle'
+    && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.my-parties-panel default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || target !== 'party')) {
+    throw new Error(`mate.my-parties-panel received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_MY_PARTIES_PANEL_INTERACTION_EVENT,
+    { value },
+  );
+  const partyCount = data === 'empty'
+    ? 0
+    : data === 'maximum-supported'
+      ? 6
+      : data === 'populated'
+        ? 4
+        : 1;
+  const parties = permission === 'user' && system === 'idle'
+    ? Array.from({ length: partyCount }, (_, index) => ({
+      ...createMatePartyCardFixture(data === 'empty' ? 'single' : data, index % 2 === 0 ? 'PENDING' : 'MATCHED', false),
+      id: 7601 + index,
+      hostId: 1001,
+    }))
+    : [];
+  const visualQaStateOverride: MateMyPartiesPanelVisualQaStateOverride = {
+    userId: permission === 'user' ? 1001 : null,
+    userHandle: permission === 'user' ? 'visual-host' : undefined,
+    parties,
+    isLoading: system === 'loading',
+  };
+
+  return {
+    props: {
+      onPartyClick: (party: Party) => emit(`party:${party.id}`)(),
+      visualQaStateOverride,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_MY_PARTIES_PANEL_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-my-parties-panel-interaction',
+    }),
+    captureSelector: '[data-testid="mate-my-parties-panel"]',
+    initialPathname: '/mate',
+    expectedPathname: '/mate',
+    surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveAccountSettingsSecurityRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== ACCOUNT_SETTINGS_SECURITY_RUNTIME_COMPONENT_ID) {
+    throw new Error('mypage.account-settings-security only supports AccountSettingsSecurityRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mypage.account-settings-security only supports data, permissions, interactions, system, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    user: 'user',
+    'user-social-no-password': 'user-social-no-password',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    'error-503': 'error-503',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targetConditions: Record<string, boolean> = {
+    'session-end': true,
+    'other-sessions': true,
+    'advanced-open': true,
+  };
+  const canonical = data === 'single' && permission === 'user' && system === 'idle' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.account-settings-security default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!canonical || !target || !targetConditions[target])) {
+    throw new Error(`mypage.account-settings-security received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const sessionCount = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 4 : 2;
+  const eventCount = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 4 : 2;
+  const sessionLabel = data === 'long-korean'
+    ? '가장 좁은 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 로그인 기기 이름'
+    : data === 'unbroken-token'
+      ? `SESSION_${'UNBROKEN'.repeat(14)}`
+      : '합성 로그인 기기';
+  const deviceSessions: DeviceSessionItem[] = Array.from({ length: sessionCount }, (_, index) => ({
+    id: `visual-session-${index + 1}`,
+    deviceLabel: `${sessionLabel} ${index + 1}`,
+    deviceType: index % 2 === 0 ? 'desktop' : 'mobile',
+    browser: data === 'long-korean' ? '모바일에서 줄바꿈되는 긴 브라우저 이름' : 'Chrome',
+    os: index % 2 === 0 ? 'macOS' : 'iOS',
+    lastActiveAt: '2099-05-01T12:00:00Z',
+    lastSeenAt: '2099-05-01T12:00:00Z',
+    isCurrent: index === 0,
+    isRevoked: index > 0 && index === sessionCount - 1,
+    ip: data === 'unbroken-token' ? `192.0.2.${index + 1}` : '192.0.2.1',
+  }));
+  const securityEvents: SecurityEventItem[] = Array.from({ length: eventCount }, (_, index) => ({
+    id: 9401 + index,
+    eventType: index % 2 === 0 ? 'LOGIN' : 'SESSION_REVOKED',
+    occurredAt: '2099-05-01T12:00:00Z',
+    deviceLabel: `${sessionLabel} ${index + 1}`,
+    deviceType: index % 2 === 0 ? 'desktop' : 'mobile',
+    browser: data === 'long-korean' ? '긴 브라우저 정보' : 'Chrome',
+    os: index % 2 === 0 ? 'macOS' : 'iOS',
+    ip: '192.0.2.1',
+    message: data === 'unbroken-token'
+      ? `SECURITY_EVENT_${'UNBROKEN'.repeat(18)}`
+      : index % 2 === 0 ? '새 기기에서 로그인했습니다.' : '다른 기기 세션을 정리했습니다.',
+  }));
+  const trustedDevices: TrustedDeviceItem[] = Array.from({
+    length: data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1,
+  }, (_, index) => ({
+    id: 9501 + index,
+    deviceLabel: `${sessionLabel} ${index + 1}`,
+    deviceType: index % 2 === 0 ? 'desktop' : 'mobile',
+    browser: 'Chrome',
+    os: index % 2 === 0 ? 'macOS' : 'iOS',
+    firstSeenAt: '2099-01-01T00:00:00Z',
+    lastSeenAt: '2099-05-01T12:00:00Z',
+    lastLoginAt: '2099-05-01T12:00:00Z',
+    lastIp: '192.0.2.1',
+  }));
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    ACCOUNT_SETTINGS_SECURITY_RUNTIME_INTERACTION_EVENT,
+    { value },
+  );
+  const visualQaStateOverride: AccountSettingsSecurityRuntimeVisualQaStateOverride = {
+    securityEvents,
+    isSecurityEventsLoading: system === 'loading',
+    deviceSessions,
+    isSessionLoading: system === 'loading',
+    isSessionError: system === 'error-503',
+    sessionErrorMessage: system === 'error-503' ? 'visual QA session service unavailable' : undefined,
+    trustedDevices,
+    isTrustedDevicesLoading: system === 'loading',
+    isDeleteSessionPending: false,
+    isDeleteOtherSessionsPending: false,
+    onDeleteSession: (sessionId) => emit(`session-end:${sessionId}`)(),
+    onDeleteOtherSessions: emit('other-sessions'),
+    onAdvancedSectionRequest: emit('advanced-open'),
+  };
+  const props: AccountSettingsSecurityRuntimeProps = {
+    userProvider: permission === 'user' ? 'local' : 'google',
+    visualQaStateOverride,
+  };
+
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: ACCOUNT_SETTINGS_SECURITY_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-account-settings-security-runtime-interaction',
+    }),
+    captureSelector: '[data-testid="account-settings-security-runtime"]',
+    initialPathname: '/mypage',
+    expectedPathname: '/mypage',
+    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveAccountSettingsSectionAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== ACCOUNT_SETTINGS_SECTION_COMPONENT_ID) {
+    throw new Error('mypage.account-settings-section only supports AccountSettingsSection');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mypage.account-settings-section only supports data, permissions, interactions, system, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    user: 'user',
+    'user-social-no-password': 'user-social-no-password',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const canonical = data === 'single' && permission === 'user' && system === 'idle' && theme === 'light';
+  const targetConditions: Record<string, boolean> = {
+    'provider-google': true,
+    'provider-kakao': true,
+    logout: true,
+  };
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.account-settings-section default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!canonical || !target || !targetConditions[target])) {
+    throw new Error(`mypage.account-settings-section received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const connectedProviderCount = data === 'empty' ? 0 : data === 'populated' || data === 'maximum-supported' ? 3 : 1;
+  const providerNames: Array<'google' | 'kakao' | 'naver'> = ['google', 'kakao', 'naver'];
+  const connectedProviders: UserProviderDto[] = providerNames.slice(0, connectedProviderCount).map((provider, index) => ({
+    provider,
+    providerId: `visual-provider-${index + 1}`,
+    email: data === 'long-korean'
+      ? '모바일 화면에서도 안전하게 줄바꿈되어야 하는 긴 계정 이메일 주소@example.com'
+      : data === 'unbroken-token'
+        ? `ACCOUNT_${'UNBROKEN'.repeat(18)}@example.com`
+        : `${provider}@visual-qa.example.com`,
+    connectedAt: '2099-05-01T12:00:00Z',
+  }));
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    ACCOUNT_SETTINGS_SECTION_INTERACTION_EVENT,
+    { value },
+  );
+  const securityRuntime = {
+    securityEvents: [],
+    isSecurityEventsLoading: system === 'loading',
+    deviceSessions: [],
+    isSessionLoading: system === 'loading',
+    isSessionError: false,
+    trustedDevices: [],
+    isTrustedDevicesLoading: false,
+    isDeleteSessionPending: false,
+    isDeleteOtherSessionsPending: false,
+  } satisfies AccountSettingsSectionVisualQaStateOverride['securityRuntime'];
+  const visualQaStateOverride: AccountSettingsSectionVisualQaStateOverride = {
+    connectedProviders,
+    isProvidersLoading: system === 'loading',
+    isLinking: false,
+    onLinkAccount: (provider) => emit(`link:${provider}`)(),
+    onUnlinkRequest: (provider) => emit(`unlink-request:${provider}`)(),
+    onUnlinkConfirm: (provider) => emit(`unlink-confirm:${provider}`)(),
+    onLogoutRequest: emit('logout-request'),
+    onLogout: emit('logout'),
+    securityRuntime,
+  };
+  const props: AccountSettingsSectionProps = {
+    userProvider: permission === 'user' ? 'local' : 'google',
+    hasPassword: permission === 'user',
+    visualQaStateOverride,
+  };
+
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: ACCOUNT_SETTINGS_SECTION_INTERACTION_EVENT,
+      testId: 'visual-qa-account-settings-section-interaction',
+    }),
+    captureSelector: '[data-testid="account-settings-section"]',
+    initialPathname: '/mypage',
+    expectedPathname: '/mypage',
+    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveAccountSettingsAdvancedRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== ACCOUNT_SETTINGS_ADVANCED_RUNTIME_COMPONENT_ID) {
+    throw new Error('mypage.account-settings-advanced only supports AccountSettingsAdvancedRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))
+    || Object.keys(context.variants).some((key) => !['dialog', 'theme'].includes(key))) {
+    throw new Error('mypage.account-settings-advanced only supports data, permissions, interactions, dialog, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    user: 'user',
+    'user-social-no-password': 'user-social-no-password',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const dialog = resolveDeclaredVariant<'advanced' | 'delete'>(context, 'dialog', {
+    advanced: 'advanced',
+    delete: 'delete',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const canonical = data === 'single' && permission === 'user' && theme === 'light';
+  const targetConditions: Record<string, boolean> = {
+    'advanced-close': dialog === 'advanced',
+    'open-delete': dialog === 'advanced',
+    'remove-device': dialog === 'advanced' && data !== 'empty',
+    'confirm-delete': dialog === 'delete',
+  };
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.account-settings-advanced default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!canonical || !target || !targetConditions[target])) {
+    throw new Error(`mypage.account-settings-advanced received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    ACCOUNT_SETTINGS_ADVANCED_RUNTIME_INTERACTION_EVENT,
+    { value },
+  );
+  const deviceCount = data === 'empty' ? 0 : data === 'maximum-supported' ? 8 : data === 'populated' ? 3 : 1;
+  const trustedDevices: TrustedDeviceItem[] = Array.from({ length: deviceCount }, (_, index) => ({
+    id: 9301 + index,
+    deviceLabel: data === 'long-korean'
+      ? '가장 좁은 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 신뢰 기기 이름'
+      : data === 'unbroken-token'
+        ? `TRUSTED_DEVICE_${'UNBROKEN'.repeat(14)}`
+        : `합성 신뢰 기기 ${index + 1}`,
+    deviceType: index % 2 === 0 ? 'desktop' : 'mobile',
+    browser: data === 'long-korean' ? '모바일 화면에서 줄바꿈되는 긴 브라우저 이름' : 'Chrome',
+    os: index % 2 === 0 ? 'macOS' : 'iOS',
+    firstSeenAt: '2099-01-01T00:00:00Z',
+    lastSeenAt: '2099-05-01T12:00:00Z',
+    lastLoginAt: '2099-05-01T12:00:00Z',
+    lastIp: '192.0.2.1',
+  }));
+  const isLocalUser = permission === 'user';
+  const isDeleteConfirmMatched = data !== 'empty';
+  const props: AccountSettingsAdvancedRuntimeProps = {
+    showAdvancedSettingsDialog: dialog === 'advanced',
+    showDeleteDialog: dialog === 'delete',
+    onAdvancedDialogClose: emit('advanced-close'),
+    onDeleteDialogClose: emit('delete-close'),
+    onDeleteOtherSessions: emit('delete-other-sessions'),
+    onTrustedDeviceRemove: (deviceId) => emit(`remove-device:${deviceId}`)(),
+    onOpenDeleteDialog: emit('open-delete'),
+    onDeleteConfirm: emit('confirm-delete'),
+    isDeleteOtherSessionsPending: false,
+    hasOtherDeviceSessions: data !== 'empty',
+    otherDeviceSessionCount: data === 'maximum-supported' ? 8 : data === 'empty' ? 0 : 1,
+    trustedDevices,
+    isTrustedDevicesLoading: false,
+    isRemoveTrustedDevicePending: false,
+    isDeletePending: false,
+    isLocalUser,
+    password: isLocalUser && data !== 'empty' ? 'visual-qa-password' : '',
+    onPasswordChange: emit('password'),
+    showPassword: false,
+    onToggleShowPassword: emit('toggle-password'),
+    deleteConfirmText: isDeleteConfirmMatched ? '삭제하겠습니다' : '',
+    onDeleteConfirmTextChange: emit('delete-confirm-text'),
+    deleteConfirmTextPlaceholder: '삭제하겠습니다',
+    isDeleteConfirmMatched,
+    deletePasswordInputClass: 'auth-autofill-input pr-10',
+    error: data === 'unbroken-token' ? `ACCOUNT_SETTINGS_ERROR_${'E'.repeat(80)}` : '',
+    formatSessionTime: (value?: string) => value ? '2099. 05. 01. 오후 12:00' : '시간 정보 없음',
+  };
+
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: ACCOUNT_SETTINGS_ADVANCED_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-account-settings-advanced-runtime-interaction',
+    }),
+    captureSelector: dialog === 'advanced'
+      ? '[data-testid="account-settings-advanced-dialog"]'
+      : '[data-testid="account-settings-delete-dialog"]',
+    initialPathname: '/mypage',
+    expectedPathname: '/mypage',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateDetailContentAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_DETAIL_CONTENT_COMPONENT_ID) {
+    throw new Error('mate.detail-content only supports MateDetailContentRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))
+    || Object.keys(context.variants).some((key) => !['status', 'theme'].includes(key))) {
+    throw new Error('mate.detail-content only supports data, permissions, interactions, status, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+    host: 'host',
+    'approved-member': 'approved-member',
+    'mate-applicant-pending': 'mate-applicant-pending',
+    'mate-applicant-rejected': 'mate-applicant-rejected',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const status = resolveDeclaredVariant<Party['status']>(context, 'status', {
+    pending: 'PENDING',
+    selling: 'SELLING',
+    matched: 'MATCHED',
+    completed: 'COMPLETED',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targetConditions: Record<string, Record<string, string>> = {
+    apply: { data: 'single', permissions: 'user', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    manage: { data: 'single', permissions: 'host', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    chat: { data: 'single', permissions: 'approved-member', interactions: 'click', 'variant.status': 'matched', 'variant.theme': 'light' },
+    checkin: { data: 'single', permissions: 'approved-member', interactions: 'click', 'variant.status': 'matched', 'variant.theme': 'light' },
+    cancel: { data: 'single', permissions: 'mate-applicant-pending', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    browse: { data: 'single', permissions: 'mate-applicant-rejected', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    'seat-guide': { data: 'single', permissions: 'user', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    'host-chat': { data: 'single', permissions: 'user', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    qr: { data: 'single', permissions: 'approved-member', interactions: 'click', 'variant.status': 'matched', 'variant.theme': 'light' },
+    share: { data: 'single', permissions: 'user', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+    'cheer-share': { data: 'single', permissions: 'host', interactions: 'click', 'variant.status': 'pending', 'variant.theme': 'light' },
+  };
+  const matches = (expected: Record<string, string>) => Object.entries(expected).every(([key, value]) => {
+    const actual = key.startsWith('variant.')
+      ? context.variants[key.slice('variant.'.length)]
+      : context.states[key as keyof ComponentStateValues];
+    return actual === value;
+  });
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.detail-content default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!target || !targetConditions[target] || !matches(targetConditions[target]))) {
+    throw new Error(`mate.detail-content received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const party = {
+    ...createMatePartyCardFixture(data === 'empty' ? 'single' : data, status, false),
+    id: 8801,
+    description: data === 'long-korean'
+      ? '모바일 상세 화면에서도 여러 줄로 자연스럽게 표시되어야 하는 긴 파티 소개입니다. '.repeat(4)
+      : data === 'unbroken-token'
+        ? `DETAIL_${'UNBROKEN'.repeat(26)}`
+        : '잠실에서 함께 응원할 메이트를 찾습니다. #응원분위기 #시간약속',
+    seatDetail: data === 'long-korean'
+      ? '모바일에서도 잘리지 않고 줄바꿈되어야 하는 긴 좌석 상세 위치 안내'
+      : data === 'unbroken-token'
+        ? `SEAT_${'UNBROKEN'.repeat(20)}`
+        : '101블록 1열',
+    hostTrustMetrics: {
+      averageResponseMinutes: 18,
+      completedMateCount: 12,
+      recentNoShowCount: 0,
+      reviewKeywordSummary: [{ label: '친절한 안내', count: 12 }],
+      recentHostReviews: [],
+    },
+  } satisfies Party;
+  const makeApplication = (id: number, applicationState: 'pending' | 'approved' | 'rejected'): Application => ({
+    id,
+    partyId: party.id,
+    applicantHandle: `detail-applicant-${id}`,
+    applicantName: data === 'long-korean'
+      ? '모바일 상세에서도 여러 줄로 표시되어야 하는 긴 신청자 이름'
+      : data === 'unbroken-token'
+        ? `DETAIL_APPLICANT_${'UNBROKEN'.repeat(14)}`
+        : `상세 신청자 ${id}`,
+    applicantBadge: id % 2 === 0 ? 'TRUSTED' : 'VERIFIED',
+    applicantRating: 4.7,
+    message: data === 'long-korean'
+      ? '상세 화면에서 안전하게 줄바꿈되어야 하는 긴 신청 메시지입니다. '.repeat(3)
+      : data === 'unbroken-token'
+        ? `DETAIL_MESSAGE_${'UNBROKEN'.repeat(18)}`
+        : '경기 전 채팅으로 만날 장소를 조율하고 싶습니다.',
+    isApproved: applicationState === 'approved',
+    isRejected: applicationState === 'rejected',
+    ticketVerified: true,
+    createdAt: '2099-04-01T00:00:00Z',
+    responseDeadline: applicationState === 'pending' ? '2099-05-01T17:00:00Z' : undefined,
+  });
+  const hostApplications = permission === 'host'
+    ? [makeApplication(1, 'pending'), ...(data === 'empty' ? [] : [makeApplication(2, 'approved')])]
+    : [];
+  const myApplication = permission === 'approved-member'
+    ? makeApplication(31, 'approved')
+    : permission === 'mate-applicant-pending'
+      ? makeApplication(31, 'pending')
+      : permission === 'mate-applicant-rejected'
+        ? makeApplication(31, 'rejected')
+        : null;
+  const isHost = permission === 'host';
+  const isApproved = permission === 'approved-member';
+  const currentUserId = permission === 'anonymous' ? null : isHost ? party.hostId ?? 1001 : 2001;
+  const applicationsForReview = isHost && status === 'COMPLETED'
+    ? [makeApplication(1, 'approved')]
+    : [];
+  const infoOverride: MateDetailContentRuntimeVisualQaStateOverride['infoSections'] = {
+    reviewsPhase: 'runtime',
+    seatPhotoCount: data === 'empty' ? 0 : data === 'maximum-supported' ? 9 : 2,
+    reviews: {
+      reviews: [],
+      applications: applicationsForReview,
+      reviewsIsLoading: false,
+      applicationsIsLoading: false,
+      reviewsIsError: false,
+      applicationsIsError: false,
+    },
+  };
+  const actionTargetIds = new Set(['apply', 'manage', 'chat', 'checkin', 'cancel', 'browse']);
+  const actionSection = interaction === 'click' && actionTargetIds.has(target ?? '')
+    ? { layout: 'mobile' as const, sheetOpen: true }
+    : interaction === 'click'
+      ? { layout: 'desktop' as const, sheetOpen: false }
+      : undefined;
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_DETAIL_CONTENT_INTERACTION_EVENT,
+    { value },
+  );
+  const props: MateDetailContentRuntimeProps = {
+    party,
+    routePartyId: String(party.id),
+    currentUserId,
+    currentUserHandle: currentUserId === null ? undefined : 'visual-detail-user',
+    isHost,
+    isApproved,
+    canAccessCheckIn: isHost || isApproved,
+    myApplication,
+    hostApplications,
+    onApply: emit('apply'),
+    onOpenCheckInPage: emit('checkin'),
+    onManageParty: emit('manage'),
+    onOpenChat: emit('chat'),
+    onBrowsePartyList: emit('browse'),
+    onOpenSeatViewGuide: emit('seat-guide'),
+    onOpenQrPanel: emit('qr'),
+    onShare: emit('share'),
+    onShareToCheer: emit('cheer-share'),
+    isShareToCheerPending: false,
+    visualQaStateOverride: {
+      actionSection,
+      infoSections: infoOverride,
+    },
+  };
+
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_DETAIL_CONTENT_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-detail-content-interaction',
+    }),
+    captureSelector: '[data-testid="mate-detail-content-runtime"]',
+    initialPathname: `/mate/party/${party.id}`,
+    expectedPathname: `/mate/party/${party.id}`,
+    surfaceClassName: 'block min-h-0 w-full max-w-[1120px] overflow-visible bg-gray-50 p-3 shadow-none dark:bg-background',
+    theme,
+  };
+};
+
+const resolveMateDetailRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_DETAIL_RUNTIME_COMPONENT_ID) {
+    throw new Error('mate.detail-runtime only supports MateDetailRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => !['status', 'surface', 'theme'].includes(key))) {
+    throw new Error('mate.detail-runtime only supports data, permissions, interactions, system, status, surface, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+    host: 'host',
+    'approved-member': 'approved-member',
+    'mate-applicant-pending': 'mate-applicant-pending',
+    'mate-applicant-rejected': 'mate-applicant-rejected',
+  });
+  requireStateValue(context, 'interactions', 'default');
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    retrying: 'retrying',
+    'error-503': 'error-503',
+  });
+  const status = resolveDeclaredVariant<Party['status']>(context, 'status', {
+    pending: 'PENDING',
+    selling: 'SELLING',
+    matched: 'MATCHED',
+    completed: 'COMPLETED',
+  });
+  const surface = resolveDeclaredVariant<'page' | 'panel'>(context, 'surface', {
+    page: 'page',
+    panel: 'panel',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const contentResult = resolveMateDetailContentAdapter({
+    componentId: MATE_DETAIL_CONTENT_COMPONENT_ID,
+    states: {
+      data,
+      permissions: permission,
+      interactions: 'default',
+    },
+    variants: {
+      status: context.variants.status,
+      theme: context.variants.theme,
+    },
+  });
+  const contentProps = contentResult.props as MateDetailContentRuntimeProps;
+  const runtimeOverride: MateDetailRuntimeVisualQaStateOverride = {
+    controller: {
+      id: String(contentProps.party.id),
+      party: system === 'loading' || system === 'error-503' ? null : contentProps.party,
+      partyError: system === 'error-503' ? '합성 상세 데이터를 불러오지 못했습니다.' : null,
+      partyStatusCode: system === 'error-503' ? 503 : null,
+      isLoading: system === 'loading',
+      isRevalidating: system === 'retrying',
+      currentUserId: contentProps.currentUserId,
+      currentUserHandle: contentProps.currentUserHandle,
+      isHost: contentProps.isHost,
+      isApproved: contentProps.isApproved,
+      canAccessCheckIn: contentProps.canAccessCheckIn,
+      myApplication: contentProps.myApplication,
+      hostApplications: contentProps.hostApplications,
+      fallbackCheckInUrl: `/mate/${contentProps.party.id}/checkin?source=visual-qa`,
+    },
+    content: contentProps.visualQaStateOverride,
+    qr: {
+      qrCodeValue: 'VISUAL-QA-CHECKIN-SESSION',
+      qrSessionExpiresAt: '2099-05-01T19:30:00Z',
+      manualCode: 'ABCD-1234',
+      isQrLoading: false,
+      qrSessionError: null,
+    },
+    seat: {
+      isLoading: false,
+      photos: [],
+      lightboxPhoto: null,
+    },
+  };
+
+  return {
+    props: {
+      id: String(contentProps.party.id),
+      variant: surface,
+      visualQaStateOverride: runtimeOverride,
+    },
+    captureSelector: '[data-testid="mate-detail-runtime"]',
+    initialPathname: `/mate/${contentProps.party.id}`,
+    expectedPathname: `/mate/${contentProps.party.id}`,
+    surfaceClassName: surface === 'panel'
+      ? 'block min-h-[844px] w-full max-w-none overflow-visible bg-background p-0 shadow-none'
+      : 'block min-h-[844px] w-full max-w-[1120px] overflow-visible bg-gray-50 p-0 shadow-none dark:bg-background',
+    theme,
+  };
+};
+
+const resolveMateListControlsRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_LIST_CONTROLS_RUNTIME_COMPONENT_ID) {
+    throw new Error('mate.list-controls-runtime only supports MateListControlsRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => !['tab', 'layout', 'theme'].includes(key))) {
+    throw new Error('mate.list-controls-runtime only supports data, permissions, interactions, system, tab, layout, and theme');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+    'error-503': 'error-503',
+  });
+  const activeTab = resolveDeclaredVariant<'all' | 'recruiting' | 'matched' | 'selling'>(context, 'tab', {
+    all: 'all',
+    recruiting: 'recruiting',
+    matched: 'matched',
+    selling: 'selling',
+  });
+  const layout = resolveDeclaredVariant<'mobile' | 'desktop'>(context, 'layout', {
+    mobile: 'mobile',
+    desktop: 'desktop',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single'
+    && permission === 'user'
+    && system === 'idle'
+    && layout === 'mobile'
+    && theme === 'light';
+  const targetConditions: Record<string, boolean> = {
+    guide: true,
+    create: true,
+    'mobile-filter': true,
+  };
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mate.list-controls-runtime default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !target || !targetConditions[target])) {
+    throw new Error(`mate.list-controls-runtime received an unsupported click target or state: ${target ?? '<missing>'}`);
+  }
+
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MATE_LIST_CONTROLS_RUNTIME_INTERACTION_EVENT,
+    { value },
+  );
+  const noop = () => {};
+  const inputValue = data === 'long-korean'
+    ? '잠실야구장 1루 응원석 가족 동반 장거리 메이트 검색어'
+    : data === 'unbroken-token'
+      ? `MATE_SEARCH_${'UNBROKEN'.repeat(18)}`
+      : '';
+  const fixtureParty = (fixtureData: string, index: number): Party => ({
+    ...createMatePartyCardFixture(fixtureData === 'empty' ? 'single' : fixtureData, 'PENDING', false),
+    id: 7201 + index,
+  });
+  const parties = data === 'empty' || system !== 'idle'
+    ? []
+    : data === 'populated'
+      ? [fixtureParty('single', 0), fixtureParty('long-korean', 1)]
+      : data === 'maximum-supported'
+        ? Array.from({ length: 4 }, (_, index) => fixtureParty('maximum-supported', index))
+        : [fixtureParty(data, 0)];
+  const controller: MateListControlsRuntimeController = {
+    activeMobileFilterCount: data === 'maximum-supported' ? 4 : data === 'empty' ? 0 : 1,
+    activeSortKey: 'latest',
+      activeSortOption: {
+        key: 'latest',
+        label: '최신순',
+        description: '새로 열린 파티 먼저',
+        sortBy: 'createdAt',
+        sortDir: 'desc',
+      },
+    activeTab,
+    applySearchTerm: emit('search-term'),
+    applyMobileFilters: emit('apply-filters'),
+    authUserId: permission === 'user' ? 2001 : null,
+    closeGuide: emit('guide-close'),
+    closeMobileFilter: emit('mobile-filter-close'),
+    dateItems: Array.from({ length: 14 }, (_, index) => new Date(2099, 4, 1 + index, 12, 0, 0)),
+    favoriteTeamId: permission === 'user' ? 'LG' : null,
+    favoriteUpdatingPartyId: null,
+    fetchError: system === 'error-503',
+    handleCreatePartyClick: emit('create'),
+    handleDateSelect: emit('date'),
+    handleMyTeamOnlyChange: emit('team'),
+    handlePartyClick: (party: Party) => emit(`party:${party.id}`)(),
+    handleFavoriteToggle: async (party: Party) => emit(`favorite:${party.id}`)(),
+    handleResetFilters: emit('reset-filters'),
+    handleRetry: emit('retry'),
+    handleSearchInputChange: emit('search-input'),
+    handleSortChange: emit('sort'),
+    handleTabChange: emit('tab'),
+    hasActiveFilters: inputValue.length > 0 || data === 'maximum-supported',
+    inputValue,
+    isDesktopListLayout: layout === 'desktop',
+    isGuideOpen: target === 'guide',
+    isLoading: system === 'loading',
+    isMobileFilterOpen: false,
+    mobileFilterButtonLabel: '팀과 좌석 필터 열기',
+    myTeamOnly: data === 'maximum-supported',
+    openMobileFilter: emit('mobile-filter'),
+    parties,
+    queryPage: 0,
+    selectedDate: data === 'empty' ? null : new Date(2099, 4, 1, 12, 0, 0),
+    setCurrentPage: emit('page'),
+    toggleGuideOpen: emit('guide'),
+    toggleMyTeamOnly: emit('team'),
+    toggleSearchQuery: emit('seat-filter'),
+    totalPages: data === 'maximum-supported' ? 4 : parties.length > 0 ? 2 : 0,
+  };
+  const props: MateListControlsRuntimeProps = {
+    controller,
+    recordedSearchTermsRef: { current: new Set<string>() },
+    children: createElement(
+      'div',
+      {
+        'data-testid': 'mate-list-controls-results-slot',
+        className: 'min-h-24 rounded-2xl border border-dashed border-border bg-card p-4 text-body text-muted-foreground',
+      },
+      system === 'loading'
+        ? '메이트 결과를 불러오는 중입니다.'
+        : system === 'error-503'
+          ? '메이트 결과를 불러오지 못했습니다.'
+          : `${parties.length}개의 합성 메이트 결과`,
+    ),
+    visualQaStateOverride: { suppressNetworkChildren: true },
+  };
+
+  return {
+    props,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_LIST_CONTROLS_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-list-controls-runtime-interaction',
+    }),
+    captureSelector: '[data-testid="mate-list-controls-runtime"]',
+    initialPathname: '/mate',
+    expectedPathname: '/mate',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-[1120px] overflow-visible bg-gray-50 p-0 shadow-none dark:bg-background',
+    theme,
+  };
+};
+
+const resolveMatePartyCardAdapter = (
+  context: ComponentStateAdapterContext,
+  componentId: string,
+  density: 'card' | 'compact' | 'row',
+): ComponentStateAdapterResult => {
+  const failClosed = (): never => {
+    throw new Error(
+      `지원하지 않는 MatePartyCard ${density} state: ${JSON.stringify({
+        componentId: context.componentId,
+        states: context.states,
+        variants: context.variants,
+        target: context.interactionTargetId,
+      })}`,
+    );
+  };
+
+  if (
+    context.componentId !== componentId
+    || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+    || Object.keys(context.variants).sort().join(',') !== 'favorite,status,theme'
+  ) {
+    return failClosed();
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const status = resolveDeclaredVariant<Party['status']>(context, 'status', {
+    recruiting: 'PENDING',
+    matched: 'MATCHED',
+    selling: 'SELLING',
+    completed: 'COMPLETED',
+  });
+  const favorited = resolveDeclaredVariant<boolean>(context, 'favorite', {
+    idle: false,
+    active: true,
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single'
+    && status === 'PENDING'
+    && !favorited
+    && theme === 'light';
+  if (interaction === 'default' && target !== undefined) return failClosed();
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['party', 'favorite']).has(target ?? ''))) {
+    return failClosed();
+  }
+
+  const party = createMatePartyCardFixture(data, status, favorited);
+  const emitPartyInteraction = (value: string) => emitVisualQaInteraction(
+    MATE_PARTY_CARD_INTERACTION_EVENT,
+    { value },
+  );
+  return {
+    props: {
+      party,
+      todayKey: '2099-04-30',
+      onClick: (selected: Party) => emitPartyInteraction(`party:${selected.id}`),
+      onFavoriteToggle: (selected: Party) => emitPartyInteraction(`favorite:${selected.id}`),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_PARTY_CARD_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-party-card-interaction',
+    }),
+    captureSelector: density === 'card'
+      ? '[data-testid="mate-party-card"]'
+      : `[data-testid="mate-party-${density}"]`,
+    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const createMateFilterBottomSheetFixture = (data: string) => {
+  const longTerm = '잠실 야구장에서 가족과 함께 관람하기 좋은 최근 검색어입니다';
+  const unbrokenTerm = `MATE_FILTER_${'UNBROKEN'.repeat(24)}`;
+  const base = {
+    inputValue: '',
+    recentSearches: [] as string[],
+    popularTerms: [] as MatePopularSearchTerm[],
+    queryState: 'success' as const,
+  };
+
+  switch (data) {
+    case 'single':
+      return {
+        ...base,
+        inputValue: '응원석',
+        recentSearches: ['잠실'],
+        popularTerms: [{ term: '잠실', count: 42, rank: 1 }],
+      };
+    case 'maximum-supported':
+      return {
+        ...base,
+        inputValue: '응원석 테이블석 프리미엄 익사이팅',
+        recentSearches: ['잠실', '문학', '수원', '사직', '고척', '대전'],
+        popularTerms: [
+          { term: '잠실', count: 120, rank: 1 },
+          { term: '문학', count: 98, rank: 2 },
+          { term: '수원', count: 76, rank: 3 },
+          { term: '사직', count: 54, rank: 4 },
+          { term: '고척', count: 31, rank: 5 },
+        ],
+      };
+    case 'long-korean':
+      return {
+        ...base,
+        inputValue: '모바일 화면에서 여러 줄로 자연스럽게 줄바꿈되어야 하는 긴 메이트 검색 조건',
+        recentSearches: [longTerm],
+        popularTerms: [{ term: longTerm, count: 12, rank: 1 }],
+      };
+    case 'unbroken-token':
+      return {
+        ...base,
+        inputValue: unbrokenTerm,
+        recentSearches: [unbrokenTerm],
+        popularTerms: [{ term: unbrokenTerm, count: 7, rank: 1 }],
+      };
+    case 'empty':
+    default:
+      return base;
+  }
+};
+
+const resolveMateFilterBottomSheetAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const failClosed = (): never => {
+    throw new Error(
+      `지원하지 않는 MateFilterBottomSheet state: ${JSON.stringify({
+        componentId: context.componentId,
+        states: context.states,
+        variants: context.variants,
+        target: context.interactionTargetId,
+      })}`,
+    );
+  };
+
+  if (
+    context.componentId !== 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet'
+    || Object.keys(context.states).sort().join(',') !== 'data,interactions'
+    || Object.keys(context.variants).sort().join(',') !== 'favoriteTeam,selection,theme'
+  ) {
+    return failClosed();
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const favoriteTeam = resolveDeclaredVariant<'with-team' | 'without-team'>(context, 'favoriteTeam', {
+    'with-team': 'with-team',
+    'without-team': 'without-team',
+  });
+  const selection = resolveDeclaredVariant<'active' | 'idle'>(context, 'selection', {
+    active: 'active',
+    idle: 'idle',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  if (favoriteTeam === 'without-team' && selection === 'active') return failClosed();
+
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single'
+    && favoriteTeam === 'with-team'
+    && selection === 'idle'
+    && theme === 'light';
+  const targetSelectors: Record<string, string> = {
+    close: '[data-testid="mate-filter-sheet"] button[aria-label="닫기"]',
+    apply: '[data-testid="mate-filter-apply"]',
+    reset: '[data-testid="mate-filter-reset"]',
+    team: '[data-testid="mate-filter-team-toggle"]',
+    seat: '[data-testid="mate-filter-seat-CHEERING"]',
+    recent: '[data-testid="mate-recent-search-term-1"]',
+    popular: '[data-testid="mate-popular-search-term-1"]',
+  };
+  if (interaction === 'default' && target !== undefined) return failClosed();
+  if (interaction === 'click' && (!canonicalInteraction || !Object.prototype.hasOwnProperty.call(targetSelectors, target ?? ''))) {
+    return failClosed();
+  }
+
+  const fixture = createMateFilterBottomSheetFixture(data);
+  const emitFilterInteraction = (value: string) => emitVisualQaInteraction(
+    MATE_FILTER_BOTTOM_SHEET_INTERACTION_EVENT,
+    { value },
+  );
+  return {
+    props: {
+      open: true,
+      favoriteTeamId: favoriteTeam === 'with-team' ? 'lg' : null,
+      myTeamOnly: selection === 'active',
+      inputValue: fixture.inputValue,
+      onClose: () => emitFilterInteraction('close'),
+      onSearchTermSelect: (term: string) => emitFilterInteraction(`search:${term}`),
+      onApplyFilters: (myTeamOnly: boolean, searchQuery: string) => emitFilterInteraction(
+        `apply:${myTeamOnly}:${searchQuery}`,
+      ),
+      onPopularTermSelect: () => emitFilterInteraction('popular-close'),
+      onResetFilters: () => emitFilterInteraction('reset'),
+      visualQaStateOverride: {
+        recentSearches: {
+          recentSearches: fixture.recentSearches,
+          onRemoveRecentSearch: (term: string) => emitFilterInteraction(`delete:${term}`),
+          onClearRecentSearches: () => emitFilterInteraction('clear-recent'),
+        },
+        popularSearches: {
+          popularTerms: fixture.popularTerms,
+          queryState: fixture.queryState,
+        },
+      },
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_FILTER_BOTTOM_SHEET_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-filter-bottom-sheet-interaction',
+    }),
+    captureSelector: '[data-testid="mate-filter-sheet"]',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible rounded-t-3xl border-0 bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const createMateDetailSeatPanelPhotos = (data: string): SeatViewPhoto[] => {
+  if (data === 'empty') return [];
+  const count = data === 'single' ? 1 : data === 'maximum-supported' ? 9 : 3;
+  return Array.from({ length: count }, (_, index) => ({
+    block: data === 'unbroken-token' ? `BLOCK-${'X'.repeat(80)}` : `${index + 1}구역`,
+    diaryDate: `2099-05-${String(index + 1).padStart(2, '0')}`,
+    photoUrl: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='640' height='480' fill='%232b5f4f'/%3E%3Ccircle cx='${160 + index * 32}' cy='240' r='90' fill='%23d8b36a'/%3E%3C/svg%3E`,
+    section: data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되는 매우 긴 시야 구역 이름'
+      : data === 'unbroken-token'
+        ? `SECTION-${'S'.repeat(120)}`
+        : `시야 ${index + 1}`,
+    stadium: 'JAMSIL',
+  }));
+};
+
+const resolveMateDetailSeatPanelAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 MateDetailSeatPanel state: ${data}:${interaction}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['close', 'photo-0']).has(target ?? ''))) {
+    throw new Error(`지원하지 않는 MateDetailSeatPanel state: ${data}:${interaction}:${theme}:${target ?? '<none>'}`);
+  }
+  const photos = createMateDetailSeatPanelPhotos(data);
+  return {
+    props: {
+      open: true,
+      stadium: '잠실야구장',
+      section: data === 'long-korean'
+        ? '1루 응원석 가족 동반 장거리 설명 좌석'
+        : data === 'unbroken-token'
+          ? `SECTION_${'UNBROKEN'.repeat(18)}`
+          : '1루 응원석',
+      seatDetail: data === 'long-korean'
+        ? '모바일 화면에서 여러 줄로 자연스럽게 줄바꿈되어야 하는 긴 좌석 상세 위치 안내입니다.'.repeat(3)
+        : data === 'unbroken-token'
+          ? `SEAT_${'UNBROKEN'.repeat(22)}`
+          : '101블록 1열',
+      onClose: () => emitVisualQaInteraction(MATE_DETAIL_SEAT_PANEL_INTERACTION_EVENT, { value: 'close' }),
+      visualQaStateOverride: {
+        isLoading: false,
+        lightboxPhoto: null,
+        photos,
+      },
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_DETAIL_SEAT_PANEL_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-detail-seat-panel-interaction',
+    }),
+    captureSelector: '[data-testid="mate-seat-panel"]',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const createMateDetailQrPanelFixture = (data: string) => {
+  const longCopy = '체크인 세션이 끊겨도 모바일 화면 안에서 안내 문장이 자연스럽게 줄바꿈되어야 하는 긴 오류 설명입니다.'.repeat(3);
+  const unbrokenCopy = `QR_SESSION_${'UNBROKEN'.repeat(20)}`;
+  return {
+    qrCodeValue: 'VISUAL-QA-CHECKIN-SESSION',
+    isQrLoading: data === 'loading',
+    qrSessionExpiresAt: ['available', 'manual', 'maximum-supported'].includes(data)
+      ? '2099-05-01T19:30:00+09:00'
+      : null,
+    qrSessionError: data === 'request-error-recovery'
+      ? '체크인 QR 세션을 불러오지 못했습니다.'
+      : data === 'long-korean'
+        ? longCopy
+        : data === 'unbroken-token'
+          ? unbrokenCopy
+          : null,
+    manualCode: ['manual', 'maximum-supported'].includes(data)
+      ? data === 'maximum-supported' ? '9'.repeat(12) : 'ABCD-1234'
+      : null,
+  };
+};
+
+const resolveMateDetailQrPanelAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    available: 'available',
+    loading: 'loading',
+    manual: 'manual',
+    'request-error-recovery': 'request-error-recovery',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'available' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 MateDetailQrPanel state: ${data}:${interaction}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['close', 'open-check-in']).has(target ?? ''))) {
+    throw new Error(`지원하지 않는 MateDetailQrPanel state: ${data}:${interaction}:${theme}:${target ?? '<none>'}`);
+  }
+  const fixture = createMateDetailQrPanelFixture(data);
+  return {
+    props: {
+      open: true,
+      ...fixture,
+      onClose: () => emitVisualQaInteraction(MATE_DETAIL_QR_PANEL_INTERACTION_EVENT, { value: 'close' }),
+      onOpenCheckInPage: () => emitVisualQaInteraction(MATE_DETAIL_QR_PANEL_INTERACTION_EVENT, { value: 'open-check-in' }),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_DETAIL_QR_PANEL_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-detail-qr-panel-interaction',
+    }),
+    captureSelector: '[data-testid="mate-qr-panel"]',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-[360px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateDetailQrRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    available: 'available',
+    loading: 'loading',
+    manual: 'manual',
+    'request-error-recovery': 'request-error-recovery',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'available' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 MateDetailQrRuntime state: ${data}:${interaction}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['close', 'open-check-in']).has(target ?? ''))) {
+    throw new Error(`지원하지 않는 MateDetailQrRuntime state: ${data}:${interaction}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const fixture: MateDetailQrRuntimeVisualQaStateOverride = createMateDetailQrPanelFixture(data);
+  return {
+    props: {
+      partyId: 77,
+      fallbackCheckInUrl: '/mate/77/check-in?source=visual-qa',
+      canAccessCheckIn: true,
+      onClose: () => emitVisualQaInteraction(MATE_DETAIL_QR_RUNTIME_INTERACTION_EVENT, { value: 'close' }),
+      onOpenCheckInPage: () => emitVisualQaInteraction(MATE_DETAIL_QR_RUNTIME_INTERACTION_EVENT, { value: 'open-check-in' }),
+      visualQaStateOverride: fixture,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_DETAIL_QR_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-detail-qr-runtime-interaction',
+    }),
+    captureSelector: '[data-testid="mate-qr-panel"]',
+    surfaceClassName: 'block min-h-[844px] w-full max-w-[360px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMateDetailInfoSectionsAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'status-completed': 'status-completed',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    'approved-member': 'approved-member',
+    host: 'host',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const phase = resolveDeclaredVariant<'fallback' | 'runtime'>(context, 'phase', {
+    fallback: 'fallback',
+    runtime: 'runtime',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'status-completed'
+    && permission === 'approved-member'
+    && phase === 'runtime'
+    && theme === 'light';
+  const interactionTargets = new Set(['seat-guide', 'chat', 'profile', 'host-reviews', 'write-review']);
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 MateDetailInfoSections state: ${data}:${permission}:${phase}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !interactionTargets.has(target ?? ''))) {
+    throw new Error(`지원하지 않는 MateDetailInfoSections state: ${data}:${permission}:${phase}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const party = {
+    ...createMatePartyCardFixture(data === 'status-completed' ? 'single' : data, data === 'status-completed' ? 'COMPLETED' : 'PENDING', false),
+    hostHandle: data === 'empty' ? undefined : 'visual-host',
+    hostName: data === 'long-korean'
+      ? '모바일 상세 섹션에서도 자연스럽게 줄바꿈되어야 하는 매우 긴 메이트 호스트 이름'
+      : data === 'unbroken-token'
+        ? `HOST_${'UNBROKEN'.repeat(18)}`
+        : data === 'empty'
+          ? '새 호스트'
+          : '시각 정합성 호스트',
+    hostReviewCount: data === 'empty' ? 0 : 24,
+    hostTrustMetrics: data === 'empty' ? null : {
+      completedMateCount: 12,
+      recentNoShowCount: 0,
+      averageResponseMinutes: 18,
+      reviewKeywordSummary: [{ label: '친절함', count: 12 }],
+      recentHostReviews: [],
+    },
+  } satisfies Party;
+  const targetHandle = permission === 'host' ? 'visual-applicant' : 'visual-host';
+  const pressureComment = data === 'long-korean'
+    ? '모바일 화면에서도 후기 본문이 경계를 넘지 않고 여러 줄로 표시되어야 하는 긴 후기입니다.'.repeat(3)
+    : data === 'unbroken-token'
+      ? `REVIEW_${'UNBROKEN'.repeat(24)}`
+      : '약속 시간을 잘 지키고 친절하게 안내해주셨어요.';
+  const reviews: PartyReview[] = [];
+  const applications: Application[] = permission === 'host' && data === 'status-completed'
+    ? [{
+      id: 1,
+      partyId: party.id,
+      applicantHandle: targetHandle,
+      applicantName: '리뷰 대상 메이트',
+      applicantBadge: 'VERIFIED',
+      applicantRating: 4.7,
+      message: pressureComment,
+      isApproved: true,
+      isRejected: false,
+      createdAt: '2099-04-01T00:00:00Z',
+    }]
+    : [];
+  const override: MateDetailInfoSectionsVisualQaStateOverride = {
+    reviewsPhase: phase,
+    seatPhotoCount: data === 'empty' ? 0 : data === 'status-completed' ? 2 : 1,
+    hostReviews: {
+      isLoading: false,
+      isError: false,
+      reviews: data === 'empty' ? [] : [{
+        id: 1,
+        partyId: party.id,
+        reviewerHandle: 'reviewer',
+        revieweeHandle: party.hostHandle,
+        rating: 5,
+        comment: pressureComment,
+        createdAt: '2099-04-01T00:00:00Z',
+      }],
+    },
+    reviews: {
+      reviews,
+      applications,
+      reviewsIsLoading: false,
+      applicationsIsLoading: false,
+      reviewsIsError: false,
+      applicationsIsError: false,
+    },
+  };
+
+  return {
+    props: {
+      party,
+      isHost: permission === 'host',
+      isApproved: permission === 'approved-member',
+      summaryPolicyText: data === 'long-korean'
+        ? '모바일에서도 여러 줄로 안전하게 표시되어야 하는 긴 안내 정책 문구입니다.'.repeat(2)
+        : '승인 후 채팅에서 장소 조율',
+      currentUserId: permission === 'anonymous' ? null : 9001,
+      currentUserHandle: permission === 'anonymous' ? undefined : 'visual-viewer',
+      onOpenHostProfile: () => emitVisualQaInteraction(MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT, { value: 'profile' }),
+      onOpenSeatViewGuide: () => emitVisualQaInteraction(MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT, { value: 'seat-guide' }),
+      onOpenChat: () => emitVisualQaInteraction(MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT, { value: 'chat' }),
+      onRequestReview: (targetReview: { handle: string }) => emitVisualQaInteraction(
+        MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT,
+        { value: `request-review:${targetReview.handle}` },
+      ),
+      visualQaStateOverride: override,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_DETAIL_INFO_SECTIONS_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-detail-info-sections-interaction',
+    }),
+    captureSelector: '[data-testid="mate-detail-seat-view-block"]',
+    surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-2 shadow-none',
+    theme,
+  };
+};
+
+const resolveSeatMapFilterBarAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const layout = resolveDeclaredVariant<'flat' | 'dimensional'>(context, 'layout', {
+    flat: 'flat',
+    dimensional: 'dimensional',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single'
+    && layout === 'dimensional'
+    && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 SeatMapFilterBar state: ${data}:${layout}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || target !== 'secondary-toggle')) {
+    throw new Error(`지원하지 않는 SeatMapFilterBar state: ${data}:${layout}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const makeGroup = (
+    id: string,
+    label: string,
+    filterDimension?: SeatMapFilterGroup['filterDimension'],
+  ): SeatMapFilterGroup => ({
+    id,
+    label,
+    cats: null,
+    ...(filterDimension ? { filterDimension } : {}),
+  });
+  const longLabel = '모바일에서도 주변 필터를 밀어내지 않고 자연스럽게 줄바꿈되어야 하는 긴 좌석 구역 이름';
+  const unbrokenLabel = `FILTER_${'UNBROKEN'.repeat(18)}`;
+  const dimensionalGroups: SeatMapFilterGroup[] = data === 'empty'
+    ? []
+    : [
+      makeGroup('level-1', data === 'long-korean' ? longLabel : data === 'unbroken-token' ? unbrokenLabel : '1층', 'level'),
+      makeGroup('level-2', '2층', 'level'),
+      makeGroup('grade-premium', data === 'maximum-supported' ? '프리미엄 최대 지원 구역' : '프리미엄', 'grade'),
+      makeGroup('grade-family', '가족석', 'grade'),
+      makeGroup('position-home', '홈 응원석', 'position'),
+      ...(data === 'maximum-supported'
+        ? [
+          makeGroup('level-3', '3층', 'level'),
+          makeGroup('grade-table', '테이블석', 'grade'),
+          makeGroup('position-away', '원정 응원석', 'position'),
+        ]
+        : []),
+    ];
+  const flatGroups: SeatMapFilterGroup[] = data === 'empty'
+    ? []
+    : [
+      makeGroup('all', '전체'),
+      makeGroup('infield', data === 'long-korean' ? longLabel : data === 'unbroken-token' ? unbrokenLabel : '내야'),
+      makeGroup('outfield', '외야'),
+      ...(data === 'maximum-supported'
+        ? [makeGroup('premium', '프리미엄 최대 지원 구역'), makeGroup('family', '가족석')]
+        : []),
+    ];
+  const groups = layout === 'dimensional' ? dimensionalGroups : flatGroups;
+  const selectedId = groups[0]?.id ?? '';
+
+  return {
+    props: {
+      groups,
+      selectedId,
+      mode: theme,
+      accentColor: theme === 'dark' ? '#7ed3b3' : '#0f766e',
+      testIdPrefix: 'visual-qa-seat-map',
+      onChange: (value: string) => emitVisualQaInteraction(
+        SEAT_MAP_FILTER_BAR_INTERACTION_EVENT,
+        { value },
+      ),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: SEAT_MAP_FILTER_BAR_INTERACTION_EVENT,
+      testId: 'visual-qa-seat-map-filter-bar-interaction',
+    }),
+    captureSelector: '[data-vqa-harness-surface]',
+    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveHomePullToRefreshAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    drag: 'drag',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 HomePullToRefresh state: ${data}:${theme}:${target}`);
+  }
+  if (interaction === 'drag' && (!canonicalInteraction || target !== 'refresh')) {
+    throw new Error(`지원하지 않는 HomePullToRefresh state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const content = data === 'long-korean'
+    ? '모바일 홈 피드에서 마지막 갱신 안내와 콘텐츠가 안전하게 여러 줄로 표시되어야 하는 긴 한국어 콘텐츠입니다.'.repeat(3)
+    : data === 'unbroken-token'
+      ? `HOME_FEED_${'UNBROKEN'.repeat(30)}`
+      : data === 'maximum-supported'
+        ? `${'최대 지원 홈 피드 항목 '.repeat(18)}${'X'.repeat(160)}`
+        : data === 'empty'
+          ? '새 경기 콘텐츠가 없습니다.'
+          : '오늘의 경기와 응원 피드를 확인해보세요.';
+  const lastRefreshedLabel = data === 'empty'
+    ? null
+    : data === 'long-korean'
+      ? '오후 6:42 마지막 동기화 완료 안내'
+      : data === 'unbroken-token'
+        ? `UPDATED_${'U'.repeat(80)}`
+        : '오후 6:42';
+
+  return {
+    props: {
+      lastRefreshedLabel,
+      contentClassName: 'min-h-24 w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900',
+      onRefresh: () => emitVisualQaInteraction(HOME_PULL_TO_REFRESH_INTERACTION_EVENT, { value: 'refresh' }),
+      children: createElement('p', {
+        className: 'text-sm leading-relaxed [overflow-wrap:anywhere]',
+        'data-testid': 'visual-qa-home-pull-content',
+      }, content),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: HOME_PULL_TO_REFRESH_INTERACTION_EVENT,
+      testId: 'visual-qa-home-pull-to-refresh-interaction',
+    }),
+    captureSelector: '[data-testid="home-pull-to-refresh"]',
+    surfaceClassName: 'block min-h-24 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveCoachAnalysisDialogAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const isDirectRuntime = context.componentId === 'src/components/CoachAnalysisDialogRuntime.tsx#CoachAnalysisDialogRuntime';
+  if (!isDirectRuntime && context.componentId !== 'src/components/CoachAnalysisDialog.tsx#CoachAnalysisDialog') {
+    throw new Error('coach-analysis.dialog only supports CoachAnalysisDialog and CoachAnalysisDialogRuntime');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 CoachAnalysisDialog state: ${data}:${theme}:${target}`);
+  }
+  const expectedClickTarget = isDirectRuntime ? 'close' : 'trigger';
+  if (interaction === 'click' && (!canonicalInteraction || target !== expectedClickTarget)) {
+    throw new Error(`지원하지 않는 CoachAnalysisDialog state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const fixture = {
+    ...(isDirectRuntime
+      ? {
+        isOpen: true,
+        onRequestClose: () => emitVisualQaInteraction(COACH_ANALYSIS_DIALOG_INTERACTION_EVENT, { value: 'close' }),
+      }
+      : {
+        defaultOpen: interaction === 'default',
+      }),
+    gameStatusBucket: 'CANCELLED',
+    initialTeam: data === 'empty'
+      ? undefined
+      : data === 'long-korean'
+        ? '모바일 화면에서 여러 줄로 표시되어야 하는 매우 긴 구단 이름'
+        : data === 'unbroken-token'
+          ? `TEAM_${'UNBROKEN'.repeat(18)}`
+          : 'LG',
+    homeTeamId: data === 'maximum-supported' ? 'LG' : undefined,
+    awayTeamId: data === 'maximum-supported' ? 'KT' : undefined,
+    homeScore: data === 'maximum-supported' ? 999999999 : null,
+    awayScore: data === 'maximum-supported' ? 888888888 : null,
+    gameId: data === 'unbroken-token' ? `GAME_${'X'.repeat(180)}` : `visual-qa-coach-${data}`,
+    initialHomeRank: data === 'maximum-supported' ? 999 : null,
+    initialAwayRank: data === 'maximum-supported' ? 888 : null,
+    initialWinProbabilityHome: data === 'maximum-supported' ? 99 : null,
+    initialSupportedFactCount: data === 'maximum-supported' ? 999999999 : 0,
+    initialUsedEvidence: data === 'long-korean'
+      ? ['모바일 화면에서 여러 줄로 표시되어야 하는 매우 긴 근거 문장'.repeat(3)]
+      : undefined,
+    initialFreshnessLabel: data === 'unbroken-token'
+      ? `FRESH_${'U'.repeat(80)}`
+      : data === 'empty'
+        ? null
+        : '방금 갱신',
+    ...(isDirectRuntime
+      ? {}
+      : {
+        trigger: createElement('button', {
+          type: 'button',
+          'data-testid': 'visual-qa-coach-analysis-trigger',
+          onClick: () => emitVisualQaInteraction(COACH_ANALYSIS_DIALOG_INTERACTION_EVENT, { value: 'trigger' }),
+          className: 'rounded-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white',
+        }, 'AI 코치 상세 분석'),
+      }),
+  };
+
+  return {
+    props: fixture,
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: COACH_ANALYSIS_DIALOG_INTERACTION_EVENT,
+      testId: 'visual-qa-coach-analysis-dialog-interaction',
+    }),
+    captureSelector: '[data-testid="coach-analysis-dialog"]',
+    surfaceClassName: 'block min-h-[720px] w-full max-w-[1080px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveCoachAnalysisResultRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    loading: 'loading',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+    'error-503': 'error-503',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    retry: 'retry',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalRetry = data === 'error-503' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 CoachAnalysisDialogResultRuntime state: ${data}:${theme}:${target}`);
+  }
+  if (interaction === 'retry' && (!canonicalRetry || target !== 'retry')) {
+    throw new Error(`지원하지 않는 CoachAnalysisDialogResultRuntime state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const longCopy = data === 'long-korean'
+    ? '모바일 화면에서도 근거와 승부처 설명이 자연스럽게 여러 줄로 표시되어야 하는 긴 코치 분석 결과입니다.'.repeat(4)
+    : data === 'unbroken-token'
+      ? `ANALYSIS_${'UNBROKEN'.repeat(28)}`
+      : '확인된 경기 정보 안에서 홈팀 기준의 승부처를 정리했습니다.';
+  const metricValue = data === 'maximum-supported' ? '999999999.999' : '0.842';
+  const result: CoachAnalyzeResponse | null = data === 'loading'
+    ? null
+    : data === 'error-503'
+      ? { error: '분석 결과를 불러오지 못했습니다.', game_status_bucket: 'COMPLETED' }
+      : {
+        data: {
+          dashboard: {
+            headline: data === 'long-korean' ? longCopy : '홈팀 승부처 리포트',
+            context: longCopy,
+            sentiment: data === 'unbroken-token' ? 'neutral' : 'positive',
+            stats: [
+              { label: '최근 흐름', value: metricValue, status: 'good', trend: 'up', is_critical: false },
+              { label: '불펜 운영', value: data === 'maximum-supported' ? '888888888.888' : '0.618', status: 'warning', trend: 'neutral', is_critical: true },
+            ],
+          },
+          metrics: [
+            {
+              category: '흐름',
+              name: '최근 흐름',
+              value: metricValue,
+              description: longCopy,
+              risk_level: data === 'maximum-supported' ? 0 : 2,
+              trend: 'up',
+            },
+            {
+              category: '불펜',
+              name: '불펜 운영',
+              value: data === 'maximum-supported' ? '888888888.888' : '0.618',
+              description: '후반 운영 여력을 확인하는 지표입니다.',
+              risk_level: 1,
+              trend: 'neutral',
+            },
+          ],
+          detailed_analysis: longCopy,
+          coach_note: '초반 선발 매치업과 후반 불펜 운영을 함께 확인하세요.',
+          analysis_summary: longCopy,
+          verdict: '홈팀 기준으로 초반 흐름을 지키는 운영이 중요합니다.',
+          strengths: ['최근 흐름이 안정적입니다.', longCopy],
+          weaknesses: ['후반 운영 변동성을 확인해야 합니다.'],
+          risks: [{
+            area: '불펜',
+            level: 1,
+            description: '후반 이닝의 운영 여력이 승부에 영향을 줄 수 있습니다.',
+            inning_label: '7회 이후',
+            inning_start: 7,
+            inning_end: 9,
+            impact: '후반 리드 유지',
+            impact_to: 'home',
+          } satisfies CoachRiskItem],
+          why_it_matters: ['확인된 수치를 경기 운영 의미로 연결합니다.'],
+          swing_factors: ['선발 투수의 초반 제구'],
+          watch_points: ['7회 이후 불펜 교체 타이밍'],
+          uncertainty: data === 'long-korean' ? [longCopy] : ['라인업 확정 여부'],
+          game_status_bucket: 'COMPLETED',
+        },
+        request_mode: 'manual_detail',
+        analysis_type: 'game_review',
+        generation_mode: 'deterministic_review',
+        data_quality: data === 'long-korean' ? 'partial' : 'grounded',
+        supported_fact_count: data === 'maximum-supported' ? 999999999 : 8,
+        used_evidence: ['내부 경기 요약', '내부 팀 지표'],
+        grounding_warnings: data === 'long-korean' ? ['일부 근거가 부족해 보수적으로 해석합니다.'] : [],
+        grounding_reasons: data === 'long-korean' ? ['missing_summary'] : [],
+        game_status_bucket: 'COMPLETED',
+        win_probability_home: data === 'maximum-supported' ? 99.9 : 62.5,
+      };
+
+  return {
+    props: {
+      loading: data === 'loading',
+      analysisStep: data === 'loading' ? '로컬 fixture 결과를 준비하는 중입니다.' : '',
+      result,
+      isPastGame: data !== 'loading',
+      isFutureGame: false,
+      gameStatusBucket: 'COMPLETED',
+      errorAction: null,
+      onLoginAction: () => {},
+      onRetry: () => emitVisualQaInteraction(COACH_ANALYSIS_RESULT_RUNTIME_INTERACTION_EVENT, { value: 'retry' }),
+      loadingFallbackMessage: '분석 결과를 준비하는 중입니다.',
+      homeTeamId: 'LG',
+      awayTeamId: 'KT',
+      homeScore: data === 'maximum-supported' ? 999999999 : 4,
+      awayScore: data === 'maximum-supported' ? 888888888 : 2,
+      initialHomeRank: data === 'maximum-supported' ? 999 : 2,
+      initialAwayRank: data === 'maximum-supported' ? 888 : 5,
+      initialWinProbabilityHome: data === 'maximum-supported' ? 99.9 : 62.5,
+      initialDataQuality: data === 'long-korean' ? 'partial' : 'grounded',
+      initialSupportedFactCount: data === 'maximum-supported' ? 999999999 : 8,
+      initialUsedEvidence: ['내부 경기 요약', '내부 팀 지표'],
+      initialGroundingWarnings: data === 'long-korean' ? ['일부 근거가 부족해 보수적으로 해석합니다.'] : [],
+      initialGroundingReasons: data === 'long-korean' ? ['missing_summary'] : [],
+      initialFreshnessLabel: data === 'unbroken-token' ? `FRESH_${'U'.repeat(80)}` : '방금 갱신',
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: COACH_ANALYSIS_RESULT_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-coach-analysis-result-runtime-interaction',
+    }),
+    captureSelector: '[data-testid^="coach-analysis-result-"]',
+    surfaceClassName: 'block min-h-[420px] w-full max-w-[1080px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+type VisualQaConfirmDialogProviderChildProps = {
+  options: ConfirmOptions;
+};
+
+function VisualQaConfirmDialogProviderChild({
+  options,
+}: VisualQaConfirmDialogProviderChildProps) {
+  const { confirm } = useConfirmDialog();
+  const [result, setResult] = useState('대기 중');
+
+  const handleOpen = () => {
+    setResult('확인 대기 중');
+    void confirm(options).then((confirmed) => {
+      setResult(confirmed ? '확인됨' : '취소됨');
+      emitVisualQaInteraction(CONFIRM_DIALOG_PROVIDER_INTERACTION_EVENT, {
+        value: confirmed ? 'confirm' : 'cancel',
+      });
+    });
+  };
+
+  return createElement(
+    'div',
+    {
+      'data-testid': 'confirm-dialog-provider-surface',
+      className: 'flex w-full max-w-md flex-col gap-3',
+    },
+    createElement(
+      'button',
+      {
+        type: 'button',
+        'data-testid': 'confirm-dialog-provider-trigger',
+        className: 'rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold',
+        onClick: handleOpen,
+      },
+      '확인 dialog 열기',
+    ),
+    createElement(
+      'output',
+      {
+        'aria-live': 'polite',
+        'data-testid': 'confirm-dialog-provider-result',
+        className: 'text-sm text-slate-600',
+      },
+      result,
+    ),
+  );
+}
+
+const resolveConfirmDialogProviderAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 ConfirmDialogProvider state: ${data}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['confirm', 'cancel']).has(target ?? ''))) {
+    throw new Error(`지원하지 않는 ConfirmDialogProvider state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const copy = data === 'long-korean'
+    ? {
+      title: '모바일에서도 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 확인 dialog 제목입니다.'.repeat(2),
+      description: '확인과 취소의 의미가 좁은 화면에서도 분명하게 전달되도록 긴 설명 문장을 줄바꿈과 함께 확인합니다.'.repeat(3),
+    }
+    : data === 'unbroken-token'
+      ? {
+        title: `CONFIRM_${'UNBROKEN'.repeat(18)}`,
+        description: `DESCRIPTION_${'TOKEN'.repeat(36)}`,
+      }
+      : data === 'maximum-supported'
+        ? {
+          title: `최대 지원 확인 항목 ${'X'.repeat(160)}`,
+          description: `MAX_${'VALUE'.repeat(80)}`,
+        }
+        : data === 'empty'
+          ? { title: '삭제할까요?' }
+          : { title: '응원 게시글을 삭제할까요?', description: '삭제한 게시글은 다시 복구할 수 없습니다.' };
+  const options: ConfirmOptions = {
+    title: copy.title,
+    description: copy.description,
+    confirmLabel: data === 'long-korean' ? '긴 확인 문구' : '확인',
+    cancelLabel: data === 'unbroken-token' ? `취소_${'C'.repeat(20)}` : '취소',
+    variant: data === 'maximum-supported' ? 'destructive' : 'default',
+  };
+
+  return {
+    props: {
+      children: createElement(VisualQaConfirmDialogProviderChild, { options }),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: CONFIRM_DIALOG_PROVIDER_INTERACTION_EVENT,
+      testId: 'visual-qa-confirm-dialog-provider-interaction',
+    }),
+    captureSelector: '[data-testid="confirm-dialog-provider-surface"]',
+    surfaceClassName: 'block min-h-[360px] w-full max-w-[560px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+type VisualQaErrorModalProviderChildProps = {
+  errorData: ErrorData;
+};
+
+function VisualQaErrorModalProviderChild({
+  errorData,
+}: VisualQaErrorModalProviderChildProps) {
+  const {
+    closeErrorModal,
+    errorId,
+    isOpen,
+    message,
+    onRetry,
+    openErrorModal,
+    source,
+    statusCode,
+  } = useErrorModal();
+  const [lastAction, setLastAction] = useState('대기 중');
+
+  const emitAction = (value: string) => {
+    setLastAction(value);
+    emitVisualQaInteraction(ERROR_MODAL_PROVIDER_INTERACTION_EVENT, { value });
+  };
+
+  const handleOpen = () => {
+    openErrorModal(errorData);
+    emitAction('open');
+  };
+
+  const handleGlobalEvent = () => {
+    window.dispatchEvent(new CustomEvent('global-api-error', { detail: errorData }));
+    emitAction('global-event');
+  };
+
+  const handleIgnoredEvent = () => {
+    window.dispatchEvent(new CustomEvent('global-api-error', {
+      detail: { ...errorData, responseCode: 'INVALID_AUTHOR' },
+    }));
+    emitAction('ignored-event');
+  };
+
+  const handleRetry = async () => {
+    await onRetry?.();
+    emitAction('retry');
+  };
+
+  return createElement(
+    'div',
+    {
+      'data-testid': 'error-modal-provider-surface',
+      className: 'flex w-full max-w-xl flex-col gap-3',
+      'data-open': isOpen,
+    },
+    createElement(
+      'div',
+      {
+        'data-testid': 'error-modal-provider-state',
+        className: 'rounded-lg border border-slate-200 p-4 text-sm',
+        role: 'status',
+      },
+      `${isOpen ? 'open' : 'closed'} · ${statusCode ?? 'none'} · ${source} · ${errorId ?? 'no-id'} · ${message}`,
+    ),
+    createElement(
+      'div',
+      { className: 'flex flex-wrap gap-2' },
+      createElement('button', {
+        type: 'button',
+        'data-testid': 'error-modal-provider-open',
+        className: 'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold',
+        onClick: handleOpen,
+      }, '직접 열기'),
+      createElement('button', {
+        type: 'button',
+        'data-testid': 'error-modal-provider-global-event',
+        className: 'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold',
+        onClick: handleGlobalEvent,
+      }, '전역 오류 보내기'),
+      createElement('button', {
+        type: 'button',
+        'data-testid': 'error-modal-provider-ignored-event',
+        className: 'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold',
+        onClick: handleIgnoredEvent,
+      }, '무시되는 오류 보내기'),
+      createElement('button', {
+        type: 'button',
+        'data-testid': 'error-modal-provider-close',
+        className: 'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold',
+        onClick: () => {
+          closeErrorModal();
+          emitAction('close');
+        },
+      }, '닫기'),
+      createElement('button', {
+        type: 'button',
+        'data-testid': 'error-modal-provider-retry',
+        className: 'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold',
+        onClick: () => { void handleRetry(); },
+      }, '다시 시도'),
+    ),
+    createElement('output', {
+      'aria-live': 'polite',
+      'data-testid': 'error-modal-provider-action',
+      className: 'text-sm text-slate-600',
+    }, lastAction),
+  );
+}
+
+const resolveErrorModalProviderAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  const validTargets = new Set(['open', 'global-event', 'ignored-event', 'close', 'retry']);
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 ErrorModalProvider state: ${data}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !validTargets.has(target ?? ''))) {
+    throw new Error(`지원하지 않는 ErrorModalProvider state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const copy = data === 'long-korean'
+    ? {
+      errorId: 'VISUAL-QA-LONG-KOREAN',
+      message: '모바일 화면에서 긴 한국어 전역 오류 안내가 줄바꿈되며 context 상태와 조작 영역을 침범하지 않아야 합니다.'.repeat(3),
+    }
+    : data === 'unbroken-token'
+      ? {
+        errorId: `VISUAL_QA_${'ERROR'.repeat(32)}`,
+        message: `MESSAGE_${'UNBROKEN'.repeat(70)}`,
+      }
+      : data === 'maximum-supported'
+        ? {
+          errorId: `VISUAL-QA-MAX-${'E'.repeat(180)}`,
+          message: `최대 지원 전역 오류 메시지 ${'오류 설명 '.repeat(90)}`,
+        }
+        : data === 'empty'
+          ? { errorId: null, message: '' }
+          : { errorId: 'VISUAL-QA-SINGLE', message: '로컬 전역 오류 상태입니다.' };
+  const errorData: ErrorData = {
+    errorId: copy.errorId,
+    message: copy.message,
+    onRetry: () => {},
+    source: data === 'maximum-supported' ? 'runtime' : 'api',
+    statusCode: data === 'empty' ? null : data === 'maximum-supported' ? 500 : 400,
+  };
+
+  return {
+    props: {
+      children: createElement(VisualQaErrorModalProviderChild, { errorData }),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: ERROR_MODAL_PROVIDER_INTERACTION_EVENT,
+      testId: 'visual-qa-error-modal-provider-interaction',
+    }),
+    captureSelector: '[data-testid="error-modal-provider-surface"]',
+    surfaceClassName: 'block min-h-[360px] w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const createVisualQaDmInboxRooms = (data: string): DmInboxRoom[] => {
+  const createRoom = (roomId: number, overrides: Partial<DmInboxRoom> = {}): DmInboxRoom => ({
+    roomId,
+    targetUser: {
+      id: roomId + 9000,
+      name: `비주얼 QA 상대 ${roomId}`,
+      handle: `visual-qa-target-${roomId}`,
+      favoriteTeam: 'LG',
+      profileImageUrl: null,
+    },
+    lastMessage: {
+      content: '로컬 inbox fixture 메시지입니다.',
+      createdAt: '2026-09-20T10:00:00+09:00',
+      senderId: roomId + 9000,
+    },
+    hasUnread: false,
+    ...overrides,
+  });
+
+  if (data === 'empty') return [];
+  if (data === 'single') return [createRoom(1)];
+  if (data === 'long-korean') {
+    return [createRoom(2, {
+      targetUser: {
+        id: 9002,
+        name: '모바일 화면에서도 자연스럽게 줄바꿈되어야 하는 긴 한국어 상대 이름',
+        handle: 'visual-qa-long-korean-target',
+        favoriteTeam: 'LG',
+        profileImageUrl: null,
+      },
+      lastMessage: {
+        content: '모바일 inbox 카드 안에서 긴 한국어 최근 메시지가 영역 밖으로 넘치지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.',
+        createdAt: '2026-09-19T10:00:00+09:00',
+        senderId: 9002,
+      },
+      hasUnread: true,
+    })];
+  }
+  if (data === 'unbroken-token') {
+    return [createRoom(3, {
+      targetUser: {
+        id: 9003,
+        name: `USER_${'UNBROKEN'.repeat(18)}`,
+        handle: `target_${'TOKEN'.repeat(18)}`,
+        favoriteTeam: 'LG',
+        profileImageUrl: null,
+      },
+      lastMessage: {
+        content: `MESSAGE_${'UNBROKEN'.repeat(70)}`,
+        createdAt: '2026-09-19T09:00:00+09:00',
+        senderId: 9003,
+      },
+      hasUnread: true,
+    })];
+  }
+  if (data === 'maximum-supported') {
+    return Array.from({ length: 8 }, (_, index) => createRoom(index + 10, {
+      hasUnread: index % 2 === 0,
+      lastMessage: {
+        content: index === 0
+          ? `최대 지원 inbox 메시지 ${'내용 '.repeat(80)}`
+          : `room-${index + 10} 최근 메시지`,
+        createdAt: `2026-09-${String(20 - index).padStart(2, '0')}T10:00:00+09:00`,
+        senderId: index + 9010,
+      },
+    }));
+  }
+  return [createRoom(4), createRoom(5, { hasUnread: true })];
+};
+
+const resolveMateGuidePanelAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MATE_GUIDE_PANEL_COMPONENT_ID) {
+    throw new Error('mate.guide-panel only supports MateGuidePanelRuntime');
+  }
+  if (Object.keys(context.states).some((key) => key !== 'interactions')
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mate.guide-panel only supports the theme variant');
+  }
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  if (interaction === 'default' && context.interactionTargetId !== undefined) {
+    throw new Error('mate.guide-panel default state does not accept an interaction target');
+  }
+  if (interaction === 'click' && context.interactionTargetId !== 'close') {
+    throw new Error(`mate.guide-panel expected close target, received ${context.interactionTargetId ?? '<missing>'}`);
+  }
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+
+  return {
+    props: {
+      onClose: () => emitVisualQaInteraction(MATE_GUIDE_PANEL_INTERACTION_EVENT, { value: 'close' }),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MATE_GUIDE_PANEL_INTERACTION_EVENT,
+      testId: 'visual-qa-mate-guide-panel-interaction',
+    }),
+    captureSelector: '[data-testid="mate-guide-panel-runtime"]',
+    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveMyPageSidebarMoreAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MY_PAGE_SIDEBAR_MORE_COMPONENT_ID) {
+    throw new Error('mypage.sidebar-more only supports MyPageSidebarMoreRuntime');
+  }
+  if (Object.keys(context.states).some((key) => key !== 'interactions')
+    || Object.keys(context.variants).some((key) => !['theme', 'view'].includes(key))) {
+    throw new Error('mypage.sidebar-more only supports interactions, view, and theme');
+  }
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const target = context.interactionTargetId;
+  const targets = new Set(['diary', 'mate-history', 'cheer-posts', 'stadium', 'alerts', 'badges', 'stats']);
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.sidebar-more default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && !targets.has(target ?? '')) {
+    throw new Error(`mypage.sidebar-more expected one of ${Array.from(targets).join(', ')}, received ${target ?? '<missing>'}`);
+  }
+  const viewMode = resolveDeclaredVariant<ViewMode>(context, 'view', {
+    diaryEditor: 'diaryEditor',
+    mateHistory: 'mateHistory',
+    cheerPosts: 'cheerPosts',
+    alerts: 'alerts',
+    badges: 'badges',
+    stats: 'stats',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+
+  return {
+    props: {
+      onSetViewMode: (mode: ViewMode, options?: { date?: string | null }) => emitVisualQaInteraction(
+        MY_PAGE_SIDEBAR_MORE_INTERACTION_EVENT,
+        { date: options?.date ?? null, value: mode },
+      ),
+      todayDate: '2026-09-20',
+      viewMode,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MY_PAGE_SIDEBAR_MORE_INTERACTION_EVENT,
+      testId: 'visual-qa-mypage-sidebar-more-interaction',
+    }),
+    captureSelector: '[data-testid="mypage-season-sidebar-more"]',
+    expectedPathname: '/mypage',
+    initialPathname: '/mypage',
+    surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveMyPageProfileCardAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MY_PAGE_PROFILE_CARD_COMPONENT_ID) {
+    throw new Error('mypage.profile-card only supports MyPageProfileCardRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('mypage.profile-card only supports data, interactions, system, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targets = new Set(['followers', 'following', 'mate-history', 'stats', 'ticket', 'edit']);
+  if (system === 'loading' && interaction !== 'default') {
+    throw new Error('mypage.profile-card loading state only supports default interaction');
+  }
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.profile-card default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && !targets.has(target ?? '')) {
+    throw new Error(`mypage.profile-card expected one of ${Array.from(targets).join(', ')}, received ${target ?? '<missing>'}`);
+  }
+
+  const interactionCallback = (value: string) => () => emitVisualQaInteraction(
+    MY_PAGE_PROFILE_CARD_INTERACTION_EVENT,
+    { value },
+  );
+  const profileByData = {
+    empty: {
+      name: '베가 팬',
+      handle: '',
+      email: 'fan@example.com',
+      savedFavoriteTeam: '없음',
+      cheerPoints: 0,
+    },
+    single: {
+      name: '민지',
+      handle: 'minji',
+      email: 'minji@example.com',
+      savedFavoriteTeam: 'LG',
+      cheerPoints: 120,
+    },
+    'long-korean': {
+      name: '긴 이름을 가진 베이스볼 팬 커뮤니티 사용자',
+      handle: 'long_korean_profile_handle',
+      email: 'very-long-profile-address@example.com',
+      savedFavoriteTeam: 'KIA',
+      cheerPoints: 12345,
+    },
+    'maximum-supported': {
+      name: '최대 길이 프로필 사용자 이름 가나다라마바사아자차카타파하',
+      handle: `profile_${'HANDLE'.repeat(12)}`,
+      email: `${'profile.'.repeat(12)}fan@example.com`,
+      savedFavoriteTeam: '삼성',
+      cheerPoints: 999999,
+    },
+    'unbroken-token': {
+      name: `USER_${'PROFILE'.repeat(14)}`,
+      handle: `HANDLE_${'UNBROKEN'.repeat(14)}`,
+      email: `${'UNBROKEN'.repeat(16)}@example.com`,
+      savedFavoriteTeam: '두산',
+      cheerPoints: 777,
+    },
+  } as const;
+  const profile = profileByData[data as keyof typeof profileByData];
+
+  return {
+    props: {
+      currentUserId: null,
+      email: profile.email,
+      handle: profile.handle,
+      isProfileLoading: system === 'loading',
+      isStatsView: data === 'maximum-supported',
+      name: profile.name,
+      onOpenEditProfile: interactionCallback('edit'),
+      onOpenFollowers: interactionCallback('followers'),
+      onOpenFollowing: interactionCallback('following'),
+      onOpenMateHistory: interactionCallback('mate-history'),
+      onOpenTicketUploadModal: interactionCallback('ticket'),
+      onToggleStats: interactionCallback('stats'),
+      profileImage: null,
+      savedFavoriteTeam: profile.savedFavoriteTeam,
+      cheerPoints: profile.cheerPoints,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MY_PAGE_PROFILE_CARD_INTERACTION_EVENT,
+      testId: 'visual-qa-mypage-profile-card-interaction',
+    }),
+    captureSelector: '[data-testid="mypage-profile-card-runtime"]',
+    initialPathname: '/mypage',
+    expectedPathname: '/mypage',
+    surfaceClassName: 'block min-h-0 w-full max-w-[900px] overflow-visible bg-transparent p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveMyPageSidebarAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== MY_PAGE_SIDEBAR_COMPONENT_ID) {
+    throw new Error('mypage.sidebar only supports MyPageSidebarRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+    || Object.keys(context.variants).some((key) => !['theme', 'view'].includes(key))) {
+    throw new Error('mypage.sidebar only supports data, interactions, system, view, and theme');
+  }
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+  });
+  const viewMode = resolveDeclaredVariant<ViewMode>(context, 'view', {
+    diary: 'diary',
+    diaryEditor: 'diaryEditor',
+    stats: 'stats',
+    editProfile: 'editProfile',
+    cheerPosts: 'cheerPosts',
+    mateHistory: 'mateHistory',
+    badges: 'badges',
+    alerts: 'alerts',
+    settings: 'settings',
+    changePassword: 'changePassword',
+    accountSettings: 'accountSettings',
+    blockedUsers: 'blockedUsers',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const targets = new Set([
+    'followers',
+    'following',
+    'diary',
+    'stats',
+    'settings',
+    'today',
+    'mate-history',
+    'cheer-posts',
+    'stadium',
+    'alerts',
+    'badges',
+    'season-stats',
+  ]);
+  if (system === 'loading' && interaction !== 'default') {
+    throw new Error('mypage.sidebar loading state only supports default interaction');
+  }
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`mypage.sidebar default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && !targets.has(target ?? '')) {
+    throw new Error(`mypage.sidebar expected one of ${Array.from(targets).join(', ')}, received ${target ?? '<missing>'}`);
+  }
+
+  const profileByData = {
+    empty: {
+      name: '베가 팬',
+      handle: '',
+      savedFavoriteTeam: '없음',
+      cheerPoints: 0,
+    },
+    single: {
+      name: '민지',
+      handle: 'minji',
+      savedFavoriteTeam: 'LG',
+      cheerPoints: 120,
+    },
+    'long-korean': {
+      name: '긴 이름을 가진 베이스볼 팬 커뮤니티 사용자',
+      handle: 'long_korean_profile_handle',
+      savedFavoriteTeam: 'KIA',
+      cheerPoints: 12345,
+    },
+    'maximum-supported': {
+      name: '최대 길이 프로필 사용자 이름 가나다라마바사아자차카타파하',
+      handle: `profile_${'HANDLE'.repeat(12)}`,
+      savedFavoriteTeam: '삼성',
+      cheerPoints: 999999,
+    },
+    'unbroken-token': {
+      name: `USER_${'PROFILE'.repeat(14)}`,
+      handle: `HANDLE_${'UNBROKEN'.repeat(14)}`,
+      savedFavoriteTeam: '두산',
+      cheerPoints: 777,
+    },
+  } as const;
+  const profile = profileByData[data as keyof typeof profileByData];
+  const emit = (value: string) => () => emitVisualQaInteraction(
+    MY_PAGE_SIDEBAR_INTERACTION_EVENT,
+    { value },
+  );
+  const onSetViewMode = (mode: ViewMode, options?: { date?: string | null }) => {
+    emitVisualQaInteraction(MY_PAGE_SIDEBAR_INTERACTION_EVENT, {
+      date: options?.date ?? null,
+      value: mode,
+    });
+  };
+
+  return {
+    props: {
+      cheerPoints: profile.cheerPoints,
+      currentUserId: null,
+      handle: profile.handle,
+      isProfileLoading: system === 'loading',
+      name: profile.name,
+      onOpenFollowers: emit('followers'),
+      onOpenFollowing: emit('following'),
+      onSetViewMode,
+      profileImage: null,
+      savedFavoriteTeam: profile.savedFavoriteTeam,
+      todayDate: '2026-09-20',
+      viewMode,
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: MY_PAGE_SIDEBAR_INTERACTION_EVENT,
+      testId: 'visual-qa-mypage-sidebar-interaction',
+    }),
+    captureSelector: '[data-testid="mypage-season-sidebar"]',
+    expectedPathname: '/mypage',
+    initialPathname: '/mypage',
+    surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+const resolveDmInboxRuntimeAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  if (context.componentId !== DM_INBOX_RUNTIME_COMPONENT_ID) {
+    throw new Error('dm.inbox-runtime only supports DmInboxRuntime');
+  }
+  if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+    throw new Error('dm.inbox-runtime only supports data, permissions, interactions, and system state axes');
+  }
+  if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+    throw new Error('dm.inbox-runtime only supports the theme variant');
+  }
+
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    populated: 'populated',
+    'long-korean': 'long-korean',
+    'maximum-supported': 'maximum-supported',
+    'unbroken-token': 'unbroken-token',
+  });
+  const permission = requireStateValueFromMap(context, 'permissions', {
+    anonymous: 'anonymous',
+    user: 'user',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const system = requireStateValueFromMap(context, 'system', {
+    idle: 'idle',
+    loading: 'loading',
+  });
+  const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+    light: 'light',
+    dark: 'dark',
+  });
+  const target = context.interactionTargetId;
+  const hasRooms = data !== 'empty' && permission === 'user';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`dm.inbox-runtime default state does not accept an interaction target: ${target}`);
+  }
+  if (interaction === 'click' && (system !== 'idle' || !hasRooms || target !== 'room')) {
+    throw new Error(`dm.inbox-runtime click requires an idle user room state and room target, received ${permission}:${data}:${system}:${target ?? '<none>'}`);
+  }
+
+  const rooms = permission === 'user' ? createVisualQaDmInboxRooms(data) : [];
+  const visualQaStateOverride: DmInboxRuntimeVisualQaStateOverride = {
+    rooms,
+    isLoading: system === 'loading',
+    onRoomClick: (room) => emitVisualQaInteraction(DM_INBOX_RUNTIME_INTERACTION_EVENT, {
+      roomId: room.roomId,
+      value: 'room',
+    }),
+  };
+
+  return {
+    props: { visualQaStateOverride },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: DM_INBOX_RUNTIME_INTERACTION_EVENT,
+      testId: 'visual-qa-dm-inbox-runtime-interaction',
+    }),
+    captureSelector: '[data-testid="dm-inbox-runtime"]',
+    expectedPathname: '/messages',
+    harnessAuthState: {
+      user: permission === 'user'
+        ? {
+            id: 900020,
+            email: 'visual-qa-dm-inbox@example.com',
+            name: '비주얼 QA 사용자',
+            handle: 'visual-qa-dm-inbox',
+            favoriteTeam: 'LG',
+            favoriteTeamColor: '#2b8a6e',
+            role: 'ROLE_USER',
+            profileImageUrl: null,
+            provider: 'LOCAL',
+            bio: 'Visual QA deterministic DM inbox fixture',
+            cheerPoints: 100,
+            hasPassword: true,
+          }
+        : null,
+    },
+    initialPathname: '/messages',
+    surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    theme,
+  };
+};
+
+const resolveConfirmDialogRendererAdapter = (
+  context: ComponentStateAdapterContext,
+): ComponentStateAdapterResult => {
+  const data = requireStateValueFromMap(context, 'data', {
+    empty: 'empty',
+    single: 'single',
+    'maximum-supported': 'maximum-supported',
+    'long-korean': 'long-korean',
+    'unbroken-token': 'unbroken-token',
+  });
+  const interaction = requireStateValueFromMap(context, 'interactions', {
+    default: 'default',
+    click: 'click',
+  });
+  const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+    dark: 'dark',
+    light: 'light',
+  });
+  const target = context.interactionTargetId;
+  const canonicalInteraction = data === 'single' && theme === 'light';
+  if (interaction === 'default' && target !== undefined) {
+    throw new Error(`지원하지 않는 ConfirmDialogRenderer state: ${data}:${theme}:${target}`);
+  }
+  if (interaction === 'click' && (!canonicalInteraction || !new Set(['confirm', 'cancel']).has(target ?? ''))) {
+    throw new Error(`지원하지 않는 ConfirmDialogRenderer state: ${data}:${theme}:${target ?? '<none>'}`);
+  }
+
+  const copy = data === 'long-korean'
+    ? {
+      title: '모바일에서도 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 확인 dialog 제목입니다.'.repeat(2),
+      description: '확인과 취소의 의미가 좁은 화면에서도 분명하게 전달되도록 긴 설명 문장을 줄바꿈과 함께 확인합니다.'.repeat(3),
+    }
+    : data === 'unbroken-token'
+      ? {
+        title: `CONFIRM_${'UNBROKEN'.repeat(18)}`,
+        description: `DESCRIPTION_${'TOKEN'.repeat(36)}`,
+      }
+      : data === 'maximum-supported'
+        ? {
+          title: `최대 지원 확인 항목 ${'X'.repeat(160)}`,
+          description: `MAX_${'VALUE'.repeat(80)}`,
+        }
+        : data === 'empty'
+          ? { title: '삭제할까요?' }
+          : { title: '응원 게시글을 삭제할까요?', description: '삭제한 게시글은 다시 복구할 수 없습니다.' };
+  const options: ConfirmOptions = {
+    title: copy.title,
+    description: copy.description,
+    confirmLabel: data === 'long-korean' ? '긴 확인 문구' : '확인',
+    cancelLabel: data === 'unbroken-token' ? `취소_${'C'.repeat(20)}` : '취소',
+    variant: data === 'maximum-supported' ? 'destructive' : 'default',
+  };
+
+  return {
+    props: {
+      open: true,
+      options,
+      onResult: (result: boolean) => emitVisualQaInteraction(CONFIRM_DIALOG_RENDERER_INTERACTION_EVENT, {
+        value: result ? 'confirm' : 'cancel',
+      }),
+    },
+    companion: createElement(VisualQaInteractionMarker, {
+      eventName: CONFIRM_DIALOG_RENDERER_INTERACTION_EVENT,
+      testId: 'visual-qa-confirm-dialog-renderer-interaction',
+    }),
+    captureSelector: '[data-testid="confirm-dialog"]',
+    surfaceClassName: 'block min-h-[360px] w-full max-w-[560px] overflow-visible bg-background p-3 shadow-none',
+    theme,
+  };
+};
+
+  const visualQaStadiumGuidePlaces = (data: string): StadiumPlace[] => {
+    const basePlace = (id: number, overrides: Partial<StadiumPlace> = {}): StadiumPlace => ({
+      id,
+      stadiumName: '합성 구장',
+      category: 'food',
+      name: `합성 장소 ${id}`,
+      description: '모바일 목록에서 줄바꿈과 상세 확장을 확인하는 합성 장소 설명입니다.',
+      lat: 37.5001,
+      lng: 127.0001,
+      address: '합성 주소 101',
+      phone: '02-0000-0000',
+      rating: 4.2,
+      openTime: '10:00',
+      closeTime: '22:00',
+      ...overrides,
+    });
+
+    if (data === 'empty') return [];
+    if (data === 'single') return [basePlace(1, { name: '합성 단일 장소' })];
+    if (data === 'long-korean') {
+      return [basePlace(2, {
+        name: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 합성 장소 이름',
+        description: '작은 화면에서 주소와 운영 시간이 함께 표시될 때도 카드 밖으로 넘치지 않아야 하는 긴 한국어 설명입니다.',
+      })];
+    }
+    if (data === 'unbroken-token') {
+      return [basePlace(3, {
+        name: `PLACE_${'UNBROKEN'.repeat(18)}`,
+        description: `DESCRIPTION_${'TOKEN'.repeat(36)}`,
+        address: `ADDRESS_${'X'.repeat(80)}`,
+      })];
+    }
+    if (data === 'maximum-supported') {
+      return Array.from({ length: 10 }, (_, index) => basePlace(100 + index, {
+        name: `최대 지원 합성 장소 ${index + 1}`,
+        rating: 3.1 + (index % 8) / 10,
+      }));
+    }
+    return [
+      basePlace(10, { name: '합성 식당 A', rating: 4.8 }),
+      basePlace(11, { name: '합성 식당 B', rating: 4.5, category: 'store' }),
+      basePlace(12, { name: '합성 식당 C', rating: 4.1, category: 'parking' }),
+    ];
+  };
+
+  const adapters: Record<string, ComponentStateAdapter> = {
+  'stadium-guide-places': (context) => {
+    if (context.componentId !== 'src/components/StadiumGuidePlacesRuntime.tsx#StadiumGuidePlacesRuntime') {
+      throw new Error('stadium-guide-places only supports StadiumGuidePlacesRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('stadium-guide-places only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('stadium-guide-places only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      input: 'input',
+      change: 'change',
+      selected: 'selected',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const places = visualQaStadiumGuidePlaces(data);
+    const selectedPlace = places.length > 0 && data !== 'empty' ? places[0] : null;
+    const interactionSelectors = {
+      hover: 'route',
+      'focus-visible': 'route',
+      pressed: 'route',
+      input: 'search',
+      change: 'sort',
+      selected: 'card',
+      retry: 'retry',
+    } as const;
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('stadium-guide-places default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && target !== interactionSelectors[interaction as keyof typeof interactionSelectors]) {
+      throw new Error(`stadium-guide-places expected ${interactionSelectors[interaction as keyof typeof interactionSelectors]} target, received ${target ?? '<missing>'}`);
+    }
+    if (system === 'loading' && interaction !== 'default') {
+      throw new Error('stadium-guide-places loading state only supports the default interaction');
+    }
+    if (system === 'error-503' && !['default', 'retry'].includes(interaction)) {
+      throw new Error('stadium-guide-places error state only supports default and retry interactions');
+    }
+    if (data === 'empty' && system === 'idle' && !['default', 'input', 'change'].includes(interaction)) {
+      throw new Error('stadium-guide-places empty state only supports default, search, and sort interactions');
+    }
+
+    const listStatus = system === 'loading'
+      ? 'loading'
+      : system === 'error-503'
+        ? 'error'
+        : data === 'empty' ? 'empty' : 'success';
+    return {
+      props: {
+        selectedStadiumId: 'visual-qa-stadium',
+        selectedStadiumName: '합성 구장',
+        selectedCategory: 'food' as CategoryType,
+        places,
+        selectedPlace,
+        listStatus,
+        listError: system === 'error-503' ? '합성 장소 목록을 불러오지 못했습니다.' : null,
+        retryPlaces: () => {},
+        handlePlaceClick: () => {},
+        listControlsDisabled: false,
+        isDark: theme === 'dark',
+        isNearbyCategory: false,
+        testId: 'visual-qa-stadium-guide-places',
+      },
+      captureSelector: '[data-testid="visual-qa-stadium-guide-places"]',
+      surfaceClassName: 'block min-h-[360px] w-full max-w-[640px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'stadium-guide-runtime': (context) => {
+    if (context.componentId !== 'src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime') {
+      throw new Error('stadium-guide-runtime only supports StadiumGuideRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('stadium-guide-runtime only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('stadium-guide-runtime only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+      'manual-required': 'manual-required',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const places = visualQaStadiumGuidePlaces(data);
+    const stadium: Stadium = {
+      stadiumId: 'visual-qa-stadium',
+      stadiumName: data === 'long-korean'
+        ? '모바일에서 자연스럽게 줄바꿈되어야 하는 합성 구장 이름'
+        : data === 'unbroken-token'
+          ? `STADIUM_${'UNBROKEN'.repeat(18)}`
+          : '합성 구장',
+      team: '합성 운영팀',
+      lat: 37.5001,
+      lng: 127.0001,
+      address: data === 'maximum-supported' ? `합성 주소 ${'X'.repeat(80)}` : '합성 구장 주소',
+      phone: '02-0000-0000',
+    };
+    const secondStadium: Stadium = {
+      ...stadium,
+      stadiumId: 'visual-qa-stadium-2',
+      stadiumName: '합성 두 번째 구장',
+    };
+    const selectedStadium = ['loading', 'error-503'].includes(system) ? null : stadium;
+    const target = context.interactionTargetId;
+    const expectedTarget = interaction === 'retry'
+      ? system === 'error-503' ? 'stadiums-retry' : 'map-retry'
+      : interaction === 'default' ? undefined : 'category';
+    if (target !== expectedTarget) {
+      throw new Error(`stadium-guide-runtime expected ${expectedTarget ?? '<none>'} target, received ${target ?? '<missing>'}`);
+    }
+    if (system === 'loading' && interaction !== 'default') {
+      throw new Error('stadium-guide-runtime loading state only supports the default interaction');
+    }
+    if (system === 'error-503' && !['default', 'retry'].includes(interaction)) {
+      throw new Error('stadium-guide-runtime error state only supports default and retry interactions');
+    }
+
+    const stateOverride: StadiumGuideRuntimeVisualQaStateOverride = {
+      stadiums: selectedStadium ? [stadium, secondStadium] : [],
+      selectedStadium,
+      selectedCategory: 'food',
+      setSelectedCategory: () => {},
+      places,
+      selectedPlace: places[0] ?? null,
+      isMapReady: false,
+      handleStadiumChange: () => {},
+      handlePlaceClick: () => {},
+      stadiumsStatus: system === 'loading' ? 'loading' : system === 'error-503' ? 'error' : 'success',
+      placesStatus: selectedStadium ? (data === 'empty' ? 'empty' : 'success') : 'idle',
+      nearbyStatus: 'idle',
+      mapStatus: selectedStadium ? 'error' : 'idle',
+      stadiumsError: system === 'error-503' ? '구장 정보를 불러오지 못했습니다. 합성 오류 상태입니다.' : null,
+      placesError: null,
+      nearbyError: null,
+      mapError: selectedStadium ? '합성 지도 오류 상태입니다.' : null,
+      retryStadiums: () => {},
+      retryPlaces: () => {},
+      retryMap: () => {},
+    };
+    return {
+      props: { visualQaStateOverride: stateOverride },
+      captureSelector: '[data-testid="stadium-guide-runtime"]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'stadium-seat-map-error-boundary': (context) => {
     if (context.componentId !== 'src/components/StadiumSeatMapStates.tsx#StadiumSeatMapErrorBoundary') {
       throw new Error('stadium-seat-map-error-boundary only supports StadiumSeatMapErrorBoundary');
@@ -5126,6 +9667,138 @@ const adapters: Record<string, ComponentStateAdapter> = {
           ? '[data-testid="stadium-seatmap-error"]'
           : '[data-testid="seat-map-runtime-resolved"]',
       surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-2 shadow-none',
+      theme,
+    };
+  },
+  'seat-map-bottom-sheet': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapBottomSheet.tsx#SeatMapBottomSheet') {
+      throw new Error('seat-map-bottom-sheet only supports SeatMapBottomSheet');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('seat-map-bottom-sheet only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('seat-map-bottom-sheet only supports the theme variant');
+    }
+    if (context.interactionTargetId !== undefined) {
+      throw new Error('seat-map-bottom-sheet does not support interaction targets');
+    }
+
+    const data = requireStateValueFromMap<Exclude<VisualQaSeatMapSectionFinderData, 'empty' | 'null-optional'>>(
+      context,
+      'data',
+      {
+        single: 'single',
+        populated: 'populated',
+        'long-korean': 'long-korean',
+        'unbroken-token': 'unbroken-token',
+        'maximum-supported': 'maximum-supported',
+      },
+    );
+    requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+      open: 'open',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const section = seatMapSectionFinderBlocks[data][0];
+    if (!section) throw new Error(`seat-map-bottom-sheet requires a section fixture for ${data}`);
+
+    return {
+      props: {
+        section,
+        mode: theme,
+        categories: seatMapSectionFinderCategories,
+        adapter: seatMapSectionFinderAdapter,
+        stadiumKey: 'VISUAL_QA',
+        onClose: () => {},
+        onUpload: () => {},
+        testId: 'visual-qa-seat-map-bottom-sheet',
+        copy: {
+          blockLabel: data === 'unbroken-token' ? `BLOCK-${'X'.repeat(120)}` : '블록',
+          galleryTitle: data === 'long-korean' ? '모바일 화면에서 자연스럽게 줄바꿈되는 실제 시야 사진 안내' : '실제 시야 사진',
+          officialBlocksTitle: data === 'maximum-supported' ? `공식 블록 묶음 ${'최대지원'.repeat(20)}` : '공식 블록 묶음',
+          uploadLabel: '시야 사진 올리기',
+        },
+        visualQaStateOverride: { photos: [], isLoading: false } as SeatViewPhotosVisualQaStateOverride,
+      },
+      captureSelector: '[data-testid="visual-qa-seat-map-bottom-sheet"]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[420px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'seat-map-detail-panel': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapDetailPanel.tsx#SeatMapDetailPanel') {
+      throw new Error('seat-map-detail-panel only supports SeatMapDetailPanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('seat-map-detail-panel only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('seat-map-detail-panel only supports the theme variant');
+    }
+    if (context.interactionTargetId !== undefined) {
+      throw new Error('seat-map-detail-panel does not support interaction targets');
+    }
+
+    const data = requireStateValueFromMap<VisualQaSeatMapSectionFinderData>(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+      'maximum-supported': 'maximum-supported',
+    });
+    requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+    const section = data === 'empty' ? null : seatMapSectionFinderBlocks[data][0] ?? null;
+    if (!section && context.states.interactions !== 'default') {
+      throw new Error('seat-map-detail-panel empty state only supports the default interaction');
+    }
+
+    return {
+      props: {
+        section,
+        mode: theme,
+        categories: seatMapSectionFinderCategories,
+        adapter: seatMapSectionFinderAdapter,
+        stadiumKey: 'VISUAL_QA',
+        onClose: () => {},
+        onUpload: () => {},
+        testId: 'visual-qa-seat-map-detail-panel',
+        copy: {
+          emptyTitle: data === 'empty' ? '모바일에서도 자연스럽게 표시되는 구역 선택 안내' : undefined,
+          emptyDescription: data === 'empty'
+            ? '좌석 배치도에서 원하는 합성 구역을 선택하면 블록 정보와 실제 시야 사진이 표시됩니다.'
+            : undefined,
+          blockLabel: data === 'unbroken-token' ? `BLOCK-${'X'.repeat(120)}` : '블록',
+          galleryTitle: data === 'long-korean' ? '모바일 화면에서 자연스럽게 줄바꿈되는 실제 시야 사진 안내' : '실제 시야 사진',
+          officialBlocksTitle: data === 'maximum-supported' ? `공식 블록 묶음 ${'최대지원'.repeat(20)}` : '공식 블록 묶음',
+          uploadLabel: '이 구역 시야 사진 올리기',
+        },
+        searchAction: {
+          label: '구역 검색',
+          ariaLabel: '합성 구역 검색 열기',
+          onClick: () => {},
+          testId: 'visual-qa-seat-map-detail-panel-search',
+        },
+        visualQaStateOverride: { photos: [], isLoading: false } as SeatViewPhotosVisualQaStateOverride,
+      },
+      captureSelector: '[data-testid="visual-qa-seat-map-detail-panel"]',
+      surfaceClassName: 'block min-h-[420px] w-full max-w-[640px] overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -6191,12 +10864,13 @@ const adapters: Record<string, ComponentStateAdapter> = {
     });
     requireStateValue(context, 'permissions', 'admin');
     const interaction = requireStateValueFromMap<
-      'default' | 'focus-visible' | 'hover' | 'pressed'
+      'default' | 'focus-visible' | 'hover' | 'pressed' | 'cta'
     >(context, 'interactions', {
       default: 'default',
       'focus-visible': 'focus-visible',
       hover: 'hover',
       pressed: 'pressed',
+      cta: 'cta',
     });
     const system = requireStateValueFromMap<'idle' | 'loading' | 'missing'>(
       context,
@@ -9528,6 +14202,3975 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'chatbot.conversation-panel': (context) => {
+    if (context.componentId !== 'src/components/chatbot/ChatBotConversationPanel.tsx#ChatBotConversationPanel') {
+      throw new Error('chatbot.conversation-panel only supports ChatBotConversationPanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.conversation-panel only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('chatbot.conversation-panel only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'error-429': 'error-429',
+      'request-pending': 'request-pending',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      submitting: 'submitting',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const expectedTarget = {
+      input: 'input',
+      submitting: 'cancel',
+      retry: 'rate-limit-retry',
+    }[interaction];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.conversation-panel default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && context.interactionTargetId !== expectedTarget) {
+      throw new Error(`chatbot.conversation-panel expected ${expectedTarget} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const timestamp = new Date('2026-09-19T12:00:00+09:00');
+    const userMessage = {
+      id: 'visual-qa-chat-user',
+      text: data === 'long-korean'
+        ? '모바일 화면에서도 입력 문장이 컨트롤 너비를 넘지 않고 자연스럽게 줄바꿈되는지 확인합니다.'
+        : '오늘 경기 흐름 알려줘',
+      sender: 'user' as const,
+      timestamp,
+    };
+    const botMessage = {
+      id: 'visual-qa-chat-bot',
+      serverId: 1,
+      text: data === 'long-korean'
+        ? '모바일 화면에서도 긴 한국어 답변과 도구 상태가 말풍선과 패널 경계를 벗어나지 않고 자연스럽게 줄바꿈되어야 합니다. 이 문장은 실제 전송 없이 레이아웃만 검증하기 위한 로컬 응답입니다.'
+        : '최근 경기 흐름을 정리했습니다.',
+      sender: 'bot' as const,
+      status: 'COMPLETED' as const,
+      timestamp: new Date(timestamp.getTime() + 60_000),
+      favorite: data === 'populated',
+    };
+    const messages = data === 'loading' || data === 'empty'
+      ? []
+      : data === 'error-429'
+        ? [userMessage]
+        : [userMessage, botMessage];
+    const isProcessing = interaction === 'submitting';
+    const rateLimitActive = data === 'error-429' || interaction === 'retry';
+    const queueStatus = data === 'request-pending'
+      ? {
+          state: 'queued' as const,
+          queuePosition: 2,
+          estimatedWaitTime: 8,
+          rpmLimit: 10,
+        }
+      : null;
+
+    return {
+      props: {
+        messages,
+        isLoadingMessages: data === 'loading',
+        isTyping: data === 'request-pending' || isProcessing,
+        typingText: '답변을 준비하고 있습니다',
+        typingLiveText: '답변을 준비하고 있습니다.',
+        expandedToolCalls: new Set<number>(),
+        copiedIndex: null,
+        messagesEndRef: { current: null },
+        messagesContainerRef: { current: null },
+        inputRef: { current: null },
+        inputMessage: interaction === 'input' || isProcessing ? '추가로 확인해줘' : '',
+        isProcessing,
+        isSendDisabled: isProcessing || rateLimitActive,
+        rateLimitActive,
+        rateLimitCountdown: 0,
+        queueStatus,
+        pendingMessage: rateLimitActive ? '다시 확인해줘' : '',
+        rateLimitCopy: rateLimitActive
+          ? {
+              main: '잠시 후 다시 시도해주세요.',
+              guide: '입력한 메시지는 안전하게 보관됩니다.',
+              buttonBase: '재시도',
+            }
+          : null,
+        setInputMessage: () => {},
+        onConversationSubmit: () => {},
+        onInputKeyDown: () => {},
+        onCopyMessage: () => {},
+        onToggleToolCalls: () => {},
+        onFavoriteToggle: () => {},
+        onCancelStream: () => {},
+        onRetrySend: () => {},
+        onRestorePendingMessage: () => {},
+        onNavigateToPrediction: () => {},
+      },
+      captureSelector: '[role="log"]',
+      surfaceClassName: 'flex min-h-[844px] w-full max-w-[720px] overflow-hidden bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.conversation-runtime': (context) => {
+    if (context.componentId !== 'src/components/chatbot/ChatBotConversationRuntime.tsx#ChatBotConversationRuntime') {
+      throw new Error('chatbot.conversation-runtime only supports ChatBotConversationRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.conversation-runtime only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('chatbot.conversation-runtime only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'error-429': 'error-429',
+      'request-pending': 'request-pending',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      submitting: 'submitting',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const expectedTarget = {
+      input: 'input',
+      submitting: 'cancel',
+      retry: 'rate-limit-retry',
+    }[interaction];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.conversation-runtime default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && context.interactionTargetId !== expectedTarget) {
+      throw new Error(`chatbot.conversation-runtime expected ${expectedTarget} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const timestamp = new Date('2026-09-19T12:00:00+09:00');
+    const userMessage: Message = {
+      id: 'visual-qa-runtime-user',
+      text: data === 'long-korean'
+        ? '모바일 화면에서도 입력 문장이 컨트롤 너비를 넘지 않고 자연스럽게 줄바꿈되는지 확인합니다.'
+        : '오늘 경기 흐름 알려줘',
+      sender: 'user',
+      timestamp,
+    };
+    const botMessage: Message = {
+      id: 'visual-qa-runtime-bot',
+      serverId: 2,
+      text: data === 'long-korean'
+        ? '모바일 화면에서도 긴 한국어 답변이 말풍선과 패널 경계를 벗어나지 않아야 합니다. 실제 전송 없이 런타임 연결만 검증하기 위한 로컬 응답입니다.'
+        : '최근 경기 흐름을 정리했습니다.',
+      sender: 'bot',
+      status: 'COMPLETED',
+      timestamp: new Date(timestamp.getTime() + 60_000),
+      favorite: true,
+    };
+    const messages = data === 'loading' || data === 'empty'
+      ? []
+      : data === 'error-429'
+        ? [userMessage]
+        : [userMessage, botMessage];
+    const isProcessing = interaction === 'submitting';
+    const rateLimitActive = data === 'error-429' || interaction === 'retry';
+    const queueStatus: ChatQueueStatus | null = data === 'request-pending'
+      ? {
+          state: 'queued',
+          queuePosition: 2,
+          estimatedWaitTime: 8,
+          rpmLimit: 10,
+        }
+      : null;
+
+    return {
+      props: {
+        isPanelOpen: true,
+        messages,
+        isLoadingMessages: data === 'loading',
+        isTyping: data === 'request-pending' || isProcessing,
+        isProcessing,
+        rateLimitActive,
+        rateLimitCountdown: 0,
+        rateLimitStage: 1,
+        queueStatus,
+        pendingMessage: rateLimitActive ? '다시 확인해줘' : '',
+        inputMessage: interaction === 'input' || isProcessing ? '추가로 확인해줘' : rateLimitActive ? '다시 확인해줘' : '',
+        setInputMessage: () => {},
+        messagesEndRef: { current: null },
+        messagesContainerRef: { current: null },
+        handleSendMessage: async () => {},
+        handleRetrySend: async () => {},
+        handleRestorePendingMessage: () => {},
+        handleCancelStream: () => {},
+        handleToggleFavorite: async () => {},
+        onRequestClose: () => {},
+      },
+      captureSelector: '[role="log"]',
+      surfaceClassName: 'flex min-h-[844px] w-full max-w-[720px] overflow-hidden bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.session': (context) => {
+    if (![
+      'src/components/chatbot/ChatBotSessionRuntime.tsx#ChatBotSessionRuntime',
+      'src/components/chatbot/ChatBotSessionStateRuntime.tsx#ChatBotSessionStateRuntime',
+      'src/components/ChatBotAuthenticatedPanel.tsx#ChatBotAuthenticatedPanel',
+    ].includes(context.componentId)) {
+      throw new Error('chatbot.session only supports ChatBotAuthenticatedPanel, ChatBotSessionRuntime, and ChatBotSessionStateRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'permissions', 'system'].includes(key))) {
+      throw new Error('chatbot.session only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['tab', 'theme'].includes(key))) {
+      throw new Error('chatbot.session only supports tab and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'error-429': 'error-429',
+      'request-pending': 'request-pending',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+      input: 'input',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    requireStateValue(context, 'system', 'online');
+    const tab = resolveDeclaredVariant<'conversation' | 'favorites' | 'history'>(context, 'tab', {
+      conversation: 'conversation',
+      favorites: 'favorites',
+      history: 'history',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+
+    const hasSavedItems = data === 'populated' || data === 'long-korean';
+    const targetIds = new Set<string>(['close', 'tab-conversation', 'tab-history', 'tab-favorites']);
+    if (tab === 'conversation') {
+      targetIds.add('conversation-input');
+      if (data === 'request-pending') targetIds.add('cancel');
+      if (data === 'error-429') targetIds.add('retry');
+      if (['populated', 'long-korean'].includes(data)) targetIds.add('send');
+    }
+    if (tab === 'history') {
+      targetIds.add('new-session');
+      if (hasSavedItems) {
+        targetIds.add('history-session-open');
+        targetIds.add('history-session-delete');
+      }
+    }
+    if (tab === 'favorites' && hasSavedItems) {
+      targetIds.add('favorite-copy');
+      targetIds.add('favorite-reask');
+      targetIds.add('favorite-open-session');
+    }
+
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.session default state does not accept interaction targets');
+    }
+    if (interaction === 'input' && tab !== 'conversation') {
+      throw new Error('chatbot.session input state requires the conversation tab');
+    }
+    if (interaction !== 'default' && !targetIds.has(context.interactionTargetId ?? '')) {
+      throw new Error(`chatbot.session expected one of ${Array.from(targetIds).join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const timestamp = new Date('2026-09-19T12:00:00+09:00');
+    const userMessage: Message = {
+      id: 'visual-qa-session-user',
+      text: data === 'long-korean'
+        ? '모바일 챗봇 세션에서 긴 한국어 입력이 화면 너비를 넘지 않고 자연스럽게 줄바꿈되는지 확인합니다.'
+        : '오늘 경기 흐름 알려줘',
+      sender: 'user',
+      timestamp,
+    };
+    const botMessage: Message = {
+      id: 'visual-qa-session-bot',
+      serverId: 41,
+      text: data === 'long-korean'
+        ? '모바일 챗봇 세션의 긴 한국어 응답과 탭 전환 상태가 패널 경계를 넘지 않고 자연스럽게 표시되는지 확인하는 로컬 응답입니다.'
+        : '최근 경기 흐름을 정리했습니다.',
+      sender: 'bot',
+      status: 'COMPLETED',
+      timestamp: new Date(timestamp.getTime() + 60_000),
+      favorite: true,
+    };
+    const messages = data === 'loading' || data === 'empty'
+      ? []
+      : data === 'error-429'
+        ? [userMessage]
+        : [userMessage, botMessage];
+    const session: ChatSessionSummary = {
+      sessionId: 21,
+      title: data === 'long-korean' ? '모바일 화면에서도 길게 표시되는 대화 세션 제목' : '오늘 경기 흐름 정리',
+      messageCount: 4,
+      latestMessagePreview: data === 'long-korean'
+        ? '모바일 화면에서 긴 최근 메시지 미리보기가 카드 안에서 자연스럽게 줄바꿈되는지 확인합니다.'
+        : '최근 경기 흐름을 정리했습니다.',
+      createdAt: '2026-09-19T10:00:00+09:00',
+      updatedAt: '2026-09-19T11:20:00+09:00',
+      lastMessageAt: '2026-09-19T11:20:00+09:00',
+    };
+    const favorite: ChatFavoriteItem = {
+      messageId: 301,
+      sessionId: session.sessionId,
+      sessionTitle: session.title,
+      content: botMessage.text,
+      prompt: '오늘 경기 흐름 알려줘',
+      favoritedAt: '2026-09-19T11:30:00+09:00',
+      messageCreatedAt: '2026-09-19T11:20:00+09:00',
+    };
+    const sessions = hasSavedItems ? [session] : [];
+    const favorites = hasSavedItems ? [favorite] : [];
+    const isProcessing = data === 'request-pending';
+    const rateLimitActive = data === 'error-429';
+    const queueStatus: ChatQueueStatus | null = isProcessing
+      ? { state: 'queued', queuePosition: 2, estimatedWaitTime: 8, rpmLimit: 10 }
+      : null;
+    const inputValue = data === 'error-429'
+      ? '다시 확인해줘'
+      : data === 'request-pending'
+        ? '응답을 기다리는 중'
+        : data === 'empty'
+          ? ''
+          : '오늘 경기 흐름 알려줘';
+    const eventValue = context.interactionTargetId ?? 'interaction';
+
+    return {
+      props: {
+        isOpen: true,
+        isClosing: false,
+        isMobile: false,
+        onRequestClose: () => emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'close' }),
+        visualQaStateOverride: {
+          activeTab: tab,
+          currentSessionId: hasSavedItems ? session.sessionId : null,
+          currentSessionTitle: hasSavedItems ? session.title : '새 대화',
+          messages,
+          inputMessage: inputValue,
+          isTyping: isProcessing,
+          isProcessing,
+          rateLimitActive,
+          rateLimitCountdown: 0,
+          rateLimitStage: 1,
+          queueStatus,
+          pendingMessage: rateLimitActive ? '다시 확인해줘' : '',
+          isLoadingMessages: data === 'loading',
+          sessionListVersion: 1,
+          favoritesVersion: 1,
+          hasOpenedHistoryTab: tab === 'history',
+          hasOpenedFavoritesTab: tab === 'favorites',
+          handleSendMessage: (event: FormEvent) => {
+            event.preventDefault();
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: eventValue });
+          },
+          handleRetrySend: () => emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'retry' }),
+          handleRestorePendingMessage: () => emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'restore-pending' }),
+          handleCancelStream: () => emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'cancel' }),
+          handleCreateNewSession: () => {
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'new-session' });
+            return session;
+          },
+          handleSelectSession: (sessionId: number) => {
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'open-session', sessionId });
+          },
+          handleDeleteSession: (sessionId: number) => {
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'delete-session', sessionId });
+            return true;
+          },
+          handleToggleFavorite: async () => {
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'favorite-toggle' });
+          },
+          handleUseFavoritePrompt: (selectedFavorite: ChatFavoriteItem) => {
+            emitVisualQaInteraction(CHATBOT_SESSION_INTERACTION_EVENT, { value: 'favorite-reask', messageId: selectedFavorite.messageId });
+          },
+          historyStateOverride: {
+            sessions,
+            isLoadingSessions: data === 'loading',
+          },
+          favoritesStateOverride: {
+            favorites,
+            isLoadingFavorites: data === 'loading',
+          },
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHATBOT_SESSION_INTERACTION_EVENT,
+        testId: 'visual-qa-chatbot-session-interaction',
+      }),
+      captureSelector: '[data-testid="chatbot-session-state"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-chatbot-session@example.com',
+          handle: '@visual-qa-user',
+          id: 900020,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-hidden bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.wrapper': (context) => {
+    if (context.componentId !== 'src/components/ChatBot.tsx#ChatBot') {
+      throw new Error('chatbot.wrapper only supports ChatBot');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.wrapper only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['theme', 'visibility'].includes(key))) {
+      throw new Error('chatbot.wrapper only supports theme and visibility variants');
+    }
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    requireStateValue(context, 'permissions', 'anonymous');
+    requireStateValue(context, 'interactions', 'default');
+    const visibility = resolveDeclaredVariant<'closed' | 'open'>(context, 'visibility', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        autoOpen: visibility === 'open',
+        onClosed: () => {},
+      },
+      captureSelector: visibility === 'open'
+        ? '[data-testid="chatbot-panel"]'
+        : '[data-testid="chatbot-launcher"]',
+      initialPathname: '/home',
+      surfaceClassName: 'relative block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'coach-analysis.dialog': (context) => resolveCoachAnalysisDialogAdapter(context),
+  'coach-analysis.result-runtime': (context) => resolveCoachAnalysisResultRuntimeAdapter(context),
+  'coach-briefing': (context) => {
+    if (context.componentId !== COACH_BRIEFING_COMPONENT_ID) {
+      throw new Error('coach-briefing only supports CoachBriefing');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('coach-briefing only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('coach-briefing only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    requireStateValue(context, 'interactions', 'default');
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+
+    const game = data === 'empty'
+      ? null
+      : {
+        gameId: `visual-qa-coach-briefing-${data}`,
+        gameDate: '2099-05-01',
+        homeTeam: 'LG',
+        awayTeam: 'KT',
+        stadium: data === 'long-korean'
+          ? '서울특별시 종합운동장 야구장 공식 경기 브리핑 문구 줄바꿈 확인용 긴 구장 이름'
+          : data === 'unbroken-token'
+            ? `STADIUM_${'UNBROKEN'.repeat(24)}`
+            : '잠실야구장',
+        startTime: '18:30',
+        homeScore: data === 'maximum-supported' ? 999999999 : null,
+        awayScore: data === 'maximum-supported' ? 888888888 : null,
+        gameStatus: 'SCHEDULED',
+        seasonId: 2099,
+        leagueType: 'REGULAR',
+        winProbability: data === 'maximum-supported' ? { home: 99, away: 1 } : undefined,
+      } satisfies PredictionGame;
+
+    return {
+      props: {
+        game,
+        gameDetail: game
+          ? {
+            gameId: game.gameId,
+            gameDate: game.gameDate,
+            homeTeam: game.homeTeam,
+            awayTeam: game.awayTeam,
+            homeScore: game.homeScore,
+            awayScore: game.awayScore,
+            gameStatus: game.gameStatus,
+          }
+          : null,
+        seasonContext: game
+          ? {
+            home: { rank: 1, gamesBehind: 0, remainingGames: 12 },
+            away: { rank: 4, gamesBehind: 3.5, remainingGames: 12 },
+            canCallAI: false,
+          }
+          : undefined,
+        isPastGame: false,
+        isFutureGame: true,
+        isLoggedIn: permission === 'user',
+        isAuthLoading: system === 'loading',
+        autoEnabled: false,
+        requestMode: 'manual_detail',
+        analysisType: 'game_preview',
+        forceManual: true,
+      },
+      captureSelector: '[data-testid="coach-briefing-card"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'common.confirm-dialog-provider': (context) => resolveConfirmDialogProviderAdapter(context),
+  'common.confirm-dialog-renderer': (context) => resolveConfirmDialogRendererAdapter(context),
+  'common.error-modal-provider': (context) => resolveErrorModalProviderAdapter(context),
+  'cheer.composer-login-prompt': (context) => {
+    if (context.componentId !== 'src/components/CheerComposerLoginPrompt.tsx#CheerComposerLoginPrompt') {
+      throw new Error('cheer.composer-login-prompt only supports CheerComposerLoginPrompt');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.composer-login-prompt only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['team', 'theme'].includes(key))) {
+      throw new Error('cheer.composer-login-prompt only supports team and theme variants');
+    }
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    requireStateValue(context, 'permissions', 'anonymous');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.composer-login-prompt default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'login') {
+      throw new Error(`cheer.composer-login-prompt expected login target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const team = resolveDeclaredVariant(context, 'team', {
+      green: { teamColor: '#2b8a6e', teamContrastText: '#ffffff' },
+      navy: { teamColor: '#17365d', teamContrastText: '#ffffff' },
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        ...team,
+        onRequireLogin: () => {},
+      },
+      captureSelector: '[data-testid="cheer-composer-login-required"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'cheer.composer-runtime': (context) => {
+    if (context.componentId !== 'src/components/CheerComposerRuntime.tsx#CheerComposerRuntime') {
+      throw new Error('cheer.composer-runtime only supports CheerComposerRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.composer-runtime only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['feed', 'theme'].includes(key))) {
+      throw new Error('cheer.composer-runtime only supports feed and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+      'no-team': 'no-team',
+      'request-pending': 'request-pending',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const feed = resolveDeclaredVariant<'all' | 'popular' | 'following'>(context, 'feed', {
+      all: 'all',
+      popular: 'popular',
+      following: 'following',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isAnonymous = permission === 'anonymous';
+    const isSubmitting = data === 'request-pending';
+    const hasContent = data === 'populated' || data === 'long-korean' || isSubmitting;
+    const canEdit = !isAnonymous;
+    if (interaction === 'input' && !canEdit) {
+      throw new Error('cheer.composer-runtime input state requires an authenticated user');
+    }
+    const allowedTargets = new Set<string>();
+    if (isAnonymous) {
+      allowedTargets.add('login');
+    } else {
+      allowedTargets.add('attach');
+      allowedTargets.add('composer-input');
+      if (hasContent && !isSubmitting) allowedTargets.add('submit');
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.composer-runtime default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !allowedTargets.has(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.composer-runtime expected one of ${Array.from(allowedTargets).join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && context.interactionTargetId !== 'composer-input') {
+      throw new Error('cheer.composer-runtime focus-visible state requires composer-input');
+    }
+
+    const initialContent = data === 'long-korean'
+      ? '모바일 응원 작성 화면에서 긴 한국어 입력이 카드와 버튼을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 Visual QA fixture입니다.'
+      : hasContent
+        ? '오늘 경기 흐름을 응원하는 메시지를 남깁니다.'
+        : '';
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    return {
+      props: {
+        openComposerOnMount: false,
+        linkedRouteRequested: false,
+        linkedTarget: null,
+        isAuthLoading: false,
+        isLoggedIn: !isAnonymous,
+        hasFavoriteTeam: permission === 'user' && data !== 'no-team',
+        authUserEmail: 'visual-qa-cheer@example.com',
+        authUserHandle: '@visual-qa-cheer',
+        authUserName: '응원 QA 사용자',
+        authUserFavoriteTeam: permission === 'user' && data !== 'no-team' ? 'LG' : null,
+        authUserProfileImageUrl: null,
+        activeFeedTab: feed,
+        activePostType: 'NORMAL',
+        activeSort: 'latest',
+        teamColor: '#2b8a6e',
+        teamAccent: '#d7f2e5',
+        teamContrastText: '#ffffff',
+        teamLabel: 'LG 트윈스',
+        teamLogoId: 'LG',
+        userDisplayName: '응원 QA 사용자',
+        onRequireLogin: () => emitVisualQaInteraction(CHEER_COMPOSER_INTERACTION_EVENT, { value: eventValue }),
+        visualQaStateOverride: {
+          initialContent,
+          isSubmitting,
+          onSubmit: () => emitVisualQaInteraction(CHEER_COMPOSER_INTERACTION_EVENT, { value: eventValue }),
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_COMPOSER_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-composer-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-composer-runtime"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-cheer@example.com',
+          handle: '@visual-qa-cheer',
+          id: 900021,
+          name: '응원 QA 사용자',
+          favoriteTeam: permission === 'user' && data !== 'no-team' ? 'LG' : undefined,
+          favoriteTeamColor: '#2b8a6e',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.write-modal': (context) => {
+    const supportedComponentIds = new Set([
+      'src/components/CheerWriteModal.tsx#CheerWriteModal',
+      'src/components/CheerWriteModal.tsx#CheerWriteModalContent',
+    ]);
+    if (!supportedComponentIds.has(context.componentId)) {
+      throw new Error('cheer.write-modal only supports CheerWriteModal and CheerWriteModalContent');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.write-modal only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['mode', 'theme'].includes(key))) {
+      throw new Error('cheer.write-modal only supports mode and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      retrying: 'retrying',
+      ready: 'ready',
+    });
+    const mode = resolveDeclaredVariant<'external' | 'internal' | 'linked-checkin' | 'linked-recruitment'>(context, 'mode', {
+      external: 'external',
+      internal: 'internal',
+      'linked-checkin': 'linked-checkin',
+      'linked-recruitment': 'linked-recruitment',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isLinked = mode === 'linked-checkin' || mode === 'linked-recruitment';
+    const isPending = system === 'retrying';
+    const initialContent = data === 'long-korean'
+      ? '모바일 응원글 작성 화면에서 긴 한국어 본문이 입력 영역과 버튼을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'maximum-supported'
+        ? '최대 지원 길이의 응원글 본문이 모바일 작성 영역 안에서 안전하게 표시되는지 확인합니다. '.repeat(16)
+        : data === 'populated'
+          ? '오늘도 우리 팀을 응원합니다.'
+          : '';
+    const shareMode = isLinked
+      ? 'INTERNAL_REPOST'
+      : mode === 'external'
+        ? 'EXTERNAL_LINK'
+        : 'INTERNAL_REPOST';
+    if (interaction === 'input' && (data !== 'empty' || isPending)) {
+      throw new Error('cheer.write-modal input state requires an empty ready draft');
+    }
+    const targetIds = new Set<string>();
+    if (!isPending) {
+      targetIds.add('emoji');
+      if (!isLinked) targetIds.add('share-mode');
+      if (data !== 'empty') targetIds.add('submit');
+      targetIds.add('content');
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.write-modal default state does not accept interaction targets');
+    }
+    if (interaction === 'input' && context.interactionTargetId !== 'content') {
+      throw new Error(`cheer.write-modal expected content input target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && context.interactionTargetId !== 'content' && context.interactionTargetId !== 'emoji') {
+      throw new Error(`cheer.write-modal expected content or emoji focus target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if ((interaction === 'click' || interaction === 'focus-visible') && !targetIds.has(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.write-modal expected one of ${Array.from(targetIds).join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const linkedContent: LinkedContent | undefined = mode === 'linked-checkin'
+      ? {
+          kind: 'CHECKIN',
+          available: true,
+          checkin: {
+            verified: true,
+            homeTeam: 'LG 트윈스',
+            awayTeam: 'KT 위즈',
+            gameDate: '2026-09-19',
+            stadium: '잠실야구장',
+            cheeringTeam: 'LG 트윈스',
+          },
+          recruitment: null,
+          unavailableReason: null,
+        }
+      : mode === 'linked-recruitment'
+        ? {
+            kind: 'RECRUITMENT',
+            available: true,
+            checkin: null,
+            recruitment: {
+              homeTeam: 'LG 트윈스',
+              awayTeam: 'KT 위즈',
+              gameDate: '2026-09-19',
+              gameTime: '18:30',
+              stadium: '잠실야구장',
+              section: '1루 응원석',
+              currentParticipants: 2,
+              maxParticipants: 4,
+              status: 'PENDING',
+              recruiting: true,
+              price: 15000,
+              ticketPrice: 12000,
+              reservationDepositAmount: 5000,
+              description: '로컬 Visual QA 동행 모집 카드입니다.',
+              partyId: 43,
+            },
+            unavailableReason: null,
+          }
+        : undefined;
+    const event = (value: string) => emitVisualQaInteraction(CHEER_WRITE_MODAL_INTERACTION_EVENT, { value });
+    const props = {
+      isOpen: true,
+      onClose: () => event('close'),
+      onSubmit: async (payload: CheerWritePayload) => {
+        event(`submit:${payload.shareMode}`);
+        if (isPending) await new Promise<void>(() => {});
+      },
+      teamColor: '#2b8a6e',
+      teamAccent: '#2b8a6e',
+      teamContrastText: '#ffffff',
+      teamLabel: 'LG 트윈스',
+      teamId: 'LG',
+      linkedContent,
+      linkedPostType: mode === 'linked-checkin' ? 'CHECKIN' : mode === 'linked-recruitment' ? 'RECRUITMENT' : undefined,
+      visualQaStateOverride: {
+        content: initialContent,
+        isSubmitting: isPending,
+        shareMode,
+        sourceUrl: mode === 'external' ? 'https://example.invalid/visual-qa-source' : '',
+        sourceTitle: 'Visual QA 로컬 출처',
+        sourceAuthor: 'BEGA QA',
+        sourceLicense: 'CC BY 4.0',
+        sourceLicenseUrl: 'https://example.invalid/visual-qa-license',
+        sourceChangedNote: '내용 변경 없음',
+        sourceSnapshotType: 'fixture',
+        showEmojiPicker: false,
+      } satisfies CheerWriteModalVisualQaStateOverride,
+    } satisfies CheerWriteModalProps;
+    return {
+      props,
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_WRITE_MODAL_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-write-modal-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-write-modal-content"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-write@example.com',
+          handle: '@visual-qa-user',
+          id: 900020,
+          name: '비주얼 QA 사용자',
+          favoriteTeam: 'LG',
+          favoriteTeamColor: '#2b8a6e',
+          role: 'ROLE_USER',
+        },
+      },
+      initialPathname: '/cheer/write',
+      surfaceClassName: 'block min-h-0 w-full max-w-[840px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.comment-modal': (context) => {
+    if (context.componentId !== 'src/components/CommentModal.tsx#CommentModal') {
+      throw new Error('cheer.comment-modal only supports CommentModal');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.comment-modal only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.comment-modal only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      input: 'input',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      online: 'online',
+      retrying: 'retrying',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isSubmitting = system === 'retrying';
+    const initialContent = data === 'long-korean'
+      ? '모바일 댓글 작성 화면에서 긴 한국어 본문이 입력 영역과 하단 버튼을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'maximum-supported'
+        ? '최대 지원 길이의 댓글 본문이 모바일 작성 영역 안에서 안전하게 표시되는지 확인합니다. '.repeat(12)
+        : data === 'populated'
+          ? '오늘도 좋은 경기였습니다. 함께 응원할 수 있어 즐거워요.'
+          : '';
+    const targetIds = new Set<string>();
+    if (!isSubmitting) {
+      targetIds.add('emoji');
+      if (permission === 'user' && data !== 'empty') targetIds.add('submit');
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.comment-modal default state does not accept interaction targets');
+    }
+    if (interaction === 'input' && (data !== 'empty' || isSubmitting)) {
+      throw new Error('cheer.comment-modal input state requires an empty ready content target');
+    }
+    if (interaction === 'input' && context.interactionTargetId !== undefined && context.interactionTargetId !== 'content') {
+      throw new Error(`cheer.comment-modal input state expected content target, received ${context.interactionTargetId}`);
+    }
+    if (interaction === 'focus-visible' && !['content', 'emoji'].includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.comment-modal expected content or emoji focus target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if ((interaction === 'click' || interaction === 'focus-visible') && !targetIds.has(context.interactionTargetId ?? '')
+      && context.interactionTargetId !== 'content') {
+      throw new Error(`cheer.comment-modal expected one of ${Array.from(targetIds).join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const post: CheerPost = {
+      id: 904,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: '응원석 사용자',
+      authorId: 902,
+      authorHandle: '@visual-qa-fan',
+      authorTeamId: 'lg',
+      content: '모바일 댓글 모달의 원문과 입력 영역을 검증하는 로컬 fixture입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 12,
+      commentCount: 3,
+      bookmarkCount: 2,
+      repostCount: 1,
+      views: 42,
+      isHot: false,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const props = {
+      isOpen: true,
+      onClose: () => emitVisualQaInteraction(CHEER_COMMENT_MODAL_INTERACTION_EVENT, { value: 'close' }),
+      post,
+      targetPostId: post.id,
+      visualQaStateOverride: {
+        content: initialContent,
+        isSubmitting,
+        showEmojiPicker: false,
+        onSubmit: () => emitVisualQaInteraction(CHEER_COMMENT_MODAL_INTERACTION_EVENT, { value: eventValue }),
+      } satisfies CommentModalVisualQaStateOverride,
+    } satisfies CommentModalProps;
+    return {
+      props,
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_COMMENT_MODAL_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-comment-modal-interaction',
+      }),
+      captureSelector: '[data-testid="comment-modal"]',
+      harnessAuthState: permission === 'user'
+        ? {
+            user: {
+              email: 'visual-qa-comment@example.com',
+              handle: '@visual-qa-comment',
+              id: 900020,
+              name: '비주얼 QA 사용자',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#2b8a6e',
+              role: 'ROLE_USER',
+            },
+          }
+        : { user: null },
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.linked-content-card': (context) => {
+    if (context.componentId !== 'src/components/cheer/CheerLinkedContentCard.tsx#CheerLinkedContentCard') {
+      throw new Error('cheer.linked-content-card only supports CheerLinkedContentCard');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('cheer.linked-content-card only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['content', 'layout', 'theme'].includes(key))) {
+      throw new Error('cheer.linked-content-card only supports content, layout, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'manual-required': 'manual-required',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const content = resolveDeclaredVariant<'checkin' | 'recruitment'>(context, 'content', {
+      checkin: 'checkin',
+      recruitment: 'recruitment',
+    });
+    const layout = resolveDeclaredVariant<'compact' | 'detail'>(context, 'layout', {
+      compact: 'compact',
+      detail: 'detail',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.linked-content-card default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'party-link') {
+      throw new Error(`cheer.linked-content-card expected party-link target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'click' && (content !== 'recruitment' || !['single', 'long-korean', 'unbroken-token'].includes(data))) {
+      throw new Error(`cheer.linked-content-card click is only available for a populated recruitment card, data=${data}, content=${content}`);
+    }
+
+    const longDescription = '모바일 화면에서도 연결된 동행 모집 설명이 카드 경계를 넘지 않고 자연스럽게 줄바꿈되어야 합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.';
+    const unbrokenDescription = `LINKED-CONTENT-${'UNBROKEN'.repeat(24)}`;
+    const linkedContent: LinkedContent = data === 'empty' || data === 'manual-required'
+      ? {
+          kind: content === 'checkin' ? 'CHECKIN' : 'RECRUITMENT',
+          available: false,
+          checkin: null,
+          recruitment: null,
+          unavailableReason: data === 'manual-required'
+            ? MANUAL_BASEBALL_DATA_REQUIRED_CODE
+            : 'NOT_FOUND',
+        } as LinkedContent
+      : content === 'checkin'
+        ? {
+            kind: 'CHECKIN',
+            available: true,
+            checkin: {
+              verified: true,
+              homeTeam: 'LG 트윈스',
+              awayTeam: 'KT 위즈',
+              gameDate: '2026-09-19',
+              stadium: '잠실야구장',
+              cheeringTeam: 'LG 트윈스',
+            },
+            recruitment: null,
+            unavailableReason: null,
+          } as LinkedContent
+        : {
+            kind: 'RECRUITMENT',
+            available: true,
+            checkin: null,
+            recruitment: {
+              homeTeam: 'LG 트윈스',
+              awayTeam: 'KT 위즈',
+              gameDate: '2026-09-19',
+              gameTime: '18:30',
+              stadium: '잠실야구장',
+              section: '1루 응원석',
+              currentParticipants: 2,
+              maxParticipants: 4,
+              status: 'PENDING',
+              recruiting: true,
+              price: 15000,
+              ticketPrice: 12000,
+              reservationDepositAmount: 5000,
+              description: data === 'long-korean'
+                ? longDescription
+                : data === 'unbroken-token' ? unbrokenDescription : '함께 경기를 관람할 동행을 모집합니다.',
+              partyId: 42,
+            },
+            unavailableReason: null,
+          } as LinkedContent;
+
+    return {
+      props: {
+        linkedContent,
+        variant: layout,
+      },
+      captureSelector: '[data-vqa-harness-surface] > section',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'cheer.live-event-summary': (context) => {
+    if (context.componentId !== 'src/components/CheerLiveEventSummary.tsx#CheerLiveEventSummary') {
+      throw new Error('cheer.live-event-summary only supports CheerLiveEventSummary');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'system'].includes(key))) {
+      throw new Error('cheer.live-event-summary only supports data and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['density', 'theme'].includes(key))) {
+      throw new Error('cheer.live-event-summary only supports density and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      idle: 'idle',
+      loading: 'loading',
+      'error-503': 'error-503',
+      'manual-required': 'manual-required',
+    });
+    const maxEvents = resolveDeclaredVariant(context, 'density', {
+      compact: 3,
+      default: 5,
+      expanded: 8,
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const descriptions = data === 'long-korean'
+      ? [
+          '모바일 화면에서도 긴 한국어 실시간 이벤트 설명이 카드 경계를 넘지 않고 자연스럽게 줄바꿈됩니다.',
+          '로컬 Visual QA fixture는 외부 경기 데이터나 네트워크 응답을 사용하지 않습니다.',
+          '운영자 제공 내부 이벤트가 연결되면 동일한 표시 영역에 렌더링됩니다.',
+        ]
+      : data === 'unbroken-token'
+        ? [`LIVE-EVENT-${'UNBROKEN'.repeat(18)}`]
+        : ['로컬 Visual QA 경기 이벤트 표시 상태입니다.'];
+    const snapshot: GameLiveSnapshot | null = system === 'idle' && data !== 'empty'
+      ? {
+          gameId: 'visual-qa-internal-fixture',
+          gameStatus: 'LIVE',
+          currentInning: 7,
+          currentInningHalf: 'BOTTOM',
+          events: descriptions.map((description, index) => ({
+            eventSeq: index + 1,
+            inning: 7 - Math.min(index, 2),
+            inningHalf: index % 2 === 0 ? 'BOTTOM' : 'TOP',
+            description,
+            eventType: 'VISUAL_QA_FIXTURE',
+          })),
+        }
+      : system === 'idle'
+        ? {
+            gameId: 'visual-qa-internal-empty-fixture',
+            gameStatus: 'LIVE',
+            events: [],
+          }
+        : null;
+    const isManualDataRequired = system === 'manual-required';
+    return {
+      props: {
+        snapshot,
+        isLoading: system === 'loading',
+        errorMessage: system === 'error-503'
+          ? '실시간 경기 흐름을 불러오지 못했습니다.'
+          : isManualDataRequired
+            ? '내부 경기 이벤트 데이터가 필요합니다.'
+            : null,
+        errorCode: system === 'error-503'
+          ? 'HTTP_503'
+          : isManualDataRequired ? MANUAL_BASEBALL_DATA_REQUIRED_CODE : null,
+        maxEvents,
+      },
+      captureSelector: '[data-testid="cheer-live-event-summary"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.live-panel': (context) => {
+    if (context.componentId !== 'src/components/CheerLivePanel.tsx#CheerLivePanel') {
+      throw new Error('cheer.live-panel only supports CheerLivePanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.live-panel only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['team', 'theme'].includes(key))) {
+      throw new Error('cheer.live-panel only supports team and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      loading: 'loading',
+      populated: 'populated',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const team = resolveDeclaredVariant<'green' | 'navy'>(context, 'team', {
+      green: 'green',
+      navy: 'navy',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isError = data === 'error-503';
+    const isPopulated = data === 'populated' || data === 'long-korean';
+    const targetId = isError ? 'retry' : isPopulated ? 'detail' : data === 'empty' ? 'schedule' : undefined;
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.live-panel default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && targetId !== context.interactionTargetId) {
+      throw new Error(`cheer.live-panel expected target ${targetId ?? '<none>'}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && targetId === undefined) {
+      throw new Error('cheer.live-panel focus-visible state requires an actionable data state');
+    }
+
+    const game: Game = {
+      gameId: 'visual-qa-live-panel-game',
+      time: '18:30',
+      stadium: '잠실야구장',
+      gameStatus: 'PLAYING',
+      gameStatusKr: '경기 중',
+      gameInfo: 'Visual QA local fixture',
+      leagueType: 'REGULAR',
+      homeTeam: 'LG',
+      homeTeamFull: data === 'long-korean' ? '모바일 화면에서 자연스럽게 줄바꿈되는 LG 트윈스 홈팀' : 'LG 트윈스',
+      awayTeam: 'KT',
+      awayTeamFull: data === 'long-korean' ? '긴 한국어 팀명이 경계를 넘지 않는 KT 위즈 원정팀' : 'KT 위즈',
+      gameDate: '2026-09-19',
+      homeScore: 5,
+      awayScore: 3,
+    };
+    const snapshot: GameLiveSnapshot = {
+      gameId: game.gameId,
+      gameStatus: 'LIVE',
+      homeScore: 5,
+      awayScore: 3,
+      currentInning: 7,
+      currentInningHalf: 'BOTTOM',
+      lastEventSeq: 2,
+      events: [
+        {
+          eventSeq: 1,
+          inning: 7,
+          inningHalf: 'TOP',
+          description: data === 'long-korean'
+            ? '모바일 실시간 경기 패널에서 긴 한국어 이벤트 설명이 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+            : 'Visual QA 로컬 경기 이벤트입니다.',
+          eventType: 'VISUAL_QA_FIXTURE',
+        },
+        {
+          eventSeq: 2,
+          inning: 7,
+          inningHalf: 'BOTTOM',
+          description: '현재 이닝이 진행 중입니다.',
+          eventType: 'VISUAL_QA_FIXTURE',
+        },
+      ],
+    };
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    return {
+      props: {
+        favoriteTeamId: team === 'green' ? 'LG' : 'SSG',
+        favoriteTeamLabel: team === 'green' ? 'LG' : 'SSG',
+        favoriteTeamFull: team === 'green' ? 'LG 트윈스' : 'SSG 랜더스',
+        teamAccent: team === 'green' ? '#2b8a6e' : '#17365d',
+        onGoPrediction: () => emitVisualQaInteraction(CHEER_LIVE_PANEL_INTERACTION_EVENT, { value: eventValue }),
+        visualQaStateOverride: {
+          games: isPopulated ? [game] : [],
+          gamesState: data === 'loading' ? 'loading' : isError ? 'error' : 'ready',
+          liveSnapshot: isPopulated ? snapshot : null,
+          isLiveSnapshotLoading: false,
+          onRetry: () => emitVisualQaInteraction(CHEER_LIVE_PANEL_INTERACTION_EVENT, { value: eventValue }),
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_LIVE_PANEL_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-live-panel-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-live-panel"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-cheer-live@example.com',
+          handle: '@visual-qa-cheer-live',
+          id: 900022,
+          name: '실시간 QA 사용자',
+          favoriteTeam: team === 'green' ? 'LG' : 'SSG',
+          favoriteTeamColor: team === 'green' ? '#2b8a6e' : '#17365d',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.mobile-bottom-nav': (context) => {
+    if (context.componentId !== 'src/components/CheerMobileBottomNav.tsx#CheerMobileBottomNav') {
+      throw new Error('cheer.mobile-bottom-nav only supports CheerMobileBottomNav');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.mobile-bottom-nav only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['active', 'chatbot', 'team', 'theme'].includes(key))) {
+      throw new Error('cheer.mobile-bottom-nav only supports active, chatbot, team, and theme variants');
+    }
+
+    requireStateValue(context, 'data', 'single');
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const activeItem = resolveDeclaredVariant<'bookmarks' | 'home' | 'profile' | 'team'>(context, 'active', {
+      bookmarks: 'bookmarks',
+      home: 'home',
+      profile: 'profile',
+      team: 'team',
+    });
+    const hasChatbot = resolveDeclaredVariant(context, 'chatbot', {
+      off: false,
+      on: true,
+    });
+    const team = resolveDeclaredVariant(context, 'team', {
+      green: { activeTextAccent: '#2b8a6e', teamAccent: '#2b8a6e' },
+      navy: { activeTextAccent: '#17365d', teamAccent: '#17365d' },
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const validTargets = hasChatbot
+      ? ['bookmarks', 'chatbot', 'home', 'profile', 'team', 'write']
+      : ['bookmarks', 'home', 'profile', 'team', 'write'];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.mobile-bottom-nav default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !validTargets.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.mobile-bottom-nav expected one of ${validTargets.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        activeItem,
+        userProfilePath: permission === 'user' ? '/mypage' : '/login?redirect=%2Fmypage',
+        onWriteClick: () => {},
+        onChatBotClick: hasChatbot ? () => {} : undefined,
+        ...team,
+      },
+      captureSelector: '[data-testid="cheer-mobile-bottom-nav"]',
+      initialPathname: '/cheer',
+      surfaceClassName: 'relative block min-h-[844px] w-full max-w-[390px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.community-pulse': (context) => {
+    if (context.componentId !== 'src/components/CheerCommunityPulse.tsx#CheerCommunityPulse') {
+      throw new Error('cheer.community-pulse only supports CheerCommunityPulse');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.community-pulse only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.community-pulse only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      loading: 'loading',
+      populated: 'populated',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPopulated = data === 'populated' || data === 'long-korean';
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.community-pulse default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && (!isPopulated || context.interactionTargetId !== 'tag')) {
+      throw new Error(`cheer.community-pulse expected populated tag target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const longPostCopy = '모바일 화면에서 긴 한국어 응원 태그가 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 Visual QA fixture입니다.';
+    const hotPosts: CheerCommunityPulseVisualQaStateOverride['hotPosts'] = data === 'empty'
+      ? []
+      : [{ content: data === 'long-korean' ? `#LG트윈스 #${longPostCopy}` : '#LG트윈스 #오늘도응원' }, { content: '#오늘도응원 #잠실' }];
+    const weeklyLeaders = isPopulated
+      ? [
+          {
+            rank: 1,
+            handle: '@visual-qa-leader',
+            userName: data === 'long-korean' ? '긴 한국어 리더보드 이름 확인 사용자' : '비주얼 QA 리더',
+            level: 12,
+            rankTitle: '주간 응원왕',
+            score: 12345,
+            streak: 5,
+          },
+          {
+            rank: 2,
+            handle: null,
+            userName: '로컬 응원 사용자',
+            level: 8,
+            rankTitle: '응원 루키',
+            score: 9876,
+            streak: 2,
+          },
+        ]
+      : [];
+    const override: CheerCommunityPulseVisualQaStateOverride = {
+      hotPosts,
+      hotPostsState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      weeklyLeaders,
+      weeklyLeaderboardState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onNavigate: (path) => emitVisualQaInteraction(CHEER_COMMUNITY_PULSE_INTERACTION_EVENT, { value: eventValue, path }),
+    };
+    return {
+      props: { visualQaStateOverride: override },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_COMMUNITY_PULSE_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-community-pulse-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-community-pulse"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.sidebar-panels': (context) => {
+    if (context.componentId !== 'src/components/CheerSidebarPanels.tsx#CheerSidebarPanels') {
+      throw new Error('cheer.sidebar-panels only supports CheerSidebarPanels');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.sidebar-panels only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['team', 'theme'].includes(key))) {
+      throw new Error('cheer.sidebar-panels only supports team and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      loading: 'loading',
+      populated: 'populated',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const team = resolveDeclaredVariant<'all' | 'error' | 'loading' | 'selected'>(context, 'team', {
+      all: 'all',
+      error: 'error',
+      loading: 'loading',
+      selected: 'selected',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPopulated = data === 'populated' || data === 'long-korean';
+    const targetId = team === 'error'
+      ? 'team-retry'
+      : data === 'error-503'
+        ? 'games-retry'
+        : isPopulated
+          ? 'detail'
+          : undefined;
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.sidebar-panels default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && targetId !== context.interactionTargetId) {
+      throw new Error(`cheer.sidebar-panels expected target ${targetId ?? '<none>'}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && targetId === undefined) {
+      throw new Error('cheer.sidebar-panels focus-visible state requires an actionable data state');
+    }
+
+    const isSelectedTeam = team !== 'all';
+    const game = createHomeGameFixture(data === 'long-korean' ? 'long-korean' : 'populated');
+    const longPostCopy = '모바일 화면에서 긴 한국어 인기 응원 글이 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.';
+    const post: CheerPost = {
+      id: 907,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+      authorId: 80,
+      authorHandle: '@visual-qa-sidebar',
+      authorTeamId: 'lg',
+      content: data === 'long-korean' ? longPostCopy : '#LG트윈스 오늘도 함께 응원하는 로컬 인기 글입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 24,
+      commentCount: 12,
+      bookmarkCount: 8,
+      repostCount: 4,
+      views: 128,
+      isHot: true,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const weeklyLeaders: LeaderboardEntry[] = isPopulated
+      ? [{
+          rank: 1,
+          handle: '@visual-qa-sidebar-leader',
+          userName: '로컬 응원 리더',
+          level: 10,
+          rankTitle: '주간 응원왕',
+          score: 12345,
+          streak: 4,
+        }]
+      : [];
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const hotOverride: CheerHotVisualQaStateOverride = {
+      hotPosts: isPopulated ? [post] : [],
+      hotPostsState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onRetry: () => emitVisualQaInteraction(CHEER_SIDEBAR_PANELS_INTERACTION_EVENT, { value: eventValue }),
+    };
+    const communityPulseOverride: CheerCommunityPulseVisualQaStateOverride = {
+      hotPosts: isPopulated ? [{ content: data === 'long-korean' ? `#LG트윈스 #${longPostCopy}` : '#LG트윈스 #오늘도응원' }] : [],
+      hotPostsState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      weeklyLeaders,
+      weeklyLeaderboardState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onNavigate: (path) => emitVisualQaInteraction(CHEER_SIDEBAR_PANELS_INTERACTION_EVENT, { value: eventValue, path }),
+    };
+    const override: CheerSidebarPanelsVisualQaStateOverride = {
+      games: isPopulated ? [game] : [],
+      gamesState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onRetryGames: () => emitVisualQaInteraction(CHEER_SIDEBAR_PANELS_INTERACTION_EVENT, { value: eventValue }),
+      hot: hotOverride,
+      communityPulse: communityPulseOverride,
+    };
+    return {
+      props: {
+        favoriteTeamFull: isSelectedTeam ? 'LG 트윈스' : null,
+        favoriteTeamId: isSelectedTeam ? 'lg' : null,
+        favoriteTeamLabel: isSelectedTeam ? 'LG' : null,
+        isTeamMetadataError: team === 'error',
+        isTeamMetadataLoading: team === 'loading',
+        onGoPrediction: () => emitVisualQaInteraction(CHEER_SIDEBAR_PANELS_INTERACTION_EVENT, { value: eventValue }),
+        onRefetchTeamMetadata: () => emitVisualQaInteraction(CHEER_SIDEBAR_PANELS_INTERACTION_EVENT, { value: eventValue }),
+        teamAccent: isSelectedTeam ? '#2b8a6e' : '#17365d',
+        teamDescription: data === 'long-korean'
+          ? '모바일 화면에서 팀 소개 문장이 자연스럽게 여러 줄로 표시되는지 확인하는 로컬 fixture입니다.'
+          : '로컬 Visual QA 팀 요약 설명입니다.',
+        teamId: isSelectedTeam ? 'lg' : 'all',
+        teamLabel: isSelectedTeam ? 'LG' : '전체',
+        teamLogoId: isSelectedTeam ? 'lg' : undefined,
+        teamName: isSelectedTeam ? 'LG 트윈스' : '전체 팀',
+        visualQaStateOverride: override,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_SIDEBAR_PANELS_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-sidebar-panels-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-sidebar-panels"]',
+      initialPathname: '/cheer',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.bookmarks-page': (context) => {
+    if (context.componentId !== 'src/components/CheerBookmarksPage.tsx#CheerBookmarksPage') {
+      throw new Error('cheer.bookmarks-page only supports CheerBookmarksPage');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.bookmarks-page only supports the page wrapper state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('cheer.bookmarks-page only supports phase and theme variants');
+    }
+    requireStateValue(context, 'data', 'single');
+    const phase = resolveDeclaredVariant<'fallback' | 'runtime'>(context, 'phase', {
+      fallback: 'fallback',
+      runtime: 'runtime',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (phase === 'fallback') {
+      return {
+        props: { visualQaPhase: 'fallback' },
+        captureSelector: '[data-testid="cheer-bookmarks-page-fallback"]',
+        initialPathname: '/cheer/bookmarks',
+        surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
+        theme,
+      };
+    }
+    const child = adapters['cheer.bookmarks']({
+      componentId: 'src/components/CheerBookmarks.tsx#CheerBookmarks',
+      states: { data: 'populated', interactions: 'default', system: 'online' },
+      variants: { theme },
+    });
+    const props = {
+      visualQaStateOverride: child.props.visualQaStateOverride as CheerBookmarksVisualQaStateOverride,
+      visualQaPhase: 'runtime',
+    } satisfies CheerBookmarksPageProps;
+    return { ...child, props };
+  },
+  'cheer.bookmarks': (context) => {
+    if (context.componentId !== 'src/components/CheerBookmarks.tsx#CheerBookmarks') {
+      throw new Error('cheer.bookmarks only supports CheerBookmarks');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.bookmarks only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.bookmarks only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    requireStateValue(context, 'system', 'online');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = data === 'error-503'
+      ? 'retry'
+      : data === 'empty'
+        ? 'empty-cta'
+        : 'write';
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.bookmarks default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== targetId) {
+      throw new Error(`cheer.bookmarks expected target ${targetId}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+    const content = data === 'long-korean'
+      ? '모바일 북마크 화면에서 긴 한국어 응원 글이 카드와 액션 영역을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+      : data === 'unbroken-token'
+        ? `CHEER-BOOKMARK-${'UNBROKEN'.repeat(26)}`
+        : '저장해둔 응원 글을 모바일에서도 안정적으로 확인합니다.';
+    const post: CheerPost = {
+      id: 907,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: data === 'long-korean' ? '모바일 북마크 정합성 검증 응원단' : '북마크 사용자',
+      authorId: 78,
+      authorHandle: '@visual-qa-bookmarks',
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(24),
+      commentCount: count(12),
+      bookmarkCount: count(8),
+      repostCount: count(4),
+      views: count(128),
+      isHot: data === 'maximum-supported',
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: true,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const override: CheerBookmarksVisualQaStateOverride = {
+      posts: ['empty', 'error-503', 'loading'].includes(data) ? [] : [post],
+      queryState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onNavigate: (path) => emitVisualQaInteraction(CHEER_BOOKMARKS_INTERACTION_EVENT, { value: eventValue, path }),
+      onRetry: () => emitVisualQaInteraction(CHEER_BOOKMARKS_INTERACTION_EVENT, { value: eventValue }),
+      onToggleBookmark: (postId) => emitVisualQaInteraction(CHEER_BOOKMARKS_INTERACTION_EVENT, { value: eventValue, postId }),
+    };
+    return {
+      props: { visualQaStateOverride: override },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_BOOKMARKS_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-bookmarks-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-bookmarks"]',
+      initialPathname: '/cheer/bookmarks',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.feed-runtime': (context) => {
+    if (context.componentId !== 'src/components/CheerFeedRuntimeContent.tsx#CheerFeedRuntimeContent') {
+      throw new Error('cheer.feed-runtime only supports CheerFeedRuntimeContent');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.feed-runtime only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['feedTab', 'theme'].includes(key))) {
+      throw new Error('cheer.feed-runtime only supports feedTab and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'interaction-check': 'interaction-check',
+      'request-error-recovery': 'request-error-recovery',
+      'request-pending': 'request-pending',
+      populated: 'populated',
+      zero: 'zero',
+      'validation-error': 'validation-error',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const feedTab = resolveDeclaredVariant<'all' | 'following' | 'popular'>(context, 'feedTab', {
+      all: 'all',
+      following: 'following',
+      popular: 'popular',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isLoginRequired = data === 'empty' && feedTab === 'following' && permission === 'anonymous';
+    const isPopulated = data === 'populated'
+      || data === 'long-korean'
+      || data === 'interaction-check'
+      || data === 'request-error-recovery'
+      || data === 'request-pending';
+    const targetId = data === 'error-503'
+      ? 'retry'
+      : isLoginRequired
+        ? 'login'
+        : data === 'empty' && feedTab !== 'following'
+          ? 'write'
+            : data === 'request-error-recovery'
+              ? 'next-retry'
+            : data === 'interaction-check'
+              ? 'new-posts'
+              : isPopulated
+                ? 'post'
+                : undefined;
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.feed-runtime default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && targetId !== context.interactionTargetId) {
+      throw new Error(`cheer.feed-runtime expected target ${targetId ?? '<none>'}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && targetId === undefined) {
+      throw new Error('cheer.feed-runtime focus-visible state requires an actionable data state');
+    }
+
+    const content = data === 'long-korean'
+      ? '#LG트윈스 모바일 화면에서 긴 한국어 응원 글이 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+      : '#LG트윈스 오늘도 함께 응원하는 로컬 feed fixture입니다.';
+    const post: CheerPost = {
+      id: 908,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+      authorId: 81,
+      authorHandle: '@visual-qa-feed',
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 24,
+      commentCount: 12,
+      bookmarkCount: 8,
+      repostCount: 4,
+      views: 128,
+      isHot: feedTab === 'popular',
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const hasPosts = isPopulated;
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const override: CheerFeedRuntimeContentVisualQaStateOverride = {
+      posts: hasPosts ? [post] : [],
+      queryState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      hasNextPage: data === 'pagination-loading' || data === 'pagination-error',
+      nextPageState: data === 'request-pending'
+        ? 'loading'
+        : data === 'request-error-recovery' ? 'error' : 'idle',
+      newPostCount: data === 'interaction-check' ? 3 : 0,
+      onRetry: () => emitVisualQaInteraction(CHEER_FEED_RUNTIME_INTERACTION_EVENT, { value: eventValue }),
+      onNextPage: () => emitVisualQaInteraction(CHEER_FEED_RUNTIME_INTERACTION_EVENT, { value: eventValue }),
+      onNewPostsClick: () => emitVisualQaInteraction(CHEER_FEED_RUNTIME_INTERACTION_EVENT, { value: eventValue }),
+    };
+    const isLoggedIn = permission === 'user';
+    return {
+      props: {
+        activeFeedTab: feedTab,
+        activePostType: 'NORMAL',
+        activeSort: feedTab === 'popular' ? 'HOT' : 'LATEST',
+        authUserId: isLoggedIn ? 900030 : null,
+        isLoggedIn,
+        onRequireLogin: () => emitVisualQaInteraction(CHEER_FEED_RUNTIME_INTERACTION_EVENT, { value: eventValue }),
+        onWriteClick: () => emitVisualQaInteraction(CHEER_FEED_RUNTIME_INTERACTION_EVENT, { value: eventValue }),
+        searchQuery: data === 'validation-error' ? 'L' : data === 'zero' ? 'LG' : '',
+        teamColor: '#2b8a6e',
+        visualQaStateOverride: override,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_FEED_RUNTIME_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-feed-runtime-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-feed-section"]',
+      harnessAuthState: isLoggedIn ? {
+        user: {
+          email: 'visual-qa-cheer-feed@example.com',
+          handle: '@visual-qa-cheer-feed',
+          id: 900030,
+          name: '응원 feed QA 사용자',
+          favoriteTeam: 'LG',
+          favoriteTeamColor: '#2b8a6e',
+          role: 'ROLE_USER',
+        },
+      } : undefined,
+      initialPathname: '/cheer',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.hot': (context) => {
+    if (context.componentId !== 'src/components/CheerHot.tsx#CheerHot') {
+      throw new Error('cheer.hot only supports CheerHot');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.hot only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.hot only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      loading: 'loading',
+      populated: 'populated',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPopulated = data === 'populated' || data === 'long-korean';
+    const targetId = data === 'error-503' ? 'retry' : isPopulated ? 'post' : undefined;
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.hot default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && targetId !== context.interactionTargetId) {
+      throw new Error(`cheer.hot expected target ${targetId ?? '<none>'}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'focus-visible' && targetId === undefined) {
+      throw new Error('cheer.hot focus-visible state requires an actionable data state');
+    }
+
+    const content = data === 'long-korean'
+      ? '#LG트윈스 모바일 화면에서 긴 한국어 인기 응원 글이 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+      : '#LG트윈스 오늘도 함께 응원하는 로컬 인기 글입니다.';
+    const post: CheerPost = {
+      id: 906,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+      authorId: 79,
+      authorHandle: '@visual-qa-hot',
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 24,
+      commentCount: 12,
+      bookmarkCount: 8,
+      repostCount: 4,
+      views: 128,
+      isHot: true,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const override: CheerHotVisualQaStateOverride = {
+      hotPosts: isPopulated ? [post] : [],
+      hotPostsState: data === 'loading' ? 'loading' : data === 'error-503' ? 'error' : 'ready',
+      onRetry: () => emitVisualQaInteraction(CHEER_HOT_INTERACTION_EVENT, { value: eventValue }),
+    };
+    return {
+      props: { visualQaStateOverride: override },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_HOT_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-hot-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-hot"]',
+      initialPathname: '/cheer',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.card-interactions': (context) => {
+    if (context.componentId !== 'src/components/CheerCardInteractionsRuntime.tsx#CheerCardInteractionsRuntime') {
+      throw new Error('cheer.card-interactions only supports CheerCardInteractionsRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.card-interactions only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['menu', 'post', 'theme'].includes(key))) {
+      throw new Error('cheer.card-interactions only supports menu, post, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'system', 'online');
+    const menu = resolveDeclaredVariant<'closed' | 'open'>(context, 'menu', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const postMode = resolveDeclaredVariant<'normal' | 'owner' | 'repost'>(context, 'post', {
+      normal: 'normal',
+      owner: 'owner',
+      repost: 'repost',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isLoggedIn = permission === 'user';
+    const isRepost = postMode === 'repost';
+    const isOwner = postMode === 'owner' || isRepost;
+    const allowedTargets = isLoggedIn
+      ? ['comment', 'repost-toggle', 'like', 'bookmark']
+      : [];
+    if (menu === 'open' && isLoggedIn && postMode === 'normal') {
+      allowedTargets.push('repost-simple', 'repost-quote');
+    }
+    if (menu === 'open' && isLoggedIn && isRepost) {
+      allowedTargets.push('repost-cancel');
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.card-interactions default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !allowedTargets.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.card-interactions expected one of ${allowedTargets.join(', ') || '<none>'}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+    const originalPost: CheerPost & EmbeddedPost = {
+      id: 903,
+      deleted: false,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: '원문 작성자',
+      authorId: 77,
+      authorHandle: '@visual-qa-original',
+      authorTeamId: 'lg',
+      content: '원문 리포스트 대상입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(18),
+      commentCount: count(4),
+      bookmarkCount: count(2),
+      repostCount: count(1),
+      views: count(64),
+      isHot: false,
+      createdAt: '2026-09-19T02:50:00.000Z',
+      updatedAt: '2026-09-19T02:50:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+    const post: CheerPost = {
+      id: 904,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: isOwner ? '비주얼 QA 사용자' : '응원석 사용자',
+      authorId: isOwner ? 900020 : 902,
+      authorHandle: isOwner ? '@visual-qa-user' : '@visual-qa-fan',
+      authorTeamId: 'lg',
+      content: data === 'long-korean'
+        ? '모바일 응원 액션 영역에서 긴 한국어 상태와 숫자 압박이 주변 조작부를 밀어내지 않는지 확인하는 로컬 fixture입니다.'
+        : '응원 카드 조작 영역을 검증하는 로컬 fixture입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(24),
+      commentCount: count(12),
+      bookmarkCount: count(8),
+      repostCount: count(4),
+      views: count(128),
+      isHot: false,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: data === 'single',
+      bookmarked: data === 'maximum-supported',
+      isOwner,
+      repostedByMe: isRepost,
+      imageUrls: [],
+      repostOfId: isRepost ? originalPost.id : undefined,
+      repostType: isRepost ? 'SIMPLE' : undefined,
+      originalPost: isRepost ? originalPost : undefined,
+    };
+    const eventValue = context.interactionTargetId ?? 'interaction';
+    const override: CheerCardInteractionsRuntimeVisualQaStateOverride = {
+      currentUserId: isLoggedIn ? 900020 : null,
+      currentUserHandle: isLoggedIn ? '@visual-qa-user' : null,
+      initialRepostMenuOpen: menu === 'open',
+      isLoggedIn,
+      onInteraction: (intent) => emitVisualQaInteraction(CHEER_CARD_INTERACTIONS_INTERACTION_EVENT, {
+        value: `${eventValue}:${intent}`,
+      }),
+    };
+    return {
+      props: {
+        onInitialInteractionHandled: () => {},
+        post,
+        visualQaStateOverride: override,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_CARD_INTERACTIONS_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-card-interactions-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-card-interactions"]',
+      harnessAuthState: isLoggedIn
+        ? {
+            user: {
+              email: 'visual-qa-card-interactions@example.com',
+              handle: '@visual-qa-user',
+              id: 900020,
+              name: '비주얼 QA 사용자',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#2b8a6e',
+              role: 'ROLE_USER',
+            },
+          }
+        : undefined,
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.card': (context) => {
+    if (context.componentId !== 'src/components/CheerCard.tsx#CheerCard') {
+      throw new Error('cheer.card only supports CheerCard');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.card only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['layout', 'post-type', 'theme'].includes(key))) {
+      throw new Error('cheer.card only supports layout, post-type, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const layout = resolveDeclaredVariant<'default' | 'hot'>(context, 'layout', {
+      default: 'default',
+      hot: 'hot',
+    });
+    const postType = resolveDeclaredVariant<'CHECKIN' | 'NORMAL' | 'NOTICE' | 'RECRUITMENT'>(context, 'post-type', {
+      checkin: 'CHECKIN',
+      normal: 'NORMAL',
+      notice: 'NOTICE',
+      recruitment: 'RECRUITMENT',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isOwner = permission === 'user';
+    const canExpand = data === 'long-korean' || data === 'unbroken-token';
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.card default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'owner-menu') {
+      throw new Error(`cheer.card expected owner-menu target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'click' && !isOwner) {
+      throw new Error('cheer.card owner-menu interaction requires the user permission state');
+    }
+
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+    const content = data === 'long-korean'
+      ? '모바일 응원 카드에서 긴 한국어 본문이 작성자 정보와 액션 영역을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'unbroken-token'
+        ? `CHEER-CARD-${'UNBROKEN'.repeat(26)}`
+        : '오늘도 우리 팀을 응원합니다.';
+    const linkedContent: LinkedContent | undefined = postType === 'CHECKIN'
+      ? {
+          kind: 'CHECKIN',
+          available: true,
+          checkin: {
+            verified: true,
+            homeTeam: 'LG 트윈스',
+            awayTeam: 'KT 위즈',
+            gameDate: '2026-09-19',
+            stadium: '잠실야구장',
+            cheeringTeam: 'LG 트윈스',
+          },
+          recruitment: null,
+          unavailableReason: null,
+        }
+      : postType === 'RECRUITMENT'
+        ? {
+            kind: 'RECRUITMENT',
+            available: true,
+            checkin: null,
+            recruitment: {
+              homeTeam: 'LG 트윈스',
+              awayTeam: 'KT 위즈',
+              gameDate: '2026-09-19',
+              gameTime: '18:30',
+              stadium: '잠실야구장',
+              section: '1루 응원석',
+              currentParticipants: 2,
+              maxParticipants: 4,
+              status: 'PENDING',
+              recruiting: true,
+              price: 15000,
+              ticketPrice: 12000,
+              reservationDepositAmount: 5000,
+              description: '로컬 Visual QA 동행 모집 카드입니다.',
+              partyId: 43,
+            },
+            unavailableReason: null,
+          }
+        : undefined;
+    const post: CheerPost = {
+      id: 902,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType,
+      author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+      authorId: 77,
+      authorHandle: '@visual-qa-fan',
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(24),
+      commentCount: count(12),
+      bookmarkCount: count(8),
+      repostCount: count(4),
+      views: count(128),
+      isHot: layout === 'hot',
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: data === 'single',
+      bookmarked: data === 'maximum-supported',
+      isOwner,
+      repostedByMe: false,
+      imageUrls: [],
+      linkedContent,
+    };
+    return {
+      props: {
+        post,
+        isHotItem: layout === 'hot',
+        teamColor: '#2b8a6e',
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      initialPathname: '/cheer/902',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.comment-item': (context) => {
+    if (context.componentId !== 'src/components/cheer/CommentItem.tsx#CommentItem') {
+      throw new Error('cheer.comment-item only supports CommentItem');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.comment-item only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['depth', 'replies', 'theme'].includes(key))) {
+      throw new Error('cheer.comment-item only supports depth, replies, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      pending: 'pending',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const depth = resolveDeclaredVariant<'reply' | 'root'>(context, 'depth', {
+      reply: 'reply',
+      root: 'root',
+    });
+    const replies = resolveDeclaredVariant<'coming-soon' | 'enabled'>(context, 'replies', {
+      'coming-soon': 'coming-soon',
+      enabled: 'enabled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const userHandle = permission === 'user' ? '@visual-qa-user' : null;
+    const commentId = 904;
+    const maximum = data === 'unbroken-token';
+    const likeCount = maximum ? Number.MAX_SAFE_INTEGER : data === 'single' ? 7 : 2;
+    const content = data === 'long-korean'
+      ? '모바일 댓글 영역에서도 긴 한국어 응원 문장이 작성자 정보와 답글 액션을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'unbroken-token'
+        ? `COMMENT-ITEM-${'UNBROKEN'.repeat(26)}`
+        : data === 'pending' ? '전송 중인 댓글의 상태를 확인합니다.' : '오늘도 끝까지 응원합니다.';
+    const reply: CheerComment = {
+      id: 905,
+      author: '답글 사용자',
+      authorHandle: '@reply-user',
+      content: '함께 응원하겠습니다.',
+      timeAgo: '5분 전',
+      likeCount: 1,
+      likedByMe: false,
+      replies: [],
+    };
+    const comment: CheerComment & { isPending?: boolean } = {
+      id: commentId,
+      author: permission === 'user' ? '내 응원 댓글' : '응원 댓글 사용자',
+      authorHandle: userHandle ?? '@commenter',
+      content,
+      timeAgo: '방금 전',
+      likeCount,
+      likedByMe: data === 'single',
+      isPending: data === 'pending',
+      replies: data === 'populated' && depth === 'root' ? [reply] : [],
+    };
+    const allowedTargets = ['like'];
+    if (permission === 'user') allowedTargets.push('delete');
+    if (permission === 'user' && replies === 'enabled') allowedTargets.push('reply');
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.comment-item default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.comment-item expected one of ${allowedTargets.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        comment,
+        depth: depth === 'reply' ? 1 : 0,
+        canInteract: permission === 'user',
+        canLike: permission === 'user',
+        repliesEnabled: replies === 'enabled',
+        repliesComingSoon: replies === 'coming-soon',
+        activeReplyId: null,
+        replyDraft: '',
+        isReplyPending: false,
+        isCommentLikePending: false,
+        commentLikeAnimating: data === 'single' ? { [commentId]: true } : {},
+        onCommentLike: () => {},
+        onReplyToggle: () => {},
+        onReplyChange: () => {},
+        onReplySubmit: () => {},
+        onReplyCancel: () => {},
+        onDelete: () => {},
+        userHandle,
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      initialPathname: '/cheer/902#comments',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-stats-body': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailStatsBody.tsx#CheerDetailStatsBody') {
+      throw new Error('cheer.detail-stats-body only supports CheerDetailStatsBody');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('cheer.detail-stats-body only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.detail-stats-body only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      zero: 'zero',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const maximum = data === 'maximum-supported';
+    const zero = data === 'zero';
+    return {
+      props: {
+        commentCount: zero ? 0 : maximum ? Number.MAX_SAFE_INTEGER : 12,
+        createdAtLabel: data === 'long-korean' ? '2026년 09월 19일 오후 12시 30분' : '2026.09.19 12:30',
+        repostedAtLabel: zero ? null : data === 'long-korean' ? '2026년 09월 19일 오후 12시 45분' : '오늘 12:45',
+        teamName: data === 'long-korean' ? '시즌 응원 데이터 정합성 검증 구단' : 'LG 트윈스',
+        views: zero ? 0 : maximum ? Number.MAX_SAFE_INTEGER : 128,
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-stats-aside': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailStatsAsideRuntime.tsx#CheerDetailStatsAsideRuntime') {
+      throw new Error('cheer.detail-stats-aside only supports CheerDetailStatsAsideRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('cheer.detail-stats-aside only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['team', 'theme'].includes(key))) {
+      throw new Error('cheer.detail-stats-aside only supports team and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      zero: 'zero',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const detailAccent = resolveDeclaredVariant(context, 'team', {
+      green: '#2b8a6e',
+      navy: '#17365d',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail-stats-aside default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'toggle') {
+      throw new Error(`cheer.detail-stats-aside expected toggle target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const maximum = data === 'maximum-supported';
+    const zero = data === 'zero';
+    return {
+      props: {
+        commentCount: zero ? 0 : maximum ? Number.MAX_SAFE_INTEGER : 12,
+        createdAtLabel: data === 'long-korean' ? '2026년 09월 19일 오후 12시 30분' : '2026.09.19 12:30',
+        detailAccent,
+        primaryBorderStyle: { borderColor: `${detailAccent}40` },
+        repostedAtLabel: zero ? null : data === 'long-korean' ? '2026년 09월 19일 오후 12시 45분' : '오늘 12:45',
+        teamName: data === 'long-korean' ? '시즌 응원 데이터 정합성 검증 구단' : 'LG 트윈스',
+        views: zero ? 0 : maximum ? Number.MAX_SAFE_INTEGER : 128,
+      },
+      captureSelector: '[data-vqa-harness-surface] > aside',
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-comments': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailCommentsPanel.tsx#CheerDetailCommentsPanel') {
+      throw new Error('cheer.detail-comments only supports CheerDetailCommentsPanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('cheer.detail-comments only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['replies', 'theme'].includes(key))) {
+      throw new Error('cheer.detail-comments only supports replies and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      'error-503': 'error-503',
+      loading: 'loading',
+      ready: 'ready',
+    });
+    const replies = resolveDeclaredVariant<'coming-soon' | 'enabled'>(context, 'replies', {
+      'coming-soon': 'coming-soon',
+      enabled: 'enabled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isLoggedIn = permission === 'user';
+    const phase: CheerDetailCommentsPanelVisualQaStateOverride['phase'] = system === 'loading'
+      ? 'loading'
+      : system === 'error-503'
+        ? 'error'
+        : data === 'empty'
+          ? 'empty'
+          : 'populated';
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+    const longCopy = data === 'long-korean'
+      ? '모바일 댓글 패널에서 긴 한국어 문장이 작성자와 액션 영역을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : maximum
+        ? '최대 지원 길이 댓글의 본문과 수치가 모바일 카드 안에서 안전하게 줄바꿈되는지 확인합니다. '.repeat(12)
+        : '오늘 경기 응원 흐름을 함께 확인합니다.';
+    const comments: CheerComment[] = data === 'empty'
+      ? []
+      : Array.from({ length: maximum ? 6 : 2 }, (_, index) => ({
+          id: 701 + index,
+          author: index === 0 && isLoggedIn ? '비주얼 QA 사용자' : `응원 댓글 사용자 ${index + 1}`,
+          authorHandle: index === 0 && isLoggedIn ? '@visual-qa-user' : `@visual-qa-comment-${index + 1}`,
+          content: index === 0 ? longCopy : '댓글 액션과 답글 조작 영역을 확인하는 로컬 fixture입니다.',
+          timeAgo: index === 0 ? '방금 전' : `${index + 1}분 전`,
+          likes: count(index + 1),
+          likeCount: count(index + 1),
+          likedByMe: index === 0 && isLoggedIn,
+          replies: index === 0 && replies === 'enabled'
+            ? [{
+                id: 801,
+                author: '원문 응원 사용자',
+                authorHandle: '@visual-qa-reply',
+                content: '답글도 같은 모바일 줄바꿈 규칙을 사용합니다.',
+                timeAgo: '방금 전',
+                likes: 1,
+                likeCount: 1,
+                likedByMe: false,
+              }]
+            : [],
+        }));
+    const hasNextPage = maximum;
+    const targetIds = new Set<string>();
+    if (isLoggedIn) {
+      targetIds.add('comment-input');
+      targetIds.add('comment-submit');
+      if (comments.length > 0) {
+        targetIds.add('comment-like');
+        targetIds.add('comment-delete');
+        if (replies === 'enabled') targetIds.add('reply-toggle');
+      }
+    } else {
+      targetIds.add('login');
+    }
+    if (system === 'error-503') targetIds.add('retry');
+    if (hasNextPage && phase === 'populated') targetIds.add('show-more');
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail-comments default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !targetIds.has(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.detail-comments expected one of ${[...targetIds].join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const onInteraction = (intent: string) => emitVisualQaInteraction(CHEER_DETAIL_COMMENTS_INTERACTION_EVENT, { value: intent });
+    const props = {
+      resolvedPostId: 904,
+      commentCount: count(comments.length),
+      onCommentCountChange: (nextCount) => onInteraction(`count:${nextCount}`),
+      isLoggedIn,
+      authUserId: isLoggedIn ? '900020' : null,
+      authUserHandle: isLoggedIn ? '@visual-qa-user' : null,
+      authUserDisplayName: '비주얼 QA 사용자',
+      authUserProfileImageUrl: null,
+      areCommentRepliesAvailable: replies === 'enabled',
+      detailAccent: '#2b8a6e',
+      primaryBorderStyle: { borderColor: '#2b8a6e40' },
+      surfaceTintStyle: { backgroundColor: '#2b8a6e0b' },
+      onRedirectToLogin: () => onInteraction('login'),
+      confirm: async () => true,
+      visualQaStateOverride: {
+        phase,
+        comments,
+        hasNextPage,
+        onInteraction,
+      },
+    } satisfies CheerDetailCommentsPanelProps;
+    return {
+      props,
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_DETAIL_COMMENTS_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-detail-comments-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-detail-comments-panel"]',
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-article': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailArticleRuntime.tsx#CheerDetailArticleRuntime') {
+      throw new Error('cheer.detail-article only supports CheerDetailArticleRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.detail-article only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['menu', 'post', 'theme'].includes(key))) {
+      throw new Error('cheer.detail-article only supports menu, post, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    const menu = resolveDeclaredVariant<'closed' | 'owner-open' | 'repost-open'>(context, 'menu', {
+      closed: 'closed',
+      'owner-open': 'owner-open',
+      'repost-open': 'repost-open',
+    });
+    const postState = resolveDeclaredVariant<'normal' | 'owner' | 'simple-repost' | 'quote-repost' | 'owned-repost'>(
+      context,
+      'post',
+      {
+        normal: 'normal',
+        owner: 'owner',
+        'simple-repost': 'simple-repost',
+        'quote-repost': 'quote-repost',
+        'owned-repost': 'owned-repost',
+      },
+    );
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+    const isRepost = postState === 'simple-repost'
+      || postState === 'quote-repost'
+      || postState === 'owned-repost';
+    const isOwner = postState === 'owner' || postState === 'owned-repost';
+    const isLoggedIn = permission === 'user';
+    if ((postState === 'owner' || postState === 'owned-repost') && !isLoggedIn) {
+      throw new Error('cheer.detail-article owner branches require the user permission state');
+    }
+    if (menu === 'owner-open' && !isOwner) {
+      throw new Error('cheer.detail-article owner menu requires an owner post variant');
+    }
+    if (menu === 'repost-open' && !isLoggedIn) {
+      throw new Error('cheer.detail-article repost menu requires the user permission state');
+    }
+
+    const targetIds = ['back', 'profile', 'like', 'comment', 'repost', 'bookmark'];
+    if (isOwner) {
+      targetIds.push('owner-menu');
+    } else if (isLoggedIn) {
+      targetIds.push('report');
+    }
+    if (menu === 'owner-open') {
+      targetIds.push('owner-edit', 'owner-delete');
+    }
+    if (menu === 'repost-open') {
+      if (postState === 'owned-repost') {
+        targetIds.push('repost-cancel');
+      } else if (!isOwner) {
+        targetIds.push('repost-simple');
+        targetIds.push('repost-quote');
+      }
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail-article default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.detail-article expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const currentUserId = isLoggedIn ? 900020 : null;
+    const currentUserHandle = isLoggedIn ? '@visual-qa-user' : null;
+    const authorIsCurrentUser = isOwner || (isRepost && isLoggedIn);
+    const postAuthor = authorIsCurrentUser ? '비주얼 QA 사용자' : '응원석 사용자';
+    const postAuthorHandle = authorIsCurrentUser ? '@visual-qa-user' : '@visual-qa-fan';
+    const content = data === 'long-korean'
+      ? '모바일 응원 상세 화면에서 긴 한국어 본문과 작성자 정보, 통계, 액션 영역이 서로 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'maximum-supported'
+        ? '최대 지원 길이의 응원 상세 본문과 수치가 모바일 화면에서 안전하게 표시되는지 확인합니다. '.repeat(24)
+        : isRepost
+          ? '원문과 함께 표시되는 리포스트 상세 본문입니다.'
+          : '오늘도 우리 팀을 응원합니다.';
+    const originalPost: EmbeddedPost | undefined = isRepost
+      ? {
+          id: 903,
+          teamId: 'lg',
+          teamColor: '#2b8a6e',
+          postType: 'NORMAL',
+          content: data === 'long-korean'
+            ? '인용된 원문의 긴 한국어 문장이 상세 카드 안에서 안전하게 줄바꿈되어야 합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+            : '상세 화면에서 함께 확인하는 원문 응원 게시글입니다.',
+          author: '원문 작성자',
+          authorHandle: '@visual-qa-original',
+          createdAt: '2026-09-19T02:50:00.000Z',
+          imageUrls: [],
+          deleted: false,
+          likeCount: 12,
+          commentCount: 3,
+          repostCount: 2,
+        }
+      : undefined;
+    const event = (value: string) => () => emitVisualQaInteraction(CHEER_DETAIL_ARTICLE_INTERACTION_EVENT, { value });
+    const selectedPost: CheerPost = {
+      id: 904,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: postAuthor,
+      authorId: authorIsCurrentUser ? currentUserId ?? undefined : 902,
+      authorHandle: postAuthorHandle,
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(24),
+      commentCount: count(12),
+      bookmarkCount: count(8),
+      repostCount: count(4),
+      views: count(128),
+      isHot: postState === 'normal' || postState === 'owner',
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: data === 'single',
+      bookmarked: data === 'maximum-supported',
+      isOwner,
+      repostedByMe: postState === 'simple-repost',
+      imageUrls: [],
+      repostOfId: isRepost ? 903 : undefined,
+      repostType: postState === 'quote-repost' ? 'QUOTE' : isRepost ? 'SIMPLE' : undefined,
+      originalPost,
+    };
+    const props = {
+      selectedPost,
+      authUserId: currentUserId,
+      authUserHandle: currentUserHandle,
+      isLoggedIn,
+      isOwnerMenuOpen: menu === 'owner-open',
+      isRepostMenuOpen: menu === 'repost-open',
+      interactionBookmarked: data === 'maximum-supported',
+      interactionBookmarkCount: count(8),
+      interactionLikeCount: count(24),
+      interactionLikedByMe: data === 'single',
+      interactionRepostCount: count(4),
+      interactionRepostedByMe: postState === 'simple-repost',
+      commentCount: count(12),
+      detailAccent: '#2b8a6e',
+      teamName: 'LG 트윈스',
+      primaryBorderStyle: { borderColor: '#2b8a6e40' },
+      softBadgeStyle: { borderColor: '#2b8a6e40', backgroundColor: '#2b8a6e0b' },
+      surfaceTintStyle: { backgroundColor: '#2b8a6e0b' },
+      onDeleteRequested: event('owner-delete'),
+      onDisplayEdit: event('owner-edit'),
+      onGoBack: event('back'),
+      onNavigateToProfile: event('profile'),
+      onOwnerMenuOpenChange: event('owner-menu'),
+      onQuoteRepost: event('repost-quote'),
+      onRedirectToLogin: event('login'),
+      onReportModalOpenChange: event('report'),
+      onRepostMenuOpenChange: event('repost-menu'),
+      onSimpleRepost: event('repost-simple'),
+      onToggleBookmark: event('bookmark'),
+      onToggleLike: event('like'),
+      onCancelRepost: event('repost-cancel'),
+    } satisfies CheerDetailArticleRuntimeProps;
+    return {
+      props,
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_DETAIL_ARTICLE_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-detail-article-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-detail-article"]',
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-content': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailContent.tsx#CheerDetailContent') {
+      throw new Error('cheer.detail-content only supports CheerDetailContent');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.detail-content only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['menu', 'overlay', 'post', 'replies', 'theme'].includes(key))) {
+      throw new Error('cheer.detail-content only supports menu, overlay, post, replies, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+      'focus-visible': 'focus-visible',
+    });
+    const menu = resolveDeclaredVariant<'closed' | 'owner-open' | 'repost-open'>(context, 'menu', {
+      closed: 'closed',
+      'owner-open': 'owner-open',
+      'repost-open': 'repost-open',
+    });
+    const overlay = resolveDeclaredVariant<
+      'closed' | 'quote-open' | 'quote-submitting' | 'report-open' | 'report-submitting'
+    >(context, 'overlay', {
+      closed: 'closed',
+      'quote-open': 'quote-open',
+      'quote-submitting': 'quote-submitting',
+      'report-open': 'report-open',
+      'report-submitting': 'report-submitting',
+    });
+    const postState = resolveDeclaredVariant<
+      'normal' | 'owner' | 'simple-repost' | 'quote-repost' | 'owned-repost'
+    >(context, 'post', {
+      normal: 'normal',
+      owner: 'owner',
+      'simple-repost': 'simple-repost',
+      'quote-repost': 'quote-repost',
+      'owned-repost': 'owned-repost',
+    });
+    const replies = resolveDeclaredVariant<'coming-soon' | 'enabled'>(context, 'replies', {
+      'coming-soon': 'coming-soon',
+      enabled: 'enabled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+
+    const isLoggedIn = permission === 'user';
+    const isOwner = postState === 'owner' || postState === 'owned-repost';
+    const isRepost = postState === 'simple-repost'
+      || postState === 'quote-repost'
+      || postState === 'owned-repost';
+    const isReportOpen = overlay === 'report-open' || overlay === 'report-submitting';
+    const isQuoteOpen = overlay === 'quote-open' || overlay === 'quote-submitting';
+    const maximum = data === 'maximum-supported';
+    const count = (base: number) => maximum ? Number.MAX_SAFE_INTEGER : base;
+
+    if ((postState === 'owner' || postState === 'owned-repost') && !isLoggedIn) {
+      throw new Error('cheer.detail-content owner branches require the user permission state');
+    }
+    if (menu === 'owner-open' && !isOwner) {
+      throw new Error('cheer.detail-content owner menu requires an owner post variant');
+    }
+    if (menu === 'repost-open' && !isLoggedIn) {
+      throw new Error('cheer.detail-content repost menu requires the user permission state');
+    }
+    if (menu === 'repost-open' && postState === 'owner') {
+      throw new Error('cheer.detail-content owner posts do not expose a repost menu');
+    }
+    if (overlay !== 'closed' && menu !== 'closed') {
+      throw new Error('cheer.detail-content overlays require closed article menus');
+    }
+    if (overlay !== 'closed' && !isLoggedIn) {
+      throw new Error('cheer.detail-content overlays require the user permission state');
+    }
+    if (overlay !== 'closed' && (postState === 'owner' || postState === 'owned-repost')) {
+      throw new Error('cheer.detail-content overlays are not available for owned posts');
+    }
+    if (interaction !== 'default' && (overlay === 'quote-submitting' || overlay === 'report-submitting')) {
+      throw new Error('cheer.detail-content submitting overlays only support the default interaction');
+    }
+
+    const targetIds = new Set(['back', 'profile', 'like', 'comment', 'repost', 'bookmark']);
+    if (isOwner) {
+      targetIds.add('owner-menu');
+    } else if (isLoggedIn) {
+      targetIds.add('report');
+    }
+    if (menu === 'owner-open') {
+      targetIds.add('owner-edit');
+      targetIds.add('owner-delete');
+    }
+    if (menu === 'repost-open') {
+      if (postState === 'owned-repost') {
+        targetIds.add('repost-cancel');
+      } else {
+        targetIds.add('repost-simple');
+        targetIds.add('repost-quote');
+      }
+    }
+
+    targetIds.add(isLoggedIn ? 'comment-input' : 'login');
+    if (isLoggedIn) {
+      targetIds.add('comment-submit');
+      targetIds.add('comment-like');
+      targetIds.add('comment-delete');
+      if (replies === 'enabled') targetIds.add('reply-toggle');
+    }
+    if (isReportOpen && overlay === 'report-open') {
+      targetIds.add('report-cancel');
+      targetIds.add('report-submit');
+    }
+    if (isQuoteOpen && overlay === 'quote-open') {
+      targetIds.add('quote-cancel');
+      targetIds.add('quote-submit');
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail-content default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !targetIds.has(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.detail-content expected one of ${[...targetIds].join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const event = (value: string) => () => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value });
+    const authorIsCurrentUser = isOwner || (isRepost && isLoggedIn);
+    const postAuthor = authorIsCurrentUser ? '비주얼 QA 사용자' : '응원석 사용자';
+    const postAuthorHandle = authorIsCurrentUser ? '@visual-qa-user' : '@visual-qa-fan';
+    const content = data === 'long-korean'
+      ? '모바일 응원 상세 컴포지션에서 긴 한국어 본문과 작성자 정보, 통계, 댓글, 모달 액션이 서로 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+      : data === 'maximum-supported'
+        ? '최대 지원 길이의 응원 상세 컴포지션과 수치가 모바일 화면에서 안전하게 표시되는지 확인합니다. '.repeat(24)
+        : isRepost
+          ? '원문과 함께 표시되는 리포스트 상세 컴포지션입니다.'
+          : '오늘도 우리 팀을 응원합니다.';
+    const originalPost: EmbeddedPost | undefined = isRepost
+      ? {
+          id: 903,
+          teamId: 'lg',
+          teamColor: '#2b8a6e',
+          postType: 'NORMAL',
+          content: '상세 컴포지션에서 함께 확인하는 원문 응원 게시글입니다.',
+          author: '원문 작성자',
+          authorHandle: '@visual-qa-original',
+          createdAt: '2026-09-19T02:50:00.000Z',
+          imageUrls: [],
+          deleted: false,
+          likeCount: 12,
+          commentCount: 3,
+          repostCount: 2,
+        }
+      : undefined;
+    const selectedPost: CheerPost = {
+      id: 904,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: postAuthor,
+      authorId: authorIsCurrentUser ? 900020 : 902,
+      authorHandle: postAuthorHandle,
+      authorTeamId: 'lg',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: count(24),
+      commentCount: count(12),
+      bookmarkCount: count(8),
+      repostCount: count(4),
+      views: count(128),
+      isHot: true,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: data === 'single',
+      bookmarked: data === 'maximum-supported',
+      isOwner,
+      repostedByMe: postState === 'simple-repost',
+      imageUrls: [],
+      repostOfId: isRepost ? 903 : undefined,
+      repostType: postState === 'quote-repost' ? 'QUOTE' : isRepost ? 'SIMPLE' : undefined,
+      originalPost,
+    };
+    const comments: CheerComment[] = Array.from({ length: maximum ? 4 : 2 }, (_, index) => ({
+      id: 701 + index,
+      author: index === 0 && isLoggedIn ? '비주얼 QA 사용자' : `응원 댓글 사용자 ${index + 1}`,
+      authorHandle: index === 0 && isLoggedIn ? '@visual-qa-user' : `@visual-qa-comment-${index + 1}`,
+      content: data === 'long-korean'
+        ? '상세 컴포지션 댓글의 긴 한국어 문장이 본문과 액션 영역을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인합니다. 실제 API를 호출하지 않는 로컬 fixture입니다.'
+        : data === 'maximum-supported'
+          ? '최대 지원 길이 댓글의 본문과 수치가 모바일 카드 안에서 안전하게 줄바꿈되는지 확인합니다. '.repeat(8)
+          : '댓글 액션과 답글 조작 영역을 확인하는 로컬 fixture입니다.',
+      timeAgo: index === 0 ? '방금 전' : `${index + 1}분 전`,
+      likes: count(index + 1),
+      likeCount: count(index + 1),
+      likedByMe: index === 0 && isLoggedIn,
+      replies: index === 0 && replies === 'enabled'
+        ? [{
+            id: 801,
+            author: '원문 응원 사용자',
+            authorHandle: '@visual-qa-reply',
+            content: '답글도 같은 모바일 줄바꿈 규칙을 사용합니다.',
+            timeAgo: '방금 전',
+            likes: 1,
+            likeCount: 1,
+            likedByMe: false,
+          }]
+        : [],
+    }));
+    const commentsOverride: CheerDetailCommentsPanelVisualQaStateOverride = {
+      phase: 'populated',
+      comments,
+      hasNextPage: maximum,
+      onInteraction: (value) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `comments:${value}` }),
+    };
+    const reportModalOverride: ReportModalVisualQaStateOverride | undefined = isReportOpen
+      ? {
+          description: data === 'long-korean'
+            ? '모바일 상세 컴포지션 신고 폼의 긴 한국어 설명이 안전하게 줄바꿈되는지 확인합니다.'.repeat(3)
+            : '상세 컴포지션 신고 폼을 확인하는 로컬 fixture입니다.',
+          sourceUrl: 'https://example.invalid/visual-qa-source',
+          ownerContact: 'visual-qa@example.invalid',
+          license: 'CC BY 4.0',
+          evidenceUrl: 'https://example.invalid/visual-qa-evidence',
+          requestedAction: 'TAKE_DOWN',
+          hasRightEvidence: true,
+          isSubmitting: overlay === 'report-submitting',
+          onSubmit: event('report-submit'),
+        }
+      : undefined;
+    const quoteRepostEditorOverride: QuoteRepostEditorVisualQaStateOverride | undefined = isQuoteOpen
+      ? {
+          content: data === 'maximum-supported'
+            ? '인용 리포스트 본문을 확인하는 로컬 fixture입니다. '.repeat(18)
+            : '상세 컴포지션에서 인용 리포스트 입력 영역을 확인하는 로컬 fixture입니다.',
+          isSubmitting: overlay === 'quote-submitting',
+          onConfirmClose: async () => true,
+          onSubmit: event('quote-submit'),
+        }
+      : undefined;
+    const visualQaStateOverride: CheerDetailContentVisualQaStateOverride = {
+      comments: commentsOverride,
+      quoteRepostEditor: quoteRepostEditorOverride,
+      reportModal: reportModalOverride,
+    };
+    const props = {
+      parsedPostId: 904,
+      resolvedPostId: 904,
+      selectedPost,
+      authUserId: isLoggedIn ? 900020 : null,
+      authUserHandle: isLoggedIn ? '@visual-qa-user' : null,
+      authUserDisplayName: '비주얼 QA 사용자',
+      authUserProfileImageUrl: null,
+      areCommentRepliesAvailable: replies === 'enabled',
+      commentCount: count(comments.length),
+      hasMountedQuoteEditor: isQuoteOpen,
+      hasMountedReportModal: isReportOpen,
+      interactionBookmarked: data === 'maximum-supported',
+      interactionBookmarkCount: count(8),
+      interactionLikeCount: count(24),
+      interactionLikedByMe: data === 'single',
+      interactionRepostCount: count(4),
+      interactionRepostedByMe: postState === 'simple-repost',
+      isLoggedIn,
+      isOwnerMenuOpen: menu === 'owner-open',
+      isQuoteEditorOpen: isQuoteOpen,
+      isReportModalOpen: isReportOpen,
+      isRepostMenuOpen: menu === 'repost-open',
+      confirm: async () => true,
+      onCommentCountChange: (value) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `comment-count:${value}` }),
+      onDeleteRequested: event('owner-delete'),
+      onDisplayEdit: event('owner-edit'),
+      onGoBack: event('back'),
+      onNavigateToProfile: event('profile'),
+      onOwnerMenuOpenChange: (open) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `owner-menu:${open}` }),
+      onQuoteEditorOpenChange: (open) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `quote-open:${open}` }),
+      onQuoteRepost: event('repost-quote'),
+      onRedirectToLogin: event('login'),
+      onReportModalOpenChange: (open) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `report-open:${open}` }),
+      onRepostMenuOpenChange: (open) => emitVisualQaInteraction(CHEER_DETAIL_CONTENT_INTERACTION_EVENT, { value: `repost-menu:${open}` }),
+      onSimpleRepost: event('repost-simple'),
+      onToggleBookmark: event('bookmark'),
+      onToggleLike: event('like'),
+      onCancelRepost: event('repost-cancel'),
+      visualQaStateOverride,
+    } satisfies CheerDetailContentProps;
+    return {
+      props,
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_DETAIL_CONTENT_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-detail-content-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-detail-content"]',
+      harnessAuthState: isLoggedIn
+        ? {
+            user: {
+              email: 'visual-qa-content@example.com',
+              handle: '@visual-qa-user',
+              id: 900020,
+              name: '비주얼 QA 사용자',
+              role: 'ROLE_USER',
+            },
+          }
+        : undefined,
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-action-bar': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailActionBarRuntime.tsx#CheerDetailActionBarRuntime') {
+      throw new Error('cheer.detail-action-bar only supports CheerDetailActionBarRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('cheer.detail-action-bar only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['repost', 'theme'].includes(key))) {
+      throw new Error('cheer.detail-action-bar only supports repost and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      zero: 'zero',
+    });
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const repost = resolveDeclaredVariant<'cancel' | 'quote' | 'simple' | 'unavailable'>(context, 'repost', {
+      cancel: 'cancel',
+      quote: 'quote',
+      simple: 'simple',
+      unavailable: 'unavailable',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const maximum = data === 'maximum-supported';
+    const zero = data === 'zero';
+    const count = (base: number) => zero ? 0 : maximum ? Number.MAX_SAFE_INTEGER : base;
+    const isLoggedIn = permission === 'user';
+    const targetIds = ['bookmark', 'comment', 'like', 'repost'];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail-action-bar default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`cheer.detail-action-bar expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (!isLoggedIn && repost !== 'unavailable') {
+      throw new Error(`cheer.detail-action-bar anonymous state only supports unavailable repost, received ${repost}`);
+    }
+
+    return {
+      props: {
+        canCancelRepost: repost === 'cancel',
+        canQuoteRepost: repost === 'quote',
+        canSimpleRepost: repost === 'simple' || repost === 'quote',
+        commentCount: count(12),
+        interactionBookmarked: data === 'maximum-supported',
+        interactionBookmarkCount: count(8),
+        interactionLikeCount: count(24),
+        interactionLikedByMe: data === 'single',
+        interactionRepostedByMe: repost === 'simple',
+        isLoggedIn,
+        isRepostMenuOpen: false,
+        repostButtonActive: repost === 'cancel' || repost === 'simple',
+        repostCount: count(4),
+        repostUnavailableMessage: data === 'long-korean'
+          ? '현재 게시글 정책상 리포스트할 수 없습니다. 잠시 후 다시 확인해 주세요.'
+          : '현재 리포스트할 수 없습니다.',
+        onCancelRepost: () => {},
+        onQuoteRepost: () => {},
+        onRedirectToLogin: () => {},
+        onRepostMenuOpenChange: () => {},
+        onScrollToComments: () => {},
+        onSimpleRepost: () => {},
+        onToggleBookmark: () => {},
+        onToggleLike: () => {},
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'repost.modal': (context) => {
+    if (context.componentId !== 'src/components/RepostModal.tsx#RepostModal') {
+      throw new Error('repost.modal only supports RepostModal');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('repost.modal only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['mode', 'theme'].includes(key))) {
+      throw new Error('repost.modal only supports mode and theme variants');
+    }
+
+    requireStateValue(context, 'data', 'single');
+    const permission = requireStateValueFromMap(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const mode = resolveDeclaredVariant<'available' | 'blocked-repost' | 'owned-repost' | 'reposted' | 'self-post'>(
+      context,
+      'mode',
+      {
+        available: 'available',
+        'blocked-repost': 'blocked-repost',
+        'owned-repost': 'owned-repost',
+        reposted: 'reposted',
+        'self-post': 'self-post',
+      },
+    );
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetIds = mode === 'available' || mode === 'reposted'
+      ? ['close', 'quote', 'simple']
+      : mode === 'owned-repost'
+        ? ['cancel-repost', 'close']
+        : ['close'];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('repost.modal default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`repost.modal expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const isRepostTarget = mode === 'blocked-repost' || mode === 'owned-repost';
+    const isOwner = mode === 'owned-repost' || mode === 'self-post';
+    const authorHandle = mode === 'self-post' ? '@visual-qa-user' : '@visual-qa-fan';
+    const post: CheerPost = {
+      id: 904,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: mode === 'self-post' ? '비주얼 QA 사용자' : '응원석 사용자',
+      authorId: mode === 'self-post' ? 900020 : 902,
+      authorHandle,
+      authorTeamId: 'lg',
+      content: '리포스트 정책과 모바일 조작 영역을 검증하는 로컬 fixture입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 12,
+      commentCount: 3,
+      bookmarkCount: 2,
+      repostCount: 1,
+      views: 42,
+      isHot: false,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner,
+      repostedByMe: mode === 'reposted',
+      imageUrls: [],
+      repostOfId: isRepostTarget ? 903 : undefined,
+      repostType: isRepostTarget ? 'SIMPLE' : undefined,
+      originalPost: isRepostTarget
+        ? {
+            id: 903,
+            teamId: 'lg',
+            teamColor: '#2b8a6e',
+            postType: 'NORMAL',
+            content: '원문 리포스트 대상입니다.',
+            author: '원문 작성자',
+            authorHandle: '@visual-qa-original',
+            createdAt: '2026-09-19T02:50:00.000Z',
+            imageUrls: [],
+            deleted: false,
+          }
+        : undefined,
+    };
+
+    return {
+      props: {
+        isOpen: true,
+        isOwner,
+        isRepostedByMe: mode === 'reposted',
+        onCancelRepost: mode === 'owned-repost'
+          ? () => emitVisualQaInteraction(REPOST_MODAL_INTERACTION_EVENT, { value: 'cancel-repost' })
+          : undefined,
+        onClose: () => emitVisualQaInteraction(REPOST_MODAL_INTERACTION_EVENT, { value: 'close' }),
+        onQuoteRepost: () => emitVisualQaInteraction(REPOST_MODAL_INTERACTION_EVENT, { value: 'quote' }),
+        onSimpleRepost: () => emitVisualQaInteraction(REPOST_MODAL_INTERACTION_EVENT, { value: 'simple' }),
+        post,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: REPOST_MODAL_INTERACTION_EVENT,
+        testId: 'visual-qa-repost-modal-interaction',
+      }),
+      captureSelector: '[data-testid="repost-modal-content"]',
+      harnessAuthState: permission === 'user'
+        ? {
+            user: {
+              email: 'visual-qa-repost@example.com',
+              handle: '@visual-qa-user',
+              id: 900020,
+              name: '비주얼 QA 사용자',
+              role: 'ROLE_USER',
+            },
+          }
+        : undefined,
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'report.modal': (context) => {
+    if (context.componentId !== 'src/components/ReportModal.tsx#ReportModal') {
+      throw new Error('report.modal only supports ReportModal');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('report.modal only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['reason', 'theme'].includes(key))) {
+      throw new Error('report.modal only supports reason and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: {
+        description: '',
+        evidenceUrl: '',
+        license: '',
+        ownerContact: '',
+        requestedAction: '',
+        sourceUrl: '',
+      },
+      'long-korean': {
+        description: '모바일 화면에서 신고 사유와 권리 정보를 확인할 수 있도록 긴 한국어 설명이 안전하게 줄바꿈되는지 확인합니다.'.repeat(3),
+        evidenceUrl: 'https://example.com/evidence/visual-qa-long-korean',
+        license: 'CC BY 4.0 및 권리자 확인이 필요한 긴 라이선스 설명입니다.',
+        ownerContact: 'visual-qa-owner@example.com',
+        requestedAction: 'TAKE_DOWN 및 원문 출처 확인 요청',
+        sourceUrl: 'https://example.com/source/visual-qa-long-korean',
+      },
+      single: {
+        description: '모바일 신고 폼의 선택 입력을 확인합니다.',
+        evidenceUrl: 'https://example.com/evidence/visual-qa',
+        license: 'CC BY 4.0',
+        ownerContact: 'visual-qa@example.com',
+        requestedAction: 'TAKE_DOWN',
+        sourceUrl: 'https://example.com/source/visual-qa',
+      },
+      'unbroken-token': {
+        description: `REPORT-DESCRIPTION-${'X'.repeat(260)}`,
+        evidenceUrl: `https://example.com/${'E'.repeat(180)}`,
+        license: `LICENSE-${'L'.repeat(180)}`,
+        ownerContact: `OWNER-${'O'.repeat(180)}`,
+        requestedAction: `ACTION-${'A'.repeat(180)}`,
+        sourceUrl: `https://example.com/${'S'.repeat(180)}`,
+      },
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      input: 'input',
+      submitting: 'submitting',
+    });
+    const reason = resolveDeclaredVariant<'ADVERTISEMENT' | 'COPYRIGHT_INFRINGEMENT' | 'OTHER' | 'SPAM'>(
+      context,
+      'reason',
+      {
+        advertisement: 'ADVERTISEMENT',
+        copyright: 'COPYRIGHT_INFRINGEMENT',
+        other: 'OTHER',
+        spam: 'SPAM',
+      },
+    );
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetIds = interaction === 'input'
+      ? ['description', 'evidence-url', 'license', 'owner-contact', 'requested-action', 'source-url']
+      : interaction === 'focus-visible'
+        ? ['cancel', 'description', 'submit']
+        : ['cancel', 'reason-copyright', 'right-evidence', 'submit'];
+    if (interaction === 'default' || interaction === 'submitting') {
+      if (context.interactionTargetId !== undefined) {
+        throw new Error(`report.modal ${interaction} state does not accept interaction targets`);
+      }
+    } else if (!targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`report.modal expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    return {
+      props: {
+        isOpen: true,
+        onClose: () => emitVisualQaInteraction(REPORT_MODAL_INTERACTION_EVENT, { value: 'close' }),
+        postId: 904,
+        visualQaStateOverride: {
+          ...data,
+          hasRightEvidence: false,
+          onSubmit: interaction === 'click' && context.interactionTargetId === 'submit'
+            ? () => emitVisualQaInteraction(REPORT_MODAL_INTERACTION_EVENT, { value: 'submit' })
+            : undefined,
+          reason,
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: REPORT_MODAL_INTERACTION_EVENT,
+        testId: 'visual-qa-report-modal-interaction',
+      }),
+      captureSelector: '[data-testid="report-modal"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-report@example.com',
+          handle: '@visual-qa-user',
+          id: 900020,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[425px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'quote-repost.editor': (context) => {
+    if (context.componentId !== 'src/components/QuoteRepostEditor.tsx#QuoteRepostEditor') {
+      throw new Error('quote-repost.editor only supports QuoteRepostEditor');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'permissions', 'system'].includes(key))) {
+      throw new Error('quote-repost.editor only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['theme', 'transport'].includes(key))) {
+      throw new Error('quote-repost.editor only supports theme and transport variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: '',
+      'long-korean': '모바일 인용 리포스트 입력 영역에서 긴 한국어 의견이 자연스럽게 줄바꿈되고 원문 카드와 겹치지 않는지 확인합니다.'.repeat(3),
+      'maximum-supported': 'Q'.repeat(500),
+      single: '인용 리포스트 의견을 확인합니다.',
+      'unbroken-token': `QUOTE-${'X'.repeat(520)}`,
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      input: 'input',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    requireStateValue(context, 'system', 'online');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const transport = resolveDeclaredVariant<'pending' | 'ready'>(context, 'transport', {
+      pending: 'pending',
+      ready: 'ready',
+    });
+
+    if (transport === 'pending' && interaction !== 'default') {
+      throw new Error(`quote-repost.editor pending state only supports default interaction, received ${interaction}`);
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('quote-repost.editor default state does not accept interaction targets');
+    }
+    if (interaction === 'input' && data !== '') {
+      throw new Error('quote-repost.editor input state requires empty data');
+    }
+    const targetIds = interaction === 'input'
+      ? ['content']
+      : interaction === 'focus-visible'
+        ? data === '' ? ['cancel', 'content'] : ['cancel', 'content', 'submit']
+        : data === '' ? ['cancel'] : ['cancel', 'submit'];
+    if (interaction !== 'default' && !targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`quote-repost.editor expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const post: CheerPost = {
+      id: 905,
+      teamId: 'lg',
+      team: 'LG 트윈스',
+      postType: 'NORMAL',
+      author: '응원석 사용자',
+      authorId: 902,
+      authorHandle: '@visual-qa-original',
+      authorTeamId: 'lg',
+      content: '인용 리포스트 원문 카드의 모바일 줄바꿈과 여백을 확인하는 로컬 fixture입니다.',
+      timeAgo: '방금 전',
+      teamColor: '#2b8a6e',
+      likeCount: 12,
+      commentCount: 3,
+      bookmarkCount: 2,
+      repostCount: 1,
+      views: 42,
+      isHot: false,
+      createdAt: '2026-09-19T03:00:00.000Z',
+      updatedAt: '2026-09-19T03:00:00.000Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+      imageUrls: [],
+    };
+
+    return {
+      props: {
+        isOpen: true,
+        onClose: () => emitVisualQaInteraction(QUOTE_REPOST_EDITOR_INTERACTION_EVENT, { value: 'close' }),
+        post,
+        visualQaStateOverride: {
+          content: data,
+          isSubmitting: transport === 'pending',
+          onConfirmClose: interaction === 'click' && context.interactionTargetId === 'cancel'
+            ? () => true
+            : undefined,
+          onSubmit: interaction === 'click' && context.interactionTargetId === 'submit'
+            ? () => emitVisualQaInteraction(QUOTE_REPOST_EDITOR_INTERACTION_EVENT, { value: 'submit' })
+            : undefined,
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: QUOTE_REPOST_EDITOR_INTERACTION_EVENT,
+        testId: 'visual-qa-quote-repost-editor-interaction',
+      }),
+      captureSelector: '[data-testid="quote-repost-editor"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-quote@example.com',
+          handle: '@visual-qa-user',
+          id: 900020,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'seat-view.gallery': (context) => {
+    if (context.componentId !== 'src/components/SeatViewGallery.tsx#SeatViewGallery') {
+      throw new Error('seat-view.gallery only supports SeatViewGallery');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'permissions', 'system'].includes(key))) {
+      throw new Error('seat-view.gallery only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['compact', 'presentation', 'theme'].includes(key))) {
+      throw new Error('seat-view.gallery only supports compact, presentation, and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      loading: 'loading',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+      'focus-visible': 'focus-visible',
+    });
+    requireStateValue(context, 'permissions', 'anonymous');
+    requireStateValue(context, 'system', 'online');
+    const compact = resolveDeclaredVariant<'compact' | 'expanded'>(context, 'compact', {
+      compact: 'compact',
+      expanded: 'expanded',
+    });
+    const presentation = resolveDeclaredVariant<'gallery' | 'lightbox'>(context, 'presentation', {
+      gallery: 'gallery',
+      lightbox: 'lightbox',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const hasPhotos = data !== 'empty' && data !== 'loading';
+    if (!hasPhotos && presentation === 'lightbox') {
+      throw new Error(`seat-view.gallery does not support presentation=lightbox for data=${data}`);
+    }
+    if (data === 'loading' && interaction !== 'default') {
+      throw new Error(`seat-view.gallery loading state only supports default interaction, received ${interaction}`);
+    }
+
+    const photos: SeatViewPhoto[] = data === 'loading' || data === 'empty'
+      ? []
+      : Array.from({ length: data === 'single' ? 1 : data === 'long-korean' ? 3 : 9 }, (_, index) => ({
+          block: data === 'unbroken-token' ? `BLOCK-${'X'.repeat(80)}` : `${index + 1}구역`,
+          diaryDate: `2026-09-${String(10 + index).padStart(2, '0')}`,
+          photoUrl: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='480'%3E%3Crect width='640' height='480' fill='%232b5f4f'/%3E%3Ccircle cx='${160 + index * 32}' cy='240' r='90' fill='%23d8b36a'/%3E%3C/svg%3E`,
+          section: data === 'long-korean'
+            ? '모바일 화면에서 자연스럽게 줄바꿈되는 매우 긴 시야 구역 이름'
+            : data === 'unbroken-token'
+              ? `SECTION-${'S'.repeat(120)}`
+              : `시야 ${index + 1}`,
+          stadium: 'JAMSIL',
+        }));
+    const initialLightboxPhoto = presentation === 'lightbox' ? photos[0] ?? null : null;
+    const targetIds = data === 'empty'
+      ? ['share']
+      : presentation === 'lightbox'
+        ? ['close']
+        : ['photo-0'];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('seat-view.gallery default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !targetIds.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`seat-view.gallery expected one of ${targetIds.join(', ')}, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    return {
+      props: {
+        compact: compact === 'compact',
+        section: '시야 1',
+        sectionAliases: ['시야 1'],
+        stadium: 'JAMSIL',
+        visualQaStateOverride: {
+          isLoading: data === 'loading',
+          lightboxPhoto: initialLightboxPhoto,
+          photos,
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: SEAT_VIEW_GALLERY_INTERACTION_EVENT,
+        testId: 'visual-qa-seat-view-gallery-interaction',
+      }),
+      captureSelector: '[data-testid="seat-view-gallery"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-embedded-post': (context) => {
+    if (context.componentId !== 'src/components/CheerDetailEmbeddedPostRuntime.tsx#CheerDetailEmbeddedPostRuntime') {
+      throw new Error('cheer.detail-embedded-post only supports CheerDetailEmbeddedPostRuntime');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('cheer.detail-embedded-post only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => !['theme', 'variant'].includes(key))) {
+      throw new Error('cheer.detail-embedded-post only supports variant and theme variants');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const variant = resolveDeclaredVariant<'repost-banner' | 'simple-deleted'>(context, 'variant', {
+      'repost-banner': 'repost-banner',
+      'simple-deleted': 'simple-deleted',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const detailAccent = variant === 'simple-deleted' ? '#17365d' : '#2b8a6e';
+    const originalEmbeddedPost: EmbeddedPost | null = data === 'empty'
+      ? null
+      : {
+          id: 901,
+          teamId: 'lg',
+          teamColor: detailAccent,
+          postType: 'NORMAL',
+          content: data === 'long-korean'
+            ? '모바일 상세 화면에서도 인용된 원문의 긴 한국어 문장이 카드와 작성자 영역을 벗어나지 않고 자연스럽게 줄바꿈되어야 합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+            : data === 'unbroken-token'
+              ? `EMBEDDED-POST-${'UNBROKEN'.repeat(24)}`
+              : '인용된 원문을 상세 화면에서 확인합니다.',
+          author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+          authorHandle: '@visual-qa-fan',
+          createdAt: '2026-09-19T03:00:00.000Z',
+          imageUrls: [],
+          deleted: variant === 'simple-deleted',
+          likeCount: 12,
+          commentCount: 3,
+          repostCount: 2,
+        };
+
+    return {
+      props: {
+        detailAccent,
+        isQuoteRepost: variant === 'repost-banner',
+        isSimpleRepost: variant === 'simple-deleted',
+        originalEmbeddedPost,
+        primaryBorderStyle: { borderColor: `${detailAccent}29` },
+        surfaceTintStyle: { backgroundColor: `${detailAccent}0b` },
+        variant,
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      initialPathname: '/cheer/901',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'embedded-post': (context) => {
+    if (context.componentId !== 'src/components/EmbeddedPost.tsx#EmbeddedPost') {
+      throw new Error('embedded-post only supports EmbeddedPost');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('embedded-post only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['post', 'variant', 'theme'].includes(key))) {
+      throw new Error('embedded-post only supports post, variant, and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const postState = resolveDeclaredVariant<'active' | 'deleted'>(context, 'post', {
+      active: 'active',
+      deleted: 'deleted',
+    });
+    const linkedContentVariant = resolveDeclaredVariant<'compact' | 'detail'>(context, 'variant', {
+      compact: 'compact',
+      detail: 'detail',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('embedded-post default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'embedded-post') {
+      throw new Error(`embedded-post expected embedded-post target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'click' && postState === 'deleted') {
+      throw new Error('embedded-post click target requires an active post');
+    }
+    const content = data === 'empty'
+      ? ''
+      : data === 'long-korean'
+        ? '모바일 상세 화면에서도 인용된 원문의 긴 한국어 문장이 카드와 작성자 영역을 벗어나지 않고 자연스럽게 줄바꿈되어야 합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+        : data === 'maximum-supported'
+          ? '최대 지원 길이의 임베디드 게시글 미리보기 '.repeat(24)
+          : data === 'unbroken-token'
+            ? `EMBEDDED-POST-${'UNBROKEN'.repeat(24)}`
+            : '인용된 원문을 상세 화면에서 확인합니다.';
+    const postType: EmbeddedPost['postType'] = data === 'long-korean'
+      ? 'CHECKIN'
+      : data === 'unbroken-token'
+        ? 'RECRUITMENT'
+        : data === 'maximum-supported'
+          ? 'NOTICE'
+          : 'NORMAL';
+    const post: EmbeddedPost = {
+      id: 902,
+      teamId: 'LG',
+      teamColor: '#2d5f4f',
+      postType,
+      content,
+      author: data === 'long-korean' ? '모바일 정합성 검증 응원단' : '응원석 사용자',
+      authorHandle: '@visual-qa-fan',
+      createdAt: '2026-09-19T03:00:00.000Z',
+      imageUrls: [],
+      deleted: postState === 'deleted',
+      likeCount: 12,
+      commentCount: 3,
+      repostCount: 2,
+    };
+    const interactive = interaction === 'click' && postState === 'active';
+    return {
+      props: {
+        linkedContentVariant,
+        onClick: interactive
+          ? () => emitVisualQaInteraction(EMBEDDED_POST_INTERACTION_EVENT, { value: 'embedded-post-clicked' })
+          : undefined,
+        post,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: EMBEDDED_POST_INTERACTION_EVENT,
+        testId: 'visual-qa-embedded-post-interaction',
+      }),
+      captureSelector: postState === 'active' ? '[data-testid="cheer-embedded-post"]' : undefined,
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.favorites-tab': (context) => {
+    if (context.componentId !== 'src/components/chatbot/ChatBotFavoritesTab.tsx#ChatBotFavoritesTab') {
+      throw new Error('chatbot.favorites-tab only supports ChatBotFavoritesTab');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.favorites-tab only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('chatbot.favorites-tab only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.favorites-tab default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !['copy', 'reask', 'open-session'].includes(context.interactionTargetId ?? '')) {
+      throw new Error(`chatbot.favorites-tab expected a favorite action target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const favorite: ChatFavoriteItem = {
+      messageId: 301,
+      sessionId: 21,
+      sessionTitle: data === 'long-korean' ? '모바일 화면에서 길게 표시되는 저장 대화 제목' : '오늘 경기 흐름 정리',
+      content: data === 'long-korean'
+        ? '모바일 화면에서도 저장한 답변의 긴 한국어 문장이 카드와 버튼 영역을 벗어나지 않고 자연스럽게 줄바꿈되어야 합니다. 실제 API를 호출하지 않는 로컬 Visual QA fixture입니다.'
+        : '최근 경기 흐름을 정리한 로컬 즐겨찾기 답변입니다.',
+      prompt: data === 'long-korean' ? '모바일 화면에서 저장 답변을 안전하게 확인하는 방법' : '오늘 경기 흐름 알려줘',
+      favoritedAt: '2026-09-19T11:30:00+09:00',
+      messageCreatedAt: '2026-09-19T11:20:00+09:00',
+    };
+    const favorites = data === 'populated' || data === 'long-korean' ? [favorite] : [];
+    return {
+      props: {
+        refreshKey: 1,
+        onCopyMessage: () => {},
+        onReaskFavorite: () => {},
+        onOpenFavoriteSession: () => {},
+        visualQaStateOverride: {
+          favorites,
+          isLoadingFavorites: data === 'loading',
+        },
+      },
+      captureSelector: '[data-testid="chatbot-favorites-tab"]',
+      surfaceClassName: 'flex min-h-[844px] w-full max-w-[720px] overflow-hidden bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.history-tab': (context) => {
+    if (context.componentId !== 'src/components/chatbot/ChatBotHistoryTab.tsx#ChatBotHistoryTab') {
+      throw new Error('chatbot.history-tab only supports ChatBotHistoryTab');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.history-tab only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('chatbot.history-tab only supports the theme variant');
+    }
+
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      populated: 'populated',
+      'long-korean': 'long-korean',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.history-tab default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'new-session') {
+      throw new Error(`chatbot.history-tab expected new-session target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const session: ChatSessionSummary = {
+      sessionId: 21,
+      title: data === 'long-korean' ? '모바일 화면에서도 길게 표시되는 대화 세션 제목' : '오늘 경기 흐름 정리',
+      messageCount: 4,
+      latestMessagePreview: data === 'long-korean'
+        ? '모바일 화면에서 긴 최근 메시지 미리보기가 카드 안에서 자연스럽게 줄바꿈되는지 확인합니다.'
+        : '최근 경기 흐름을 정리했습니다.',
+      createdAt: '2026-09-19T10:00:00+09:00',
+      updatedAt: '2026-09-19T11:20:00+09:00',
+      lastMessageAt: '2026-09-19T11:20:00+09:00',
+    };
+    const sessions = data === 'populated' || data === 'long-korean' ? [session] : [];
+    return {
+      props: {
+        currentSessionId: data === 'populated' ? session.sessionId : null,
+        refreshKey: 1,
+        onCreateNewSession: async () => null,
+        onOpenSession: () => {},
+        onDeleteSession: () => false,
+        visualQaStateOverride: {
+          sessions,
+          isLoadingSessions: data === 'loading',
+        },
+      },
+      captureSelector: '[data-testid="chatbot-history-tab"]',
+      surfaceClassName: 'flex min-h-[844px] w-full max-w-[720px] overflow-hidden bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'chatbot.runtime': (context) => {
+    if (context.componentId !== 'src/components/ChatBotRuntime.tsx#ChatBotRuntime') {
+      throw new Error('chatbot.runtime only supports ChatBotRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('chatbot.runtime only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['theme', 'visibility'].includes(key))) {
+      throw new Error('chatbot.runtime only supports theme and visibility variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    requireStateValue(context, 'permissions', 'anonymous');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      pressed: 'pressed',
+      cta: 'cta',
+    });
+    const visibility = resolveDeclaredVariant<'closed' | 'open'>(context, 'visibility', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const expectedTargets = interaction === 'cta'
+      ? [visibility === 'open' ? 'login-cta' : 'launcher']
+      : [visibility === 'open' ? 'close' : 'launcher'];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('chatbot.runtime default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && !expectedTargets.includes(context.interactionTargetId ?? '')) {
+      throw new Error(`chatbot.runtime expected ${expectedTargets.join(' or ')} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    return {
+      props: {
+        autoOpen: visibility === 'open',
+        onClosed: () => {},
+      },
+      captureSelector: visibility === 'open'
+        ? '[data-testid="chatbot-panel"]'
+        : '[data-testid="chatbot-launcher"]',
+      initialPathname: '/home',
+      surfaceClassName: 'relative block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'navbar.notification-controls': (context) => {
     const unreadCountOverride = requireStateValueFromMap(context, 'data', {
       negative: -1,
@@ -10060,7 +18703,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
     ) {
       throw new Error(`지원하지 않는 Visual QA notification panel target: ${context.interactionTargetId ?? '<missing>'}`);
     }
-    const browserPermissionOverride = resolveDeclaredVariant(context, 'browser-permission', {
+    const browserPermissionOverride = resolveDeclaredVariant<BrowserNotificationPermission>(context, 'browser-permission', {
       default: 'default',
       denied: 'denied',
       granted: 'granted',
@@ -10096,6 +18739,194 @@ const adapters: Record<string, ComponentStateAdapter> = {
       },
       captureSelector: '[data-testid="notification-panel"]',
       surfaceClassName: 'block min-h-[720px] w-[320px] max-w-none overflow-hidden bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.cheer-posts-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/MyCheerPostsSection.tsx#MyCheerPostsSection') {
+      throw new Error('mypage.cheer-posts-section only supports MyCheerPostsSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.cheer-posts-section supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.cheer-posts-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-404': 'error-404',
+      error: 'error',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    const allowedTargets = data === 'empty'
+      ? ['empty-write']
+      : data === 'error' || data === 'error-404'
+        ? ['retry']
+        : data === 'populated' || data === 'maximum-supported'
+          ? ['load-more']
+          : [];
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.cheer-posts-section default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA cheer post target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const content = isPressure
+      ? data === 'unbroken-token'
+        ? `CHEER-${'UNBROKEN'.repeat(48)}`
+        : '모바일 마이페이지 응원석 글 목록에서 긴 한국어 본문이 카드 너비를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+      : '오늘 경기 응원하며 남긴 내 응원석 글입니다.';
+    const createPost = (id: number): CheerPost => ({
+      id,
+      teamId: 'LG',
+      team: isPressure ? `모바일 응원팀 ${'X'.repeat(24)}` : 'LG 트윈스',
+      postType: 'NORMAL',
+      author: '응원하는 팬',
+      authorId: 42,
+      authorHandle: 'visual_qa_fan',
+      content,
+      timeAgo: '방금 전',
+      teamColor: '#C60C30',
+      likeCount: 12,
+      commentCount: 3,
+      bookmarkCount: 2,
+      repostCount: 1,
+      views: 84,
+      isHot: false,
+      createdAt: '2026-09-20T10:00:00Z',
+      updatedAt: '2026-09-20T10:00:00Z',
+      liked: false,
+      bookmarked: false,
+      isOwner: false,
+      repostedByMe: false,
+    });
+    const posts = data === 'populated'
+      ? [createPost(101)]
+      : data === 'maximum-supported'
+        ? Array.from({ length: 8 }, (_, index) => createPost(101 + index))
+        : data === 'long-korean' || data === 'unbroken-token'
+          ? [createPost(101)]
+          : [];
+    const visualQaStateOverride: MyCheerPostsVisualQaStateOverride = {
+      posts,
+      isLoading: data === 'loading',
+      isFetchingNextPage: false,
+      hasNextPage: data === 'populated' || data === 'maximum-supported',
+      isError: data === 'error' || data === 'error-404',
+      isEmpty: data === 'empty',
+      emptyMessage: '작성한 응원석 글이 없습니다',
+      errorMessage: data === 'error-404'
+        ? '응원석 글 조회 경로를 찾을 수 없습니다.'
+        : '응원석 글을 불러오지 못했습니다.',
+      fetchNextPage: () => {},
+      refetch: () => {},
+    };
+    return {
+      props: { visualQaStateOverride },
+      captureSelector: '[data-screen-label="응원석 글"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.alerts-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/AlertsSection.tsx#AlertsSection') {
+      throw new Error('mypage.alerts-section only supports AlertsSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('mypage.alerts-section only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['browser-permission', 'tab', 'theme'].includes(key))) {
+      throw new Error('mypage.alerts-section only supports browser-permission, tab, and theme variants');
+    }
+
+    const notificationsOverride = requireStateValueFromMap(
+      context,
+      'data',
+      visualQaNotificationData,
+    );
+    requireStateValueFromMap(context, 'permissions', { user: 'user' });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const supportedTargets = new Set([
+      'active-tab-all',
+      'active-tab-mate',
+      'active-tab-cheer',
+      'browser-permission',
+      'first-delete-all',
+      'first-delete-mate',
+      'first-delete-cheer',
+      'first-item-all',
+      'first-item-mate',
+      'first-item-cheer',
+      'mark-all-read-all',
+      'mark-all-read-mate',
+      'mark-all-read-cheer',
+    ]);
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error(`mypage.alerts-section default state does not accept an interaction target: ${context.interactionTargetId}`);
+    }
+    if (interaction === 'click' && !supportedTargets.has(context.interactionTargetId ?? '')) {
+      throw new Error(`mypage.alerts-section received an unsupported click target: ${context.interactionTargetId ?? '<missing>'}`);
+    }
+
+    const browserPermissionOverride = resolveDeclaredVariant<BrowserNotificationPermission>(context, 'browser-permission', {
+      default: 'default',
+      denied: 'denied',
+      granted: 'granted',
+      unsupported: 'unsupported',
+    });
+    const initialActiveTabOverride = resolveDeclaredVariant<'ALL' | 'CHEER' | 'MATE'>(
+      context,
+      'tab',
+      {
+        all: 'ALL',
+        cheer: 'CHEER',
+        mate: 'MATE',
+      },
+    );
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const props: AlertsSectionProps = {
+      notificationPanelPropsOverride: {
+        browserPermissionOverride,
+        initialActiveTabOverride,
+        isLoggedInOverride: true,
+        notificationsOverride,
+        nowOverride: visualQaNotificationNow,
+        runtimeOverride: {
+          deleteNotification: async () => {},
+          markAllAsRead: async () => {},
+          markAsRead: async () => {},
+          navigate: () => {},
+          requestBrowserNotificationPermission: async () => 'granted',
+        },
+      },
+    };
+    return {
+      props,
+      captureSelector: '[data-testid="mypage-alerts-section"]',
+      initialPathname: '/mypage?view=alerts',
+      expectedPathname: '/mypage',
+      expectedSearch: '?view=alerts',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
       theme,
     };
   },
@@ -10145,6 +18976,62 @@ const adapters: Record<string, ComponentStateAdapter> = {
       },
       surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-[var(--cheer-page-bg)] p-4 shadow-none',
       theme: resolvedTheme,
+    };
+  },
+  'home.recovery-banner': (context) => {
+    if (context.componentId !== 'src/components/home/HomeRecoveryBanner.tsx#HomeRecoveryBanner') {
+      throw new Error('home.recovery-banner only supports HomeRecoveryBanner');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('home.recovery-banner only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('home.recovery-banner only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'manual-required' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      'manual-required': 'manual-required',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('home.recovery-banner default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'retry') {
+      throw new Error(`home.recovery-banner expected retry target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const isManualRequired = data !== 'single';
+    const manualDataRequest = isManualRequired
+      ? data === 'unbroken-token'
+        ? {
+          ...homeRecoveryManualRequest,
+          operatorMessage: `MANUAL-DATA-${'X'.repeat(180)}`,
+          missingItems: [{ key: 'unbroken', label: `MISSING-${'X'.repeat(120)}` }],
+        }
+        : data === 'long-korean'
+          ? {
+            ...homeRecoveryManualRequest,
+            operatorMessage: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 운영자 안내 문구입니다.',
+          }
+          : homeRecoveryManualRequest
+      : null;
+    return {
+      props: {
+        loadFailureReason: isManualRequired ? 'manual-data-required' : 'request-failed',
+        manualDataRequest,
+        onRetry: () => undefined,
+      },
+      captureSelector: '[data-testid="home-global-recovery"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
     };
   },
   'home.game-card': (context) => {
@@ -10301,6 +19188,281 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'home.scheduled-match-panel': (context) => {
+    if (context.componentId !== 'src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel') {
+      throw new Error('home.scheduled-match-panel only supports HomeScheduledMatchPanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('home.scheduled-match-panel only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('home.scheduled-match-panel only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'empty' | 'error-503' | 'loading' | 'long-korean' | 'manual-required' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'manual-required': 'manual-required',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'open' | 'retry'>(context, 'interactions', {
+      default: 'default',
+      open: 'open',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const isLoading = data === 'loading';
+    const isError = data === 'error-503' || data === 'manual-required';
+    const hasSecondaryGames = data === 'long-korean';
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.scheduled-match-panel default state does not accept interaction targets');
+    }
+    if (interaction === 'open' && (target !== 'secondary-toggle' || !hasSecondaryGames)) {
+      throw new Error(`home.scheduled-match-panel open state requires secondary-toggle, data=${data}`);
+    }
+    if (interaction === 'retry' && (target !== 'retry' || !isError)) {
+      throw new Error(`home.scheduled-match-panel retry state requires retry, data=${data}`);
+    }
+    const fixtures = createHomeMatchPanelFixtures(data === 'loading' ? 'single' : data);
+    return {
+      props: {
+        isScheduledLoading: isLoading,
+        isScheduledError: isError,
+        loadFailureReason: data === 'manual-required' ? 'manual-data-required' : isError ? 'request-failed' : null,
+        suppressRecoveryActions: false,
+        isSecondarySectionExpanded: interaction === 'open',
+        loadingMatchCardCount: 2,
+        matchSectionMinHeightStyle: { minHeight: '360px' },
+        scheduledPrimaryGames: fixtures.scheduledPrimaryGames,
+        scheduledSecondaryGames: fixtures.scheduledSecondaryGames,
+        liveOrFinishedScheduledGames: fixtures.liveOrFinishedScheduledGames,
+        scheduledPrimaryGamesBySourceDate: fixtures.scheduledPrimaryGamesBySourceDate,
+        scheduledSecondaryGamesBySourceDate: fixtures.scheduledSecondaryGamesBySourceDate,
+        shouldMountTeamLogos: true,
+        onRetry: () => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          value: '예정 경기 다시 시도됨',
+        }),
+        onSelectPrediction: (game: Game) => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          gameId: game.gameId,
+          value: `예정 경기 선택됨: ${game.gameId}`,
+        }),
+        onToggleSecondarySection: () => emitVisualQaInteraction(HOME_MATCH_PANEL_INTERACTION_EVENT, {
+          value: '예정 경기 보조 일정 토글됨',
+        }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: HOME_MATCH_PANEL_INTERACTION_EVENT,
+        testId: 'visual-qa-home-scheduled-panel-interaction',
+      }),
+      captureSelector: '[data-testid="home-match-priority-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.pull-to-refresh': (context) => resolveHomePullToRefreshAdapter(context),
+  'home.game-card-default': (context) => {
+    if (context.componentId !== 'src/components/GameCard.tsx#GameCard') {
+      throw new Error('home.game-card-default only supports GameCard');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('home.game-card-default only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['featured', 'variant', 'theme'].includes(key))) {
+      throw new Error('home.game-card-default only supports featured, variant, and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'missing-image': 'missing-image',
+      populated: 'populated',
+      single: 'single',
+      'unknown-team': 'unknown-team',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'keyboard-navigation': 'keyboard-navigation',
+      selected: 'selected',
+    });
+    const featured = resolveDeclaredVariant(context, 'featured', {
+      no: false,
+      yes: true,
+    });
+    const variant = resolveDeclaredVariant<'default' | 'home'>(context, 'variant', {
+      default: 'default',
+      home: 'home',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.game-card-default default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && target !== 'card') {
+      throw new Error(`home.game-card-default expected card target, received ${target ?? '<missing>'}`);
+    }
+    const game = createHomeGameFixture(data);
+    const interactive = interaction !== 'default';
+    return {
+      props: {
+        featured,
+        game,
+        onSelectPrediction: interactive
+          ? () => emitVisualQaInteraction(GAME_CARD_INTERACTION_EVENT, { value: 'game-card-selected' })
+          : undefined,
+        variant,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: GAME_CARD_INTERACTION_EVENT,
+        testId: 'visual-qa-game-card-interaction',
+      }),
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.scheduled-game-card': (context) => {
+    if (context.componentId !== 'src/components/ScheduledGameCard.tsx#ScheduledGameCard') {
+      throw new Error('home.scheduled-game-card only supports ScheduledGameCard');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('home.scheduled-game-card only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['league', 'status', 'theme'].includes(key))) {
+      throw new Error('home.scheduled-game-card only supports league, status, and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'keyboard-navigation': 'keyboard-navigation',
+      click: 'click',
+    });
+    const league = resolveDeclaredVariant<'regular' | 'postseason'>(context, 'league', {
+      postseason: 'postseason',
+      regular: 'regular',
+    });
+    const status = resolveDeclaredVariant<'cancelled' | 'postponed' | 'scheduled'>(context, 'status', {
+      cancelled: 'cancelled',
+      postponed: 'postponed',
+      scheduled: 'scheduled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.scheduled-game-card default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && target !== 'cta') {
+      throw new Error(`home.scheduled-game-card expected cta target, received ${target ?? '<missing>'}`);
+    }
+    if (interaction === 'keyboard-navigation' && target !== 'card') {
+      throw new Error(`home.scheduled-game-card expected card target, received ${target ?? '<missing>'}`);
+    }
+    const isLong = data === 'long-korean';
+    const isMaximum = data === 'maximum-supported';
+    const game = {
+      gameId: `visual-scheduled-${data}-${status}`,
+      time: isMaximum ? '18:30' : '19:00',
+      stadium: isLong ? '서울특별시 종합운동장 야구장 공식 좌석 안내 구역' : '잠실야구장',
+      gameStatus: status === 'postponed' ? 'POSTPONED' : status === 'cancelled' ? 'CANCELLED' : 'SCHEDULED',
+      gameStatusKr: status === 'postponed' ? '경기 연기' : status === 'cancelled' ? '경기 취소' : '경기 예정',
+      homeTeam: 'LG',
+      homeTeamFull: isLong ? '모바일 화면에서 여러 줄로 표시되는 홈 팀 LG 트윈스' : 'LG 트윈스',
+      awayTeam: 'LT',
+      awayTeamFull: isLong ? '모바일 화면에서 여러 줄로 표시되는 원정 팀 롯데 자이언츠' : '롯데 자이언츠',
+      sourceDate: isMaximum ? '2026-09-30' : '2026-09-19',
+      leagueType: league === 'postseason' ? 'POSTSEASON' : 'REGULAR',
+      leagueBadge: league === 'postseason' ? '포스트시즌' : isMaximum ? '정규시즌 50차전' : undefined,
+    };
+    const interactive = interaction !== 'default';
+    return {
+      props: {
+        game,
+        onSelectPrediction: interactive
+          ? () => emitVisualQaInteraction(SCHEDULED_GAME_CARD_INTERACTION_EVENT, { value: 'scheduled-game-card-selected' })
+          : () => {},
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: SCHEDULED_GAME_CARD_INTERACTION_EVENT,
+        testId: 'visual-qa-scheduled-game-card-interaction',
+      }),
+      captureSelector: '[role="button"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.match-error-state': (context) => {
+    if (context.componentId !== 'src/components/home/HomeMatchPanelErrorState.tsx#HomeMatchPanelErrorState') {
+      throw new Error('home.match-error-state only supports HomeMatchPanelErrorState');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))) {
+      throw new Error('home.match-error-state only supports data, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['compact', 'recovery', 'theme'].includes(key))) {
+      throw new Error('home.match-error-state only supports compact, recovery, and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const system = requireStateValueFromMap(context, 'system', {
+      'error-503': 'error-503',
+      'manual-required': 'manual-required',
+    });
+    const compact = resolveDeclaredVariant(context, 'compact', {
+      compact: true,
+      regular: false,
+    });
+    const recovery = resolveDeclaredVariant(context, 'recovery', {
+      enabled: false,
+      suppressed: true,
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('home.match-error-state default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'retry') {
+      throw new Error(`home.match-error-state expected retry target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'click' && recovery) {
+      throw new Error('home.match-error-state retry target requires enabled recovery actions');
+    }
+    return {
+      props: {
+        style: { minHeight: compact ? '188px' : '360px' },
+        title: system === 'manual-required' ? '오늘 경기 데이터를 준비하지 못했습니다.' : '오늘 경기 정보를 불러오지 못했습니다.',
+        description: data === 'long-korean'
+          ? '모바일 화면에서도 경기 오류 안내와 복구 버튼이 영역 밖으로 밀리지 않고 자연스럽게 줄바꿈되어야 합니다.'
+          : '잠시 후 다시 시도해 주세요.',
+        suppressRecoveryActions: recovery,
+        compact,
+        onRetry: () => {},
+      },
+      captureSelector: '[data-testid="home-match-priority-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
   'home.runtime': (context) => {
     if (context.componentId !== HOME_RUNTIME_COMPONENT_ID
       || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
@@ -10369,6 +19531,1820 @@ const adapters: Record<string, ComponentStateAdapter> = {
       props: {},
       captureSelector: '[data-vqa-harness-surface]',
       initialPathname: `/home?date=${HOME_RUNTIME_DATA_DATES[data]}`,
+      surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.deferred-surfaces': (context) => {
+    if (context.componentId !== HOME_DEFERRED_SURFACES_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['calendar', 'theme'].includes(key))) {
+      throw new Error('home.deferred-surfaces only supports its declared data, permissions, interaction, system, calendar, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'populated' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'default'>(context, 'interactions', {
+      default: 'default',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const calendar = resolveDeclaredVariant<'closed' | 'open'>(context, 'calendar', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction !== 'default' || context.interactionTargetId !== undefined) {
+      throw new Error('home.deferred-surfaces only exposes its default interaction state');
+    }
+    const containerFixture = resolveComponentStateAdapter('home.secondary-panels-container', {
+      componentId: HOME_SECONDARY_PANELS_CONTAINER_COMPONENT_ID,
+      states: { data, system },
+      variants: { theme },
+    });
+    return {
+      props: {
+        selectedDate: new Date('2026-09-10T12:00:00'),
+        selectedDateKey: '2026-09-10',
+        showCalendar: calendar === 'open',
+        loggedIn: permission === 'user',
+        userId: permission === 'user' ? 'visual-qa-home-deferred-user' : null,
+        suppressRecoveryActions: false,
+        onAuthSnapshotChange: () => {},
+        onCloseCalendar: () => {},
+        onSelectCalendarDate: () => {},
+        visualQaStateOverride: containerFixture.props.visualQaStateOverride,
+        visualQaDisableAdSlot: true,
+        visualQaDisableAuthBridge: true,
+        visualQaWelcomeGuideOverride: false,
+      },
+      captureSelector: '[data-testid="home-secondary-panels"]',
+      harnessAuthState: {
+        user: permission === 'user'
+          ? {
+              id: 9405,
+              email: 'visual-qa-home-deferred@example.com',
+              name: '홈 deferred 시각 QA 사용자',
+              handle: 'visual-qa-home-deferred',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#c30452',
+              role: 'ROLE_USER',
+              profileImageUrl: null,
+              provider: 'LOCAL',
+              bio: 'Visual QA deterministic deferred home fixture',
+              cheerPoints: 100,
+              hasPassword: true,
+            }
+          : null,
+      },
+      initialPathname: '/home',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.secondary-panels': (context) => {
+    if (context.componentId !== HOME_SECONDARY_PANELS_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['calendar', 'recovery', 'theme'].includes(key))) {
+      throw new Error('home.secondary-panels only supports its declared data, interaction, system, calendar, recovery, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'populated' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const calendar = resolveDeclaredVariant<'closed' | 'open'>(context, 'calendar', {
+      closed: 'closed',
+      open: 'open',
+    });
+    const recovery = resolveDeclaredVariant<'enabled' | 'suppressed'>(context, 'recovery', {
+      enabled: 'enabled',
+      suppressed: 'suppressed',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const canonicalInteractiveState = data === 'populated'
+      && system === 'idle'
+      && recovery === 'enabled'
+      && theme === 'light';
+    const allowedTargets = calendar === 'open'
+      ? new Set(['calendar-close'])
+      : new Set(['cheer-more', 'mate-more', 'hot-post', 'featured-mate', 'ranking-previous', 'ranking-next']);
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('home.secondary-panels default state does not accept an interaction target');
+    }
+    if (interaction === 'click' && (!canonicalInteractiveState || !allowedTargets.has(target ?? ''))) {
+      throw new Error(`home.secondary-panels click requires a canonical target, received ${target ?? '<missing>'}`);
+    }
+
+    const isLoading = system === 'loading';
+    const isError = system === 'error-503' || system === 'manual-required';
+    const pressureCopy = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 여러 줄로 표시되어야 하는 매우 긴 홈 보조 패널 안내 문구입니다.'
+      : data === 'unbroken-token'
+        ? `HOME_SECONDARY_${'UNBROKEN'.repeat(18)}`
+        : '홈 보조 패널 정합성 fixture';
+    const hotCheerPosts: CheerPost[] = data === 'empty'
+      ? []
+      : [
+          makeVisualQaNoticePost(9201, {
+            author: data === 'long-korean' ? pressureCopy : '시각 QA 응원단장',
+            content: data === 'long-korean' ? pressureCopy : data === 'unbroken-token' ? pressureCopy : '오늘도 끝까지 함께 응원해요.',
+          }),
+          makeVisualQaNoticePost(9202, { content: '홈 보조 패널의 두 번째 인기 응원글입니다.' }),
+        ];
+    const featuredMates: FeaturedMateCard[] = data === 'empty'
+      ? []
+      : [
+          {
+            id: 9301,
+            hostId: 9302,
+            hostHandle: '@visual-mate',
+            teamId: 'LG',
+            cheeringSide: 'HOME',
+            stadium: data === 'long-korean' ? pressureCopy : '잠실야구장',
+            gameDate: '2026-09-11',
+            gameTime: '18:30',
+            section: data === 'unbroken-token' ? pressureCopy : '1루 응원석',
+            currentParticipants: 2,
+            maxParticipants: data === 'unbroken-token' ? 999 : 4,
+            status: 'PENDING',
+            description: pressureCopy,
+            homeTeam: 'LG',
+            awayTeam: 'KT',
+            ticketPrice: data === 'unbroken-token' ? 9999999 : 15000,
+          },
+        ];
+    const displayedRankings = data === 'empty'
+      ? []
+      : [
+          {
+            rank: 1,
+            teamId: 'LG',
+            displayName: 'LG 트윈스',
+            winRate: '0.625',
+            wins: 25,
+            draws: 1,
+            losses: 14,
+            recentForm: ['W', 'D', 'L', 'W', 'W'] as Array<'W' | 'D' | 'L'>,
+          },
+          {
+            rank: 2,
+            teamId: 'KT',
+            displayName: data === 'long-korean' ? pressureCopy : 'KT 위즈',
+            winRate: '0.590',
+            wins: 23,
+            draws: 1,
+            losses: 16,
+          },
+        ];
+    const emit = (value: string) => emitVisualQaInteraction(HOME_SECONDARY_PANELS_INTERACTION_EVENT, { value });
+    return {
+      props: {
+        selectedDate: new Date('2026-09-10T12:00:00'),
+        calendarMonth: new Date('2026-09-01T12:00:00'),
+        showCalendar: calendar === 'open',
+        shouldMountWelcomeGuide: false,
+        calendarDialogTitleId: 'visual-qa-home-calendar-title',
+        loggedIn: true,
+        userId: 'visual-qa-home-user',
+        suppressRecoveryActions: recovery === 'suppressed',
+        currentYear: 2026,
+        todayKey: '2026-09-09',
+        isHotCheerLoading: isLoading,
+        hotCheerError: isError ? '홈 인기 응원글을 불러오지 못했습니다.' : null,
+        hotCheerPosts,
+        isFeaturedMatesLoading: isLoading,
+        featuredMatesError: isError ? '홈 메이트 목록을 불러오지 못했습니다.' : null,
+        featuredMates,
+        rankingSeasonYear: 2025,
+        isRankingsLoading: isLoading,
+        rankingsError: isError,
+        displayedRankings,
+        rankingDataVisibilityMessage: pressureCopy,
+        rankingStatusHintMessage: '현재 시즌의 팀 순위 집계 데이터가 없습니다.',
+        rankingPlaceholderRows: Math.max(0, 10 - displayedRankings.length),
+        homeDashboardCardHeightClass: 'min-h-[238px] lg:h-[650px]',
+        teamRankingCardHeightClass: 'min-h-[320px] lg:h-[650px]',
+        homeDashboardRankingRowClass: 'xl:h-[65px] xl:min-h-[65px]',
+        onRetryWidgets: () => emit('widgets-retry'),
+        onRetryRanking: () => emit('ranking-retry'),
+        onLoadPreviousRankingSeason: () => emit('ranking-previous'),
+        onLoadNextRankingSeason: () => emit('ranking-next'),
+        onNavigateToCheer: () => emit('cheer-more'),
+        onNavigateToMate: () => emit('mate-more'),
+        onNavigateToCheerPost: (postId: number) => emit(`hot-post:${postId}`),
+        onSelectFeaturedMate: (mate: { id: number }) => emit(`featured-mate:${mate.id}`),
+        onCloseCalendar: () => emit('calendar-close'),
+        onCalendarMonthChange: () => emit('calendar-month-change'),
+        onSelectCalendarDate: () => emit('calendar-date-select'),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: HOME_SECONDARY_PANELS_INTERACTION_EVENT,
+        testId: 'visual-qa-home-secondary-panels-interaction',
+      }),
+      captureSelector: '[data-testid="home-secondary-panels"]',
+      harnessAuthState: {
+        user: {
+          id: 9303,
+          email: 'visual-qa-home-secondary@example.com',
+          name: '홈 시각 QA 사용자',
+          handle: 'visual-qa-home-secondary',
+          favoriteTeam: 'LG',
+          favoriteTeamColor: '#c30452',
+          role: 'ROLE_USER',
+          profileImageUrl: null,
+          provider: 'LOCAL',
+          bio: 'Visual QA deterministic home secondary panels fixture',
+          cheerPoints: 100,
+          hasPassword: true,
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.secondary-panels-container': (context) => {
+    if (context.componentId !== HOME_SECONDARY_PANELS_CONTAINER_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('home.secondary-panels-container only supports its declared data, system, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'populated' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const pressureCopy = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 여러 줄로 표시되어야 하는 홈 위젯 query 결과 압력 문구입니다.'
+      : data === 'unbroken-token'
+        ? `HOME_QUERY_${'UNBROKEN'.repeat(18)}`
+        : '홈 query fixture';
+    const widgetsData = data === 'empty'
+      ? {
+          hotCheerPosts: [],
+          featuredMates: [],
+          rankingSnapshot: {
+            rankingSeasonYear: 2025,
+            rankingSourceMessage: '표시할 순위 데이터가 없습니다.',
+            isOffSeason: false,
+            rankings: [],
+          },
+        }
+      : {
+          hotCheerPosts: [makeVisualQaNoticePost(9401, {
+            author: data === 'long-korean' ? pressureCopy : '홈 query 응원단장',
+            content: data === 'unbroken-token' ? pressureCopy : 'query provider를 거친 인기 응원글 fixture입니다.',
+          })],
+          featuredMates: [{
+            id: 9402,
+            hostId: 9403,
+            hostHandle: '@visual-query-mate',
+            teamId: 'LG',
+            cheeringSide: 'HOME',
+            stadium: data === 'long-korean' ? pressureCopy : '잠실야구장',
+            gameDate: '2026-09-11',
+            gameTime: '18:30',
+            section: data === 'unbroken-token' ? pressureCopy : '1루 응원석',
+            currentParticipants: 2,
+            maxParticipants: 4,
+            status: 'PENDING',
+            description: pressureCopy,
+            homeTeam: 'LG',
+            awayTeam: 'KT',
+            ticketPrice: 15000,
+          }],
+          rankingSnapshot: {
+            rankingSeasonYear: 2025,
+            rankingSourceMessage: '',
+            isOffSeason: false,
+            rankings: [
+              {
+                rank: 1,
+                teamId: 'LG',
+                teamName: 'LG 트윈스',
+                shortName: 'LG',
+                wins: 25,
+                draws: 1,
+                losses: 14,
+                games: 40,
+                winRate: '0.625',
+                gamesBehind: 0,
+                recentForm: ['W', 'D', 'L', 'W', 'W'],
+              },
+            ],
+          },
+        };
+    const emitRetry = () => emitVisualQaInteraction(HOME_SECONDARY_PANELS_INTERACTION_EVENT, { value: 'query-retry' });
+    return {
+      props: {
+        selectedDate: new Date('2026-09-10T12:00:00'),
+        selectedDateKey: '2026-09-10',
+        calendarMonth: new Date('2026-09-01T12:00:00'),
+        showCalendar: false,
+        shouldMountWelcomeGuide: false,
+        calendarDialogTitleId: 'visual-qa-home-query-calendar-title',
+        loggedIn: true,
+        userId: 'visual-qa-home-query-user',
+        suppressRecoveryActions: false,
+        onNavigateToCheer: () => {},
+        onNavigateToMate: () => {},
+        onNavigateToCheerPost: () => {},
+        onSelectFeaturedMate: () => {},
+        onCloseCalendar: () => {},
+        onCalendarMonthChange: () => {},
+        onSelectCalendarDate: () => {},
+        visualQaStateOverride: {
+          status: system === 'loading' ? 'loading' : system === 'idle' ? 'success' : 'error',
+          data: system === 'loading' || system === 'error-503' || system === 'manual-required'
+            ? undefined
+            : widgetsData,
+          onRetry: emitRetry,
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: HOME_SECONDARY_PANELS_INTERACTION_EVENT,
+        testId: 'visual-qa-home-secondary-panels-container-interaction',
+      }),
+      captureSelector: '[data-testid="home-secondary-panels"]',
+      harnessAuthState: {
+        user: {
+          id: 9404,
+          email: 'visual-qa-home-query@example.com',
+          name: '홈 query 시각 QA 사용자',
+          handle: 'visual-qa-home-query',
+          favoriteTeam: 'LG',
+          favoriteTeamColor: '#c30452',
+          role: 'ROLE_USER',
+          profileImageUrl: null,
+          provider: 'LOCAL',
+          bio: 'Visual QA deterministic home query fixture',
+          cheerPoints: 100,
+          hasPassword: true,
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.team-rank-row': (context) => {
+    if (context.componentId !== 'src/components/home/TeamRankRow.tsx#TeamRankRow') {
+      throw new Error('home.team-rank-row only supports TeamRankRow');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('home.team-rank-row only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['row', 'sparkline', 'theme'].includes(key))) {
+      throw new Error('home.team-rank-row only supports row, sparkline, and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      zero: 'zero',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+    });
+    const row = resolveDeclaredVariant<'compact' | 'rich'>(context, 'row', {
+      compact: 'compact',
+      rich: 'rich',
+    });
+    const sparkline = resolveDeclaredVariant<undefined | Array<'W' | 'D' | 'L'>>(context, 'sparkline', {
+      none: undefined,
+      recent: ['W', 'D', 'L', 'W', 'W'],
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('home.team-rank-row default state does not accept interaction targets');
+    }
+    if (interaction === 'hover' && context.interactionTargetId !== 'row') {
+      throw new Error(`home.team-rank-row expected row target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const team = data === 'zero'
+      ? {
+          rank: 8,
+          teamId: 'LG',
+          displayName: 'LG 트윈스',
+          winRate: '0.000',
+          wins: 0,
+          draws: 0,
+          losses: 0,
+        }
+      : data === 'long-korean'
+        ? {
+            rank: 2,
+            teamId: 'LG',
+            displayName: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 LG 트윈스 구단명',
+            winRate: '0.678',
+            wins: 40,
+            draws: 2,
+            losses: 17,
+            gamesBehind: 1.5,
+          }
+        : data === 'maximum-supported'
+          ? {
+              rank: 4,
+              teamId: 'LG',
+              displayName: 'LG 트윈스',
+              winRate: '0.990',
+              wins: 99,
+              draws: 1,
+              losses: 0,
+              gamesBehind: 10,
+            }
+          : {
+              rank: 1,
+              teamId: 'LG',
+              displayName: 'LG 트윈스',
+              winRate: '0.625',
+              wins: 25,
+              draws: 1,
+              losses: 14,
+              gamesBehind: 0,
+            };
+    return {
+      props: {
+        sparkline,
+        team,
+        variant: row,
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'home.wrapper': (context) => {
+    if (context.componentId !== HOME_WRAPPER_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('home.wrapper only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant<'fallback' | 'resolved'>(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="home-route-loading"]',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'home-wrapper-runtime-probe',
+          },
+          'HomeRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="home-wrapper-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'cheer.wrapper': (context) => {
+    if (context.componentId !== CHEER_WRAPPER_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('cheer.wrapper only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant<'fallback' | 'resolved'>(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="cheer-route-loading"]',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'cheer-wrapper-runtime-probe',
+          },
+          'CheerRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="cheer-wrapper-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'cheer.runtime': (context) => {
+    if (context.componentId !== CHEER_RUNTIME_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['surface', 'theme'].includes(key))) {
+      throw new Error('cheer.runtime only supports its declared data, permissions, interaction, system, surface, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'focus-visible' | 'submit' | 'tab-change'>(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      submit: 'submit',
+      'tab-change': 'tab-change',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const surface = resolveDeclaredVariant<'feed' | 'live' | 'search'>(context, 'surface', {
+      feed: 'feed',
+      live: 'live',
+      search: 'search',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('cheer.runtime default state does not accept interaction targets');
+    }
+    const targetByInteraction = {
+      'focus-visible': 'search-input',
+      'tab-change': 'popular-tab',
+      submit: 'bottom-write',
+    } as const;
+    if (interaction !== 'default' && target !== targetByInteraction[interaction]) {
+      throw new Error(`cheer.runtime expected ${targetByInteraction[interaction]} target, received ${target ?? '<missing>'}`);
+    }
+
+    const childData = data === 'maximum-supported'
+      ? 'long-korean'
+      : data === 'single' ? 'populated' : data;
+    const feedData = system === 'loading'
+      ? 'loading'
+      : system === 'error-503' || system === 'manual-required'
+        ? 'error-503'
+        : childData === 'empty'
+          ? 'empty'
+          : childData;
+    const composerData = childData === 'empty' ? 'empty' : childData === 'long-korean' ? 'long-korean' : 'populated';
+    const sidebarData = system === 'loading'
+      ? 'loading'
+      : system === 'error-503' || system === 'manual-required'
+        ? 'error-503'
+        : childData;
+    const liveData = system === 'loading'
+      ? 'loading'
+      : system === 'error-503' || system === 'manual-required'
+        ? 'error-503'
+        : childData;
+    const eventValue = target ?? 'interaction';
+    const emit = (value: string) => emitVisualQaInteraction(CHEER_RUNTIME_INTERACTION_EVENT, {
+      value: `${eventValue}:${value}`,
+    });
+    const composerChild = adapters['cheer.composer-runtime']({
+      componentId: 'src/components/CheerComposerRuntime.tsx#CheerComposerRuntime',
+      states: {
+        data: composerData,
+        permissions: permission,
+        interactions: 'default',
+        system: 'online',
+      },
+      variants: { feed: 'all', theme },
+    });
+    const feedChild = adapters['cheer.feed-runtime']({
+      componentId: 'src/components/CheerFeedRuntimeContent.tsx#CheerFeedRuntimeContent',
+      states: {
+        data: feedData,
+        permissions: permission,
+        interactions: 'default',
+        system: 'online',
+      },
+      variants: { feedTab: 'all', theme },
+    });
+    const sidebarChild = adapters['cheer.sidebar-panels']({
+      componentId: 'src/components/CheerSidebarPanels.tsx#CheerSidebarPanels',
+      states: {
+        data: sidebarData,
+        interactions: 'default',
+        system: 'online',
+      },
+      variants: { team: permission === 'user' ? 'selected' : 'all', theme },
+    });
+    const liveChild = adapters['cheer.live-panel']({
+      componentId: 'src/components/CheerLivePanel.tsx#CheerLivePanel',
+      states: {
+        data: liveData,
+        interactions: 'default',
+        system: 'online',
+      },
+      variants: { team: permission === 'user' ? 'green' : 'navy', theme },
+    });
+    const composerOverride = composerChild.props.visualQaStateOverride as CheerComposerRuntimeVisualQaStateOverride;
+    const feedOverride = feedChild.props.visualQaStateOverride as CheerFeedRuntimeContentVisualQaStateOverride;
+    const sidebarOverride = sidebarChild.props.visualQaStateOverride as CheerSidebarPanelsVisualQaStateOverride;
+    const liveOverride = liveChild.props.visualQaStateOverride as CheerLivePanelVisualQaStateOverride;
+    const isAuthenticated = permission === 'user';
+    const isMetadataError = system === 'error-503' || system === 'manual-required';
+    const visualQaStateOverride: CheerRuntimeVisualQaStateOverride = {
+      authUserEmail: isAuthenticated ? 'visual-qa-cheer-runtime@example.com' : null,
+      authUserFavoriteTeam: isAuthenticated ? 'LG' : null,
+      authUserFavoriteTeamColor: '#2b8a6e',
+      authUserHandle: isAuthenticated ? '@visual-qa-cheer-runtime' : null,
+      authUserId: isAuthenticated ? 900040 : null,
+      authUserName: isAuthenticated ? '응원 런타임 QA 사용자' : null,
+      authUserProfileImageUrl: null,
+      composer: {
+        ...composerOverride,
+        onSubmit: () => emit('composer-submit'),
+      },
+      feed: {
+        ...feedOverride,
+        onNewPostsClick: () => emit('new-posts'),
+        onNextPage: () => emit('next-page'),
+        onRetry: () => emit('feed-retry'),
+      },
+      isAuthLoading: system === 'loading',
+      isLoggedIn: isAuthenticated,
+      live: {
+        ...liveOverride,
+        onRetry: () => emit('live-retry'),
+      },
+      onInteraction: (value) => emit(value),
+      shouldRenderFeedRuntime: true,
+      shouldRenderSidebar: true,
+      sidebar: {
+        ...sidebarOverride,
+        onRetryGames: () => emit('games-retry'),
+      },
+      teamMetadata: isAuthenticated
+        ? {
+            summary: data === 'long-korean' || data === 'maximum-supported'
+              ? '모바일 화면에서 긴 한국어 팀 소개가 카드 경계를 넘지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+              : '응원 런타임 정합성 검증을 위한 로컬 팀 소개입니다.',
+          }
+        : null,
+      teamMetadataState: system === 'loading' ? 'loading' : isMetadataError ? 'error' : 'ready',
+    };
+    return {
+      props: { visualQaStateOverride },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: CHEER_RUNTIME_INTERACTION_EVENT,
+        testId: 'visual-qa-cheer-runtime-interaction',
+      }),
+      captureSelector: '[data-testid="cheer-runtime-route"]',
+      harnessAuthState: isAuthenticated
+        ? {
+            user: {
+              id: 900040,
+              email: 'visual-qa-cheer-runtime@example.com',
+              name: '응원 런타임 QA 사용자',
+              handle: 'visual-qa-cheer-runtime',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#2b8a6e',
+              role: 'ROLE_USER',
+              profileImageUrl: null,
+              provider: 'LOCAL',
+              bio: 'Visual QA deterministic cheer runtime fixture',
+              cheerPoints: 100,
+              hasPassword: true,
+            },
+          }
+        : { user: null },
+      initialPathname: surface === 'live'
+        ? '/cheer?tab=live'
+        : surface === 'search' ? '/cheer?q=LG' : '/cheer',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail': (context) => {
+    if (context.componentId !== CHEER_DETAIL_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.detail only supports its declared data, permissions, interaction, system, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'default'>(context, 'interactions', {
+      default: 'default',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction !== 'default' || context.interactionTargetId !== undefined) {
+      throw new Error('cheer.detail only exposes its default interaction state');
+    }
+    const contentFixture = data === 'empty'
+      ? null
+      : resolveComponentStateAdapter('cheer.detail-content', {
+          componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+          states: {
+            data: data === 'single' ? 'single' : data,
+            permissions: permission,
+            interactions: 'default',
+          },
+          variants: {
+            menu: 'closed',
+            overlay: 'closed',
+            post: 'normal',
+            replies: 'coming-soon',
+            theme,
+          },
+        });
+    const visualQaStateOverride: CheerDetailVisualQaStateOverride = {
+      selectedPost: system === 'idle' && contentFixture
+        ? contentFixture.props.selectedPost as CheerPost
+        : null,
+      loading: system === 'loading',
+      error: system === 'error-503' || system === 'manual-required'
+        ? new Error('Visual QA local cheer detail fixture is unavailable')
+        : null,
+      isLoggedIn: permission === 'user',
+      authUserId: permission === 'user' ? 900020 : null,
+      authUserEmail: permission === 'user' ? 'visual-qa-detail@example.com' : null,
+      authUserName: permission === 'user' ? '비주얼 QA 사용자' : null,
+      authUserHandle: permission === 'user' ? '@visual-qa-user' : null,
+      authUserProfileImageUrl: null,
+    };
+    return {
+      props: { visualQaStateOverride },
+      captureSelector: '[data-testid="cheer-detail-route"]',
+      harnessAuthState: permission === 'user'
+        ? {
+            user: {
+              id: 900020,
+              email: 'visual-qa-detail@example.com',
+              name: '비주얼 QA 사용자',
+              handle: 'visual-qa-user',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#2b8a6e',
+              role: 'ROLE_USER',
+              profileImageUrl: null,
+              provider: 'LOCAL',
+              bio: 'Visual QA deterministic cheer detail fixture',
+              cheerPoints: 100,
+              hasPassword: true,
+            },
+          }
+        : { user: null },
+      initialPathname: '/cheer/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.detail-page': (context) => {
+    if (context.componentId !== CHEER_DETAIL_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('cheer.detail-page only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="cheer-detail-route-loading"]',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'cheer-detail-page-runtime-probe',
+          },
+          'CheerDetailRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="cheer-detail-page-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'cheer.edit': (context) => {
+    if (context.componentId !== CHEER_EDIT_COMPONENT_ID
+      || Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('cheer.edit only supports its declared data, permissions, interaction, system, and theme axes');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'default'>(context, 'interactions', {
+      default: 'default',
+    });
+    const system = requireStateValueFromMap<'error-503' | 'idle' | 'loading' | 'manual-required'>(context, 'system', {
+      'error-503': 'error-503',
+      idle: 'idle',
+      loading: 'loading',
+      'manual-required': 'manual-required',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+
+    if (interaction !== 'default' || context.interactionTargetId !== undefined) {
+      throw new Error('cheer.edit only exposes its default interaction state');
+    }
+    if (data === 'empty' && system === 'idle') {
+      throw new Error('cheer.edit empty data requires a loading or unavailable system state');
+    }
+
+    const isUnavailable = system === 'error-503' || system === 'manual-required';
+    const isAuthenticated = permission === 'user';
+    const contentFixture = data === 'empty'
+      ? null
+      : resolveComponentStateAdapter('cheer.detail-content', {
+          componentId: 'src/components/CheerDetailContent.tsx#CheerDetailContent',
+          states: {
+            data: data === 'single' ? 'single' : data,
+            permissions: permission,
+            interactions: 'default',
+          },
+          variants: {
+            menu: 'closed',
+            overlay: 'closed',
+            post: isAuthenticated ? 'owner' : 'normal',
+            replies: 'coming-soon',
+            theme,
+          },
+        });
+    const post = system === 'idle' && contentFixture
+      ? contentFixture.props.selectedPost as CheerPost
+      : null;
+    const visualQaStateOverride: CheerEditVisualQaStateOverride = {
+      postId: 904,
+      favoriteTeam: isAuthenticated ? 'LG' : null,
+      post,
+      isLoading: system === 'loading',
+      isError: isUnavailable,
+      hasAccess: isAuthenticated && post !== null,
+      content: post?.content ?? '',
+      existingImages: [],
+      newFilePreviews: [],
+      deletingImageId: null,
+      isDragging: false,
+      isSubmitting: false,
+      onSubmit: () => {},
+      onCancel: () => {},
+    };
+
+    return {
+      props: { visualQaStateOverride },
+      captureSelector: '[data-testid="cheer-edit-route"]',
+      harnessAuthState: isAuthenticated
+        ? {
+            user: {
+              id: 900020,
+              email: 'visual-qa-edit@example.com',
+              name: '비주얼 QA 사용자',
+              handle: 'visual-qa-user',
+              favoriteTeam: 'LG',
+              favoriteTeamColor: '#2b8a6e',
+              role: 'ROLE_USER',
+              profileImageUrl: null,
+              provider: 'LOCAL',
+              bio: 'Visual QA deterministic cheer edit fixture',
+              cheerPoints: 100,
+              hasPassword: true,
+            },
+          }
+        : { user: null },
+      initialPathname: '/cheer/edit/904',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-2 shadow-none',
+      theme,
+    };
+  },
+  'cheer.edit-page': (context) => {
+    if (context.componentId !== CHEER_EDIT_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('cheer.edit-page only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="cheer-edit-route-loading"]',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'cheer-edit-page-runtime-probe',
+          },
+          'CheerEditRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="cheer-edit-page-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'dm.page': (context) => {
+    if (context.componentId !== DM_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('dm.page only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="dm-route-loading"]',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'dm-page-runtime-probe',
+          },
+          'DirectMessageRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="dm-page-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'dm.inbox-page': (context) => {
+    if (context.componentId !== DM_INBOX_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('dm.inbox-page only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="dm-inbox-route-loading"]',
+        initialPathname: '/messages',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'dm-inbox-page-runtime-probe',
+          },
+          'DmInboxRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="dm-inbox-page-runtime-probe"]',
+      initialPathname: '/messages',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'mypage.wrapper': (context) => {
+    if (context.componentId !== MYPAGE_WRAPPER_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('mypage.wrapper only supports its declared phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="mypage-route-loading"]',
+        initialPathname: '/mypage',
+        surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'mypage-wrapper-runtime-probe',
+          },
+          'MyPageRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="mypage-wrapper-runtime-probe"]',
+      initialPathname: '/mypage',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'mypage.runtime': (context) => {
+    if (context.componentId !== 'src/components/MyPageRuntime.tsx#MyPageRuntime'
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('mypage.runtime only supports its declared phase and theme variants');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        visualQaPhase: phase,
+        visualQaRuntimeOverride: phase === 'resolved'
+          ? createElement(
+            'div',
+            {
+              className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+              'data-testid': 'mypage-runtime-probe',
+            },
+            'MyPageRuntime 위임 경계가 준비되었습니다.',
+          )
+          : undefined,
+      },
+      captureSelector: phase === 'fallback'
+        ? '[data-testid="mypage-runtime-fallback"]'
+        : '[data-testid="mypage-runtime-probe"]',
+      initialPathname: '/mypage',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'admin.moderation-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/admin/AdminModerationRuntime.tsx#AdminModerationRuntime',
+    'admin.moderation-runtime',
+    'admin-moderation-runtime-fallback',
+    'admin-moderation-runtime-probe',
+    '관리자 검수 화면을 준비하고 있습니다.',
+    'AdminModerationRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'coach.briefing-content-card-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/CoachBriefingContentCardRuntime.tsx#CoachBriefingContentCardRuntime',
+    'coach.briefing-content-card-runtime',
+    'coach-briefing-content-card-runtime-fallback',
+    'coach-briefing-content-card-runtime-probe',
+    '코치 브리핑을 준비하고 있습니다.',
+    'CoachBriefingContentCardRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'coach.briefing-content-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/CoachBriefingContentRuntime.tsx#CoachBriefingContentRuntime',
+    'coach.briefing-content-runtime',
+    'coach-briefing-content-runtime-fallback',
+    'coach-briefing-content-runtime-probe',
+    '코치 브리핑 화면을 준비하고 있습니다.',
+    'CoachBriefingContentRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'module-federation.design-system-probe': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/moduleFederation/ModuleFederationDesignSystemProbe.tsx#ModuleFederationDesignSystemProbe',
+    'module-federation.design-system-probe',
+    'module-federation-design-system-probe-fallback',
+    'module-federation-design-system-probe-probe',
+    '디자인 시스템 원격 모듈을 준비하고 있습니다.',
+    'ModuleFederationDesignSystemProbe 위임 경계가 준비되었습니다.',
+  ),
+  'module-federation.theme-provider': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/moduleFederation/fallback/ThemeProvider.tsx#ThemeProvider',
+    'module-federation.theme-provider',
+    'module-federation-theme-provider-fallback',
+    'module-federation-theme-provider-probe',
+    '디자인 시스템 테마를 준비하고 있습니다.',
+    'ThemeProvider 위임 경계가 준비되었습니다.',
+  ),
+  'profile.page': (context) => {
+    if (context.componentId !== USER_PROFILE_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('profile.page only supports its declared phase and theme variants');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const surfaceClassName = 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none';
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="user-profile-route-loading"]',
+        initialPathname: '/profile/@visual-qa-profile',
+        surfaceClassName,
+        theme,
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'user-profile-page-runtime-probe',
+          },
+          'UserProfileRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="user-profile-page-runtime-probe"]',
+      initialPathname: '/profile/@visual-qa-profile',
+      surfaceClassName,
+      theme,
+    };
+  },
+  'profile.user-list-modal': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/profile/UserListModal.tsx#UserListModal',
+    'profile.user-list-modal',
+    'user-list-modal-fallback',
+    'user-list-modal-probe',
+    '팔로워 목록을 불러오는 중입니다.',
+    'UserListModal 위임 경계가 준비되었습니다.',
+  ),
+  'profile.user-profile-modal': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/profile/UserProfileModal.tsx#UserProfileModal',
+    'profile.user-profile-modal',
+    'user-profile-modal-fallback',
+    'user-profile-modal-probe',
+    '사용자 프로필을 불러오는 중입니다.',
+    'UserProfileModal 위임 경계가 준비되었습니다.',
+  ),
+  'profile.user-profile': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/profile/UserProfile.tsx#UserProfile',
+    'profile.user-profile',
+    'user-profile-fallback',
+    'user-profile-probe',
+    '사용자 프로필을 불러오는 중입니다.',
+    'UserProfile 위임 경계가 준비되었습니다.',
+  ),
+  'profile.user-profile-posts-section': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/profile/UserProfilePostsSection.tsx#UserProfilePostsSection',
+    'profile.user-profile-posts-section',
+    'user-profile-posts-section-fallback',
+    'user-profile-posts-section-probe',
+    '게시글을 불러오는 중입니다.',
+    'UserProfilePostsSection 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.page': (context) => {
+    if (context.componentId !== PREDICTION_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.page only supports its declared theme variant');
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'prediction-page-runtime-probe',
+          },
+          'PredictionRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="prediction-page-runtime-probe"]',
+      initialPathname: '/prediction',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionRuntime.tsx#PredictionRuntime',
+    'prediction.runtime',
+    'prediction-runtime-fallback',
+    'prediction-runtime-probe',
+    '예측 화면을 불러오는 중입니다.',
+    'PredictionRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchRuntime.tsx#PredictionMatchRuntime',
+    'prediction.match-runtime',
+    'prediction-match-runtime-fallback',
+    'prediction-match-runtime-probe',
+    '경기 화면을 불러오는 중입니다.',
+    'PredictionMatchRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-runtime-content': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchRuntimeContent.tsx#PredictionMatchRuntimeContent',
+    'prediction.match-runtime-content',
+    'prediction-match-runtime-content-fallback',
+    'prediction-match-runtime-content-probe',
+    '경기 콘텐츠를 불러오는 중입니다.',
+    'PredictionMatchRuntimeContent 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleRuntime.tsx#PredictionMatchScheduleRuntime',
+    'prediction.match-schedule-runtime',
+    'prediction-match-schedule-runtime-fallback',
+    'prediction-match-schedule-runtime-probe',
+    '경기 일정을 불러오는 중입니다.',
+    'PredictionMatchScheduleRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-interactive-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchInteractiveRuntime.tsx#PredictionMatchInteractiveRuntime',
+    'prediction.match-interactive-runtime',
+    'prediction-match-interactive-runtime-fallback',
+    'prediction-match-interactive-runtime-probe',
+    '경기 화면을 불러오는 중입니다.',
+    'PredictionMatchInteractiveRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-interactive-data-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchInteractiveDataRuntime.tsx#PredictionMatchInteractiveDataRuntime',
+    'prediction.match-interactive-data-runtime',
+    'prediction-match-interactive-data-runtime-fallback',
+    'prediction-match-interactive-data-runtime-probe',
+    '경기 데이터를 불러오는 중입니다.',
+    'PredictionMatchInteractiveDataRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-interactive-content-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchInteractiveContentRuntime.tsx#PredictionMatchInteractiveContentRuntime',
+    'prediction.match-interactive-content-runtime',
+    'prediction-match-interactive-content-runtime-fallback',
+    'prediction-match-interactive-content-runtime-probe',
+    '경기 콘텐츠를 준비하고 있습니다.',
+    'PredictionMatchInteractiveContentRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-interactive-view': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchInteractiveView.tsx#PredictionMatchInteractiveView',
+    'prediction.match-interactive-view',
+    'prediction-match-interactive-view-fallback',
+    'prediction-match-interactive-view-probe',
+    '경기 화면을 준비하고 있습니다.',
+    'PredictionMatchInteractiveView 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-data-content': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleDataContent.tsx#PredictionMatchScheduleDataContent',
+    'prediction.match-schedule-data-content',
+    'prediction-match-schedule-data-content-fallback',
+    'prediction-match-schedule-data-content-probe',
+    '일정 데이터를 불러오는 중입니다.',
+    'PredictionMatchScheduleDataContent 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-data-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleDataRuntime.tsx#PredictionMatchScheduleDataRuntime',
+    'prediction.match-schedule-data-runtime',
+    'prediction-match-schedule-data-runtime-fallback',
+    'prediction-match-schedule-data-runtime-probe',
+    '일정 화면을 불러오는 중입니다.',
+    'PredictionMatchScheduleDataRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-preview-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchSchedulePreviewRuntime.tsx#PredictionMatchSchedulePreviewRuntime',
+    'prediction.match-schedule-preview-runtime',
+    'prediction-match-schedule-preview-runtime-fallback',
+    'prediction-match-schedule-preview-runtime-probe',
+    '경기 목록을 준비하고 있습니다.',
+    'PredictionMatchSchedulePreviewRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-ready-view': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleReadyView.tsx#PredictionMatchScheduleReadyView',
+    'prediction.match-schedule-ready-view',
+    'prediction-match-schedule-ready-view-fallback',
+    'prediction-match-schedule-ready-view-probe',
+    '경기 일정을 준비하고 있습니다.',
+    'PredictionMatchScheduleReadyView 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-resolved-data-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleResolvedDataRuntime.tsx#PredictionMatchScheduleResolvedDataRuntime',
+    'prediction.match-schedule-resolved-data-runtime',
+    'prediction-match-schedule-resolved-data-runtime-fallback',
+    'prediction-match-schedule-resolved-data-runtime-probe',
+    '일정 데이터를 확인하고 있습니다.',
+    'PredictionMatchScheduleResolvedDataRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-resolved-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleResolvedRuntime.tsx#PredictionMatchScheduleResolvedRuntime',
+    'prediction.match-schedule-resolved-runtime',
+    'prediction-match-schedule-resolved-runtime-fallback',
+    'prediction-match-schedule-resolved-runtime-probe',
+    '일정 화면을 확인하고 있습니다.',
+    'PredictionMatchScheduleResolvedRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-schedule-top-notice-runtime': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchScheduleTopNoticeRuntime.tsx#PredictionMatchScheduleTopNoticeRuntime',
+    'prediction.match-schedule-top-notice-runtime',
+    'prediction-match-schedule-top-notice-runtime-fallback',
+    'prediction-match-schedule-top-notice-runtime-probe',
+    '일정 안내를 준비하고 있습니다.',
+    'PredictionMatchScheduleTopNoticeRuntime 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.match-vote-controller': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionMatchVoteController.tsx#PredictionMatchVoteController',
+    'prediction.match-vote-controller',
+    'prediction-match-vote-controller-fallback',
+    'prediction-match-vote-controller-probe',
+    '투표 기능을 준비하고 있습니다.',
+    'PredictionMatchVoteController 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.ranking-tab': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionRankingTab.tsx#PredictionRankingTab',
+    'prediction.ranking-tab',
+    'prediction-ranking-tab-fallback',
+    'prediction-ranking-tab-probe',
+    '순위 예측 화면을 불러오는 중입니다.',
+    'PredictionRankingTab 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.stats-panel': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/PredictionStatsPanel.tsx#PredictionStatsPanel',
+    'prediction.stats-panel',
+    'prediction-stats-panel-fallback',
+    'prediction-stats-panel-probe',
+    '예측 통계를 불러오는 중입니다.',
+    'PredictionStatsPanel 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.schedule-provider': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionScheduleContext.tsx#PredictionScheduleProvider'
+      || context.states.data !== 'provided'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.schedule-provider only supports its provided data and theme variants');
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', { dark: 'dark', light: 'light' });
+    return {
+      props: {
+        schedule: { games: [], loading: false, error: null, selectedDate: '2099-05-01' },
+        children: createElement('div', { 'data-testid': 'prediction-schedule-provider-child' }, '예측 일정 컨텍스트가 준비되었습니다.'),
+      },
+      captureSelector: '[data-testid="prediction-schedule-provider-child"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.user-votes-provider': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionScheduleContext.tsx#PredictionUserVotesProvider'
+      || context.states.data !== 'provided'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.user-votes-provider only supports its provided data and theme variants');
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', { dark: 'dark', light: 'light' });
+    return {
+      props: {
+        userVotes: { votes: {}, loading: false, error: null },
+        children: createElement('div', { 'data-testid': 'prediction-user-votes-provider-child' }, '예측 투표 컨텍스트가 준비되었습니다.'),
+      },
+      captureSelector: '[data-testid="prediction-user-votes-provider-child"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.animated-sections': (context) => {
+    if (context.componentId !== PREDICTION_ANIMATED_SECTIONS_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.animated-sections only supports its declared theme variant');
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        activeTab: 'match',
+        topNotice: {
+          kind: 'visual-qa',
+          content: createElement(
+            'div',
+            { className: 'rounded-lg border border-border bg-card px-3 py-2 text-caption text-foreground' },
+            '예측 탭 전환 안내',
+          ),
+        },
+        matchChildren: createElement(
+          'div',
+          { className: 'rounded-xl border border-border bg-card p-4 text-body text-foreground' },
+          '경기 예측 콘텐츠',
+        ),
+        rankingChildren: createElement(
+          'div',
+          { className: 'rounded-xl border border-border bg-card p-4 text-body text-foreground' },
+          '순위 예측 콘텐츠',
+        ),
+      },
+      captureSelector: '[data-testid="prediction-animated-sections"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.advanced-match-card': (context) => {
+    if (context.componentId !== 'src/components/prediction/AdvancedMatchCard.tsx#AdvancedMatchCard'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.advanced-match-card only supports its data and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      completed: 'completed',
+      error: 'error',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      manual: 'manual',
+      scheduled: 'scheduled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const fixture = createAdvancedMatchCardFixture(data);
+    return {
+      props: {
+        game: fixture.game,
+        gameDetail: fixture.gameDetail,
+        gameDetailLoading: fixture.gameDetailLoading,
+        gameDetailRefreshing: fixture.gameDetailRefreshing,
+        gameDetailError: fixture.gameDetailError,
+        gameDetailErrorCode: fixture.gameDetailErrorCode,
+        gameDetailActions: createElement('button', { type: 'button' }, '다시 시도'),
+        userVote: fixture.userVote,
+        userVoteResolutionState: fixture.userVoteResolutionState,
+        votePercentages: fixture.votePercentages,
+        isVoteOpen: fixture.isVoteOpen,
+        isVoteActionLocked: fixture.isVoteActionLocked,
+        statusLabel: fixture.statusLabel,
+        statusCode: fixture.statusCode,
+        onVote: () => {},
+        onPrevDate: () => {},
+        onNextDate: () => {},
+        hasPrevDate: fixture.hasPrevDate,
+        hasNextDate: fixture.hasNextDate,
+        coachBriefing: null,
+      },
+      captureSelector: '[data-vote-resolution]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.advanced-match-card-content': (context) => {
+    if (context.componentId !== 'src/components/prediction/AdvancedMatchCardContentRuntime.tsx#AdvancedMatchCardContentRuntime'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.advanced-match-card-content only supports its data and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      completed: 'completed',
+      error: 'error',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      manual: 'manual',
+      scheduled: 'scheduled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const fixture = createAdvancedMatchCardFixture(data);
+    return {
+      props: {
+        ...fixture,
+        coachBriefing: null,
+        votePanel: createElement('div', { 'data-testid': 'prediction-vote-panel' }, '승리 팀 예측'),
+      },
+      captureSelector: '[data-testid="prediction-match-card-content-runtime"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.advanced-match-card-supplementary': (context) => {
+    if (context.componentId !== 'src/components/prediction/AdvancedMatchCardSupplementaryRuntime.tsx#AdvancedMatchCardSupplementaryRuntime'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.advanced-match-card-supplementary only supports its data and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      completed: 'completed',
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      manual: 'manual',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const fixture = createAdvancedMatchCardFixture(data === 'completed' ? 'completed' : data === 'long-korean' ? 'long-korean' : 'scheduled');
+    return {
+      props: {
+        awayColor: fixture.awayColor,
+        homeColor: fixture.homeColor,
+        timelineEntries: data === 'completed' ? [{ type: '홈런', playerName: '홍길동', detail: '3회 홈런', groupTitle: '타격', _index: 0, _inning: 3 }] : [],
+        summaryGroups: data === 'completed' ? { batting: [{ type: '홈런', playerName: '홍길동', detail: '3회 홈런' }] } : {},
+        inningRowCount: data === 'completed' ? 3 : 0,
+        shouldHideResultSections: false,
+        gameDetailLoading: false,
+        attendanceLabel: data === 'completed' ? '12,345명' : null,
+        weatherLabel: data === 'long-korean' ? '맑음' : null,
+        gameTimeLabel: data === 'completed' ? '3시간 12분' : null,
+        shouldShowMatchEnvironmentLoading: false,
+        isDarkMode: theme === 'dark',
+        isManualBaseballDataRequired: data === 'manual',
+      },
+      captureSelector: '[data-testid="prediction-game-timeline-manual-required"], [data-testid="prediction-game-summary-timeline"], section',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.coach-analysis-result-view': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/prediction/CoachAnalysisResultView.tsx#CoachAnalysisResultView',
+    'prediction.coach-analysis-result-view',
+    'coach-analysis-result-view-fallback',
+    'coach-analysis-result-view-probe',
+    '코치 분석 결과를 준비하고 있습니다.',
+    'CoachAnalysisResultView 위임 경계가 준비되었습니다.',
+  ),
+  'prediction.coach-briefing-runtime': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionCoachBriefingRuntime.tsx#PredictionCoachBriefingRuntime'
+      || Object.keys(context.states).some((key) => key !== 'data')
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.coach-briefing-runtime only supports its data and theme axes');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'auth-loading': 'auth-loading',
+      'manual-required': 'manual-required',
+      'past-game': 'past-game',
+      'scheduled': 'scheduled',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const game = createPredictionMatchPreviewGames(data === 'past-game' ? 'populated' : 'single')[0]
+      ?? createPredictionMatchPreviewGames('single')[0]!;
+    const isPastGame = data === 'past-game';
+    const isAuthLoading = data === 'auth-loading';
+    return {
+      props: {
+        game,
+        gameDetail: isPastGame ? createPredictionMatchTabDetail(game, 'populated') : null,
+        seasonContext: {
+          home: { rank: 2, gamesBehind: 1, remainingGames: 10 },
+          away: { rank: 5, gamesBehind: 4, remainingGames: 10 },
+          canCallAI: data !== 'manual-required',
+        },
+        requestMode: data === 'past-game' ? 'manual_detail' : 'auto_brief',
+        analysisType: data === 'past-game' ? 'game_review' : 'game_preview',
+        autoEnabled: data !== 'manual-required',
+        forceManual: data === 'manual-required',
+        isPastGame,
+        isFutureGame: !isPastGame,
+        isLoggedIn: data !== 'auth-loading',
+        isAuthLoading,
+      },
+      captureSelector: '[data-testid="prediction-coach-briefing-runtime"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'dm.inbox-runtime': (context) => resolveDmInboxRuntimeAdapter(context),
+  'mate.guide-panel': (context) => resolveMateGuidePanelAdapter(context),
+  'mate.manage-applications': (context) => resolveMateManageApplicationsAdapter(context),
+  'mate.manage': (context) => resolveMateManageAdapter(context),
+  'mate.manage-content': (context) => resolveMateManageContentAdapter(context),
+  'mate.manage-edit-panel': (context) => resolveMateManageEditPanelAdapter(context),
+  'mate.manage-overview': (context) => resolveMateManageOverviewAdapter(context),
+  'mate.my-parties-panel': (context) => resolveMateMyPartiesPanelAdapter(context),
+  'mypage.account-settings-advanced': (context) => resolveAccountSettingsAdvancedRuntimeAdapter(context),
+  'mypage.account-settings-section': (context) => resolveAccountSettingsSectionAdapter(context),
+  'mypage.account-settings-security': (context) => resolveAccountSettingsSecurityRuntimeAdapter(context),
+  'mate.detail-content': (context) => resolveMateDetailContentAdapter(context),
+  'mate.detail-runtime': (context) => resolveMateDetailRuntimeAdapter(context),
+  'mate.list-controls-runtime': (context) => resolveMateListControlsRuntimeAdapter(context),
+  'mate.results': (context) => resolveMateResultsAdapter(context),
+  'mypage.profile-card': (context) => resolveMyPageProfileCardAdapter(context),
+  'mypage.sidebar': (context) => resolveMyPageSidebarAdapter(context),
+  'mypage.sidebar-more': (context) => resolveMyPageSidebarMoreAdapter(context),
+  'dm.runtime': (context) => {
+    if (context.componentId !== DIRECT_MESSAGE_RUNTIME_COMPONENT_ID) {
+      throw new Error('dm.runtime only supports DirectMessageRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions', 'system'].includes(key))) {
+      throw new Error('dm.runtime only supports data, permissions, interactions, and system state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('dm.runtime only supports the theme variant');
+    }
+
+    requireStateValueFromMap<'populated'>(context, 'data', {
+      populated: 'populated',
+    });
+    requireStateValueFromMap<'user'>(context, 'permissions', {
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'input' | 'submitting' | 'retry'>(
+      context,
+      'interactions',
+      {
+        default: 'default',
+        input: 'input',
+        submitting: 'submitting',
+        retry: 'retry',
+      },
+    );
+    const system = requireStateValueFromMap<'online' | 'request-failed'>(context, 'system', {
+      online: 'online',
+      'request-failed': 'request-failed',
+    });
+    const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
+      light: 'light',
+      dark: 'dark',
+    });
+
+    const expectedTargetByInteraction = {
+      default: undefined,
+      input: 'composer',
+      submitting: 'send',
+      retry: 'retry',
+    } as const;
+    const expectedTarget = expectedTargetByInteraction[interaction];
+    if (expectedTarget === undefined && context.interactionTargetId !== undefined) {
+      throw new Error('dm.runtime default state does not accept an interaction target');
+    }
+    if (expectedTarget !== undefined && context.interactionTargetId !== expectedTarget) {
+      throw new Error(`dm.runtime expected ${expectedTarget} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (interaction === 'retry' && system !== 'request-failed') {
+      throw new Error('dm.runtime retry requires the request-failed system state');
+    }
+    if (interaction !== 'retry' && system !== 'online') {
+      throw new Error(`dm.runtime ${interaction} requires the online system state`);
+    }
+
+    return {
+      props: {},
+      captureSelector: '[data-vqa-harness-surface]',
+      expectedHash: '',
+      expectedPathname: '/messages/otheruser',
+      expectedSearch: '',
+      harnessAuthState: {
+        user: {
+          id: 900002,
+          email: 'visual-qa-dm@example.com',
+          name: '비주얼 QA 사용자',
+          handle: 'visual-qa-dm',
+          favoriteTeam: '한화',
+          favoriteTeamColor: '#f15a24',
+          role: 'ROLE_USER',
+          profileImageUrl: null,
+          provider: 'LOCAL',
+          bio: 'Visual QA deterministic direct-message fixture',
+          cheerPoints: 120,
+          hasPassword: true,
+        },
+      },
+      initialPathname: '/messages/otheruser',
+      semanticHost: 'protected-route',
       surfaceClassName: 'block min-h-[844px] w-full max-w-none overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
@@ -12700,6 +23676,58 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.view-toggle': (context) => {
+    if (context.componentId !== 'src/components/MateViewToggle.tsx#MateViewToggle') {
+      throw new Error('mate.view-toggle only supports MateViewToggle');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'interactions')) {
+      throw new Error('mate.view-toggle only supports its interactions state');
+    }
+    if (Object.keys(context.variants).some((key) => !['activeView', 'theme'].includes(key))) {
+      throw new Error('mate.view-toggle only supports activeView and theme variants');
+    }
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      selected: 'selected',
+    });
+    const activeView = resolveDeclaredVariant<'compact' | 'grid' | 'list'>(context, 'activeView', {
+      compact: 'compact',
+      grid: 'grid',
+      list: 'list',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const selectedTarget = {
+      compact: 'grid',
+      grid: 'list',
+      list: 'compact',
+    }[activeView];
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('mate.view-toggle default state does not accept interaction targets');
+    }
+    if (interaction === 'selected' && context.interactionTargetId !== selectedTarget) {
+      throw new Error(`mate.view-toggle expected ${selectedTarget} target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        forceVisible: true,
+        onViewModeChangeOverride: (mode: string) => emitVisualQaInteraction(
+          MATE_VIEW_TOGGLE_INTERACTION_EVENT,
+          { value: `view:${mode}` },
+        ),
+        viewModeOverride: activeView,
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: MATE_VIEW_TOGGLE_INTERACTION_EVENT,
+        testId: 'visual-qa-mate-view-toggle-interaction',
+      }),
+      captureSelector: '[data-testid="mate-view-toggle"]',
+      surfaceClassName: 'flex min-h-20 w-full max-w-[320px] items-center justify-center overflow-visible bg-transparent p-4 shadow-none',
+      theme,
+    };
+  },
   'mate.create': (context) => {
     const data = requireStateValueFromMap(context, 'data', {
       'long-korean': 'long-korean',
@@ -13263,6 +24291,51 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.manage-page': (context) => {
+    if (context.componentId !== MATE_MANAGE_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('mate.manage-page only supports its declared phase and theme variants');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const surfaceClassName = 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none';
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="mate-manage-route-loading"]',
+        initialPathname: '/mate/visual-qa-missing-id/manage',
+        surfaceClassName,
+        theme,
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'mate-manage-page-runtime-probe',
+          },
+          'MateManageRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="mate-manage-page-runtime-probe"]',
+      initialPathname: '/mate/visual-qa-missing-id/manage',
+      surfaceClassName,
+      theme,
+    };
+  },
   'mate.detail-page': (context) => {
     requireStateValue(context, 'data', 'single');
     const phase = resolveDeclaredVariant<'fallback' | 'runtime'>(context, 'phase', {
@@ -13641,7 +24714,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
       if (actions === 'maximum') {
         actionButtons.push(
           { key: 'chat', label: actionLabel('chat', '채팅방 입장'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-primary text-primary' },
-          { key: 'checkin', label: actionLabel('checkin', '체크인 페이지'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-[#5b21b6] text-[#5b21b6]' },
+          { key: 'checkin', label: actionLabel('checkin', '체크인 페이지'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-[#5b21b6] text-violet-800' },
           { key: 'sale', label: actionLabel('sale', '판매 전환'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-orange-400 text-orange-600' },
         );
       }
@@ -13654,7 +24727,7 @@ const adapters: Record<string, ComponentStateAdapter> = {
       }];
       if (actions === 'maximum') {
         actionButtons.push(
-          { key: 'checkin', label: actionLabel('checkin', '체크인 페이지'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-[#5b21b6] text-[#5b21b6]' },
+          { key: 'checkin', label: actionLabel('checkin', '체크인 페이지'), onClick: noop, variant: 'outline', className: 'w-full h-12 border-[#5b21b6] text-violet-800' },
           { key: 'cancel', label: actionLabel('cancel', '참여 취소'), onClick: noop, variant: 'outline', className: 'w-full h-10 border-red-200 text-red-500' },
         );
       }
@@ -13810,6 +24883,8 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.detail-info-sections': (context) => resolveMateDetailInfoSectionsAdapter(context),
+  'seat-map-filter-bar': (context) => resolveSeatMapFilterBarAdapter(context),
   'mate.detail-host-block': (context) => {
     const data = requireStateValueFromMap(context, 'data', {
       empty: 'empty',
@@ -14151,6 +25226,9 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.detail-qr-panel': (context) => resolveMateDetailQrPanelAdapter(context),
+  'mate.detail-qr-runtime': (context) => resolveMateDetailQrRuntimeAdapter(context),
+  'mate.detail-seat-panel': (context) => resolveMateDetailSeatPanelAdapter(context),
   'mate.detail-reference-card': (context) => {
     const children = requireStateValueFromMap(context, 'data', {
       empty: null,
@@ -15405,6 +26483,134 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'image.grid': (context) => {
+    if (context.componentId !== 'src/components/ImageGrid.tsx#ImageGrid') {
+      throw new Error('image.grid only supports ImageGrid');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('image.grid only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('image.grid only supports the theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'broken-image': 'broken-image',
+      empty: 'empty',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      single: 'single',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('image.grid default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'image') {
+      throw new Error(`image.grid expected image target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const images = data === 'empty'
+      ? []
+      : data === 'single'
+        ? [IMAGE_GRID_LOCAL_ASSETS[0]]
+        : data === 'populated'
+          ? IMAGE_GRID_LOCAL_ASSETS.slice(0, 3)
+          : data === 'maximum-supported'
+            ? [...IMAGE_GRID_LOCAL_ASSETS, IMAGE_GRID_LOCAL_ASSETS[0]]
+            : ['/__visual-qa__/image-grid-missing.svg'];
+    return {
+      props: { images },
+      captureSelector: images.length > 0 ? '[data-skip-cheer-card-nav]' : undefined,
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'ranking.prediction': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/RankingPrediction.tsx#RankingPrediction',
+    'ranking.prediction',
+    'ranking-prediction-fallback',
+    'ranking-prediction-probe',
+    '순위 예측을 불러오는 중입니다.',
+    'RankingPrediction 위임 경계가 준비되었습니다.',
+  ),
+  'ranking.share': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/RankingPredictionShare.tsx#RankingPredictionShare',
+    'ranking.share',
+    'ranking-prediction-share-fallback',
+    'ranking-prediction-share-probe',
+    '공유된 순위 예측을 불러오는 중입니다.',
+    'RankingPredictionShare 위임 경계가 준비되었습니다.',
+  ),
+  'retro.authenticated-leaderboard': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/retro/AuthenticatedRetroLeaderboard.tsx#AuthenticatedRetroLeaderboard',
+    'retro.authenticated-leaderboard',
+    'authenticated-retro-leaderboard-fallback',
+    'authenticated-retro-leaderboard-probe',
+    '개인 랭킹을 불러오는 중입니다.',
+    'AuthenticatedRetroLeaderboard 위임 경계가 준비되었습니다.',
+  ),
+  'retro.leaderboard': (context) => resolvePredictionRuntimeBoundary(
+    context,
+    'src/components/retro/RetroLeaderboard.tsx#RetroLeaderboard',
+    'retro.leaderboard',
+    'retro-leaderboard-fallback',
+    'retro-leaderboard-probe',
+    '레트로 랭킹을 불러오는 중입니다.',
+    'RetroLeaderboard 위임 경계가 준비되었습니다.',
+  ),
+  'ranking.share-page': (context) => {
+    if (context.componentId !== RANKING_SHARE_PAGE_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('ranking.share-page only supports its declared phase and theme variants');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const surfaceClassName = 'block min-h-0 w-full max-w-none overflow-visible bg-transparent p-0 shadow-none';
+
+    if (phase === 'fallback') {
+      return {
+        props: {
+          runtimeLoader: () => new Promise<never>(() => {}),
+        },
+        captureSelector: '[data-testid="ranking-share-route-loading"]',
+        initialPathname: '/predictions/ranking/share/visual-qa-share/2026',
+        surfaceClassName,
+        theme,
+      };
+    }
+
+    return {
+      props: {
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'ranking-share-page-runtime-probe',
+          },
+          'RankingPredictionShareRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="ranking-share-page-runtime-probe"]',
+      initialPathname: '/predictions/ranking/share/visual-qa-share/2026',
+      surfaceClassName,
+      theme,
+    };
+  },
   'ranking.save-dialog': (context) => {
     const failClosed = (): never => {
       throw new Error(
@@ -15647,6 +26853,181 @@ const adapters: Record<string, ComponentStateAdapter> = {
       },
       captureSelector: '[data-testid="mate-mobile-date-filter"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mate.team-filter-button': (context) => {
+    if (context.componentId !== 'src/components/MateTeamFilterButton.tsx#$default') {
+      throw new Error('mate.team-filter-button only supports the MateTeamFilterButton default export');
+    }
+    requireStateValue(context, 'data', 'single');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const layout = resolveDeclaredVariant<'rail' | 'toolbar'>(context, 'layout', {
+      rail: 'rail',
+      toolbar: 'toolbar',
+    });
+    const selection = resolveDeclaredVariant<'active' | 'idle'>(context, 'selection', {
+      active: 'active',
+      idle: 'idle',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('mate.team-filter-button default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'team-filter') {
+      throw new Error(`mate.team-filter-button expected team-filter target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        favoriteTeamId: 'lg',
+        layout,
+        myTeamOnly: selection === 'active',
+        onClick: () => emitVisualQaInteraction(MATE_TEAM_FILTER_INTERACTION_EVENT, { value: context.interactionTargetId ?? 'interaction' }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: MATE_TEAM_FILTER_INTERACTION_EVENT,
+        testId: 'visual-qa-mate-team-filter-interaction',
+      }),
+      captureSelector: '[data-testid="mate-team-filter-button"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'mate.filter-bottom-sheet': (context) => resolveMateFilterBottomSheetAdapter(context),
+  'mate.popular-searches-panel': (context) => {
+    if (context.componentId !== 'src/components/MatePopularSearchesPanel.tsx#MatePopularSearchesPanel') {
+      throw new Error('mate.popular-searches-panel only supports MatePopularSearchesPanel');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      loading: 'loading',
+      empty: 'empty',
+      single: 'single',
+      'maximum-supported': 'maximum-supported',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : data === 'single' && theme === 'light' && target === 'term-1';
+    if (!validInteraction) {
+      throw new Error(
+        `지원하지 않는 MatePopularSearchesPanel state: ${data}:${interaction}:${theme}:${target ?? '<none>'}`,
+      );
+    }
+
+    const longKoreanTerm = '잠실 야구장에서 가족과 함께 관람하기 좋은 응원석 검색어입니다';
+    const terms: Record<string, MatePopularSearchTerm[]> = {
+      loading: [],
+      empty: [],
+      single: [{ term: '잠실', count: 42, rank: 1 }],
+      'maximum-supported': [
+        { term: '잠실', count: 120, rank: 1 },
+        { term: '문학', count: 98, rank: 2 },
+        { term: '수원', count: 76, rank: 3 },
+        { term: '사직', count: 54, rank: 4 },
+        { term: '고척', count: 31, rank: 5 },
+      ],
+      'long-korean': [{ term: longKoreanTerm, count: 12, rank: 1 }],
+      'unbroken-token': [{ term: `MATE_SEARCH_${'UNBROKEN'.repeat(24)}`, count: 7, rank: 1 }],
+    };
+    return {
+      props: {
+        onTermClick: (term: string) => emitVisualQaInteraction(
+          MATE_POPULAR_SEARCHES_INTERACTION_EVENT,
+          { value: term },
+        ),
+        visualQaStateOverride: {
+          popularTerms: terms[data] ?? [],
+          queryState: data === 'loading' ? 'loading' : 'success',
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: MATE_POPULAR_SEARCHES_INTERACTION_EVENT,
+        testId: 'visual-qa-mate-popular-searches-interaction',
+      }),
+      captureSelector: '[data-testid="mate-popular-searches-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-3 shadow-none',
+      theme,
+    };
+  },
+  'mate.recent-searches-panel': (context) => {
+    if (context.componentId !== 'src/components/MateRecentSearchesPanel.tsx#MateRecentSearchesPanel') {
+      throw new Error('mate.recent-searches-panel only supports MateRecentSearchesPanel');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      single: 'single',
+      'maximum-supported': 'maximum-supported',
+      'long-korean': 'long-korean',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const target = context.interactionTargetId;
+    const validInteraction = interaction === 'default'
+      ? target === undefined
+      : (data === 'single' || data === 'maximum-supported')
+        && theme === 'light'
+        && new Set(['selected', 'deleted', 'cleared']).has(target ?? '');
+    if (!validInteraction) {
+      throw new Error(
+        `지원하지 않는 MateRecentSearchesPanel state: ${data}:${interaction}:${theme}:${target ?? '<none>'}`,
+      );
+    }
+
+    const longKoreanTerm = '잠실 야구장에서 가족과 함께 관람하기 좋은 최근 검색어입니다';
+    const recentSearches: Record<string, string[]> = {
+      empty: [],
+      single: ['잠실'],
+      'maximum-supported': ['잠실', '문학', '수원', '사직', '고척', '대전'],
+      'long-korean': [longKoreanTerm],
+      'unbroken-token': [`MATE_RECENT_${'UNBROKEN'.repeat(24)}`],
+    };
+    return {
+      props: {
+        onTermClick: (term: string) => emitVisualQaInteraction(
+          MATE_RECENT_SEARCHES_INTERACTION_EVENT,
+          { value: `selected:${term}` },
+        ),
+        visualQaStateOverride: {
+          recentSearches: recentSearches[data] ?? [],
+          onRemoveRecentSearch: (term: string) => emitVisualQaInteraction(
+            MATE_RECENT_SEARCHES_INTERACTION_EVENT,
+            { value: `deleted:${term}` },
+          ),
+          onClearRecentSearches: () => emitVisualQaInteraction(
+            MATE_RECENT_SEARCHES_INTERACTION_EVENT,
+            { value: 'cleared' },
+          ),
+        },
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: MATE_RECENT_SEARCHES_INTERACTION_EVENT,
+        testId: 'visual-qa-mate-recent-searches-interaction',
+      }),
+      captureSelector: '[data-testid="mate-recent-searches-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-3 shadow-none',
       theme,
     };
   },
@@ -15895,6 +27276,82 @@ const adapters: Record<string, ComponentStateAdapter> = {
       theme,
     };
   },
+  'mate.page-wrapper': (context) => {
+    if (
+      context.componentId !== MATE_PAGE_WRAPPER_COMPONENT_ID
+      || Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase' && key !== 'theme')
+    ) {
+      throw new Error('mate.page-wrapper only supports its declared phase and theme variants');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      'auth-loading': 'auth-loading',
+      'logged-out': 'logged-out',
+      runtime: 'runtime',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const surfaceClassName = 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none';
+
+    if (phase === 'auth-loading') {
+      return {
+        props: {
+          visualQaStateOverride: {
+            authBootstrapMode: 'bootstrapping',
+            isAuthBootstrapPending: true,
+            isAuthLoading: true,
+            isLoggedIn: false,
+          },
+        },
+        captureSelector: '[data-testid="mate-page-route-loading"]',
+        initialPathname: '/mate',
+        surfaceClassName,
+        theme,
+      };
+    }
+
+    if (phase === 'logged-out') {
+      return {
+        props: {
+          visualQaStateOverride: {
+            authBootstrapMode: 'skip',
+            isAuthBootstrapPending: false,
+            isAuthLoading: false,
+            isLoggedIn: false,
+          },
+        },
+        captureSelector: '[data-testid="mate-logged-out-entry"]',
+        initialPathname: '/mate',
+        surfaceClassName,
+        theme,
+      };
+    }
+
+    return {
+      props: {
+        visualQaStateOverride: {
+          authBootstrapMode: 'skip',
+          isAuthBootstrapPending: false,
+          isAuthLoading: false,
+          isLoggedIn: true,
+        },
+        runtimeOverride: createElement(
+          'div',
+          {
+            className: 'min-h-[844px] w-full bg-background px-4 py-8 text-center text-body text-muted-foreground',
+            'data-testid': 'mate-page-runtime-probe',
+          },
+          'MateRuntime 위임 경계가 준비되었습니다.',
+        ),
+      },
+      captureSelector: '[data-testid="mate-page-runtime-probe"]',
+      initialPathname: '/mate',
+      surfaceClassName,
+      theme,
+    };
+  },
   'mate.ticket-verification': (context) => {
     const data = requireStateValueFromMap(context, 'data', {
       'long-korean': 'long-korean',
@@ -16132,6 +27589,1263 @@ const adapters: Record<string, ComponentStateAdapter> = {
       surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-background p-0 text-foreground shadow-none',
       theme,
     };
+  },
+  'landing.footer': (context) => {
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      pressed: 'pressed',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {},
+      captureSelector: '[data-testid="landing-footer"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'common.deferred-markdown': (context) => {
+    if (context.componentId !== 'src/components/DeferredMarkdown.tsx#DeferredMarkdown') {
+      throw new Error('common.deferred-markdown only supports DeferredMarkdown');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('common.deferred-markdown only supports its data axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('common.deferred-markdown only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: { content: deferredMarkdownCopy[data as keyof typeof deferredMarkdownCopy] },
+      surfaceClassName: 'block min-h-0 w-full max-w-[640px] overflow-visible bg-background p-4 text-foreground shadow-none',
+      theme,
+    };
+  },
+  'gocheok.facility-guide': (context) => {
+    if (context.componentId !== 'src/components/gocheok/GocheokFacilityGuide.tsx#GocheokFacilityGuide') {
+      throw new Error('gocheok.facility-guide only supports GocheokFacilityGuide');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('gocheok.facility-guide only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('gocheok.facility-guide only supports its theme variant');
+    }
+    const activeTab = requireStateValueFromMap<'entrances' | 'floors' | 'operations' | 'overview'>(context, 'data', {
+      entrances: 'entrances',
+      floors: 'floors',
+      operations: 'operations',
+      overview: 'overview',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'tab-change'>(context, 'interactions', {
+      default: 'default',
+      'tab-change': 'tab-change',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('gocheok.facility-guide default state does not accept interaction targets');
+    }
+    if (interaction === 'tab-change' && context.interactionTargetId !== 'operations-tab') {
+      throw new Error(`gocheok.facility-guide expected operations-tab target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        defaultTab: activeTab,
+        mode: theme,
+        onTabChange: (tab: string) => emitVisualQaInteraction(GOCHEOK_FACILITY_INTERACTION_EVENT, {
+          value: `tab:${tab}`,
+        }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: GOCHEOK_FACILITY_INTERACTION_EVENT,
+        testId: 'visual-qa-gocheok-facility-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'jamsil.baseball-field': (context) => {
+    if (context.componentId !== 'src/components/jamsil/JamsilBaseballField.tsx#JamsilBaseballField') {
+      throw new Error('jamsil.baseball-field only supports JamsilBaseballField');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('jamsil.baseball-field only supports its data axis');
+    }
+    if (Object.keys(context.variants).some((key) => !['mode', 'scale'].includes(key))) {
+      throw new Error('jamsil.baseball-field only supports mode and scale variants');
+    }
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    const mode = resolveDeclaredVariant<'dark' | 'light'>(context, 'mode', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const scale = resolveDeclaredVariant(context, 'scale', {
+      compact: 0.82,
+      regular: 1,
+    });
+    return {
+      props: { cx: 160, cy: 160, mode, scale },
+      semanticHost: 'svg',
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-4 shadow-none',
+      theme: mode,
+    };
+  },
+  'jamsil.sun-overlay': (context) => {
+    if (context.componentId !== 'src/components/jamsil/JamsilSunOverlay.tsx#JamsilSunOverlay') {
+      throw new Error('jamsil.sun-overlay only supports JamsilSunOverlay');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('jamsil.sun-overlay only supports its data axis');
+    }
+    if (Object.keys(context.variants).some((key) => !['mode', 'radius'].includes(key))) {
+      throw new Error('jamsil.sun-overlay only supports mode and radius variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'boundary-angle': 'boundary-angle',
+      single: 'single',
+    });
+    const mode = resolveDeclaredVariant<'dark' | 'light'>(context, 'mode', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const radius = resolveDeclaredVariant(context, 'radius', {
+      compact: 92,
+      regular: 120,
+    });
+    return {
+      props: {
+        cx: 160,
+        cy: 160,
+        mode,
+        radius,
+        sunAngle: data === 'boundary-angle' ? 180 : 42,
+      },
+      semanticHost: 'svg',
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-background p-4 shadow-none',
+      theme: mode,
+    };
+  },
+  'seat-map-attribution': (context) => {
+    if (context.componentId !== 'src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution') {
+      throw new Error('seat-map-attribution only supports SeatMapAttribution');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('seat-map-attribution only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('seat-map-attribution only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'secondary-source' | 'single'>(context, 'data', {
+      'long-korean': 'long-korean',
+      'secondary-source': 'secondary-source',
+      single: 'single',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'focus-visible' | 'pressed'>(context, 'interactions', {
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('seat-map-attribution default state does not accept interaction targets');
+    }
+    if (interaction !== 'default' && context.interactionTargetId !== 'source-link') {
+      throw new Error(`seat-map-attribution expected source-link target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const sourceLabel = data === 'long-korean'
+      ? '모바일에서도 여러 줄로 안전하게 표시되어야 하는 공식 좌석 배치 기준 자료'
+      : 'Visual QA 공식 좌석 배치 기준 자료';
+    const source = {
+      prefixLabel: '좌석 배치 기준:',
+      sourceLabel,
+      sourceUrl: '#visual-qa-source',
+    };
+    return {
+      props: {
+        children: createElement('span', { className: 'ml-2 text-10' }, '시각 검증용 표면'),
+        secondarySources: data === 'secondary-source' ? [{
+          prefixLabel: '보조 참고:',
+          sourceLabel: 'Visual QA 보조 자료',
+          sourceUrl: '#visual-qa-secondary-source',
+        }] : [],
+        source,
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'common.swipe-to-reveal-row': (context) => {
+    if (context.componentId !== 'src/components/common/SwipeToRevealRow.tsx#SwipeToRevealRow') {
+      throw new Error('common.swipe-to-reveal-row only supports SwipeToRevealRow');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('common.swipe-to-reveal-row only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('common.swipe-to-reveal-row only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'delete'>(context, 'interactions', {
+      default: 'default',
+      delete: 'delete',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('common.swipe-to-reveal-row default state does not accept interaction targets');
+    }
+    if (interaction === 'delete' && context.interactionTargetId !== 'delete') {
+      throw new Error(`common.swipe-to-reveal-row expected delete target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {
+        children: createElement(
+          'div',
+          { className: 'min-w-0 break-words px-4 py-4 text-sm font-semibold text-foreground [overflow-wrap:anywhere]' },
+          swipeToRevealCopy[data as keyof typeof swipeToRevealCopy],
+        ),
+        onDelete: () => emitVisualQaInteraction(SWIPE_TO_REVEAL_INTERACTION_EVENT, { value: 'deleted' }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: SWIPE_TO_REVEAL_INTERACTION_EVENT,
+        testId: 'visual-qa-swipe-to-reveal-interaction',
+      }),
+      surfaceClassName: theme === 'dark'
+        ? 'block min-h-0 w-full max-w-[640px] overflow-visible bg-background p-4 shadow-none [--cheer-card-bg:#0f172a]'
+        : 'block min-h-0 w-full max-w-[640px] overflow-visible bg-background p-4 shadow-none [--cheer-card-bg:#ffffff]',
+      theme,
+    };
+  },
+  'prediction.match-preview-tab': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab') {
+      throw new Error('prediction.match-preview-tab only supports PredictionMatchPreviewTab');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.match-preview-tab only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.match-preview-tab only supports its theme variant');
+    }
+
+    const data = requireStateValueFromMap<'empty' | 'in-progress' | 'long-korean' | 'populated' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'in-progress': 'in-progress',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.match-preview-tab default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (data === 'empty' || targetId !== 'match-detail')) {
+      throw new Error(`prediction.match-preview-tab received unsupported target ${targetId ?? '<missing>'}`);
+    }
+
+    return {
+      props: {
+        currentDate: '2099-05-01',
+        currentDateGames: createPredictionMatchPreviewGames(data),
+        isToday: data === 'empty',
+        nearestNavigationDate: data === 'empty'
+          ? { date: '2099-05-02', isPast: false }
+          : null,
+        onEnterMatchDetail: (game: PredictionGame) => emitVisualQaInteraction(
+          PREDICTION_MATCH_PREVIEW_INTERACTION_EVENT,
+          { gameId: game.gameId, value: 'match-detail' },
+        ),
+        onGoToDate: () => {},
+        onNearestNavigation: () => {},
+      },
+      captureSelector: '[data-testid="prediction-schedule-preview"]',
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: PREDICTION_MATCH_PREVIEW_INTERACTION_EVENT,
+        testId: 'visual-qa-prediction-match-preview-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.combo-animation-runtime': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionComboAnimationRuntime.tsx#PredictionComboAnimationRuntime') {
+      throw new Error('prediction.combo-animation-runtime only supports PredictionComboAnimationRuntime');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.combo-animation-runtime only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.combo-animation-runtime only supports its theme variant');
+    }
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {},
+      surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.match-tab': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab') {
+      throw new Error('prediction.match-tab only supports PredictionMatchTab');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.match-tab only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.match-tab only supports its theme variant');
+    }
+
+    const data = requireStateValueFromMap<'empty' | 'error-503' | 'loading' | 'long-korean' | 'populated' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const currentDateGames = createPredictionMatchPreviewGames(data);
+    const currentGame = currentDateGames[0] ?? null;
+    const allowedTargets = data === 'empty'
+      ? new Set(['previous-date', 'next-date', 'nearest-date'])
+      : data === 'error-503'
+        ? new Set(['previous-date', 'next-date', 'retry-detail'])
+        : new Set(['previous-date', 'next-date', 'vote-home', 'vote-away']);
+
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.match-tab default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.match-tab received unsupported target ${targetId ?? '<missing>'}`);
+    }
+
+    const emit = (value: string, detail: Record<string, unknown> = {}) => emitVisualQaInteraction(
+      PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+      { value, ...detail },
+    );
+    const currentGameDetail = createPredictionMatchTabDetail(currentGame as PredictionGame, data);
+    return {
+      props: {
+        currentDateGames,
+        currentDate: '2099-05-01',
+        currentGame,
+        currentGameId: currentGame?.gameId,
+        currentGameDetail,
+        currentGameDetailLoading: data === 'loading',
+        currentGameDetailRefreshing: false,
+        currentGameDetailError: data === 'error-503' ? '경기 상세 정보를 불러오지 못했습니다.' : null,
+        currentGameDetailErrorCode: data === 'error-503' ? 'UPSTREAM_ERROR' : null,
+        userVote: currentGame ? { [currentGame.gameId]: null } : {},
+        currentUserVoteResolutionState: 'resolved',
+        votes: currentGame ? { [currentGame.gameId]: { home: 3, away: 2 } } : {},
+        isLoggedIn: data !== 'empty',
+        isAuthLoading: false,
+        shouldRenderMatchCard: currentGame !== null,
+        isVoteActionLocked: false,
+        predictionRecoveryPath: '/prediction',
+        canMovePrevDate: true,
+        canMoveNextDate: true,
+        isDetailRetryLoading: false,
+        nearestNavigationDate: data === 'empty'
+          ? { date: '2099-05-02', isPast: false }
+          : null,
+        isToday: data === 'empty',
+        onVote: (team: string, game: PredictionGame) => emit(`vote-${team}`, { gameId: game.gameId }),
+        onPrevDate: () => emit('previous-date'),
+        onNextDate: () => emit('next-date'),
+        onNearestNavigation: () => emit('nearest-date'),
+        reloadCurrentGameDetail: () => emit('retry-detail'),
+      },
+      captureSelector: '[data-testid="prediction-match-detail-root"], [data-testid="prediction-empty-nearest-date-btn"], button[aria-label="이전 날짜 보기"]',
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+        testId: 'visual-qa-prediction-match-tab-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.match-detail-panel': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionMatchDetailPanel.tsx#PredictionMatchDetailPanel') {
+      throw new Error('prediction.match-detail-panel only supports PredictionMatchDetailPanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('prediction.match-detail-panel only supports data, permissions, and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.match-detail-panel only supports its theme variant');
+    }
+
+    const data = requireStateValueFromMap<'error-503' | 'loading' | 'long-korean' | 'populated' | 'single' | 'unbroken-token'>(context, 'data', {
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const allowedTargets = data === 'error-503'
+      ? new Set(['retry-detail'])
+      : data === 'populated' || data === 'loading'
+        ? new Set<string>()
+        : new Set(['vote-home']);
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.match-detail-panel default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.match-detail-panel received unsupported target ${targetId ?? '<missing>'}`);
+    }
+
+    const panelProps = createPredictionMatchDetailPanelProps(data, permission === 'user');
+    const emit = (value: string) => emitVisualQaInteraction(
+      PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+      { value, gameId: panelProps.game.gameId },
+    );
+    return {
+      props: {
+        ...panelProps,
+        onVote: (team: string) => emit(`vote-${team}`),
+        onPrevDate: () => emit('previous-date'),
+        onNextDate: () => emit('next-date'),
+        reloadCurrentGameDetail: () => emit('retry-detail'),
+      },
+      captureSelector: '[data-testid="prediction-match-detail-root"]',
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+        testId: 'visual-qa-prediction-match-detail-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.match-tab-detail-section': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionMatchTabDetailSection') {
+      throw new Error('prediction.match-tab-detail-section only supports PredictionMatchTabDetailSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('prediction.match-tab-detail-section only supports data, permissions, and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.match-tab-detail-section only supports its theme variant');
+    }
+
+    const data = requireStateValueFromMap<'error-503' | 'loading' | 'long-korean' | 'populated' | 'single' | 'unbroken-token'>(context, 'data', {
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const permission = requireStateValueFromMap<'anonymous' | 'user'>(context, 'permissions', {
+      anonymous: 'anonymous',
+      user: 'user',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const allowedTargets = data === 'error-503'
+      ? new Set(['retry-detail'])
+      : data === 'populated' || data === 'loading'
+        ? new Set<string>()
+        : new Set(['vote-home']);
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.match-tab-detail-section default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.match-tab-detail-section received unsupported target ${targetId ?? '<missing>'}`);
+    }
+
+    const panelProps = createPredictionMatchDetailPanelProps(data, permission === 'user');
+    const gameId = panelProps.game.gameId;
+    const emit = (value: string) => emitVisualQaInteraction(
+      PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+      { value, gameId },
+    );
+    return {
+      props: {
+        currentDate: '2099-05-01',
+        currentGame: panelProps.game,
+        currentGameId: gameId,
+        currentGameDetail: panelProps.gameDetail,
+        currentGameDetailLoading: panelProps.gameDetailLoading,
+        currentGameDetailRefreshing: panelProps.gameDetailRefreshing,
+        currentGameDetailError: panelProps.gameDetailError,
+        currentGameDetailErrorCode: panelProps.gameDetailErrorCode,
+        userVote: { [gameId]: panelProps.userVote },
+        currentUserVoteResolutionState: panelProps.userVoteResolutionState,
+        votes: { [gameId]: { home: 3, away: 2 } },
+        isLoggedIn: panelProps.isLoggedIn,
+        isAuthLoading: panelProps.isAuthLoading,
+        isVoteActionLocked: panelProps.isVoteActionLocked,
+        predictionRecoveryPath: panelProps.predictionRecoveryPath,
+        canMovePrevDate: panelProps.hasPrevDate,
+        canMoveNextDate: panelProps.hasNextDate,
+        isDetailRetryLoading: panelProps.isDetailRetryLoading,
+        onVote: (team: string) => emit(`vote-${team}`),
+        onPrevDate: () => emit('previous-date'),
+        onNextDate: () => emit('next-date'),
+        reloadCurrentGameDetail: () => emit('retry-detail'),
+      },
+      captureSelector: '[data-testid="prediction-match-detail-root"]',
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: PREDICTION_MATCH_TAB_INTERACTION_EVENT,
+        testId: 'visual-qa-prediction-match-tab-detail-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.vote-panel': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionVotePanel.tsx#PredictionVotePanel') {
+      throw new Error('prediction.vote-panel only supports PredictionVotePanel');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.vote-panel only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => !['selection', 'theme'].includes(key))) {
+      throw new Error('prediction.vote-panel only supports selection and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'error-503' | 'long-korean' | 'manual-required' | 'maximum-supported' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      'manual-required': 'manual-required',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const selection = resolveDeclaredVariant<'away' | 'home' | 'none'>(context, 'selection', {
+      away: 'away',
+      home: 'home',
+      none: 'none',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const isHidden = data === 'empty';
+    const isDisabled = data === 'manual-required';
+    const userVote = selection === 'none' ? null : selection;
+    const allowedTargets = new Set<string>();
+    if (!isHidden && !isDisabled) {
+      allowedTargets.add('away');
+      allowedTargets.add('home');
+      if (userVote) allowedTargets.add('cancel');
+    }
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.vote-panel default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.vote-panel received unsupported target ${targetId ?? '<missing>'}`);
+    }
+    const longTeamToken = `PREDICTION-TEAM-${'X'.repeat(36)}`;
+    const game = {
+      gameId: 'visual-qa-prediction-vote-game',
+      gameDate: '2026-09-19',
+      homeTeam: data === 'unbroken-token' ? longTeamToken : 'LG',
+      awayTeam: data === 'unbroken-token' ? `PREDICTION-AWAY-${'Y'.repeat(32)}` : 'KT',
+      stadium: 'Visual QA Stadium',
+      gameStatus: data === 'manual-required' ? 'POSTPONED' : 'SCHEDULED',
+    };
+    return {
+      props: {
+        game,
+        userVote,
+        userVoteResolutionState: data === 'error-503' ? 'unknown-auth' : 'resolved',
+        votePercentages: {
+          totalVotes: data === 'maximum-supported' ? 999999999 : data === 'long-korean' ? 123456 : 42,
+        },
+        isDarkMode: theme === 'dark',
+        isVoteOpen: !isDisabled,
+        isVoteActionLocked: false,
+        isPostponedOrCancelled: isDisabled,
+        onVote: () => undefined,
+      },
+      captureSelector: '[data-testid="prediction-vote-panel"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'coach-analysis.launcher': (context) => {
+    if (context.componentId !== 'src/components/CoachAnalysisDialogLauncher.tsx#CoachAnalysisDialogLauncher') {
+      throw new Error('coach-analysis.launcher only supports CoachAnalysisDialogLauncher');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('coach-analysis.launcher only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('coach-analysis.launcher only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('coach-analysis.launcher default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && targetId !== 'open') {
+      throw new Error(`coach-analysis.launcher expected open target, received ${targetId ?? '<missing>'}`);
+    }
+    const longCopy = data === 'long-korean'
+      ? '모바일 화면에서도 AI 코치 상세 분석 버튼과 경기 메타데이터가 자연스럽게 줄바꿈되어야 합니다.'
+      : data === 'unbroken-token'
+        ? `COACH-${'X'.repeat(180)}`
+        : null;
+    return {
+      props: {
+        buttonLabel: longCopy || (data === 'maximum-supported' ? '경기 상세 분석 결과 확인하기' : 'AI 코치 분석 보기'),
+        initialTeam: 'LG',
+        homeTeamId: data === 'unbroken-token' ? `HOME-${'Y'.repeat(40)}` : 'LG',
+        awayTeamId: data === 'unbroken-token' ? `AWAY-${'Z'.repeat(40)}` : 'KT',
+        homeScore: data === 'maximum-supported' ? 999 : 3,
+        awayScore: data === 'maximum-supported' ? 888 : 2,
+        gameId: 'visual-qa-coach-analysis-game',
+        gameDate: '2026-09-19',
+        seasonId: 2026,
+        leagueType: 'REGULAR',
+        round: longCopy,
+        gameNo: 1,
+        homePitcher: data === 'unbroken-token' ? `PITCHER-${'H'.repeat(64)}` : '홍길동',
+        awayPitcher: data === 'unbroken-token' ? `PITCHER-${'A'.repeat(64)}` : '김철수',
+        isPastGame: data === 'single',
+        isFutureGame: data === 'maximum-supported',
+        gameStatusBucket: data === 'single' ? 'completed' : 'scheduled',
+        initialHomeRank: data === 'maximum-supported' ? 999 : 2,
+        initialAwayRank: data === 'maximum-supported' ? 888 : 5,
+        initialWinProbabilityHome: data === 'maximum-supported' ? 99.9 : 54.2,
+        initialDataQuality: data === 'empty' ? 'MANUAL_BASEBALL_DATA_REQUIRED' : 'complete',
+        initialSupportedFactCount: data === 'maximum-supported' ? 999 : 12,
+        initialUsedEvidence: data === 'empty' ? [] : ['local-visual-qa-fixture'],
+        initialGroundingWarnings: data === 'empty' ? [MANUAL_BASEBALL_DATA_REQUIRED_CODE] : [],
+        initialGroundingReasons: data === 'empty' ? ['operator-provided-data-required'] : [],
+        initialFreshnessLabel: data === 'empty' ? null : '로컬 Visual QA fixture',
+        fullWidth: data === 'long-korean' || data === 'unbroken-token',
+      },
+      captureSelector: '[data-testid="coach-analysis-open"], [data-testid="coach-analysis-dialog-loading"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.scoreboard-section': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionScoreboardSection.tsx#PredictionScoreboardSection') {
+      throw new Error('prediction.scoreboard-section only supports PredictionScoreboardSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.scoreboard-section only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.scoreboard-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'empty' | 'error-503' | 'long-korean' | 'manual-required' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      'long-korean': 'long-korean',
+      'manual-required': 'manual-required',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const hasExtraInnings = data === 'long-korean';
+    const allowedTargets = hasExtraInnings
+      ? new Set(['regular-innings', 'extra-innings'])
+      : new Set<string>();
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.scoreboard-section default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.scoreboard-section received unsupported target ${targetId ?? '<missing>'}`);
+    }
+    const longTeamName = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 원정 긴 팀 이름'
+      : data === 'unbroken-token'
+        ? `AWAY-${'X'.repeat(48)}`
+        : '원정팀';
+    const homeTeamName = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 홈 긴 팀 이름'
+      : data === 'unbroken-token'
+        ? `HOME-${'Y'.repeat(48)}`
+        : '홈팀';
+    const inningRows: Record<number, { away?: number | null; home?: number | null }> = {};
+    if (data === 'single' || data === 'error-503' || data === 'long-korean' || data === 'unbroken-token') {
+      for (let inning = 1; inning <= 9; inning += 1) {
+        inningRows[inning] = { away: inning % 3 === 0 ? 1 : 0, home: inning % 4 === 0 ? 2 : 0 };
+      }
+    }
+    if (hasExtraInnings) {
+      inningRows[10] = { away: 1, home: 0 };
+      inningRows[11] = { away: null, home: null };
+    }
+    const isManualDataRequired = data === 'manual-required';
+    const isLiveStatusError = data === 'error-503' || isManualDataRequired;
+    return {
+      props: {
+        headingTextStyle: {},
+        awayTeamNameStyle: {},
+        homeTeamNameStyle: {},
+        liveStatusError: isLiveStatusError
+          ? data === 'error-503'
+            ? '실시간 점수 갱신 상태를 확인하는 중입니다.'
+            : '실시간 점수/이닝 데이터 준비가 필요합니다.'
+          : null,
+        liveStatusErrorCode: isLiveStatusError
+          ? data === 'error-503' ? 'UPSTREAM_ERROR' : MANUAL_BASEBALL_DATA_REQUIRED_CODE
+          : null,
+        isManualLiveStatusError: isManualDataRequired,
+        shouldShowManualScoreboardState: isManualDataRequired,
+        inningRows,
+        awayTeamName: longTeamName,
+        homeTeamName,
+        awayScoreForDisplay: data === 'empty' || isManualDataRequired ? '-' : 3,
+        homeScoreForDisplay: data === 'empty' || isManualDataRequired ? '-' : 2,
+      },
+      captureSelector: '[data-testid="prediction-scoreboard"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.top-notice': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionTopNotice.tsx#PredictionTopNotice') {
+      throw new Error('prediction.top-notice only supports PredictionTopNotice');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.top-notice only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => !['kind', 'theme'].includes(key))) {
+      throw new Error('prediction.top-notice only supports kind and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'error-503' | 'loading' | 'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const kind = resolveDeclaredVariant<'END' | 'ERROR' | 'FUTURE' | 'INFO' | 'RUN'>(context, 'kind', {
+      END: 'END',
+      ERROR: 'ERROR',
+      FUTURE: 'FUTURE',
+      INFO: 'INFO',
+      RUN: 'RUN',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const targetId = context.interactionTargetId;
+    const allowedTargets = new Set<string>();
+    if (kind === 'RUN' && data === 'loading') {
+      allowedTargets.add('dismiss-run');
+      allowedTargets.add('resume-run');
+    }
+    if (kind === 'FUTURE' && data !== 'loading') {
+      allowedTargets.add('retry-future');
+      allowedTargets.add('return-future');
+    }
+    if (kind === 'ERROR') {
+      allowedTargets.add(data === 'error-503' ? 'retry-past' : 'retry-vote');
+      allowedTargets.add(data === 'error-503' ? 'return-past' : 'return-vote');
+    }
+    if (kind === 'INFO' && data === 'long-korean') {
+      allowedTargets.add('retry-partial');
+    }
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.top-notice default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && (!targetId || !allowedTargets.has(targetId))) {
+      throw new Error(`prediction.top-notice received unsupported target ${targetId ?? '<missing>'}`);
+    }
+    const longCopy = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 예측 공지 문구입니다. 안내와 복구 액션이 카드 밖으로 넘치지 않아야 합니다.'
+      : data === 'unbroken-token'
+        ? `PREDICTION-NOTICE-${'X'.repeat(180)}`
+        : null;
+    return {
+      props: {
+        kind,
+        currentDateIndex: kind === 'END' && data === 'empty' ? 0 : 1,
+        pastRangeLoadState: kind === 'INFO' && data === 'loading'
+          ? 'loading'
+          : kind === 'END' && data === 'empty'
+            ? 'end'
+            : 'error',
+        pastRangeLoadErrorMessage: kind === 'ERROR' && data === 'error-503'
+          ? longCopy || '이전 경기 조회에 실패했습니다.'
+          : kind === 'END' && data === 'empty'
+            ? '더 이상 이전 경기가 없습니다.'
+            : null,
+        futureRangeLoadState: kind === 'FUTURE' && data === 'loading' ? 'loading' : kind === 'END' && data !== 'empty' ? 'end' : 'error',
+        futureRangeLoadErrorMessage: kind === 'FUTURE' || kind === 'END'
+          ? longCopy || (kind === 'END' ? '더 이상 예정 경기가 없습니다.' : '미래 구간 조회에 실패했습니다.')
+          : null,
+        canLoadMorePast: false,
+        canLoadMoreFuture: false,
+        hasPastNavigation: true,
+        isCurrentVotePartial: kind === 'INFO' && data === 'long-korean',
+        currentVotePartialReason: kind === 'INFO' && data === 'long-korean' ? longCopy : null,
+        voteStatusError: kind === 'ERROR' && data !== 'error-503' ? longCopy || '투표 집계 조회에 실패했습니다.' : null,
+        isVoteRetryLoading: data === 'loading',
+        isRunBannerDismissed: false,
+        isRunInProgress: kind === 'RUN' && data === 'loading',
+        runProgressMessage: kind === 'RUN' ? longCopy || '예측을 계산하는 중입니다.' : null,
+        deepLinkNotice: kind === 'INFO' && data === 'single' ? '공유된 예측 링크를 확인했습니다.' : null,
+        predictionRecoveryPath: '/prediction',
+        onRetryLoadMorePastMatches: () => undefined,
+        onRetryLoadMoreFutureMatches: () => undefined,
+        onRetryVoteStatus: () => undefined,
+        onRetryPartialVoteStatus: () => undefined,
+        onDismissRunProgressBanner: () => undefined,
+        onResumeRunProgressBanner: () => undefined,
+      },
+      captureSelector: '[data-testid="prediction-top-notice"], [data-testid="prediction-partial-result-notice"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[640px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.error-overlay': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionErrorOverlay.tsx#PredictionErrorOverlay') {
+      throw new Error('prediction.error-overlay only supports PredictionErrorOverlay');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.error-overlay only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => !['error', 'theme'].includes(key))) {
+      throw new Error('prediction.error-overlay only supports error and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const error = resolveDeclaredVariant<'auth-expired' | 'network' | 'partial' | 'validation'>(context, 'error', {
+      'auth-expired': 'auth-expired',
+      network: 'network',
+      partial: 'partial',
+      validation: 'validation',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const actionPriorityOrder = {
+      'auth-expired': ['GO_LIST', 'GO_BACK'],
+      network: ['RETRY', 'GO_LIST'],
+      partial: ['FALLBACK_SIMPLE', 'GO_LIST'],
+      validation: ['RETRY', 'GO_BACK'],
+    }[error] as string[];
+    const targetId = context.interactionTargetId;
+    if (interaction === 'default' && targetId !== undefined) {
+      throw new Error('prediction.error-overlay default state does not accept interaction targets');
+    }
+    if (interaction === 'click') {
+      if (data === 'empty') {
+        throw new Error('prediction.error-overlay closed state does not accept click interactions');
+      }
+      const allowedTargets = new Set(['close', ...actionPriorityOrder.map((action) => action.toLowerCase())]);
+      if (!targetId || !allowedTargets.has(targetId.replace('action-', ''))) {
+        throw new Error(`prediction.error-overlay received unsupported target ${targetId ?? '<missing>'}`);
+      }
+    }
+    const message = data === 'long-korean'
+      ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 오류 안내 문구입니다. 복구 액션과 설명이 다이얼로그 밖으로 넘치지 않아야 합니다.'
+      : data === 'unbroken-token'
+        ? `PREDICTION-ERROR-${'X'.repeat(180)}`
+        : undefined;
+    return {
+      props: {
+        isOpen: data !== 'empty',
+        title: data === 'unbroken-token' ? `ERROR-TITLE-${'X'.repeat(80)}` : undefined,
+        message,
+        errorCode: {
+          'auth-expired': 'AUTH_EXPIRED',
+          network: 'NETWORK',
+          partial: 'PARTIAL_DATA',
+          validation: 'VALIDATION',
+        }[error],
+        copyKey: data === 'single' ? 'network_error_message' : undefined,
+        actionPriorityOrder,
+        onAction: () => undefined,
+        onClose: () => undefined,
+      },
+      captureSelector: '[data-testid="prediction-error-overlay"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[640px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.coach-verdict-memo': (context) => {
+    if (context.componentId !== 'src/components/prediction/CoachVerdictMemo.tsx#CoachVerdictMemo') {
+      throw new Error('prediction.coach-verdict-memo only supports CoachVerdictMemo');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.coach-verdict-memo only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => !['mode', 'result', 'theme'].includes(key))) {
+      throw new Error('prediction.coach-verdict-memo only supports mode, result, and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      single: 'single',
+    });
+    const mode = resolveDeclaredVariant<'analysis' | 'review'>(context, 'mode', {
+      analysis: 'analysis',
+      review: 'review',
+    });
+    const result = resolveDeclaredVariant<'canonical' | 'fallback'>(context, 'result', {
+      canonical: 'canonical',
+      fallback: 'fallback',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        verdict: coachVerdictCopy[data],
+        isReviewMode: mode === 'review',
+        isFallback: result === 'fallback',
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.risk-timeline': (context) => {
+    if (context.componentId !== 'src/components/prediction/RiskTimeline.tsx#RiskTimeline') {
+      throw new Error('prediction.risk-timeline only supports RiskTimeline');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.risk-timeline only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => !['polarity', 'theme'].includes(key))) {
+      throw new Error('prediction.risk-timeline only supports polarity and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const polarity = resolveDeclaredVariant<'negative' | 'positive'>(context, 'polarity', {
+      negative: 'negative',
+      positive: 'positive',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        risks: coachRiskFixtures[data],
+        isPositive: polarity === 'positive',
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.risk-versus': (context) => {
+    if (context.componentId !== 'src/components/prediction/RiskVersus.tsx#RiskVersus') {
+      throw new Error('prediction.risk-versus only supports RiskVersus');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.risk-versus only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => !['polarity', 'teams', 'theme'].includes(key))) {
+      throw new Error('prediction.risk-versus only supports polarity, teams, and theme variants');
+    }
+    const data = requireStateValueFromMap<'empty' | 'long-korean' | 'maximum-supported' | 'single'>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const polarity = resolveDeclaredVariant<'negative' | 'positive'>(context, 'polarity', {
+      negative: 'negative',
+      positive: 'positive',
+    });
+    const teams = resolveDeclaredVariant<'with-teams' | 'without-teams'>(context, 'teams', {
+      'with-teams': 'with-teams',
+      'without-teams': 'without-teams',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        risks: coachRiskFixtures[data],
+        isPositive: polarity === 'positive',
+        homeTeamId: teams === 'with-teams' ? 'LG' : undefined,
+        awayTeamId: teams === 'with-teams' ? 'KIA' : undefined,
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.game-summary-timeline': (context) => {
+    if (context.componentId !== 'src/components/prediction/GameSummaryTimeline.tsx#GameSummaryTimeline') {
+      throw new Error('prediction.game-summary-timeline only supports GameSummaryTimeline');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.game-summary-timeline only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.game-summary-timeline only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<keyof typeof gameSummaryTimelineFixtures>(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        timelineEntries: gameSummaryTimelineFixtures[data],
+        awayColor: '#2563eb',
+        homeColor: '#dc2626',
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.live-relay-timeline': (context) => {
+    if (context.componentId !== 'src/components/prediction/LiveRelayTimeline.tsx#LiveRelayTimeline') {
+      throw new Error('prediction.live-relay-timeline only supports LiveRelayTimeline');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('prediction.live-relay-timeline only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.live-relay-timeline only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      'manual-required': 'manual-required',
+      single: 'single',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isManualError = data === 'manual-required';
+    return {
+      props: {
+        events: liveRelayTimelineFixtures[data],
+        errorMessage: isManualError ? '문자중계 데이터를 불러올 수 없습니다.' : null,
+        errorCode: isManualError ? MANUAL_BASEBALL_DATA_REQUIRED_CODE : null,
+        maxEvents: data === 'maximum-supported' ? 8 : 20,
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.match-tab-empty-state': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState') {
+      throw new Error('prediction.match-tab-empty-state only supports PredictionMatchTabEmptyState');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('prediction.match-tab-empty-state only supports data and interactions states');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('prediction.match-tab-empty-state only supports its theme variant');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'single'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+    });
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const hasNearestNavigation = data === 'long-korean';
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('prediction.match-tab-empty-state default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !['next-date', 'nearest-date', 'previous-date'].includes(context.interactionTargetId ?? '')) {
+      throw new Error(`prediction.match-tab-empty-state received unsupported target ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    if (context.interactionTargetId === 'nearest-date' && !hasNearestNavigation) {
+      throw new Error('prediction.match-tab-empty-state nearest-date requires long-korean data');
+    }
+    return {
+      props: {
+        currentDate: data === 'long-korean' ? '2026-10-31' : '2026-09-19',
+        isToday: data === 'single',
+        nearestNavigationDate: hasNearestNavigation
+          ? { date: '2026-11-01', isPast: false }
+          : null,
+        canMovePrevDate: true,
+        canMoveNextDate: true,
+        onPrevDate: () => emitVisualQaInteraction(PREDICTION_EMPTY_INTERACTION_EVENT, { value: 'previous-date' }),
+        onNextDate: () => emitVisualQaInteraction(PREDICTION_EMPTY_INTERACTION_EVENT, { value: 'next-date' }),
+        onNearestNavigation: () => emitVisualQaInteraction(PREDICTION_EMPTY_INTERACTION_EVENT, { value: 'nearest-date' }),
+      },
+      companion: createElement(VisualQaInteractionMarker, {
+        eventName: PREDICTION_EMPTY_INTERACTION_EVENT,
+        testId: 'visual-qa-prediction-empty-interaction',
+      }),
+      surfaceClassName: 'block min-h-0 w-full max-w-[640px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'test-error.page': (context) => {
+    if (context.componentId !== 'src/components/TestError.tsx#TestError') {
+      throw new Error('test-error.page only supports TestError');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'interactions')) {
+      throw new Error('test-error.page only supports its interactions state');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('test-error.page only supports its theme variant');
+    }
+    const interaction = requireStateValueFromMap<'click' | 'default'>(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('test-error.page default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && ![
+      'bad-request',
+      'forbidden',
+      'not-found',
+      'server-error',
+      'unauthorized',
+    ].includes(context.interactionTargetId ?? '')) {
+      throw new Error(`test-error.page received unsupported target ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    return {
+      props: {},
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-4 text-foreground shadow-none',
+      theme,
+    };
+  },
+  'landing.static-leaf': (context) => {
+    const selectors: Record<string, string> = {
+      'src/components/landing/LandingStadiumSection.tsx#LandingStadiumSection': '[data-testid="landing-feature-05"]',
+      'src/components/landing/phone/LandingPhoneBoardScreen.tsx#LandingPhoneBoardScreen': '.landing-phone-board-screen',
+      'src/components/landing/phone/LandingPhoneHomeScreen.tsx#LandingPhoneHomeScreen': '.landing-phone-home-screen',
+      'src/components/landing/phone/LandingPhoneMateScreen.tsx#LandingPhoneMateScreen': '.landing-phone-mate-screen',
+    };
+    if (selectors[context.componentId] === undefined) {
+      throw new Error(`landing.static-leaf does not support ${context.componentId}`);
+    }
+    return resolveLandingStatic(context, selectors[context.componentId]);
   },
   'landing.laptop-mockup': (context) => {
     const dataState = requireStateValueFromMap(context, 'data', {
@@ -18177,6 +30891,115 @@ const adapters: Record<string, ComponentStateAdapter> = {
     },
     captureSelector: '.vqa-profile-image',
   }),
+  'profile.block-button': (context) => {
+    if (context.componentId !== 'src/components/profile/BlockButton.tsx#BlockButton') {
+      throw new Error('profile.block-button only supports BlockButton');
+    }
+    const relation = resolveDeclaredVariant(context, 'relation', {
+      blocked: 'blocked',
+      unblocked: 'unblocked',
+    });
+    const size = resolveDeclaredVariant<'sm' | 'default' | 'lg'>(context, 'size', {
+      default: 'default',
+      lg: 'lg',
+      sm: 'sm',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const interaction = context.states.interactions ?? 'default';
+    if (!['default', 'selected'].includes(interaction)) {
+      throw new Error(`지원하지 않는 Visual QA profile.block-button interaction: ${interaction}`);
+    }
+
+    return {
+      props: {
+        handle: 'visualqa-target',
+        initialBlocked: relation === 'blocked',
+        onBlockChange: () => {},
+        size,
+        userName: '비주얼 QA 대상',
+        variant: 'ghost',
+        visualQaToggleBlock: async () => ({
+          blocked: relation !== 'blocked',
+          blockedCount: relation === 'blocked' ? 0 : 1,
+        }),
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-profile@example.com',
+          handle: 'visualqa-viewer',
+          id: 900010,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-transparent p-4 shadow-none',
+      theme,
+    };
+  },
+  'profile.follow-button': (context) => {
+    if (context.componentId !== 'src/components/profile/FollowButton.tsx#FollowButton') {
+      throw new Error('profile.follow-button only supports FollowButton');
+    }
+    const relation = resolveDeclaredVariant(context, 'relation', {
+      available: 'available',
+      following: 'following',
+      'following-static': 'following-static',
+    });
+    const size = resolveDeclaredVariant<'sm' | 'default' | 'lg'>(context, 'size', {
+      default: 'default',
+      lg: 'lg',
+      sm: 'sm',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const interaction = context.states.interactions ?? 'default';
+    if (!['default', 'selected'].includes(interaction)) {
+      throw new Error(`지원하지 않는 Visual QA profile.follow-button interaction: ${interaction}`);
+    }
+    const initialFollowing = relation !== 'available';
+    const initialNotify = relation === 'following';
+
+    return {
+      props: {
+        handle: 'visualqa-target',
+        initialFollowing,
+        initialNotify,
+        onFollowChange: () => {},
+        showNotifyOption: relation !== 'following-static',
+        size,
+        visualQaFollowToggle: async () => ({
+          followerCount: initialFollowing ? 124 : 125,
+          following: !initialFollowing,
+          followingCount: 37,
+          notifyNewPosts: false,
+        }),
+        visualQaNotifyToggle: async () => ({
+          followerCount: 125,
+          following: true,
+          followingCount: 37,
+          notifyNewPosts: !initialNotify,
+        }),
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-profile@example.com',
+          handle: 'visualqa-viewer',
+          id: 900010,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[360px] overflow-visible bg-transparent p-4 shadow-none',
+      theme,
+    };
+  },
   'common.qr-code': (context) => ({
     props: {
       ...resolveDeclaredVariant(context, 'palette', {
@@ -18362,6 +31185,1790 @@ const adapters: Record<string, ComponentStateAdapter> = {
       captureSelector: '[data-testid="prediction-login-required-dialog"]',
     };
   },
+  'mypage.stat-card': (context) => {
+    if (context.componentId !== 'src/components/mypage/StatCard.tsx#StatCard') {
+      throw new Error('mypage.stat-card only supports StatCard');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.stat-card only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => !['color', 'theme'].includes(key))) {
+      throw new Error('mypage.stat-card only supports color and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      zero: 'zero',
+    });
+    const color = resolveDeclaredVariant(context, 'color', {
+      accent: 'var(--mp-accent)',
+      green: '#2d5f4f',
+      amber: '#b7791f',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const value = data === 'zero'
+      ? 0
+      : data === 'maximum-supported'
+        ? Number.MAX_SAFE_INTEGER
+        : data === 'long-korean' ? '1,234,567' : 128;
+    return {
+      props: {
+        value,
+        label: data === 'long-korean' ? '모바일 화면에서 길게 표시되는 응원 기록 통계' : '응원 기록',
+        color,
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[220px] overflow-visible bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'mypage.win-rate-chart': (context) => {
+    if (context.componentId !== 'src/components/mypage/WinRateChart.tsx#WinRateChart') {
+      throw new Error('mypage.win-rate-chart only supports WinRateChart');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.win-rate-chart only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.win-rate-chart only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isMaximum = data === 'maximum-supported' || data === 'unbroken-token';
+    const wins = data === 'empty' ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : data === 'long-korean' ? 123456 : 1;
+    const draws = data === 'empty' ? 0 : isMaximum ? 0 : data === 'long-korean' ? 23456 : 0;
+    const losses = data === 'empty' ? 0 : isMaximum ? 1 : data === 'long-korean' ? 3456 : 0;
+    const winRate = data === 'empty' ? 0 : isMaximum ? 99.9 : data === 'long-korean' ? 84.6 : 100;
+    return {
+      props: { wins, draws, losses, winRate },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[420px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.monthly-stats-chart': (context) => {
+    if (context.componentId !== 'src/components/mypage/MonthlyStatsChart.tsx#MonthlyStatsChart') {
+      throw new Error('mypage.monthly-stats-chart only supports MonthlyStatsChart');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.monthly-stats-chart only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.monthly-stats-chart only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const entries = data === 'empty'
+      ? []
+      : data === 'single'
+        ? [{ month: '9월', count: 1 }]
+        : data === 'long-korean'
+          ? [
+            { month: '2026년 정규시즌 09월', count: 12 },
+            { month: '2026년 포스트시즌 10월', count: 8 },
+            { month: '2027년 스프링캠프 02월', count: 5 },
+          ]
+          : data === 'maximum-supported'
+            ? [
+              { month: '2026년 09월', count: Number.MAX_SAFE_INTEGER },
+              { month: '2026년 10월', count: Number.MAX_SAFE_INTEGER - 1 },
+            ]
+            : [{ month: `MONTH-${'X'.repeat(96)}`, count: 123456789 }];
+    return {
+      props: { data: entries },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.day-of-week-chart': (context) => {
+    if (context.componentId !== 'src/components/mypage/DayOfWeekChart.tsx#DayOfWeekChart') {
+      throw new Error('mypage.day-of-week-chart only supports DayOfWeekChart');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.day-of-week-chart only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.day-of-week-chart only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const dayOfWeekStats = data === 'empty'
+      ? {}
+      : data === 'single'
+        ? { 월: { count: 1, wins: 1, winRate: 100 } }
+        : Object.fromEntries(['월', '화', '수', '목', '금', '토', '일'].map((day, index) => [
+          day,
+          {
+            count: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER - index : 12 + index,
+            wins: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER - index - 1 : 6 + index,
+            winRate: data === 'long-korean' ? 52.4 + index * 6.1 : data === 'unbroken-token' ? 48.8 : 88.8 - index * 5.2,
+          },
+        ]));
+    return {
+      props: { dayOfWeekStats },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.opponent-win-rate-chart': (context) => {
+    if (context.componentId !== 'src/components/mypage/OpponentWinRateChart.tsx#OpponentWinRateChart') {
+      throw new Error('mypage.opponent-win-rate-chart only supports OpponentWinRateChart');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.opponent-win-rate-chart only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.opponent-win-rate-chart only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const opponentStats = data === 'empty'
+      ? {}
+      : Object.fromEntries(Array.from({ length: data === 'single' ? 1 : 8 }, (_, index) => {
+        const team = data === 'unbroken-token'
+          ? `OPPONENT-${'X'.repeat(72)}-${index}`
+          : data === 'long-korean'
+            ? `긴 이름의 상대팀 ${index + 1} · 모바일 줄바꿈 검증`
+            : `상대팀 ${index + 1}`;
+        const wins = data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER - index : data === 'single' ? 1 : 20 - index;
+        const losses = data === 'maximum-supported' ? index : data === 'single' ? 0 : index + 1;
+        const draws = data === 'maximum-supported' ? 0 : data === 'single' ? 0 : index % 2;
+        return [team, {
+          wins,
+          losses,
+          draws,
+          winRate: data === 'maximum-supported' ? 99.9 : data === 'single' ? 100 : 62.5 - index * 4.2,
+        }];
+      }));
+    return {
+      props: { opponentStats },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.emoji-stats-card': (context) => {
+    if (context.componentId !== 'src/components/mypage/EmojiStatsCard.tsx#EmojiStatsCard') {
+      throw new Error('mypage.emoji-stats-card only supports EmojiStatsCard');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.emoji-stats-card only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.emoji-stats-card only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const stats = data === 'empty'
+      ? []
+      : Array.from({ length: data === 'single' ? 1 : 3 }, (_, index) => ({
+        name: data === 'long-korean'
+          ? `모바일 화면에서 자연스럽게 줄바꿈되는 응원 감정 ${index + 1}`
+          : data === 'unbroken-token'
+            ? `EMOJI-${'X'.repeat(64)}-${index}`
+            : ['즐거움', '응원', '승리'][index],
+        emoji: ['⚾', '🔥', '🏆'][index],
+        count: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER - index : 10 + index,
+      }));
+    return {
+      props: { stats },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.badges-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/BadgesSection.tsx#BadgesSection') {
+      throw new Error('mypage.badges-section only supports BadgesSection');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.badges-section only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.badges-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      full: 'full',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      partial: 'partial',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isEmpty = data === 'empty';
+    const isMaximum = data === 'maximum-supported';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const earnedBadges = isEmpty
+      ? []
+      : data === 'partial'
+        ? ['ticket', 'sparkles']
+        : ['ticket', 'flame', 'map-pin', 'sparkles', 'crown'];
+    const stadiumVisitCounts = isEmpty
+      ? {}
+      : Object.fromEntries((isPressure
+        ? [
+          `구장-${'X'.repeat(72)}-A`,
+          `구장-${'Y'.repeat(72)}-B`,
+          `구장-${'Z'.repeat(72)}-C`,
+        ]
+        : ['잠실야구장', '고척스카이돔', '문학야구장'])
+        .slice(0, data === 'partial' ? 2 : 3)
+        .map((stadium, index) => [stadium, isMaximum ? Number.MAX_SAFE_INTEGER - index : index + 1]));
+    const statistics: DiaryStatistics = {
+      totalCount: isEmpty ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : data === 'full' ? 50 : data === 'partial' ? 7 : 42,
+      totalWins: isEmpty ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER - 1 : 24,
+      totalLosses: isEmpty ? 0 : isMaximum ? 1 : 12,
+      totalDraws: isEmpty ? 0 : 6,
+      winRate: isEmpty ? 0 : isMaximum ? 99.9 : data === 'partial' ? 42.9 : 57.1,
+      monthlyCount: isEmpty ? 0 : 12,
+      yearlyCount: isEmpty ? 0 : 42,
+      yearlyWins: isEmpty ? 0 : 24,
+      yearlyWinRate: isEmpty ? 0 : 57.1,
+      mostVisitedStadium: isEmpty ? null : isPressure ? `구장-${'Y'.repeat(72)}` : '잠실야구장',
+      mostVisitedCount: isEmpty ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : 8,
+      monthlyVisitCounts: {},
+      stadiumVisitCounts,
+      homeVisitCount: isEmpty ? 0 : 24,
+      awayVisitCount: isEmpty ? 0 : 18,
+      scheduledCount: isEmpty ? 0 : 2,
+      happiestMonth: isEmpty ? null : '9월',
+      happiestCount: isEmpty ? 0 : 6,
+      firstDiaryDate: isEmpty ? null : '2026-03-01',
+      cheerPostCount: isEmpty ? 0 : 9,
+      mateParticipationCount: isEmpty ? 0 : 3,
+      currentWinStreak: isEmpty ? 0 : 4,
+      longestWinStreak: isEmpty ? 0 : 9,
+      currentLossStreak: isEmpty ? 0 : 1,
+      opponentWinRates: {},
+      bestOpponent: isEmpty ? '' : '상대팀 1',
+      worstOpponent: isEmpty ? '' : '상대팀 2',
+      dayOfWeekStats: {},
+      luckyDay: isEmpty ? '' : '월',
+      earnedBadges,
+    };
+    return {
+      props: {
+        visualQaStateOverride: {
+          statistics,
+          isLoading: false,
+        },
+      },
+      captureSelector: '[data-testid="mypage-badge-catalog"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.blocked-users-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/BlockedUsersSection.tsx#BlockedUsersSection') {
+      throw new Error('mypage.blocked-users-section only supports BlockedUsersSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('mypage.blocked-users-section supports only data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.blocked-users-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    if (interaction === 'click' && !['long-korean', 'maximum-supported', 'populated', 'single', 'unbroken-token'].includes(data)) {
+      throw new Error(`지원하지 않는 Visual QA blocked-users interaction: data=${data}`);
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'first-unblock') {
+      throw new Error(`지원하지 않는 Visual QA blocked-users target: ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isLoading = data === 'loading';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const userCount = data === 'empty' || isLoading
+      ? 0
+      : data === 'single'
+        ? 1
+        : data === 'maximum-supported'
+          ? 24
+          : data === 'populated'
+            ? 6
+            : 3;
+    const users: UserFollowSummary[] = Array.from({ length: userCount }, (_, index) => ({
+      id: index + 1,
+      handle: isPressure
+        ? `@blocked-${'X'.repeat(64)}-${index + 1}`
+        : `@blocked_user_${index + 1}`,
+      name: isPressure
+        ? `모바일 화면에서 줄바꿈되는 차단 사용자 이름 ${index + 1}`
+        : `차단 사용자 ${index + 1}`,
+      profileImageUrl: null,
+      favoriteTeam: null,
+      isFollowedByMe: false,
+    }));
+    const visualQaStateOverride: BlockedUsersSectionVisualQaStateOverride = {
+      users,
+      isLoading,
+      hasNextPage: data === 'maximum-supported',
+      isFetchingNextPage: false,
+      blockToggleResponse: { blocked: false, blockedCount: Math.max(userCount - 1, 0) },
+      onNextPage: () => {},
+      onBlockChange: () => {},
+    };
+    return {
+      props: { visualQaStateOverride },
+      captureSelector: '[data-testid="mypage-blocked-users-section"]',
+      harnessAuthState: {
+        user: {
+          email: 'visual-qa-blocked-users@example.com',
+          handle: 'visualqa-viewer',
+          id: 900011,
+          name: '비주얼 QA 사용자',
+          role: 'ROLE_USER',
+        },
+      },
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.diary-edit-mode': (context) => {
+    if (context.componentId !== 'src/components/mypage/DiaryEditModeRuntime.tsx#DiaryEditModeRuntime') {
+      throw new Error('mypage.diary-edit-mode only supports DiaryEditModeRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.diary-edit-mode supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.diary-edit-mode only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      attended: 'attended',
+      editing: 'editing',
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      photos: 'photos',
+      'saving': 'saving',
+      scheduled: 'scheduled',
+      'seat-dialog': 'seat-dialog',
+      'ticket-verified': 'ticket-verified',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.diary-edit-mode default state does not accept interaction targets');
+    }
+    const allowedTargets = data === 'attended'
+      ? ['scheduled-type', 'winning-win', 'save']
+      : data === 'editing'
+        ? ['cancel']
+        : data === 'seat-dialog'
+          ? ['seat-skip']
+          : [];
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA diary edit target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isScheduled = data === 'scheduled';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const formData: DiaryFormData = {
+      type: isScheduled ? 'scheduled' : 'attended',
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: isScheduled ? '' : 'WIN',
+      gameId: data === 'empty' ? 0 : 20260920,
+      memo: isPressure
+        ? data === 'unbroken-token'
+          ? `DIARY-${'UNBROKEN'.repeat(34)}`
+          : '모바일 화면에서도 편집 필드와 저장 영역이 서로 밀어내지 않고 자연스럽게 줄바꿈되는지 확인하는 긴 직관 기록 메모입니다.'
+        : '로컬 모바일 정합성 검증용 직관 기록입니다.',
+      photos: data === 'photos'
+        ? [validVisualQaImage, validVisualQaImage]
+        : data === 'maximum-supported'
+          ? Array.from({ length: 5 }, () => validVisualQaImage)
+          : [],
+      photoStoragePaths: [],
+      photoFiles: [] as DiaryPhotoFile[],
+      section: isPressure ? `1루-${'X'.repeat(42)}` : '1루 응원석',
+      block: '101블록',
+      seatRow: '5열',
+      seatNumber: '13번',
+      ticketVerificationToken: data === 'ticket-verified' ? 'visual-qa-ticket-token' : undefined,
+      ticketVerified: data === 'ticket-verified',
+    };
+    const selectedDiary: DiaryEntry | undefined = data === 'editing'
+      ? {
+        id: 77,
+        date: '2026-09-20',
+        type: 'attended',
+        emoji: '⚾',
+        emojiName: '즐거움',
+        winningName: 'WIN',
+        gameId: 20260920,
+        memo: formData.memo,
+        photos: formData.photos,
+        team: 'LG 트윈스',
+        stadium: '잠실야구장',
+        ticketVerified: true,
+      }
+      : undefined;
+    const availableGames: DiaryGame[] = data === 'empty'
+      ? []
+      : [{
+        id: 20260920,
+        homeTeam: 'LG 트윈스',
+        awayTeam: 'KT 위즈',
+        stadium: '잠실야구장',
+        score: data === 'attended' || data === 'editing' ? '4-2' : undefined,
+        date: '2026-09-20',
+      }];
+    const candidates: SeatViewCandidate[] = data === 'seat-dialog'
+      ? [{
+        id: 1,
+        storagePath: 'visual-qa/seat-view-1.webp',
+        previewUrl: validVisualQaImage,
+        sourceType: 'DIARY_UPLOAD',
+        aiSuggestedLabel: 'SEAT_VIEW',
+        aiConfidence: 0.96,
+        shareEligible: true,
+      }, {
+        id: 2,
+        storagePath: 'visual-qa/ticket-2.webp',
+        previewUrl: validVisualQaImage,
+        sourceType: 'TICKET_SCAN',
+        aiSuggestedLabel: 'TICKET',
+        aiConfidence: 0.88,
+        shareEligible: false,
+      }]
+      : [];
+    const saveMutation = {
+      isPending: data === 'saving',
+    } as unknown as UseMutationResult<unknown, Error, SaveDiaryRequest>;
+    const updateMutation = {
+      isPending: data === 'saving',
+    } as unknown as UseMutationResult<unknown, Error, { id: number; data: SaveDiaryRequest }>;
+    const props: DiaryEditModeRuntimeProps = {
+      diaryForm: formData,
+      updateForm: () => {},
+      handlePhotoUpload: () => {},
+      removePhoto: () => {},
+      availableGames,
+      selectedDiary,
+      setIsEditMode: () => {},
+      handleDateSelect: () => {},
+      selectedDate: new Date(2026, 8, 20, 12, 0, 0),
+      handleSaveDiary: () => {},
+      saveMutation,
+      updateMutation,
+      seatViewSelectionState: {
+        open: data === 'seat-dialog',
+        diaryId: data === 'seat-dialog' ? 77 : null,
+        candidates,
+        selectedIds: data === 'seat-dialog' ? [1] : [],
+        submitting: false,
+      },
+      toggleSeatViewCandidate: () => {},
+      handleSeatViewSelectionConfirm: () => {},
+      handleSeatViewSelectionSkip: () => {},
+    };
+    return {
+      props,
+      captureSelector: '[data-testid="diary-edit-runtime-ready"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.profile-edit-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/ProfileEditSection.tsx#ProfileEditSection') {
+      throw new Error('mypage.profile-edit-section only supports ProfileEditSection');
+    }
+    if (Object.keys(context.states).length > 0) {
+      throw new Error('mypage.profile-edit-section does not accept state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('mypage.profile-edit-section only supports its phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    return {
+      props: {
+        profileImage: null,
+        name: '시각 검증 사용자',
+        email: 'visual-qa@example.test',
+        savedFavoriteTeam: 'LG',
+        onCancel: () => {},
+        onSave: () => {},
+        visualQaPhase: phase,
+        visualQaRuntimeOverride: phase === 'resolved'
+          ? createElement(
+            'div',
+            {
+              className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+              'data-testid': 'profile-edit-section-runtime-probe',
+            },
+            'ProfileEditSection 위임 경계가 준비되었습니다.',
+          )
+          : undefined,
+      },
+      captureSelector: phase === 'fallback'
+        ? '[data-vqa-harness-surface]'
+        : '[data-testid="profile-edit-section-runtime-probe"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme: 'light',
+    };
+  },
+  'mypage.profile-edit-section-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/ProfileEditSectionRuntime.tsx#ProfileEditSection') {
+      throw new Error('mypage.profile-edit-section-runtime only supports ProfileEditSectionRuntime');
+    }
+    if (Object.keys(context.states).length > 0
+      || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('mypage.profile-edit-section-runtime only supports its phase variant');
+    }
+    const phase = resolveDeclaredVariant<'fallback' | 'resolved'>(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const props: ProfileEditSectionRuntimeProps = {
+      profileImage: null,
+      name: '시각 검증 사용자',
+      email: 'visual-qa@example.test',
+      savedFavoriteTeam: 'LG',
+      initialBio: 'KBO 직관 기록을 남기는 팬입니다.',
+      userRole: 'ROLE_USER',
+      userProvider: 'LOCAL',
+      onCancel: () => {},
+      onSave: () => {},
+      activeSection: 'profile',
+      hasPassword: true,
+      visualQaPhase: phase,
+    };
+    return {
+      props,
+      captureSelector: phase === 'fallback'
+        ? '[data-testid="profile-edit-section-runtime-fallback"]'
+        : '[data-testid="profile-edit-section-runtime"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme: 'light',
+    };
+  },
+  'mypage.profile-edit-profile-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/ProfileEditProfileRuntime.tsx#ProfileEditProfileRuntime') {
+      throw new Error('mypage.profile-edit-profile-runtime only supports ProfileEditProfileRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('mypage.profile-edit-profile-runtime supports only data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.profile-edit-profile-runtime only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      changed: 'changed',
+      'long-korean': 'long-korean',
+      'nickname-available': 'nickname-available',
+      'nickname-checking': 'nickname-checking',
+      'nickname-taken': 'nickname-taken',
+      pristine: 'pristine',
+      saving: 'saving',
+      'validation-error': 'validation-error',
+      'unbroken-token': 'unbroken-token',
+    });
+    requireStateValueFromMap(context, 'permissions', { user: 'user' });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    const allowedTargets = data === 'changed' || data === 'nickname-available'
+      ? ['save']
+      : [];
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.profile-edit-profile-runtime default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA profile edit target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const nicknameCheckState: NicknameCheckState = data === 'nickname-available'
+      ? 'available'
+      : data === 'nickname-checking'
+        ? 'checking'
+        : data === 'nickname-taken'
+          ? 'taken'
+          : 'idle';
+    const name = isPressure
+      ? data === 'unbroken-token' ? `USER-${'UNBROKEN'.repeat(24)}` : '모바일 설정 화면 긴 사용자 이름 검증'
+      : data === 'nickname-available' || data === 'nickname-taken' ? '검증팬' : '시각 검증 사용자';
+    const props: ProfileEditProfileRuntimeProps = {
+      name,
+      setName: () => {},
+      email: 'visual-qa@example.test',
+      bio: isPressure
+        ? data === 'unbroken-token'
+          ? `BIO-${'UNBROKEN'.repeat(50)}`
+          : '모바일 프로필 편집에서 긴 한국어 자기소개가 카드 폭을 넘지 않고 저장 영역을 밀어내지 않는지 확인하는 로컬 fixture입니다.'
+        : 'KBO 직관 기록을 남기는 팬입니다.',
+      setBio: () => {},
+      userRole: 'ROLE_USER',
+      editingFavoriteTeam: 'LG',
+      selectableTeamIds: ['없음', 'LG', 'KT', 'SSG', '두산'],
+      isDesktop: false,
+      isLoading: data === 'saving',
+      fieldErrors: data === 'validation-error' ? { name: '이름은 2자 이상 입력해주세요.', bio: '자기소개를 확인해주세요.' } : {},
+      nicknameCheckState,
+      nicknameCheckMessage: data === 'nickname-available'
+        ? '사용 가능한 닉네임입니다.'
+        : data === 'nickname-taken'
+          ? '이미 사용 중인 닉네임입니다.'
+          : data === 'nickname-checking'
+            ? '닉네임을 확인하고 있습니다...'
+            : null,
+      saveAttempted: data === 'validation-error',
+      hasValidationErrors: data === 'validation-error',
+      hasChanges: data !== 'pristine',
+      canSubmit: data === 'changed' || data === 'nickname-available',
+      lastSavedAt: null,
+      saveMessage: null,
+      showTeamTest: false,
+      setShowTeamTest: () => {},
+      handleSave: () => {},
+      handleCancelRequest: () => {},
+      handleTeamSelect: () => {},
+    };
+    return {
+      props,
+      captureSelector: '[data-testid="profile-edit-profile-runtime"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.view-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/MyPageViewRuntime.tsx#MyPageViewRuntime') {
+      throw new Error('mypage.view-runtime only supports MyPageViewRuntime');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.view-runtime only supports its data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => !['phase', 'theme'].includes(key))) {
+      throw new Error('mypage.view-runtime only supports phase and theme variants');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      accountSettings: 'accountSettings',
+      alerts: 'alerts',
+      badges: 'badges',
+      blockedUsers: 'blockedUsers',
+      changePassword: 'changePassword',
+      cheerPosts: 'cheerPosts',
+      diary: 'diary',
+      diaryEditor: 'diaryEditor',
+      editProfile: 'editProfile',
+      mateHistory: 'mateHistory',
+      settings: 'settings',
+      stats: 'stats',
+    }) as ViewMode;
+    const phase = resolveDeclaredVariant<'fallback' | 'resolved'>(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const props: MyPageViewRuntimeProps = {
+      viewMode: data,
+      profileImage: null,
+      name: '시각 검증 사용자',
+      email: 'visual-qa@example.test',
+      savedFavoriteTeam: 'LG',
+      cheerPoints: 120,
+      userRole: 'USER',
+      userProvider: 'local',
+      initialBio: null,
+      hasPassword: true,
+      selectedDiaryDate: '2026-09-20',
+      onSetViewMode: () => {},
+      onProfileUpdated: () => {},
+      onOpenTicketUploadModal: () => {},
+      visualQaPhase: phase,
+      visualQaRuntimeOverride: phase === 'resolved'
+        ? createElement(
+          'div',
+          {
+            className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+            'data-testid': 'mypage-view-runtime-probe',
+          },
+          `MyPageViewRuntime ${data} 위임 경계가 준비되었습니다.`,
+        )
+        : undefined,
+    };
+    return {
+      props,
+      captureSelector: phase === 'fallback'
+        ? '[data-vqa-harness-surface]'
+        : '[data-testid="mypage-view-runtime-probe"]',
+      initialPathname: `/mypage?view=${data}`,
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.season-timeline-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/MyPageSeasonTimelineRuntime.tsx#MyPageSeasonTimelineRuntime') {
+      throw new Error('mypage.season-timeline-runtime only supports MyPageSeasonTimelineRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.season-timeline-runtime supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.season-timeline-runtime only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      photos: 'photos',
+      populated: 'populated',
+      scheduled: 'scheduled',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    const hasEntries = data !== 'empty';
+    const allowedTargets = hasEntries ? ['edit-entry'] : ['empty-write'];
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.season-timeline-runtime default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA season timeline target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const makeEntry = (id: number, date: string): DiaryEntry => ({
+      id,
+      date,
+      type: data === 'scheduled' ? 'scheduled' : 'attended',
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: data === 'scheduled' ? null : 'WIN',
+      gameId: 20260920,
+      memo: isPressure
+        ? data === 'unbroken-token'
+          ? `TIMELINE-${'UNBROKEN'.repeat(42)}`
+          : '모바일 시즌 타임라인에서 긴 한국어 메모가 티켓 카드와 사진 영역을 밀어내지 않는지 확인하는 로컬 fixture입니다.'
+        : '시즌 타임라인 직관 기록입니다.',
+      photos: data === 'photos' || data === 'maximum-supported'
+        ? [validVisualQaImage, validVisualQaImage]
+        : [],
+      photoStoragePaths: [],
+      team: isPressure ? `긴 응원팀 이름 ${'X'.repeat(26)}` : 'LG 트윈스 vs KT 위즈',
+      stadium: '잠실야구장',
+      section: '1루 일반석',
+      block: 'A',
+      seatRow: '3',
+      seatNumber: '12',
+      gameScope: 'home',
+      ticketVerified: true,
+    });
+    const entries: DiaryEntry[] = data === 'empty'
+      ? []
+      : data === 'maximum-supported'
+        ? Array.from({ length: 10 }, (_, index) => makeEntry(401 + index, `2026-09-${String(20 - (index % 9)).padStart(2, '0')}`))
+        : [makeEntry(401, '2026-09-20')];
+    const props = {
+      entries,
+      scopeLabel: data === 'scheduled' ? '전체' : '홈',
+      flashingEntryId: null,
+      onOpenDiaryEditor: () => {},
+    } satisfies ComponentProps<typeof MyPageSeasonTimelineRuntimeComponent>;
+    return {
+      props,
+      captureSelector: hasEntries ? '[aria-label="2026년 9월 기록"]' : '.mypage-season-empty',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.season-log-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/MyPageSeasonLogRuntime.tsx#MyPageSeasonLogRuntime') {
+      throw new Error('mypage.season-log-runtime only supports MyPageSeasonLogRuntime');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.season-log-runtime supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.season-log-runtime only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      scheduled: 'scheduled',
+      scoped: 'scoped',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    const dataWithEntries = ['long-korean', 'maximum-supported', 'populated', 'scheduled', 'scoped', 'unbroken-token'];
+    const allowedTargets = data === 'loading'
+      ? []
+      : ['ticket', 'write', ...(dataWithEntries.includes(data) ? ['result-filter', 'edit-entry'] : []), ...(data === 'scoped' ? ['home-scope'] : [])];
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.season-log-runtime default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA season log target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const makeEntry = (id: number, date: string, overrides: Partial<DiaryEntry> = {}): DiaryEntry => ({
+      id,
+      date,
+      type: 'attended',
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: id % 3 === 0 ? 'DRAW' : id % 3 === 1 ? 'WIN' : 'LOSE',
+      gameId: 20260920,
+      memo: isPressure
+        ? data === 'unbroken-token'
+          ? `SEASON-${'UNBROKEN'.repeat(40)}`
+          : '모바일 시즌 로그에서 긴 한국어 기록이 히트맵과 티켓 카드 너비를 넘지 않고 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+        : '시즌 로그 모바일 직관 기록입니다.',
+      photos: data === 'maximum-supported' ? [validVisualQaImage, validVisualQaImage] : [],
+      photoStoragePaths: [],
+      team: isPressure ? `모바일 상대팀 ${'X'.repeat(28)}` : id % 2 === 0 ? 'KT 위즈' : 'LG 트윈스',
+      stadium: '잠실야구장',
+      section: '1루 일반석',
+      block: 'A',
+      seatRow: '3',
+      seatNumber: '12',
+      gameScope: 'home',
+      ticketVerified: true,
+      ...overrides,
+    });
+    const entries: DiaryEntry[] = data === 'empty' || data === 'loading'
+      ? []
+      : data === 'maximum-supported'
+        ? Array.from({ length: 16 }, (_, index) => makeEntry(300 + index, `2026-${String((index % 8) + 3).padStart(2, '0')}-${String((index % 20) + 1).padStart(2, '0')}`, {
+          gameScope: index % 2 === 0 ? 'home' : 'away',
+        }))
+        : data === 'scheduled'
+          ? [makeEntry(301, '2026-09-20', { type: 'scheduled', winningName: null })]
+          : data === 'scoped'
+            ? [
+              makeEntry(301, '2026-09-20', { gameScope: 'home', winningName: 'WIN' }),
+              makeEntry(302, '2026-09-21', { gameScope: 'away', winningName: 'DRAW' }),
+              makeEntry(303, '2026-09-22', { gameScope: 'neutral', winningName: 'LOSE' }),
+            ]
+            : [
+              makeEntry(301, '2026-09-20', { winningName: 'WIN' }),
+              makeEntry(302, '2026-09-21', { winningName: 'DRAW' }),
+              makeEntry(303, '2026-09-22', { winningName: 'LOSE' }),
+            ];
+    const createScopedStats = (scopeEntries: DiaryEntry[]): DiaryScopedStatistics => {
+      const attended = scopeEntries.filter((entry) => entry.type === 'attended');
+      const totalWins = attended.filter((entry) => entry.winningName === 'WIN').length;
+      const totalDraws = attended.filter((entry) => entry.winningName === 'DRAW').length;
+      const totalLosses = attended.filter((entry) => entry.winningName === 'LOSE').length;
+      const decisionCount = totalWins + totalDraws + totalLosses;
+      return {
+        totalCount: attended.length,
+        totalWins,
+        totalDraws,
+        totalLosses,
+        winRate: decisionCount > 0 ? Math.round((totalWins / decisionCount) * 1000) / 10 : 0,
+        mostVisitedStadium: attended.length > 0 ? '잠실야구장' : null,
+        mostVisitedCount: attended.length,
+        monthlyVisitCounts: { '9': attended.length },
+        stadiumVisitCounts: { 잠실야구장: attended.length },
+        homeVisitCount: attended.filter((entry) => entry.gameScope === 'home').length,
+        awayVisitCount: attended.filter((entry) => entry.gameScope === 'away').length,
+        scheduledCount: scopeEntries.filter((entry) => entry.type === 'scheduled').length,
+        emojiCounts: { 즐거움: attended.length },
+        opponentWinRates: {},
+      };
+    };
+    const allStats = createScopedStats(entries);
+    const statistics: DiaryStatistics = {
+      ...allStats,
+      monthlyCount: allStats.totalCount,
+      yearlyCount: allStats.totalCount,
+      yearlyWins: allStats.totalWins,
+      yearlyWinRate: allStats.winRate,
+      happiestMonth: allStats.totalCount > 0 ? '9월' : null,
+      happiestCount: allStats.totalCount,
+      firstDiaryDate: entries[0]?.date ?? null,
+      cheerPostCount: 2,
+      mateParticipationCount: 1,
+      currentWinStreak: 1,
+      longestWinStreak: 3,
+      currentLossStreak: 0,
+      opponentWinRates: {},
+      bestOpponent: 'KT 위즈',
+      worstOpponent: '두산 베어스',
+      dayOfWeekStats: {},
+      luckyDay: '토요일',
+      earnedBadges: ['FIRST_GAME'],
+      scopedStatistics: data === 'scoped'
+        ? {
+          all: allStats,
+          home: createScopedStats(entries.filter((entry) => entry.gameScope === 'home')),
+          away: createScopedStats(entries.filter((entry) => entry.gameScope === 'away')),
+        }
+        : undefined,
+    };
+    const visualQaStateOverride: DiaryStatisticsVisualQaStateOverride = {
+      diaryEntries: entries,
+      statistics,
+      isLoading: data === 'loading',
+    };
+    return {
+      props: {
+        profileImage: null,
+        name: '시각 검증 사용자',
+        onOpenDiaryEditor: () => {},
+        onOpenTicketUploadModal: () => {},
+        visualQaStateOverride,
+      },
+      captureSelector: data === 'loading'
+        ? '[aria-label="시즌 로그 로딩"]'
+        : '[data-screen-label="시즌 로그"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.diary-view-runtime': (context) => {
+    if (context.componentId !== 'src/components/mypage/DiaryformRuntime.tsx#DiaryViewSection') {
+      throw new Error('mypage.diary-view-runtime only supports DiaryViewSection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.diary-view-runtime supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.diary-view-runtime only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      attended: 'attended',
+      editing: 'editing',
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      photos: 'photos',
+      scheduled: 'scheduled',
+      'seat-dialog': 'seat-dialog',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    const allowedTargets = data === 'seat-dialog'
+      ? []
+      : ['next-week', 'prev-week', ...(data === 'empty' ? ['first-day'] : [])];
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.diary-view-runtime default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA diary runtime target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const date = '2026-09-20';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const photos = data === 'photos' || data === 'maximum-supported'
+      ? Array.from({ length: data === 'maximum-supported' ? 8 : 4 }, () => validVisualQaImage)
+      : [];
+    const diaryForm: DiaryFormData = {
+      type: data === 'scheduled' ? 'scheduled' : 'attended',
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: data === 'scheduled' ? null : 'WIN',
+      gameId: 20260920,
+      memo: isPressure
+        ? data === 'unbroken-token'
+          ? `RUNTIME-${'UNBROKEN'.repeat(42)}`
+          : '모바일 다이어리 런타임에서 긴 한국어 기록이 달력과 상세 영역을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+        : '모바일 다이어리 런타임 직관 기록입니다.',
+      photos,
+      photoStoragePaths: photos,
+      photoFiles: [],
+      section: '1루 일반석',
+      block: 'A',
+      seatRow: '3',
+      seatNumber: '12',
+      ticketVerified: data === 'attended' || data === 'photos' || data === 'maximum-supported',
+    };
+    const selectedDiary: DiaryEntry | undefined = data === 'empty'
+      ? undefined
+      : {
+        id: 91,
+        date,
+        type: data === 'scheduled' ? 'scheduled' : 'attended',
+        emoji: validVisualQaImage,
+        emojiName: diaryForm.emojiName,
+        winningName: diaryForm.winningName,
+        gameId: diaryForm.gameId,
+        memo: diaryForm.memo,
+        photos,
+        photoStoragePaths: photos,
+        team: isPressure ? `모바일 런타임 응원팀 ${'X'.repeat(30)}` : 'LG 트윈스 vs KT 위즈',
+        stadium: isPressure ? `구장-${'Y'.repeat(56)}` : '잠실야구장',
+        section: diaryForm.section,
+        block: diaryForm.block,
+        seatRow: diaryForm.seatRow,
+        seatNumber: diaryForm.seatNumber,
+        ticketVerified: diaryForm.ticketVerified,
+      };
+    const diaryEntries: DiaryEntry[] = data === 'maximum-supported'
+      ? Array.from({ length: 7 }, (_, index) => ({
+        ...selectedDiary!,
+        id: 91 + index,
+        date: `2026-09-${String(20 + index).padStart(2, '0')}`,
+      }))
+      : selectedDiary
+        ? [selectedDiary]
+        : [];
+    const availableGames: DiaryGame[] = [{
+      id: diaryForm.gameId,
+      homeTeam: 'LG 트윈스',
+      awayTeam: 'KT 위즈',
+      stadium: '잠실야구장',
+      score: '4-2',
+      date,
+    }];
+    const visualQaStateOverride: DiaryViewVisualQaStateOverride = {
+      selectedDate: new Date(2026, 8, 20, 12, 0, 0),
+      currentMonth: new Date(2026, 8, 20, 12, 0, 0),
+      isEditMode: data === 'empty' || data === 'editing' || data === 'seat-dialog',
+      selectedDiary,
+      availableGames,
+      diaryEntries,
+      diaryForm,
+      seatViewSelectionState: {
+        open: data === 'seat-dialog',
+        diaryId: data === 'seat-dialog' ? 91 : null,
+        candidates: [],
+        selectedIds: [],
+        submitting: false,
+      },
+    };
+    return {
+      props: { visualQaStateOverride } satisfies DiaryViewSectionProps,
+      captureSelector: '[data-testid="diary-editor-calendar-card"]',
+      initialPathname: '/mypage?view=diary',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.diary-view-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/Diaryform.tsx#DiaryViewSection') {
+      throw new Error('mypage.diary-view-section only supports DiaryViewSection');
+    }
+    if (Object.keys(context.states).length > 0 || Object.keys(context.variants).some((key) => key !== 'phase')) {
+      throw new Error('mypage.diary-view-section only supports its phase variant');
+    }
+    const phase = resolveDeclaredVariant(context, 'phase', {
+      fallback: 'fallback',
+      resolved: 'resolved',
+    });
+    return {
+      props: {
+        visualQaPhase: phase,
+        visualQaRuntimeOverride: phase === 'resolved'
+          ? createElement(
+            'div',
+            {
+              className: 'min-w-0 max-w-full break-words rounded-2xl border border-border bg-card p-5 text-center text-foreground [overflow-wrap:anywhere]',
+              'data-testid': 'diary-view-section-runtime-probe',
+            },
+            'DiaryformRuntime 위임 경계가 준비되었습니다.',
+          )
+          : undefined,
+      },
+      captureSelector: phase === 'fallback'
+        ? '[data-vqa-harness-surface]'
+        : '[data-testid="diary-view-section-runtime-probe"]',
+      initialPathname: '/mypage?view=diary',
+      surfaceClassName: 'block min-h-0 w-full max-w-none overflow-visible bg-background p-0 shadow-none',
+      theme: 'light',
+    };
+  },
+  'mypage.diary-read-mode': (context) => {
+    if (context.componentId !== 'src/components/mypage/DiaryformRuntime.tsx#DiaryReadMode') {
+      throw new Error('mypage.diary-read-mode only supports DiaryReadMode');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.diary-read-mode supports only data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.diary-read-mode only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'delete-pending': 'delete-pending',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      photos: 'photos',
+      'share-pending': 'share-pending',
+      single: 'single',
+      'ticket-verified': 'ticket-verified',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+    });
+    const target = context.interactionTargetId;
+    if (interaction === 'default' && target !== undefined) {
+      throw new Error('mypage.diary-read-mode default state does not accept interaction targets');
+    }
+    const shareEnabled = ['maximum-supported', 'photos', 'ticket-verified'].includes(data);
+    const allowedTargets = data === 'single'
+      ? ['delete', 'edit']
+      : shareEnabled
+        ? ['share']
+        : [];
+    if (interaction === 'click' && !allowedTargets.includes(target ?? '')) {
+      throw new Error(`지원하지 않는 Visual QA diary read target: ${target ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const photos = data === 'photos'
+      ? [validVisualQaImage, validVisualQaImage]
+      : data === 'maximum-supported'
+        ? Array.from({ length: 8 }, () => validVisualQaImage)
+        : [];
+    const diaryForm: DiaryFormData = {
+      type: 'attended',
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: 'WIN',
+      gameId: 20260920,
+      memo: isPressure
+        ? data === 'unbroken-token'
+          ? `READ-MODE-${'UNBROKEN'.repeat(38)}`
+          : '모바일 읽기 화면에서 긴 한국어 직관 메모가 경기 정보와 액션 버튼을 밀어내지 않고 자연스럽게 줄바꿈되는지 확인하는 로컬 fixture입니다.'
+        : '오늘의 직관 기록을 모바일에서 확인합니다.',
+      photos,
+      photoStoragePaths: [],
+      photoFiles: [],
+      ticketVerified: shareEnabled,
+    };
+    const selectedDiary: DiaryEntry | undefined = data === 'empty'
+      ? undefined
+      : {
+        id: 81,
+        date: '2026-09-20',
+        type: 'attended',
+        emoji: '⚾',
+        emojiName: '즐거움',
+        winningName: 'WIN',
+        gameId: 20260920,
+        memo: diaryForm.memo,
+        photos,
+        team: isPressure ? `모바일 줄바꿈 검증 응원팀 ${'X'.repeat(30)}` : 'LG 트윈스',
+        stadium: isPressure ? `구장-${'Y'.repeat(56)}` : '잠실야구장',
+        ticketVerified: shareEnabled,
+      };
+    const deleteMutation = {
+      isPending: data === 'delete-pending',
+    } as unknown as DiaryReadModeProps['deleteMutation'];
+    const props: DiaryReadModeProps = {
+      diaryForm,
+      selectedDiary,
+      setIsEditMode: () => {},
+      handleDeleteDiary: () => {},
+      deleteMutation,
+      onShareToCheer: () => {},
+      isShareToCheerPending: data === 'share-pending',
+    };
+    return {
+      props,
+      captureSelector: '[data-testid="diary-read-mode"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.badge-showcase': (context) => {
+    if (context.componentId !== 'src/components/mypage/BadgeShowcase.tsx#BadgeShowcase') {
+      throw new Error('mypage.badge-showcase only supports BadgeShowcase');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.badge-showcase only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.badge-showcase only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      full: 'full',
+      partial: 'partial',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        earnedBadges: data === 'empty'
+          ? []
+          : data === 'partial'
+            ? ['ticket', 'sparkles']
+            : ['ticket', 'flame', 'map-pin', 'sparkles', 'crown'],
+      },
+      captureSelector: '[data-testid="mypage-badge-showcase"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.diary-charts-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/DiaryChartsSection.tsx#DiaryChartsSection') {
+      throw new Error('mypage.diary-charts-section only supports DiaryChartsSection');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.diary-charts-section only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.diary-charts-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isMaximum = data === 'maximum-supported';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const opponentStats = data === 'empty'
+      ? {}
+      : Object.fromEntries(Array.from({ length: data === 'populated' ? 3 : 8 }, (_, index) => [
+        data === 'unbroken-token'
+          ? `OPPONENT-${'X'.repeat(72)}-${index}`
+          : data === 'long-korean'
+            ? `모바일 화면에서 줄바꿈되는 긴 상대팀 이름 ${index + 1}`
+            : `상대팀 ${index + 1}`,
+        {
+          wins: isMaximum ? Number.MAX_SAFE_INTEGER - index : 18 - index,
+          losses: isMaximum ? index : index + 2,
+          draws: isMaximum ? 0 : index % 2,
+          winRate: isMaximum ? 99.9 : 72.5 - index * 8.5,
+        },
+      ]));
+    const dayOfWeekStats = data === 'empty'
+      ? {}
+      : Object.fromEntries(['월', '화', '수', '목', '금', '토', '일'].map((day, index) => [
+        day,
+        {
+          count: isMaximum ? Number.MAX_SAFE_INTEGER - index : 8 + index,
+          wins: isMaximum ? Number.MAX_SAFE_INTEGER - index - 1 : 4 + index,
+          winRate: isPressure ? 52.4 + index * 5.2 : 81.5 - index * 4.1,
+        },
+      ]));
+    const statistics = {
+      totalCount: data === 'empty' ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : 42,
+      totalWins: data === 'empty' ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER - 2 : 24,
+      totalLosses: data === 'empty' ? 0 : isMaximum ? 1 : 12,
+      totalDraws: data === 'empty' ? 0 : isMaximum ? 0 : 6,
+      winRate: data === 'empty' ? 0 : isMaximum ? 99.9 : 57.1,
+      monthlyCount: data === 'empty' ? 0 : 12,
+      yearlyCount: data === 'empty' ? 0 : 42,
+      yearlyWins: data === 'empty' ? 0 : 24,
+      yearlyWinRate: data === 'empty' ? 0 : 57.1,
+      mostVisitedStadium: data === 'empty' ? null : isPressure ? `구장-${'Y'.repeat(48)}` : '잠실야구장',
+      mostVisitedCount: data === 'empty' ? 0 : 8,
+      happiestMonth: data === 'empty' ? null : '9월',
+      happiestCount: data === 'empty' ? 0 : 6,
+      firstDiaryDate: data === 'empty' ? null : '2026-03-01',
+      cheerPostCount: data === 'empty' ? 0 : 9,
+      mateParticipationCount: data === 'empty' ? 0 : 3,
+      currentWinStreak: data === 'empty' ? 0 : 4,
+      longestWinStreak: data === 'empty' ? 0 : 9,
+      currentLossStreak: data === 'empty' ? 0 : 1,
+      opponentWinRates: opponentStats,
+      bestOpponent: data === 'empty' ? '' : '상대팀 1',
+      worstOpponent: data === 'empty' ? '' : '상대팀 3',
+      dayOfWeekStats,
+      luckyDay: data === 'empty' ? '' : '월',
+      earnedBadges: data === 'empty' ? [] : ['ticket', 'sparkles'],
+    };
+    const monthlyData = data === 'empty'
+      ? []
+      : data === 'populated'
+        ? [{ month: '7월', count: 3 }, { month: '8월', count: 5 }, { month: '9월', count: 4 }]
+        : data === 'long-korean'
+          ? [
+            { month: '2026년 정규시즌 09월', count: 12 },
+            { month: '2026년 포스트시즌 10월', count: 8 },
+            { month: '2027년 스프링캠프 02월', count: 5 },
+          ]
+          : [{ month: `MONTH-${'X'.repeat(96)}`, count: isMaximum ? Number.MAX_SAFE_INTEGER : 123456789 }];
+    return {
+      props: { statistics, monthlyData },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[1120px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.diary-statistics': (context) => {
+    if (context.componentId !== 'src/components/mypage/Diarystatistics.tsx#DiaryStatistics') {
+      throw new Error('mypage.diary-statistics only supports DiaryStatistics');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.diary-statistics only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.diary-statistics only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'error-503': 'error-503',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const isMaximum = data === 'maximum-supported';
+    const isPressure = data === 'long-korean' || data === 'unbroken-token';
+    const isUnavailable = data === 'empty' || data === 'loading' || data === 'error-503';
+    const opponentWinRates = isUnavailable
+      ? {}
+      : Object.fromEntries(Array.from({ length: isMaximum ? 6 : 4 }, (_, index) => [
+        isPressure
+          ? `${data === 'unbroken-token' ? 'OPPONENT-' : '긴 이름의 상대팀 '}${'X'.repeat(data === 'unbroken-token' ? 56 : 0)}${index + 1}`
+          : `상대팀 ${index + 1}`,
+        {
+          wins: isMaximum ? Number.MAX_SAFE_INTEGER - index : 18 - index,
+          losses: isMaximum ? index : index + 2,
+          draws: isMaximum ? 0 : index % 2,
+          winRate: isMaximum ? 99.9 : 72.5 - index * 8.5,
+        },
+      ]));
+    const dayOfWeekStats = isUnavailable
+      ? {}
+      : Object.fromEntries(['월', '화', '수', '목', '금', '토', '일'].map((day, index) => [
+        day,
+        {
+          count: isMaximum ? Number.MAX_SAFE_INTEGER - index : 8 + index,
+          wins: isMaximum ? Number.MAX_SAFE_INTEGER - index - 1 : 4 + index,
+          winRate: isPressure ? 52.4 + index * 5.2 : 81.5 - index * 4.1,
+        },
+      ]));
+    const statistics = {
+      totalCount: isUnavailable ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : 42,
+      totalWins: isUnavailable ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER - 2 : 24,
+      totalLosses: isUnavailable ? 0 : isMaximum ? 1 : 12,
+      totalDraws: isUnavailable ? 0 : isMaximum ? 0 : 6,
+      winRate: isUnavailable ? 0 : isMaximum ? 99.9 : 57.1,
+      monthlyCount: isUnavailable ? 0 : 12,
+      yearlyCount: isUnavailable ? 0 : 42,
+      yearlyWins: isUnavailable ? 0 : 24,
+      yearlyWinRate: isUnavailable ? 0 : 57.1,
+      mostVisitedStadium: isUnavailable ? null : isPressure ? `구장-${'Y'.repeat(40)}` : '잠실야구장',
+      mostVisitedCount: isUnavailable ? 0 : 8,
+      monthlyVisitCounts: isUnavailable
+        ? {}
+        : Object.fromEntries([3, 4, 5, 6, 7, 8, 9, 10].map((month, index) => [
+          String(month), isMaximum ? Number.MAX_SAFE_INTEGER - index : index + 1,
+        ])),
+      stadiumVisitCounts: isUnavailable
+        ? {}
+        : Object.fromEntries(['잠실야구장', '고척스카이돔', '문학야구장', '수원KT위즈파크'].map((stadium, index) => [
+          isPressure ? `${stadium}-${'Z'.repeat(24)}` : stadium,
+          isMaximum ? Number.MAX_SAFE_INTEGER - index : 8 - index,
+        ])),
+      homeVisitCount: isUnavailable ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER : 24,
+      awayVisitCount: isUnavailable ? 0 : isMaximum ? Number.MAX_SAFE_INTEGER - 1 : 18,
+      scheduledCount: isUnavailable ? 0 : 2,
+      happiestMonth: isUnavailable ? null : '9월',
+      happiestCount: isUnavailable ? 0 : 6,
+      firstDiaryDate: isUnavailable ? null : '2026-03-01',
+      cheerPostCount: isUnavailable ? 0 : 9,
+      mateParticipationCount: isUnavailable ? 0 : 3,
+      currentWinStreak: isUnavailable ? 0 : 4,
+      longestWinStreak: isUnavailable ? 0 : 9,
+      currentLossStreak: isUnavailable ? 0 : 1,
+      opponentWinRates,
+      bestOpponent: isUnavailable ? '' : '상대팀 1',
+      worstOpponent: isUnavailable ? '' : '상대팀 4',
+      dayOfWeekStats,
+      luckyDay: isUnavailable ? '' : '월',
+      earnedBadges: isUnavailable ? [] : ['ticket', 'sparkles'],
+      emojiCounts: isUnavailable ? {} : { 즐거움: 8, 최고: 5, 분노: 2 },
+    };
+    const diaryEntries = isUnavailable ? [] : [{
+      id: 1,
+      date: '2026-09-20',
+      type: 'attended' as const,
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: 'WIN' as const,
+      gameId: 1,
+      memo: isPressure ? `모바일에서 줄바꿈을 확인하는 긴 관람 메모 ${'M'.repeat(64)}` : '즐거운 직관 기록',
+      photos: [],
+      team: '두산 베어스',
+      stadium: '잠실야구장',
+    }];
+    const emojiStats = isUnavailable
+      ? []
+      : [
+        { name: '즐거움', emoji: '⚾', count: isMaximum ? Number.MAX_SAFE_INTEGER : 8 },
+        { name: '최고', emoji: '🔥', count: isMaximum ? Number.MAX_SAFE_INTEGER - 1 : 5 },
+        { name: '분노', emoji: '😡', count: isMaximum ? Number.MAX_SAFE_INTEGER - 2 : 2 },
+      ];
+    return {
+      props: {
+        cheerPoints: isMaximum ? Number.MAX_SAFE_INTEGER : 1280,
+        visualQaStateOverride: {
+          statistics,
+          emojiStats,
+          diaryEntries,
+          isLoading: data === 'loading',
+          isError: data === 'error-503',
+        },
+      },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[1120px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.stadium-visit-list': (context) => {
+    if (context.componentId !== 'src/components/mypage/StadiumVisitList.tsx#StadiumVisitList') {
+      throw new Error('mypage.stadium-visit-list only supports StadiumVisitList');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('mypage.stadium-visit-list only supports the data state axis');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.stadium-visit-list only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const entryCount = data === 'empty'
+      ? 0
+      : data === 'single'
+        ? 1
+        : data === 'maximum-supported'
+          ? 48
+          : data === 'populated'
+            ? 12
+            : 8;
+    const stadiumNames = data === 'unbroken-token'
+      ? [
+        `STADIUM-${'X'.repeat(76)}-A`,
+        `STADIUM-${'Y'.repeat(76)}-B`,
+        `STADIUM-${'Z'.repeat(76)}-C`,
+      ]
+      : data === 'long-korean'
+        ? [
+          '긴 이름의 홈 구장 · 모바일 줄바꿈 검증 A',
+          '긴 이름의 원정 구장 · 모바일 줄바꿈 검증 B',
+          '긴 이름의 특별 좌석 구장 · 모바일 줄바꿈 검증 C',
+        ]
+        : ['잠실야구장', '고척스카이돔', '인천SSG랜더스필드', '수원KT위즈파크'];
+    const entries = Array.from({ length: entryCount }, (_, index) => ({
+      id: index + 1,
+      date: `2026-${String((index % 9) + 3).padStart(2, '0')}-${String((index % 27) + 1).padStart(2, '0')}`,
+      type: 'attended' as const,
+      emoji: '⚾',
+      emojiName: '즐거움',
+      winningName: index % 3 === 0 ? 'WIN' as const : index % 3 === 1 ? 'DRAW' as const : 'LOSE' as const,
+      gameId: index + 1,
+      memo: 'Visual QA local stadium visit fixture',
+      photos: [],
+      team: '두산 베어스',
+      stadium: stadiumNames[index % stadiumNames.length],
+    }));
+    return {
+      props: { entries },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.mate-history-card': (context) => {
+    if (context.componentId !== 'src/components/mypage/MateHistoryCard.tsx#MateHistoryCard') {
+      throw new Error('mypage.mate-history-card only supports MateHistoryCard');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.mate-history-card only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.mate-history-card only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('mypage.mate-history-card default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && context.interactionTargetId !== 'party-card') {
+      throw new Error(`mypage.mate-history-card expected party-card target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const party: MateParty = {
+      id: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER : 4201,
+      hostId: 77,
+      hostHandle: 'visual-qa-host',
+      teamId: 'DOOSAN',
+      cheeringSide: 'HOME',
+      stadium: data === 'unbroken-token'
+        ? `STADIUM-${'X'.repeat(72)}`
+        : data === 'long-korean'
+          ? '모바일 화면에서 자연스럽게 줄바꿈되는 긴 구장 이름'
+          : '잠실야구장',
+      gameDate: '2026-09-20',
+      gameTime: '18:30:00',
+      section: data === 'unbroken-token' ? `SECTION-${'Y'.repeat(42)}` : '1루 블루석',
+      currentParticipants: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER - 1 : data === 'single' ? 1 : 3,
+      maxParticipants: data === 'maximum-supported' ? Number.MAX_SAFE_INTEGER : 4,
+      status: data === 'long-korean'
+        ? 'CHECKED_IN'
+        : data === 'unbroken-token'
+          ? 'COMPLETED'
+          : data === 'maximum-supported'
+            ? 'SOLD'
+            : data === 'single'
+              ? 'PENDING'
+              : 'MATCHED',
+      description: data === 'long-korean'
+        ? '모바일 카드에서 일정·좌석·상태가 겹치지 않는지 확인하는 긴 동행 설명입니다.'
+        : 'Visual QA local mate history fixture',
+      homeTeam: '두산 베어스',
+      awayTeam: 'LG 트윈스',
+    };
+    return {
+      props: { party },
+      captureSelector: '[data-testid="mypage-mate-card"]',
+      initialPathname: '/mypage',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
+  'mypage.mate-history-section': (context) => {
+    if (context.componentId !== 'src/components/mypage/MateHistorySection.tsx#MateHistorySection') {
+      throw new Error('mypage.mate-history-section only supports MateHistorySection');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('mypage.mate-history-section only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('mypage.mate-history-section only supports its theme variant');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      loading: 'loading',
+      'long-korean': 'long-korean',
+      'maximum-supported': 'maximum-supported',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      click: 'click',
+    });
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('mypage.mate-history-section default state does not accept interaction targets');
+    }
+    if (interaction === 'click' && !['completed-tab', 'load-more'].includes(context.interactionTargetId ?? '')) {
+      throw new Error(`mypage.mate-history-section expected a known target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const unavailable = data === 'empty' || data === 'loading';
+    const pressure = data === 'long-korean' || data === 'unbroken-token';
+    const maximum = data === 'maximum-supported';
+    const makeParty = (id: number, status: MateParty['status'], stadium: string): MateParty => ({
+      id,
+      hostId: id + 100,
+      hostHandle: `history-host-${id}`,
+      teamId: 'DOOSAN',
+      cheeringSide: 'HOME',
+      stadium,
+      gameDate: '2026-09-20',
+      gameTime: '18:30:00',
+      section: pressure ? `SECTION-${'X'.repeat(40)}-${id}` : `${id}루 블루석`,
+      currentParticipants: maximum ? Number.MAX_SAFE_INTEGER - id : id + 1,
+      maxParticipants: maximum ? Number.MAX_SAFE_INTEGER : 4,
+      status,
+      description: pressure ? `모바일 카드 정합성 확인용 긴 메이트 기록 ${'M'.repeat(48)}` : 'Visual QA local mate history section fixture',
+      homeTeam: '두산 베어스',
+      awayTeam: 'LG 트윈스',
+    });
+    const stadium = data === 'unbroken-token'
+      ? `STADIUM-${'Y'.repeat(72)}`
+      : data === 'long-korean'
+        ? '모바일에서 자연스럽게 줄바꿈되는 긴 구장 이름'
+        : '잠실야구장';
+    const tabStates = {
+      all: {
+        parties: unavailable ? [] : [
+          makeParty(1, data === 'populated' ? 'MATCHED' : 'CHECKED_IN', stadium),
+          makeParty(2, 'COMPLETED', stadium),
+        ],
+        isLoading: data === 'loading',
+        isFetchingNextPage: false,
+        hasNextPage: !unavailable,
+        emptyMessage: '참여한 메이트 내역이 없습니다',
+      },
+      completed: {
+        parties: unavailable ? [] : [makeParty(3, 'COMPLETED', stadium)],
+        isLoading: data === 'loading',
+        isFetchingNextPage: false,
+        hasNextPage: false,
+        emptyMessage: '완료된 메이트 내역이 없습니다',
+      },
+      ongoing: {
+        parties: unavailable ? [] : [makeParty(4, 'CHECKED_IN', stadium)],
+        isLoading: data === 'loading',
+        isFetchingNextPage: false,
+        hasNextPage: false,
+        emptyMessage: '진행 중인 메이트가 없습니다',
+      },
+    } satisfies Record<string, unknown>;
+    if (context.interactionTargetId === 'load-more' && !tabStates.all.hasNextPage) {
+      throw new Error(`mypage.mate-history-section load-more is unavailable for data=${data}`);
+    }
+    return {
+      props: {
+        visualQaStateOverride: {
+          initialTab: 'all',
+          tabStates,
+          onFetchNextPage: () => undefined,
+        },
+      },
+      captureSelector: '[data-testid="mypage-mate-history-section"]',
+      initialPathname: '/mypage',
+      surfaceClassName: 'block min-h-0 w-full max-w-[520px] overflow-visible bg-background p-0 shadow-none',
+      theme,
+    };
+  },
   'mypage.season-empty': (context) => {
     const content = resolveMyPageSeasonEmptyContent(context);
     const actionPresent = resolveDeclaredVariant(context, 'action', {
@@ -18393,6 +33000,109 @@ const adapters: Record<string, ComponentStateAdapter> = {
           default: 'default',
         }),
       },
+    };
+  },
+  'mypage.password-change': (context) => {
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty',
+      'interaction-check': 'interaction-check',
+      'request-error-recovery': 'request-error-recovery',
+      'request-pending': 'request-pending',
+      'request-success': 'request-success',
+      'validation-error': 'validation-error',
+    });
+    requireStateValue(context, 'permissions', 'user');
+    const hasPassword = resolveDeclaredVariant(context, 'has-password', {
+      false: false,
+      true: true,
+    });
+    const interaction = requireStateValueFromMap(context, 'interactions', {
+      click: 'click',
+      default: 'default',
+      'focus-visible': 'focus-visible',
+      hover: 'hover',
+      pressed: 'pressed',
+      submit: 'submit',
+    });
+    const target = context.interactionTargetId;
+    const submitData = new Set([
+      'request-error-recovery',
+      'request-pending',
+      'request-success',
+      'validation-error',
+    ]);
+    if (data === 'empty' && (interaction === 'click' || interaction === 'submit')) {
+      throw new Error(`지원하지 않는 Visual QA password-change initial interaction: ${interaction}`);
+    }
+    if (submitData.has(data) && interaction !== 'submit') {
+      throw new Error(`지원하지 않는 Visual QA password-change submit state: ${data}/${interaction}`);
+    }
+    if (data === 'interaction-check' && interaction !== 'click') {
+      throw new Error(`지원하지 않는 Visual QA password-change interaction state: ${data}/${interaction}`);
+    }
+    if (interaction !== 'default') {
+      const sharedTargets = new Set([
+        'cancel',
+        'confirm-password',
+        'confirm-visibility',
+        'new-password',
+        'new-visibility',
+      ]);
+      const validTarget = sharedTargets.has(target ?? '')
+        || (submitData.has(data) && target?.startsWith('submit-'))
+        || (hasPassword && new Set(['current-password', 'current-visibility']).has(target ?? ''));
+      if (!validTarget) {
+        throw new Error(`지원하지 않는 Visual QA password-change target: ${target ?? '<missing>'}`);
+      }
+      if (data === 'interaction-check' && !new Set([
+        'cancel',
+        'confirm-visibility',
+        'current-visibility',
+        'new-visibility',
+      ]).has(target ?? '')) {
+        throw new Error(`지원하지 않는 Visual QA password-change interaction-check target: ${target ?? '<missing>'}`);
+      }
+      if (submitData.has(data) && !target?.startsWith('submit-')) {
+        throw new Error(`지원하지 않는 Visual QA password-change submit target: ${target ?? '<missing>'}`);
+      }
+    }
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    return {
+      props: {
+        hasPassword,
+        onCancel: () => emitVisualQaInteraction('visual-qa-password-change-cancel', {
+          value: 'cancelled',
+        }),
+        onSuccess: () => emitVisualQaInteraction('visual-qa-password-change-success', {
+          value: 'completed',
+        }),
+      },
+      captureSelector: '[data-testid="mypage-password-change-section"]',
+      expectedHash: '',
+      expectedPathname: '/mypage',
+      expectedSearch: '?view=changePassword',
+      harnessAuthState: {
+        user: {
+          id: 900001,
+          email: 'visual-qa-mypage@example.com',
+          name: '비주얼 QA 사용자',
+          handle: 'visual-qa-mypage',
+          favoriteTeam: '한화',
+          favoriteTeamColor: '#f15a24',
+          role: 'ROLE_USER',
+          profileImageUrl: null,
+          provider: 'LOCAL',
+          bio: 'Visual QA deterministic password-management fixture',
+          cheerPoints: 120,
+          hasPassword,
+        },
+      },
+      initialPathname: '/mypage?view=changePassword',
+      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-transparent p-0 shadow-none',
+      theme,
     };
   },
   'notice.page': (context) => {
@@ -19322,6 +34032,28 @@ const adapters: Record<string, ComponentStateAdapter> = {
       surfaceClassName: 'block min-h-20 w-full max-w-[288px] overflow-visible bg-[#1a1a2e] p-4',
     };
   },
+  'prediction.game-powerup-inventory': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory') {
+      throw new Error('prediction.game-powerup-inventory only supports PredictionGamePowerupInventory');
+    }
+    const gameId = 'visual-qa-game';
+    const inventory = resolveDeclaredVariant(context, 'inventory', retroFooterInventories);
+    const viewerScope = getViewerQueryScope();
+    return {
+      props: { gameId },
+      // usePowerups reads these two queries; seeding them keeps the scenario free of transport.
+      queryData: [
+        { queryKey: PRIVATE_QUERY_KEYS.powerupInventory(viewerScope), data: inventory.powerups },
+        {
+          queryKey: PRIVATE_QUERY_KEYS.activePowerups(viewerScope),
+          data: inventory.activePowerups.map((type) => ({ type, gameId })),
+        },
+      ],
+      captureSelector: '[data-testid="prediction-game-powerup-inventory"]',
+      surfaceClassName: 'block w-full max-w-[320px] overflow-visible bg-[#1a1a2e] p-0',
+      theme: resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', { dark: 'dark', light: 'light' }),
+    };
+  },
   'retro.power-up-inventory': (context) => {
     const interaction = requireStateValueFromMap(context, 'interactions', {
       default: 'default',
@@ -19706,6 +34438,206 @@ const adapters: Record<string, ComponentStateAdapter> = {
       surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
     };
   },
+  'changwon.seat-map': (context) => {
+    if (context.componentId !== 'src/components/changwon/ChangwonSeatMap.tsx#ChangwonSeatMap') {
+      throw new Error('changwon.seat-map only supports ChangwonSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('changwon.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('changwon.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', changwonSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as ChangwonSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'daegu.seat-map': (context) => {
+    if (context.componentId !== 'src/components/daegu/DaeguSeatMap.tsx#DaeguSeatMap') {
+      throw new Error('daegu.seat-map only supports DaeguSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('daegu.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('daegu.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', daeguSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as DaeguSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'gwangju.seat-map': (context) => {
+    if (context.componentId !== 'src/components/gwangju/GwangjuSeatMap.tsx#GwangjuSeatMap') {
+      throw new Error('gwangju.seat-map only supports GwangjuSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('gwangju.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('gwangju.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', gwangjuSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as GwangjuSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'daejeon.seat-map': (context) => {
+    if (context.componentId !== 'src/components/daejeon/DaejeonSeatMap.tsx#DaejeonSeatMap') {
+      throw new Error('daejeon.seat-map only supports DaejeonSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('daejeon.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('daejeon.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', daejeonSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as DaejeonSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'gocheok.seat-map': (context) => {
+    if (context.componentId !== 'src/components/gocheok/GocheokSeatMap.tsx#GocheokSeatMap') {
+      throw new Error('gocheok.seat-map only supports GocheokSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('gocheok.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('gocheok.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', gocheokSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as GocheokSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'incheon.seat-map': (context) => {
+    if (context.componentId !== 'src/components/incheon/IncheonSeatMap.tsx#IncheonSeatMap') {
+      throw new Error('incheon.seat-map only supports IncheonSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('incheon.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('incheon.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', incheonSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as IncheonSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'jamsil.seat-map': (context) => {
+    if (context.componentId !== 'src/components/jamsil/JamsilSeatMap.tsx#JamsilSeatMap') {
+      throw new Error('jamsil.seat-map only supports JamsilSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('jamsil.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('jamsil.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', jamsilSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as JamsilSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'suwon.seat-map': (context) => {
+    if (context.componentId !== 'src/components/suwon/SuwonSeatMap.tsx#SuwonSeatMap') {
+      throw new Error('suwon.seat-map only supports SuwonSeatMap');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'permissions', 'interactions'].includes(key))) {
+      throw new Error('suwon.seat-map only supports data, permissions, and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'mode')) {
+      throw new Error('suwon.seat-map only supports the mode variant');
+    }
+
+    requireStateValue(context, 'data', 'populated');
+    requireStateValueFromMap(context, 'interactions', suwonSeatMapInteractions);
+    const isLoggedIn = requireStateValueFromMap(context, 'permissions', {
+      anonymous: false,
+      user: true,
+    });
+
+    return {
+      props: { stateOverride: { isLoggedIn } as SuwonSeatMapStateOverride },
+      captureSelector: '[data-vqa-harness-surface]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1440px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
   'sajik.seat-map-editor': (context) => {
     requireStateValueFromMap(context, 'interactions', sajikSeatMapEditorInteractions);
     const dataState = requireStateValueFromMap(context, 'data', {
@@ -19744,6 +34676,508 @@ const adapters: Record<string, ComponentStateAdapter> = {
       },
       captureSelector: '[data-testid="sajik-seatmap-editor"]',
       surfaceClassName: 'block min-h-[844px] w-full max-w-[1680px] overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'changwon.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/changwon/ChangwonSeatMapSvg.tsx#ChangwonSeatMapSvg') {
+      throw new Error('changwon.seat-map-svg only supports ChangwonSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('changwon.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('changwon.seat-map-svg only supports filter, fullscreen, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', changwonSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['TABLE'], filterLevels: null, filterSides: null, filterGroup: null },
+      'level-filtered': { filterCats: null, filterLevels: ['1F'], filterSides: null, filterGroup: null },
+      none: { filterCats: null, filterLevels: null, filterSides: null, filterGroup: null },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', {
+      maximum: 3,
+      minimum: 1,
+    });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? changwonSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? changwonSvgReferenceBlock.id : null,
+        setHover: () => {},
+        ...filter,
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 3,
+        zoomStep: 0.25,
+        enableAutoCenter: false,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="changwon-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'daegu.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/daegu/DaeguSeatMapSvg.tsx#DaeguSeatMapSvg') {
+      throw new Error('daegu.seat-map-svg only supports DaeguSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('daegu.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('daegu.seat-map-svg only supports filter, fullscreen, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', daeguSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['AWAY'], filterLevels: null, filterSides: null },
+      'level-filtered': { filterCats: null, filterLevels: ['3F'], filterSides: null },
+      none: { filterCats: null, filterLevels: null, filterSides: null },
+      'side-filtered': { filterCats: null, filterLevels: null, filterSides: ['FIRST_BASE'] },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', { maximum: 3, minimum: 1 });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        blocks: DAEGU_CANONICAL_BLOCKS,
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? daeguSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? daeguSvgReferenceBlock.id : null,
+        setHover: () => {},
+        ...filter,
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 3,
+        zoomStep: 0.25,
+        focusBlockId: null,
+        focusRequestId: 0,
+        enableAutoCenter: false,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="daegu-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'daejeon.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/daejeon/DaejeonSeatMapSvg.tsx#DaejeonSeatMapSvg') {
+      throw new Error('daejeon.seat-map-svg only supports DaejeonSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('daejeon.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('daejeon.seat-map-svg only supports filter, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', daejeonSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['TABLE'], filterLevels: null, filterSides: null },
+      'level-filtered': { filterCats: null, filterLevels: ['1F'], filterSides: null },
+      none: { filterCats: null, filterLevels: null, filterSides: null },
+      'side-filtered': { filterCats: null, filterLevels: null, filterSides: ['FIRST_BASE'] },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', {
+      maximum: 2.5,
+      minimum: 0.9,
+    });
+    const visibleBlockIds = DAEJEON_BLOCKS
+      .filter((block) => (
+        (filter.filterCats == null || filter.filterCats.includes(block.category))
+        && (filter.filterLevels == null || filter.filterLevels.includes(block.level))
+        && (filter.filterSides == null || filter.filterSides.includes(block.side))
+      ))
+      .map((block) => block.id);
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? daejeonSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? daejeonSvgReferenceBlock.id : null,
+        setHover: () => {},
+        visibleBlockIds,
+        ...filter,
+        zoom,
+        pan: zoom <= 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 0.9,
+        maxZoom: 2.5,
+        focusBlockId: null,
+        focusRequestId: 0,
+      },
+      captureSelector: '[data-testid="daejeon-seatmap-transform-layer"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'incheon.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/incheon/IncheonSeatMapSvg.tsx#IncheonSeatMapSvg') {
+      throw new Error('incheon.seat-map-svg only supports IncheonSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('incheon.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('incheon.seat-map-svg only supports filter, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', incheonSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['OUTFIELD_FIELD'], filterLevels: null, filterSides: null },
+      'level-filtered': { filterCats: null, filterLevels: ['1F'], filterSides: null },
+      none: { filterCats: null, filterLevels: null, filterSides: null },
+      'side-filtered': { filterCats: null, filterLevels: null, filterSides: ['FIRST_BASE'] },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', { maximum: 2.5, minimum: 1 });
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? incheonSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? incheonSvgReferenceBlock.id : null,
+        setHover: () => {},
+        ...filter,
+        comparisonIds: [incheonSvgReferenceBlock.id],
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 2.5,
+        zoomStep: 0.25,
+        enableAutoCenter: false,
+      },
+      captureSelector: '[data-testid="incheon-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'incheon.operator-visit-guide': (context) => {
+    if (context.componentId !== 'src/components/incheon/IncheonSeatMap.tsx#IncheonOperatorVisitGuidePanel') {
+      throw new Error('incheon.operator-visit-guide only supports IncheonOperatorVisitGuidePanel');
+    }
+    if (Object.keys(context.states).some((key) => key !== 'data')) {
+      throw new Error('incheon.operator-visit-guide only supports its data state');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('incheon.operator-visit-guide only supports its theme variant');
+    }
+
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const sourceBlock = INCHEON_BLOCKS.find((block) => block.block === '101B') ?? INCHEON_BLOCKS[0];
+    const section = data === 'long-korean'
+      ? {
+        ...sourceBlock,
+        name: '모바일 화면에서 여러 줄로 표시되어야 하는 매우 긴 인천 좌석 구역 이름',
+        sourceNote: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 긴 좌석 안내 근거 문구',
+      }
+      : data === 'unbroken-token'
+        ? {
+          ...sourceBlock,
+          name: `INCHEON-OPERATOR-${'X'.repeat(180)}`,
+          sourceNote: `SOURCE-${'X'.repeat(180)}`,
+        }
+        : sourceBlock;
+
+    return {
+      props: {
+        accent: theme === 'dark' ? '#78B9BE' : '#315783',
+        section,
+      },
+      captureSelector: '[data-testid="incheon-operator-visit-guide"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'jamsil.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/jamsil/JamsilSeatMapSvg.tsx#JamsilSeatMapSvg') {
+      throw new Error('jamsil.seat-map-svg only supports JamsilSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('jamsil.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'granularity', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('jamsil.seat-map-svg only supports filter, fullscreen, granularity, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', jamsilSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filterId = resolveDeclaredVariant(context, 'filter', {
+      category: 'premium',
+      level: 'lv-1f',
+      none: 'all',
+      side: 'pos-first',
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', { maximum: 2.5, minimum: 1 });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        granularity: resolveDeclaredVariant(context, 'granularity', { high: 'high', low: 'low' }),
+        officialSource: 'LG',
+        onOfficialSourceChange: () => {},
+        selected: selection === 'selected' ? jamsilSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? jamsilSvgReferenceBlock.id : null,
+        setHover: () => {},
+        filterId,
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 2.5,
+        zoomStep: 0.25,
+        enableAutoCenter: false,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="jamsil-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'suwon.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/suwon/SuwonSeatMapSvg.tsx#SuwonSeatMapSvg') {
+      throw new Error('suwon.seat-map-svg only supports SuwonSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('suwon.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'selection', 'zoom'].includes(key))) {
+      throw new Error('suwon.seat-map-svg only supports filter, fullscreen, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', suwonSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filterCats = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': ['INFIELD_RED'],
+      none: null,
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', { maximum: 2.5, minimum: 1 });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        selectedId: selection === 'selected' ? suwonSvgReferenceBlock.id : null,
+        hoveredId: selection === 'hovered' ? suwonSvgReferenceBlock.id : null,
+        comparisonIds: [suwonSvgReferenceBlock.id],
+        filterCats,
+        onSelect: () => {},
+        onHover: () => {},
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 2.5,
+        zoomStep: 0.25,
+        enableAutoCenter: false,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="suwon-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+    };
+  },
+  'gocheok.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/gocheok/GocheokSeatMapSvg.tsx#GocheokSeatMapSvg') {
+      throw new Error('gocheok.seat-map-svg only supports GocheokSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('gocheok.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('gocheok.seat-map-svg only supports filter, fullscreen, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', gocheokSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['TABLE'], filterLevels: null, filterSides: null },
+      'level-filtered': { filterCats: null, filterLevels: ['1F'], filterSides: null },
+      none: { filterCats: null, filterLevels: null, filterSides: null },
+      'side-filtered': { filterCats: null, filterLevels: null, filterSides: ['FIRST_BASE'] },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', {
+      maximum: 2.5,
+      minimum: 1,
+    });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? gocheokSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? gocheokSvgReferenceBlock.id : null,
+        setHover: () => {},
+        ...filter,
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 2.5,
+        zoomStep: 0.25,
+        enableAutoCenter: false,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="gocheok-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+    };
+  },
+  'gwangju.seat-map-editor': (context) => {
+    if (context.componentId !== 'src/components/gwangju/GwangjuSeatMapEditor.tsx#GwangjuSeatMapEditor') {
+      throw new Error('gwangju.seat-map-editor only supports GwangjuSeatMapEditor');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('gwangju.seat-map-editor only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('gwangju.seat-map-editor only supports the theme variant');
+    }
+
+    requireStateValueFromMap(context, 'data', { single: 'single' });
+    requireStateValueFromMap(context, 'interactions', gwangjuSeatMapEditorInteractions);
+    const theme = resolveDeclaredVariant<'dark'>(context, 'theme', { dark: 'dark' });
+
+    return {
+      props: {},
+      captureSelector: '[data-testid="gwangju-seatmap-editor"]',
+      surfaceClassName: 'block min-h-[844px] w-full max-w-[1680px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'gwangju.seat-map-svg': (context) => {
+    if (context.componentId !== 'src/components/gwangju/GwangjuSeatMapSvg.tsx#GwangjuSeatMapSvg') {
+      throw new Error('gwangju.seat-map-svg only supports GwangjuSeatMapSvg');
+    }
+    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
+      throw new Error('gwangju.seat-map-svg only supports data and interactions state axes');
+    }
+    if (Object.keys(context.variants).some((key) => !['filter', 'fullscreen', 'mode', 'selection', 'zoom'].includes(key))) {
+      throw new Error('gwangju.seat-map-svg only supports filter, fullscreen, mode, selection, and zoom variants');
+    }
+
+    requireStateValueFromMap(context, 'data', { populated: 'loaded' });
+    requireStateValueFromMap(context, 'interactions', gwangjuSeatMapSvgInteractions);
+    const selection = resolveDeclaredVariant(context, 'selection', {
+      hovered: 'hovered',
+      none: 'none',
+      selected: 'selected',
+    });
+    const filter = resolveDeclaredVariant(context, 'filter', {
+      'category-filtered': { filterCats: ['K7'], filterLevels: null, filterSides: null, filterFanRoles: null, activeFilterId: 'k7' },
+      'level-filtered': { filterCats: null, filterLevels: ['1F'], filterSides: null, filterFanRoles: null, activeFilterId: 'lv-1f' },
+      none: { filterCats: null, filterLevels: null, filterSides: null, filterFanRoles: null, activeFilterId: 'all' },
+    });
+    const zoom = resolveDeclaredVariant(context, 'zoom', {
+      maximum: 3,
+      minimum: 1,
+    });
+    const fullscreen = resolveDeclaredVariant(context, 'fullscreen', {
+      absent: undefined,
+      present: () => {},
+    });
+
+    return {
+      props: {
+        mode: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
+        selected: selection === 'selected' ? gwangjuSvgReferenceBlock : null,
+        setSelected: () => {},
+        hover: selection === 'hovered' ? gwangjuSvgReferenceBlock.id : null,
+        setHover: () => {},
+        ...filter,
+        zoom,
+        pan: zoom === 1 ? { x: 0, y: 0 } : { x: 24, y: -18 },
+        onPanChange: () => {},
+        onZoom: () => {},
+        minZoom: 1,
+        maxZoom: 3,
+        zoomStep: 0.25,
+        onFullscreen: fullscreen,
+      },
+      captureSelector: '[data-testid="gwangju-seatmap-viewport"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: resolveDeclaredVariant(context, 'mode', { dark: 'dark', light: 'light' }),
     };
   },
   'sajik.seat-map-svg': (context) => {

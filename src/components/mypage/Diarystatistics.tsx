@@ -4,6 +4,7 @@ import { EMOJI_STATS } from '../../constants/diary';
 import { useDiaryStatistics } from '../../hooks/useDiaryStatistics';
 import type {
   DiaryEntry,
+  EmojiStat,
   DiaryScopedStatistics,
   DiaryStatistics as DiaryStatisticsPayload,
   DiaryStatsScope,
@@ -17,9 +18,18 @@ import {
 } from './MyPageFlowIcons';
 import MyPageSeasonEmptyState from './MyPageSeasonEmptyState';
 
+export interface DiaryStatisticsVisualQaStateOverride {
+  statistics?: DiaryStatisticsPayload;
+  emojiStats?: EmojiStat[];
+  diaryEntries?: DiaryEntry[];
+  isLoading?: boolean;
+  isError?: boolean;
+}
+
 type DiaryStatisticsProps = {
   cheerPoints?: number;
   onOpenDiaryEditor?: () => void;
+  visualQaStateOverride?: DiaryStatisticsVisualQaStateOverride;
 };
 
 const formatOpponentRecord = (stats: OpponentStats): string => {
@@ -135,8 +145,20 @@ function DiaryStatisticsSkeleton() {
   );
 }
 
-export default function DiaryStatistics({ cheerPoints = 0, onOpenDiaryEditor }: DiaryStatisticsProps) {
-  const { statistics, emojiStats, diaryEntries, isLoading } = useDiaryStatistics();
+export default function DiaryStatistics({
+  cheerPoints = 0,
+  onOpenDiaryEditor,
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: DiaryStatisticsProps) {
+  const liveState = useDiaryStatistics();
+  const visualQaStateOverride = import.meta.env.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
+  const statistics = visualQaStateOverride?.statistics ?? liveState.statistics;
+  const emojiStats = visualQaStateOverride?.emojiStats ?? liveState.emojiStats;
+  const diaryEntries = visualQaStateOverride?.diaryEntries ?? liveState.diaryEntries;
+  const isLoading = visualQaStateOverride?.isLoading ?? liveState.isLoading;
+  const isError = visualQaStateOverride?.isError ?? liveState.isError;
   const [statsScope, setStatsScope] = useState<DiaryStatsScope>('all');
   const scopedStatsAvailable = hasCompleteScopedStatistics(statistics);
   const displayStats = resolveDisplayStats(statistics, statsScope);
@@ -199,6 +221,28 @@ export default function DiaryStatistics({ cheerPoints = 0, onOpenDiaryEditor }: 
 
   if (isLoading) {
     return <DiaryStatisticsSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <section className="mypage-season-section mypage-season-section--error" data-screen-label="나의 기록">
+        <div className="mypage-season-head">
+          <div>
+            <h1>나의 기록</h1>
+            <p>{seasonYear} 시즌 직관 데이터 분석</p>
+          </div>
+        </div>
+
+        <div role="alert">
+          <MyPageSeasonEmptyState
+            icon={<MyPageBarChartIcon />}
+            title="통계를 불러오지 못했어요"
+            description="잠시 후 다시 방문하면 통계를 확인할 수 있어요."
+            tone="danger"
+          />
+        </div>
+      </section>
+    );
   }
 
   if (displayStats.totalCount === 0) {

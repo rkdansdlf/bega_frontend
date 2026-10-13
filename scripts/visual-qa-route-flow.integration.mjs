@@ -25,6 +25,7 @@ export const PRODUCT_DEFECT_SOURCES = {
     source: 'src/components/PublicNavbar.tsx',
     symbol: 'PublicNavbar',
     selectors: [
+      'a[aria-label="BEGA 홈"]',
       '[data-testid="navbar-notification-trigger"]',
       '[data-testid="navbar-dm-icon"]',
       'button[aria-label="메뉴 열기"]',
@@ -38,6 +39,7 @@ export const PRODUCT_DEFECT_SOURCES = {
       '[data-testid="ticket-upload-dialog"] h2',
       '[data-testid="ticket-upload-dropzone"]',
       '[data-testid="ticket-upload-cancel"]',
+      '[data-testid="ticket-upload-dialog"] button[aria-label="닫기"]',
     ],
   },
 };
@@ -80,6 +82,8 @@ export const HOME_ASSERTION_IDS = [
   'home-date-navigation-missing',
   'home-date-navigation-not-updated',
   'home-navbar-interactive-overlap',
+  'home-navbar-content-overflow',
+  'home-title-header-overlap',
 ];
 
 export const MY_PAGE_ASSERTION_IDS = [
@@ -119,6 +123,11 @@ export const TICKET_MODAL_FLOW_SOURCE_IDENTITIES = [
     source: 'src/components/ticket/TicketUploadModal.tsx',
     symbol: 'TicketUploadModal',
     responsibility: 'ticket dialog surface and keyboard close path',
+  },
+  {
+    source: 'src/components/ui/plain-dialog.tsx',
+    symbol: 'PlainDialog',
+    responsibility: 'shared dialog title and close-control layout',
   },
 ];
 
@@ -165,7 +174,7 @@ export const ROUTE_FLOW_EVIDENCE_RECORDS = [
   {
     id: 'ticket-upload-modal-host',
     flow: 'mypage',
-    source: TICKET_MODAL_FLOW_SOURCE_IDENTITIES[0],
+    source: TICKET_MODAL_FLOW_SOURCE_IDENTITIES,
     contractComponentIds: ['src/components/MyPageRuntime.tsx#TicketUploadModal'],
     contractStatuses: ['registered'],
     hostScenarioIds: [
@@ -212,7 +221,7 @@ export const ROUTE_FLOW_EVIDENCE_RECORDS = [
   {
     id: 'ticket-modal-200-percent-surface',
     flow: 'product-defects',
-    source: PRODUCT_DEFECT_SOURCES.ticketModal,
+    source: TICKET_MODAL_FLOW_SOURCE_IDENTITIES,
     contractComponentIds: ['src/components/MyPageRuntime.tsx#TicketUploadModal'],
     contractStatuses: ['registered'],
     hostScenarioIds: [
@@ -223,6 +232,7 @@ export const ROUTE_FLOW_EVIDENCE_RECORDS = [
     validator: 'productDefectAssertions',
     assertionIds: [
       'ticket-modal-title-overflow',
+      'ticket-modal-title-close-overlap',
       'ticket-modal-dropzone-clipped',
       'ticket-modal-interactive-overlap',
     ],
@@ -370,6 +380,24 @@ export const homeAssertions = (evidence) => {
       evidence: evidence.navbarInteractiveOverlaps,
     });
   }
+  if ((evidence?.navbarContentOverflows?.length ?? 0) > 0) {
+    failures.push({
+      id: 'home-navbar-content-overflow',
+      message: 'visible Home navbar content extends outside its capsule',
+      evidence: evidence.navbarContentOverflows,
+    });
+  }
+  const homeTitleHeaderOverlapAtTop = evidence
+    && Object.prototype.hasOwnProperty.call(evidence, 'homeTitleHeaderOverlapAtTop')
+    ? evidence.homeTitleHeaderOverlapAtTop
+    : (evidence?.scrollY ?? 0) <= 1 ? evidence?.homeTitleHeaderOverlap : null;
+  if (homeTitleHeaderOverlapAtTop) {
+    failures.push({
+      id: 'home-title-header-overlap',
+      message: 'the sticky public navbar overlaps the Home page title at the top of the page',
+      evidence: homeTitleHeaderOverlapAtTop,
+    });
+  }
   return failures;
 };
 
@@ -446,6 +474,7 @@ export const collectHomeEvidence = async (page) => page.evaluate((source) => {
   const primaryAction = document.querySelector(source.selectors.primaryAction);
   const datePrevious = document.querySelector(source.selectors.datePrev);
   const dateNext = document.querySelector(source.selectors.dateNext);
+  const pageTitle = document.querySelector('main h1') ?? document.querySelector('h1');
   const gameCards = panel?.querySelectorAll(source.selectors.gameCard) ?? [];
   const rectData = (rect) => ({
     x: Number((rect.x ?? rect.left).toFixed(2)),
@@ -467,6 +496,28 @@ export const collectHomeEvidence = async (page) => page.evaluate((source) => {
   const navbarRoot = document.querySelector('header');
   const navbar = document.querySelector('[data-testid="navbar-capsule"]') ?? navbarRoot;
   const navbarRect = navbar?.getBoundingClientRect();
+  const pageTitleRect = pageTitle?.getBoundingClientRect();
+  const navbarContentOverflows = navbar instanceof HTMLElement && navbarRect
+    ? [...navbar.children].flatMap((child) => {
+      if (!(child instanceof HTMLElement)) return [];
+      const style = getComputedStyle(child);
+      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity || '1') <= 0.01) {
+        return [];
+      }
+      const childRect = child.getBoundingClientRect();
+      if (childRect.width <= 0 || childRect.height <= 0) return [];
+      const overflows = childRect.left < navbarRect.left - 0.5
+        || childRect.right > navbarRect.right + 0.5
+        || childRect.top < navbarRect.top - 0.5
+        || childRect.bottom > navbarRect.bottom + 0.5;
+      return overflows
+        ? [{ className: String(child.className || child.tagName), rect: rectData(childRect), navbarRect: rectData(navbarRect) }]
+        : [];
+    })
+    : [];
+  const homeTitleHeaderOverlap = navbarRect && pageTitleRect
+    ? intersect(navbarRect, pageTitleRect)
+    : null;
   const navbarInteractiveOverlaps = navbar instanceof HTMLElement && navbarRect
     ? [
       ['home-primary-action', primaryAction],
@@ -497,6 +548,11 @@ export const collectHomeEvidence = async (page) => page.evaluate((source) => {
       && heading.getBoundingClientRect().height > 0
       && (heading.textContent?.trim().length ?? 0) > 0,
     priorityHeadingText: heading?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
+    pageTitleText: pageTitle?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
+    pageTitleRect: pageTitleRect ? rectData(pageTitleRect) : null,
+    homeTitleHeaderOverlap: homeTitleHeaderOverlap ? rectData(homeTitleHeaderOverlap) : null,
+    scrollY: window.scrollY,
+    navbarContentOverflows,
     gameCardCount: gameCards.length,
     fixtureTeamsVisible: panelText.includes('한화 이글스') && panelText.includes('롯데 자이언츠'),
     panelText: panelText.slice(0, 1000),
@@ -606,8 +662,13 @@ const collectProductDefectEvidence = async (page) => page.evaluate((sourceMap) =
   const title = elementForSelector(sourceMap.ticketModal.selectors[0]);
   const titleRange = title ? document.createRange() : null;
   if (titleRange) titleRange.selectNodeContents(title);
+  const titleTextRect = titleRange?.getBoundingClientRect() ?? null;
   const dropzone = targetRect(sourceMap.ticketModal.selectors[1]);
   const cancel = targetRect(sourceMap.ticketModal.selectors[2]);
+  const closeButton = targetRect(sourceMap.ticketModal.selectors[3]);
+  const titleCloseOverlap = titleTextRect && closeButton?.visible
+    ? intersect(titleTextRect, closeButton.visible)
+    : null;
   const dropzoneVisibleRatio = dropzone?.rect.width > 0 && dropzone.rect.height > 0
     ? dropzone.visible.height / dropzone.rect.height
     : 0;
@@ -630,7 +691,13 @@ const collectProductDefectEvidence = async (page) => page.evaluate((sourceMap) =
         selector: selector(title),
         lineCount: titleRange ? [...titleRange.getClientRects()].length : 0,
         rect: title ? rectData(title.getBoundingClientRect()) : null,
+        textRect: titleTextRect ? rectData(titleTextRect) : null,
       },
+      closeButton: closeButton ? {
+        rect: rectData(closeButton.rect),
+        visibleRect: rectData(closeButton.visible),
+      } : null,
+      titleCloseOverlap: titleCloseOverlap ? rectData(titleCloseOverlap) : null,
       dropzone: dropzone ? {
         rect: rectData(dropzone.rect),
         visibleRect: rectData(dropzone.visible),
@@ -662,6 +729,13 @@ export const productDefectAssertions = (evidence, { zoom } = {}) => {
       evidence: evidence.ticketModal.title,
     });
   }
+  if (evidence.ticketModal?.titleCloseOverlap) {
+    failures.push({
+      id: 'ticket-modal-title-close-overlap',
+      message: 'ticket modal title text overlaps the dialog close control',
+      evidence: evidence.ticketModal.titleCloseOverlap,
+    });
+  }
   if (evidence.ticketModal?.dropzone && evidence.ticketModal.dropzone.visibleRatio < 0.85) {
     failures.push({
       id: 'ticket-modal-dropzone-clipped',
@@ -679,10 +753,13 @@ export const productDefectAssertions = (evidence, { zoom } = {}) => {
   return failures;
 };
 
+export const screenshotEvidenceFilename = (browserName, label) => `${browserName}-${label}.png`;
+
 const screenshotEvidence = async (page, outputDir, label) => {
   if (!outputDir) return null;
   await mkdir(outputDir, { recursive: true });
-  const screenshotPath = join(outputDir, `${label}.png`);
+  const browserName = page.context().browser()?.browserType().name() ?? 'unknown';
+  const screenshotPath = join(outputDir, screenshotEvidenceFilename(browserName, label));
   await page.screenshot({ path: screenshotPath, fullPage: false });
   const sha256 = createHash('sha256').update(await readFile(screenshotPath)).digest('hex');
   return { path: screenshotPath, sha256 };
@@ -866,8 +943,16 @@ const runHomeFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   ]);
   await waitFor(page, HOME_FLOW_SOURCE.selectors.priorityPanel);
   await waitFor(page, HOME_FLOW_SOURCE.selectors.gameCard);
+  const initialHomeEvidence = await collectHomeEvidence(page);
+  const initialLayoutScreenshot = zoom === 2
+    ? await screenshotEvidence(page, evidenceDir, `home-layout-before-focus-${width}-${zoom * 100}`)
+    : null;
   await page.locator(HOME_FLOW_SOURCE.selectors.dateNext).focus();
   const evidence = await collectHomeEvidence(page);
+  const initialFailures = homeAssertions({
+    ...evidence,
+    homeTitleHeaderOverlapAtTop: initialHomeEvidence.homeTitleHeaderOverlap,
+  });
   const beforeNavigationUrl = page.url();
   const dateNext = page.locator(HOME_FLOW_SOURCE.selectors.dateNext);
   if (!await dateNext.isDisabled()) {
@@ -880,20 +965,25 @@ const runHomeFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   const postNavigationEvidence = await collectHomeEvidence(page);
   const navigationEvidence = {
     ...postNavigationEvidence,
+    homeTitleHeaderOverlapAtTop: initialHomeEvidence.homeTitleHeaderOverlap,
+    homeTitleHeaderScrollY: initialHomeEvidence.scrollY,
     dateNavigationChecked: true,
     dateNavigationUpdated: afterNavigationUrl !== beforeNavigationUrl,
     beforeNavigationUrl,
     afterNavigationUrl,
   };
-  const failures = homeAssertions(navigationEvidence);
+  const failures = [...initialFailures, ...homeAssertions(navigationEvidence)];
   const normal = await measureFocusedRoute(page, '/home', width, zoom, 'home-content-and-navigation');
   normal.zoomMetrics = zoomMetrics;
+  normal.homeInitialEvidence = initialHomeEvidence;
   normal.homeEvidence = navigationEvidence;
+  normal.homeInitialLayoutScreenshot = initialLayoutScreenshot;
   normal.homeAssertionIds = HOME_ASSERTION_IDS;
   normal.homeAssertionFailures = failures;
   normal.productEvidence = {
     source: HOME_FLOW_SOURCE,
     assertionFailures: failures,
+    initialLayoutScreenshot,
     screenshot: zoom === 2
       ? await screenshotEvidence(page, evidenceDir, `home-content-and-navigation-${width}-${zoom * 100}`)
       : null,

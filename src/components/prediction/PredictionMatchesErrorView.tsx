@@ -43,7 +43,7 @@ export default function PredictionMatchesErrorView({
       />
       <EmptyState
         testId="prediction-empty-state-content"
-        title={isManualDataRequired ? title : '잠시 우천 중단이에요'}
+        title={title}
         description={description}
         tone={isManualDataRequired ? 'warning' : 'danger'}
         className="relative min-h-0 border-0 bg-transparent p-0 shadow-none"
@@ -76,7 +76,7 @@ export default function PredictionMatchesErrorView({
                 window.location.href = predictionRecoveryPath;
               }}
             >
-              예측으로 돌아가기
+              예측 목록으로 이동
             </Button>
           </>
         )}

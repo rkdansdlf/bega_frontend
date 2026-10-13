@@ -3,10 +3,16 @@ import assert from 'node:assert/strict';
 
 import {
   createInitialPartyFormData,
+  getMateCreateDraftStorageKey,
   isMateCreateDraftEmpty,
   readMateCreateDraft,
   serializeMateCreateDraft,
 } from './mateCreateDraft';
+
+test('mate create draft 저장 키는 viewer별로 분리한다', () => {
+  assert.notEqual(getMateCreateDraftStorageKey(101), getMateCreateDraftStorageKey(202));
+  assert.equal(getMateCreateDraftStorageKey(null), null);
+});
 
 test('mate create draft는 기존 zustand persist 구조를 복원한다', () => {
   const restored = readMateCreateDraft(JSON.stringify({

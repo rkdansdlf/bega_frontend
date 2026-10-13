@@ -1,9 +1,12 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType, type ReactNode } from 'react';
 
-const DmInboxRuntime = lazy(() => import('./dm/DmInboxRuntime'));
+const dmInboxRuntimeComponent = lazy(() => import('./dm/DmInboxRuntime'));
 
 const DmInboxFallback = () => (
-  <div className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8">
+  <div
+    className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8"
+    data-testid="dm-inbox-route-loading"
+  >
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="h-7 w-32 rounded bg-gray-200 dark:bg-secondary" />
       {[0, 1, 2].map((i) => (
@@ -20,10 +23,17 @@ const DmInboxFallback = () => (
   </div>
 );
 
-export default function DmInboxPage() {
+export type DmInboxPageProps = {
+  runtimeLoader?: () => Promise<{ default: ComponentType<Record<string, never>> }>;
+  runtimeOverride?: ReactNode;
+};
+
+export default function DmInboxPage({ runtimeLoader, runtimeOverride }: DmInboxPageProps = {}) {
+  const Runtime = runtimeLoader ? lazy(runtimeLoader) : dmInboxRuntimeComponent;
+
   return (
     <Suspense fallback={<DmInboxFallback />}>
-      <DmInboxRuntime />
+      {runtimeOverride !== undefined ? runtimeOverride : <Runtime />}
     </Suspense>
   );
 }

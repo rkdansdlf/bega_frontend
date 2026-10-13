@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import TeamLogo from '../TeamLogo';
 import { TEAM_DATA } from '../../constants/teams';
 import { formatDate } from '../../utils/formatters';
+import { isAdminUserDeletionBlocked } from './adminUserDeletionPolicy';
 import {
   AdminSearchIcon,
   AdminTrashIcon,
@@ -151,7 +152,7 @@ export function UsersAdminPanel({
                 if (visualQaEnabled) setVisualQaSearchTerm(nextSearchTerm);
                 setSearchTerm(nextSearchTerm);
               }}
-              className="h-11 rounded-xl border-slate-700 bg-slate-800/50 pl-12 text-slate-100 transition-colors placeholder:text-slate-500 focus:border-amber-500 focus:ring-amber-500"
+              className="h-11 rounded-xl border-slate-700 bg-slate-800/50 pl-12 text-slate-100 transition-colors placeholder:text-slate-500 focus:border-amber-500 focus:ring-amber-500 sm:h-11"
             />
           </div>
         </div>
@@ -297,7 +298,10 @@ export function UsersAdminPanel({
                         data-testid={`admin-user-delete-${user.id}`}
                         aria-label={`사용자 ${user.name} 삭제`}
                         className="min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 sm:min-w-8"
-                        disabled={user.role === 'ROLE_ADMIN'}
+                        disabled={isAdminUserDeletionBlocked(user.id, user.role, currentUserId)}
+                        title={isAdminUserDeletionBlocked(user.id, user.role, currentUserId)
+                          ? '일반 사용자로 확인되고 현재 계정이 아닌 경우에만 삭제할 수 있습니다.'
+                          : undefined}
                         onClick={() => setPendingDeleteUser(user)}
                       >
                         <AdminTrashIcon className="w-4 h-4" />
@@ -315,7 +319,7 @@ export function UsersAdminPanel({
         open={Boolean(pendingDeleteUser)}
         onClose={() => setPendingDeleteUser(null)}
         title="유저를 삭제하시겠습니까?"
-        description="이 작업은 되돌릴 수 없습니다. 유저의 모든 데이터가 영구적으로 삭제됩니다."
+        description="이 작업은 되돌릴 수 없습니다. 계정 정보와 비금융 콘텐츠를 즉시 비식별 처리합니다. 결제·지급 및 감사 기록과 보존 대상 콘텐츠는 유지될 수 있습니다."
         contentTestId="admin-user-delete-dialog"
         className="sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
         footer={(

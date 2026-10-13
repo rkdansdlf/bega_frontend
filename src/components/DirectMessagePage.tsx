@@ -1,9 +1,28 @@
-import { lazy, Suspense } from 'react';
+import {
+  createElement,
+  lazy,
+  Suspense,
+  useMemo,
+  type ComponentType,
+  type ReactNode,
+} from 'react';
 
-const DirectMessageRuntime = lazy(() => import('./dm/DirectMessageRuntime'));
+const directMessageRuntimeComponent = lazy(() => import('./dm/DirectMessageRuntime'));
+
+type DirectMessageRuntimeLoader = () => Promise<{
+  default: ComponentType<Record<string, never>>;
+}>;
+
+export type DirectMessagePageProps = {
+  runtimeLoader?: DirectMessageRuntimeLoader;
+  runtimeOverride?: ReactNode;
+};
 
 const DirectMessageFallback = () => (
-  <div className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8">
+  <div
+    className="min-h-screen bg-background px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8"
+    data-testid="dm-route-loading"
+  >
     <div className="mx-auto max-w-4xl space-y-4">
       <div className="h-6 w-24 rounded bg-gray-200 dark:bg-secondary" />
       <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-border dark:bg-card">
@@ -24,10 +43,17 @@ const DirectMessageFallback = () => (
   </div>
 );
 
-export default function DirectMessagePage() {
+export default function DirectMessagePage({ runtimeLoader, runtimeOverride }: DirectMessagePageProps = {}) {
+  const runtimeComponent = useMemo(
+    () => (runtimeLoader ? lazy(runtimeLoader) : directMessageRuntimeComponent),
+    [runtimeLoader],
+  );
+
   return (
     <Suspense fallback={<DirectMessageFallback />}>
-      <DirectMessageRuntime />
+      {runtimeOverride !== undefined
+        ? runtimeOverride
+        : createElement(runtimeComponent)}
     </Suspense>
   );
 }

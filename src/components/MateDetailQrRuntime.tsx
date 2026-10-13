@@ -4,12 +4,21 @@ import { createCheckInQrSession } from '../api/mate';
 import { QR_REFRESH_LEAD_MS, resolveQrRefreshDelayMs } from '../utils/qrRefresh';
 import MateDetailQrPanel from './MateDetailQrPanel';
 
+export type MateDetailQrRuntimeVisualQaStateOverride = {
+  qrCodeValue: string;
+  qrSessionExpiresAt: string | null;
+  manualCode: string | null;
+  isQrLoading: boolean;
+  qrSessionError: string | null;
+};
+
 interface MateDetailQrRuntimeProps {
   partyId: number;
   fallbackCheckInUrl: string;
   canAccessCheckIn: boolean;
   onClose: () => void;
   onOpenCheckInPage: (targetUrl?: string) => void;
+  visualQaStateOverride?: MateDetailQrRuntimeVisualQaStateOverride;
 }
 
 const TECHNICAL_ERROR_PATTERNS = [
@@ -50,7 +59,11 @@ export default function MateDetailQrRuntime({
   canAccessCheckIn,
   onClose,
   onOpenCheckInPage,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MateDetailQrRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const [qrCheckInUrl, setQrCheckInUrl] = useState(fallbackCheckInUrl);
   const [qrSessionExpiresAt, setQrSessionExpiresAt] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState<string | null>(null);
@@ -158,6 +171,10 @@ export default function MateDetailQrRuntime({
   }, [fetchQrSession]);
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     const isMountedRef = { current: true };
 
     qrCheckInUrlRef.current = fallbackCheckInUrl;
@@ -188,23 +205,30 @@ export default function MateDetailQrRuntime({
         refreshTimerRef.current = null;
       }
     };
-  }, [canAccessCheckIn, fallbackCheckInUrl, fetchQrSession, isDocumentVisible]);
+  }, [canAccessCheckIn, fallbackCheckInUrl, fetchQrSession, isDocumentVisible, visualQaStateOverride]);
 
   const qrCodeValue = useMemo(
     () => qrCheckInUrl || fallbackCheckInUrl,
     [qrCheckInUrl, fallbackCheckInUrl],
   );
+  const renderedQrState = visualQaStateOverride ?? {
+    qrCodeValue,
+    qrSessionExpiresAt,
+    manualCode,
+    isQrLoading,
+    qrSessionError,
+  };
 
   return (
     <MateDetailQrPanel
       open
-      qrCodeValue={qrCodeValue}
-      isQrLoading={isQrLoading}
-      qrSessionExpiresAt={qrSessionExpiresAt}
-      qrSessionError={qrSessionError}
+      qrCodeValue={renderedQrState.qrCodeValue}
+      isQrLoading={renderedQrState.isQrLoading}
+      qrSessionExpiresAt={renderedQrState.qrSessionExpiresAt}
+      qrSessionError={renderedQrState.qrSessionError}
       onClose={onClose}
-      manualCode={manualCode}
-      onOpenCheckInPage={() => onOpenCheckInPage(qrCodeValue)}
+      manualCode={renderedQrState.manualCode}
+      onOpenCheckInPage={() => onOpenCheckInPage(renderedQrState.qrCodeValue)}
     />
   );
 }

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { PredictionLocationState, PredictionNavigationOptions } from '../../utils/predictionDeepLink';
 import PredictionLoadingView from './PredictionLoadingView';
 import PredictionMatchesErrorView from './PredictionMatchesErrorView';
@@ -11,6 +12,8 @@ interface PredictionMatchScheduleResolvedRuntimeProps {
   locationState: PredictionLocationState;
   searchParams: URLSearchParams;
   setSearchParams: (nextInit: URLSearchParams, navigateOptions?: PredictionNavigationOptions) => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
 export default function PredictionMatchScheduleResolvedRuntime({
@@ -20,7 +23,18 @@ export default function PredictionMatchScheduleResolvedRuntime({
   locationState,
   searchParams,
   setSearchParams,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchScheduleResolvedRuntimeProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-resolved-runtime-fallback">일정 화면을 확인하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   return (
     <PredictionMatchScheduleResolvedDataRuntime
       isAuthLoading={isAuthLoading}

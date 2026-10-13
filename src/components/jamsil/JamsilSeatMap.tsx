@@ -168,9 +168,18 @@ function JamsilOperatorVisitMeta({
   );
 }
 
-export default function JamsilSeatMap() {
+export interface JamsilSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface JamsilSeatMapProps {
+  stateOverride?: JamsilSeatMapStateOverride;
+}
+
+export default function JamsilSeatMap({ stateOverride }: JamsilSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride ? () => stateOverride.isLoggedIn : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
 
   const [zoom, setZoom] = useState(1);

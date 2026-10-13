@@ -132,6 +132,20 @@ test('mobile detail sheet is an accessible contained dialog with the complete ac
   assert.match(markup, /overflow-wrap:anywhere/);
 });
 
+test('mobile detail sheet restores trigger focus after Escape and keeps focus handling local', async () => {
+  const source = await readFile(new URL('./MateDetailActionSection.tsx', import.meta.url), 'utf8');
+
+  assert.match(source, /primaryTriggerRef/);
+  assert.match(source, /summaryTriggerRef/);
+  assert.match(source, /lastTriggerRef/);
+  assert.match(source, /closeButtonRef/);
+  assert.match(source, /lastTriggerRef\.current \?\? primaryTriggerRef\.current/);
+  assert.match(source, /event\.preventDefault\(\);[\s\S]*?setShowSheet\(false\)/);
+  assert.match(source, /actionSheetRef/);
+  assert.match(source, /data-testid="mate-detail-action-sheet-close"[^>]*ref=\{closeButtonRef\}/);
+  assert.match(source, /data-testid="mate-detail-mobile-primary"[\s\S]*?ref=\{primaryTriggerRef\}/);
+});
+
 test('sheet actions override caller fixed heights so long labels expand without overlapping', async () => {
   const markup = await renderSection({
     actionClassName: 'h-14 text-lg',

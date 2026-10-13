@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from './viteTestCacheDir';
 
 const componentSource = readFileSync(new URL('./MateMobileDateFilter.tsx', import.meta.url), 'utf8');
 const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
@@ -157,6 +158,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
   timeout: 90_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('mate-mobile-date-filter'),
     configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createDateFilterPlugin()],

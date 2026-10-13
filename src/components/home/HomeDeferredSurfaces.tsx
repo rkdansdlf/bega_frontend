@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import type { HomeAuthSnapshot } from './HomeAuthBridge';
+import type { HomeSecondaryPanelsContainerVisualQaStateOverride } from './HomeSecondaryPanelsContainer';
 
 const LazyAdSlot = lazy(() => import('../ads/AdSlot'));
 const LazyHomeAuthBridge = lazy(() => import('./HomeAuthBridge'));
@@ -21,6 +22,10 @@ interface HomeDeferredSurfacesProps {
   onAuthSnapshotChange: (snapshot: HomeAuthSnapshot) => void;
   onCloseCalendar: () => void;
   onSelectCalendarDate: (date: Date) => void;
+  visualQaStateOverride?: HomeSecondaryPanelsContainerVisualQaStateOverride;
+  visualQaDisableAdSlot?: boolean;
+  visualQaDisableAuthBridge?: boolean;
+  visualQaWelcomeGuideOverride?: boolean;
 }
 
 export default function HomeDeferredSurfaces({
@@ -33,6 +38,10 @@ export default function HomeDeferredSurfaces({
   onAuthSnapshotChange,
   onCloseCalendar,
   onSelectCalendarDate,
+  visualQaStateOverride,
+  visualQaDisableAdSlot = false,
+  visualQaDisableAuthBridge = false,
+  visualQaWelcomeGuideOverride,
 }: HomeDeferredSurfacesProps) {
   const navigate = useNavigate();
   const calendarDialogTitleId = useId();
@@ -43,7 +52,7 @@ export default function HomeDeferredSurfaces({
   const [shouldMountWelcomeGuide, setShouldMountWelcomeGuide] = useState(false);
 
   useEffect(() => {
-    if (shouldMountAdSlot) {
+    if (visualQaDisableAdSlot || shouldMountAdSlot) {
       return undefined;
     }
 
@@ -58,7 +67,7 @@ export default function HomeDeferredSurfaces({
         adSlotTimeoutRef.current = null;
       }
     };
-  }, [shouldMountAdSlot]);
+  }, [shouldMountAdSlot, visualQaDisableAdSlot]);
 
   useEffect(() => {
     const dontShowAgain = localStorage.getItem('bega_dont_show_guide');
@@ -101,13 +110,17 @@ export default function HomeDeferredSurfaces({
     };
   }, [onCloseCalendar, showCalendar]);
 
+  const resolvedShouldMountWelcomeGuide = visualQaWelcomeGuideOverride ?? shouldMountWelcomeGuide;
+
   return (
     <>
-      <Suspense fallback={null}>
-        <LazyHomeAuthBridge onSnapshotChange={onAuthSnapshotChange} />
-      </Suspense>
+      {visualQaDisableAuthBridge ? null : (
+        <Suspense fallback={null}>
+          <LazyHomeAuthBridge onSnapshotChange={onAuthSnapshotChange} />
+        </Suspense>
+      )}
 
-      {shouldMountAdSlot ? (
+      {!visualQaDisableAdSlot && shouldMountAdSlot ? (
         <Suspense fallback={null}>
           <LazyAdSlot
             slotId="home_mid_1"
@@ -126,7 +139,7 @@ export default function HomeDeferredSurfaces({
             selectedDateKey={selectedDateKey}
             calendarMonth={calendarMonth}
             showCalendar={showCalendar}
-            shouldMountWelcomeGuide={shouldMountWelcomeGuide}
+            shouldMountWelcomeGuide={resolvedShouldMountWelcomeGuide}
             calendarDialogTitleId={calendarDialogTitleId}
             loggedIn={loggedIn}
             userId={userId}
@@ -140,6 +153,7 @@ export default function HomeDeferredSurfaces({
             onCloseCalendar={onCloseCalendar}
             onCalendarMonthChange={setCalendarMonth}
             onSelectCalendarDate={onSelectCalendarDate}
+            visualQaStateOverride={visualQaStateOverride}
           />
         </LazyHomeQueryProvider>
       </Suspense>

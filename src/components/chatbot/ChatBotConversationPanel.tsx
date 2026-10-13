@@ -158,7 +158,7 @@ const ChatConversationMessage = memo(function ChatConversationMessage({
                 <button
                   type="button"
                   onClick={() => onToggleToolCalls(index)}
-                  className="flex items-center gap-1 text-body font-semibold text-gray-400 transition-colors hover:text-gray-600 dark:text-white dark:hover:text-gray-300"
+                  className="flex min-h-11 items-center gap-1 text-body font-semibold text-gray-400 transition-colors hover:text-gray-600 dark:text-white dark:hover:text-gray-300"
                 >
                   <ChatBotChevronDownIcon
                     className={`h-3 w-3 transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}
@@ -406,7 +406,7 @@ export default function ChatBotConversationPanel({
             <button
               type="button"
               onClick={onCancelStream}
-              className="flex min-h-[40px] min-w-[40px] items-center justify-center rounded-xl bg-amber-500 text-white transition-colors hover:bg-amber-600"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-amber-500 text-white transition-colors hover:bg-amber-600"
               aria-label="응답 취소"
               data-testid="chatbot-cancel-button"
             >
@@ -418,7 +418,7 @@ export default function ChatBotConversationPanel({
             disabled={isSendDisabled}
             data-testid="chatbot-send-button"
             className={`
-              flex min-h-[40px] min-w-[40px] items-center justify-center rounded-xl border-none bg-primary p-2 text-white
+              flex min-h-11 min-w-11 items-center justify-center rounded-xl border-none bg-primary p-2 text-white
               transition-colors
               ${isSendDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-[#3d7f6f]'}
             `}
@@ -444,6 +444,7 @@ export default function ChatBotConversationPanel({
                   type="button"
                   onClick={onRetrySend}
                   disabled={rateLimitCountdown > 0}
+                  data-testid="chatbot-retry-button"
                   className={`
                     rounded-lg px-3 py-1 text-body font-semibold transition-colors
                     ${
@@ -461,6 +462,7 @@ export default function ChatBotConversationPanel({
                   type="button"
                   onClick={onRestorePendingMessage}
                   disabled={!pendingMessage.trim()}
+                  data-testid="chatbot-restore-pending-button"
                   className={`
                     rounded-lg border border-amber-200 px-3 py-1 text-body font-semibold transition-colors
                     ${

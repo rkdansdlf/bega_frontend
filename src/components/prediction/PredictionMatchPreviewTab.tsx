@@ -287,7 +287,7 @@ export default function PredictionMatchPreviewTab({
             variant="outline"
             size="sm"
             data-testid="prediction-schedule-mobile-today-btn"
-            className="h-11 rounded-xl border-slate-200 bg-white px-3 text-13 font-extrabold text-slate-600 shadow-sm hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
+            className="h-11 min-h-11 rounded-xl border-slate-200 bg-white px-3 text-13 font-extrabold text-slate-600 shadow-sm hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
             onClick={() => onGoToDate(getPredictionScheduleTodayKey())}
           >
             최근
@@ -460,7 +460,7 @@ export default function PredictionMatchPreviewTab({
                         data-testid="prediction-schedule-match-row"
                         data-game-id={game.gameId}
                         aria-label={viewModel.ariaLabel}
-                        className="grid min-h-[7rem] animate-fade-in-up grid-cols-[3.25rem_minmax(0,1fr)_3.25rem] items-center gap-1 px-2 py-3 motion-reduce:animate-none sm:grid-cols-[4.25rem_minmax(0,1fr)_4.25rem] sm:gap-3 sm:px-4 lg:grid-cols-[5rem_minmax(8rem,10rem)_minmax(28rem,1fr)_11rem] lg:gap-4 lg:px-6 lg:py-4"
+                        className="grid min-h-28 animate-fade-in-up grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-1 px-2 py-3 motion-reduce:animate-none sm:grid-cols-[4.25rem_minmax(0,1fr)_4.25rem] sm:gap-3 sm:px-4 lg:grid-cols-[5rem_minmax(8rem,10rem)_minmax(28rem,1fr)_11rem] lg:gap-4 lg:px-6 lg:py-4"
                       >
                         <div className="min-w-0 lg:hidden">
                           <p className="text-13 font-black leading-tight tabular-nums text-slate-900 dark:text-white sm:text-15">
@@ -474,11 +474,11 @@ export default function PredictionMatchPreviewTab({
                           {viewModel.stadiumLabel}
                         </div>
                         <div
-                          className="grid min-w-0 grid-cols-[minmax(0,1fr)_2.5rem_minmax(0,1fr)] items-center gap-1 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-2 lg:grid-cols-[minmax(10rem,1fr)_6.25rem_minmax(10rem,1fr)] lg:gap-3"
+                          className="grid min-w-0 grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)] items-center gap-1 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-2 lg:grid-cols-[minmax(10rem,1fr)_6.25rem_minmax(10rem,1fr)] lg:gap-3"
                           data-testid="prediction-schedule-matchup"
                         >
-                          <div className="flex min-h-12 min-w-0 items-center justify-end gap-1 sm:min-h-14 sm:gap-2 lg:min-h-[3.75rem] lg:gap-3">
-                            <div className="min-w-0 text-right">
+                          <div className="flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 sm:min-h-14 sm:flex-row sm:justify-end sm:gap-2 lg:min-h-[3.75rem] lg:gap-3">
+                            <div className="w-full min-w-0 text-center sm:w-auto sm:text-right">
                               <p
                                 className="truncate text-13 font-black leading-tight text-slate-900 dark:text-white sm:text-15 lg:text-xl"
                                 aria-label={viewModel.awayTeam.fullName}
@@ -494,7 +494,7 @@ export default function PredictionMatchPreviewTab({
                           <div className={`text-center text-12 font-black sm:text-sm lg:text-lg ${getStatusToneClass(viewModel.status.tone)}`}>
                             {viewModel.status.hasScore ? (
                               <span
-                                className="inline-flex min-w-[2.5rem] items-center justify-center rounded-md bg-slate-100 px-1 py-1 text-slate-900 tabular-nums dark:bg-secondary dark:text-white sm:min-w-[3.25rem] sm:px-2 lg:min-w-[5.5rem] lg:rounded-full lg:px-3 lg:py-1.5"
+                                className="inline-flex min-w-10 items-center justify-center rounded-md bg-slate-100 px-1 py-1 text-slate-900 tabular-nums dark:bg-secondary dark:text-white sm:min-w-[3.25rem] sm:px-2 lg:min-w-[5.5rem] lg:rounded-full lg:px-3 lg:py-1.5"
                                 aria-label={`${viewModel.status.label} ${viewModel.status.scoreLabel}`}
                               >
                                 <span className="lg:hidden">{compactScoreLabel}</span>
@@ -504,11 +504,11 @@ export default function PredictionMatchPreviewTab({
                               viewModel.status.label
                             )}
                           </div>
-                          <div className="flex min-h-12 min-w-0 items-center gap-1 sm:min-h-14 sm:gap-2 lg:min-h-[3.75rem] lg:gap-3">
+                          <div className="flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 sm:min-h-14 sm:flex-row sm:gap-2 lg:min-h-[3.75rem] lg:gap-3">
                             {renderScheduleTeamLogo(viewModel.homeTeam.rawName, 'home', viewModel.winnerSide)}
-                            <div className="min-w-0">
+                            <div className="w-full min-w-0 sm:w-auto">
                               <p
-                                className="flex min-w-0 items-center gap-0.5 text-13 font-black leading-tight text-slate-900 dark:text-white sm:text-15 lg:gap-1.5 lg:text-xl"
+                                className="flex w-full min-w-0 items-center justify-center gap-0.5 text-13 font-black leading-tight text-slate-900 dark:text-white sm:w-auto sm:justify-start sm:text-15 lg:gap-1.5 lg:text-xl"
                                 aria-label={viewModel.homeTeam.fullName}
                               >
                                 <span className="truncate">{viewModel.homeTeam.shortName}</span>
@@ -529,7 +529,33 @@ export default function PredictionMatchPreviewTab({
                               variant="outline"
                               size="sm"
                               data-testid="prediction-match-enter-detail-btn"
-                              className="h-8 min-w-10 rounded-lg border-slate-200 bg-white px-2 text-12 font-black text-primary dark:border-border dark:bg-card dark:text-primary-light dark:hover:bg-secondary hover:bg-emerald-50 sm:h-9 sm:min-w-[3.5rem] sm:text-caption lg:h-10 lg:min-w-[4.5rem] lg:px-4 lg:text-body"
+                              className="h-11 min-h-11 min-w-11 scroll-mb-[136px] rounded-lg border-slate-200 bg-white px-2 text-12 font-black text-primary sm:h-9 sm:min-h-9 sm:px-3 sm:text-caption lg:h-10 lg:min-h-10 lg:min-w-[4.5rem] lg:px-4 lg:text-body dark:border-border dark:bg-card dark:text-primary-light dark:hover:bg-secondary hover:bg-emerald-50"
+                              onFocus={(event) => {
+                                const action = event.currentTarget;
+                                const keepActionVisible = () => {
+                                  const navigation = document.querySelector<HTMLElement>('[data-testid="public-mobile-bottom-nav"]');
+                                  const navigationHeight = navigation?.getBoundingClientRect().height || 0;
+                                  const actionRect = action.getBoundingClientRect();
+                                  const visibleBottom = window.innerHeight - navigationHeight - 8;
+
+                                  if (actionRect.top < 0 || actionRect.bottom > visibleBottom) {
+                                    const targetScrollTop = Math.max(0, actionRect.top + window.scrollY - 16);
+                                    const root = document.documentElement;
+                                    const previousScrollBehavior = root.style.scrollBehavior;
+                                    root.style.scrollBehavior = 'auto';
+                                    if (document.scrollingElement) {
+                                      document.scrollingElement.scrollTop = targetScrollTop;
+                                    }
+                                    window.scrollTo({ top: targetScrollTop, left: 0, behavior: 'auto' });
+                                    window.requestAnimationFrame(() => {
+                                      root.style.scrollBehavior = previousScrollBehavior;
+                                    });
+                                  }
+                                };
+
+                                keepActionVisible();
+                                window.requestAnimationFrame(keepActionVisible);
+                              }}
                               onClick={() => onEnterMatchDetail(game)}
                             >
                               전력
@@ -618,7 +644,7 @@ export default function PredictionMatchPreviewTab({
                 type="button"
                 aria-label="날짜 선택 닫기"
                 data-testid="prediction-schedule-mobile-date-close"
-                className="rounded-full px-2 py-1 text-xl font-bold leading-none text-slate-400 hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:text-white/60 dark:hover:bg-secondary"
+                className="flex h-11 w-11 items-center justify-center rounded-full px-2 py-1 text-xl font-bold leading-none text-slate-400 hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:text-white/60 dark:hover:bg-secondary sm:h-9 sm:w-8"
                 onClick={closeMobileDateSheet}
               >
                 x

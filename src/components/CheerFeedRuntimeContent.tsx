@@ -30,7 +30,18 @@ type FeedTabKey = 'all' | 'popular' | 'following';
 type FeedItem = { type: 'post'; post: CheerPost } | { type: 'ad' };
 const NEXT_PAGE_LOADER_MIN_MS = 350;
 
-interface CheerFeedRuntimeContentProps {
+export type CheerFeedRuntimeContentVisualQaStateOverride = {
+    posts?: CheerPost[];
+    queryState?: 'loading' | 'error' | 'ready';
+    hasNextPage?: boolean;
+    nextPageState?: 'idle' | 'loading' | 'error';
+    newPostCount?: number;
+    onRetry?: () => void;
+    onNextPage?: () => void;
+    onNewPostsClick?: () => void;
+};
+
+export interface CheerFeedRuntimeContentProps {
     activeFeedTab: FeedTabKey;
     activePostType?: 'NORMAL' | 'NOTICE';
     activeSort?: string;
@@ -40,6 +51,7 @@ interface CheerFeedRuntimeContentProps {
     onRequireLogin: () => void;
     onWriteClick: () => void;
     searchQuery?: string;
+    visualQaStateOverride?: CheerFeedRuntimeContentVisualQaStateOverride;
 }
 
 export default function CheerFeedRuntimeContent({
@@ -52,7 +64,11 @@ export default function CheerFeedRuntimeContent({
     onRequireLogin,
     onWriteClick,
     searchQuery = '',
+    visualQaStateOverride: requestedVisualQaStateOverride,
 }: CheerFeedRuntimeContentProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const queryClient = useQueryClient();
     const [newPostCount, setNewPostCount] = useState(0);
     const [showNextPageLoader, setShowNextPageLoader] = useState(false);
@@ -123,16 +139,24 @@ export default function CheerFeedRuntimeContent({
         staleTime: 60 * 1000,
         gcTime: 5 * 60 * 1000,
         enabled: hasSearchQuery
-            ? isSearchMode
-            : activeFeedTab !== 'following' || isLoggedIn,
+            ? isSearchMode && visualQaStateOverride === undefined
+            : (activeFeedTab !== 'following' || isLoggedIn) && visualQaStateOverride === undefined,
     });
+    const effectiveIsLoading = visualQaStateOverride?.queryState === 'loading' || isLoading;
+    const effectiveQueryError = visualQaStateOverride?.queryState === 'error'
+        ? new Error('Visual QA local feed fixture error')
+        : queryError;
+    const effectiveHasNextPage = visualQaStateOverride?.hasNextPage ?? hasNextPage;
+    const effectiveIsFetchingNextPage = visualQaStateOverride?.nextPageState === 'loading'
+        || isFetchingNextPage;
     const hasNextPageRef = useRef(false);
     const isFetchingNextPageRef = useRef(false);
     const nextPageRequestInFlightRef = useRef(false);
     const fetchNextPageRef = useRef<typeof fetchNextPage | null>(null);
-    const isNextPageRequestActive = isFetchingNextPage || isNextPageRequestInFlight;
+    const isNextPageRequestActive = effectiveIsFetchingNextPage || isNextPageRequestInFlight;
 
     const currentPosts = useMemo(() => {
+        if (visualQaStateOverride?.posts) return visualQaStateOverride.posts;
         if (!data?.pages) return [];
         const flattened = data.pages.flatMap((page) => page?.content ?? []);
         const seen = new Set<number>();
@@ -142,9 +166,11 @@ export default function CheerFeedRuntimeContent({
             seen.add(post.id);
             return true;
         });
-    }, [data]);
-    const shouldShowNextPageLoader = Boolean(hasNextPage && showNextPageLoader);
-    const showNextPageError = Boolean(queryError && currentPosts.length > 0 && !shouldShowNextPageLoader);
+    }, [data, visualQaStateOverride?.posts]);
+    const shouldShowNextPageLoader = visualQaStateOverride?.nextPageState === 'loading'
+        || Boolean(effectiveHasNextPage && showNextPageLoader);
+    const showNextPageError = visualQaStateOverride?.nextPageState === 'error'
+        || Boolean(effectiveQueryError && currentPosts.length > 0 && !shouldShowNextPageLoader);
 
     const feedItems = useMemo<FeedItem[]>(() => {
         const items: FeedItem[] = [];
@@ -197,7 +223,11 @@ export default function CheerFeedRuntimeContent({
         refetchInterval: 15000,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: false,
-        enabled: !hasSearchQuery && !isLoading && activeFeedTab === 'all' && latestVisiblePostId !== null,
+        enabled: visualQaStateOverride === undefined
+            && !hasSearchQuery
+            && !effectiveIsLoading
+            && activeFeedTab === 'all'
+            && latestVisiblePostId !== null,
     });
 
     useEffect(() => {
@@ -220,15 +250,15 @@ export default function CheerFeedRuntimeContent({
     }, [polledChanges]);
 
     useEffect(() => {
-        hasNextPageRef.current = Boolean(hasNextPage);
-        isFetchingNextPageRef.current = isFetchingNextPage || nextPageRequestInFlightRef.current;
+        hasNextPageRef.current = Boolean(effectiveHasNextPage);
+        isFetchingNextPageRef.current = effectiveIsFetchingNextPage || nextPageRequestInFlightRef.current;
         fetchNextPageRef.current = fetchNextPage;
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    }, [effectiveHasNextPage, effectiveIsFetchingNextPage, fetchNextPage]);
 
     useEffect(() => {
         let hideLoaderTimer: ReturnType<typeof setTimeout> | undefined;
 
-        if (!hasNextPage) {
+        if (!effectiveHasNextPage) {
             setShowNextPageLoader(false);
             return undefined;
         }
@@ -249,9 +279,13 @@ export default function CheerFeedRuntimeContent({
                 clearTimeout(hideLoaderTimer);
             }
         };
-    }, [hasNextPage, isNextPageRequestActive, showNextPageLoader]);
+    }, [effectiveHasNextPage, isNextPageRequestActive, showNextPageLoader]);
 
     const requestNextPage = useCallback(() => {
+        if (visualQaStateOverride?.onNextPage) {
+            visualQaStateOverride.onNextPage();
+            return;
+        }
         if (isFetchingNextPageRef.current || !hasNextPageRef.current || !fetchNextPageRef.current) {
             return;
         }
@@ -269,7 +303,7 @@ export default function CheerFeedRuntimeContent({
                 isFetchingNextPageRef.current = false;
                 setIsNextPageRequestInFlight(false);
             });
-    }, []);
+    }, [visualQaStateOverride]);
 
     useEffect(() => {
         if (!sentinelRef.current) return;
@@ -296,35 +330,46 @@ export default function CheerFeedRuntimeContent({
     }, [requestNextPage]);
 
     useEffect(() => {
-        if (!isSentinelIntersecting || isNextPageRequestActive || !hasNextPage) {
+        if (!isSentinelIntersecting || isNextPageRequestActive || !effectiveHasNextPage) {
             return;
         }
 
         requestNextPage();
-    }, [hasNextPage, isNextPageRequestActive, isSentinelIntersecting, requestNextPage]);
+    }, [effectiveHasNextPage, isNextPageRequestActive, isSentinelIntersecting, requestNextPage]);
 
     const handleNewPostsClick = useCallback(() => {
+        if (visualQaStateOverride?.onNewPostsClick) {
+            visualQaStateOverride.onNewPostsClick();
+            return;
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
         queryClient.invalidateQueries({ queryKey: cheerPostsQueryKey, exact: true });
         setNewPostCount(0);
-    }, [cheerPostsQueryKey, queryClient]);
+    }, [cheerPostsQueryKey, queryClient, visualQaStateOverride]);
 
     const handleRetryClick = useCallback(() => {
+        if (visualQaStateOverride?.onRetry) {
+            visualQaStateOverride.onRetry();
+            return;
+        }
         queryClient.invalidateQueries({ queryKey: cheerPostsQueryKey, exact: true });
-    }, [cheerPostsQueryKey, queryClient]);
+    }, [cheerPostsQueryKey, queryClient, visualQaStateOverride]);
+
+    const effectiveNewPostCount = visualQaStateOverride?.newPostCount ?? newPostCount;
 
     return (
         <>
             <div className="contents" data-testid="cheer-new-post-banner-slot">
-                {newPostCount > 0 && (
+                {effectiveNewPostCount > 0 && (
                     <button
                         type="button"
+                        data-testid="cheer-feed-new-posts"
                         onClick={handleNewPostsClick}
                         className="sticky top-12 z-20 w-full backdrop-blur-sm min-h-11 text-body font-bold transition-colors flex items-center justify-center gap-2 border-b"
                         style={newPostBannerStyle}
                     >
                         <ArrowUpIcon className="w-4 h-4" />
-                        새 글 {newPostCount}개 보기
+                        새 글 {effectiveNewPostCount}개 보기
                     </button>
                 )}
             </div>
@@ -336,9 +381,9 @@ export default function CheerFeedRuntimeContent({
                             <p className="text-body font-black text-slate-900 dark:text-white">검색어를 두 글자 이상 입력해 주세요.</p>
                             <p className="mt-2 text-caption font-semibold text-slate-500 dark:text-slate-300">본문과 해시태그를 검색할 수 있습니다.</p>
                         </div>
-                    ) : isLoading && currentPosts.length === 0 ? (
+                    ) : effectiveIsLoading && currentPosts.length === 0 ? (
                         <CheerFeedLoadingSkeleton />
-                    ) : queryError ? (
+                    ) : effectiveQueryError ? (
                         <CheerFeedErrorState onRetry={handleRetryClick} />
                     ) : !hasSearchQuery && activeFeedTab === 'following' && !isLoggedIn ? (
                         <CheerFeedLoginRequiredState teamColor={teamColor} onRequireLogin={onRequireLogin} />
@@ -412,6 +457,7 @@ export default function CheerFeedRuntimeContent({
                             </p>
                             <button
                                 type="button"
+                                data-testid="cheer-feed-next-retry"
                                 onClick={requestNextPage}
                                 className="min-h-11 rounded-full border border-slate-200 px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
                             >
@@ -430,7 +476,7 @@ export default function CheerFeedRuntimeContent({
                             <span className="font-bold">불러오는 중...</span>
                         </div>
                     </div>
-                    {!hasNextPage && currentPosts.length > 0 && !shouldShowNextPageLoader && !showNextPageError && (
+                    {!effectiveHasNextPage && currentPosts.length > 0 && !shouldShowNextPageLoader && !showNextPageError && (
                         <EndOfFeed />
                     )}
                 </div>

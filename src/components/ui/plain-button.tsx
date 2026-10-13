@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { buttonBaseClassFor, buttonVariantClasses, buttonSizeClasses } from './button-styles';
 
 type ButtonVariant = 'default' | 'outline' | 'ghost' | 'secondary' | 'destructive' | 'link';
 type ButtonSize = 'default' | 'sm' | 'icon' | 'iconTouch' | 'touch';
@@ -8,23 +9,6 @@ interface PlainButtonProps extends React.ComponentProps<'button'> {
   size?: ButtonSize;
   asChild?: boolean;
 }
-
-const variantClasses: Record<ButtonVariant, string> = {
-  default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  outline: 'border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-  ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  destructive: 'bg-destructive text-white hover:bg-destructive/90',
-  link: 'text-primary underline-offset-4 hover:underline',
-};
-
-const sizeClasses: Record<ButtonSize, string> = {
-  default: 'min-h-11 px-4 py-2 sm:min-h-9',
-  sm: 'min-h-11 rounded-md px-3 text-15 sm:min-h-8',
-  icon: 'size-11 shrink-0 rounded-md p-0 sm:size-9',
-  iconTouch: 'size-11 shrink-0 rounded-xl p-0',
-  touch: 'min-h-11 rounded-xl px-4 text-15',
-};
 
 const joinClassNames = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
@@ -56,9 +40,9 @@ const Button = React.forwardRef<HTMLButtonElement, PlainButtonProps>(({
   ...props
 }, ref) => {
   const resolvedClassName = joinClassNames(
-    "bf rounded-md text-15 font-semibold outline-none focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50",
-    variantClasses[variant],
-    sizeClasses[size],
+    buttonBaseClassFor(variant, size),
+    buttonVariantClasses[variant],
+    buttonSizeClasses[size],
     className,
   );
 

@@ -120,12 +120,22 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
   markAllAsRead: (readThrough = Date.now()) =>
     set((state) => {
       const locallyReadIds = new Set(state.locallyReadIds);
-      state.notifications.forEach((notification) => locallyReadIds.add(notification.id));
+      const effectiveReadThrough = Math.max(state.locallyReadThrough ?? readThrough, readThrough);
+      const notifications = state.notifications.map((notification) => {
+        const shouldRemainRead = notification.isRead || wasCreatedBy(notification, readThrough);
+        if (shouldRemainRead) {
+          locallyReadIds.add(notification.id);
+        }
+
+        return shouldRemainRead && !notification.isRead
+          ? { ...notification, isRead: true }
+          : notification;
+      });
 
       return {
-        notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+        notifications,
         locallyReadIds,
-        locallyReadThrough: readThrough,
+        locallyReadThrough: effectiveReadThrough,
       };
     }),
 

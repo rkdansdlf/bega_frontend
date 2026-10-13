@@ -12,6 +12,7 @@ import {
 import { PredictionLoaderIcon } from './PredictionShellIcons';
 
 const PredictionMatchDetailPanel = lazy(() => import('./PredictionMatchDetailPanel'));
+const PredictionGamePowerupInventory = lazy(() => import('./PredictionGamePowerupInventory'));
 
 interface PredictionMatchTabDetailSectionProps {
   currentDate: string;
@@ -117,6 +118,9 @@ export default function PredictionMatchTabDetailSection({
         isLoggedIn={isLoggedIn}
         isAuthLoading={isAuthLoading}
       />
+      {isLoggedIn && !isAuthLoading && gameStatus.isVoteOpen ? (
+        <PredictionGamePowerupInventory gameId={currentGameId} />
+      ) : null}
     </Suspense>
   );
 }

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState, type ComponentType } from 'react';
+import type { ReactNode } from 'react';
 
 import {
   buildPredictionDetailPath,
@@ -40,6 +41,8 @@ type PredictionMatchScheduleReadyViewProps = {
   currentGame: Game | null;
   currentDateGames: DateGames['games'];
   currentDate: string;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 };
 
 export default function PredictionMatchScheduleReadyView({
@@ -49,7 +52,18 @@ export default function PredictionMatchScheduleReadyView({
   currentGame,
   currentDateGames,
   currentDate,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
 }: PredictionMatchScheduleReadyViewProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-schedule-ready-view-fallback">경기 일정을 준비하고 있습니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const [hasEnteredMatchDetail, setHasEnteredMatchDetail] = useState(false);
   const [InteractiveRuntimeComponent, setInteractiveRuntimeComponent] = useState<ComponentType | null>(null);
   const schedule = usePredictionScheduleRuntimeState();

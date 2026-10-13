@@ -329,6 +329,22 @@ Global Error의 self-contained closure는 dirty admin 제품 타입을 포함하
 
 Module Federation fallback `Button.tsx#FallbackDesignSystemButton`과 `Modal.tsx#FallbackDesignSystemModal`은 각각 exact 48개(`34 canonical + 14 interaction`)와 exact 21개(`10 canonical + 11 interaction`) direct 모바일 계약으로 등록했습니다. Remote Button/Modal/ThemeProvider와 probe/AppRoutes hosted 항목은 pending으로 유지하며 root를 재캡처하지 않습니다. Button은 public variant/size 매핑과 native props를 그대로 전달하면서 fallback 자체의 `min-h-11 min-w-11 h-auto !whitespace-normal`, 긴 한국어·무공백 줄바꿈, bounded active feedback, 고정 QA target을 소유합니다. Detached HEAD actual은 shared Button의 아직 커밋되지 않은 모바일 크기 의존성과 committed no-wrap/fixed-height 의존성을 차례로 RED로 드러냈고, 두 보정을 fallback 내부에만 적용했습니다. shared Button은 수정하지 않았으며 Button 증거만 폐기·재생성했습니다. Modal은 한 close 요청에서 `onOpenChange(false)`를 우선하고 없을 때만 `onClose()`를 호출해 두 callback을 함께 실행하지 않으며, shared `PlainDialog`를 수정하지 않고 portal/backdrop/Escape/focus loop/body lock과 긴 본문 내부 scroll을 유지합니다. actual Vite+ReactDOM+Chromium 3/3은 320/390에서 Button pointer/Enter/Space exact 1, disabled·hover·focus·resize·remount replay 0과 Modal close/backdrop/Escape × both/open-change/onClose/none 12조합의 `1/0`, `0/1`, `0/0`, StrictMode/remount pre-reset 0을 확인합니다. dual dispatch, 두 번 호출, fallback 누락, visibility/propagation/listener/body/focus와 package missing/duplicate 변형은 모두 RED였습니다. 실제 portal 바깥 좌표 클릭을 위해 QA-only 실행기에 optional finite/nonnegative `clickPosition`을 추가했으며 click 이외 입력은 fail closed이고, position이 없으면 기존 `locator.click()` 경로를 그대로 사용합니다. 최종 `reports/visual-qa-mf-fallback-button-mobile.json`은 48/48, `reports/visual-qa-mf-fallback-modal-mobile.json`은 21/21 pass이고 둘 다 fresh, expand-tall-flow, failed/recovered 0, 전부 attempt 1입니다. 25개 interaction은 verified·captureVerified·viewportExpanded·revalidatedAfterViewportExpansion이 모두 true이며 69개 고유 ID/path/nonzero PNG가 있습니다. Modal은 `body` full-portal capture로 backdrop·dialog 전체를 포함합니다. Button/Modal report SHA-256은 각각 `c72622ca84add31814417fd9ef6c74fd4ab06313e566eb559f150ce9dace6b5a`, `8a231866278e2ec5d163e61e7d27033d5a808ca5457339e4297a71df547a7549`, two-report aggregate는 `e9dec5a298a30fccfe3313501519360a56cb09e2a7a7e5ef9cf3d2f13431fd3a`, Button/Modal PNG aggregate는 `f0d352523463fcb73c25d8c44b26c2a2280633685737484e4e54370ae13320eb`, `da845967c6bed9d5913455a1b5adb8f38eb5146a7e02307ea85bbd6520b1da33`, sorted 69-PNG aggregate는 `0022bc058e4ea47b95b0180778e95892a2e3fd663c38b63a166f46e03877a884`입니다. 54개 실제 PNG hash의 7개 동일-image group은 동일한 최종 픽셀 상태인 brand/default, pointer/default, keyboard/focus, secondary/ghost-hover, closed callback 결과, autofocus/tab/none-open, hover/pressed뿐이며 callback·focus ledger와 scenario ID로 구분됩니다. 최종 누계는 `449/1,010 registered`, `561 pending`, direct `70,836`, valid `71,839`입니다. pre-harness 162/162, harness 406/406, catalog/adapter 269/269, interaction runner 17/17, prior duplicate coordinator 12/12·6/6, GlobalError actual 8/8, contract 13/13, state 19/19, isolation/import/audit/reflow 46/46, DOM probe, TypeScript, Priority 0 정책과 worker 17/client 5,736 production build가 통과했습니다. inventory는 기존 Landing residual만 정확히 15 unclassified + 1 stale이고 fallback residual은 0입니다. CSS는 `255,465/255,500B`, bundle budget은 153/153, production isolation과 QA companion production identifier는 0입니다. 이 두 direct leaf의 로컬 증거는 닫혔지만 전역 완전성 게이트는 정확히 561개 pending 때문에 계속 닫혀 있습니다.
 
+### 2026-08-30~31 완료 component-state slice 통합 기록
+
+아래 slice는 계획·설계 문서가 아니라 구조화된 report JSON과 PNG를 증거의 기준으로 사용합니다. 모든 report는 `320x844`, `pageMode=fresh`, `captureHeightMode=expand-tall-flow`이며 `failed=0`, `recovered=0`입니다. 이 결과는 각 컴포넌트 slice의 완료 근거이며 전체 Visual QA 완전성이나 릴리즈 완료를 의미하지 않습니다.
+
+| 컴포넌트 | 결과 | 증거 report |
+| --- | ---: | --- |
+| `MateStatusTabs` | 21/21 | `reports/visual-qa-mate-status-tabs-mobile.json` |
+| `MateSortDropdown` | 30/30 | `reports/visual-qa-mate-sort-dropdown-mobile.json` |
+| `MateSeatFilterButtons` | 28/28 | `reports/visual-qa-mate-seat-filter-buttons-mobile.json` |
+| `MateMobileDateFilter` | 55/55 | `reports/visual-qa-mate-mobile-date-filter-mobile.json` |
+| `RankingPredictionCompletionPanel` | 44/44 | `reports/visual-qa-ranking-prediction-completion-panel-mobile.json` |
+| `RankingPredictionSaveDialog` | 25/25 | `reports/visual-qa-ranking-prediction-save-dialog-mobile.json` |
+| `ImageLightbox` | 42/42 | `reports/visual-qa-image-lightbox-mobile.json` |
+
+각 report의 scenario ID, component ID, attempt 기록, screenshot 경로는 JSON에 보존되어 있습니다. hosted parent와 전역 pending 상태는 기존 상태 매니페스트·검사 결과를 기준으로 계속 별도 관리합니다.
+
 ## 실행
 
 ```bash
@@ -417,3 +433,22 @@ npm run visual-qa:scan -- \
 현재 경로 스캐너가 보장하는 범위는 라우팅 가능한 33개 화면, 위의 주요 오버레이 상태, 내부 fixture로 정의한 대표 성공/콘텐츠 상태입니다. 새 라우트는 기본 경로와 상태 시나리오에 등록해야 하며 라우트 누락은 테스트에서 실패합니다. 전수 계약의 최종 보장은 이 경로 검사에 컴포넌트 심볼·상태·환경 실행 증거가 모두 합쳐졌을 때만 성립합니다.
 
 외부 AI 리뷰는 1차 리포트의 오탐 기준이 안정된 뒤 `report.json`과 문제 스크린샷만 전달하는 별도 단계로 추가합니다. 모든 정상 화면을 외부 모델로 보내거나 자동으로 코드를 수정하지 않습니다.
+
+## UI UX Design Intent
+
+`contracts/ui-ux-design-intent-v1.json`은 `src/guidelines/Guidelines.md`와 `src/index.css`에 정한 BEGA 규칙을 기계적으로 검사하는 mirror입니다. `npm run uiux:policy:test`와 `npm run uiux:policy:check`는 touch target, semantic token, text zoom, visible focus, reduced motion, React stack 호환성, 8개 페이지 profile의 owner·route·대표 컴포넌트, Pro Max 결정 원장을 확인합니다. Pro Max 추천은 이 계약을 자동으로 바꾸지 않습니다.
+
+고정된 Pro Max snapshot을 올리기 전에는 후보 tarball과 그 SHA-256·commit·version을 적은 lock JSON, 이전 BEGA Design Intent 계약을 준비한 뒤 오프라인 비교를 실행합니다.
+
+```bash
+npm run uiux:upgrade-review -- \
+  --candidate-lock /path/to/candidate-lock.json \
+  --candidate-archive /path/to/candidate.tar.gz \
+  --baseline-contract /path/to/baseline-ui-ux-design-intent-v1.json
+```
+
+후보 tarball에는 `skill.json`의 `repository`, `version`, `commit` 메타데이터가 후보 lock과 일치하도록 포함되어야 합니다. stock upstream archive에 이 manifest가 없으면 저장소의 snapshot root에 manifest를 추가한 뒤 tarball을 만들고 hash를 계산합니다. 후보 lock은 `schemaVersion`, `repository`, `commit`, `snapshotDeclaredVersion`, `archiveSha256` 필드를 사용합니다. commit은 오프라인 도구가 인증하는 값이 아니라 operator가 선언한 값이므로, lock을 만들기 전에 upstream commit과 archive를 확인해야 합니다. SHA-256은 그 lock이 지목하는 archive 바이트를 고정합니다. digest는 `shasum -a 256 /path/to/candidate.tar.gz`로 확인합니다.
+
+비교기는 후보 tarball의 digest와 크기를 검증하고 임시 디렉터리에 안전하게 풉니다. 후보의 Python 코드는 실행하지 않습니다. 설치된 pinned search engine으로 기존 데이터와 후보 `ux-guidelines.csv`를 같은 9개 profile query로 평가하며, 후보 검색 코드 변경 목록도 검토용으로 기록합니다. 추천 항목의 추가·삭제·변경·순서와 BEGA `required` rule의 추가·삭제·변경을 JSON/Markdown으로 남깁니다. 외부 네트워크 요청은 하지 않고 계약 파일도 수정하지 않습니다. 결과는 기본적으로 `reports/ui-ux-pro-max-upgrade-review.json`과 `.md`에 생성되며, 채택은 별도 검토 후 계약을 직접 수정할 때만 발생합니다.
+
+추천 결과별 BEGA 판단은 `contracts/ui-ux-decision-ledger-v1.json`에 `pending`, `accepted`, `rejected`와 근거로 기록합니다. `accepted` 항목은 실제 `required` Design Intent rule ID를 참조해야 합니다.

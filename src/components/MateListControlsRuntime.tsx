@@ -28,23 +28,31 @@ const MateViewToggle = lazy(() => import('./MateViewToggle'));
 const MateRecentSearchesPanel = lazy(() => import('./MateRecentSearchesPanel'));
 const MatePopularSearchesPanel = lazy(() => import('./MatePopularSearchesPanel'));
 
-type MateListController = ReturnType<typeof useMateListController>;
+export type MateListController = ReturnType<typeof useMateListController>;
+export type MateListControlsRuntimeController = MateListController;
 
-interface MateListControlsRuntimeProps {
+export interface MateListControlsRuntimeProps {
   controller: MateListController;
   recordedSearchTermsRef: MutableRefObject<Set<string>>;
   children: ReactNode;
+  visualQaStateOverride?: {
+    suppressNetworkChildren?: boolean;
+  };
 }
 
 const GUIDE_BUTTON_CLASS = 'rounded-full px-4 font-bold text-gray-700 hover:bg-primary/10 hover:text-primary dark:text-white dark:hover:bg-primary/20 dark:hover:text-primary';
 const CREATE_BUTTON_CLASS = 'rounded-full bg-primary px-5 font-bold text-primary-foreground shadow-lg hover:bg-primary-hover';
-const SIDEBAR_CARD_CLASS = 'rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#000000]';
+const SIDEBAR_CARD_CLASS = 'rounded-2xl border border-gray-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-card';
 
 export default function MateListControlsRuntime({
   controller,
   recordedSearchTermsRef,
   children,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MateListControlsRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const {
     activeMobileFilterCount,
     activeSortKey,
@@ -160,9 +168,9 @@ export default function MateListControlsRuntime({
   };
 
   return (
-    <>
-      <div className="mb-5 flex items-start justify-between gap-3 md:mb-6 md:items-end">
-        <div className="min-w-0">
+    <div data-testid="mate-list-controls-runtime" className="min-w-0">
+      <div className="mate-list-controls-heading mb-5 flex flex-wrap items-start justify-between gap-3 md:mb-6 md:items-end">
+        <div className="min-w-0 w-full sm:w-auto">
           <p className="mb-1 hidden text-13 font-semibold text-gray-500 dark:text-white/70 sm:block">
             Mate Flow
           </p>
@@ -170,15 +178,18 @@ export default function MateListControlsRuntime({
             <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">
               직관 메이트 찾기
             </h1>
-            <Suspense fallback={null}>
-              <MateTodayCountBadge />
-            </Suspense>
+            {visualQaStateOverride?.suppressNetworkChildren ? null : (
+              <Suspense fallback={null}>
+                <MateTodayCountBadge />
+              </Suspense>
+            )}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex w-full items-center justify-end gap-2 sm:w-auto sm:shrink-0">
           <Button
             variant="ghost"
             size="touch"
+            data-testid="mate-controls-guide-mobile"
             onClick={toggleGuideOpen}
             className={`${GUIDE_BUTTON_CLASS} sm:hidden`}
           >
@@ -188,6 +199,7 @@ export default function MateListControlsRuntime({
             <Button
               variant="ghost"
               size="touch"
+              data-testid="mate-controls-guide-desktop"
               onClick={toggleGuideOpen}
               className={GUIDE_BUTTON_CLASS}
             >
@@ -195,6 +207,7 @@ export default function MateListControlsRuntime({
             </Button>
             <Button
               size="touch"
+              data-testid="mate-controls-create-desktop"
               onClick={handleCreatePartyClick}
               className={CREATE_BUTTON_CLASS}
             >
@@ -214,9 +227,11 @@ export default function MateListControlsRuntime({
       <div className="lg:grid lg:grid-cols-[264px_minmax(0,1fr)] lg:gap-[22px]">
         <aside className="hidden lg:block">
           <div className="sticky top-24 max-h-[calc(100vh-7rem)] space-y-3 overflow-y-auto pr-0.5">
-            <Suspense fallback={null}>
-              <MateMyPartiesPanel onPartyClick={handlePartyClick} />
-            </Suspense>
+            {visualQaStateOverride?.suppressNetworkChildren ? null : (
+              <Suspense fallback={null}>
+                <MateMyPartiesPanel onPartyClick={handlePartyClick} />
+              </Suspense>
+            )}
             <section className={`${SIDEBAR_CARD_CLASS} space-y-3`}>
               <h2 className="text-13 font-black text-gray-900 dark:text-white">경기 날짜</h2>
               {renderDateFilter('rail')}
@@ -242,20 +257,24 @@ export default function MateListControlsRuntime({
               </Suspense>
             </section>
 
-            <Suspense fallback={null}>
-              <MateRecentSearchesPanel onTermClick={handleSearchTermSelect} />
-            </Suspense>
+            {visualQaStateOverride?.suppressNetworkChildren ? null : (
+              <Suspense fallback={null}>
+                <MateRecentSearchesPanel onTermClick={handleSearchTermSelect} />
+              </Suspense>
+            )}
 
-            <Suspense fallback={null}>
-              <MatePopularSearchesPanel onTermClick={handleSearchTermSelect} />
-            </Suspense>
+            {visualQaStateOverride?.suppressNetworkChildren ? null : (
+              <Suspense fallback={null}>
+                <MatePopularSearchesPanel onTermClick={handleSearchTermSelect} />
+              </Suspense>
+            )}
           </div>
         </aside>
 
         <section className="min-w-0">
           {renderDateFilter('scroller')}
 
-          <div className="z-30 -mx-4 mb-4 border-y border-gray-200/80 bg-gray-50/95 px-4 py-3 backdrop-blur md:sticky md:top-16 md:mx-0 md:rounded-14 md:border lg:static lg:mb-[14px] lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none dark:border-white/10 dark:bg-[#000000]/95 lg:dark:bg-transparent">
+          <div className="mate-list-controls-toolbar z-30 -mx-4 mb-4 border-y border-gray-200/80 bg-gray-50/95 px-4 py-3 backdrop-blur md:sticky md:top-16 md:mx-0 md:rounded-14 md:border lg:static lg:mb-[14px] lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none dark:border-white/10 dark:bg-card/95 lg:dark:bg-transparent">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-[10px]">
                 <div className="flex min-w-0 flex-1 gap-2">
@@ -276,7 +295,7 @@ export default function MateListControlsRuntime({
                             commitSearchTerm(inputValue);
                           }
                         }}
-                        className="h-[46px] rounded-14 border-gray-200/80 bg-white pl-11 pr-4 text-13 font-medium text-gray-900 shadow-none placeholder:text-slate-400 transition-colors focus:border-primary/50 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-[#000000] dark:text-white dark:placeholder-zinc-500"
+                        className="min-h-11 h-[46px] rounded-14 border-gray-200/80 bg-white pl-11 pr-4 text-13 font-medium text-gray-900 shadow-none placeholder:text-slate-400 transition-colors focus:border-primary/50 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-card dark:text-white dark:placeholder-zinc-500"
                       />
                     </div>
                   </div>
@@ -286,7 +305,7 @@ export default function MateListControlsRuntime({
                     data-testid="mate-mobile-filter-open"
                     aria-label={mobileFilterButtonLabel}
                     onClick={openMobileFilter}
-                    className="h-[46px] shrink-0 rounded-14 border-gray-200/80 bg-white px-3 text-13 font-bold text-gray-700 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-[#000000] dark:text-white dark:hover:bg-primary/20 lg:hidden"
+                    className="h-[46px] shrink-0 rounded-14 border-gray-200/80 bg-white px-3 text-13 font-bold text-gray-700 hover:border-primary/30 hover:bg-primary/10 hover:text-primary dark:border-white/15 dark:bg-card dark:text-white dark:hover:bg-primary/20 lg:hidden"
                   >
                     <MateTicketIcon className="h-4 w-4" />
                     <span>필터</span>
@@ -325,6 +344,7 @@ export default function MateListControlsRuntime({
                 {renderTeamFilterButton('toolbar')}
                 <Button
                   size="touch"
+                  data-testid="mate-controls-create-mobile"
                   onClick={handleCreatePartyClick}
                   className="h-12 w-full rounded-full bg-primary font-bold text-primary-foreground shadow-[0_10px_24px_rgba(15,23,42,0.16)] hover:bg-primary-hover sm:hidden"
                 >
@@ -354,6 +374,6 @@ export default function MateListControlsRuntime({
           />
         </Suspense>
       ) : null}
-    </>
+    </div>
   );
 }

@@ -12,23 +12,40 @@ import { useConfirmDialog } from './contexts/ConfirmDialogContext';
 import { ProfileAvatar } from './ui/ProfileAvatar';
 import PlainDialog from './ui/plain-dialog';
 
+export type QuoteRepostEditorVisualQaStateOverride = {
+    content?: string;
+    isSubmitting?: boolean;
+    onConfirmClose?: () => boolean | Promise<boolean>;
+    onSubmit?: () => void | Promise<void>;
+};
+
 interface QuoteRepostEditorProps {
     isOpen: boolean;
     onClose: () => void;
     post: CheerPost;
+    visualQaStateOverride?: QuoteRepostEditorVisualQaStateOverride;
 }
 
-export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepostEditorProps) {
-    const [content, setContent] = useState('');
+export default function QuoteRepostEditor({
+    isOpen,
+    onClose,
+    post,
+    visualQaStateOverride: requestedVisualQaStateOverride,
+}: QuoteRepostEditorProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
+    const [content, setContent] = useState(visualQaStateOverride?.content ?? '');
+    const [isLocallySubmitting, setIsLocallySubmitting] = useState(false);
     const { confirm } = useConfirmDialog();
     const { quoteRepostMutation } = useCheerMutations();
-  const {
-    userName: authUserName,
-    userHandle: authUserHandle,
-    userProfileImageUrl,
-  } = useAuthProfileSnapshot();
-  const userName = authUserName || '프로필';
-  const userHandle = authUserHandle || 'user';
+    const {
+        userName: authUserName,
+        userHandle: authUserHandle,
+        userProfileImageUrl,
+    } = useAuthProfileSnapshot();
+    const userName = authUserName || '프로필';
+    const userHandle = authUserHandle || 'user';
     const resolveProfileImage = (imageUrl?: string | null) => {
         if (!imageUrl) return undefined;
         if (imageUrl.includes('/assets/') || imageUrl.includes('/src/assets/')) return undefined;
@@ -38,7 +55,10 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
     const MAX_LENGTH = 500;
     const remainingChars = MAX_LENGTH - content.length;
     const isOverLimit = remainingChars < 0;
-    const canSubmit = content.trim().length > 0 && !isOverLimit && !quoteRepostMutation.isPending;
+    const isSubmitting = quoteRepostMutation.isPending
+        || isLocallySubmitting
+        || visualQaStateOverride?.isSubmitting === true;
+    const canSubmit = content.trim().length > 0 && !isOverLimit && !isSubmitting;
 
     // 원본 게시글을 EmbeddedPost 형식으로 변환
     const embeddedOriginal: EmbeddedPostType = {
@@ -56,8 +76,20 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
         linkedContent: post.linkedContent,
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!canSubmit) return;
+
+        if (visualQaStateOverride?.onSubmit) {
+            setIsLocallySubmitting(true);
+            try {
+                await visualQaStateOverride.onSubmit();
+                setContent('');
+                onClose();
+            } finally {
+                setIsLocallySubmitting(false);
+            }
+            return;
+        }
 
         quoteRepostMutation.mutate(
             { postId: post.id, content: content.trim() },
@@ -72,8 +104,10 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
     };
 
     const handleClose = async () => {
-        if (content.trim() && !quoteRepostMutation.isPending) {
-            const confirmed = await confirm({ title: '작성 취소', description: '작성 중인 내용이 있습니다. 정말 닫으시겠습니까?', confirmLabel: '닫기' });
+        if (content.trim() && !isSubmitting) {
+            const confirmed = visualQaStateOverride?.onConfirmClose
+                ? await visualQaStateOverride.onConfirmClose()
+                : await confirm({ title: '작성 취소', description: '작성 중인 내용이 있습니다. 정말 닫으시겠습니까?', confirmLabel: '닫기' });
             if (!confirmed) return;
         }
         setContent('');
@@ -87,6 +121,7 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
             hideCloseButton
             className="max-w-[500px] max-h-[90vh] overflow-hidden"
             bodyClassName="p-0"
+            contentTestId="quote-repost-editor"
         >
             <div className="flex max-h-[90vh] flex-col">
                 <div className="px-4 py-3 border-b border-gray-100 dark:border-border flex-shrink-0">
@@ -94,8 +129,9 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
                         <button
                             type="button"
                             onClick={() => void handleClose()}
-                            className="p-1 -ml-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                            disabled={quoteRepostMutation.isPending}
+                            data-testid="quote-repost-cancel"
+                            className="-ml-1 flex h-11 w-11 items-center justify-center rounded-full p-1 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 sm:h-8 sm:w-8"
+                            disabled={isSubmitting}
                         >
                             <XIcon className="w-5 h-5 text-gray-500" />
                         </button>
@@ -105,14 +141,15 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
                         <button
                             type="button"
                             onClick={handleSubmit}
+                            data-testid="quote-repost-submit"
                             disabled={!canSubmit}
-                        className={`px-4 py-1.5 text-body font-semibold rounded-full transition-colors ${
-                            canSubmit
-                                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                : 'bg-gray-200 dark:bg-secondary text-gray-400 cursor-not-allowed'
-                        }`}
+                            className={`inline-flex h-auto min-h-11 items-center justify-center rounded-full px-4 py-1.5 text-body font-semibold transition-colors sm:min-h-9 ${
+                                canSubmit
+                                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                    : 'bg-gray-200 dark:bg-secondary text-gray-400 cursor-not-allowed'
+                            }`}
                         >
-                            {quoteRepostMutation.isPending ? (
+                            {isSubmitting ? (
                                 <LoaderIcon className="w-4 h-4 animate-spin" />
                             ) : (
                                 '게시'
@@ -146,11 +183,12 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
                             </div>
 
                             <textarea
+                                data-testid="quote-repost-content"
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 placeholder="내 의견을 추가하세요..."
                                 className="w-full min-h-[100px] resize-none border-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base leading-relaxed"
-                                disabled={quoteRepostMutation.isPending}
+                                disabled={isSubmitting}
                                 autoFocus
                             />
 
@@ -162,6 +200,7 @@ export default function QuoteRepostEditor({ isOpen, onClose, post }: QuoteRepost
                 <div className="px-4 py-3 border-t border-gray-100 dark:border-border flex-shrink-0">
                     <div className="flex justify-end">
                         <span
+                            data-testid="quote-repost-remaining"
                             className={`text-body ${
                                 isOverLimit
                                     ? 'text-red-500'

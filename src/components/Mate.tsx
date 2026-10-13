@@ -5,6 +5,7 @@ import {
   type UseMateListControllerReturn,
 } from '../hooks/useMateListController';
 import { useUIStore } from '../store/uiStore';
+import './Mate.css';
 
 const MateListControlsRuntime = lazy(() => import('./MateListControlsRuntime'));
 const MateResultsRuntime = lazy(() => import('./MateResultsRuntime'));
@@ -106,9 +107,9 @@ export default function Mate({ visualQaStateOverride: visualQaStateOverrideProp 
   return (
     <div
       data-testid="mate-page"
-      className="relative min-h-screen min-w-0 overflow-x-clip bg-gray-50 transition-colors duration-200 dark:bg-background"
+      className="mate-list-page relative min-h-screen min-w-0 overflow-x-clip bg-gray-50 transition-colors duration-200 dark:bg-background"
     >
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 pb-8 sm:px-6 lg:px-8 2xl:max-w-[1440px]">
+      <div className="mate-list-page__content relative z-10 mx-auto max-w-7xl px-4 py-5 pb-8 sm:px-6 lg:px-8 2xl:max-w-[1440px]">
         {visualQaStateOverride?.phase === 'controls-fallback' ? (
           <MateControlsFallback />
         ) : (

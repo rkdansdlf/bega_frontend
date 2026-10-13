@@ -21,7 +21,12 @@ import {
   sanitizeLoginRedirect,
   setStoredLoginRedirect,
 } from '../utils/loginRedirect';
-import { markAuthSessionEstablished } from '../api/authSessionGeneration';
+import { clearLegacyOwnerlessDrafts } from '../utils/viewerScopedDraftStorage';
+import {
+  AuthOperationSupersededError, beginAuthLogout, finishAuthLogout,
+  getAuthSessionEpoch, isAuthLogoutPending, markAuthSessionEstablished, trackAuthLogout,
+} from '../api/authSessionGeneration';
+import type { GlobalApiErrorDetail } from '../types/error';
 
 const LEGACY_AUTH_TOKEN_KEY = 'authToken';
 const PUBLIC_OPTIONAL_BOOTSTRAP_DEDUP_MS = 60_000;
@@ -38,6 +43,14 @@ const loadAuthApi = () => {
   }
 
   return authApiModulePromise;
+};
+
+const notifyOtherTabsOfAuthSessionChange = () => {
+  void import('../utils/authSessionEvents')
+    .then(({ publishAuthSessionChanged }) => publishAuthSessionChanged())
+    .catch((error: unknown) => {
+      console.warn('[auth] cross-tab session notification failed', error);
+    });
 };
 
 const clearLegacyAuthTokenStorage = () => {
@@ -138,41 +151,24 @@ const shouldLogBootstrapFailure = (status?: number, responseCode?: string): bool
 
 const isAuthBootstrapTraceEnabled = (): boolean => {
   const isDev = Boolean(import.meta.env?.DEV);
-
-  if (typeof window === 'undefined') {
-    return isDev;
-  }
-
+  if (typeof window === 'undefined') return isDev;
   return isDev || new URLSearchParams(window.location?.search ?? '').get('traceAuth') === '1';
 };
 
-const logBootstrapFailure = (
-  error: unknown,
-  options: {
-    mode?: 'default' | 'public-optional';
-  } = {},
-) => {
+const logBootstrapFailure = (error: unknown, options: { mode?: 'default' | 'public-optional' } = {}) => {
   const status = extractHttpStatus(error);
   const responseCode = extractResponseCode(error);
-  if (!shouldLogBootstrapFailure(status, responseCode)) {
-    return;
-  }
-
+  if (!shouldLogBootstrapFailure(status, responseCode)) return;
   if (options.mode === 'public-optional') {
     if (isAuthBootstrapTraceEnabled()) {
       console.debug('[auth-bootstrap] optional public bootstrap failed', {
-        status,
-        responseCode,
-        hadPersistedHint: hasPersistedAuthBootstrapHint(),
+        status, responseCode, hadPersistedHint: hasPersistedAuthBootstrapHint(),
       });
     }
     return;
   }
-
   console.warn('[auth-bootstrap] session bootstrap failed', {
-    status,
-    responseCode,
-    hadPersistedHint: hasPersistedAuthBootstrapHint(),
+    status, responseCode, hadPersistedHint: hasPersistedAuthBootstrapHint(),
   });
 };
 
@@ -195,13 +191,17 @@ const normalizeProfileImageUrl = (value?: string | null): string | null => {
 };
 
 export const authStoreApi = {
-  fetchCurrentUserProfile: async (options?: { retryOn401?: boolean }) => {
+  fetchCurrentUserProfile: async (options?: { retryOn401?: boolean; isCurrentRequest?: () => boolean }) => {
     const authApi = await loadAuthApi();
     return authApi.fetchCurrentUserProfile(options);
   },
-  logoutUser: async () => {
+  logoutUser: async (isCurrentRequest?: () => boolean) => {
     const authApi = await loadAuthApi();
-    return authApi.logoutUser();
+    return authApi.logoutUser(isCurrentRequest);
+  },
+  waitForAuthReissue: async () => {
+    const authApi = await loadAuthApi();
+    return authApi.waitForAuthReissue();
   },
   normalizeProfileImageUrl,
 };
@@ -255,7 +255,7 @@ interface AuthActions {
   setUserProfile: (profile: Partial<Omit<User, 'id'>> & { email: string; name: string }) => void;
   deductCheerPoints: (amount: number) => void; // Added action
   login: (email: string, name: string, profileImageUrl?: string | null, role?: string, favoriteTeam?: string, id?: number, cheerPoints?: number, handle?: string, provider?: string, hasPassword?: boolean) => void;
-  logout: (skipServerLogout?: boolean) => void;
+  logout: (skipServerLogout?: boolean) => Promise<boolean>;
   setFavoriteTeam: (team: string, color: string) => void;
   setShowLoginRequiredDialog: (show: boolean) => void;
   setPendingLoginRedirect: (redirectPath?: string | null) => void;
@@ -281,16 +281,26 @@ const getInitialAuthLoadingState = (): boolean => {
   });
 };
 
-const getInitialState = (): AuthState => ({
+const getInitialState = (isAuthLoading = getInitialAuthLoadingState()): AuthState => ({
   user: null,
-  isAuthLoading: getInitialAuthLoadingState(),
+  isAuthLoading,
   publicAuthBootstrapPhase: 'idle',
   showLoginRequiredDialog: false,
   pendingLoginRedirect: null,
 });
 
 let pendingAuthProfileRequest: Promise<boolean> | null = null;
-let pendingLogoutRequest: Promise<void> | null = null;
+let authProfileRevision = 0;
+const invalidateAuthProfileRequest = () => {
+  authProfileRevision += 1;
+  pendingAuthProfileRequest = null;
+};
+let pendingLogoutRequest: {
+  sessionEpoch: number;
+  userId: number;
+  result: Promise<boolean>;
+  completion: Promise<boolean>;
+} | null = null;
 
 export const useAuthStore = create<AuthStore>()(
   persist(
@@ -299,6 +309,9 @@ export const useAuthStore = create<AuthStore>()(
 
       fetchProfileAndAuthenticate: async (options) => {
         const isPublicOptional = options?.mode === 'public-optional';
+        if (isAuthLogoutPending()) {
+          return false;
+        }
         if (pendingAuthProfileRequest) {
           return pendingAuthProfileRequest;
         }
@@ -326,6 +339,8 @@ export const useAuthStore = create<AuthStore>()(
           getPublicOptionalBootstrapAttemptStore()[pathname] = now;
         }
 
+        const revision = authProfileRevision;
+        const isCurrentProfileRequest = () => revision === authProfileRevision;
         const request = (async (): Promise<boolean> => {
           if (isPublicOptional) {
             set({ publicAuthBootstrapPhase: 'running' });
@@ -339,9 +354,15 @@ export const useAuthStore = create<AuthStore>()(
           try {
             const profile = await authStoreApi.fetchCurrentUserProfile({
               retryOn401: !isPublicOptional,
+              isCurrentRequest: isCurrentProfileRequest,
             });
+            if (!isCurrentProfileRequest()) return false;
             markPersistedAuthBootstrapSuccess();
-            markAuthSessionEstablished();
+            if (get().user?.id !== profile.id) {
+              clearLegacyOwnerlessDrafts();
+              runSessionScopedQueryCleanup();
+              markAuthSessionEstablished();
+            }
             cacheAuthenticatedUserProfile(profile);
             set({
               user: profile,
@@ -350,6 +371,11 @@ export const useAuthStore = create<AuthStore>()(
             return true;
 
           } catch (error) {
+            if (!isCurrentProfileRequest()) return false;
+            if (error instanceof AuthOperationSupersededError) {
+              set({ isAuthLoading: false });
+              return false;
+            }
             // 401 errors are handled by interceptor (redirect to login)
             // For other errors during initial auth check, we just reset state silently to avoid modal on startup
             logBootstrapFailure(error, { mode: isPublicOptional ? 'public-optional' : 'default' });
@@ -359,6 +385,7 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             if (!isPublicOptional) {
+              clearLegacyOwnerlessDrafts();
               runSessionScopedQueryCleanup();
               set({
                 user: null,
@@ -368,7 +395,7 @@ export const useAuthStore = create<AuthStore>()(
             }
             return false;
           } finally {
-            if (isPublicOptional) {
+            if (isPublicOptional && isCurrentProfileRequest()) {
               set({ publicAuthBootstrapPhase: 'idle' });
             }
           }
@@ -378,7 +405,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           return await request;
         } finally {
-          pendingAuthProfileRequest = null;
+          if (pendingAuthProfileRequest === request) pendingAuthProfileRequest = null;
         }
       },
 
@@ -419,10 +446,15 @@ export const useAuthStore = create<AuthStore>()(
 
       login: (email: string, name: string, profileImageUrl?: string | null, role?: string, favoriteTeam?: string, id?: number, cheerPoints?: number, handle?: string, provider?: string, hasPassword?: boolean) => {
         const normalizedId = Number(id) || 0;
+        invalidateAuthProfileRequest();
+        resetPublicOptionalBootstrapAttemptStore();
+        clearLegacyOwnerlessDrafts();
+        runSessionScopedQueryCleanup();
         markPersistedAuthBootstrapSuccess();
         markAuthSessionEstablished();
 
         set({
+          ...getInitialState(false),
           user: {
             id: normalizedId,
             email: email,
@@ -436,44 +468,98 @@ export const useAuthStore = create<AuthStore>()(
             provider: provider,
             hasPassword,
           },
-          isAuthLoading: false,
-          publicAuthBootstrapPhase: 'idle',
         });
+        notifyOtherTabsOfAuthSessionChange();
       },
 
       logout: (skipServerLogout = false) => {
-        resetPublicOptionalBootstrapAttemptStore();
-        clearStoredLoginRedirect();
-        clearPersistedAuthBootstrapState();
-        if (!get().user || skipServerLogout) {
-          runSessionScopedQueryCleanup();
-          set(getInitialState());
-          return;
+        const clearLocalSession = () => {
+          try {
+            invalidateAuthProfileRequest();
+            resetPublicOptionalBootstrapAttemptStore();
+            clearStoredLoginRedirect();
+            clearPersistedAuthBootstrapState();
+            clearLegacyOwnerlessDrafts();
+            runSessionScopedQueryCleanup();
+            markAuthSessionEstablished();
+            set(getInitialState(false));
+            return true;
+          } catch {
+            return false;
+          }
+        };
+
+        const user = get().user;
+        if (!user) {
+          return Promise.resolve(clearLocalSession());
+        }
+        if (skipServerLogout) {
+          const cleared = clearLocalSession();
+          if (cleared) notifyOtherTabsOfAuthSessionChange();
+          return Promise.resolve(cleared);
         }
 
-          runSessionScopedQueryCleanup();
-          if (!pendingLogoutRequest) {
-            pendingLogoutRequest = authStoreApi.logoutUser()
-              .then(() => {
-                // ignore response
-              })
-              .catch(() => {
-                // Ignore logout request failures (e.g., already expired token / invalid session).
-                // Local auth state is already cleared above.
-              })
-              .finally(() => {
-                pendingLogoutRequest = null;
-              });
-          }
+        const sessionEpoch = getAuthSessionEpoch();
+        const userId = user.id;
+        if (pendingLogoutRequest?.sessionEpoch === sessionEpoch
+          && pendingLogoutRequest.userId === userId) {
+          return pendingLogoutRequest.result;
+        }
+        // Logout intent takes precedence over an in-flight profile refresh.
+        invalidateAuthProfileRequest();
+        const intent = beginAuthLogout();
+        resetPublicOptionalBootstrapAttemptStore();
+        set({ isAuthLoading: false, publicAuthBootstrapPhase: 'idle' });
+        const isCurrentSession = () => (
+          getAuthSessionEpoch() === sessionEpoch && get().user?.id === userId
+        );
 
-        set({
-          ...getInitialState(),
-        });
+        let resolveResult!: (value: boolean) => void;
+        const result = new Promise<boolean>((resolve) => { resolveResult = resolve; });
+        let noticeShown = false;
+        const showPendingNotice = () => {
+          if (!isCurrentSession() || noticeShown) return;
+          noticeShown = true;
+          if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent<GlobalApiErrorDetail>('global-api-error', {
+            detail: {
+              message: '인증 요청의 완료 여부를 확인하고 있습니다. 로그아웃은 아직 완료되지 않았습니다.',
+              statusCode: null, responseCode: 'AUTH_OPERATION_PENDING', endpoint: '/auth/logout', source: 'api',
+            },
+          }));
+        };
+        const timer = setTimeout(() => { showPendingNotice(); resolveResult(false); }, 10_000);
+        const previousRequest = pendingLogoutRequest?.completion;
+        const completion = import('./authLogoutRuntime')
+          .then(({ runLogoutOperation }) => runLogoutOperation({
+            previous: previousRequest, isCurrent: isCurrentSession,
+            drain: authStoreApi.waitForAuthReissue, dispatch: authStoreApi.logoutUser,
+            clear: () => {
+              const cleared = clearLocalSession();
+              if (cleared) notifyOtherTabsOfAuthSessionChange();
+              return cleared;
+            },
+            retry: () => get().logout(),
+            status: extractHttpStatus, code: extractResponseCode,
+            incomplete: () => { clearTimeout(timer); showPendingNotice(); resolveResult(false); },
+          }))
+          .catch(() => { showPendingNotice(); return false; })
+          .finally(() => {
+            clearTimeout(timer);
+            finishAuthLogout(intent);
+            if (pendingLogoutRequest?.completion === completion) pendingLogoutRequest = null;
+          })
+          .then((value) => { resolveResult(value); return value; });
+        pendingLogoutRequest = { sessionEpoch, userId, result, completion };
+        trackAuthLogout(completion);
+        return result;
       },
       reset: () =>
         {
+          invalidateAuthProfileRequest();
+          markAuthSessionEstablished();
           resetPublicOptionalBootstrapAttemptStore();
           clearPersistedAuthBootstrapState();
+          clearLegacyOwnerlessDrafts();
           return set({
             ...getInitialState(),
           });
@@ -523,6 +609,7 @@ export const useAuthSession = () =>
       isLoggedIn: isLoggedInUser(state.user),
       isAuthLoading: state.isAuthLoading,
       userId: state.user?.id ?? null,
+      sessionEpoch: getAuthSessionEpoch(),
     })),
   );
 

@@ -7,6 +7,7 @@ import {
 } from '../icons/StadiumGuideIcons';
 
 import SeatViewGallery from '../SeatViewGallery';
+import type { SeatViewPhotosVisualQaStateOverride } from '../../hooks/useSeatViewPhotos';
 import type {
   SeatMapCategoryMeta,
   SeatMapCommonCopy,
@@ -30,6 +31,8 @@ interface SeatMapDetailPanelProps<TSection> {
   isUploadDisabled?: (section: TSection) => boolean;
   getUploadLabel?: (section: TSection) => ReactNode;
   searchAction?: SeatMapSearchAction;
+  testId?: string;
+  visualQaStateOverride?: SeatViewPhotosVisualQaStateOverride;
 }
 
 function EmptyState({ copy, mode }: { copy?: SeatMapCommonCopy; mode: SeatMapThemeMode }) {
@@ -84,6 +87,8 @@ export function SeatMapDetailPanel<TSection>({
   isUploadDisabled,
   getUploadLabel,
   searchAction,
+  testId,
+  visualQaStateOverride,
 }: SeatMapDetailPanelProps<TSection>) {
   const isDark = mode === 'dark';
   const panelStyle = {
@@ -95,6 +100,7 @@ export function SeatMapDetailPanel<TSection>({
   if (!section) {
     return (
       <div
+        data-testid={testId}
         className="sticky top-4 overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
         style={{ ...panelStyle, maxHeight: 'calc(100vh - 32px)', minHeight: 220 }}
       >
@@ -117,15 +123,17 @@ export function SeatMapDetailPanel<TSection>({
 
   return (
     <div
+      data-testid={testId}
       className="sticky top-4 overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
       style={{ ...panelStyle, maxHeight: 'calc(100vh - 32px)' }}
     >
       <div className="relative px-5 pb-4 pt-5">
         <button
           type="button"
+          data-testid={testId ? `${testId}-close` : undefined}
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200"
+          className="absolute right-5 top-5 z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 sm:h-8 sm:w-8"
           style={{
             backgroundColor: isDark ? STADIUM_SEATMAP_DARK_COLORS.surface : undefined,
             color: isDark ? STADIUM_SEATMAP_DARK_COLORS.muted : undefined,
@@ -238,6 +246,7 @@ export function SeatMapDetailPanel<TSection>({
           section={adapter.getName(section)}
           sectionAliases={[...adapter.getSeatViewSections(section)]}
           compact
+          visualQaStateOverride={visualQaStateOverride}
         />
       </div>
 
@@ -252,6 +261,7 @@ export function SeatMapDetailPanel<TSection>({
       >
         <button
           type="button"
+          data-testid={testId ? `${testId}-upload` : undefined}
           onClick={onUpload}
           disabled={uploadDisabled}
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"

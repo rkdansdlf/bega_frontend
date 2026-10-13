@@ -184,8 +184,14 @@ export default function PredictionScoreboardSection({
                   key={page}
                   aria-label={page === 0 ? '정규 이닝 보기' : '연장 이닝 보기'}
                   onClick={() => setInningPage(page)}
-                  className={`h-2 w-2 rounded-full ${inningPage === page ? 'bg-gray-800 dark:bg-gray-100' : 'bg-gray-200 dark:bg-border'}`}
-                />
+                  data-testid={`prediction-scoreboard-page-${page}`}
+                  className="flex h-11 w-11 items-center justify-center"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-2 w-2 rounded-full ${inningPage === page ? 'bg-gray-800 dark:bg-gray-100' : 'bg-gray-200 dark:bg-border'}`}
+                  />
+                </button>
               ))}
             </div>
           </div>

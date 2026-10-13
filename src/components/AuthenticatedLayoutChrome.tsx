@@ -1,9 +1,9 @@
-import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import {
   CHATBOT_OPEN_REQUEST_EVENT,
-  consumePendingChatbotOpenRequest,
+  consumePendingChatbotOpenRequestDetails,
 } from '../utils/chatbotLauncher';
 
 const AuthenticatedLayoutToaster = lazy(() => import('./AuthenticatedLayoutToaster'));
@@ -20,6 +20,7 @@ type AuthenticatedLayoutChromeProps = {
     chatBot?: ComponentType<{
       autoOpen?: boolean;
       onClosed?: () => void;
+      returnFocusTo?: HTMLElement | null;
     }>;
     chatBotFloatingButton?: ComponentType<{
       className?: string;
@@ -33,6 +34,7 @@ type AuthenticatedLayoutChromeProps = {
 export default function AuthenticatedLayoutChrome(props: AuthenticatedLayoutChromeProps) {
   const { enableAuthenticatedServices = true } = props;
   const [liveChatBotRequested, setLiveChatBotRequested] = useState(false);
+  const chatbotOpenerRef = useRef<HTMLElement | null>(null);
   const usesChatBotOverride = import.meta.env.DEV
     && props.isChatBotRequestedOverride !== undefined;
   const isChatBotRequested = usesChatBotOverride
@@ -55,15 +57,21 @@ export default function AuthenticatedLayoutChrome(props: AuthenticatedLayoutChro
     : ChatBotFloatingButton;
   const location = useLocation();
   const shouldMountToaster = enableAuthenticatedServices || isChatBotRequested;
+  const isMateDetailRoute = /^\/mate\/[^/]+$/.test(location.pathname);
   const isMateBottomActionRoute = /^\/mate(?:\/create|\/[^/]+(?:\/(apply|manage|checkin|chat))?)$/.test(location.pathname);
   const mobileBottomNavOffsetClass =
     'bottom-[var(--mobile-content-safe-bottom)] sm:bottom-[calc(1.125rem+env(safe-area-inset-bottom))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]';
   const chatBotOffsetClass = isMateBottomActionRoute
     ? 'bottom-[calc(var(--mobile-content-safe-bottom)+2.25rem)] sm:bottom-[calc(1.125rem+env(safe-area-inset-bottom))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]'
     : mobileBottomNavOffsetClass;
-  const chatBotHorizontalClass = isMateBottomActionRoute
+  const chatBotHorizontalClass = isMateDetailRoute
+    ? 'lg:right-[calc(1.5rem+env(safe-area-inset-right))]'
+    : isMateBottomActionRoute
     ? 'lg:left-[calc(1.5rem+env(safe-area-inset-left))] lg:right-auto xl:left-auto xl:right-[calc(1.5rem+env(safe-area-inset-right))]'
     : 'lg:right-[calc(1.5rem+env(safe-area-inset-right))]';
+  const chatBotDetailOffsetClass = isMateDetailRoute
+    ? 'lg:bottom-[calc(0.5rem+env(safe-area-inset-bottom))]'
+    : '';
 
   useEffect(() => {
     if (usesChatBotOverride) {
@@ -71,11 +79,14 @@ export default function AuthenticatedLayoutChrome(props: AuthenticatedLayoutChro
     }
 
     const handleChatBotOpenRequest = () => {
-      consumePendingChatbotOpenRequest(window);
+      const request = consumePendingChatbotOpenRequestDetails(window);
+      chatbotOpenerRef.current = request?.opener ?? null;
       setLiveChatBotRequested(true);
     };
     window.addEventListener(CHATBOT_OPEN_REQUEST_EVENT, handleChatBotOpenRequest);
-    if (consumePendingChatbotOpenRequest(window)) {
+    const pendingRequest = consumePendingChatbotOpenRequestDetails(window);
+    if (pendingRequest) {
+      chatbotOpenerRef.current = pendingRequest.opener;
       setLiveChatBotRequested(true);
     }
 
@@ -96,6 +107,7 @@ export default function AuthenticatedLayoutChrome(props: AuthenticatedLayoutChro
         <Suspense fallback={null}>
           <ChatBotComponent
             autoOpen
+            returnFocusTo={chatbotOpenerRef.current}
             onClosed={() => {
               if (!usesChatBotOverride) {
                 setLiveChatBotRequested(false);
@@ -113,9 +125,9 @@ export default function AuthenticatedLayoutChrome(props: AuthenticatedLayoutChro
               }
             }}
             compactOnMobile
-            className={`max-md:hidden right-[calc(1rem+env(safe-area-inset-right))]
+            className={`max-lg:hidden right-[calc(1rem+env(safe-area-inset-right))]
                         sm:right-[calc(1.125rem+env(safe-area-inset-right))]
-                        ${chatBotHorizontalClass} ${chatBotOffsetClass}`}
+                        ${chatBotHorizontalClass} ${chatBotOffsetClass} ${chatBotDetailOffsetClass}`}
           />
         </Suspense>
       )}

@@ -5,6 +5,7 @@ import {
   CHATBOT_OPEN_REQUEST_EVENT,
   PENDING_CHATBOT_OPEN_REQUEST_TTL_MS,
   consumePendingChatbotOpenRequest,
+  consumePendingChatbotOpenRequestDetails,
   requestChatbotOpen,
 } from './chatbotLauncher';
 
@@ -18,6 +19,16 @@ test('requestChatbotOpen dispatches the shared launcher event', () => {
   requestChatbotOpen(target);
 
   assert.equal(requestCount, 1);
+});
+
+test('an open request retains its opener for focus restoration', () => {
+  const target = new EventTarget();
+  const opener = { focus: () => undefined } as HTMLElement;
+
+  requestChatbotOpen(target, undefined, undefined, opener);
+
+  assert.equal(consumePendingChatbotOpenRequestDetails(target)?.opener, opener);
+  assert.equal(consumePendingChatbotOpenRequest(target), false);
 });
 
 test('an open request remains pending until a late-mounted listener consumes it', () => {

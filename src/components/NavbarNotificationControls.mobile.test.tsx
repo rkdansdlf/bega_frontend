@@ -17,6 +17,7 @@ test('navbar notification trigger and badge stay compact and reachable on mobile
 
   assert.match(source, /data-testid="navbar-notification-trigger"/);
   assert.match(source, /relative inline-flex min-h-11 min-w-11/);
+  assert.match(source, /className="shrink-0"/);
   assert.match(source, /data-testid="navbar-notification-unread-badge"/);
   assert.match(source, /pointer-events-none/);
   assert.match(source, /max-w-7/);

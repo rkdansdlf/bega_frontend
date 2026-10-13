@@ -17,14 +17,31 @@ import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
 import { getDuplicateCommentErrorMessage } from '../utils/errorUtils';
 import PlainDialog from './ui/plain-dialog';
 
-interface CommentModalProps {
+export interface CommentModalVisualQaStateOverride {
+    content?: string;
+    isSubmitting?: boolean;
+    showEmojiPicker?: boolean;
+    onSubmit?: () => void;
+}
+
+export interface CommentModalProps {
     isOpen: boolean;
     onClose: () => void;
     post: CheerPost;
     targetPostId?: number;
+    visualQaStateOverride?: CommentModalVisualQaStateOverride;
 }
 
-export default function CommentModal({ isOpen, onClose, post, targetPostId }: CommentModalProps) {
+export default function CommentModal({
+    isOpen,
+    onClose,
+    post,
+    targetPostId,
+    visualQaStateOverride: requestedVisualQaStateOverride,
+}: CommentModalProps) {
+    const visualQaStateOverride = import.meta.env?.PROD === true
+        ? undefined
+        : requestedVisualQaStateOverride;
     const {
         userName,
         userProfileImageUrl,
@@ -35,8 +52,8 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
     const { theme, resolvedTheme } = useTheme();
     const isDarkMode = resolvedTheme === 'dark' || theme === 'dark';
     const queryClient = useQueryClient();
-    const [content, setContent] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [content, setContent] = useState(visualQaStateOverride?.content ?? '');
+    const [showEmojiPicker, setShowEmojiPicker] = useState(visualQaStateOverride?.showEmojiPicker ?? false);
     const emojiPickerRef = useRef<HTMLDivElement>(null);
     const resolvedPostId = targetPostId ?? post.id;
     const postProfileImageUrl = post.authorProfileImageUrl
@@ -85,7 +102,11 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
             navigate(buildLoginPath(getCurrentRelativeUrl()));
             return;
         }
-        if (!content.trim() || commentMutation.isPending) return;
+        if (!content.trim() || (visualQaStateOverride?.isSubmitting ?? commentMutation.isPending)) return;
+        if (visualQaStateOverride) {
+            visualQaStateOverride.onSubmit?.();
+            return;
+        }
         commentMutation.mutate();
     };
 
@@ -96,6 +117,7 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
             open={isOpen}
             onClose={onClose}
             title="댓글 남기기"
+            contentTestId="comment-modal"
             className="max-w-[600px] overflow-hidden border-none bg-white dark:bg-card"
             bodyClassName="p-4"
         >
@@ -166,6 +188,7 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
                 <div className="flex-1 min-w-0">
                     <AutosizeTextarea
                         autoFocus
+                        data-testid="comment-modal-content"
                         placeholder="내 댓글을 게시하세요"
                         className="w-full resize-none border-none bg-transparent text-19 leading-relaxed text-[#0f1419] dark:text-white placeholder:text-[#536471] dark:placeholder:text-slate-500 focus:outline-none focus:ring-0 min-h-[120px]"
                         minRows={3}
@@ -180,6 +203,7 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
                                 <button
                                     type="button"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                    data-testid="comment-modal-emoji"
                                     aria-label="이모지 선택"
                                     aria-expanded={showEmojiPicker}
                                     className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:bg-secondary"
@@ -198,10 +222,11 @@ export default function CommentModal({ isOpen, onClose, post, targetPostId }: Co
                         </div>
                         <Button
                             onClick={handleSubmit}
-                            disabled={!content.trim() || commentMutation.isPending}
+                            data-testid="comment-modal-submit"
+                            disabled={!content.trim() || (visualQaStateOverride?.isSubmitting ?? commentMutation.isPending)}
                             className="rounded-full px-6 font-bold bg-indigo-500 hover:bg-indigo-600 text-white shadow-md transition-all"
                         >
-                            {commentMutation.isPending ? '댓글 중...' : '댓글'}
+                            {(visualQaStateOverride?.isSubmitting ?? commentMutation.isPending) ? '댓글 중...' : '댓글'}
                         </Button>
                     </div>
                 </div>

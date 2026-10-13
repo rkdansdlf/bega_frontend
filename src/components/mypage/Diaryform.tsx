@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 
 const DiaryformRuntime = lazy(() => import('./DiaryformRuntime'));
 
@@ -8,12 +8,27 @@ const diaryViewFallback = (
   </div>
 );
 
-interface DiaryViewSectionProps {
+export interface DiaryViewSectionProps {
   initialDate?: string;
   onBackToLog?: () => void;
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
 }
 
-export default function DiaryViewSection({ initialDate, onBackToLog }: DiaryViewSectionProps) {
+export default function DiaryViewSection({
+  initialDate,
+  onBackToLog,
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride,
+}: DiaryViewSectionProps) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  if (visualQaPhase === 'fallback') {
+    return diaryViewFallback;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   return (
     <Suspense fallback={diaryViewFallback}>
       <DiaryformRuntime initialDate={initialDate} onBackToLog={onBackToLog} />

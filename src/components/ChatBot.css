@@ -117,6 +117,10 @@
     opacity: 0.9;
   }
 
+  .animate-fade-in-up {
+    opacity: 1;
+  }
+
   .chatbot-typing-text {
     text-shadow: none;
   }
@@ -134,6 +138,10 @@
 :root[data-reduced-motion='true'] .chatbot-typing-dot,
 :root[data-reduced-motion='true'] .chatbot-typing-cursor {
   opacity: 0.9;
+}
+
+:root[data-reduced-motion='true'] .animate-fade-in-up {
+  opacity: 1;
 }
 
 :root[data-reduced-motion='true'] .chatbot-typing-text {

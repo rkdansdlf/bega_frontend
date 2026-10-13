@@ -5,6 +5,101 @@ import { DEV_PROXY_UPSTREAM_UNAVAILABLE } from './httpClientCore';
 import { claimAuthSessionExpiry, markAuthSessionEstablished } from './authSessionGeneration';
 import { PrivateApiError, privateDelete, privateGet, privatePost, requestPrivateReissue } from './privateClient';
 
+test('privateGet preserves caller cancellation with default and disabled timeouts', async (t) => {
+  const abortReasons = [
+    new DOMException('Request cancelled by caller', 'AbortError'),
+    new DOMException('Request cancelled with timeout disabled', 'AbortError'),
+  ];
+  const timeoutOptions: Array<number | null | undefined> = [undefined, null];
+  let requestIndex = 0;
+
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => (
+    new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+      if (!signal) {
+        reject(new Error('Expected the request to receive a signal'));
+        return;
+      }
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    })
+  ));
+
+  for (const [index, timeoutMs] of timeoutOptions.entries()) {
+    const controller = new AbortController();
+    const request = privateGet('/users/profile', {
+      signal: controller.signal,
+      timeoutMs,
+    });
+    controller.abort(abortReasons[index]);
+    requestIndex += 1;
+
+    await assert.rejects(request, (error: unknown) => {
+      assert.equal(error, abortReasons[index]);
+      return true;
+    });
+  }
+
+  assert.equal(requestIndex, 2);
+});
+
+test('privateGet preserves caller cancellation while reading a response body', async (t) => {
+  const controller = new AbortController();
+  const abortReason = new DOMException('Body read cancelled by caller', 'AbortError');
+  let signal: AbortSignal | undefined;
+  let markBodyReadStarted: (() => void) | undefined;
+  const bodyReadStarted = new Promise<void>((resolve) => {
+    markBodyReadStarted = resolve;
+  });
+
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => {
+    signal = init?.signal ?? undefined;
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: () => new Promise<unknown>((_resolve, reject) => {
+        signal?.addEventListener('abort', () => reject(signal?.reason), { once: true });
+        markBodyReadStarted?.();
+      }),
+    } as Response;
+  });
+
+  const request = privateGet('/users/profile', { signal: controller.signal });
+  await bodyReadStarted;
+  controller.abort(abortReason);
+
+  await assert.rejects(request, (error: unknown) => {
+    assert.equal(error, abortReason);
+    return true;
+  });
+});
+
+test('privateGet still reports an internal deadline as a timeout', async (t) => {
+  // AbortSignal.timeout() timers are unref'd; with nothing else pending the runner sees an idle
+  // event loop and cancels this test (and every later one) before the 25ms deadline fires.
+  const keepAlive = setTimeout(() => {}, 1000);
+  t.after(() => clearTimeout(keepAlive));
+  t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => (
+    new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+      if (!signal) {
+        reject(new Error('Expected the request to receive a signal'));
+        return;
+      }
+      if (signal.aborted) {
+        reject(signal.reason);
+        return;
+      }
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    })
+  ));
+
+  await assert.rejects(privateGet('/users/profile', { timeoutMs: 25 }), (error: unknown) => {
+    assert.equal((error as Error).message, 'Request timed out after 25ms');
+    return true;
+  });
+});
+
 test('privatePost는 401 후 reissue 성공 시 원 요청을 한 번 재시도한다', async (t) => {
   const urls: string[] = [];
   let requestCount = 0;

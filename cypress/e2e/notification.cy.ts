@@ -154,6 +154,42 @@ describe('Notification Panel', () => {
         cy.contains('새 팔로워').scrollIntoView().should('be.visible');
     });
 
+    [
+        {
+            id: 41,
+            type: 'PARTY_CANCELLED_HOST_DELETED',
+            title: '호스트 계정 삭제로 파티가 취소되었습니다',
+            relatedId: 451,
+        },
+        {
+            id: 42,
+            type: 'PARTY_PARTICIPANT_LEFT',
+            title: '계정 삭제로 참여자가 파티에서 탈퇴했습니다',
+            relatedId: 452,
+        },
+    ].forEach((notification) => {
+        it(`${notification.type} is categorized as Mate and opens its party`, () => {
+            cy.intercept('GET', '**/api/notifications/my', {
+                statusCode: 200,
+                body: [{
+                    ...notification,
+                    message: '계정 삭제로 파티 상태가 변경되었습니다.',
+                    isRead: true,
+                    createdAt: new Date().toISOString(),
+                }],
+            }).as('getNotifications');
+
+            cy.get('button[aria-label^="알림"]').click();
+            cy.wait('@getNotifications');
+            cy.get('[data-testid="notification-tabs"]').contains('메이트').click();
+            cy.get(`[data-testid="notification-item-${notification.id}"]`)
+                .should('be.visible')
+                .click();
+
+            cy.location('pathname').should('eq', `/mate/${notification.relatedId}`);
+        });
+    });
+
     it('shows empty state when there are no notifications', () => {
         const notifications: Array<{
             id: number;

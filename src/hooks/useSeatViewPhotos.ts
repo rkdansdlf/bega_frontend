@@ -26,6 +26,11 @@ export function dedupeSeatViewPhotos(photoGroups: SeatViewPhoto[][]): SeatViewPh
 
 type SeatViewFetcher = (stadium: string, section: string, limit: number) => Promise<SeatViewPhoto[]>;
 
+export type SeatViewPhotosVisualQaStateOverride = {
+  photos?: SeatViewPhoto[];
+  isLoading?: boolean;
+};
+
 export async function fetchPrioritizedSeatViewPhotos(
   stadium: string,
   sectionQueries: string[],
@@ -55,8 +60,10 @@ export function useSeatViewPhotos(
   section: string,
   sectionAliases: string[] = [],
   limit = 9,
+  visualQaStateOverride?: SeatViewPhotosVisualQaStateOverride,
 ) {
   const sectionQueries = buildSeatViewSectionQueries(section, sectionAliases);
+  const shouldUseVisualQaState = import.meta.env?.PROD !== true && visualQaStateOverride !== undefined;
 
   const { data: photos = [], isLoading } = useQuery({
     queryKey: ['seat-views', stadium, sectionQueries, limit],
@@ -65,8 +72,11 @@ export function useSeatViewPhotos(
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-    enabled: Boolean(stadium && sectionQueries.length > 0),
+    enabled: !shouldUseVisualQaState && Boolean(stadium && sectionQueries.length > 0),
   });
 
-  return { photos, isLoading };
+  return {
+    photos: shouldUseVisualQaState ? (visualQaStateOverride.photos ?? []) : photos,
+    isLoading: shouldUseVisualQaState ? (visualQaStateOverride.isLoading ?? false) : isLoading,
+  };
 }

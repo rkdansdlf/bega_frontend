@@ -1,10 +1,12 @@
-import { lazy, Suspense, useEffect, useId, useMemo, useRef, type UIEvent } from 'react';
+import { lazy, Suspense, useEffect, useId, useMemo, useRef, type ReactNode, type UIEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getMyFollowers, getMyFollowing } from '../../api/followApi';
 import { getPublicFollowers, getPublicFollowing } from '../../api/followPublic';
 import { useAuthProfileSnapshot } from '../../store/authStore';
+import { profileQueryKeys } from '../../hooks/profileQueryKeys';
+import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import { ProfileAvatar } from '../ui/ProfileAvatar';
 import { Button } from '../ui/button';
 import {
@@ -17,18 +19,39 @@ import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 const FollowButton = lazy(() => import('./FollowButton'));
 
-interface UserListModalProps {
+export interface UserListModalProps {
     isOpen: boolean;
     onClose: () => void;
     userHandle: string;
     type: 'followers' | 'following';
     title: string;
     useCurrentUser?: boolean;
+    visualQaPhase?: 'fallback' | 'resolved';
+    visualQaRuntimeOverride?: ReactNode;
 }
 
-export default function UserListModal({ isOpen, onClose, userHandle, type, title, useCurrentUser = false }: UserListModalProps) {
+export default function UserListModal({
+    isOpen,
+    onClose,
+    userHandle,
+    type,
+    title,
+    useCurrentUser = false,
+    visualQaPhase: requestedVisualQaPhase,
+    visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: UserListModalProps) {
+    const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+    const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+    if (visualQaPhase === 'fallback') {
+        return <div data-testid="user-list-modal-fallback">팔로워 목록을 불러오는 중입니다.</div>;
+    }
+    if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+        return <>{visualQaRuntimeOverride}</>;
+    }
+
     const navigate = useNavigate();
     const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
+    const viewerScope = useViewerQueryScope();
     const titleId = useId();
     const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +66,7 @@ export default function UserListModal({ isOpen, onClose, userHandle, type, title
         isError,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ['userList', useCurrentUser ? 'me' : userHandle, type],
+        queryKey: profileQueryKeys.userList(useCurrentUser ? 'me' : userHandle, type, viewerScope),
         queryFn: ({ pageParam = 0 }) => {
             if (useCurrentUser) {
                 if (type === 'followers') {

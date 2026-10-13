@@ -281,7 +281,7 @@ export default function AdvancedMatchCardContentRuntime({
 
   if (isInitialDetailLoading) {
     return (
-      <div className="space-y-6 px-4 py-6">
+      <div className="space-y-6 px-4 py-6" data-testid="prediction-match-card-content-runtime">
         <div data-testid="prediction-detail-refresh-indicator" className="flex justify-end">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50/90 px-3 py-1.5 text-13 font-bold text-sky-900 dark:border-sky-700/40 dark:bg-sky-900/20 dark:text-sky-100">
             <PredictionLoaderIcon className="h-3.5 w-3.5 animate-spin" />
@@ -296,7 +296,7 @@ export default function AdvancedMatchCardContentRuntime({
   }
 
   return (
-    <div className="space-y-6 px-4 py-6">
+    <div className="space-y-6 px-4 py-6" data-testid="prediction-match-card-content-runtime">
       {gameDetailError ? (
         <div
           data-testid="prediction-detail-error-banner"

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "commit": "09170eec67eefd46a7ae85de61b40c194020f997",
+    "snapshotDeclaredVersion": "2.13.0",
+    "archiveSha256": "93f4e8cbcd060533e5d368c3183b764adcbcc82c04a2cdc933bf97024bed67c9"
+  },
+  "review": {
+    "recommendationsAreNormative": false,
+    "persistedUpstreamOutput": false,
+    "cssTokensChangedFromRecommendations": false,
+    "stackNote": "The pinned React catalog describes React 19.2.x. BEGA uses React 18.3.1, so stack-specific React guidance is advisory-incompatible."
+  },
+  "searches": [
+    { "profile": "bega", "query": "baseball fan companion sports community stadium guide mobile-first", "observed": "Minimalism & Swiss Style; red palette; Bebas Neue and Source Sans 3", "decision": "unadopted pending BEGA review" },
+    { "profile": "landing", "query": "baseball fan companion landing community mobile-first", "observed": "Vibrant & Block-based; red palette", "decision": "unadopted pending BEGA review" },
+    { "profile": "auth", "query": "sports community secure account sign-in accessible form", "observed": "Trust & Authority; navy and gold; Lexend and Source Sans 3", "decision": "unadopted pending BEGA review" },
+    { "profile": "home", "query": "baseball fan home feed games community content discovery", "observed": "Generic minimal sports direction", "decision": "unadopted pending BEGA review" },
+    { "profile": "mate", "query": "baseball fan meetup social matching messaging mobile workflow", "observed": "Generic hero-centric red and minimal direction", "decision": "unadopted pending BEGA review" },
+    { "profile": "stadium", "query": "baseball stadium guide seat map venue places mobile information", "observed": "Unrelated event-landing result and dark palette", "decision": "rejected as off-topic" },
+    { "profile": "prediction", "query": "baseball prediction statistics data dense sports dashboard", "observed": "Enterprise gateway; blue and amber; Fira Sans and Fira Code", "decision": "unadopted pending BEGA review" },
+    { "profile": "mypage", "query": "baseball fan personal profile diary season history", "observed": "Scroll-triggered storytelling; brown and indigo; Caveat and Quicksand", "decision": "rejected as off-topic" },
+    { "profile": "admin", "query": "sports community administration operational data dashboard", "observed": "Real-time operations; dark status green; Fira Sans and Fira Code", "decision": "unadopted pending BEGA review" }
+  ]
+}

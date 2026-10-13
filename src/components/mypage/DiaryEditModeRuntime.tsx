@@ -61,7 +61,7 @@ const WINNING_STYLE_BY_RESULT: Record<SelectedWinningType, {
   },
 };
 
-interface DiaryEditModeProps {
+export interface DiaryEditModeRuntimeProps {
   diaryForm: DiaryFormData;
   updateForm: (updates: Partial<DiaryFormData>) => void;
   handlePhotoUpload: (files: FileList | null, sourceType?: SeatViewSourceType) => Promise<void> | void;
@@ -135,7 +135,7 @@ export default function DiaryEditModeRuntime({
   toggleSeatViewCandidate,
   handleSeatViewSelectionConfirm,
   handleSeatViewSelectionSkip,
-}: DiaryEditModeProps) {
+}: DiaryEditModeRuntimeProps) {
   const [isScanning, setIsScanning] = useState(false);
 
   const handleTicketScan = async (files: FileList | null) => {

@@ -84,7 +84,9 @@ test('fetchRankingSnapshot은 전달받은 signal로 진행 중 요청을 취소
 
   controller.abort();
 
-  await assert.rejects(promise, /Request timed out after 10000ms/);
+  await assert.rejects(promise, (error: unknown) => (
+    error instanceof DOMException && error.name === 'AbortError'
+  ));
 });
 
 test('getRankingSnapshotQueryOptions는 auto와 explicit seasonYear를 서로 다른 캐시 키로 분리한다', () => {

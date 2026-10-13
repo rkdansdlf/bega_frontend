@@ -3,6 +3,8 @@ import {
   registerSessionScopedQueryCleanup,
   registerUserProfileQueryPrimer,
 } from './queryClientRegistry';
+import { useNotificationStore } from '../store/notificationStore';
+import { SESSION_SCOPED_QUERY_KEY_ROOTS } from '../utils/privateQueryKeys';
 
 type UserProfileQueryData = {
   id?: number;
@@ -22,11 +24,17 @@ type UserProfileQueryData = {
 
 const SESSION_SCOPED_QUERY_KEYS = [
   ['userProfile'],
+  ['mate'],
+  ['publicProfile'],
+  ['followCounts'],
+  ['userList'],
+  ['userPosts'],
   ['deviceSessions'],
   ['linkedProviders'],
   ['securityEvents'],
   ['trustedDevices'],
   ['notifications'],
+  ...SESSION_SCOPED_QUERY_KEY_ROOTS,
 ] as const;
 
 export const queryClient = new QueryClient({
@@ -48,6 +56,7 @@ export const clearSessionScopedQueries = () => {
     void queryClient.cancelQueries({ queryKey });
     queryClient.removeQueries({ queryKey });
   }
+  useNotificationStore.getState().reset();
 };
 
 registerSessionScopedQueryCleanup(clearSessionScopedQueries);

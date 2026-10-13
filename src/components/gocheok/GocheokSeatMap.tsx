@@ -91,9 +91,10 @@ function GuideModeTabs({
           <button
             key={option.id}
             type="button"
+            data-testid={`gocheok-guide-mode-${option.id}`}
             aria-pressed={active}
             onClick={() => onChange(option.id)}
-            className="rounded-lg border-0 px-3 py-1.5 text-11 font-black transition-colors"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border-0 px-3 py-1.5 text-11 font-black transition-colors sm:min-h-8"
             style={{
               background: active ? '#820024' : 'transparent',
               color: active ? '#ffffff' : (mode === 'dark' ? '#cbd5e1' : '#475569'),
@@ -142,7 +143,7 @@ function DetailPanel({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800"
+          className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-0 bg-slate-100 text-slate-500 dark:bg-slate-800 sm:h-8 sm:w-8"
         >
           ×
         </button>
@@ -195,7 +196,7 @@ function DetailPanel({
         <button
           type="button"
           onClick={onUpload}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+          className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 sm:min-h-9"
           style={{ background: accent }}
         >
           + 이 구역 시야 사진 올리기
@@ -205,9 +206,20 @@ function DetailPanel({
   );
 }
 
-export default function GocheokSeatMap() {
+export interface GocheokSeatMapStateOverride {
+  isLoggedIn: boolean;
+}
+
+interface GocheokSeatMapProps {
+  stateOverride?: GocheokSeatMapStateOverride;
+}
+
+export default function GocheokSeatMap({ stateOverride }: GocheokSeatMapProps = {}) {
   const { resolvedTheme } = useTheme();
-  const { requireLogin } = useAuthAccessActions();
+  const { requireLogin: storeRequireLogin } = useAuthAccessActions();
+  const requireLogin = stateOverride
+    ? () => stateOverride.isLoggedIn
+    : storeRequireLogin;
   const mode: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light';
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [pan, setPan] = useState<SeatMapPan>({ x: 0, y: 0 });
@@ -433,7 +445,7 @@ export default function GocheokSeatMap() {
           type="button"
           data-testid="gocheok-facility-guide-open"
           onClick={() => handleOpenFacilityGuide(hint.facilityTab)}
-          className="mt-3 w-full rounded-xl border-0 px-4 py-2.5 text-sm font-black text-white transition-opacity hover:opacity-90"
+          className="mt-3 flex min-h-11 w-full items-center justify-center rounded-xl border-0 px-4 py-2.5 text-sm font-black text-white transition-opacity hover:opacity-90 sm:min-h-9"
           style={{ background: accent }}
         >
           시설현황 보기
@@ -442,7 +454,7 @@ export default function GocheokSeatMap() {
           type="button"
           data-testid="gocheok-operation-guide-open"
           onClick={() => handleOpenFacilityGuide('operations')}
-          className="mt-2 w-full rounded-xl border px-4 py-2.5 text-sm font-black transition-colors"
+          className="mt-2 flex min-h-11 w-full items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-black transition-colors sm:min-h-9"
           style={{ borderColor: `${accent}55`, color: accent }}
         >
           운영 안내 보기

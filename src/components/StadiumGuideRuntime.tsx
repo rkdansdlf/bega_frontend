@@ -16,7 +16,6 @@ import { getCategoryIcon } from '../utils/stadium';
 import { useStadiumGuide } from '../hooks/useStadiumGuide';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthSession, useAuthProfileSnapshot } from '../store/authStore';
-import AdSlot from './ads/AdSlot';
 import {
   formatOptionalText,
   hasValidCoordinates,
@@ -28,6 +27,13 @@ import './StadiumGuide.css';
 
 const AuthenticatedStadiumFavoriteToggle = lazy(() => import('./AuthenticatedStadiumFavoriteToggle'));
 const StadiumGuidePlacesRuntime = lazy(() => import('./StadiumGuidePlacesRuntime'));
+const AdSlot = lazy(() => import('./ads/AdSlot'));
+
+export type StadiumGuideRuntimeVisualQaStateOverride = Partial<ReturnType<typeof useStadiumGuide>>;
+
+type StadiumGuideRuntimeProps = {
+  visualQaStateOverride?: StadiumGuideRuntimeVisualQaStateOverride;
+};
 
 const STADIUM_DARK_COLORS = {
   surface: 'var(--stadium-dark-surface)',
@@ -111,8 +117,13 @@ function StadiumGuideCategorySelector({
   );
 }
 
-export default function StadiumGuideRuntime() {
+export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGuideRuntimeProps = {}) {
   const { theme, resolvedTheme } = useTheme();
+  const runtimeState = useStadiumGuide();
+  const guideState = {
+    ...runtimeState,
+    ...(import.meta.env.PROD ? undefined : visualQaStateOverride),
+  };
   const {
     stadiums,
     selectedStadium,
@@ -135,7 +146,7 @@ export default function StadiumGuideRuntime() {
     retryStadiums,
     retryPlaces,
     retryMap,
-  } = useStadiumGuide();
+  } = guideState;
 
   const { isLoggedIn } = useAuthSession();
   const { userId: authUserId } = useAuthProfileSnapshot();
@@ -199,7 +210,10 @@ export default function StadiumGuideRuntime() {
   };
 
   return (
-    <div className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200">
+    <div
+      className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200"
+      data-testid="stadium-guide-runtime"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Premium Hero Section */}
         <section
@@ -452,14 +466,16 @@ export default function StadiumGuideRuntime() {
                 />
               </div>
 
-              <AdSlot
-                slotId="stadium_partner_1"
-                pageType="stadium"
-                contentId={selectedStadiumId !== null ? String(selectedStadiumId) : null}
-                disabled={!selectedStadiumId}
-                loggedIn={isLoggedIn}
-                userId={authUserId ? String(authUserId) : null}
-              />
+              <Suspense fallback={null}>
+                <AdSlot
+                  slotId="stadium_partner_1"
+                  pageType="stadium"
+                  contentId={selectedStadiumId !== null ? String(selectedStadiumId) : null}
+                  disabled={!selectedStadiumId}
+                  loggedIn={isLoggedIn}
+                  userId={authUserId ? String(authUserId) : null}
+                />
+              </Suspense>
 
               <div>
                 <Suspense fallback={null}>
@@ -516,14 +532,16 @@ export default function StadiumGuideRuntime() {
               />
             </div>
 
-            <AdSlot
-              slotId="stadium_partner_1"
-              pageType="stadium"
-              contentId={selectedStadiumId !== null ? String(selectedStadiumId) : null}
-              disabled={!selectedStadiumId}
-              loggedIn={isLoggedIn}
-              userId={authUserId ? String(authUserId) : null}
-            />
+            <Suspense fallback={null}>
+              <AdSlot
+                slotId="stadium_partner_1"
+                pageType="stadium"
+                contentId={selectedStadiumId !== null ? String(selectedStadiumId) : null}
+                disabled={!selectedStadiumId}
+                loggedIn={isLoggedIn}
+                userId={authUserId ? String(authUserId) : null}
+              />
+            </Suspense>
 
             <div>
               <Suspense fallback={null}>

@@ -20,6 +20,7 @@ test('app browser and runtime shells expose deterministic harness seams without 
   assert.match(appShell, /phaseOverride === 'resolved'/);
   assert.match(appShell, /runtimeOverride/);
   assert.match(appShell, /<AuthSessionBoundary>/);
+  assert.match(appShell, /<AuthSessionSync \/>/);
 
   const authSessionBoundary = readSource('./AuthSessionBoundary.tsx');
   assert.match(authSessionBoundary, /import\.meta\.env\.DEV && stateOverride !== undefined/);

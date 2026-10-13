@@ -212,11 +212,12 @@ export default function MateManageApplicationsRuntime({
 
             {tabKey === 'pending' ? (
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <Button onClick={() => onApprove(app.id)} className="flex-1 bg-primary text-white">
+                <Button data-testid={`mate-manage-application-approve-${app.id}`} onClick={() => onApprove(app.id)} className="flex-1 bg-primary text-white">
                   <MateCheckCircleIcon className="mr-2 h-4 w-4" />
                   승인
                 </Button>
                 <Button
+                  data-testid={`mate-manage-application-reject-${app.id}`}
                   onClick={() => onReject(app.id)}
                   variant="outline"
                   className="flex-1 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/30"
@@ -227,11 +228,12 @@ export default function MateManageApplicationsRuntime({
               </div>
             ) : tabKey === 'approved' ? (
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <Button onClick={onOpenChat} className="flex-1 bg-primary text-white">
+                <Button data-testid="mate-manage-application-chat" onClick={onOpenChat} className="flex-1 bg-primary text-white">
                   <MateMessageSquareIcon className="mr-2 h-4 w-4" />
                   채팅방 입장
                 </Button>
                 <Button
+                  data-testid="mate-manage-application-checkin"
                   onClick={onOpenCheckIn}
                   variant="outline"
                   className="flex-1 border-violet-300 text-violet-700 hover:bg-violet-50 dark:border-violet-900 dark:text-violet-300 dark:hover:bg-violet-950/30"
@@ -252,7 +254,7 @@ export default function MateManageApplicationsRuntime({
   };
 
   return (
-    <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`}>
+    <Card className={`p-5 sm:p-6 ${mateSectionCardClass}`} data-testid="mate-manage-applications-runtime">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className={mateMetaLabelClass}>
@@ -289,6 +291,7 @@ export default function MateManageApplicationsRuntime({
               <button
                 type="button"
                 key={tab.key}
+                data-testid={`mate-manage-applications-tab-${tab.key}`}
                 onClick={() => onSelectApplicationTab(tab.key)}
                 aria-pressed={isActive}
                 className={cn(

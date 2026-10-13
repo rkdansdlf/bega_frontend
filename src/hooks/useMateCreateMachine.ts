@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { analyzeTicket, type TicketInfo } from '../api/ticket';
 import { createParty, getKboSchedule, type KboScheduleItem } from '../api/mate';
@@ -11,6 +11,8 @@ import { useMateCreateDraft } from './useMateCreateDraft';
 import { STADIUMS, TEAMS } from '../utils/constants';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import type { MateCreateFormErrors, PartyFormData } from '../utils/mateCreateDraft';
+import { isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
+import { useViewerQueryScope } from './useViewerQueryScope';
 
 export interface MatchInfo {
   id: string;
@@ -198,6 +200,7 @@ const sanitizeUserFacingMessage = (message: string, fallback: string): string =>
 
 export function useMateCreateMachine(): UseMateCreateMachineReturn {
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
   const {
     createStep,
     formData,
@@ -218,6 +221,20 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
   const [isConfirming, setIsConfirming] = useState(false);
   const errorTypeRef = useRef<MateCreateErrorType>(null);
   const verificationTokenRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    setAvailableMatches([]);
+    setErrorType(null);
+    setErrorMessage('');
+    setSubmitErrorStatus(null);
+    setCreatedPartyId(null);
+    setIsScanning(false);
+    setIsSubmitting(false);
+    setIsLoadingMatches(false);
+    setIsConfirming(false);
+    errorTypeRef.current = null;
+    verificationTokenRef.current = null;
+  }, [viewerScope]);
 
   const setStep = (step: 1 | 2 | 3 | 4) => {
     setCreateStep(step);
@@ -247,6 +264,8 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
   };
 
   const uploadTicket = async (file: File) => {
+    const requestScope = viewerScope;
+
     if (file.size > 10 * 1024 * 1024) {
       setFormError('ticketFile', '파일 크기는 10MB 이하여야 합니다.');
       return;
@@ -265,10 +284,14 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
 
     try {
       const ticketInfo = await analyzeTicket(file);
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
       verificationTokenRef.current = ticketInfo.verificationToken ?? null;
       updateFormData(getTicketPatch(ticketInfo));
       setStep(2);
     } catch (error) {
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
       verificationTokenRef.current = null;
       setErrorType('scan');
       const fallbackMessage = '이미지 분석에 실패했습니다. 다른 파일로 다시 시도해주세요. (티켓 업로드는 필수)';
@@ -276,7 +299,9 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
         sanitizeUserFacingMessage(getApiErrorMessage(error, fallbackMessage), fallbackMessage)
       );
     } finally {
-      setIsScanning(false);
+      if (isViewerQueryScopeCurrent(requestScope)) {
+        setIsScanning(false);
+      }
     }
   };
 
@@ -312,9 +337,12 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
     setStep(2);
     setIsLoadingMatches(true);
     clearMatchError();
+    const requestScope = viewerScope;
 
     try {
       const response = await getKboSchedule(formData.gameDate);
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
       const matches = (response || []).map((game: KboScheduleItem) => ({
         id: game.gameId,
         gameTime: game.time,
@@ -324,11 +352,15 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
       }));
       setAvailableMatches(matches);
     } catch {
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
       setAvailableMatches([]);
       setErrorType('matches');
       setErrorMessage('경기 조회에 실패했습니다. 직접 입력으로 진행해주세요.');
     } finally {
-      setIsLoadingMatches(false);
+      if (isViewerQueryScopeCurrent(requestScope)) {
+        setIsLoadingMatches(false);
+      }
     }
   };
 
@@ -372,6 +404,7 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
     setIsSubmitting(true);
     clearSubmitError();
     setStep(4);
+    const requestScope = viewerScope;
 
     try {
       const partyData = {
@@ -392,7 +425,9 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
       };
 
       const createdParty = await createParty(partyData);
-      setMatePartyDetailQueryData(queryClient, createdParty);
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
+      setMatePartyDetailQueryData(queryClient, createdParty, viewerScope);
       void invalidateMateCollectionQueries(queryClient);
       resetForm();
 
@@ -400,13 +435,17 @@ export function useMateCreateMachine(): UseMateCreateMachineReturn {
       verificationTokenRef.current = null;
       clearError();
     } catch (error) {
+      if (!isViewerQueryScopeCurrent(requestScope)) return;
+
       setErrorType('submit');
       setSubmitErrorStatus(getApiErrorStatus(error) ?? 500);
       setErrorMessage(
         getApiErrorMessage(error, '파티 생성 중 오류가 발생했습니다.')
       );
     } finally {
-      setIsSubmitting(false);
+      if (isViewerQueryScopeCurrent(requestScope)) {
+        setIsSubmitting(false);
+      }
     }
   };
 

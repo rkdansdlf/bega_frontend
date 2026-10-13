@@ -73,7 +73,7 @@ export default function PredictionAnimatedSections({
   const tabContent = displayedTab === 'match' ? matchChildren : rankingChildren;
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="prediction-animated-sections">
       {topNotice && (
         <div
           key={`top-notice-${topNotice.kind}`}

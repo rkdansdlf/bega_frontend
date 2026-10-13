@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from '../viteTestCacheDir';
 
 const resultsSource = readFileSync(new URL('./OffseasonMovementAdminResultsRuntime.tsx', import.meta.url), 'utf8');
 const dialogsSource = readFileSync(new URL('./OffseasonMovementAdminDialogs.tsx', import.meta.url), 'utf8');
@@ -158,6 +159,7 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
   timeout: 90_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('offseason-admin-leaves'),
     configFile: fileURLToPath(new URL('../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createDirectLeavesPlugin()],

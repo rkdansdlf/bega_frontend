@@ -163,6 +163,7 @@ export type MatePartySeed = Party | MateParty;
 export interface MateRouteLocationState {
   partySeed?: MatePartySeed;
   returnTo?: string;
+  viewerScope?: { viewerId: number | null; sessionEpoch: number };
 }
 
 export interface MateApplication {

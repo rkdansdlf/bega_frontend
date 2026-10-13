@@ -15,6 +15,14 @@ const predictionUserVoteRequests = new Map<string, Promise<UserVoteRecord>>();
 const predictionUserVoteCache = new Map<string, { votes: UserVoteRecord; fetchedAt: number }>();
 let predictionUserVoteCacheEpoch = 0;
 
+const removeExpiredPredictionUserVoteEntries = (now: number) => {
+  predictionUserVoteCache.forEach((entry, key) => {
+    if (now - entry.fetchedAt >= USER_VOTE_BATCH_TTL_MS) {
+      predictionUserVoteCache.delete(key);
+    }
+  });
+};
+
 export const invalidatePredictionUserVoteCache = () => {
   predictionUserVoteCacheEpoch += 1;
   predictionUserVoteRequests.clear();
@@ -24,6 +32,8 @@ export const invalidatePredictionUserVoteCache = () => {
 export const clearPredictionUserVoteCacheForTests = invalidatePredictionUserVoteCache;
 
 export const getPredictionUserVoteCacheEpochForTests = () => predictionUserVoteCacheEpoch;
+
+export const getPredictionUserVoteCacheSizeForTests = () => predictionUserVoteCache.size;
 
 const getPredictionUserVoteRuntimeScope = () => {
   if (typeof window === 'undefined') {
@@ -66,6 +76,7 @@ export const usePredictionUserVotes = ({ userId }: UsePredictionUserVotesParams)
 
     const cacheKey = `${getPredictionUserVoteRuntimeScope()}:${currentUserVoteKey}:${requestKeySuffix}:${normalizedIds.join('|')}`;
     const now = Date.now();
+    removeExpiredPredictionUserVoteEntries(now);
     const cachedBatch = predictionUserVoteCache.get(cacheKey);
 
     if (cachedBatch && now - cachedBatch.fetchedAt < USER_VOTE_BATCH_TTL_MS) {

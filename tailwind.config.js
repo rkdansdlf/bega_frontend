@@ -4,6 +4,8 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "!./src/**/*.test.{js,ts,jsx,tsx}",
+    "!./src/**/*.spec.{js,ts,jsx,tsx}",
   ],
   theme: {
     screens: {
@@ -70,6 +72,8 @@ export default {
           hover: 'rgb(var(--brand-primary-hover) / <alpha-value>)',
           light: 'rgb(var(--brand-primary-light) / <alpha-value>)',
           dark: 'rgb(var(--brand-primary-rest) / <alpha-value>)',
+          deep: 'rgb(var(--brand-primary-deep) / <alpha-value>)',
+          panel: 'rgb(var(--brand-primary-panel) / <alpha-value>)',
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {

@@ -68,7 +68,7 @@ const pixelProgressBarSource = readFileSync(
 test('mobile bottom navigation owns the chatbot entry point while the floating launcher stays desktop-only', () => {
   assert.match(authenticatedChromeSource, /CHATBOT_OPEN_REQUEST_EVENT/);
   assert.match(authenticatedChromeSource, /consumePendingChatbotOpenRequest/);
-  assert.match(authenticatedChromeSource, /max-md:hidden/);
+  assert.match(authenticatedChromeSource, /max-lg:hidden/);
 
   assert.match(navbarSource, /grid-cols-5/);
   assert.match(navbarSource, /data-testid="auth-mobile-chatbot-tab"/);

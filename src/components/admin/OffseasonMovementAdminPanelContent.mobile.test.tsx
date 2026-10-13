@@ -10,6 +10,7 @@ import { createServer, type Plugin } from 'vite';
 import * as contentModule from './OffseasonMovementAdminPanelContent';
 import type { OffseasonMovementAdminPanelContentProps } from './OffseasonMovementAdminPanelContent';
 import { resolveComponentStateAdapter } from '../../visual-qa/stateAdapters';
+import { createViteCacheDir } from '../viteTestCacheDir';
 
 const contentSource = readFileSync(new URL('./OffseasonMovementAdminPanelContent.tsx', import.meta.url), 'utf8');
 const resultsSource = readFileSync(new URL('./OffseasonMovementAdminResultsRuntime.tsx', import.meta.url), 'utf8');
@@ -153,6 +154,7 @@ test('actual Content DOM routes controlled callbacks exactly once without replay
   timeout: 60_000,
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('offseason-admin-panel'),
     configFile: fileURLToPath(new URL('../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createCallbackTestPlugin()],

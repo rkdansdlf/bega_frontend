@@ -60,6 +60,14 @@ type PredictionBootstrapCacheEntry = {
 const predictionBootstrapCache = new Map<string, PredictionBootstrapCacheEntry>();
 const predictionBootstrapRequests = new Map<string, Promise<PredictionBootstrapResult>>();
 
+const removeExpiredPredictionBootstrapEntries = (now: number) => {
+  predictionBootstrapCache.forEach((entry, key) => {
+    if (now - entry.fetchedAt >= PREDICTION_BOOTSTRAP_TTL_MS) {
+      predictionBootstrapCache.delete(key);
+    }
+  });
+};
+
 const getPredictionBootstrapRuntimeScope = () => {
   if (typeof window === 'undefined') {
     return 'server';
@@ -142,6 +150,8 @@ export const clearPredictionBootstrapCacheForTests = () => {
   invalidatePredictionBootstrapCache();
 };
 
+export const getPredictionBootstrapCacheSizeForTests = () => predictionBootstrapCache.size;
+
 export const fetchPredictionBootstrap = async (
   date: string,
   gameId?: string | null
@@ -149,8 +159,9 @@ export const fetchPredictionBootstrap = async (
   const normalizedDate = date.trim();
   const normalizedGameId = gameId?.trim() || null;
   const cacheKey = buildBootstrapCacheKey(normalizedDate, normalizedGameId);
-  const cached = predictionBootstrapCache.get(cacheKey);
   const now = Date.now();
+  removeExpiredPredictionBootstrapEntries(now);
+  const cached = predictionBootstrapCache.get(cacheKey);
   if (cached && now - cached.fetchedAt < PREDICTION_BOOTSTRAP_TTL_MS) {
     return {
       ok: true,
@@ -163,7 +174,8 @@ export const fetchPredictionBootstrap = async (
     return existingRequest;
   }
 
-  const nextRequest = (async (): Promise<PredictionBootstrapResult> => {
+  let nextRequest!: Promise<PredictionBootstrapResult>;
+  nextRequest = (async (): Promise<PredictionBootstrapResult> => {
     try {
       const data = await publicGet<PredictionBootstrapWireResponse>('/predictions/bootstrap', {
         params: {
@@ -179,10 +191,12 @@ export const fetchPredictionBootstrap = async (
         detail: normalizeBootstrapResource(data.detail, toGameDetail),
         voteStatus: normalizeBootstrapResource(data.voteStatus, toVoteStatus),
       };
-      predictionBootstrapCache.set(cacheKey, {
-        data: normalizedData,
-        fetchedAt: Date.now(),
-      });
+      if (predictionBootstrapRequests.get(cacheKey) === nextRequest) {
+        predictionBootstrapCache.set(cacheKey, {
+          data: normalizedData,
+          fetchedAt: Date.now(),
+        });
+      }
       return {
         ok: true,
         data: normalizedData,

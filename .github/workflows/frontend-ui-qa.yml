@@ -6,6 +6,12 @@ on:
       - "src/api/authPublic.ts"
       - "src/**"
       - "scripts/**"
+      - "contracts/ui-ux-*.json"
+      - "design-system/bega/**"
+      - ".agents/skills/ui-ux-pro-max/**"
+      - "docs/VISUAL_QA.md"
+      - "visual-qa-harness.html"
+      - "vite.visual-qa.config.ts"
       - "src/api/authPublic.test.ts"
       - "src/api/publicClient.ts"
       - "src/components/auth/AuthLayout.tsx"
@@ -35,6 +41,12 @@ on:
       - "scripts/cypress-run.mjs"
       - "scripts/landing-qa.mjs"
       - "scripts/landing-first-load-audit.mjs"
+      - "scripts/uiux-*.mjs"
+      - "scripts/uiux-*.test.mjs"
+      - "scripts/visual-qa-design-intent.mjs"
+      - "scripts/visual-qa-design-intent.test.mjs"
+      - "scripts/visual-qa-harness-smoke.ts"
+      - "scripts/visual-qa-harness-smoke.test.ts"
       - "scripts/test-e2e.mjs"
       - "src/assets/landing/**"
       - "src/components/Landing.tsx"
@@ -72,6 +84,7 @@ on:
           - landing
           - stadium
           - pages
+          - design-intent
 
 concurrency:
   group: frontend-ui-qa-${{ github.event.pull_request.number || github.ref }}
@@ -86,6 +99,8 @@ jobs:
       landing_changed: ${{ steps.detect.outputs.landing_changed }}
       stadium_changed: ${{ steps.detect.outputs.stadium_changed }}
       pages_changed: ${{ steps.detect.outputs.pages_changed }}
+      design_intent_changed: ${{ steps.detect.outputs.design_intent_changed }}
+      design_intent_profiles: ${{ steps.detect.outputs.design_intent_profiles }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -134,6 +149,104 @@ jobs:
       artifact_name: frontend-pages-build-artifacts
       artifact_paths: |
         dist/**
+
+  frontend-unit:
+    needs: detect-changes
+    uses: ./.github/workflows/_frontend-node-suite.yml
+    permissions:
+      contents: read
+    with:
+      timeout_minutes: 25
+      install_playwright: true
+      checkout_backend: true
+      env_exports: |
+        BEGA_BACKEND_ROOT=backend
+      run_script: |
+        npm run test:unit
+        npm run visual-qa:contract:test
+        npm run visual-qa:contract:check
+        npm run visual-qa:inventory:test
+        npm run visual-qa:inventory:check
+        npm run visual-qa:states:test
+        npm run visual-qa:states
+        npm run visual-qa:harness:test
+        npm run uiux:policy:test
+        npm run uiux:policy:check
+        npm run uiux:recommend:test
+        npm run uiux:impact:test
+        npm run uiux:design-intent:test
+        npm run uiux:upgrade-review:test
+      summary_script: |
+        echo "### Frontend Unit Tests" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- TypeScript and TSX unit suites: passed" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- Visual QA contracts and detectors: passed" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- UI UX Design Intent policy and routing: passed" >> "${GITHUB_STEP_SUMMARY}"
+
+  design-intent-qa:
+    needs: detect-changes
+    if: ${{ (github.event_name == 'pull_request' && needs.detect-changes.outputs.design_intent_changed == 'true') || (github.event_name == 'workflow_dispatch' && (github.event.inputs.suite == 'design-intent' || github.event.inputs.suite == 'all')) }}
+    uses: ./.github/workflows/_frontend-node-suite.yml
+    permissions:
+      contents: read
+    with:
+      timeout_minutes: 30
+      install_playwright: true
+      env_exports: |
+        UI_UX_PROFILES=${{ needs.detect-changes.outputs.design_intent_profiles }}
+        VITE_SITE_URL=http://127.0.0.1:5176
+        VITE_API_BASE_URL=/api
+        VITE_MATE_REQUIRE_SOCIAL_VERIFICATION=false
+        VITE_GA4_MEASUREMENT_ID=G-CI00000000
+        VITE_GOOGLE_SITE_VERIFICATION=ciGoogleVerificationToken2026
+        VITE_NAVER_SITE_VERIFICATION=ciNaverVerificationToken2026
+        VITE_KAKAO_MAP_KEY=ciKakaoMapKey
+      run_script: |
+        npm run uiux:policy:check
+        node --import tsx scripts/visual-qa-design-intent.mjs --plan --profiles="${UI_UX_PROFILES}"
+        VISUAL_QA_HARNESS_COMPONENT_IDS="$(node -e "const p=require('./reports/ui-ux-design-intent-plan.json'); process.stdout.write(p.scenarios.map(s => s.id).join(','))")"
+        export VISUAL_QA_HARNESS_COMPONENT_IDS
+        export VISUAL_QA_HARNESS_SCOPE=component-states
+        export VISUAL_QA_HARNESS_REPORT=reports/ui-ux-design-intent-harness.json
+        export VISUAL_QA_HARNESS_SCREENSHOTS_DIR=reports/ui-ux-design-intent-screenshots
+        export VISUAL_QA_HARNESS_CONCURRENCY=4
+        HARNESS_STATUS=0
+        set +e
+        npx start-server-and-test "npm run visual-qa:harness:dev" http://127.0.0.1:5182/visual-qa-harness.html "node --import tsx scripts/visual-qa-harness-smoke.ts"
+        HARNESS_STATUS=$?
+        set -e
+        if [[ ! -f "reports/ui-ux-design-intent-harness.json" ]]; then
+          node - <<'NODE'
+          const fs = require('node:fs');
+          fs.mkdirSync('reports', { recursive: true });
+          fs.writeFileSync('reports/ui-ux-design-intent-harness.json', JSON.stringify({
+            summary: { ok: false, passed: 0, failed: 1, total: 0 },
+            results: [],
+          }, null, 2));
+          NODE
+        fi
+        AUDIT_STATUS=0
+        set +e
+        node --import tsx scripts/visual-qa-design-intent.mjs --finalize
+        AUDIT_STATUS=$?
+        set -e
+        if [[ "${HARNESS_STATUS}" -ne 0 || "${AUDIT_STATUS}" -ne 0 ]]; then exit 1; fi
+      summary_script: |
+        echo "### UI UX Design Intent Browser Audit" >> "${GITHUB_STEP_SUMMARY}"
+        if [[ -f "reports/ui-ux-design-intent-audit.json" ]]; then
+          node --import tsx scripts/visual-qa-design-intent.mjs --summary \
+            --audit=reports/ui-ux-design-intent-audit.json \
+            --upgrade-review=reports/ui-ux-pro-max-upgrade-review.json \
+            >> "${GITHUB_STEP_SUMMARY}"
+        else
+          echo "Audit report was not generated" >> "${GITHUB_STEP_SUMMARY}"
+        fi
+      artifact_name: frontend-ui-ux-design-intent-artifacts
+      artifact_paths: |
+        reports/ui-ux-design-intent-plan.json
+        reports/ui-ux-design-intent-harness.json
+        reports/ui-ux-design-intent-audit.json
+        reports/ui-ux-design-intent-audit.md
+        reports/ui-ux-design-intent-screenshots/**
 
   auth-qa:
     needs: detect-changes

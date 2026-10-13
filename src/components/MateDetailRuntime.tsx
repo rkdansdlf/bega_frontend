@@ -7,7 +7,10 @@ import { Card } from './ui/card';
 import { Skeleton } from './ui/skeleton';
 import { Alert, AlertDescription } from './ui/alert';
 import { StatusBadge } from './ui/status-badge';
-import { useMateDetailController } from '../hooks/useMateDetailController';
+import {
+  useMateDetailController,
+  type MateDetailControllerVisualQaStateOverride,
+} from '../hooks/useMateDetailController';
 import {
   MateDetailAlertTriangleIcon as MateAlertTriangleIcon,
   MateDetailChevronLeftIcon as MateChevronLeftIcon,
@@ -17,20 +20,38 @@ import {
 import { getMateStatusBadgeMeta } from '../utils/statusBadgeMeta';
 import { createCheerLinkedEntryAction } from './cheer/CheerLinkedEntryActions';
 import ViewportDeferred from './ViewportDeferred';
+import type { MateDetailContentRuntimeVisualQaStateOverride } from './MateDetailContentRuntime';
+import type { MateDetailQrRuntimeVisualQaStateOverride } from './MateDetailQrRuntime';
+import type { SeatViewPhotosVisualQaStateOverride } from '../hooks/useSeatViewPhotos';
+import type { SeatViewPhoto } from '../api/diary';
 
 const LazyMateDetailQrRuntime = lazy(() => import('./MateDetailQrRuntime'));
 const LazyMateDetailSeatPanel = lazy(() => import('./MateDetailSeatPanel'));
 const LazyMateDetailContentRuntime = lazy(() => import('./MateDetailContentRuntime'));
 
+export type MateDetailRuntimeVisualQaStateOverride = {
+  controller: MateDetailControllerVisualQaStateOverride;
+  content?: MateDetailContentRuntimeVisualQaStateOverride;
+  qr?: MateDetailQrRuntimeVisualQaStateOverride;
+  seat?: SeatViewPhotosVisualQaStateOverride & { lightboxPhoto?: SeatViewPhoto | null };
+};
+
+export interface MateDetailRuntimeProps {
+  id?: string;
+  variant?: 'page' | 'panel';
+  onClose?: () => void;
+  visualQaStateOverride?: MateDetailRuntimeVisualQaStateOverride;
+}
+
 export default function MateDetailRuntime({
   id: idProp,
   variant = 'page',
   onClose,
-}: {
-  id?: string;
-  variant?: 'page' | 'panel';
-  onClose?: () => void;
-} = {}) {
+  visualQaStateOverride: requestedVisualQaStateOverride,
+}: MateDetailRuntimeProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const navigate = useNavigate();
   const cheerEntryActionRef = useRef(createCheerLinkedEntryAction());
   const [isShareToCheerPending, setIsShareToCheerPending] = useState(false);
@@ -59,7 +80,12 @@ export default function MateDetailRuntime({
     setShowSeatViewGuide,
     showQrPanel,
     showSeatViewGuide,
-  } = useMateDetailController({ id: idProp, variant, onClose });
+  } = useMateDetailController({
+    id: idProp,
+    variant,
+    onClose,
+    visualQaStateOverride: visualQaStateOverride?.controller,
+  });
   useEffect(() => {
     cheerEntryActionRef.current.invalidate();
     setIsShareToCheerPending(false);
@@ -217,6 +243,7 @@ export default function MateDetailRuntime({
               onShare={handleShare}
               onShareToCheer={handleShareToCheer}
               isShareToCheerPending={isShareToCheerPending}
+              visualQaStateOverride={visualQaStateOverride?.content}
             />
           </Suspense>
         </ViewportDeferred>
@@ -230,6 +257,7 @@ export default function MateDetailRuntime({
             canAccessCheckIn={canAccessCheckIn}
             onClose={() => setShowQrPanel(false)}
             onOpenCheckInPage={handleCheckIn}
+            visualQaStateOverride={visualQaStateOverride?.qr}
           />
         </Suspense>
       ) : null}
@@ -242,6 +270,7 @@ export default function MateDetailRuntime({
             section={party.section}
             seatDetail={party.seatDetail}
             onClose={() => setShowSeatViewGuide(false)}
+            visualQaStateOverride={visualQaStateOverride?.seat}
           />
         </Suspense>
       ) : null}

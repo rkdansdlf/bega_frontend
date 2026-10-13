@@ -8,6 +8,7 @@ import {
   AUTOMATIC_COMPONENT_STATE_SCENARIOS,
   AUTOMATIC_ICON_SCENARIOS,
 } from '../src/visual-qa/harnessCatalog';
+import { resolveDesignIntent } from '../src/visual-qa/designIntent';
 import {
   executeHarnessInteractionPlan,
   revalidateHarnessInteractionPlan,
@@ -34,6 +35,13 @@ type HarnessResult = {
     failureType?: ReturnType<typeof classifyHarnessFailure>;
   }>;
   screenshot?: string;
+  designIntent?: {
+    profileId: string;
+    ruleIds: string[];
+  };
+  touchTargetChecks?: {
+    markedTargetCount: number;
+  };
   interaction?: HarnessInteractionEvidence;
   navigation?: {
     actualHash?: string;
@@ -57,6 +65,11 @@ type HarnessReadyOutcome = {
   renderedScenarioId: string | null;
   renderedNodes: number;
   captureSelector: string | null;
+  actualDesignProfileId?: string | null;
+  actualDesignRuleIds?: string[];
+  expectedDesignProfileId?: string;
+  expectedDesignRuleIds?: string[];
+  touchTargetCount?: number;
   boundedHeightViolations?: Array<{
     actualHeight: number;
     maxHeight: number;
@@ -120,7 +133,7 @@ export const selectRequestedInteractionScenarios = <Scenario extends { id: strin
 ) => {
   if (requestedInteractions.length === 0) return scenarios;
   const interactionFor = (scenario: Scenario) => (
-    scenario.id.match(/(?:^|\|)interactions=([^|]+)/)?.[1]
+    scenario.id.match(/(?:^|[|:])interactions=([^|]+)/)?.[1]
   );
   const availableInteractions = new Set(
     scenarios.map(interactionFor).filter((interaction): interaction is string => Boolean(interaction)),
@@ -240,6 +253,16 @@ export const assertHarnessReadyOutcome = (outcome: HarnessReadyOutcome) => {
     || outcome.renderedNodes < 1) {
     throw new Error(outcome.harness?.message ?? 'component produced no rendered node');
   }
+  if (outcome.expectedDesignProfileId
+    && outcome.actualDesignProfileId !== outcome.expectedDesignProfileId) {
+    throw new Error(
+      `expected design profile ${outcome.expectedDesignProfileId} but received ${outcome.actualDesignProfileId ?? '<missing>'}`,
+    );
+  }
+  if (outcome.expectedDesignRuleIds
+    && outcome.actualDesignRuleIds?.join(',') !== outcome.expectedDesignRuleIds.join(',')) {
+    throw new Error('rendered Design Intent rule ids do not match the local contract');
+  }
   const boundedHeightViolation = outcome.boundedHeightViolations?.[0];
   if (boundedHeightViolation) {
     throw new Error(
@@ -331,7 +354,8 @@ export const resolveHarnessTimeoutMs = (value: string | undefined) => {
 export const resolveHarnessBrowserEngine = (value: string | undefined) => {
   if (value === undefined || value === 'chrome') return 'chrome' as const;
   if (value === 'chromium') return 'chromium' as const;
-  throw new Error('VISUAL_QA_HARNESS_BROWSER must be either chrome or chromium');
+  if (value === 'webkit') return 'webkit' as const;
+  throw new Error('VISUAL_QA_HARNESS_BROWSER must be either chrome, chromium, or webkit');
 };
 
 export const resolveHarnessPageMode = (value: string | undefined) => {
@@ -728,9 +752,10 @@ const loadPlaywright = async () => {
 };
 
 const launchBrowser = async () => {
-  const { chromium } = await loadPlaywright();
+  const { chromium, webkit } = await loadPlaywright();
   const browserEngine = resolveHarnessBrowserEngine(process.env.VISUAL_QA_HARNESS_BROWSER);
   if (browserEngine === 'chromium') return chromium.launch({ headless: true });
+  if (browserEngine === 'webkit') return webkit.launch({ headless: true });
   try {
     return await chromium.launch({ channel: 'chrome', headless: true });
   } catch {
@@ -740,7 +765,12 @@ const launchBrowser = async () => {
 
 type HarnessContext = {
   route: (pattern: string, handler: (route: {
-    request: () => { url: () => string };
+    request: () => {
+      url: () => string;
+      method: () => string;
+      postData: () => string | null;
+      headers: () => Record<string, string>;
+    };
     abort: () => Promise<void>;
     continue: () => Promise<void>;
     fulfill: (response: { status: number; contentType: string; body: string }) => Promise<void>;
@@ -869,11 +899,270 @@ export const resolveHarnessRequestPolicy = (
   return 'continue';
 };
 
+const HOME_RUNTIME_COMPONENT_ID = 'src/components/HomeRuntime.tsx#HomeRuntime';
+const PASSWORD_CHANGE_COMPONENT_ID = 'src/components/mypage/PasswordChangeSection.tsx#PasswordChangeSection';
+const DIRECT_MESSAGE_RUNTIME_COMPONENT_ID = 'src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime';
+
+type PasswordChangeFixtureRequest = {
+  currentPassword?: unknown;
+  newPassword?: unknown;
+  confirmPassword?: unknown;
+};
+
+export type PasswordChangeFixtureResponse = {
+  status: 200 | 401 | 503;
+  body: { success: boolean; code?: string; message?: string };
+  delayMs?: number;
+};
+
+export const resolvePasswordChangeFixtureResponse = (
+  body: PasswordChangeFixtureRequest,
+  attempt: number,
+): PasswordChangeFixtureResponse => {
+  const newPassword = body.newPassword;
+  if (newPassword === 'VisualQaPending1!') {
+    return {
+      status: 200,
+      body: { success: true },
+      delayMs: 1_500,
+    };
+  }
+  if (newPassword === 'VisualQaError1!' && attempt === 1) {
+    return {
+      status: 401,
+      body: {
+        success: false,
+        code: 'INVALID_CURRENT_PASSWORD',
+        message: '현재 비밀번호가 일치하지 않습니다.',
+      },
+    };
+  }
+  if (newPassword === 'VisualQaRecovery1!' || newPassword === 'VisualQaSuccess1!') {
+    return {
+      status: 200,
+      body: { success: true },
+    };
+  }
+  return {
+    status: 503,
+    body: {
+      success: false,
+      code: 'VISUAL_QA_UNEXPECTED_PASSWORD_FIXTURE',
+      message: 'Unexpected password-change fixture request.',
+    },
+  };
+};
+
+const shouldUseHomeRuntimeInteractionFixture = () => {
+  const componentIds = (process.env.VISUAL_QA_HARNESS_COMPONENT_IDS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const interactions = new Set(
+    (process.env.VISUAL_QA_HARNESS_INTERACTIONS ?? '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+  return componentIds.length === 1
+    && componentIds[0] === HOME_RUNTIME_COMPONENT_ID
+    && (interactions.has('next-date') || interactions.has('cta'));
+};
+
+const shouldUsePasswordChangeFixture = () => (
+  (process.env.VISUAL_QA_HARNESS_COMPONENT_IDS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .length === 1
+  && (process.env.VISUAL_QA_HARNESS_COMPONENT_IDS ?? '').trim() === PASSWORD_CHANGE_COMPONENT_ID
+);
+
+const shouldUseDirectMessageFixture = () => (
+  (process.env.VISUAL_QA_HARNESS_COMPONENT_IDS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .length === 1
+  && (process.env.VISUAL_QA_HARNESS_COMPONENT_IDS ?? '').trim() === DIRECT_MESSAGE_RUNTIME_COMPONENT_ID
+);
+
+const directMessageBootstrapResponse = {
+  roomId: 901,
+  membershipState: 'ACTIVE',
+  targetUser: {
+    id: 456,
+    name: 'Visual QA 상대',
+    handle: '@visual-qa-target',
+    favoriteTeam: 'LG',
+    profileImageUrl: null,
+  },
+};
+
+const directMessageHistory = [{
+  id: 1,
+  roomId: 901,
+  senderId: 456,
+  content: '기존 대화 기록입니다.',
+  clientMessageId: null,
+  createdAt: '2026-09-17T09:00:00.000Z',
+}];
+
+const buildHomeRuntimeInteractionFixture = (pathname: string, date: string) => {
+  if (pathname === '/api/home/bootstrap') {
+    const gameId = date === '2026-09-11' ? 'HOME-B-20260911' : `HOME-${date.replaceAll('-', '')}`;
+    return {
+      selectedDate: date,
+      leagueStartDates: {
+        regularSeasonStart: '2026-03-28',
+        postseasonStart: null,
+        koreanSeriesStart: null,
+      },
+      navigation: {
+        prevGameDate: '2026-09-09',
+        nextGameDate: '2026-09-11',
+        hasPrev: true,
+        hasNext: true,
+      },
+      games: [{
+        gameId,
+        time: '18:30',
+        stadium: '잠실야구장',
+        gameStatus: 'SCHEDULED',
+        gameStatusKr: '경기 예정',
+        gameInfo: '정규시즌',
+        leagueType: 'REGULAR',
+        homeTeam: 'LT',
+        homeTeamFull: '롯데 자이언츠',
+        awayTeam: 'HH',
+        awayTeamFull: '한화 이글스',
+        gameDate: date,
+        sourceDate: date,
+      }],
+      scheduledGamesWindow: [],
+    };
+  }
+  if (pathname === '/api/home/widgets') {
+    return {
+      hotCheerPosts: [],
+      featuredMates: [],
+      rankingSnapshot: {
+        rankingSeasonYear: Number(date.slice(0, 4)),
+        rankingSourceMessage: '공통 harness 내부 fixture',
+        isOffSeason: false,
+        rankings: [],
+      },
+    };
+  }
+  return {
+    resolvedDate: date,
+    prevGameDate: '2026-09-09',
+    nextGameDate: '2026-09-11',
+    hasPrev: true,
+    hasNext: true,
+  };
+};
+
 const installOfflineRoutes = async (context: HarnessContext, harnessOrigin: string) => {
+  let passwordChangeAttempt = 0;
+  const directMessageBootstrapAttempts = new Map<string, number>();
   await context.route('**/*', async (route) => {
     const policy = resolveHarnessRequestPolicy(route.request().url(), harnessOrigin);
     if (policy === 'abort-external') return route.abort();
     if (policy === 'stub-api') {
+      const requestUrl = new URL(route.request().url());
+      if (
+        shouldUsePasswordChangeFixture()
+        && requestUrl.pathname === '/api/auth/password'
+        && route.request().method() === 'PUT'
+      ) {
+        passwordChangeAttempt += 1;
+        let body: PasswordChangeFixtureRequest = {};
+        try {
+          const rawBody = route.request().postData();
+          body = rawBody ? JSON.parse(rawBody) as PasswordChangeFixtureRequest : {};
+        } catch {
+          body = {};
+        }
+        const fixture = resolvePasswordChangeFixtureResponse(body, passwordChangeAttempt);
+        if (fixture.delayMs) {
+          await new Promise((resolveDelay) => setTimeout(resolveDelay, fixture.delayMs));
+        }
+        return route.fulfill({
+          status: fixture.status,
+          contentType: 'application/json',
+          body: JSON.stringify(fixture.body),
+        });
+      }
+      if (
+        shouldUseHomeRuntimeInteractionFixture()
+        && ['/api/home/bootstrap', '/api/home/widgets', '/api/home/navigation'].includes(requestUrl.pathname)
+      ) {
+        const date = requestUrl.searchParams.get('date') ?? '2026-09-10';
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(buildHomeRuntimeInteractionFixture(requestUrl.pathname, date)),
+        });
+      }
+      if (shouldUseDirectMessageFixture()) {
+        const referer = route.request().headers().referer ?? 'direct-message-default';
+        const requestKey = referer;
+        if (requestUrl.pathname === '/api/dm/rooms' && route.request().method() === 'POST') {
+          const attempt = (directMessageBootstrapAttempts.get(requestKey) ?? 0) + 1;
+          directMessageBootstrapAttempts.set(requestKey, attempt);
+          const isRetryScenario = referer.includes('system%3Drequest-failed')
+            || referer.includes('system=request-failed');
+          if (isRetryScenario && attempt === 1) {
+            return route.fulfill({
+              status: 503,
+              contentType: 'application/json',
+              body: JSON.stringify({
+                success: false,
+                code: 'VISUAL_QA_DM_BOOTSTRAP_RETRY',
+                message: 'Visual QA direct-message bootstrap retry fixture.',
+              }),
+            });
+          }
+          return route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, data: directMessageBootstrapResponse }),
+          });
+        }
+        if (requestUrl.pathname === '/api/dm/rooms/901/messages' && route.request().method() === 'GET') {
+          return route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, data: directMessageHistory }),
+          });
+        }
+        if (requestUrl.pathname === '/api/dm/messages' && route.request().method() === 'POST') {
+          let body: { content?: unknown; clientMessageId?: unknown } = {};
+          try {
+            const rawBody = route.request().postData();
+            body = rawBody ? JSON.parse(rawBody) as { content?: unknown; clientMessageId?: unknown } : {};
+          } catch {
+            body = {};
+          }
+          const content = typeof body.content === 'string' ? body.content : 'Visual QA 전송 메시지';
+          return route.fulfill({
+            status: 201,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              data: {
+                id: 2,
+                roomId: 901,
+                senderId: 900002,
+                content,
+                clientMessageId: typeof body.clientMessageId === 'string' ? body.clientMessageId : null,
+                createdAt: '2026-09-17T09:01:00.000Z',
+              },
+            }),
+          });
+        }
+      }
       return route.fulfill({
         status: 503,
         contentType: 'application/json',
@@ -934,7 +1223,8 @@ const probeIsolatedScenario = async ({
       { timeout: timeoutMs },
     );
     await settleHarnessPage(page, assetTracker.waitForQuiet);
-    const rawOutcome = await page.evaluate(({ componentId, scenarioId }) => {
+    const designIntent = resolveDesignIntent(scenario.componentId);
+    const rawOutcome = await page.evaluate(({ componentId, scenarioId, designProfileId, designRuleIds }) => {
       const surface = document.querySelector('[data-vqa-harness-surface]');
       const captureSelector = surface?.getAttribute('data-vqa-capture-selector') ?? null;
       const renderedSurfaceChildCount = [...(surface?.children ?? [])].filter((child) => (
@@ -985,6 +1275,13 @@ const probeIsolatedScenario = async ({
           ?.getAttribute('data-vqa-router-search') ?? null,
         renderedComponentId: surface?.getAttribute('data-vqa-rendered-component-id') ?? null,
         renderedScenarioId: surface?.getAttribute('data-vqa-rendered-scenario-id') ?? null,
+        actualDesignProfileId: surface?.getAttribute('data-vqa-design-profile') ?? null,
+        actualDesignRuleIds: (surface?.getAttribute('data-vqa-design-rule-ids') ?? '')
+          .split(/\s+/)
+          .filter(Boolean),
+        expectedDesignProfileId: designProfileId,
+        expectedDesignRuleIds: designRuleIds,
+        touchTargetCount: document.querySelectorAll('[data-vqa-min-touch]').length,
         captureNodeCount: captureSelector
           ? document.querySelectorAll(captureSelector).length
           : renderedSurfaceChildCount,
@@ -996,7 +1293,12 @@ const probeIsolatedScenario = async ({
         expectedSearch: surface?.getAttribute('data-vqa-expected-search') ?? null,
         expectedScenarioId: scenarioId,
       };
-    }, { componentId: scenario.componentId, scenarioId: scenario.id });
+    }, {
+      componentId: scenario.componentId,
+      scenarioId: scenario.id,
+      designProfileId: designIntent.profileId,
+      designRuleIds: designIntent.ruleIds,
+    });
     const outcome: HarnessReadyOutcome = {
       ...rawOutcome,
       renderedNodes: resolveHarnessReadinessNodeCount({
@@ -1006,6 +1308,13 @@ const probeIsolatedScenario = async ({
       }),
     };
     assertHarnessReadyOutcome(outcome);
+    const designIntentEvidence = {
+      profileId: outcome.actualDesignProfileId ?? designIntent.profileId,
+      ruleIds: outcome.actualDesignRuleIds ?? designIntent.ruleIds,
+    };
+    const touchTargetChecks = {
+      markedTargetCount: outcome.touchTargetCount ?? 0,
+    };
     const navigationEvidence = outcome.expectedPathname
       ? {
         ...(outcome.expectedHash != null ? {
@@ -1051,6 +1360,8 @@ const probeIsolatedScenario = async ({
         scenarioId: scenario.id,
         componentId: scenario.componentId,
         status: 'pass',
+        designIntent: designIntentEvidence,
+        touchTargetChecks,
         ...(interactionEvidence ? { interaction: interactionEvidence } : {}),
         ...(navigationEvidence ? { navigation: navigationEvidence } : {}),
       };
@@ -1066,6 +1377,8 @@ const probeIsolatedScenario = async ({
       scenarioId: scenario.id,
       componentId: scenario.componentId,
       status: 'pass',
+      designIntent: designIntentEvidence,
+      touchTargetChecks,
       screenshot: relative(process.cwd(), screenshotPath),
       ...(interactionEvidence ? { interaction: interactionEvidence } : {}),
       ...(navigationEvidence ? { navigation: navigationEvidence } : {}),
@@ -1149,6 +1462,19 @@ const main = async () => {
           window.localStorage.clear();
           window.sessionStorage.clear();
         });
+        if (shouldUseDirectMessageFixture()) {
+          await context.addInitScript(() => {
+            const typedWindow = window as Window & {
+              Cypress?: unknown;
+              __begaDmSocketFactory?: (options: { onConnect: () => void }) => () => void;
+            };
+            typedWindow.Cypress = true;
+            typedWindow.__begaDmSocketFactory = ({ onConnect }) => {
+              onConnect();
+              return () => {};
+            };
+          });
+        }
         return { context, page: null as HarnessPage | null, pageInitialized: false };
       },
       async (resource) => {

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import { usePredictionInteractiveData } from '../../hooks/usePredictionInteractiveData';
 import { resolvePredictionUserVoteResolutionState } from '../../hooks/predictionHookShared';
@@ -15,7 +16,24 @@ import type {
 const PredictionMatchInteractiveView = lazy(() => import('./PredictionMatchInteractiveView'));
 const PredictionMatchVoteController = lazy(() => import('./PredictionMatchVoteController'));
 
-export default function PredictionMatchInteractiveDataRuntime() {
+export interface PredictionMatchInteractiveDataRuntimeProps {
+  visualQaPhase?: 'fallback' | 'resolved';
+  visualQaRuntimeOverride?: ReactNode;
+}
+
+export default function PredictionMatchInteractiveDataRuntime({
+  visualQaPhase: requestedVisualQaPhase,
+  visualQaRuntimeOverride: visualQaRuntimeOverrideProp,
+}: PredictionMatchInteractiveDataRuntimeProps = {}) {
+  const visualQaPhase = import.meta.env.PROD === true ? undefined : requestedVisualQaPhase;
+  const visualQaRuntimeOverride = import.meta.env.PROD === true ? undefined : visualQaRuntimeOverrideProp;
+  if (visualQaPhase === 'fallback') {
+    return <div data-testid="prediction-match-interactive-data-runtime-fallback">경기 데이터를 불러오는 중입니다.</div>;
+  }
+  if (visualQaPhase === 'resolved' && visualQaRuntimeOverride) {
+    return <>{visualQaRuntimeOverride}</>;
+  }
+
   const {
     currentGame,
     currentDateGames,

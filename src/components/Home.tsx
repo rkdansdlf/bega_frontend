@@ -1,8 +1,29 @@
-import { createElement, lazy, Suspense } from 'react';
+import {
+  createElement,
+  lazy,
+  Suspense,
+  useMemo,
+  type ComponentType,
+  type ReactNode,
+} from 'react';
 
 const homeRuntimeComponent = lazy(() => import('./HomeRuntime'));
 
-export default function Home() {
+type HomeRuntimeLoader = () => Promise<{
+  default: ComponentType<Record<string, never>>;
+}>;
+
+type HomeProps = {
+  runtimeLoader?: HomeRuntimeLoader;
+  runtimeOverride?: ReactNode;
+};
+
+export default function Home({ runtimeLoader, runtimeOverride }: HomeProps = {}) {
+  const runtimeComponent = useMemo(
+    () => (runtimeLoader ? lazy(runtimeLoader) : homeRuntimeComponent),
+    [runtimeLoader],
+  );
+
   return (
     <Suspense
       fallback={(
@@ -13,7 +34,9 @@ export default function Home() {
         />
       )}
     >
-      {createElement(homeRuntimeComponent)}
+      {runtimeOverride !== undefined
+        ? runtimeOverride
+        : createElement(runtimeComponent)}
     </Suspense>
   );
 }

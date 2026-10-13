@@ -41,9 +41,27 @@ import type {
   MateManageEditFormState,
   MateManageMobileAction,
 } from './MateManageContentRuntime';
+import type { Application, Party } from '../types/mate';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 
 const LazyMateManageOverviewRuntime = lazy(() => import('./MateManageOverviewRuntime'));
 type MateIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+export type MateManageVisualQaStateOverride = {
+  party: Party | null;
+  applications: Application[];
+  currentUserId: number | null;
+  currentUserHandle?: string;
+  isPartyLoading?: boolean;
+  isPartyRevalidating?: boolean;
+  partyError?: string | null;
+  applicationsLoading?: boolean;
+  applicationsErrorStatus?: number | null;
+};
+
+export type MateManageProps = {
+  visualQaStateOverride?: MateManageVisualQaStateOverride;
+};
 
 const resolveDefaultApplicationTab = (
   pendingCount: number,
@@ -85,7 +103,10 @@ function EmptyState({
   );
 }
 
-export default function MateManage() {
+export default function MateManage({ visualQaStateOverride: requestedVisualQaStateOverride }: MateManageProps = {}) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { confirm } = useConfirmDialog();
@@ -94,11 +115,29 @@ export default function MateManage() {
     isLoading: isPartyLoading,
     isRevalidating: isPartyRevalidating,
     error: partyError,
-  } = useMatePartyFromRoute(id);
+  } = useMatePartyFromRoute(visualQaStateOverride ? undefined : id);
   const { userHandle: currentUserHandle } = useAuthProfileSnapshot();
   const { isAuthLoading, userId: currentUserId } = useAuthSession();
   const { logout, requireLogin } = useAuthAccessActions();
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
+
+  const resolvedParty = visualQaStateOverride ? visualQaStateOverride.party : party;
+  const resolvedPartyLoading = visualQaStateOverride
+    ? Boolean(visualQaStateOverride.isPartyLoading)
+    : isPartyLoading;
+  const resolvedPartyRevalidating = visualQaStateOverride
+    ? Boolean(visualQaStateOverride.isPartyRevalidating)
+    : isPartyRevalidating;
+  const resolvedPartyError = visualQaStateOverride
+    ? visualQaStateOverride.partyError ?? null
+    : partyError;
+  const resolvedCurrentUserId = visualQaStateOverride
+    ? visualQaStateOverride.currentUserId
+    : currentUserId;
+  const resolvedCurrentUserHandle = visualQaStateOverride
+    ? visualQaStateOverride.currentUserHandle
+    : currentUserHandle;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -114,27 +153,39 @@ export default function MateManage() {
   const [applicationActionError, setApplicationActionError] = useState('');
 
   useEffect(() => {
+    if (visualQaStateOverride) {
+      return;
+    }
+
     if (isAuthLoading || currentUserId !== null) {
       return;
     }
 
     logout(true);
     requireLogin();
-  }, [currentUserId, isAuthLoading, logout, requireLogin]);
+  }, [currentUserId, isAuthLoading, logout, requireLogin, visualQaStateOverride]);
 
-  const isHost = party
-    ? isPartyHostedByUser(party, { id: currentUserId, handle: currentUserHandle })
+  const isHost = resolvedParty
+    ? isPartyHostedByUser(resolvedParty, { id: resolvedCurrentUserId, handle: resolvedCurrentUserHandle })
     : false;
   const applicationsQuery = useQuery({
-    ...(party?.id != null
-      ? getMatePartyApplicationsQueryOptions(party.id)
-      : getMatePartyApplicationsQueryOptions('unknown')),
-    enabled: Boolean(party?.id && currentUserId && isHost),
+    ...(resolvedParty?.id != null
+      ? getMatePartyApplicationsQueryOptions(resolvedParty.id, viewerScope)
+      : getMatePartyApplicationsQueryOptions('unknown', viewerScope)),
+    enabled: Boolean(!visualQaStateOverride && resolvedParty?.id && resolvedCurrentUserId && isHost),
   });
-  const applications = applicationsQuery.data ?? [];
-  const isLoading = applicationsQuery.isPending;
-  const isHostAccessDenied = getApiErrorStatus(applicationsQuery.error) === 403;
-  const fetchError = Boolean(applicationsQuery.error) && !isHostAccessDenied;
+  const applications = visualQaStateOverride
+    ? visualQaStateOverride.applications
+    : applicationsQuery.data ?? [];
+  const isLoading = visualQaStateOverride
+    ? Boolean(visualQaStateOverride.applicationsLoading)
+    : applicationsQuery.isPending;
+  const isHostAccessDenied = visualQaStateOverride
+    ? visualQaStateOverride.applicationsErrorStatus === 403
+    : getApiErrorStatus(applicationsQuery.error) === 403;
+  const fetchError = visualQaStateOverride
+    ? Boolean(visualQaStateOverride.applicationsErrorStatus && !isHostAccessDenied)
+    : Boolean(applicationsQuery.error) && !isHostAccessDenied;
   const [pendingApplications, approvedApplications, rejectedApplications] = useMemo(() => [
     applications.filter((app) => !app.isApproved && !app.isRejected),
     applications.filter((app) => app.isApproved),
@@ -154,11 +205,12 @@ export default function MateManage() {
       const approvedApplication = await approveApplication(applicationId);
       updateMatePartyApplicationQueryData(
         queryClient,
-        party!.id,
+        resolvedParty!.id,
         approvedApplication.id,
         () => approvedApplication,
+        viewerScope,
       );
-      updateMatePartyCollectionQueryData(queryClient, party!.id, (currentParty) => {
+      updateMatePartyCollectionQueryData(queryClient, resolvedParty!.id, (currentParty) => {
         const nextParticipants = Math.min(
           currentParty.maxParticipants,
           currentParty.currentParticipants + 1,
@@ -171,7 +223,7 @@ export default function MateManage() {
             ? 'MATCHED'
             : currentParty.status,
         };
-      });
+      }, {}, viewerScope);
       toast.success('신청이 승인되었습니다!');
     } catch (error: unknown) {
       console.error('신청 승인 중 오류:', error);
@@ -187,9 +239,10 @@ export default function MateManage() {
       const rejectedApplication = await rejectApplication(applicationId);
       updateMatePartyApplicationQueryData(
         queryClient,
-        party!.id,
+        resolvedParty!.id,
         rejectedApplication.id,
         () => rejectedApplication,
+        viewerScope,
       );
       toast.success('신청이 거절되었습니다.');
     } catch (error: unknown) {
@@ -201,8 +254,8 @@ export default function MateManage() {
   };
 
   const handleDeleteParty = async () => {
-    if (!party || !currentUserId) {
-      if (!currentUserId) {
+    if (!resolvedParty || !resolvedCurrentUserId) {
+      if (!resolvedCurrentUserId) {
         logout(true);
         requireLogin();
       }
@@ -238,9 +291,9 @@ export default function MateManage() {
 
     setIsDeleting(true);
     try {
-      await deleteParty(party.id);
-      removeMatePartyFromCollections(queryClient, party.id);
-      removeMatePartyQueries(queryClient, party.id);
+      await deleteParty(resolvedParty.id);
+      removeMatePartyFromCollections(queryClient, resolvedParty.id, {}, viewerScope);
+      removeMatePartyQueries(queryClient, resolvedParty.id, viewerScope);
       toast.success('파티가 삭제되었습니다.');
       navigate('/mate');
     } catch (error: unknown) {
@@ -260,24 +313,24 @@ export default function MateManage() {
   };
 
   const handleStartEdit = () => {
-    if (!party) {
+    if (!resolvedParty) {
       return;
     }
 
     setEditForm({
-      section: party.section,
-      seatDetail: party.seatDetail || '',
-      maxParticipants: party.maxParticipants,
-      ticketPrice: party.ticketPrice || 0,
-      reservationDepositAmount: party.reservationDepositAmount || 0,
-      description: party.description,
+      section: resolvedParty.section,
+      seatDetail: resolvedParty.seatDetail || '',
+      maxParticipants: resolvedParty.maxParticipants,
+      ticketPrice: resolvedParty.ticketPrice || 0,
+      reservationDepositAmount: resolvedParty.reservationDepositAmount || 0,
+      description: resolvedParty.description,
     });
     setDescriptionError('');
     setIsEditing(true);
   };
 
   const handleSaveEdit = async () => {
-    if (!party) {
+    if (!resolvedParty) {
       return;
     }
 
@@ -288,8 +341,8 @@ export default function MateManage() {
     }
 
     try {
-      const updatedParty = await updateParty(party.id, editForm);
-      syncMatePartyQueryData(queryClient, normalizeMateParty(updatedParty));
+      const updatedParty = await updateParty(resolvedParty.id, editForm);
+      syncMatePartyQueryData(queryClient, normalizeMateParty(updatedParty), {}, viewerScope);
       toast.success('파티 정보가 수정되었습니다.');
       setDescriptionError('');
       setIsEditing(false);
@@ -299,13 +352,17 @@ export default function MateManage() {
     }
   };
 
-  if (isAuthLoading || (isPartyLoading && !party)) {
-    return <LoadingSpinner text="파티 정보를 불러오는 중..." fullScreen />;
+  if ((visualQaStateOverride ? false : isAuthLoading) || (resolvedPartyLoading && !resolvedParty)) {
+    return (
+      <div data-testid="mate-manage-runtime-loading">
+        <LoadingSpinner text="파티 정보를 불러오는 중..." fullScreen />
+      </div>
+    );
   }
 
-  if (partyError || !party) {
+  if (resolvedPartyError || !resolvedParty) {
     return (
-      <div className={matePageShellClass}>
+      <div className={matePageShellClass} data-testid="mate-manage-runtime-error">
         <img
           src={grassDecor}
           alt=""
@@ -316,7 +373,7 @@ export default function MateManage() {
             <Alert className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/25">
               <MateAlertCircleIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
               <AlertDescription className="text-red-700 dark:text-red-300">
-                {partyError || '파티 정보를 찾을 수 없습니다.'}
+                {resolvedPartyError || '파티 정보를 찾을 수 없습니다.'}
               </AlertDescription>
             </Alert>
             <Button onClick={() => navigate('/mate')} className="mt-4 w-fit">
@@ -328,13 +385,13 @@ export default function MateManage() {
     );
   }
 
-  if (!currentUserId) {
+  if (!resolvedCurrentUserId) {
     return null;
   }
 
   if (!isHost || isHostAccessDenied) {
     return (
-      <div className={matePageShellClass}>
+      <div className={matePageShellClass} data-testid="mate-manage-runtime-access">
         <img
           src={grassDecor}
           alt=""
@@ -358,8 +415,8 @@ export default function MateManage() {
     );
   }
 
-  const canEdit = party.status === 'PENDING' && approvedApplications.length === 0;
-  const canReviewCheckIn = approvedApplications.length > 0 || ['MATCHED', 'CHECKED_IN', 'COMPLETED'].includes(party.status);
+  const canEdit = resolvedParty.status === 'PENDING' && approvedApplications.length === 0;
+  const canReviewCheckIn = approvedApplications.length > 0 || ['MATCHED', 'CHECKED_IN', 'COMPLETED'].includes(resolvedParty.status);
   const nextStepSummary = pendingApplications.length > 0
     ? '대기 신청 검토'
     : approvedApplications.length > 0
@@ -431,7 +488,7 @@ export default function MateManage() {
 
   if (isLoading) {
     return (
-      <div className={matePageShellClass}>
+      <div className={matePageShellClass} data-testid="mate-manage-runtime-loading">
         <img
           src={grassDecor}
           alt=""
@@ -446,7 +503,7 @@ export default function MateManage() {
 
   if (fetchError) {
     return (
-      <div className={matePageShellClass}>
+      <div className={matePageShellClass} data-testid="mate-manage-runtime-error">
         <img
           src={grassDecor}
           alt=""
@@ -471,10 +528,10 @@ export default function MateManage() {
 
   return (
     <LazyMateManageOverviewRuntime
-      party={party}
+      party={resolvedParty}
       approvedApplications={approvedApplications}
       pendingApplications={pendingApplications}
-      isPartyRevalidating={isPartyRevalidating}
+      isPartyRevalidating={resolvedPartyRevalidating}
       applicationActionError={applicationActionError}
       contentProps={contentProps}
       onNavigateBack={() => navigate(`/mate/${id}`)}

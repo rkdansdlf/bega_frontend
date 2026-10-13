@@ -84,7 +84,7 @@ export interface AdminSeatView {
   id: number;
   diaryId: number | null;
   userId: number;
-  photoUrl: string;
+  photoUrl: string | null;
   storagePath: string;
   sourceType: string;
   aiSuggestedLabel: string | null;

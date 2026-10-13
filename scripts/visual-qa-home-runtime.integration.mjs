@@ -21,7 +21,7 @@ const REPORT_DIR = resolve(PROJECT_ROOT, 'reports/visual-qa/p2-c-2026-09-10');
 const REPORT_PATH = join(REPORT_DIR, 'home-runtime.json');
 const SCREENSHOT_DIR = join(REPORT_DIR, 'screenshots');
 const COMPONENT_ID = 'src/components/HomeRuntime.tsx#HomeRuntime';
-const CASES = ['normal', 'empty', 'retry-success', 'persistent-failure', 'manual', 'race', 'date-next', 'cta', 'reentry'];
+const CASES = ['normal', 'empty', 'retry-success', 'persistent-failure', 'manual', 'race', 'date-next', 'cta', 'offseason-cta', 'reentry'];
 const MATRIX = [
   { width: 320, zoom: 1, theme: 'light' },
   { width: 320, zoom: 2, theme: 'dark' },
@@ -70,7 +70,11 @@ const bootstrapBody = (date, kind, options = {}) => {
   const loadState = options.loadState;
   return {
     selectedDate: date,
-    leagueStartDates: { regularSeasonStart: '2026-03-28', postseasonStart: null, koreanSeriesStart: null },
+    leagueStartDates: {
+      regularSeasonStart: kind === 'offseason-cta' ? '2026-10-28' : '2026-03-28',
+      postseasonStart: null,
+      koreanSeriesStart: null,
+    },
     navigation: {
       prevGameDate: '2026-09-09',
       nextGameDate: '2026-09-11',
@@ -96,7 +100,9 @@ const widgetsBody = (date) => ({
 
 const isAllowedApi = (url) => (
   url.origin === new URL(BASE_URL).origin
-  && ['/api/home/bootstrap', '/api/home/widgets', '/api/home/navigation', '/api/auth/mypage', '/api/auth/reissue'].includes(url.pathname)
+  && (['/api/home/bootstrap', '/api/home/widgets', '/api/home/navigation', '/api/auth/mypage', '/api/auth/reissue'].includes(url.pathname)
+    || url.pathname.startsWith('/api/kbo/offseason/')
+    || url.pathname.startsWith('/api/kbo/rankings/'))
 );
 
 const isExpectedExternalAsset = (url) => (
@@ -131,7 +137,7 @@ const fixtureContext = (kind) => {
       }
       const body = kind === 'empty'
         ? bootstrapBody(dates.empty, 'empty')
-        : bootstrapBody(date, date === dates.b ? 'normal' : 'normal');
+        : bootstrapBody(date, kind === 'offseason-cta' ? 'offseason-cta' : 'normal');
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
     },
     handleManual: async (route, url) => {
@@ -188,6 +194,11 @@ const installRoutes = async (context, fixture, blocked) => {
     }
     if (requestUrl.pathname === '/api/auth/reissue') {
       await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ code: 'P2C_ANONYMOUS' }) });
+      return;
+    }
+    if (requestUrl.pathname.startsWith('/api/kbo/offseason/') || requestUrl.pathname.startsWith('/api/kbo/rankings/')) {
+      fixture.requests.push({ kind: 'offseason-downstream', path: requestUrl.pathname, status: 503, sequence: fixture.requests.length + 1 });
+      await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ code: 'P2C_OFFSEASON_DOWNSTREAM_STUB' }) });
       return;
     }
     if (requestUrl.pathname === '/api/home/bootstrap') {
@@ -286,6 +297,11 @@ const runCase = async ({ browser, caseName, matrix, baseUrl, screenshotDir }) =>
         await page.locator('[data-testid="home-game-card"]').first().locator('[role="button"]').click();
         await page.waitForURL(/\/prediction\/matches\/HOME-A-20260910\?date=2026-09-10/);
         assertions.push({ id: 'cta-carries-game-id', status: 'pass', selector: '[data-testid="home-game-card"] [role="button"]' });
+      }
+      if (caseName === 'offseason-cta') {
+        await page.locator('[data-testid="home-offseason-cta"]').click();
+        await page.waitForURL(/\/offseason(?:\?|$)/);
+        assertions.push({ id: 'offseason-cta-navigates', status: 'pass', selector: '[data-testid="home-offseason-cta"]' });
       }
       if (caseName === 'reentry') {
         await page.goto(`${baseUrl}/home?date=${dates.b}`, { waitUntil: 'domcontentloaded' });

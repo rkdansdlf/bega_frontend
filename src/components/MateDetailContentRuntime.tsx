@@ -25,8 +25,15 @@ import { isMateGameSoon } from '../utils/mateDateLabels';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useTodayKey } from '../hooks/useTodayKey';
 import { MateDetailHeroBlock } from './MateDetailReferenceBlocks';
-import type { MateDetailActionButton, MateDetailActionContext } from './MateDetailActionSection';
+import type {
+  MateDetailActionButton,
+  MateDetailActionContext,
+  MateDetailActionSectionVisualQaStateOverride,
+} from './MateDetailActionSection';
+import type { MateDetailActionDialogsVisualQaStateOverride } from './MateDetailActionDialogs';
+import type { MateDetailInfoSectionsVisualQaStateOverride } from './MateDetailInfoSections';
 import { useConfirmDialog } from './contexts/confirmDialogCore';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 
 const ReviewDialog = lazy(() => import('./ReviewDialog'));
 const LazyUserProfileModal = lazy(() => import('./profile/UserProfileModal'));
@@ -34,7 +41,13 @@ const LazyMateDetailActionDialogs = lazy(() => import('./MateDetailActionDialogs
 const LazyMateDetailActionSection = lazy(() => import('./MateDetailActionSection'));
 const LazyMateDetailInfoSections = lazy(() => import('./MateDetailInfoSections'));
 
-interface MateDetailContentRuntimeProps {
+export type MateDetailContentRuntimeVisualQaStateOverride = {
+  actionDialogs?: MateDetailActionDialogsVisualQaStateOverride;
+  actionSection?: MateDetailActionSectionVisualQaStateOverride;
+  infoSections?: MateDetailInfoSectionsVisualQaStateOverride;
+};
+
+export interface MateDetailContentRuntimeProps {
   party: Party;
   routePartyId?: string;
   currentUserId: number | null;
@@ -54,6 +67,7 @@ interface MateDetailContentRuntimeProps {
   onShare: () => void;
   onShareToCheer: () => void;
   isShareToCheerPending: boolean;
+  visualQaStateOverride?: MateDetailContentRuntimeVisualQaStateOverride;
 }
 
 const resolveMateDetailErrorMessage = (error: unknown, fallback: string): string => {
@@ -108,9 +122,14 @@ export default function MateDetailContentRuntime({
   onShare,
   onShareToCheer,
   isShareToCheerPending,
+  visualQaStateOverride: requestedVisualQaStateOverride,
 }: MateDetailContentRuntimeProps) {
+  const visualQaStateOverride = import.meta.env?.PROD === true
+    ? undefined
+    : requestedVisualQaStateOverride;
   const { confirm } = useConfirmDialog();
   const queryClient = useQueryClient();
+  const viewerScope = useViewerQueryScope();
   const [isCancelling, setIsCancelling] = useState(false);
   const [isConvertingToSale, setIsConvertingToSale] = useState(false);
   const [showSaleDialog, setShowSaleDialog] = useState(false);
@@ -187,9 +206,12 @@ export default function MateDetailContentRuntime({
         cancelReasonType: selectedCancelReason,
         cancelMemo: cancelMemo.trim() || undefined,
       });
-      setMatePartyMyApplicationQueryData(queryClient, party.id, currentUserId, null);
-      updateMatePartyApplicationsQueryData(queryClient, party.id, (currentApplications) =>
-        currentApplications.filter((application) => application.id !== cancelledApplicationId),
+      setMatePartyMyApplicationQueryData(queryClient, party.id, currentUserId, null, viewerScope);
+      updateMatePartyApplicationsQueryData(
+        queryClient,
+        party.id,
+        (currentApplications) => currentApplications.filter((application) => application.id !== cancelledApplicationId),
+        viewerScope,
       );
       if (wasApproved) {
         updateMatePartyCollectionQueryData(queryClient, party.id, (currentParty) => ({
@@ -198,11 +220,11 @@ export default function MateDetailContentRuntime({
           status: 'PENDING',
         }), {
           includeMyParties: false,
-        });
+        }, viewerScope);
         removeMatePartyFromCollections(queryClient, party.id, {
           includePartyLists: false,
           includeMyParties: true,
-        });
+        }, viewerScope);
       }
       toast.success('신청이 취소되었습니다.', {
         description: getRefundPolicyMessage(
@@ -234,13 +256,13 @@ export default function MateDetailContentRuntime({
     const previous = Boolean(party.favorited);
     const next = !previous;
     setIsTogglingFavorite(true);
-    syncMatePartyQueryData(queryClient, { ...party, favorited: next });
+    syncMatePartyQueryData(queryClient, { ...party, favorited: next }, {}, viewerScope);
     try {
       const confirmed = await setPartyFavorite(party.id, next);
-      syncMatePartyQueryData(queryClient, { ...party, favorited: confirmed });
+      syncMatePartyQueryData(queryClient, { ...party, favorited: confirmed }, {}, viewerScope);
     } catch (error: unknown) {
       console.error('찜 처리 중 오류:', error);
-      syncMatePartyQueryData(queryClient, { ...party, favorited: previous });
+      syncMatePartyQueryData(queryClient, { ...party, favorited: previous }, {}, viewerScope);
       toast.error(resolveMateDetailErrorMessage(error, '찜 처리 중 오류가 발생했습니다.'));
     } finally {
       setIsTogglingFavorite(false);
@@ -261,7 +283,7 @@ export default function MateDetailContentRuntime({
     setIsConvertingToSale(true);
     try {
       const updatedParty = await updateParty(party.id, { status: 'SELLING', price: parsedPrice });
-      syncMatePartyQueryData(queryClient, normalizeMateParty(updatedParty));
+      syncMatePartyQueryData(queryClient, normalizeMateParty(updatedParty), {}, viewerScope);
       toast.success('판매 전환이 완료되었습니다.');
       setShowSaleDialog(false);
     } catch (error: unknown) {
@@ -361,7 +383,7 @@ export default function MateDetailContentRuntime({
         label: '체크인 페이지',
         onClick: onOpenCheckInPage,
         variant: 'outline',
-        className: 'w-full h-12 border-[#5b21b6] text-[#5b21b6] hover:bg-[#5b21b6]/10',
+        className: 'w-full h-12 border-[#5b21b6] text-violet-800 hover:bg-[#5b21b6]/10',
       });
     }
     if (canConvertToSale) {
@@ -387,7 +409,7 @@ export default function MateDetailContentRuntime({
         label: '체크인 페이지',
         onClick: onOpenCheckInPage,
         variant: 'outline',
-        className: 'w-full h-12 border-[#5b21b6] text-[#5b21b6] hover:bg-[#5b21b6]/10',
+        className: 'w-full h-12 border-[#5b21b6] text-violet-800 hover:bg-[#5b21b6]/10',
       });
     }
     if (canCancelApplication) {
@@ -397,7 +419,7 @@ export default function MateDetailContentRuntime({
         onClick: handleCancelApplication,
         disabled: isCancelling,
         variant: 'outline',
-        className: 'w-full h-10 border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30',
+        className: 'w-full min-h-11 border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30',
       });
     }
   } else if (isAwaitingApproval) {
@@ -429,7 +451,7 @@ export default function MateDetailContentRuntime({
   const primaryMobileAction = actionButtons.find((action) => !action.disabled) ?? actionButtons[0] ?? null;
 
   return (
-    <>
+    <div data-testid="mate-detail-content-runtime" className="min-w-0">
       <div className="mb-6 grid grid-cols-1 gap-3.5 sm:gap-4 md:gap-5 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 xl:gap-7">
         <div className="flex min-w-0 flex-col gap-3.5 sm:gap-4 md:gap-5 lg:gap-4">
           <MateDetailHeroBlock
@@ -451,6 +473,7 @@ export default function MateDetailContentRuntime({
               onOpenSeatViewGuide={onOpenSeatViewGuide}
               onOpenChat={onOpenChat}
               onRequestReview={setReviewTarget}
+              visualQaStateOverride={visualQaStateOverride?.infoSections}
             />
           </Suspense>
         </div>
@@ -469,6 +492,7 @@ export default function MateDetailContentRuntime({
             onShareToCheer={onShareToCheer}
             isShareToCheerPending={isShareToCheerPending}
             onBrowsePartyList={onBrowsePartyList}
+            visualQaStateOverride={visualQaStateOverride?.actionSection}
           />
         </Suspense>
       </div>
@@ -494,7 +518,7 @@ export default function MateDetailContentRuntime({
               void invalidateMatePartyQueries(queryClient, party.id, {
                 includeParty: false,
                 includeReviews: true,
-              });
+              }, viewerScope);
             }}
           />
         </Suspense>
@@ -522,9 +546,10 @@ export default function MateDetailContentRuntime({
               setSalePrice(value);
               setSalePriceError('');
             }}
+            visualQaStateOverride={visualQaStateOverride?.actionDialogs}
           />
         </Suspense>
       ) : null}
-    </>
+    </div>
   );
 }

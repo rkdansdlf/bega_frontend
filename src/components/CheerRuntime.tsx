@@ -7,8 +7,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { cn } from '../lib/utils';
 import { TEAM_DATA } from '../constants/teams';
 import { fetchHotPosts, getTeamNameById } from '../api/cheerApi';
-import { fetchTeamFranchiseMetadata } from '../api/teamFranchiseApi';
+import type { TeamFranchiseMetadata } from '../api/teamFranchiseApi';
 import TeamLogo from './TeamLogo';
+import type { CheerComposerRuntimeVisualQaStateOverride } from './CheerComposerRuntime';
+import type { CheerFeedRuntimeContentVisualQaStateOverride } from './CheerFeedRuntimeContent';
+import type { CheerLivePanelVisualQaStateOverride } from './CheerLivePanel';
+import type { CheerSidebarPanelsVisualQaStateOverride } from './CheerSidebarPanels';
 import {
     BookmarkIcon,
     HomeIcon,
@@ -29,7 +33,6 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
 import { scheduleAfterNextPaint } from '../utils/afterNextPaint';
-import { formatStadiumDisplayName } from '../utils/stadiumDisplay';
 import { useDebounce } from '../hooks/useDebounce';
 import {
     getAccessibleCheerTextColor,
@@ -84,6 +87,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                         <button
                             key={tab.key}
                             type="button"
+                            data-testid={`cheer-tab-${tab.key}`}
                             onClick={() => {
                                 setSelectedTab(tab.key);
                                 onTabChange(tab.key);
@@ -92,7 +96,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                                 'relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
                                 isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
-                                    : 'text-[#64748B] hover:bg-white/70 hover:text-[#0F172A] dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
+                                    : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
                             )}
                             style={isActive ? { color: activeAccentText } : undefined}
                         >
@@ -142,9 +146,37 @@ const CheerFeedRuntimeFallback = () => (
 
 export interface CheerProps {
     openComposerOnMount?: boolean;
+    visualQaStateOverride?: CheerRuntimeVisualQaStateOverride;
 }
 
-export default function CheerRuntime({ openComposerOnMount = false }: CheerProps) {
+export type CheerRuntimeVisualQaStateOverride = {
+    isAuthLoading?: boolean;
+    isLoggedIn?: boolean;
+    authUserId?: number | null;
+    authUserEmail?: string | null;
+    authUserHandle?: string | null;
+    authUserName?: string | null;
+    authUserFavoriteTeam?: string | null;
+    authUserFavoriteTeamColor?: string | null;
+    authUserProfileImageUrl?: string | null;
+    teamMetadata?: TeamFranchiseMetadata | null;
+    teamMetadataState?: 'loading' | 'error' | 'ready';
+    shouldRenderFeedRuntime?: boolean;
+    shouldRenderSidebar?: boolean;
+    composer?: CheerComposerRuntimeVisualQaStateOverride;
+    feed?: CheerFeedRuntimeContentVisualQaStateOverride;
+    live?: CheerLivePanelVisualQaStateOverride;
+    sidebar?: CheerSidebarPanelsVisualQaStateOverride;
+    onInteraction?: (value: string) => void;
+};
+
+export default function CheerRuntime({
+    openComposerOnMount = false,
+    visualQaStateOverride: requestedVisualQaStateOverride,
+}: CheerProps) {
+    const visualQaStateOverride = import.meta.env.DEV
+        ? requestedVisualQaStateOverride
+        : undefined;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -172,6 +204,15 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     } = useAuthProfileSnapshot();
     const { isLoggedIn, isAuthLoading } = useAuthSession();
     const { fetchProfileAndAuthenticate } = useAuthProfileActions();
+    const effectiveAuthUserId = visualQaStateOverride?.authUserId ?? authUserId;
+    const effectiveAuthUserEmail = visualQaStateOverride?.authUserEmail ?? authUserEmail;
+    const effectiveAuthUserHandle = visualQaStateOverride?.authUserHandle ?? authUserHandle;
+    const effectiveAuthUserName = visualQaStateOverride?.authUserName ?? authUserName;
+    const effectiveAuthUserFavoriteTeam = visualQaStateOverride?.authUserFavoriteTeam ?? authUserFavoriteTeam;
+    const effectiveAuthUserFavoriteTeamColor = visualQaStateOverride?.authUserFavoriteTeamColor ?? authUserFavoriteTeamColor;
+    const effectiveAuthUserProfileImageUrl = visualQaStateOverride?.authUserProfileImageUrl ?? authUserProfileImageUrl;
+    const effectiveIsLoggedIn = visualQaStateOverride?.isLoggedIn ?? isLoggedIn;
+    const effectiveIsAuthLoading = visualQaStateOverride?.isAuthLoading ?? isAuthLoading;
     const feedTabs = useMemo<FeedTabConfig[]>(
         () => [
             { key: 'all', label: '전체', postType: undefined },
@@ -186,7 +227,9 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     ));
     const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [shouldRenderFeedRuntime, setShouldRenderFeedRuntime] = useState(false);
+    const [shouldRenderFeedRuntime, setShouldRenderFeedRuntime] = useState(
+        () => visualQaStateOverride?.shouldRenderFeedRuntime ?? false
+    );
     const {
         recentSearches,
         addRecentSearch,
@@ -199,22 +242,27 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     );
     const debouncedSearchQuery = useDebounce(normalizedSearchQuery, 250);
     const [shouldRenderSidebar, setShouldRenderSidebar] = useState(() => (
-        typeof window !== 'undefined' ? window.innerWidth >= 768 : false
+        visualQaStateOverride?.shouldRenderSidebar
+        ?? (typeof window !== 'undefined' ? window.innerWidth >= 768 : false)
     ));
     const hasFetchedProfile = useRef(false);
     const pendingFeedTabTransitionRef = useRef<(() => void) | null>(null);
     const committedUrlSearchQueryRef = useRef(normalizeCheerSearchQuery(searchParams.get('q') || ''));
-    const hasFavoriteTeam = Boolean(authUserFavoriteTeam && authUserFavoriteTeam !== '없음');
-    const userDisplayName = authUserName || authUserEmail || '나';
-    const userProfilePath = authUserHandle
-        ? `/profile/${authUserHandle.startsWith('@') ? authUserHandle : `@${authUserHandle}`}`
+    const hasFavoriteTeam = Boolean(effectiveAuthUserFavoriteTeam && effectiveAuthUserFavoriteTeam !== '없음');
+    const userDisplayName = effectiveAuthUserName || effectiveAuthUserEmail || '나';
+    const userProfilePath = effectiveAuthUserHandle
+        ? `/profile/${effectiveAuthUserHandle.startsWith('@') ? effectiveAuthUserHandle : `@${effectiveAuthUserHandle}`}`
         : '/mypage';
+    const emitVisualQaInteraction = (value: string) => {
+        visualQaStateOverride?.onInteraction?.(value);
+    };
     const redirectToLogin = (replace = true) => {
         toast.error('로그인이 필요한 서비스입니다.');
         navigate(buildLoginPath(getCurrentRelativeUrl()), replace ? { replace: true } : undefined);
     };
 
     useEffect(() => {
+        if (visualQaStateOverride) return;
         if (isAuthLoading) return;
         if (!isLoggedIn) return;
         if (hasFavoriteTeam) return;
@@ -222,7 +270,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
 
         hasFetchedProfile.current = true;
         fetchProfileAndAuthenticate();
-    }, [fetchProfileAndAuthenticate, hasFavoriteTeam, isAuthLoading, isLoggedIn]);
+    }, [fetchProfileAndAuthenticate, hasFavoriteTeam, isAuthLoading, isLoggedIn, visualQaStateOverride]);
 
     useEffect(() => {
         const nextTab = resolveCheerTabFromParam(searchParams.get('tab'));
@@ -262,6 +310,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     }, [debouncedSearchQuery, setSearchParams]);
 
     useEffect(() => {
+        if (visualQaStateOverride) return;
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
             return;
         }
@@ -280,9 +329,10 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
 
         mediaQuery.addListener(syncSidebarVisibility);
         return () => mediaQuery.removeListener(syncSidebarVisibility);
-    }, []);
+    }, [visualQaStateOverride]);
 
     useEffect(() => {
+        if (visualQaStateOverride) return;
         if (!shouldRenderSidebar) {
             return;
         }
@@ -293,7 +343,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
             staleTime: 3 * 60 * 1000,
             gcTime: 10 * 60 * 1000,
         });
-    }, [queryClient, shouldRenderSidebar]);
+    }, [queryClient, shouldRenderSidebar, visualQaStateOverride]);
 
     const buildCheerWritePath = () => {
         const nextSearchParams = new URLSearchParams();
@@ -308,7 +358,8 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     };
 
     const handleWriteClick = () => {
-        if (!isLoggedIn) {
+        emitVisualQaInteraction('write');
+        if (!effectiveIsLoggedIn) {
             toast.error('로그인이 필요한 서비스입니다.');
             navigate(buildLoginPath(buildCheerWritePath()));
             return;
@@ -344,13 +395,13 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     };
 
     const { resolvedTheme } = useTheme();
-    const teamColor = normalizeHexColor(authUserFavoriteTeamColor || DEFAULT_BRAND_COLOR);
+    const teamColor = normalizeHexColor(effectiveAuthUserFavoriteTeamColor || DEFAULT_BRAND_COLOR);
     const teamAccent = getReadableAccent(teamColor);
     const teamContrastText = getAccessibleCheerTextColor(teamAccent);
     const tabActiveAccentText = resolvedTheme === 'dark'
         ? getDarkModeAccentText(teamColor)
         : getLightModeAccentText(teamColor);
-    const favoriteTeamId = hasFavoriteTeam ? authUserFavoriteTeam ?? null : null;
+    const favoriteTeamId = hasFavoriteTeam ? effectiveAuthUserFavoriteTeam ?? null : null;
     const favoriteTeamLabel = favoriteTeamId ? TEAM_DATA[favoriteTeamId]?.name ?? favoriteTeamId : null;
     const favoriteTeamFull = favoriteTeamId ? TEAM_DATA[favoriteTeamId]?.fullName ?? favoriteTeamId : null;
     const teamId = favoriteTeamId ?? 'all';
@@ -363,24 +414,38 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
         ? (TEAM_DATA[favoriteTeamId]?.fullName || rawTeamName)
         : rawTeamName;
     const {
-        data: teamMetadata,
+        data: queriedTeamMetadata,
         isLoading: isTeamMetadataLoading,
         isError: isTeamMetadataError,
         refetch: refetchTeamMetadata,
     } = useQuery({
         queryKey: ['cheer-team-metadata', teamId],
-        queryFn: () => fetchTeamFranchiseMetadata(favoriteTeamId!),
-        enabled: Boolean(favoriteTeamId),
+        queryFn: async () => {
+            const [{ fetchTeamFranchiseMetadata }, { formatStadiumDisplayName }] = await Promise.all([
+                import('../api/teamFranchiseApi'),
+                import('../utils/stadiumDisplay'),
+            ]);
+            const metadata = await fetchTeamFranchiseMetadata(favoriteTeamId!);
+            return metadata.homeStadium
+                ? { ...metadata, homeStadium: formatStadiumDisplayName(metadata.homeStadium) }
+                : metadata;
+        },
+        enabled: visualQaStateOverride === undefined && Boolean(favoriteTeamId),
         staleTime: 5 * 60 * 1000,
         gcTime: 30 * 60 * 1000,
     });
+    const teamMetadata = visualQaStateOverride?.teamMetadata ?? queriedTeamMetadata;
+    const effectiveTeamMetadataLoading = visualQaStateOverride?.teamMetadataState === 'loading'
+        || (visualQaStateOverride === undefined && isTeamMetadataLoading);
+    const effectiveTeamMetadataError = visualQaStateOverride?.teamMetadataState === 'error'
+        || (visualQaStateOverride === undefined && isTeamMetadataError);
     const teamDescription = useMemo(() => {
         if (!teamMetadata) return '멋진 선택이에요! 함께 응원하며 즐거운 야구 생활을 시작해보세요.';
         if (teamMetadata.summary) return teamMetadata.summary;
         if (teamMetadata.description) return teamMetadata.description;
 
         const metadataFields = [
-            teamMetadata.homeStadium ? `홈구장: ${formatStadiumDisplayName(teamMetadata.homeStadium)}` : '',
+            teamMetadata.homeStadium ? `홈구장: ${teamMetadata.homeStadium}` : '',
             teamMetadata.foundedYear ? `창단: ${teamMetadata.foundedYear}` : '',
             teamMetadata.owner ? `구단주: ${teamMetadata.owner}` : '',
             teamMetadata.homepage ? `홈페이지: ${teamMetadata.homepage}` : '',
@@ -396,6 +461,10 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
     const isSearchSettling = activeSurface === 'search' && debouncedSearchQuery !== normalizedSearchQuery;
 
     useEffect(() => {
+        if (visualQaStateOverride?.shouldRenderFeedRuntime !== undefined) {
+            setShouldRenderFeedRuntime(visualQaStateOverride.shouldRenderFeedRuntime);
+            return undefined;
+        }
         if (activeSurface === 'live' || shouldRenderFeedRuntime) {
             return undefined;
         }
@@ -403,10 +472,13 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
         return scheduleAfterNextPaint(() => {
             startTransition(() => setShouldRenderFeedRuntime(true));
         });
-    }, [activeSurface, shouldRenderFeedRuntime]);
+    }, [activeSurface, shouldRenderFeedRuntime, visualQaStateOverride]);
 
     return (
-        <div className="min-h-screen bg-[#f7f9f9] pb-[var(--mobile-content-safe-bottom)] dark:bg-background md:pb-0">
+        <div
+            className="min-h-screen bg-[var(--cheer-sub-card)] pb-[var(--mobile-content-safe-bottom)] dark:bg-background md:pb-0"
+            data-testid="cheer-runtime-route"
+        >
             <div className="px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
                 <div className="mx-auto w-full max-w-[1008px] xl:max-w-[1136px] lg:-translate-x-4">
                     <div className="grid grid-cols-1 gap-0 md:grid-cols-[1fr_264px] md:gap-x-4 lg:grid-cols-[68px_1fr_264px] xl:grid-cols-[200px_1fr_270px]">
@@ -429,7 +501,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                             'flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors',
                                             isActive
                                                 ? 'bg-slate-100 text-slate-900 dark:bg-secondary dark:text-white'
-                                                : 'text-[#334155] hover:bg-[#F1F5F9] dark:text-white dark:hover:bg-secondary'
+                                                : 'text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary'
                                         )}
                                         style={isActive ? { backgroundColor: `${teamColor}1A` } : undefined}
                                     >
@@ -466,11 +538,13 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                     <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                                     <input
                                         type="search"
+                                        data-testid="cheer-search-input"
                                         value={searchQuery}
                                         onChange={(event) => setSearchQuery(event.target.value)}
                                         onKeyDown={(event) => {
                                             if (event.key === 'Enter' && normalizedSearchQuery.length >= 2) {
                                                 addRecentSearch(normalizedSearchQuery);
+                                                emitVisualQaInteraction('search-submit');
                                             }
                                             if (event.key === 'Escape') {
                                                 setIsSearchFocused(false);
@@ -486,7 +560,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                             type="button"
                                             onClick={() => setSearchQuery('')}
                                             aria-label="검색어 지우기"
-                                            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 active:scale-[0.98] dark:text-white dark:hover:bg-slate-700"
+                                            className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 active:scale-[0.98] dark:text-white dark:hover:bg-slate-700"
                                         >
                                             <XIcon className="h-4 w-4" />
                                         </button>
@@ -511,7 +585,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                                     <li key={term} className="flex items-center gap-1">
                                                         <button
                                                             type="button"
-                                                            className="min-h-10 min-w-0 flex-1 truncate rounded-xl px-3 text-left text-body font-bold text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary"
+                                                            className="min-h-11 min-w-0 flex-1 truncate rounded-xl px-3 text-left text-body font-bold text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary"
                                                             onClick={() => setSearchQuery(term)}
                                                         >
                                                             {term}
@@ -519,7 +593,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                                         <button
                                                             type="button"
                                                             aria-label={`${term} 최근 검색 삭제`}
-                                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-secondary dark:hover:text-white"
+                                                            className="flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-secondary dark:hover:text-white"
                                                             onClick={() => removeRecentSearch(term)}
                                                         >
                                                             <XIcon className="h-4 w-4" />
@@ -535,7 +609,10 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                 tabs={feedTabs}
                                 activeTab={contentFeedTab}
                                 activeAccentText={tabActiveAccentText}
-                                onTabChange={handleFeedTabChange}
+                                onTabChange={(nextTab) => {
+                                    emitVisualQaInteraction(`tab:${nextTab}`);
+                                    handleFeedTabChange(nextTab);
+                                }}
                             />
                             {activeSurface === 'feed' && (
                               <Suspense
@@ -562,14 +639,14 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                     openComposerOnMount={openComposerOnMount}
                                     linkedRouteRequested={linkedRouteRequested}
                                     linkedTarget={linkedTarget}
-                                    isAuthLoading={isAuthLoading}
-                                    isLoggedIn={isLoggedIn}
+                                    isAuthLoading={effectiveIsAuthLoading}
+                                    isLoggedIn={effectiveIsLoggedIn}
                                     hasFavoriteTeam={hasFavoriteTeam}
-                                    authUserEmail={authUserEmail}
-                                    authUserHandle={authUserHandle}
-                                    authUserName={authUserName}
-                                    authUserFavoriteTeam={authUserFavoriteTeam}
-                                    authUserProfileImageUrl={authUserProfileImageUrl}
+                                    authUserEmail={effectiveAuthUserEmail}
+                                    authUserHandle={effectiveAuthUserHandle}
+                                    authUserName={effectiveAuthUserName}
+                                    authUserFavoriteTeam={effectiveAuthUserFavoriteTeam}
+                                    authUserProfileImageUrl={effectiveAuthUserProfileImageUrl}
                                     activeFeedTab={activeContentFeedTab}
                                     activePostType={activeTabConfig?.postType}
                                     activeSort={activeTabConfig?.sort}
@@ -580,6 +657,7 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                     teamLogoId={teamLogoId}
                                     userDisplayName={userDisplayName}
                                     onRequireLogin={(replace = true) => redirectToLogin(replace)}
+                                    visualQaStateOverride={visualQaStateOverride?.composer}
                                 />
                               </Suspense>
                             )}
@@ -597,7 +675,11 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                         favoriteTeamLabel={favoriteTeamLabel}
                                         favoriteTeamFull={favoriteTeamFull}
                                         teamAccent={teamAccent}
-                                        onGoPrediction={() => navigate('/prediction')}
+                                        onGoPrediction={() => {
+                                            emitVisualQaInteraction('prediction');
+                                            navigate('/prediction');
+                                        }}
+                                        visualQaStateOverride={visualQaStateOverride?.live}
                                     />
                                 </Suspense>
                             ) : isSearchSettling ? (
@@ -616,12 +698,16 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                     activeFeedTab={activeContentFeedTab}
                                     activePostType={activeTabConfig?.postType}
                                     activeSort={activeTabConfig?.sort}
-                                    isLoggedIn={isLoggedIn}
+                                    isLoggedIn={effectiveIsLoggedIn}
                                     teamColor={teamColor}
-                                    authUserId={authUserId}
-                                    onRequireLogin={() => navigate(buildLoginPath(getCurrentRelativeUrl()))}
+                                    authUserId={effectiveAuthUserId}
+                                    onRequireLogin={() => {
+                                        emitVisualQaInteraction('login');
+                                        navigate(buildLoginPath(getCurrentRelativeUrl()));
+                                    }}
                                     onWriteClick={handleWriteClick}
                                     searchQuery={activeSurface === 'search' ? debouncedSearchQuery : ''}
+                                    visualQaStateOverride={visualQaStateOverride?.feed}
                                 />
                               </Suspense>
                             ) : (<CheerFeedRuntimeFallback />)}
@@ -653,8 +739,8 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                         teamLabel={teamLabel}
                                         teamName={teamName}
                                         teamId={teamId}
-                                        isTeamMetadataLoading={isTeamMetadataLoading}
-                                        isTeamMetadataError={isTeamMetadataError}
+                                        isTeamMetadataLoading={effectiveTeamMetadataLoading}
+                                        isTeamMetadataError={effectiveTeamMetadataError}
                                         onRefetchTeamMetadata={() => {
                                             void refetchTeamMetadata();
                                         }}
@@ -662,8 +748,12 @@ export default function CheerRuntime({ openComposerOnMount = false }: CheerProps
                                         favoriteTeamId={favoriteTeamId}
                                         favoriteTeamLabel={favoriteTeamLabel}
                                         favoriteTeamFull={favoriteTeamFull}
-                                        onGoPrediction={() => navigate('/prediction')}
+                                        onGoPrediction={() => {
+                                            emitVisualQaInteraction('prediction');
+                                            navigate('/prediction');
+                                        }}
                                         teamAccent={teamAccent}
+                                        visualQaStateOverride={visualQaStateOverride?.sidebar}
                                     />
                                 </Suspense>
                             </aside>

@@ -93,6 +93,7 @@ export default function HomePullToRefresh({
 
   return (
     <div
+      data-testid="home-pull-to-refresh"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}

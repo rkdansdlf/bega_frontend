@@ -88,6 +88,7 @@ interface PanelHeaderProps {
   icon: ReactNode;
   onMore?: () => void;
   moreLabel?: string;
+  testId?: string;
   children?: ReactNode;
 }
 
@@ -96,6 +97,7 @@ function PanelHeader({
   icon,
   onMore,
   moreLabel = '더보기',
+  testId,
   children,
 }: PanelHeaderProps) {
   return (
@@ -109,6 +111,7 @@ function PanelHeader({
           <Button
             variant="ghost"
             size="touch"
+            data-testid={testId}
             onClick={onMore}
             className="rounded-full px-3 text-15 font-bold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/40 dark:hover:text-zinc-100"
           >
@@ -277,6 +280,7 @@ export default function HomeSecondaryPanels({
         icon={<FlameIcon className="h-5 w-5 text-red-500" />}
         onMore={onNavigateToCheer}
         moreLabel="전체 보기"
+        testId="home-secondary-cheer-more"
       />
       <Card className={panelCardClassName}>
         {isHotCheerLoading ? (
@@ -299,6 +303,7 @@ export default function HomeSecondaryPanels({
                   <button
                     type="button"
                     key={post.id}
+                    data-testid="home-secondary-hot-post"
                     onClick={() => onNavigateToCheerPost(post.id)}
                     className="group w-full rounded-xl px-2.5 py-2.5 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                   >
@@ -350,6 +355,7 @@ export default function HomeSecondaryPanels({
                 return (
                   <button
                     type="button"
+                    data-testid="home-secondary-hot-post"
                     onClick={() => onNavigateToCheerPost(hero.id)}
                     className="group w-full rounded-xl text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                   >
@@ -395,6 +401,7 @@ export default function HomeSecondaryPanels({
                       <button
                         type="button"
                         key={post.id}
+                        data-testid="home-secondary-hot-post"
                         onClick={() => onNavigateToCheerPost(post.id)}
                         className="group flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/45"
                       >
@@ -440,6 +447,7 @@ export default function HomeSecondaryPanels({
         icon={<UsersIcon className="h-5 w-5 text-blue-500" />}
         onMore={onNavigateToMate}
         moreLabel="전체 보기"
+        testId="home-secondary-mate-more"
       />
       <Card className={panelCardClassName}>
         {isFeaturedMatesLoading ? (
@@ -468,6 +476,7 @@ export default function HomeSecondaryPanels({
                 <button
                   type="button"
                   key={mate.id}
+                  data-testid="home-secondary-featured-mate"
                   onClick={() => onSelectFeaturedMate(mate)}
                   className="status-badge-hover-scope w-full rounded-xl px-2.5 py-2.5 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/35"
                 >
@@ -507,7 +516,7 @@ export default function HomeSecondaryPanels({
                     <div className="mt-2 flex items-center gap-1.5">
                       <span
                         aria-hidden="true"
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2d5f4f] text-9 font-black text-white"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-panel text-9 font-black text-white"
                       >
                         {mate.hostHandle.replace(/^@/, '').slice(0, 1).toUpperCase()}
                       </span>
@@ -540,13 +549,14 @@ export default function HomeSecondaryPanels({
     <section data-home-panel-priority="secondary" className="w-full space-y-3 lg:order-3 lg:col-span-4 lg:w-auto">
       <PanelHeader
         title="팀 순위"
-        icon={<TrophyIcon className="h-5 w-5 text-[#2d5f4f] dark:text-emerald-200" />}
+        icon={<TrophyIcon className="h-5 w-5 text-primary-panel dark:text-emerald-200" />}
       >
         <div className="flex items-center rounded-full border border-zinc-200 bg-slate-100 p-0.5 shadow-sm dark:border-zinc-800 dark:bg-card">
           <Button
             aria-label={`${rankingSeasonYear - 1}시즌 팀 순위 보기`}
             variant="ghost"
             size="iconTouch"
+            data-testid="home-secondary-ranking-previous"
             onClick={onLoadPreviousRankingSeason}
             className="rounded-md text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/60 dark:hover:text-white"
           >
@@ -559,6 +569,7 @@ export default function HomeSecondaryPanels({
             aria-label={`${rankingSeasonYear + 1}시즌 팀 순위 보기`}
             variant="ghost"
             size="iconTouch"
+            data-testid="home-secondary-ranking-next"
             onClick={onLoadNextRankingSeason}
             disabled={rankingSeasonYear >= currentYear}
             className="rounded-md text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-white dark:hover:bg-zinc-800/60 dark:hover:text-white"
@@ -593,8 +604,8 @@ export default function HomeSecondaryPanels({
         ) : (
           <div>
             {myTeamRanking ? (
-              <div className="flex items-center gap-2.5 border-b border-zinc-200/80 bg-[#2d5f4f]/[0.06] px-3 py-2.5 dark:border-zinc-800/80 dark:bg-emerald-950/20">
-                <span className="w-6 shrink-0 text-center text-17 font-black text-[#2d5f4f] dark:text-emerald-200">
+              <div className="flex items-center gap-2.5 border-b border-zinc-200/80 bg-primary-panel/[0.06] px-3 py-2.5 dark:border-zinc-800/80 dark:bg-emerald-950/20">
+                <span className="w-6 shrink-0 text-center text-17 font-black text-primary-panel dark:text-emerald-200">
                   {myTeamRanking.rank}
                 </span>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 p-1 shadow-sm dark:bg-white">
@@ -605,7 +616,7 @@ export default function HomeSecondaryPanels({
                     <span className="truncate text-15 font-black text-gray-900 dark:text-white">
                       {myTeamRanking.displayName}
                     </span>
-                    <span className="shrink-0 rounded-md bg-[#2d5f4f] px-1.5 py-0.5 text-11 font-bold text-white dark:bg-emerald-800">
+                    <span className="shrink-0 rounded-md bg-primary-panel px-1.5 py-0.5 text-11 font-bold text-white dark:bg-emerald-800">
                       내 팀
                     </span>
                   </div>
@@ -747,6 +758,7 @@ export default function HomeSecondaryPanels({
                 </h2>
                 <button
                   type="button"
+                  data-testid="home-secondary-calendar-close"
                   className="min-h-11 rounded-md px-3 py-1 text-body text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800 dark:hover:text-white"
                   onClick={onCloseCalendar}
                 >
