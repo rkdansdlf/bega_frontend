@@ -8,6 +8,7 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   appType: 'mpa',
+  cacheDir: path.resolve(rootDir, '.visual-qa-cache'),
   plugins: [react()],
   resolve: {
     alias: {

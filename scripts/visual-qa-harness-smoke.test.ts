@@ -1040,3 +1040,16 @@ test('scenario interaction execution records verified evidence and preserves cle
   await result.cleanup();
   assert.deepEqual(events, ['execute:pressed:button', 'cleanup']);
 });
+test('design consistency viewport selection preserves default and validates explicit widths', () => {
+  const resolveViewport = (harnessSmokeModule as typeof harnessSmokeModule & {
+    resolveHarnessViewport?: (value?: string) => { width: number; height: number };
+  }).resolveHarnessViewport;
+  assert.equal(typeof resolveViewport, 'function');
+  assert.deepEqual(resolveViewport!(), { width: 320, height: 844 });
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    assert.deepEqual(resolveViewport!(`${width}x900`), { width, height: 900 });
+  }
+  for (const invalid of ['0x900', '390x0', '390', 'NaNx900', '390.5x900', '390x900junk']) {
+    assert.throws(() => resolveViewport!(invalid), /VIEWPORT/);
+  }
+});
