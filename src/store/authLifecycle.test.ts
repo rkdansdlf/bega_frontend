@@ -19,7 +19,14 @@ const deferred = <T,>() => {
   const promise = new Promise<T>((done) => { resolve = done; });
   return { promise, resolve };
 };
-const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
+// The store reaches its collaborators through dynamic import(), whose latency depends on runner load.
+// Several tests mock setTimeout, so wait on real time with setImmediate turns instead of one turn.
+const flush = async () => {
+  const end = Date.now() + 25;
+  do {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+  } while (Date.now() < end);
+};
 const json = (status: number, body: unknown = {}) => new Response(JSON.stringify(body), {
   status, headers: { 'content-type': 'application/json' },
 });
