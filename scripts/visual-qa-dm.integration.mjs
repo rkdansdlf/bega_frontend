@@ -14,8 +14,10 @@ const scenarioId = (interaction, system = 'online', theme = 'light') => (
     + (interaction === 'default' ? '' : `|interactionTarget=${interaction === 'input' ? 'composer' : interaction === 'submitting' ? 'send' : 'retry'}`)
 );
 
-const installRoutes = async (context, mutation = null) => {
+const installRoutes = async (context, mutation = null, retryScenario = false) => {
   let bootstrapAttempts = 0;
+  let failedBootstraps = 0;
+  let retryReleased = !retryScenario;
   const requests = [];
   await context.addInitScript(() => {
     const typedWindow = window;
@@ -38,19 +40,12 @@ const installRoutes = async (context, mutation = null) => {
     }
     if (url.pathname === '/api/dm/rooms' && request.method() === 'POST') {
       bootstrapAttempts += 1;
-      if (mutation === 'retry-noop') {
+      if (mutation === 'retry-noop' || !retryReleased) {
+        failedBootstraps += 1;
         await route.fulfill({
           status: 503,
           contentType: 'application/json',
-          body: JSON.stringify({ success: false, code: 'VISUAL_QA_DM_RETRY_MUTATION', message: 'retry mutation' }),
-        });
-        return;
-      }
-      if (request.headers().referer?.includes('system%3Drequest-failed') && bootstrapAttempts === 1) {
-        await route.fulfill({
-          status: 503,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: false, code: 'VISUAL_QA_DM_RETRY', message: 'retry fixture' }),
+          body: JSON.stringify({ success: false, code: mutation === 'retry-noop' ? 'VISUAL_QA_DM_RETRY_MUTATION' : 'VISUAL_QA_DM_RETRY', message: 'retry fixture' }),
         });
         return;
       }
@@ -115,7 +110,12 @@ const installRoutes = async (context, mutation = null) => {
     }
     await route.abort();
   });
-  return { requests };
+  return {
+    requests,
+    get bootstrapAttempts() { return bootstrapAttempts; },
+    get failedBootstraps() { return failedBootstraps; },
+    releaseRetry: () => { retryReleased = true; },
+  };
 };
 
 const waitReady = async (page, selectedScenarioId) => {
@@ -128,7 +128,7 @@ const waitReady = async (page, selectedScenarioId) => {
 const runFlow = async (browserType, browserName, interaction, mutation = null) => {
   const browser = await browserType.launch({ headless: true });
   const context = await browser.newContext({ viewport: VIEWPORT });
-  const fixture = await installRoutes(context, mutation);
+  const fixture = await installRoutes(context, mutation, interaction === 'retry');
   const page = await context.newPage();
   const selectedScenarioId = scenarioId(interaction, interaction === 'retry' ? 'request-failed' : 'online');
   try {
@@ -141,12 +141,21 @@ const runFlow = async (browserType, browserName, interaction, mutation = null) =
     assert.equal(await page.locator('[data-vqa-router-pathname]').getAttribute('data-vqa-router-pathname'), '/messages/otheruser');
 
     if (interaction === 'retry') {
-      if (mutation === 'retry-noop') {
-        await page.getByRole('button', { name: '다시 시도' }).click();
-        await page.getByRole('button', { name: '다시 시도' }).waitFor({ state: 'visible', timeout: 5_000 });
-        throw new Error('retry mutation unexpectedly recovered');
-      }
+      await page.getByRole('button', { name: '다시 시도' }).waitFor({ state: 'visible', timeout: 5_000 });
+      assert.ok(fixture.failedBootstraps > 0, 'retry must begin from an actual failed API response');
+      const attemptsBeforeClick = fixture.bootstrapAttempts;
+      const retryResponse = page.waitForResponse((response) => (
+        new URL(response.url()).pathname === '/api/dm/rooms' && response.request().method() === 'POST'
+      ), { timeout: 5_000 });
+      fixture.releaseRetry();
       await page.getByRole('button', { name: '다시 시도' }).click();
+      const response = await retryResponse;
+      assert.ok(fixture.bootstrapAttempts > attemptsBeforeClick, 'retry click must issue a new bootstrap request');
+      assert.equal(response.status(), mutation === 'retry-noop' ? 503 : 200);
+      if (mutation === 'retry-noop') {
+        await page.getByRole('button', { name: '다시 시도' }).waitFor({ state: 'visible', timeout: 5_000 });
+        throw new Error('EXPECTED_DM_RETRY_MUTATION_RED');
+      }
       await page.getByPlaceholder('메시지를 입력하세요').waitFor({ state: 'visible', timeout: 5_000 });
       assert.equal(await page.getByText('기존 대화 기록입니다.').count(), 1);
     } else {
@@ -171,14 +180,14 @@ const runFlow = async (browserType, browserName, interaction, mutation = null) =
       if (mutation === 'send-noop') {
         assert.equal(await page.getByText('Visual QA 전송 메시지').count(), 0);
         assert.equal(await page.getByText('MUTATED_RESPONSE').count(), 1);
-        throw new Error('send mutation unexpectedly preserved the sent message');
+        throw new Error('EXPECTED_DM_SEND_MUTATION_RED');
       }
       await page.getByText('Visual QA 전송 메시지').waitFor({ state: 'visible', timeout: 5_000 });
       assert.equal(fixture.requests.length, 1);
       assert.equal(fixture.requests[0].body.content, 'Visual QA 전송 메시지');
     }
 
-    return { browser: browserName, interaction, mutation, status: 'PASS', requestCount: fixture.requests.length };
+    return { browser: browserName, interaction, mutation, status: 'PASS', requestCount: fixture.requests.length, bootstrapAttempts: fixture.bootstrapAttempts, failedBootstraps: fixture.failedBootstraps };
   } finally {
     await context.close();
     await browser.close();
@@ -195,8 +204,10 @@ const runBrowser = async (browserType, browserName) => {
     let red = false;
     try {
       await runFlow(browserType, browserName, mutation === 'send-noop' ? 'submitting' : 'retry', mutation);
-    } catch {
-      red = true;
+    } catch (error) {
+      red = error instanceof Error && error.message === (mutation === 'send-noop'
+        ? 'EXPECTED_DM_SEND_MUTATION_RED' : 'EXPECTED_DM_RETRY_MUTATION_RED');
+      if (!red) throw error;
     }
     assert.equal(red, true, `${browserName} ${mutation} mutation must be RED`);
     const restored = await runFlow(browserType, browserName, mutation === 'send-noop' ? 'submitting' : 'retry');
