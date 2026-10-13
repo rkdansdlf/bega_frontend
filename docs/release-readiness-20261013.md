@@ -127,3 +127,14 @@ sibling backend contracts present. Source hashes:
 `unit/immutable-source-r2.json`; log: `unit/full-immutable-r2.log`.
 The source and test counts are frozen throughout this run. Full-suite success
 still requires its normal completion with zero failures/cancellations.
+
+R2 full `npm run test:unit` **completed normally, exit 0**: **2,514/2,514
+pass, 0 fail, 0 cancelled, 0 skipped**, duration 576.4s. No forced exit or
+unbounded timeout was used. `unit/full-immutable-r2.log` and recorded frontend
+and backend source hashes prove the execution source. The boundary fixture
+passed in the full run and did not retain watcher handles.
+
+Remaining work is P2 representative user-flow/keyboard/environment evidence
+and final requirement-by-requirement completion audit. Full build/unit success
+alone is not a release approval. Overall status remains NOT READY until that
+work is verified.
