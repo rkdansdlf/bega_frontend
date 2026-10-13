@@ -19,7 +19,10 @@ const deferred = <T,>() => {
   const promise = new Promise<T>((done) => { resolve = done; });
   return { promise, resolve };
 };
-const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flush = async () => {
+  await import('./authLogoutRuntime');
+  await new Promise<void>((resolve) => setImmediate(resolve));
+};
 const json = (status: number, body: unknown = {}) => new Response(JSON.stringify(body), {
   status, headers: { 'content-type': 'application/json' },
 });

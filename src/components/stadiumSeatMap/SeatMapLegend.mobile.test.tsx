@@ -100,15 +100,20 @@ const createLegendPlugin = (): Plugin => ({
   },
 });
 
-const startServer = async () => {
+const startServer = async (
+  resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string },
+  createViteServer: typeof createServer = createServer,
+) => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-legend-vite-'));
-  const server = await createServer({
+  resources.cacheDir = cacheDir;
+  const server = await createViteServer({
     root: process.cwd(),
     appType: 'custom',
     cacheDir,
     plugins: [createLegendPlugin()],
     server: { host: '127.0.0.1', port: 0 },
   });
+  resources.server = server;
   await server.listen();
   return { cacheDir, server };
 };
@@ -129,6 +134,24 @@ const closeResources = async (resources: { browser?: Browser; server?: ViteDevSe
   if (errors.length === 1) throw errors[0];
   if (errors.length > 1) throw new Error(`SeatMapLegend test cleanup failed: ${errors.length}`);
 };
+
+test('SeatMapLegend startup rejection still closes the server and removes its cache', async () => {
+  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  let closeCalls = 0;
+  const failure = new Error('synthetic listen failure');
+  const createViteServer = (async () => ({
+    listen: async () => { throw failure; },
+    close: async () => { closeCalls += 1; },
+  })) as unknown as typeof createServer;
+  try {
+    await assert.rejects(() => startServer(resources, createViteServer), (error) => error === failure);
+  } finally {
+    await closeResources(resources);
+  }
+  assert.equal(closeCalls, 1);
+  assert.ok(resources.cacheDir);
+  await assert.rejects(() => access(resources.cacheDir!));
+});
 
 test('SeatMapLegend cleanup closes every resource after an earlier closer fails', async () => {
   const calls: string[] = [];
@@ -154,7 +177,7 @@ test('SeatMapLegend cleanup removes cache after a server close failure', async (
 test('SeatMapLegend renders all synthetic data and theme states without mobile overflow', async () => {
   const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
   try {
-    const started = await startServer();
+    const started = await startServer(resources);
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });

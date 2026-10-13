@@ -2,36 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { QueryClient } from '@tanstack/react-query';
 import { createJSONStorage } from 'zustand/middleware';
-import { useAuthStore } from '../store/authStore';
-import { getViewerQueryScope } from '../utils/viewerQueryScope';
 
 import type {
   InvalidateMatePartyQueriesOptions,
   MatePartyCollectionsRemoveOptions,
   MatePartyCollectionsUpdateOptions,
 } from './mateQueryCacheContracts';
-import {
-  appendMatePartyCheckInQueryData,
-  invalidateMateCollectionQueries,
-  invalidateMatePartyQueries,
-  removeMatePartyFromCollections,
-  removeMatePartyQueries,
-  seedMatePartyQueryData,
-  setMatePartyDetailQueryData,
-  setMatePartyMyApplicationQueryData,
-  syncMatePartyQueryData,
-  updateMatePartyApplicationQueryData,
-  updateMatePartyCollectionQueryData,
-} from './mateQueryCache';
-import { MATE_KEYS } from './mateQueryKeys';
-import {
-  getMateMyPartiesQueryOptions,
-  getMatePartyApplicationsQueryOptions,
-  getMatePartyCheckInsQueryOptions,
-  getMatePartyListQueryOptions,
-  getMatePartyMyApplicationQueryOptions,
-  getMatePartyQueryOptions,
-} from './mateQueryOptions';
 
 const createInvalidateRecorder = () => {
   const invalidateCalls: unknown[] = [];
@@ -60,7 +36,36 @@ const authStorage = {
   setItem: (key: string, value: string) => { authStorageValues.set(key, value); },
   removeItem: (key: string) => { authStorageValues.delete(key); },
 };
+Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: authStorage });
+const { useAuthStore } = await import('../store/authStore');
+const { MATE_KEYS } = await import('./mateQueryKeys');
+const { getViewerQueryScope } = await import('../utils/viewerQueryScope');
+const {
+  appendMatePartyCheckInQueryData,
+  invalidateMateCollectionQueries,
+  invalidateMatePartyQueries,
+  removeMatePartyFromCollections,
+  removeMatePartyQueries,
+  seedMatePartyQueryData,
+  setMatePartyDetailQueryData,
+  setMatePartyMyApplicationQueryData,
+  syncMatePartyQueryData,
+  updateMatePartyApplicationQueryData,
+  updateMatePartyCollectionQueryData,
+} = await import('./mateQueryCache');
+const {
+  getMateMyPartiesQueryOptions,
+  getMatePartyApplicationsQueryOptions,
+  getMatePartyCheckInsQueryOptions,
+  getMatePartyListQueryOptions,
+  getMatePartyMyApplicationQueryOptions,
+  getMatePartyQueryOptions,
+} = await import('./mateQueryOptions');
 useAuthStore.persist.setOptions({ storage: createJSONStorage(() => authStorage) });
+
+test.after(() => {
+  delete (globalThis as { localStorage?: unknown }).localStorage;
+});
 
 test.beforeEach(() => {
   useAuthStore.setState({ user: null });
