@@ -10,6 +10,17 @@ import config from '../../../tailwind.config.js';
 import { Input } from './input';
 import { Textarea } from './textarea';
 import { StatusBadge } from './status-badge';
+import { Skeleton } from './skeleton';
+
+test('default skeleton has a visible dark surface on the shared dark card', () => {
+  const html = renderToStaticMarkup(createElement(Skeleton));
+  assert.match(html, /dark:bg-input/);
+  const css = readFileSync(new URL('../../index.css', import.meta.url), 'utf8');
+  const dark = css.slice(css.indexOf('  .dark {'));
+  assert.match(dark, /--input:\s*var\(--border-default\)/);
+  assert.match(dark, /--border-default:\s*var\(--primitive-color-neutral-300\)/);
+  assert.match(dark, /--primitive-color-neutral-300:\s*216 16% 30%/);
+});
 
 test('form controls emit a supported light surface utility and keep dark/focus/invalid styles', async () => {
   const html = [Input, Textarea].map((component) => renderToStaticMarkup(

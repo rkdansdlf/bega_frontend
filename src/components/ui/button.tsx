@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { cn } from "../../lib/utils";
-import { buttonBaseClassFor, buttonVariantClasses, buttonSizeClasses } from "./button-styles";
+import { buttonBaseClass, buttonVariantClasses, buttonSizeClasses } from "./button-styles";
 
 export type ButtonVariant = keyof typeof buttonVariantClasses;
 export type ButtonSize = keyof typeof buttonSizeClasses;
@@ -14,7 +14,7 @@ interface ButtonVariantsOptions {
 
 const buttonVariants = ({ variant = "default", size = "default", className }: ButtonVariantsOptions = {}) => {
   return cn(
-    buttonBaseClassFor(variant, size),
+    buttonBaseClass,
     buttonVariantClasses[variant],
     buttonSizeClasses[size],
     className,

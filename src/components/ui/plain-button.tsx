@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { buttonBaseClassFor, buttonVariantClasses, buttonSizeClasses } from './button-styles';
+import { buttonBaseClass, buttonVariantClasses, buttonSizeClasses } from './button-styles';
 
 type ButtonVariant = 'default' | 'outline' | 'ghost' | 'secondary' | 'destructive' | 'link';
 type ButtonSize = 'default' | 'sm' | 'icon' | 'iconTouch' | 'touch';
@@ -40,7 +40,7 @@ const Button = React.forwardRef<HTMLButtonElement, PlainButtonProps>(({
   ...props
 }, ref) => {
   const resolvedClassName = joinClassNames(
-    buttonBaseClassFor(variant, size),
+    buttonBaseClass,
     buttonVariantClasses[variant],
     buttonSizeClasses[size],
     className,
