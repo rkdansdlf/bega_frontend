@@ -1,0 +1,1041 @@
+{
+  "results": [
+    {
+      "width": 320,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/30/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/31/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/32/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/33/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/34/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/35/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/36/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/37/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/38/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/39/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/40/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-3771a82b6d02.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=long-korean|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/41/mypageprofilecardruntime-mypageprofilecardruntime-data-long-korean-interactions-0ac2b0225813.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=unbroken-token|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/42/mypageprofilecardruntime-mypageprofilecardruntime-data-unbroken-token-interactio-e9d68cde6340.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/43/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-18eb5be745d2.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/44/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/45/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/46/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/47/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/48/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/49/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/50/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/51/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/52/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/53/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/54/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-be96f9a59792.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=long-korean|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/55/mypageprofilecardruntime-mypageprofilecardruntime-data-long-korean-interactions-04fc53dd1fbb.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=unbroken-token|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/56/mypageprofilecardruntime-mypageprofilecardruntime-data-unbroken-token-interactio-c87a98c0985e.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r2/57/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-3fce5e4e27a6.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    }
+  ],
+  "note": "Original timeouts preserved; Login timeout-recheck report supplies the three recovered cases separately."
+}

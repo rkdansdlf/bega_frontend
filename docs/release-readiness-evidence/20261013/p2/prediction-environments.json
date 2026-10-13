@@ -1,0 +1,967 @@
+{
+  "nativeZoom": false,
+  "nativeSafeArea": false,
+  "source": "existing registered current-source QA fixtures",
+  "results": [
+    {
+      "width": 320,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/0/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/1/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/2/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/3/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/4/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/5/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/6/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/7/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 1,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/8/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/9/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-930109abe45a.png"
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=empty|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/10/predictionmatchtab-predictionmatchtab-data-empty-interactions-default-variant-th-6d0a71746e15.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=long-korean|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/11/predictionmatchtab-predictionmatchtab-data-long-korean-interactions-default-vari-6572c441449b.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=unbroken-token|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/12/predictionmatchtab-predictionmatchtab-data-unbroken-token-interactions-default-v-747901b97759.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=loading|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/13/predictionmatchtab-predictionmatchtab-data-loading-interactions-default-variant-02720a5ef049.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "light",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=error-503|interactions=default|variant.theme=light",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/14/predictionmatchtab-predictionmatchtab-data-error-503-interactions-default-varian-50b41184c225.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/15/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/16/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/17/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 390,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/18/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 390,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/19/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 768,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/20/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 768,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/21/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1024,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/22/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 1024,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 1,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/23/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "16px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 1440,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=single|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/24/predictionmatchtab-predictionmatchtab-data-single-interactions-default-variant-t-927141da3d0c.png"
+      },
+      "geometry": {
+        "actualWidth": 1440,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=empty|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/25/predictionmatchtab-predictionmatchtab-data-empty-interactions-default-variant-th-6602e9de1e61.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=long-korean|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/26/predictionmatchtab-predictionmatchtab-data-long-korean-interactions-default-vari-a5076c4a859b.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=unbroken-token|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/27/predictionmatchtab-predictionmatchtab-data-unbroken-token-interactions-default-v-1f4e04ab6127.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=loading|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/28/predictionmatchtab-predictionmatchtab-data-loading-interactions-default-variant-95ff498b6eb1.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    },
+    {
+      "width": 320,
+      "zoom": 2,
+      "theme": "dark",
+      "probe": {
+        "scenarioId": "state:src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab:data=error-503|interactions=default|variant.theme=dark",
+        "componentId": "src/components/prediction/PredictionMatchTab.tsx#PredictionMatchTab",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "prediction",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/flows/extended-environments-r3/29/predictionmatchtab-predictionmatchtab-data-error-503-interactions-default-varian-5fc59b7a8f81.png"
+      },
+      "geometry": {
+        "actualWidth": 320,
+        "overflow": 0,
+        "rootFontSize": "32px",
+        "reducedMotion": true,
+        "safeBottom": "32px"
+      }
+    }
+  ]
+}

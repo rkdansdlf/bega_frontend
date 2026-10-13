@@ -187,3 +187,12 @@ nodes; the QA-only adapter now captures the unique full harness surface,
 including date controls and detail, without dropping scope. Adapter tests
 299/299 pass; actual Prediction30-case verification is running. Final full
 unit verification must include this QA-source change before completion.
+
+Prediction capture repair is verified in actual browsers: **30/30 pass**, normal
+exit, with requested/actual widths equal and overflow0. Curated P2 report and
+four representative screenshots are in `docs/release-readiness-evidence/20261013/p2/`.
+The three exact Login timeouts now **3/3 pass**, normal exit, width equality
+and overflow0. Original27pass/3timeout remains preserved and the separate
+recheck is marked as recovered evidence, not an overwritten clean initial run.
+MyPage28/28 geometry assertions remain green. Corrected DM multi-width probe
+is running next; Cypress flows, WebKit and final current-source gates remain.
