@@ -196,3 +196,11 @@ and overflow0. Original27pass/3timeout remains preserved and the separate
 recheck is marked as recovered evidence, not an overwritten clean initial run.
 MyPage28/28 geometry assertions remain green. Corrected DM multi-width probe
 is running next; Cypress flows, WebKit and final current-source gates remain.
+
+Corrected DM environment verification completed **20/20**, normal exit,
+requested/actual viewport widths equal at320/390/768/1024/1440, light/dark,
+16/32px root text scale, incoming/outgoing messages present and internal text
+viewport overflow0. This supersedes the earlier invalid multi-width claim.
+Curated report: `p2/dm-widths-corrected.json`. A production DM real-Tab keyboard
+probe is now running to check delete/composer visibility and occlusion by the
+fixed mobile navigation. Native soft-keyboard behavior is not implied.
