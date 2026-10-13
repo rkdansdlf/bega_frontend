@@ -308,54 +308,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/payment-intents/reconciliation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["listPending"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/payment-intents/reconciliation/{intentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getReview"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admin/payment-intents/reconciliation/{intentId}/resolution": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["resolve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admin/posts": {
         parameters: {
             query?: never;
@@ -4949,33 +4901,6 @@ export interface components {
             message?: string;
             success?: boolean;
         };
-        ApiResponsePaymentIntentReconciliationPageDto: {
-            code?: string;
-            data?: components["schemas"]["PaymentIntentReconciliationPageDto"];
-            errors?: {
-                [key: string]: string;
-            };
-            message?: string;
-            success?: boolean;
-        };
-        ApiResponsePaymentIntentReconciliationResolutionResultDto: {
-            code?: string;
-            data?: components["schemas"]["PaymentIntentReconciliationResolutionResultDto"];
-            errors?: {
-                [key: string]: string;
-            };
-            message?: string;
-            success?: boolean;
-        };
-        ApiResponsePaymentIntentReconciliationReviewDto: {
-            code?: string;
-            data?: components["schemas"]["PaymentIntentReconciliationReviewDto"];
-            errors?: {
-                [key: string]: string;
-            };
-            message?: string;
-            success?: boolean;
-        };
         ApiResponsePlaceDto: {
             code?: string;
             data?: components["schemas"]["PlaceDto"];
@@ -5329,18 +5254,18 @@ export interface components {
         CreateAssistantChatMessageRequest: {
             cached?: boolean;
             cancelled?: boolean;
-            citations?: unknown;
+            citations?: components["schemas"]["JsonNode"];
             content: string;
             errorCode?: string;
             fallbackReason?: string;
             finishReason?: string;
             intent?: string;
-            metadata?: unknown;
+            metadata?: components["schemas"]["JsonNode"];
             plannerCacheHit?: boolean;
             plannerMode?: string;
             status?: string;
             strategy?: string;
-            toolCalls?: unknown;
+            toolCalls?: components["schemas"]["JsonNode"];
             toolExecutionMode?: string;
             verified?: boolean;
         };
@@ -5514,24 +5439,6 @@ export interface components {
             repostCount?: number;
             teamColor?: string;
             teamId?: string;
-        };
-        Event: {
-            /** Format: int32 */
-            candidateAmount?: number;
-            candidateOrderId?: string;
-            candidatePaymentKey?: string;
-            candidateStatus?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            eventType?: string;
-            evidenceReference?: string;
-            /** Format: int64 */
-            recordedBy?: number;
-            /** Format: int32 */
-            verifiedAmount?: number;
-            verifiedOrderId?: string;
-            verifiedPaymentKey?: string;
-            verifiedStatus?: string;
         };
         FeaturedMateCardDto: {
             awayTeam?: string;
@@ -6007,10 +5914,6 @@ export interface components {
             operatorMessage?: string;
             scope?: string;
         };
-        MarkAllAsReadRequest: {
-            /** Format: date-time */
-            readThrough: string;
-        };
         MatchBoundsResponseDto: {
             /** Format: date */
             earliestGameDate?: string;
@@ -6407,7 +6310,7 @@ export interface components {
             /** Format: int64 */
             intentId?: number;
             /** @enum {string} */
-            status?: "PREPARED" | "CONFIRMED" | "APPLICATION_CREATED" | "CANCEL_REQUESTED" | "CANCELED" | "CANCEL_FAILED" | "RECONCILIATION_REQUIRED" | "EXPIRED";
+            status?: "PREPARED" | "CONFIRMED" | "APPLICATION_CREATED" | "CANCEL_REQUESTED" | "CANCELED" | "CANCEL_FAILED" | "EXPIRED";
         };
         MatePaymentCapabilityResponse: {
             /** @enum {string} */
@@ -6765,48 +6668,6 @@ export interface components {
             /** Format: email */
             email: string;
             redirect?: string;
-        };
-        PaymentIntentReconciliationPageDto: {
-            items?: components["schemas"]["PaymentIntentReconciliationReviewDto"][];
-            /** Format: int32 */
-            page?: number;
-            /** Format: int32 */
-            size?: number;
-            /** Format: int64 */
-            totalElements?: number;
-            /** Format: int32 */
-            totalPages?: number;
-        };
-        PaymentIntentReconciliationResolutionRequest: {
-            evidenceReference: string;
-            /** @enum {string} */
-            outcome: "VERIFIED_PAYMENT" | "VERIFIED_CANCELED" | "VERIFIED_REFUNDED";
-            /** Format: int32 */
-            verifiedAmount: number;
-            verifiedOrderId: string;
-            verifiedPaymentKey: string;
-            verifiedStatus: string;
-        };
-        PaymentIntentReconciliationResolutionResultDto: {
-            awaitingIndependentReview?: boolean;
-            outcome?: string;
-        };
-        PaymentIntentReconciliationReviewDto: {
-            /** Format: int32 */
-            candidateAmount?: number;
-            candidateOrderId?: string;
-            candidatePaymentKey?: string;
-            candidateStatus?: string;
-            currency?: string;
-            /** Format: date-time */
-            detectedAt?: string;
-            events?: components["schemas"]["Event"][];
-            /** Format: int32 */
-            expectedAmount?: number;
-            /** Format: int64 */
-            intentId?: number;
-            orderId?: string;
-            requestedPaymentKey?: string;
         };
         PitcherDto: {
             era: string | null;
@@ -8109,77 +7970,6 @@ export interface operations {
                 content: {
                     "application/json; charset=UTF-8": components["schemas"]["ApiResponseMapStringLong"];
                     "application/json;charset=UTF-8": components["schemas"]["ApiResponseMapStringLong"];
-                };
-            };
-        };
-    };
-    listPending: {
-        parameters: {
-            query?: {
-                page?: number;
-                size?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationPageDto"];
-                };
-            };
-        };
-    };
-    getReview: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                intentId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationReviewDto"];
-                };
-            };
-        };
-    };
-    resolve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                intentId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PaymentIntentReconciliationResolutionRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponsePaymentIntentReconciliationResolutionResultDto"];
                 };
             };
         };
@@ -12487,11 +12277,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MarkAllAsReadRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
