@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthProfileActions, useAuthProfileSnapshot, useAuthSession } from '../store/authStore';
 import { useCheerRecentSearchStore } from '../store/cheerRecentSearchStore';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { cn } from '../lib/utils';
 import { TEAM_DATA } from '../constants/teams';
 import { fetchHotPosts, getTeamNameById } from '../api/cheerApi';
 import type { TeamFranchiseMetadata } from '../api/teamFranchiseApi';
@@ -92,12 +91,10 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                                 setSelectedTab(tab.key);
                                 onTabChange(tab.key);
                             }}
-                            className={cn(
-                                'relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15',
-                                isActive
+                            className={`relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15 ${isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                                     : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
-                            )}
+                            }`}
                             style={isActive ? { color: activeAccentText } : undefined}
                         >
                             <span className="relative z-10 inline-flex items-center gap-1.5">
@@ -497,12 +494,10 @@ export default function CheerRuntime({
                                         key={item.id}
                                         type="button"
                                         onClick={() => navigate(item.path)}
-                                        className={cn(
-                                            'flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors',
-                                            isActive
+                                        className={`flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors ${isActive
                                                 ? 'bg-slate-100 text-slate-900 dark:bg-secondary dark:text-white'
                                                 : 'text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary'
-                                        )}
+                                        }`}
                                         style={isActive ? { backgroundColor: `${teamColor}1A` } : undefined}
                                     >
                                         <Icon className="h-5 w-5" />
