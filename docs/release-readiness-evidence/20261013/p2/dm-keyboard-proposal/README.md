@@ -1,7 +1,10 @@
 # DM keyboard occlusion: reviewable proposal
 
-Product focus behavior remains unchanged. `product-focus.patch` is a proposed
-patch, checked with `git apply --check`, awaiting explicit behavior-change approval.
+The proposed product focus patch was applied on 2026-10-14 in `66b7765c`, after
+the user instructed continuation immediately following the explicit confirmation
+question. The patch file preserves the reviewed proposal; it now passes
+`git apply --reverse --check`. Fresh product verification is recorded in
+`docs/release-readiness-20261014.md`. Historical results below remain preserved.
 It scrolls the composer only when its focused bounds intersect a visible bottom
 tab bar. It uses instant scrolling; no breakpoints, send handlers or API calls change.
 
@@ -21,9 +24,9 @@ DM_KEYBOARD_OUTPUT=/private/tmp/bega-dm-product node scripts/visual-qa-dm-keyboa
 DM_KEYBOARD_PROTOTYPE=1 DM_KEYBOARD_OUTPUT=/private/tmp/bega-dm-prototype node scripts/visual-qa-dm-keyboard.integration.mjs
 ```
 
-The product command must fail before a fix. The prototype flag injects a QA-only
+The product command fails on the pre-fix HEAD and passes after the fix. The prototype flag injects a QA-only
 focus listener and is clearly recorded in its report; it is never evidence that
-the product is fixed. After approval/applying the patch, rerun without that flag,
+the product is fixed. For current product verification, run without that flag,
 then verify send/delete/retry interactions and the required release gates.
 
 Raw logs and eight screenshots per mode:
