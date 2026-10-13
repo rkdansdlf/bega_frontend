@@ -35,6 +35,7 @@ yarn-error.log*
 !.dev.vars.example
 /reports
 /visual-qa
+/.visual-qa-cache
 /.visual-qa.staging-*
 /.visual-qa.backup-*
 /.visual-qa.commit.lock
