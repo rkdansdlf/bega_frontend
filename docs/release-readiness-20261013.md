@@ -241,3 +241,15 @@ of real iOS soft-keyboard/device safe-area validation.
 Concurrent modifications to reflow main-document HTTP status validation were
 observed and preserved as another task's changes; not reverted or committed
 with this task's engine selection patch.
+
+Home→Prediction scoped navigation fixture recheck **5/5 pass**, normal exit,
+no force-click. Combined with the unchanged passing four specs, the36 distinct
+flow tests are verified; original35/36 run and failure remain retained.
+Evidence: `flows/cypress-r1.log` and `flows/cypress-home-r2.log`.
+Fixture-only commit: `94faf096`.
+
+Additional concurrent MateDateRailFilter component/test edits were observed.
+They are preserved and excluded from this task's commits. Earlier full unit
+source-equivalence result predates these and the Prediction QA capture repair;
+final current-source verification must include the current worktree rather
+than assuming the previous snapshot still matches.
