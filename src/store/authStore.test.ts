@@ -18,10 +18,12 @@ import {
   subscribeToAuthSessionChanges,
 } from '../utils/authSessionEvents';
 
-// The store reaches its async collaborators through dynamic import(), which resolves over several
-// event-loop turns under the tsx loader; a single setImmediate is not enough to observe it.
-const nextTurns = async (turns = 40) => {
+// The store reaches its async collaborators through dynamic import(), whose resolution goes
+// through the tsx loader thread. Its latency depends on machine load (CI runners are slower than a
+// developer laptop), so wait on real timers as well as event-loop turns instead of a fixed count.
+const nextTurns = async (turns = 4) => {
   for (let turn = 0; turn < turns; turn += 1) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 15));
     await new Promise<void>((resolve) => setImmediate(resolve));
   }
 };
