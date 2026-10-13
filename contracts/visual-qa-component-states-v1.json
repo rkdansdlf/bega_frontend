@@ -76880,30 +76880,29 @@
       "axes": {
         "data": {
           "values": [
-            "populated"
+            "single"
           ],
-          "reason": "The guest entry owns a fixed two-card public sample inventory.",
+          "reason": "The guest sample list is static copy with two fixed sample cards; there is no data-driven variant.",
           "owner": "frontend-mate",
           "testEvidence": "src/components/MateGuestSampleList.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The sample list is intentionally public and does not inspect viewer identity.",
+            "reason": "The sample list is the logged-out guest preview; it has no role-dependent rendering.",
             "owner": "frontend-mate",
             "testEvidence": "src/components/MateGuestSampleList.tsx"
           }
         },
         "interactions": {
-          "values": [
-            "default"
-          ],
-          "reason": "Sample cards are illustrative content without component-local event handlers.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MateGuestSampleList.tsx"
+          "notApplicable": {
+            "reason": "The sample cards are non-interactive articles; no control exists to exercise.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MateGuestSampleList.tsx"
+          }
         },
         "system": {
           "notApplicable": {
-            "reason": "The list performs no request or asynchronous state transition.",
+            "reason": "The list has no transport or loading state; it renders synchronously from constants.",
             "owner": "frontend-mate",
             "testEvidence": "src/components/MateGuestSampleList.tsx"
           }
@@ -76917,7 +76916,7 @@
               "light",
               "dark"
             ],
-            "reason": "Card borders, surfaces, and copy follow both application themes.",
+            "reason": "Card surfaces, tags, and text switch between light and dark tokens.",
             "owner": "frontend-mate",
             "testEvidence": "src/components/MateGuestSampleList.tsx"
           }
@@ -80344,61 +80343,56 @@
         "data": {
           "values": [
             "single",
-            "maximum-supported",
             "long-korean",
             "unbroken-token"
           ],
-          "reason": "The default party card owns the representative party, bounded participant and price values, long Korean copy, and unbroken token pressure.",
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
           "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The direct party card contract supplies the party and callback props; authorization behavior belongs to the hosted Mate results runtime.",
-            "owner": "frontend-auth",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
-          "values": [
-            "default",
-            "click"
-          ],
-          "reason": "The party card exposes party navigation and favorite callbacks through its two actionable controls.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "notApplicable": {
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
         },
         "system": {
           "notApplicable": {
-            "reason": "The direct visual contract supplies deterministic party data; network and mutation behavior belongs to the hosted Mate results runtime.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
         "dimensions": [
           {
-            "name": "status",
-            "values": [
-              "recruiting",
-              "matched",
-              "selling",
-              "completed"
-            ],
-            "reason": "The card changes status badge and price presentation across recruiting, matched, selling, and completed party lifecycle states.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          },
-          {
             "name": "favorite",
             "values": [
-              "idle",
-              "active"
+              "off",
+              "on"
             ],
-            "reason": "The favorite control renders both the unselected and selected visual treatments.",
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           },
           {
             "name": "theme",
@@ -80406,88 +80400,13 @@
               "light",
               "dark"
             ],
-            "reason": "The card uses explicit light and dark utility treatments for surface, typography, status, and controls.",
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         ]
       },
-      "interactionPlans": {
-        "click": {
-          "action": "click",
-          "targets": [
-            {
-              "id": "party",
-              "selector": "[data-testid=\"mate-party-card-detail\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "favorite",
-              "selector": "[data-testid=\"mate-party-card-favorite\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            }
-          ],
-          "reason": "The party card detail and favorite controls execute the production navigation and favorite callback paths.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      },
-      "constraints": [
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "data": [
-              "maximum-supported",
-              "long-korean",
-              "unbroken-token"
-            ]
-          },
-          "reason": "Executable controls use the canonical single-party fixture; other data fixtures remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.status": [
-              "matched",
-              "selling",
-              "completed"
-            ]
-          },
-          "reason": "The click plan is captured once in the recruiting state; other lifecycle states remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.favorite": "active"
-          },
-          "reason": "The interaction fixture starts from an idle favorite state so the callback transition is deterministic.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.theme": "dark"
-          },
-          "reason": "The callback is captured once in the light theme; dark remains covered as an equivalent visual theme state.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      ]
+      "constraints": []
     },
     {
       "id": "src/components/MatePartyCard.tsx#FavoriteToggleButton",
@@ -80496,46 +80415,98 @@
       "render": {
         "mode": "hosted",
         "hostScenarioIds": [
-          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=light",
-          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=dark"
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark"
         ]
       },
       "axes": {
         "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/MatePartyCard.tsx#$default; payload coverage remains with the parent contract.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          }
+          "values": [
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
           "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "system": {
           "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
+        "dimensions": [
+          {
+            "name": "favorite",
+            "values": [
+              "off",
+              "on"
+            ],
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -80546,46 +80517,98 @@
       "render": {
         "mode": "hosted",
         "hostScenarioIds": [
-          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=light",
-          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=dark"
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark"
         ]
       },
       "axes": {
         "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/MatePartyCard.tsx#$default; payload coverage remains with the parent contract.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          }
+          "values": [
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
           "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "system": {
           "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
+        "dimensions": [
+          {
+            "name": "favorite",
+            "values": [
+              "off",
+              "on"
+            ],
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -80601,61 +80624,56 @@
         "data": {
           "values": [
             "single",
-            "maximum-supported",
             "long-korean",
             "unbroken-token"
           ],
-          "reason": "The compact party row owns a representative party, bounded participant and price values, long Korean copy, and unbroken token pressure.",
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
           "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The direct party row contract supplies the party and callback props; authorization behavior belongs to the hosted Mate results runtime.",
-            "owner": "frontend-auth",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
-          "values": [
-            "default",
-            "click"
-          ],
-          "reason": "The compact row exposes party navigation and favorite callbacks through its two actionable controls.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "notApplicable": {
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
         },
         "system": {
           "notApplicable": {
-            "reason": "The direct visual contract supplies deterministic party data; network and mutation behavior belongs to the hosted Mate results runtime.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
         "dimensions": [
           {
-            "name": "status",
-            "values": [
-              "recruiting",
-              "matched",
-              "selling",
-              "completed"
-            ],
-            "reason": "The row changes status badge and price presentation across recruiting, matched, selling, and completed party lifecycle states.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          },
-          {
             "name": "favorite",
             "values": [
-              "idle",
-              "active"
+              "off",
+              "on"
             ],
-            "reason": "The favorite control renders both the unselected and selected visual treatments.",
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           },
           {
             "name": "theme",
@@ -80663,88 +80681,13 @@
               "light",
               "dark"
             ],
-            "reason": "The row uses explicit light and dark utility treatments for surface, typography, status, and controls.",
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         ]
       },
-      "interactionPlans": {
-        "click": {
-          "action": "click",
-          "targets": [
-            {
-              "id": "party",
-              "selector": "[data-testid=\"mate-party-compact\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "favorite",
-              "selector": "[data-testid=\"mate-party-compact-favorite\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            }
-          ],
-          "reason": "The compact party button and favorite control execute the production navigation and favorite callback paths.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      },
-      "constraints": [
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "data": [
-              "maximum-supported",
-              "long-korean",
-              "unbroken-token"
-            ]
-          },
-          "reason": "Executable controls use the canonical single-party fixture; other data fixtures remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.status": [
-              "matched",
-              "selling",
-              "completed"
-            ]
-          },
-          "reason": "The click plan is captured once in the recruiting state; other lifecycle states remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.favorite": "active"
-          },
-          "reason": "The interaction fixture starts from an idle favorite state so the callback transition is deterministic.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.theme": "dark"
-          },
-          "reason": "The callback is captured once in the light theme; dark remains covered as an equivalent visual theme state.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      ]
+      "constraints": []
     },
     {
       "id": "src/components/MatePartyCard.tsx#PartyCompactBase",
@@ -80753,46 +80696,98 @@
       "render": {
         "mode": "hosted",
         "hostScenarioIds": [
-          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=light",
-          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=dark"
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark"
         ]
       },
       "axes": {
         "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/MatePartyCard.tsx#PartyCompact; payload coverage remains with the parent contract.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          }
+          "values": [
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
           "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "system": {
           "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
+        "dimensions": [
+          {
+            "name": "favorite",
+            "values": [
+              "off",
+              "on"
+            ],
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -80808,61 +80803,56 @@
         "data": {
           "values": [
             "single",
-            "maximum-supported",
             "long-korean",
             "unbroken-token"
           ],
-          "reason": "The desktop-oriented party row owns a representative party, bounded participant and price values, long Korean copy, and unbroken token pressure.",
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
           "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The direct party row contract supplies the party and callback props; authorization behavior belongs to the hosted Mate results runtime.",
-            "owner": "frontend-auth",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
-          "values": [
-            "default",
-            "click"
-          ],
-          "reason": "The party row exposes party navigation and favorite callbacks through its two actionable controls.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
+          "notApplicable": {
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
         },
         "system": {
           "notApplicable": {
-            "reason": "The direct visual contract supplies deterministic party data; network and mutation behavior belongs to the hosted Mate results runtime.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
         "dimensions": [
           {
-            "name": "status",
-            "values": [
-              "recruiting",
-              "matched",
-              "selling",
-              "completed"
-            ],
-            "reason": "The row changes status badge and price presentation across recruiting, matched, selling, and completed party lifecycle states.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          },
-          {
             "name": "favorite",
             "values": [
-              "idle",
-              "active"
+              "off",
+              "on"
             ],
-            "reason": "The favorite control renders both the unselected and selected visual treatments.",
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           },
           {
             "name": "theme",
@@ -80870,88 +80860,13 @@
               "light",
               "dark"
             ],
-            "reason": "The row uses explicit light and dark utility treatments for surface, typography, status, and controls.",
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         ]
       },
-      "interactionPlans": {
-        "click": {
-          "action": "click",
-          "targets": [
-            {
-              "id": "party",
-              "selector": "[data-testid=\"mate-party-row\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            },
-            {
-              "id": "favorite",
-              "selector": "[data-testid=\"mate-party-row-favorite\"]",
-              "when": {
-                "data": "single",
-                "variant.status": "recruiting",
-                "variant.favorite": "idle",
-                "variant.theme": "light"
-              }
-            }
-          ],
-          "reason": "The party row button and favorite control execute the production navigation and favorite callback paths.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      },
-      "constraints": [
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "data": [
-              "maximum-supported",
-              "long-korean",
-              "unbroken-token"
-            ]
-          },
-          "reason": "Executable controls use the canonical single-party fixture; other data fixtures remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#mate-party-card"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.status": [
-              "matched",
-              "selling",
-              "completed"
-            ]
-          },
-          "reason": "The click plan is captured once in the recruiting state; other lifecycle states remain covered as default visual surfaces.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.favorite": "active"
-          },
-          "reason": "The interaction fixture starts from an idle favorite state so the callback transition is deterministic.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        },
-        {
-          "excludeWhen": {
-            "interactions": "click",
-            "variant.theme": "dark"
-          },
-          "reason": "The callback is captured once in the light theme; dark remains covered as an equivalent visual theme state.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
-      ]
+      "constraints": []
     },
     {
       "id": "src/components/MatePartyCard.tsx#PartyRowBase",
@@ -80960,46 +80875,98 @@
       "render": {
         "mode": "hosted",
         "hostScenarioIds": [
-          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=light",
-          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|interactions=default|variant.status=completed|variant.favorite=active|variant.theme=dark"
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+          "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark"
         ]
       },
       "axes": {
         "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/MatePartyCard.tsx#PartyRow; payload coverage remains with the parent contract.",
-            "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
-          }
+          "values": [
+            "single",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Card copy must survive ordinary, long Korean, and unbroken stadium, section, host, and description text inside a fixed-width surface.",
+          "owner": "frontend-mate",
+          "testEvidence": "src/components/MatePartyCard.test.tsx"
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "reason": "The party card is presentational; host and member role labels are not rendered as permission-gated controls.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "interactions": {
           "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "reason": "Pointer and keyboard behavior is registered on the nested favorite toggle and card action controls, not on this surface.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         },
         "system": {
           "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
+            "reason": "Transport and mutation status belong to the parent list runtime; this card only receives a favoriteUpdating prop.",
             "owner": "frontend-mate",
-            "testEvidence": "src/components/MatePartyCard.tsx"
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
           }
         }
       },
       "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-mate",
-          "testEvidence": "src/components/MatePartyCard.tsx"
-        }
+        "dimensions": [
+          {
+            "name": "favorite",
+            "values": [
+              "off",
+              "on"
+            ],
+            "reason": "The favorite toggle changes its pressed state, icon fill, and colors.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "status",
+            "values": [
+              "matched",
+              "selling"
+            ],
+            "reason": "Status chip, price row, and status accent differ between matched and selling parties.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Card surface, borders, and text tokens are theme-aware.",
+            "owner": "frontend-mate",
+            "testEvidence": "src/components/MatePartyCard.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },

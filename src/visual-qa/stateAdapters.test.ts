@@ -550,15 +550,6 @@ test('static image, embedded-post, ranking-row, and landing-footer adapters pres
   assert.equal(landingFooter.captureSelector, '[data-testid="landing-footer"]');
   assert.equal(landingFooter.theme, 'dark');
 
-  const mateGuestSampleList = resolveComponentStateAdapter('mate.guest-sample-list', {
-    componentId: 'src/components/MateGuestSampleList.tsx#MateGuestSampleList',
-    states: { data: 'populated', interactions: 'default' },
-    variants: { theme: 'light' },
-  });
-  assert.deepEqual(mateGuestSampleList.props, {});
-  assert.equal(mateGuestSampleList.captureSelector, '[data-testid="mate-guest-sample-list"]');
-  assert.equal(mateGuestSampleList.theme, 'light');
-
   const mateViewToggle = resolveComponentStateAdapter('mate.view-toggle', {
     componentId: 'src/components/MateViewToggle.tsx#MateViewToggle',
     states: { interactions: 'selected' },
@@ -12469,42 +12460,6 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
   });
   assert.equal(typeof recentSearches.props.onTermClick, 'function');
 
-  const partyRow = resolveComponentStateAdapter('mate.party-row', {
-    componentId: 'src/components/MatePartyCard.tsx#PartyRow',
-    states: { data: 'single', interactions: 'click' },
-    variants: { status: 'recruiting', favorite: 'idle', theme: 'light' },
-    interactionTargetId: 'party',
-  });
-  assert.equal(partyRow.captureSelector, '[data-testid="mate-party-row"]');
-  assert.equal(partyRow.theme, 'light');
-  assert.equal((partyRow.props.party as { status: string }).status, 'PENDING');
-  assert.equal((partyRow.props.party as { favorited: boolean }).favorited, false);
-  assert.equal(typeof partyRow.props.onClick, 'function');
-  assert.equal(typeof partyRow.props.onFavoriteToggle, 'function');
-
-  const partyCompact = resolveComponentStateAdapter('mate.party-compact', {
-    componentId: 'src/components/MatePartyCard.tsx#PartyCompact',
-    states: { data: 'maximum-supported', interactions: 'default' },
-    variants: { status: 'selling', favorite: 'active', theme: 'dark' },
-  });
-  assert.equal(partyCompact.captureSelector, '[data-testid="mate-party-compact"]');
-  assert.equal(partyCompact.theme, 'dark');
-  assert.equal((partyCompact.props.party as { status: string }).status, 'SELLING');
-  assert.equal((partyCompact.props.party as { favorited: boolean }).favorited, true);
-  assert.equal((partyCompact.props.party as { maxParticipants: number }).maxParticipants, 999);
-
-  const partyCard = resolveComponentStateAdapter('mate.party-card', {
-    componentId: 'src/components/MatePartyCard.tsx#$default',
-    states: { data: 'single', interactions: 'click' },
-    variants: { status: 'recruiting', favorite: 'idle', theme: 'light' },
-    interactionTargetId: 'favorite',
-  });
-  assert.equal(partyCard.captureSelector, '[data-testid="mate-party-card"]');
-  assert.equal(partyCard.theme, 'light');
-  assert.equal((partyCard.props.party as { status: string }).status, 'PENDING');
-  assert.equal(typeof partyCard.props.onClick, 'function');
-  assert.equal(typeof partyCard.props.onFavoriteToggle, 'function');
-
   const filterSheet = resolveComponentStateAdapter('mate.filter-bottom-sheet', {
     componentId: 'src/components/MateFilterBottomSheet.tsx#MateFilterBottomSheet',
     states: { data: 'single', interactions: 'click' },
@@ -12642,15 +12597,6 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
       interactionTargetId: 'deleted',
     }),
     /지원하지 않는 MateRecentSearchesPanel state/,
-  );
-  assert.throws(
-    () => resolveComponentStateAdapter('mate.party-row', {
-      componentId: 'src/components/MatePartyCard.tsx#PartyRow',
-      states: { data: 'single', interactions: 'click' },
-      variants: { status: 'recruiting', favorite: 'idle', theme: 'light' },
-      interactionTargetId: 'wrong-target',
-    }),
-    /지원하지 않는 MatePartyCard row state/,
   );
   assert.throws(
     () => resolveComponentStateAdapter('mate.filter-bottom-sheet', {

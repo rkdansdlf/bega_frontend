@@ -303,7 +303,7 @@ function PartyRowBase({
   const favorited = Boolean(party.favorited);
 
   return (
-    <div className="relative">
+    <div data-testid="mate-party-row" className="relative">
       <button
         type="button"
         data-testid="mate-party-row"
@@ -371,7 +371,7 @@ function PartyCompactBase({
   const favorited = Boolean(party.favorited);
 
   return (
-    <div className="relative">
+    <div data-testid="mate-party-compact" className="relative">
       <button
         type="button"
         data-testid="mate-party-compact"

@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-09T10:59:56.140Z",
+  "baseUrl": "http://127.0.0.1:5182",
+  "scope": "component-states",
+  "isolation": "reset-storage-cache-state-and-reuse-page-per-bounded-worker",
+  "pageMode": "reuse",
+  "captureHeightMode": "mobile",
+  "groupSize": 50,
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "timeoutMs": 60000,
+  "screenshots": {
+    "mode": "captured",
+    "directory": "../vqa-evidence/shots"
+  },
+  "summary": {
+    "total": 72,
+    "passed": 72,
+    "failed": 0,
+    "recovered": 0,
+    "ok": true
+  },
+  "results": [
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-off-variant-status-match-0d87bd917258.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-off-variant-status-match-1561127e5b28.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-off-variant-status-selli-4df9d450a8f5.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-off-variant-status-selli-93e484f57ed7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-on-variant-status-matche-aa038c1ebbe9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-on-variant-status-matche-56658ba2b1f7.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-on-variant-status-sellin-1d073763ccd1.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-long-korean-variant-favorite-on-variant-status-sellin-e3c142506713.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-off-variant-status-matched-va-a2175fed93ec.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-off-variant-status-matched-va-70e565a5f1f9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-off-variant-status-selling-va-3588433b4a4d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-off-variant-status-selling-va-b0e96d08fd53.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-on-variant-status-matched-var-a26bf8b291fc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-on-variant-status-matched-var-5b40da8f81c9.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-on-variant-status-selling-var-0313ecf54591.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-single-variant-favorite-on-variant-status-selling-var-765b8d4ab881.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-off-variant-status-ma-694d970d56c0.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-off-variant-status-ma-6cd2dbef50bb.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-off-variant-status-se-bf40331bbbdb.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-off-variant-status-se-f46cb467d40f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-on-variant-status-mat-f095c2b42c5c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-on-variant-status-mat-dcbcbdaca7dc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-on-variant-status-sel-59fcb5d3d1e2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#$default:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#$default",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-default-data-unbroken-token-variant-favorite-on-variant-status-sel-ba03ca1ad58c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-off-variant-status-matc-e3db0c441435.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-off-variant-status-matc-b23f8b38748b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-off-variant-status-sell-c0140574a44f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-off-variant-status-sell-7116ac2783de.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-on-variant-status-match-c64baef9335e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-on-variant-status-match-8c3953b2b1cf.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-on-variant-status-selli-7b426e0bda4f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-long-korean-variant-favorite-on-variant-status-selli-3779d2b1bf32.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-off-variant-status-matched-v-ac050c146801.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-off-variant-status-matched-v-1bd584bd2f1a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-off-variant-status-selling-v-94f157c66f90.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-off-variant-status-selling-v-a4ed9244c015.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-on-variant-status-matched-va-460154499423.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-on-variant-status-matched-va-00be4cc78f1a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-on-variant-status-selling-va-eaffcdf3a79b.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-single-variant-favorite-on-variant-status-selling-va-259652a4a9e4.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-off-variant-status-m-20644504b936.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-off-variant-status-m-9091b598e205.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-off-variant-status-s-f60b3a0ce48d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-off-variant-status-s-903a0cc515c2.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-on-variant-status-ma-f7094a3dbdca.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-on-variant-status-ma-0d744b2bb963.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-on-variant-status-se-cf6d5d09bfeb.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyRow:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyRow",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partyrow-data-unbroken-token-variant-favorite-on-variant-status-se-6eb89fe626cd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-off-variant-status-7bd288e585dc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-off-variant-status-9e1b6412fa3d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-off-variant-status-cbb8e6d60745.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-off-variant-status-92d358995674.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-on-variant-status-m-1fc2efd36593.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-on-variant-status-m-91c009ad8b39.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-on-variant-status-s-723b8b880d1d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=long-korean|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-long-korean-variant-favorite-on-variant-status-s-0db2638f566f.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-off-variant-status-match-452124c687cd.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-off-variant-status-match-9bcc84b06071.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-off-variant-status-selli-2b367d0f76ae.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-off-variant-status-selli-b3ba342c8764.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-on-variant-status-matche-40c626363508.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-on-variant-status-matche-e244db20448a.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-on-variant-status-sellin-e3d0402739ca.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=single|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-single-variant-favorite-on-variant-status-sellin-7d1239e13013.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-off-variant-stat-562888def268.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-off-variant-stat-b00de0eab3fc.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-off-variant-stat-ae960721667c.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=off|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-off-variant-stat-17d8e233108e.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-on-variant-statu-3357a78ecb3d.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=matched|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-on-variant-statu-897011590a44.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=dark",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-on-variant-statu-83c5ae9840ed.png",
+      "attempts": 1
+    },
+    {
+      "scenarioId": "state:src/components/MatePartyCard.tsx#PartyCompact:data=unbroken-token|variant.favorite=on|variant.status=selling|variant.theme=light",
+      "componentId": "src/components/MatePartyCard.tsx#PartyCompact",
+      "status": "pass",
+      "screenshot": "reports/visual-qa-mate-party-card-mobile-screenshots/matepartycard-partycompact-data-unbroken-token-variant-favorite-on-variant-statu-4d37b1ba12f3.png",
+      "attempts": 1
+    }
+  ],
+  "note": "Synthetic harness fixtures only (no backend or baseball data). Desktop-only list/compact surfaces are rendered at 960px by design (Mate list modes are gated to desktop layouts); the 320px card grid is the mobile surface."
+}

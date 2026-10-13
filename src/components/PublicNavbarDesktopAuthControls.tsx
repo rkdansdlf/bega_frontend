@@ -69,8 +69,9 @@ export default function PublicNavbarDesktopAuthControls({
     opacity: expandedProgress,
   });
 
-  const handleLogout = async () => {
-    if (await logout()) navigate('/home');
+  const handleLogout = () => {
+    logout();
+    navigate('/home');
   };
 
   if (isAuthBootstrapPending) {
