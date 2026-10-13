@@ -1,0 +1,17 @@
+{
+  "snapshot": "/private/tmp/bega-release-unit-20261013-r3",
+  "head": "5ab8439d6ae7baa36da94df02f5c1078730eeea9",
+  "files": 1593,
+  "mismatches": [
+    "scripts/postdeploy-workflow-security.test.ts"
+  ],
+  "normalExit": 0,
+  "testSummary": {
+    "tests": 2515,
+    "pass": 2515,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 199427.393083
+  }
+}
