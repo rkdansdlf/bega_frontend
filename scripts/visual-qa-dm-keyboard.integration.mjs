@@ -8,6 +8,8 @@ const baseUrl = process.env.DM_KEYBOARD_BASE_URL ?? 'http://127.0.0.1:5186';
 const prototype = process.env.DM_KEYBOARD_PROTOTYPE === '1';
 const output = resolve(process.env.DM_KEYBOARD_OUTPUT ?? `/private/tmp/bega-dm-keyboard-${prototype ? 'prototype' : 'product'}`);
 const engine = resolveReflowBrowser(process.env.DM_KEYBOARD_BROWSER ?? 'chromium');
+const keyboardKey = process.env.DM_KEYBOARD_KEY ?? 'Tab';
+assert.ok(['Tab', 'Alt+Tab'].includes(keyboardKey), 'supported native navigation key');
 const results = [];
 const noScrollResults = [];
 await mkdir(output, { recursive: true });
@@ -56,7 +58,7 @@ try {
         for (const target of ['delete', 'composer']) {
           let found = false;
           for (let index = 0; index < 100 && !found; index += 1) {
-            await page.keyboard.press('Tab');
+            await page.keyboard.press(keyboardKey);
             found = await page.evaluate((target) => target === 'composer'
               ? document.activeElement?.tagName === 'TEXTAREA'
               : document.activeElement?.getAttribute('aria-label') === '메시지 삭제', target);
@@ -113,8 +115,11 @@ try {
   await browser.close();
   const pass = results.filter((result) => result.pass).length;
   await writeFile(resolve(output, 'report.json'), `${JSON.stringify({
-    baseUrl, browser: engine, prototype, nativeKeyboard: false, offlineFixtures: true,
-    checks: 'real Tab, viewport bounds, focus-visible and five interior hit points',
+    baseUrl, browser: engine, keyboardKey, prototype, nativeKeyboard: false, offlineFixtures: true,
+    checks: `native ${keyboardKey}, viewport bounds, focus-visible and five interior hit points`,
+    status: results.length !== 8 || noScrollResults.length !== 8 ? 'INCOMPLETE'
+      : results.every((result) => result.pass) && noScrollResults.every((result) => result.pass) ? 'PASS' : 'FAIL',
+    expectedControls: 8, expectedNoScrollChecks: 8,
     summary: { pass, fail: results.length - pass, total: results.length }, results, noScrollResults,
   }, null, 2)}\n`);
 }
