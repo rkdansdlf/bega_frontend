@@ -7060,7 +7060,8 @@
             "boundary-maximum",
             "long-korean",
             "unbroken-token",
-            "maximum-supported"
+            "maximum-supported",
+            "broken-image"
           ],
           "reason": "The panel owns empty and populated candidate lists, nullable review metadata, identifier and confidence boundaries, long Korean and unbroken seat values, and the maximum supported 50-row inventory.",
           "owner": "frontend-admin",
@@ -7405,6 +7406,15 @@
             "system": "loading"
           },
           "reason": "Loading replaces candidate rows with one canonical announced status surface while preserving each filter variant.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "system": "loading"
+          },
+          "reason": "Loading hides the photo row; the existing empty/loading scenarios cover the identical surface.",
           "owner": "frontend-admin",
           "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
         }
@@ -126752,6 +126762,186 @@
           "testEvidence": "src/visual-qa/stateAdapters.test.ts#leaderboard-page-runtime"
         }
       ]
+    },
+    {
+      "id": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "prediction.game-powerup-inventory"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "populated"
+          ],
+          "reason": "Local viewer-scoped query seeds drive the actual hook and inventory; cross-game active items must be filtered.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "This leaf is mounted only by the authenticated open-game parent; authorization is owned by the parent.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default"
+          ]
+        },
+        "system": {
+          "values": [
+            "idle"
+          ],
+          "reason": "These specimens cover settled hook-backed query results. This registration does not claim pending transport or mutation execution coverage.",
+          "owner": "frontend-prediction",
+          "testEvidence": "scripts/visual-qa-release-registration.integration.ts"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "activeGame",
+            "values": [
+              "current",
+              "other"
+            ],
+            "reason": "The real hook filters active powerups by the bound game ID, retaining inventory counts.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/hooks/powerupGameBinding.test.ts"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Preserves the retro palette in both document themes.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "data": "empty",
+            "variant.activeGame": "other"
+          },
+          "reason": "An empty active list has no game binding; the current variant is its canonical equivalent.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+        }
+      ]
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=empty|interactions=default|system=idle|variant.activeGame=current|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=empty|interactions=default|system=idle|variant.activeGame=current|variant.theme=dark",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=current|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=current|variant.theme=dark",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=other|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=other|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "Lazy alias resolves to the actual game inventory export; dimensions are covered by the referenced executable direct scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Lazy alias resolves to the actual game inventory export; dimensions are covered by the referenced executable direct scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Lazy alias resolves to the actual game inventory export; dimensions are covered by the referenced executable direct scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Lazy alias resolves to the actual game inventory export; dimensions are covered by the referenced executable direct scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The referenced direct inventory scenarios cover both themes.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+          "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=null-optional|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+          "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=broken-image|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "Hosted photo is rendered by the real seat-view panel with valid, missing, and broken-image candidates; no independent transport or controls.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Hosted photo is rendered by the real seat-view panel with valid, missing, and broken-image candidates; no independent transport or controls.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Hosted photo is rendered by the real seat-view panel with valid, missing, and broken-image candidates; no independent transport or controls.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Hosted photo is rendered by the real seat-view panel with valid, missing, and broken-image candidates; no independent transport or controls.",
+            "owner": "frontend-admin",
+            "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Admin photo styling is covered by the hosted dark panel scenarios.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+        }
+      },
+      "constraints": []
     }
   ]
 }

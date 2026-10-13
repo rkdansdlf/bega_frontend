@@ -1,0 +1,187 @@
+{
+  "baseUrl": "http://127.0.0.1:5182",
+  "total": 9,
+  "passed": 9,
+  "results": [
+    {
+      "scenarioId": "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=broken-image|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+      "componentId": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "admin",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/adminseatviewspanel-adminseatviewspanel-data-broken-image-permissions-admin-inte-18b0015222f9.png"
+    },
+    {
+      "scenarioId": "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=null-optional|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+      "componentId": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "admin",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/adminseatviewspanel-adminseatviewspanel-data-null-optional-permissions-admin-int-58efa1804004.png"
+    },
+    {
+      "scenarioId": "state:src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel:data=populated|permissions=admin|interactions=default|system=idle|variant.filters=default|variant.theme=dark",
+      "componentId": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "admin",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/adminseatviewspanel-adminseatviewspanel-data-populated-permissions-admin-interac-687fc8aa1c4d.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=empty|interactions=default|system=idle|variant.activeGame=current|variant.theme=dark",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-empty-interac-cdc272a8e90d.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=empty|interactions=default|system=idle|variant.activeGame=current|variant.theme=light",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-empty-interac-a8fea47ca3f7.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=current|variant.theme=dark",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-populated-int-5bfe778b4670.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=current|variant.theme=light",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-populated-int-553dda689408.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=other|variant.theme=dark",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-populated-int-6a614e8861fc.png"
+    },
+    {
+      "scenarioId": "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:data=populated|interactions=default|system=idle|variant.activeGame=other|variant.theme=light",
+      "componentId": "src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory",
+      "status": "pass",
+      "designIntent": {
+        "profileId": "prediction",
+        "ruleIds": [
+          "interaction.touch-target",
+          "interaction.focus-visible",
+          "layout.text-scale",
+          "motion.reduced",
+          "tokens.semantic-colors",
+          "framework.react-stack-guidance"
+        ]
+      },
+      "touchTargetChecks": {
+        "markedTargetCount": 0
+      },
+      "screenshot": "artifacts/release-readiness-20261013/registration/rendered-settled/predictiongamepowerupinventory-predictiongamepowerupinventory-data-populated-int-30615e217443.png"
+    }
+  ]
+}

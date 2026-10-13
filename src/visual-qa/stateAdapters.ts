@@ -4,14 +4,17 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useLayoutEffect,
   useState,
   type ComponentProps,
   type FormEvent,
   type ReactNode,
 } from 'react';
-import type { UseMutationResult } from '@tanstack/react-query';
+import { useQueryClient, type UseMutationResult } from '@tanstack/react-query';
 import { toast, type ToastOptions } from 'sonner';
 
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 import type { AdminStadium, Place, PlaceFormData } from '../api/admin';
 import type { CheerPost, Comment as CheerComment, EmbeddedPost, LinkedContent } from '../api/cheerApi';
 import type { SeatViewPhoto } from '../api/diary';
@@ -374,6 +377,23 @@ function VisualQaInteractionMarker({ eventName, testId }: { eventName: string; t
     },
     value,
   );
+}
+
+function VisualQaGamePowerupSeed({ data, gameId }: { data: string; gameId: string }) {
+  const queryClient = useQueryClient();
+  const scope = useViewerQueryScope();
+  useLayoutEffect(() => {
+    queryClient.setQueryData(PRIVATE_QUERY_KEYS.powerupInventory(scope), {
+      MAGIC_BAT: data === 'empty' ? 0 : 2,
+      GOLDEN_GLOVE: data === 'empty' ? 0 : 1,
+      SCOUTER: 0,
+    });
+    queryClient.setQueryData(PRIVATE_QUERY_KEYS.activePowerups(scope), data === 'empty' ? [] : [{
+      type: 'MAGIC_BAT',
+      gameId: data === 'active-other-game' ? 'VISUAL_QA_OTHER_GAME' : gameId,
+    }]);
+  }, [data, gameId, queryClient, scope]);
+  return null;
 }
 
 export type ComponentStateValues = Partial<Record<
@@ -12518,6 +12538,7 @@ const resolveConfirmDialogRendererAdapter = (
       'maximum-supported': 'maximum-supported',
       'null-optional': 'null-optional',
       populated: 'populated',
+      'broken-image': 'broken-image',
       'unbroken-token': 'unbroken-token',
     });
     requireStateValue(context, 'permissions', 'admin');
@@ -12623,8 +12644,10 @@ const resolveConfirmDialogRendererAdapter = (
       AdminSeatView
     > = {
       populated: baseSeatView,
+      'broken-image': { ...baseSeatView, photoUrl: 'data:image/png;base64,bm90LXZhbGlk' },
       'null-optional': {
         ...baseSeatView,
+        photoUrl: null,
         id: 43,
         diaryId: null,
         aiSuggestedLabel: null,
@@ -27944,6 +27967,29 @@ const resolveConfirmDialogRendererAdapter = (
         testId: 'visual-qa-prediction-match-detail-interaction',
       }),
       surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'prediction.game-powerup-inventory': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory'
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['theme', 'activeGame'].includes(key))) {
+      throw new Error('prediction.game-powerup-inventory received unsupported dimensions');
+    }
+    const data = requireStateValueFromMap(context, 'data', {
+      empty: 'empty', populated: 'populated',
+    });
+    requireStateValue(context, 'interactions', 'default');
+    requireStateValue(context, 'system', 'idle');
+    const theme = resolveDeclaredVariant(context, 'theme', { light: 'light', dark: 'dark' });
+    const activeGame = resolveDeclaredVariant(context, 'activeGame', { current: 'current', other: 'other' });
+    if (data === 'empty' && activeGame === 'other') throw new Error('empty inventory has no active game');
+    const gameId = 'VISUAL_QA_GAME_POWERUP';
+    return {
+      props: { gameId },
+      companion: createElement(VisualQaGamePowerupSeed, { data: activeGame === 'other' ? 'active-other-game' : data, gameId }),
+      captureSelector: '[data-testid="prediction-game-powerup-inventory"]',
+      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },

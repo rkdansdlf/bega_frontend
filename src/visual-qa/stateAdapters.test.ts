@@ -2209,6 +2209,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'prediction.coach-verdict-memo',
     'prediction.combo-animation-runtime',
     'prediction.error-overlay',
+    'prediction.game-powerup-inventory',
     'prediction.game-summary-timeline',
     'prediction.live-relay-timeline',
     'prediction.loading-view',
@@ -15981,5 +15982,22 @@ test('SeatMapFilterBar adapter covers flat and dimensional filter surfaces with 
     componentId,
     states: { data: 'not-declared', interactions: 'default' },
     variants: { layout: 'flat', theme: 'light' },
+  }));
+});
+
+
+test('game powerup inventory adapter mounts the real hook-backed export with local game-scoped seeds', () => {
+  const componentId = 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory';
+  for (const data of ['empty', 'populated']) {
+    const result = resolveComponentStateAdapter('prediction.game-powerup-inventory', {
+      componentId, states: { data, interactions: 'default', system: 'idle' }, variants: { activeGame: 'current', theme: 'dark' },
+    });
+    assert.equal(result.props.gameId, 'VISUAL_QA_GAME_POWERUP');
+    assert.equal(result.captureSelector, '[data-testid="prediction-game-powerup-inventory"]');
+    assert.equal(result.theme, 'dark');
+    assert.ok(result.companion);
+  }
+  assert.throws(() => resolveComponentStateAdapter('prediction.game-powerup-inventory', {
+    componentId, states: { data: 'unsupported', interactions: 'default' }, variants: { theme: 'dark' },
   }));
 });

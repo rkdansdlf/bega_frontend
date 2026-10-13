@@ -21112,6 +21112,34 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Subscribes to cross-tab session events and refreshes shared-cookie state, returns null; the lazy alias also has a null Suspense fallback.",
+      "owner": "frontend-auth",
+      "testEvidence": "src/components/AuthSessionSync.tsx; scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/AuthSessionSync.tsx#AuthSessionSync",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Subscribes to cross-tab session events and refreshes shared-cookie state, returns null; the lazy alias also has a null Suspense fallback.",
+      "owner": "frontend-auth",
+      "testEvidence": "src/components/AuthSessionSync.tsx; scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "Renders the candidate photo or an accessible missing/failed-image placeholder inside AdminSeatViewsPanel.",
+      "testEvidence": "src/components/admin/AdminSeatViewsPanel.mobile.test.tsx",
+      "owner": "frontend-admin",
+      "renderAccess": "hosted"
     }
   ]
 }

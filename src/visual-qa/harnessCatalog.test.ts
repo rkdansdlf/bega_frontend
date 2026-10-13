@@ -1077,7 +1077,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 95704);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 95712);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -1090,7 +1090,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    519,
+    520,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -3665,8 +3665,8 @@ test('admin seat-views panel covers filters, list pressure, lifecycle, and every
   const defaults = scenarios.filter(({ states }) => states.interactions === 'default');
   const interactive = scenarios.filter(({ states }) => states.interactions !== 'default');
 
-  assert.equal(scenarios.length, 38);
-  assert.equal(defaults.length, 18);
+  assert.equal(scenarios.length, 40);
+  assert.equal(defaults.length, 20);
   assert.equal(interactive.length, 20);
   assert.deepEqual(
     new Set(defaults.map(({ states }) => states.data)),
@@ -3679,6 +3679,7 @@ test('admin seat-views panel covers filters, list pressure, lifecycle, and every
       'long-korean',
       'unbroken-token',
       'maximum-supported',
+      'broken-image',
     ]),
   );
   assert.deepEqual(
@@ -7276,4 +7277,14 @@ test('global error Root, Content, and lazy host cover exactly 22, 35, and 16 leg
   assert.equal(hosted?.render?.mode, 'hosted');
   assert.deepEqual(hosted?.render?.hostScenarioIds, expectedHostScenarioIds);
   assert.ok(expectedHostScenarioIds.every((id) => rootScenarios.some((scenario) => scenario.id === id)));
+});
+
+
+test('new inventory registrations retain direct query-backed cases and hosted photo evidence', () => {
+  const inventoryId = 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory';
+  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter((entry) => entry.componentId === inventoryId);
+  assert.equal(scenarios.length, 6);
+  assert.ok(scenarios.every((entry) => entry.adapterId === 'prediction.game-powerup-inventory'));
+  assert.deepEqual([...new Set(scenarios.map((entry) => entry.states.data))].sort(), ['empty', 'populated']);
+  assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.some((entry) => entry.componentId === 'src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel' && entry.states.data === 'broken-image'));
 });
