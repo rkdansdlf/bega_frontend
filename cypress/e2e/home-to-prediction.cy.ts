@@ -264,6 +264,21 @@ describe('Home to Prediction deep link', () => {
     });
 
     it('restores selected home date and scheduled tab after returning from prediction', () => {
+        cy.intercept('GET', '**/api/home/navigation*', (req) => {
+            const requestUrl = new URL(req.url);
+            const requestDate = requestUrl.searchParams.get('date') || today;
+            const isTomorrow = requestDate === tomorrow;
+            req.reply({
+                statusCode: 200,
+                body: {
+                    resolvedDate: requestDate,
+                    prevGameDate: isTomorrow ? today : null,
+                    nextGameDate: isTomorrow ? null : tomorrow,
+                    hasPrev: isTomorrow,
+                    hasNext: !isTomorrow,
+                },
+            });
+        }).as('getHomeScopedNavigationRouteState');
         cy.intercept('GET', '**/api/home/bootstrap*', (req) => {
             const requestUrl = new URL(req.url);
             const requestDate = requestUrl.searchParams.get('date') || today;
@@ -345,7 +360,8 @@ describe('Home to Prediction deep link', () => {
         cy.contains('TestUser 님', { timeout: 10000 }).should('be.visible');
         cy.get('[aria-controls="home-tabpanel-scheduled"]').should('have.attr', 'aria-selected', 'true');
 
-        cy.get('[data-testid="home-date-next"]').click();
+        cy.wait('@getHomeScopedNavigationRouteState').its('request.url').should('include', 'scope=scheduled');
+        cy.get('[data-testid="home-date-next"]').should('not.be.disabled').click();
         cy.location('search').should('include', `date=${tomorrow}`);
         cy.location('search').should('include', 'tab=scheduled');
         cy.wait('@getHomeBootstrapRouteState');
