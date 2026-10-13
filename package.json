@@ -308,7 +308,7 @@
     "uiux:recommend:test": "node --test scripts/uiux-query.test.mjs",
     "uiux:design-system": "node scripts/uiux-design-system.mjs",
     "uiux:policy:check": "node scripts/uiux-policy-check.mjs",
-    "uiux:policy:test": "node --test scripts/uiux-policy-check.test.mjs",
+    "uiux:policy:test": "node --test scripts/uiux-policy-check.test.mjs scripts/ui-style-drift.test.mjs",
     "uiux:impact": "node scripts/uiux-impact.mjs",
     "uiux:impact:test": "node --import tsx --test scripts/uiux-impact.test.mjs scripts/frontend-ui-impact.test.ts",
     "uiux:design-intent": "node --import tsx scripts/visual-qa-design-intent.mjs",

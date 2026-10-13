@@ -35533,6 +35533,9 @@ const resolveConfirmDialogRendererAdapter = (
       hover: 'hover',
       pressed: 'pressed',
       selected: 'selected',
+      open: 'open',
+      input: 'input',
+      'keyboard-navigation': 'keyboard-navigation',
     });
     const theme = resolveDeclaredVariant<'light' | 'dark'>(context, 'theme', {
       dark: 'dark',
@@ -35541,15 +35544,23 @@ const resolveConfirmDialogRendererAdapter = (
     if (
       interaction !== 'default'
       && interaction !== 'selected'
-      && context.interactionTargetId !== 'theme-toggle'
+      && interaction !== 'open'
+      && interaction !== 'input'
+      && interaction !== 'keyboard-navigation'
+      && !['theme-toggle', 'regular-button', 'plain-button', 'input', 'textarea', 'dialog-open'].includes(context.interactionTargetId ?? '')
     ) {
       throw new Error(`지원하지 않는 Visual QA UI kit interaction target: ${context.interactionTargetId ?? '<missing>'}`);
     }
     if (
       interaction === 'selected'
       && context.interactionTargetId !== (theme === 'light' ? 'to-dark' : 'to-light')
+      && context.interactionTargetId !== 'dialog-confirm'
     ) {
       throw new Error(`지원하지 않는 Visual QA UI kit theme transition: ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const specimenTarget = { open: 'dialog-open', input: 'form-input', 'keyboard-navigation': 'dialog-escape' };
+    if (interaction in specimenTarget && context.interactionTargetId !== specimenTarget[interaction as keyof typeof specimenTarget]) {
+      throw new Error(`지원하지 않는 Visual QA UI kit specimen target: ${context.interactionTargetId ?? '<missing>'}`);
     }
     return {
       props: {},

@@ -125836,7 +125836,10 @@
             "hover",
             "focus-visible",
             "pressed",
-            "selected"
+            "selected",
+            "open",
+            "input",
+            "keyboard-navigation"
           ]
         },
         "system": {
@@ -125871,6 +125874,26 @@
             {
               "id": "theme-toggle",
               "selector": "[data-testid=\"ui-kit-preview\"] button[aria-pressed]"
+            },
+            {
+              "id": "regular-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"button\"]:not(:disabled)"
+            },
+            {
+              "id": "plain-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"plain-button\"]:not(:disabled)"
+            },
+            {
+              "id": "input",
+              "selector": "#ui-kit-input"
+            },
+            {
+              "id": "textarea",
+              "selector": "#ui-kit-textarea"
+            },
+            {
+              "id": "dialog-open",
+              "selector": "[data-testid=\"ui-kit-dialog-open\"]"
             }
           ]
         },
@@ -125883,6 +125906,26 @@
             {
               "id": "theme-toggle",
               "selector": "[data-testid=\"ui-kit-preview\"] button[aria-pressed]"
+            },
+            {
+              "id": "regular-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"button\"]:not(:disabled)"
+            },
+            {
+              "id": "plain-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"plain-button\"]:not(:disabled)"
+            },
+            {
+              "id": "input",
+              "selector": "#ui-kit-input"
+            },
+            {
+              "id": "textarea",
+              "selector": "#ui-kit-textarea"
+            },
+            {
+              "id": "dialog-open",
+              "selector": "[data-testid=\"ui-kit-dialog-open\"]"
             }
           ]
         },
@@ -125895,6 +125938,26 @@
             {
               "id": "theme-toggle",
               "selector": "[data-testid=\"ui-kit-preview\"] button[aria-pressed]"
+            },
+            {
+              "id": "regular-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"button\"]:not(:disabled)"
+            },
+            {
+              "id": "plain-button",
+              "selector": "[data-testid=\"ui-kit-button-comparison\"] [data-slot=\"plain-button\"]:not(:disabled)"
+            },
+            {
+              "id": "input",
+              "selector": "#ui-kit-input"
+            },
+            {
+              "id": "textarea",
+              "selector": "#ui-kit-textarea"
+            },
+            {
+              "id": "dialog-open",
+              "selector": "[data-testid=\"ui-kit-dialog-open\"]"
             }
           ]
         },
@@ -125919,6 +125982,65 @@
                 "variant.theme": "dark"
               },
               "waitForSelector": "[data-testid=\"ui-kit-preview\"] button[aria-pressed=\"false\"]"
+            },
+            {
+              "id": "dialog-confirm",
+              "selector": "[data-testid=\"ui-kit-dialog-confirm\"]",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"ui-kit-dialog-open\"]",
+                  "waitForSelector": "[data-testid=\"ui-kit-dialog\"]"
+                }
+              ],
+              "waitForHiddenSelector": "[data-testid=\"ui-kit-dialog\"]"
+            }
+          ]
+        },
+        "open": {
+          "action": "click",
+          "reason": "Open the production PlainDialog specimen.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#ui-kit-preview",
+          "targets": [
+            {
+              "id": "dialog-open",
+              "selector": "[data-testid=\"ui-kit-dialog-open\"]",
+              "waitForSelector": "[data-testid=\"ui-kit-dialog\"]"
+            }
+          ]
+        },
+        "input": {
+          "action": "fill",
+          "reason": "Fill the shared Input specimen and preserve its visible value.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#ui-kit-preview",
+          "targets": [
+            {
+              "id": "form-input",
+              "selector": "#ui-kit-input",
+              "value": "Visual QA sample input"
+            }
+          ]
+        },
+        "keyboard-navigation": {
+          "action": "press-key",
+          "reason": "Escape dismisses the PlainDialog specimen.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#ui-kit-preview",
+          "targets": [
+            {
+              "id": "dialog-escape",
+              "selector": "#ui-kit-dialog-input",
+              "key": "Escape",
+              "setup": [
+                {
+                  "action": "click",
+                  "selector": "[data-testid=\"ui-kit-dialog-open\"]",
+                  "waitForSelector": "[data-testid=\"ui-kit-dialog\"]"
+                }
+              ],
+              "waitForHiddenSelector": "[data-testid=\"ui-kit-dialog\"]"
             }
           ]
         }
