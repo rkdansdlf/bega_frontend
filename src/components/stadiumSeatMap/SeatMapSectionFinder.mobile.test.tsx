@@ -229,10 +229,11 @@ const startServer = async (
   resources.cacheDir = cacheDir;
   const server = await createViteServer({
     root: process.cwd(),
+    configFile: join(process.cwd(), 'vite.visual-qa.config.ts'),
     appType: 'custom',
     cacheDir,
     plugins: [createSectionFinderPlugin()],
-    server: { host: '127.0.0.1', port: 0 },
+    server: { host: '127.0.0.1', port: 0, strictPort: false, watch: null },
   });
   resources.server = server;
   await server.listen();
