@@ -60,7 +60,7 @@ export default function SwipeToRevealRow({ children, onDelete, deleteLabel = 'ì‚
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-16 ${className ?? ''}`}>
+    <div className={`relative overflow-hidden rounded-2xl ${className ?? ''}`}>
       <div
         className="absolute inset-y-0 right-0 flex items-center justify-center bg-red-600"
         style={{ width: ACTION_WIDTH }}
