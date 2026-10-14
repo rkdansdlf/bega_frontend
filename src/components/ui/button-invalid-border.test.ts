@@ -44,7 +44,7 @@ const borderColorRules = async (tokens: string[]) => {
   root.walkRules((rule) => {
     if (!rule.nodes.some((node) => node.type === 'decl' && node.prop === 'border-color')) return;
     selectorParser((selectors) => {
-      selectors.each((selector) => rules.push({ selector: selector.toString(), spec: specificity(selector) }));
+      selectors.each((selector) => { rules.push({ selector: selector.toString(), spec: specificity(selector) }); });
     }).processSync(rule.selector);
   });
   return rules;
