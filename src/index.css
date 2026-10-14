@@ -302,6 +302,14 @@
   .dark button {
     font-family: inherit;
   }
+
+  /* Card and Alert draw a bare `border`, which falls back to Tailwind's preflight #e5e7eb:
+     near-white on the black dark surfaces. Give them the theme border by default.
+     :where() keeps specificity at zero, so any border-color utility a consumer passes (cn() does
+     not tailwind-merge) still wins, whatever the generated CSS order. */
+  :where(.dark) :where([data-slot='card'], [data-slot='alert']) {
+    border-color: hsl(var(--border));
+  }
 }
 
 @layer utilities {
