@@ -1,0 +1,806 @@
+{
+  "source": "current DEV registered component state with long incoming/outgoing internal fixtures",
+  "nativeZoom": false,
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/320-light-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/320-light-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/320-dark-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/320-dark-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/390-light-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/390-light-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/390-dark-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/390-dark-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/768-light-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/768-light-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/768-dark-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/768-dark-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1024-light-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1024-light-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1024-dark-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1024-dark-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1440-light-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=light",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1440-light-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-1d7dc08a50cb.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1440-dark-100/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "16px",
+        "messageParagraphCount": 2
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 2,
+      "probe": {
+        "scenarioId": "state:src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime:data=populated|permissions=user|interactions=default|system=online|variant.theme=dark",
+        "componentId": "src/components/dm/DirectMessageRuntime.tsx#DirectMessageRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mate",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/dm-after-harness/1440-dark-200/directmessageruntime-directmessageruntime-data-populated-permissions-user-intera-8cbab2d9e1bd.png",
+        "navigation": {
+          "actualHash": "",
+          "expectedHash": "",
+          "actualPathname": "/messages/otheruser",
+          "actualSearch": "",
+          "expectedSearch": "",
+          "expectedPathname": "/messages/otheruser",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "documentOverflow": 0,
+        "textViewportOverflow": 0,
+        "rootFontSize": "32px",
+        "messageParagraphCount": 2
+      }
+    }
+  ]
+}

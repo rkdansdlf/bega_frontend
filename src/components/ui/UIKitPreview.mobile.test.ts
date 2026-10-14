@@ -25,3 +25,15 @@ test('UI kit preview keeps dense panels readable and exposes stable QA surfaces'
   assert.match(source, /p-4 sm:p-6/);
   assert.match(source, /break-words/);
 });
+
+test('UI kit compares real shared controls and their disabled, invalid and loading states', async () => {
+  const source = await readSource();
+  for (const specimen of ['ui-kit-button-comparison', 'ui-kit-form-controls', 'ui-kit-status-badges', 'ui-kit-states', 'ui-kit-dialog-open']) {
+    assert.ok(source.includes(`data-testid="${specimen}"`), `missing ${specimen}`);
+  }
+  for (const component of ['PlainButton', 'Input', 'Textarea', 'StatusBadge', 'Skeleton', 'EmptyState', 'PlainDialog']) {
+    assert.match(source, new RegExp(`<${component}(?:\\s|>)`));
+  }
+  assert.match(source, /aria-invalid/);
+  assert.match(source, /htmlFor=/);
+});

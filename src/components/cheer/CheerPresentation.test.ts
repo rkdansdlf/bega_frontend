@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { getLuminance } from '../../utils/teamColors';
 
 import {
   getAccessibleCheerTextColor,
@@ -8,6 +10,47 @@ import {
   resolveCheerSurface,
   resolveCheerTabFromParam,
 } from './CheerPresentation';
+
+test('Cheer text contrast preserves the original 8-bit color calculation', () => {
+  const originalLuminance = (channels: number[]) => {
+    const linear = channels.map((channel) => {
+      const value = channel / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+  const hex = (channels: number[]) => channels.map((value) => value.toString(16).padStart(2, '0')).join('');
+  // Both transfer-function thresholds lie between the same two 8-bit values.
+  // Verify every channel, including 10/11, before sharing the existing utility.
+  for (let channel = 0; channel < 256; channel += 1) {
+    for (let index = 0; index < 3; index += 1) {
+      const channels = [0, 0, 0];
+      channels[index] = channel;
+      assert.equal(getLuminance(`#${hex(channels)}`), originalLuminance(channels));
+    }
+  }
+  const dark = originalLuminance([15, 23, 42]);
+  for (let r = 0; r < 256; r += 17) {
+    for (let g = 0; g < 256; g += 17) {
+      for (let b = 0; b < 256; b += 17) {
+        const luminance = originalLuminance([r, g, b]);
+        const lightContrast = 1.05 / (luminance + 0.05);
+        const darkContrast = (Math.max(luminance, dark) + 0.05) / (Math.min(luminance, dark) + 0.05);
+        const expected = lightContrast >= darkContrast ? '#FFFFFF' : '#0F172A';
+        const full = hex([r, g, b]);
+        for (const input of [`#${full}`, full.toUpperCase(), ` #${full[0]}${full[2]}${full[4]} `]) {
+          assert.equal(getAccessibleCheerTextColor(input), expected, input);
+        }
+      }
+    }
+  }
+  for (const invalid of ['', 'invalid', '#ffff', '#ffffff00', '#xyz', '##fff']) {
+    assert.equal(getAccessibleCheerTextColor(invalid), '#0F172A');
+  }
+  const source = readFileSync(new URL('./CheerPresentation.ts', import.meta.url), 'utf8');
+  assert.match(source, /import \{ getLuminance \} from '\.\.\/\.\.\/utils\/teamColors';/);
+  assert.doesNotMatch(source, /const relativeLuminance/);
+});
 
 test('연결 작성 경로는 정확한 타입과 양의 정수 원본 ID 조합만 허용한다', () => {
   assert.deepEqual(parseLinkedTarget('CHECKIN', '12', null), {

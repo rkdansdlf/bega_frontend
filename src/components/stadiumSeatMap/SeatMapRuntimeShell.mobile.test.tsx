@@ -130,15 +130,21 @@ const createRuntimeShellPlugin = (): Plugin => ({
   },
 });
 
-const startServer = async () => {
+const startServer = async (
+  resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string },
+  createViteServer: typeof createServer = createServer,
+) => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-runtime-shell-vite-'));
-  const server = await createServer({
+  resources.cacheDir = cacheDir;
+  const server = await createViteServer({
     root: process.cwd(),
+    configFile: join(process.cwd(), 'vite.visual-qa.config.ts'),
     appType: 'custom',
     cacheDir,
     plugins: [createRuntimeShellPlugin()],
-    server: { host: '127.0.0.1', port: 0 },
+    server: { host: '127.0.0.1', port: 0, strictPort: false, watch: null },
   });
+  resources.server = server;
   await server.listen();
   return { cacheDir, server };
 };
@@ -166,6 +172,24 @@ const serverAddress = (server: ViteDevServer) => {
   return `http://127.0.0.1:${address.port}`;
 };
 
+test('SeatMapRuntimeShell startup rejection still closes the server and removes its cache', async () => {
+  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  let closeCalls = 0;
+  const failure = new Error('synthetic listen failure');
+  const createViteServer = (async () => ({
+    listen: async () => { throw failure; },
+    close: async () => { closeCalls += 1; },
+  })) as unknown as typeof createServer;
+  try {
+    await assert.rejects(() => startServer(resources, createViteServer), (error) => error === failure);
+  } finally {
+    await closeResources(resources);
+  }
+  assert.equal(closeCalls, 1);
+  assert.ok(resources.cacheDir);
+  await assert.rejects(() => access(resources.cacheDir!));
+});
+
 test('SeatMapRuntimeShell cleanup closes every resource after an earlier closer fails', async () => {
   const calls: string[] = [];
   const cacheDir = await mkdtemp(join(tmpdir(), 'seat-map-runtime-shell-cleanup-'));
@@ -190,7 +214,7 @@ test('SeatMapRuntimeShell cleanup removes cache after a server close failure', a
 test('SeatMapRuntimeShell contains every synthetic runtime state at mobile widths and recovers on retry', async () => {
   const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
   try {
-    const started = await startServer();
+    const started = await startServer(resources);
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });

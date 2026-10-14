@@ -1,0 +1,78 @@
+{
+  "status": "READY for verified task commit; concurrent working-tree changes excluded",
+  "implementationHead": "eaab41ee0cd86633d3b633a97a44944022137b32",
+  "unitAndBuildVerifiedHead": "64435fd4fc4fdbb2974776ce69195a52f534009c",
+  "sourceFilesMatchingFinalHead": 1381,
+  "snapshot": "/private/tmp/bega-release-final-20261014",
+  "gates": {
+    "unit": {
+      "pass": 2514,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "normalExit": true
+    },
+    "build": {
+      "pass": true,
+      "cheerBytes": 119784,
+      "unchangedLimitBytes": 121600
+    },
+    "inventory": {
+      "symbols": 2133,
+      "files": 523,
+      "unclassified": 0,
+      "stale": 0,
+      "provisional": 0
+    },
+    "states": {
+      "registered": 1017,
+      "pending": 0
+    },
+    "contract": "PASS",
+    "policy": "PASS",
+    "policyMutations": {
+      "pass": 24,
+      "total": 24
+    },
+    "reflow": {
+      "pass": 40,
+      "fail": 0,
+      "untrusted": 0
+    },
+    "dmFlows": {
+      "pass": 8,
+      "mutationRed": 4,
+      "restoredGreen": 4
+    },
+    "dmCypress": {
+      "pass": 9,
+      "fail": 0
+    },
+    "dmKeyboard": {
+      "chromiumTab": 8,
+      "webkitAltTab": 8,
+      "noScrollPerEngine": 8
+    }
+  },
+  "logs": {
+    "artifacts/release-readiness-20261014/unit-final-head-r2.log": "d7148ad7ab614ffdca69f8e5d9a3c61d190f6ec670c3b966d8096b7f9b885423",
+    "artifacts/release-readiness-20261014/build-final-head.log": "435e98eea458bb03f8fc36b3cdaa6a40d5dd8407e18d27206ad740faa1119f4b",
+    "artifacts/release-readiness-20261014/inventory-final-head.log": "1ca26d47cb7cc3833d89d7d7062fe5dc99db74882c590751e956d534f243ac04",
+    "artifacts/release-readiness-20261014/states-final-head.log": "919aa70c2dd6298f6a848c1e50b9009b2c05b340b2255a4a717f42dfbbbdca9b",
+    "artifacts/release-readiness-20261014/contract-final-head.log": "5c30ea327cc626a659d3d2e0fe77e6e4e10c3811d09a422a04ba3d2deb0b3136",
+    "artifacts/release-readiness-20261014/policy-final-head.log": "6a3f1ad1424607f2ce00427be75cb0740cf6113b5bd54646511824b65158dd50",
+    "artifacts/release-readiness-20261014/policy-mutation-final-head.log": "6c6fb06febeda5349b8e3eb48d0b1320de7bc9faef39fc584d632663f1727d1c",
+    "artifacts/release-readiness-20261014/reflow-final-head.log": "d6d284b4e73210c75a90dd866036e72c5c4b33cea52163d8a9ae0e2313e17b96",
+    "artifacts/release-readiness-20261014/dm-interactions-final.log": "9302ff2d9c7a116e3bba9ace6945eaac208a713e57d0faf7434a9d7c5db45296",
+    "artifacts/release-readiness-20261014/dm-cypress-final.log": "15fc5dead5c0df25ee11142020d7332749281fbb55230f28852224547799ad2d",
+    "artifacts/release-readiness-20261014/dm-keyboard-final-chromium.log": "1c71dfe27440efcaaafa1d94cedb941740016e5763f0a8bc6f577f979d77250c",
+    "artifacts/release-readiness-20261014/dm-keyboard-final-webkit-r2.log": "71373345be72c64ea5c8b083b4477585d318316f36e574024eb356f34849abe0",
+    "artifacts/release-readiness-20261014/stadium-cold-fixtures-r2.log": "18f4079eaba7744cf8633a835c7f6e6879eb093e527ff4f96a7716b974c0e24b"
+  },
+  "limitations": [
+    "WebKit default Tab could not reach delete; incomplete run retained, excluded from passes.",
+    "Desktop WebKit Alt+Tab is not native iOS virtual-keyboard validation.",
+    "MyPage lg/2xl loading shift retained as separate issue; responsive changes prohibited.",
+    "API fixtures offline; deployment and live backend verification not performed."
+  ]
+}

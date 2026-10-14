@@ -182,11 +182,21 @@ export const evaluateRoute = (measurement) => {
     };
   }
 
+  if (measurement.skeletonCount > 0) {
+    return { route, status: 'untrusted', measuredState: 'loading',
+      reason: 'content remained on loading placeholders after the settle deadline' };
+  }
+
   const overflowNormal = scrollWidthNormal - viewportWidth;
   const overflowZoomed = scrollWidthZoomed - viewportWidth;
   const failures = [];
   if (overflowNormal > 0) failures.push(`${overflowNormal}px at 100% text`);
   if (overflowZoomed > 0) failures.push(`${overflowZoomed}px at 200% text`);
+  for (const content of measurement.contentOverflows ?? []) {
+    if (content.normal > 0 || content.zoomed > 0) {
+      failures.push(`${content.selector} text scroll ${content.normal}px at 100% / ${content.zoomed}px at 200%`);
+    }
+  }
 
   // Report the offenders from the state that actually failed — a zoom-only
   // failure has no offenders at normal size, which would leave it undiagnosable.
@@ -202,12 +212,17 @@ export const evaluateRoute = (measurement) => {
     measuredState,
     overflowNormal,
     overflowZoomed,
+    contentOverflows: measurement.contentOverflows ?? [],
     reason: failures.length
       ? `horizontal scroll: ${failures.join(', ')}${measuredState === 'loading' ? ' (measured while still loading)' : ''}`
       : undefined,
     offenders,
   };
 };
+
+export const isExpectedRoutePath = (requested, landed) => requested === '/'
+  ? landed === '/' || landed === '/home'
+  : landed === requested;
 
 export const summarize = (results) => {
   const counts = { pass: 0, fail: 0, untrusted: 0 };
@@ -227,7 +242,7 @@ const PAGE_PROBE = async (zoomRootFontPx) => {
     // Skeletons still on screen mean we measured a loading state, whose fixed
     // placeholder widths differ from the real content. Recorded so a result is
     // never silently attributed to the loaded UI.
-    skeletonCount: document.querySelectorAll('.animate-pulse').length,
+    skeletonCount: [...document.querySelectorAll('.animate-pulse')].filter((el) => !el.closest('svg') && !el.textContent.trim()).length,
   };
   if (vw < 100) return result;
 
@@ -268,6 +283,10 @@ const PAGE_PROBE = async (zoomRootFontPx) => {
 
   result.offenders = collect();
 
+  // A conversation is flowing text, not an intentional two-dimensional table
+  // or seat map. Internal horizontal scrolling must not hide clipping here.
+  const messageViewport = document.querySelector('[data-testid="dm-message-viewport"]');
+  const contentNormal = messageViewport ? messageViewport.scrollWidth - messageViewport.clientWidth : 0;
   const baseFont = getComputedStyle(de).fontSize;
   de.style.fontSize = `${zoomRootFontPx}px`;
   // Let the reflow settle before measuring — reading scrollWidth flushes layout,
@@ -275,6 +294,8 @@ const PAGE_PROBE = async (zoomRootFontPx) => {
   await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(undefined))));
   result.scrollWidthZoomed = de.scrollWidth;
   result.offendersZoomed = collect();
+  result.contentOverflows = messageViewport ? [{ selector: '[data-testid="dm-message-viewport"]',
+    normal: contentNormal, zoomed: messageViewport.scrollWidth - messageViewport.clientWidth }] : [];
   de.style.fontSize = baseFont;
 
   return result;
@@ -331,10 +352,31 @@ export const settle = async (page) => {
 
   const settledBy = Date.now() + capMs;
   while (Date.now() < settledBy) {
-    const skeletons = await page.evaluate(() => document.querySelectorAll('.animate-pulse').length);
-    if (skeletons === 0) break;
+    const pending = await page.evaluate(() => [...document.querySelectorAll('.animate-pulse')].filter((el) => !el.closest('svg') && !el.textContent.trim()).length > 0
+      || /인증 상태를 확인하고 있습니다|페이지를 준비하고 있습니다/.test(document.body.innerText));
+    if (!pending) break;
     await page.waitForTimeout(250);
   }
+};
+
+// Full-page screenshots do not scroll the viewport. Visit offscreen loading
+// surfaces so ViewportDeferred can mount its real content before measurement.
+export const activateDeferredSurfaces = async (page) => {
+  const initialScroll = await page.evaluate(() => window.scrollY);
+  for (let attempt = 0; attempt < 24; attempt += 1) {
+    const deferredTop = await page.evaluate(() => {
+      const skeleton = [...document.querySelectorAll('.animate-pulse')].find((el) => {
+        const rect = el.getBoundingClientRect();
+        return !el.closest('svg') && !el.textContent.trim() && rect.height > 0
+          && rect.top >= window.innerHeight;
+      });
+      return skeleton ? skeleton.getBoundingClientRect().top + window.scrollY : null;
+    });
+    if (deferredTop === null) break;
+    await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), deferredTop);
+    await page.waitForTimeout(250);
+  }
+  await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), initialScroll);
 };
 
 /**
@@ -350,13 +392,18 @@ export const settle = async (page) => {
  *
  * Set REFLOW_ALLOW_API=1 to run against a real backend instead.
  */
-export const stubApi = async (context, { allowedOrigin } = {}) => {
+export const stubApi = async (context, { allowedOrigin, pageOrigin } = {}) => {
+  const headers = pageOrigin ? {
+    'access-control-allow-origin': new URL(pageOrigin).origin,
+    'access-control-allow-credentials': 'true',
+  } : {};
   // Order matters: Playwright gives precedence to the most recently registered
   // matching handler, so the catch-all has to be registered *before* the
   // specific one or it swallows it.
   await context.route((requestUrl) => isApiRequestUrl(requestUrl, allowedOrigin), (route) => route.fulfill({
     status: 503,
     contentType: 'application/json',
+    headers,
     body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
   }));
   // Populated responses for the surfaces most likely to overflow. Registered
@@ -375,6 +422,7 @@ export const stubApi = async (context, { allowedOrigin } = {}) => {
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
+      headers,
       body: JSON.stringify(fixture.body(route.request().url(), { pagePathname })),
     });
   });
@@ -388,44 +436,71 @@ export const stubApi = async (context, { allowedOrigin } = {}) => {
   }, (route) => route.fulfill({
     status: 200,
     contentType: 'application/json',
+    headers,
     body: JSON.stringify({ success: true, data: AUDIT_USER }),
   }));
+};
+
+// Production bundles may use an absolute API origin. Offline auditing must
+// intercept those requests too, while preventing any external request escape.
+export const installOfflineBoundary = async (context, baseUrl) => {
+  const localOrigin = new URL(baseUrl).origin;
+  await context.route((url) => /^https?:$/.test(url.protocol) && url.origin !== localOrigin,
+    (route) => route.abort('blockedbyclient'));
+  // WebSocket routes are separate from HTTP interception in Playwright.
+  await context.routeWebSocket(/.*/, (socket) => socket.close());
+};
+
+export const resolveReflowBrowser = (name = 'chromium') => {
+  if (name !== 'chromium' && name !== 'webkit') throw new Error(`Unsupported reflow browser: ${name}`);
+  return name;
 };
 
 export const runReflowAudit = async ({
   baseUrl = process.env.REFLOW_BASE_URL ?? 'http://127.0.0.1:5180',
   routes = DEFAULT_ROUTES,
-  reportPath = resolve(PROJECT_ROOT, 'reports/reflow-320-report.json'),
+  reportPath = process.env.REFLOW_REPORT_PATH ?? resolve(PROJECT_ROOT, 'reports/reflow-320-report.json'),
+  screenshotDir = process.env.REFLOW_SCREENSHOT_DIR,
   allowApi = process.env.REFLOW_ALLOW_API === '1',
+  browserName = process.env.REFLOW_BROWSER ?? 'chromium',
 } = {}) => {
-  const { chromium } = await loadPlaywright();
+  const engine = resolveReflowBrowser(browserName);
+  const browserType = (await loadPlaywright())[engine];
   let browser;
   try {
-    browser = await chromium.launch({ channel: 'chrome', headless: true });
+    browser = await browserType.launch({ ...(engine === 'chromium' ? { channel: 'chrome' } : {}), headless: true });
   } catch {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
   }
 
   const results = [];
   try {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
-    if (!allowApi) await stubApi(context, { allowedOrigin: new URL(baseUrl).origin });
+    if (!allowApi) {
+      await installOfflineBoundary(context, baseUrl);
+      await stubApi(context, { pageOrigin: baseUrl });
+    }
     // ProtectedRoute only attempts the profile bootstrap when this hint is set;
     // without it the guard redirects to /login before rendering anything.
-    await context.addInitScript(() => {
+    await context.addInitScript((user) => {
+      // Reuse the existing Cypress profile injection contract. A lone hint is
+      // insufficient to seed a session reliably in production route audits.
+      if (user) window.__BEGA_TEST_AUTH_PROFILE__ = { data: user };
       try {
         window.localStorage.setItem('auth-bootstrap-hint', '1');
-      } catch { /* storage unavailable — public routes still measure fine */ }
-    });
+      } catch { /* storage unavailable — injected profile still bootstraps */ }
+    }, allowApi ? null : AUDIT_USER);
     const mainPage = await context.newPage();
     const page = mainPage;
 
     // Visited without the stubbed session, or PublicOnlyAuthRoute bounces them.
     const loggedOutContext = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
     if (!allowApi) {
-      await loggedOutContext.route((requestUrl) => isApiRequestUrl(requestUrl, new URL(baseUrl).origin), (route) => route.fulfill({
+      await installOfflineBoundary(loggedOutContext, baseUrl);
+      await loggedOutContext.route((requestUrl) => isApiRequestUrl(requestUrl), (route) => route.fulfill({
         status: 503,
         contentType: 'application/json',
+        headers: { 'access-control-allow-origin': new URL(baseUrl).origin, 'access-control-allow-credentials': 'true' },
         body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
       }));
     }
@@ -435,7 +510,10 @@ export const runReflowAudit = async ({
       const needsLoggedOut = !allowApi && LOGGED_OUT_ROUTES.includes(route);
       const target = needsLoggedOut ? loggedOutPage : page;
 
+      await target.bringToFront();
       await target.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await settle(target);
+      await activateDeferredSurfaces(target);
       await settle(target);
 
       // Whatever the reason — a guard redirect, or an auth spinner that never
@@ -444,14 +522,21 @@ export const runReflowAudit = async ({
       const landed = await target.evaluate(() => ({
         path: window.location.pathname,
         spinner: /인증 상태를 확인하고 있습니다/.test(document.body.innerText || ''),
+        pendingShell: /페이지를 준비하고 있습니다/.test(document.body.innerText || ''),
       }));
-      const routePattern = route.replace(/:[^/]+/g, '');
-      const redirected = !route.includes(':') && landed.path !== route && !landed.path.startsWith(routePattern);
-      if (redirected || landed.spinner) {
+      const redirected = !isExpectedRoutePath(route, landed.path);
+      if (screenshotDir) {
+        await mkdir(screenshotDir, { recursive: true });
+        const filename = route === '/' ? 'root' : route.slice(1).replace(/[^a-zA-Z0-9-]/g, '-');
+        await target.screenshot({ path: resolve(screenshotDir, `${filename}.png`), fullPage: true });
+      }
+      if (redirected || landed.spinner || landed.pendingShell) {
         results.push({
           route,
           status: 'untrusted',
-          reason: landed.spinner
+          reason: landed.pendingShell
+            ? 'stuck on the application suspense fallback; route content did not render'
+            : landed.spinner
             ? 'stuck on the auth spinner; the session did not resolve'
             : `redirected to ${landed.path}, so this measured a different page`,
         });
@@ -464,6 +549,7 @@ export const runReflowAudit = async ({
 
     for (const { route, name, open } of OVERLAY_CASES) {
       if (!routes.includes(route)) continue;
+      await page.bringToFront();
       await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
       await settle(page);
 
@@ -509,6 +595,7 @@ export const runReflowAudit = async ({
       if (!routes.includes(route)) continue;
       // All the form routes are logged-out-only, so they need that context too.
       const page = LOGGED_OUT_ROUTES.includes(route) && !allowApi ? loggedOutPage : mainPage;
+      await page.bringToFront();
       await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
       await settle(page);
       // These routes are lazy: the shell's <header> exists before the form
@@ -560,7 +647,9 @@ export const runReflowAudit = async ({
 
   const summary = summarize(results);
   await mkdir(dirname(reportPath), { recursive: true });
-  await writeFile(reportPath, `${JSON.stringify({ baseUrl, viewport: VIEWPORT, apiStubbed: !allowApi, summary, results }, null, 2)}\n`, 'utf8');
+  await writeFile(reportPath, `${JSON.stringify({ baseUrl, browser: engine, viewport: VIEWPORT, apiStubbed: !allowApi,
+    authFixture: !allowApi ? 'existing Cypress injected profile contract; layout audit, not server authentication' : null,
+    externalNetworkBlocked: !allowApi, summary, results }, null, 2)}\n`, 'utf8');
 
   for (const r of results) {
     const line = r.status === 'pass'

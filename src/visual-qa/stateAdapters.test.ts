@@ -2485,7 +2485,7 @@ test('static mobile leaves resolve repository-owned props and interaction bounda
     interactionTargetId: 'retry-detail',
   });
   assert.equal(predictionMatchTab.theme, 'dark');
-  assert.match(String(predictionMatchTab.captureSelector), /prediction-match-detail-root/);
+  assert.equal(predictionMatchTab.captureSelector, '[data-vqa-harness-surface]');
   assert.equal((predictionMatchTab.props.currentDateGames as unknown[]).length, 1);
   assert.equal(predictionMatchTab.props.currentGameDetailErrorCode, 'UPSTREAM_ERROR');
   assert.equal(typeof predictionMatchTab.props.reloadCurrentGameDetail, 'function');
@@ -2498,6 +2498,7 @@ test('static mobile leaves resolve repository-owned props and interaction bounda
   assert.deepEqual(predictionMatchTabEmpty.props.currentDateGames, []);
   assert.equal(predictionMatchTabEmpty.props.currentGame, null);
   assert.equal(predictionMatchTabEmpty.props.isToday, true);
+  assert.equal(predictionMatchTabEmpty.captureSelector, predictionMatchTab.captureSelector);
 
   const predictionMatchDetail = resolveComponentStateAdapter('prediction.match-detail-panel', {
     componentId: 'src/components/prediction/PredictionMatchDetailPanel.tsx#PredictionMatchDetailPanel',
@@ -10569,6 +10570,31 @@ test('ui-kit-preview-scenarios pin both themes and validate every toggle interac
     }),
     /theme transition/,
   );
+});
+
+test('ui-kit-preview accepts shared-control and dialog specimen targets and rejects unknown targets', () => {
+  for (const interaction of ['hover', 'focus-visible', 'pressed']) {
+    for (const target of ['regular-button', 'plain-button', 'input', 'textarea', 'dialog-open']) {
+      assert.equal(resolveComponentStateAdapter('ui.ui-kit-preview', {
+        componentId: 'src/components/ui/UIKitPreview.tsx#UIKitPreview',
+        interactionTargetId: target,
+        states: { interactions: interaction },
+        variants: { theme: 'light' },
+      }).theme, 'light');
+    }
+  }
+  for (const [interaction, target] of [['open', 'dialog-open'], ['selected', 'dialog-confirm'], ['keyboard-navigation', 'dialog-escape'], ['input', 'form-input']]) {
+    assert.equal(resolveComponentStateAdapter('ui.ui-kit-preview', {
+      componentId: 'src/components/ui/UIKitPreview.tsx#UIKitPreview',
+      interactionTargetId: target,
+      states: { interactions: interaction },
+      variants: { theme: 'dark' },
+    }).theme, 'dark');
+  }
+  assert.throws(() => resolveComponentStateAdapter('ui.ui-kit-preview', {
+    componentId: 'src/components/ui/UIKitPreview.tsx#UIKitPreview',
+    interactionTargetId: 'unknown', states: { interactions: 'hover' }, variants: { theme: 'light' },
+  }), /interaction target/);
 });
 
 test('ui-toaster scenarios seed real toast API states without changing the production wrapper props', () => {

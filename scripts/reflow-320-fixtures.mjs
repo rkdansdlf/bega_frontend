@@ -234,6 +234,21 @@ export const FIXTURES = [
     body: () => page([1, 2, 3].map(post)),
   },
   {
+    name: 'mate party list',
+    match: (url) => /\/api\/parties(?:\?|$)/.test(url),
+    body: () => page([{ ...auditParty, status: 'PENDING' }]),
+  },
+  {
+    name: 'mate popular searches',
+    match: (url) => /\/api\/parties\/search-terms\/popular(?:\?|$)/.test(url),
+    body: () => [],
+  },
+  {
+    name: 'mate personal parties',
+    match: (url) => /\/api\/parties\/my(?:\?|$)/.test(url),
+    body: () => [],
+  },
+  {
     name: 'mate party detail',
     match: (url) => /\/api\/parties\/1(\?|$)/.test(url),
     body: (_url, context = {}) => auditPartyForRoute(context.pagePathname),
@@ -436,6 +451,23 @@ export const FIXTURES = [
       monthlyCount: 9, yearlyCount: 52, yearlyWins: 31, yearlyWinRate: 59.6,
       mostVisitedStadium: '대전 한화생명볼파크', mostVisitedCount: 41,
     }),
+  },
+  {
+    name: 'DM conversation bootstrap',
+    match: (url) => /\/api\/dm\/rooms(?:\?|$)/.test(url),
+    body: () => envelope({
+      roomId: 1,
+      membershipState: 'ACTIVE',
+      targetUser: { id: 900, name: '비주얼 QA 대화상대', handle: 'testuser', profileImageUrl: null },
+    }),
+  },
+  {
+    name: 'DM conversation messages',
+    match: (url) => /\/api\/dm\/rooms\/1\/messages(?:\?|$)/.test(url),
+    body: () => envelope([
+      { id: 1, roomId: 1, senderId: 900, content: `${LONG_KOREAN} ${UNBREAKABLE_URL}`, createdAt: '2026-08-06T09:00:00Z' },
+      { id: 2, roomId: 1, senderId: 123, content: '비주얼 QA 메시지', createdAt: '2026-08-06T09:01:00Z' },
+    ]),
   },
   {
     name: 'DM inbox',

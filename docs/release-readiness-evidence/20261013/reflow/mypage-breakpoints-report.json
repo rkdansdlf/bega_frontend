@@ -1,0 +1,302 @@
+{
+  "componentOnly": true,
+  "productResponsiveCodeChanged": false,
+  "results": [
+    {
+      "width": 1024,
+      "theme": "light",
+      "system": "loading",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1024-light-loading/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-18eb5be745d2.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "352px 488px",
+        "cardHeight": 156,
+        "gridHeight": 114,
+        "scrollWidth": 1024,
+        "clientWidth": 1024
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "system": "idle",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1024-light-idle/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "856px",
+        "cardHeight": 394,
+        "gridHeight": 352,
+        "scrollWidth": 1024,
+        "clientWidth": 1024
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "system": "loading",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1024-dark-loading/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-3fce5e4e27a6.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "352px 488px",
+        "cardHeight": 156,
+        "gridHeight": 114,
+        "scrollWidth": 1024,
+        "clientWidth": 1024
+      }
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "system": "idle",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1024-dark-idle/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "856px",
+        "cardHeight": 394,
+        "gridHeight": 352,
+        "scrollWidth": 1024,
+        "clientWidth": 1024
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "system": "loading",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1440-light-loading/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-18eb5be745d2.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "352px 488px",
+        "cardHeight": 156,
+        "gridHeight": 114,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "system": "idle",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1440-light-idle/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-04404e9bf814.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "856px",
+        "cardHeight": 394,
+        "gridHeight": 352,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "system": "loading",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=empty|interactions=default|system=loading|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1440-dark-loading/mypageprofilecardruntime-mypageprofilecardruntime-data-empty-interactions-defaul-3fce5e4e27a6.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "352px 488px",
+        "cardHeight": 156,
+        "gridHeight": 114,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "system": "idle",
+      "probe": {
+        "scenarioId": "state:src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime:data=single|interactions=default|system=idle|variant.theme=dark",
+        "componentId": "src/components/mypage/MyPageProfileCardRuntime.tsx#MyPageProfileCardRuntime",
+        "status": "pass",
+        "designIntent": {
+          "profileId": "mypage",
+          "ruleIds": [
+            "interaction.touch-target",
+            "interaction.focus-visible",
+            "layout.text-scale",
+            "motion.reduced",
+            "tokens.semantic-colors",
+            "framework.react-stack-guidance"
+          ]
+        },
+        "touchTargetChecks": {
+          "markedTargetCount": 0
+        },
+        "screenshot": "artifacts/release-readiness-20261013/reflow/mypage-breakpoints/1440-dark-idle/mypageprofilecardruntime-mypageprofilecardruntime-data-single-interactions-defau-1d2adbd53d83.png",
+        "navigation": {
+          "actualPathname": "/mypage",
+          "expectedPathname": "/mypage",
+          "verified": true
+        }
+      },
+      "geometry": {
+        "gridTemplateColumns": "856px",
+        "cardHeight": 394,
+        "gridHeight": 352,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      }
+    }
+  ]
+}

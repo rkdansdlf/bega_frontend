@@ -1,0 +1,102 @@
+{
+  "baseUrl": "http://127.0.0.1:5186",
+  "prototype": true,
+  "nativeKeyboard": false,
+  "offlineFixtures": true,
+  "checks": "real Tab, viewport bounds, focus-visible and five interior hit points",
+  "summary": {
+    "pass": 8,
+    "fail": 0,
+    "total": 8
+  },
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 543.875,
+      "bottom": 565.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 543.875,
+      "bottom": 565.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 495.875,
+      "bottom": 517.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 495.875,
+      "bottom": 517.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    }
+  ]
+}

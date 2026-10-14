@@ -1,3 +1,5 @@
+import { getLuminance } from '../../utils/teamColors';
+
 export type CheerTabKey = 'all' | 'popular' | 'following' | 'live';
 export type CheerContentFeedTabKey = Exclude<CheerTabKey, 'live'>;
 export type CheerSurface = 'feed' | 'search' | 'live';
@@ -31,21 +33,13 @@ export const parseLinkedTarget = (
   return null;
 };
 
-const parseHexColor = (value: string): [number, number, number] | null => {
+const parseHexColor = (value: string): string | null => {
   const compact = value.trim().replace(/^#/, '');
   const normalized = compact.length === 3
     ? compact.split('').map((character) => character.repeat(2)).join('')
     : compact;
   if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return null;
-  return [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16)) as [number, number, number];
-};
-
-const relativeLuminance = ([red, green, blue]: [number, number, number]): number => {
-  const [r, g, b] = [red, green, blue].map((channel) => {
-    const value = channel / 255;
-    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-  });
-  return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+  return `#${normalized}`;
 };
 
 const contrastRatio = (first: number, second: number): number => (
@@ -54,12 +48,11 @@ const contrastRatio = (first: number, second: number): number => (
 
 export const getAccessibleCheerTextColor = (backgroundColor: string): string => {
   const parsedBackground = parseHexColor(backgroundColor);
-  const parsedDarkText = parseHexColor(CHEER_DARK_TEXT);
-  if (!parsedBackground || !parsedDarkText) return CHEER_DARK_TEXT;
+  if (!parsedBackground) return CHEER_DARK_TEXT;
 
-  const backgroundLuminance = relativeLuminance(parsedBackground);
+  const backgroundLuminance = getLuminance(parsedBackground);
   const lightContrast = contrastRatio(backgroundLuminance, 1);
-  const darkContrast = contrastRatio(backgroundLuminance, relativeLuminance(parsedDarkText));
+  const darkContrast = contrastRatio(backgroundLuminance, getLuminance(CHEER_DARK_TEXT));
   return lightContrast >= darkContrast ? CHEER_LIGHT_TEXT : CHEER_DARK_TEXT;
 };
 

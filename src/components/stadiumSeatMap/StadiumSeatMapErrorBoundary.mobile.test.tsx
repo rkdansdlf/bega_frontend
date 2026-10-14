@@ -130,13 +130,16 @@ const startServer = async (mutate = false) => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'stadium-seatmap-error-boundary-vite-'));
   const server = await createServer({
     root: process.cwd(),
+    configFile: join(process.cwd(), 'vite.visual-qa.config.ts'),
     appType: 'custom',
     cacheDir,
     plugins: [createBoundaryPlugin(mutate)],
-    server: { host: '127.0.0.1', port: 5191, strictPort: true },
+    server: { host: '127.0.0.1', port: 0, strictPort: false, watch: null },
   });
   try {
     await server.listen();
+    await server.transformRequest('/src/index.css');
+    await server.transformRequest(entryPath);
   } catch (error) {
     await server.close().catch(() => {});
     await rm(cacheDir, { recursive: true, force: true }).catch(() => {});

@@ -351,6 +351,15 @@ export const resolveHarnessTimeoutMs = (value: string | undefined) => {
   return timeoutMs;
 };
 
+export const resolveHarnessViewport = (value?: string) => {
+  if (value === undefined) return { width: 320, height: 844 };
+  const match = /^(\d+)x(\d+)$/.exec(value);
+  if (!match || Number(match[1]) <= 0 || Number(match[2]) <= 0) {
+    throw new Error('VISUAL_QA_HARNESS_VIEWPORT must be positive integer WIDTHxHEIGHT');
+  }
+  return { width: Number(match[1]), height: Number(match[2]) };
+};
+
 export const resolveHarnessBrowserEngine = (value: string | undefined) => {
   if (value === undefined || value === 'chrome') return 'chrome' as const;
   if (value === 'chromium') return 'chromium' as const;
@@ -751,7 +760,7 @@ const loadPlaywright = async () => {
   throw new Error(`Playwright is unavailable: ${errors.join(' | ')}`);
 };
 
-const launchBrowser = async () => {
+export const launchBrowser = async () => {
   const { chromium, webkit } = await loadPlaywright();
   const browserEngine = resolveHarnessBrowserEngine(process.env.VISUAL_QA_HARNESS_BROWSER);
   if (browserEngine === 'chromium') return chromium.launch({ headless: true });
@@ -827,7 +836,7 @@ export const switchHarnessPageScenario = async (
   page: Pick<HarnessPage, 'evaluate' | 'setViewportSize'>,
   selectionId: string,
 ) => {
-  await page.setViewportSize({ width: 320, height: 844 });
+  await page.setViewportSize(resolveHarnessViewport(process.env.VISUAL_QA_HARNESS_VIEWPORT));
   await page.evaluate((nextSelectionId) => {
     window.scrollTo(0, 0);
     window.localStorage.clear();
@@ -1063,7 +1072,7 @@ const buildHomeRuntimeInteractionFixture = (pathname: string, date: string) => {
   };
 };
 
-const installOfflineRoutes = async (context: HarnessContext, harnessOrigin: string) => {
+export const installOfflineRoutes = async (context: HarnessContext, harnessOrigin: string) => {
   let passwordChangeAttempt = 0;
   const directMessageBootstrapAttempts = new Map<string, number>();
   await context.route('**/*', async (route) => {
@@ -1173,7 +1182,7 @@ const installOfflineRoutes = async (context: HarnessContext, harnessOrigin: stri
   });
 };
 
-const probeIsolatedScenario = async ({
+export const probeIsolatedScenario = async ({
   context,
   page: borrowedPage,
   reuseExistingPage = false,
@@ -1182,6 +1191,7 @@ const probeIsolatedScenario = async ({
   timeoutMs,
   screenshotDir,
   captureHeightMode,
+  preparePage,
 }: {
   context: HarnessContext;
   page?: HarnessPage;
@@ -1193,6 +1203,7 @@ const probeIsolatedScenario = async ({
   timeoutMs: number;
   screenshotDir: string | null;
   captureHeightMode: ReturnType<typeof resolveHarnessCaptureHeightMode>;
+  preparePage?: (page: HarnessPage) => Promise<void>;
 }): Promise<HarnessResult> => {
   await context.clearCookies();
   const page = borrowedPage ?? await context.newPage();
@@ -1223,6 +1234,7 @@ const probeIsolatedScenario = async ({
       { timeout: timeoutMs },
     );
     await settleHarnessPage(page, assetTracker.waitForQuiet);
+    await preparePage?.(page);
     const designIntent = resolveDesignIntent(scenario.componentId);
     const rawOutcome = await page.evaluate(({ componentId, scenarioId, designProfileId, designRuleIds }) => {
       const surface = document.querySelector('[data-vqa-harness-surface]');
@@ -1456,7 +1468,9 @@ const main = async () => {
       scenarioGroups,
       concurrency,
       async () => {
-        const context = await browser.newContext({ viewport: { width: 320, height: 844 } });
+        const context = await browser.newContext({
+          viewport: resolveHarnessViewport(process.env.VISUAL_QA_HARNESS_VIEWPORT),
+        });
         await installOfflineRoutes(context, harnessOrigin);
         await context.addInitScript(() => {
           window.localStorage.clear();
@@ -1555,7 +1569,7 @@ const main = async () => {
     pageMode,
     captureHeightMode,
     groupSize: resolveHarnessGroupSize(process.env.VISUAL_QA_HARNESS_GROUP_SIZE),
-    viewport: { width: 320, height: 844 },
+    viewport: resolveHarnessViewport(process.env.VISUAL_QA_HARNESS_VIEWPORT),
     timeoutMs,
     screenshots: screenshotDir
       ? { mode: 'captured', directory: relative(process.cwd(), screenshotDir) }

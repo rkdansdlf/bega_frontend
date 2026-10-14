@@ -426,9 +426,9 @@ export default function DirectMessageRuntime() {
                       key={`${message.id}-${message.clientMessageId || 'no-client'}`}
                       className={`group flex ${isMine ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="relative">
+                      <div className="relative min-w-0 max-w-[80%]">
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ${
+                          className={`max-w-full rounded-2xl px-4 py-3 shadow-sm ${
                             isMine
                               ? 'bg-primary text-primary-foreground'
                               : 'border border-gray-100 bg-white text-gray-900 dark:border-border dark:bg-secondary/40 dark:text-white'
@@ -472,6 +472,19 @@ export default function DirectMessageRuntime() {
               <textarea
                 value={messageText}
                 onChange={(event) => setMessageText(event.target.value)}
+                onFocus={(event) => {
+                  const input = event.currentTarget;
+                  const rect = input.getBoundingClientRect();
+                  for (const nav of document.querySelectorAll('nav[aria-label="하단 탭바"]')) {
+                    const bar = nav.getBoundingClientRect();
+                    if (bar.height > 0 && bar.width > 0
+                      && rect.bottom > bar.top && rect.top < bar.bottom
+                      && rect.right > bar.left && rect.left < bar.right) {
+                      input.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+                      break;
+                    }
+                  }
+                }}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();

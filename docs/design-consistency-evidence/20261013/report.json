@@ -1,0 +1,110 @@
+{
+  "sourceHead": "4b29b2e978fe91a26ba9b731c84e531937d0cb74",
+  "sourceRepository": "rkdansdlf/bega_frontend",
+  "fullCoverage": false,
+  "beforeMatrix": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "afterMatrix": {
+    "total": 120,
+    "passed": 120,
+    "failed": 0
+  },
+  "uiKitStates": {
+    "total": 48,
+    "passed": 48,
+    "failed": 0
+  },
+  "images": [
+    {
+      "file": "home-dark-1440-before.png",
+      "scenario": "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=dark",
+      "phase": "before",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "home-dark-1440-after.png",
+      "scenario": "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=dark",
+      "phase": "after",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "cheer-dark-1440-before.png",
+      "scenario": "state:src/components/CheerRuntime.tsx#CheerRuntime:data=single|permissions=anonymous|interactions=default|system=idle|variant.surface=feed|variant.theme=dark",
+      "phase": "before",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "cheer-dark-1440-after.png",
+      "scenario": "state:src/components/CheerRuntime.tsx#CheerRuntime:data=single|permissions=anonymous|interactions=default|system=idle|variant.surface=feed|variant.theme=dark",
+      "phase": "after",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "mate-dark-1440-before.png",
+      "scenario": "state:src/components/MateListControlsRuntime.tsx#MateListControlsRuntime:data=single|permissions=anonymous|interactions=default|system=idle|variant.tab=all|variant.layout=desktop|variant.theme=dark",
+      "phase": "before",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "mate-dark-1440-after.png",
+      "scenario": "state:src/components/MateListControlsRuntime.tsx#MateListControlsRuntime:data=single|permissions=anonymous|interactions=default|system=idle|variant.tab=all|variant.layout=desktop|variant.theme=dark",
+      "phase": "after",
+      "width": 1440,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "ui-kit-light-320-before.png",
+      "scenario": "state:src/components/ui/UIKitPreview.tsx#UIKitPreview:interactions=default|variant.theme=light",
+      "phase": "before",
+      "width": 320,
+      "theme": "light",
+      "zoom": 1
+    },
+    {
+      "file": "ui-kit-dark-320-before.png",
+      "scenario": "state:src/components/ui/UIKitPreview.tsx#UIKitPreview:interactions=default|variant.theme=dark",
+      "phase": "before",
+      "width": 320,
+      "theme": "dark",
+      "zoom": 1
+    },
+    {
+      "file": "ui-kit-light-320-after.png",
+      "scenario": "state:src/components/ui/UIKitPreview.tsx#UIKitPreview:interactions=default|variant.theme=light",
+      "phase": "after",
+      "width": 320,
+      "theme": "light",
+      "zoom": 1
+    },
+    {
+      "file": "ui-kit-dark-320-after.png",
+      "scenario": "state:src/components/ui/UIKitPreview.tsx#UIKitPreview:interactions=default|variant.theme=dark",
+      "phase": "after",
+      "width": 320,
+      "theme": "dark",
+      "zoom": 1
+    }
+  ],
+  "limitations": [
+    "Only representative state/environment combinations executed; global Visual QA remains partial.",
+    "200% uses 16/32px root text scale, not native browser zoom; pixel font tokens do not automatically scale.",
+    "Safe-area behavior is simulated using the existing CSS variable, not native device env().",
+    "Screenshot helper freezes animations; postcapture durations are not independent proof of reduced-motion CSS.",
+    "13 reflow measurements are untrusted because auth or route resolution did not reach the requested screen."
+  ],
+  "rawEvidence": "artifacts/design-consistency-20261013/"
+}

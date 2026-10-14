@@ -1,0 +1,176 @@
+{
+  "baseUrl": "http://127.0.0.1:5186",
+  "prototype": false,
+  "nativeKeyboard": false,
+  "offlineFixtures": true,
+  "checks": "real Tab, viewport bounds, focus-visible and five interior hit points",
+  "summary": {
+    "pass": 8,
+    "fail": 0,
+    "total": 8
+  },
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 543.875,
+      "bottom": 565.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 543.875,
+      "bottom": 565.875,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 495.875,
+      "bottom": 517.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "target": "delete",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 495.875,
+      "bottom": 517.875,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "target": "composer",
+      "visible": true,
+      "unobscured": true,
+      "focusVisible": true,
+      "top": 381.875,
+      "bottom": 453.875,
+      "pass": true
+    }
+  ],
+  "noScrollResults": [
+    {
+      "width": 320,
+      "theme": "light",
+      "before": 343,
+      "after": 343,
+      "actualWidth": 320,
+      "navVisible": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "before": 307,
+      "after": 307,
+      "actualWidth": 1440,
+      "navVisible": false,
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "before": 343,
+      "after": 343,
+      "actualWidth": 320,
+      "navVisible": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "before": 307,
+      "after": 307,
+      "actualWidth": 1440,
+      "navVisible": false,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "before": 343,
+      "after": 343,
+      "actualWidth": 390,
+      "navVisible": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "before": 307,
+      "after": 307,
+      "actualWidth": 1440,
+      "navVisible": false,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "before": 343,
+      "after": 343,
+      "actualWidth": 390,
+      "navVisible": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "before": 307,
+      "after": 307,
+      "actualWidth": 1440,
+      "navVisible": false,
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "releaseReady": false,
+  "remaining": "Product DM keyboard occlusion awaits explicit behavior-change approval; MyPage breakpoint separate issue; native mobile device validation not claimed",
+  "sourceEquivalence": {
+    "checkedFiles": 1385,
+    "mismatches": [],
+    "currentHead": "b37d54d7cda7bae5514612d5a349430e5c5092b4",
+    "snapshot": "/private/tmp/bega-release-unit-20261013-r1",
+    "historical": true
+  },
+  "gates": [
+    {
+      "command": "existing design environment harness",
+      "result": "PASS:120/120,0 failure",
+      "rawEvidence": "artifacts/release-readiness-20261013/environment-matrix/report.json",
+      "sha256": "bba3cc4ab6973907e3178602a2f29274415afa635efacb5bc3cbe3e3c545290c"
+    },
+    {
+      "command": "npm run uiux:policy:test",
+      "result": "PASS: 24/24; 0 fail/cancel/skip",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-uiux-policy-test-final.log",
+      "sha256": "2a3b02312d6a18dac105882fdbc6feeef2cfce205b87e6124008bf4f6f8cbb8e"
+    },
+    {
+      "command": "REFLOW_BROWSER=webkit npm run qa:reflow:320",
+      "result": "PASS:40/40,0 fail/untrusted",
+      "rawEvidence": "artifacts/release-readiness-20261013/reflow/webkit-r1.json",
+      "sha256": "9127eb6b7b0d4bd55da07ea12bef1cb6be411b2f1c74034f1db29180f87b0601"
+    },
+    {
+      "command": "Home-to-Prediction Cypress recheck",
+      "result": "PASS:5/5; original 4/5 retained",
+      "rawEvidence": "artifacts/release-readiness-20261013/flows/cypress-home-r2.log",
+      "sha256": "a767e448162f105e728ea12ae673d203f27b4fb7557681d476202de8bea11a4d"
+    },
+    {
+      "command": "Prediction environment companion",
+      "result": "PASS:30/30; requested=actual width",
+      "rawEvidence": "artifacts/release-readiness-20261013/flows/extended-environments-r3/report.json",
+      "sha256": "0cdc2a765928daf639da5f1a9866fbd30049c509581683023ec1957fda252b18"
+    },
+    {
+      "command": "DM width companion",
+      "result": "PASS:20/20; requested=actual width",
+      "rawEvidence": "artifacts/release-readiness-20261013/reflow/dm-after-harness-r2/report.json",
+      "sha256": "1d37a9f91218dd29d18132349eb21a450d4927ebc8818ef224f016b015b5e598"
+    },
+    {
+      "command": "npm run test:unit",
+      "result": "PASS:2515/2515,0 fail/cancel/skip; normal exit0",
+      "rawEvidence": "artifacts/release-readiness-20261013/unit/full-immutable-r3.log",
+      "sha256": "1cff5d05fe8fb2ed7c632d6767ec52b4d45d362b2cca1daf388fa819e21db4f1"
+    },
+    {
+      "command": "npm run visual-qa:contract:check",
+      "result": "PASS:2 browsers,18 viewports,4 state axes",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-contract-r3.log",
+      "sha256": "5c30ea327cc626a659d3d2e0fe77e6e4e10c3811d09a422a04ba3d2deb0b3136"
+    },
+    {
+      "command": "npm run build",
+      "result": "PASS:worker/client,bundle,SEO prerender,sitemap; normal exit0",
+      "rawEvidence": "artifacts/release-readiness-20261013/build/current-r3.log",
+      "sha256": "40bd808292767ad135079cf69703fcf68ba4e50d2b136f4bf0e1a797343c7723"
+    },
+    {
+      "command": "npm run visual-qa:inventory:reviewed-check",
+      "result": "PASS:2133 symbols,523 files,0 unclassified/stale/provisional/errors",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-inventory-r3.log",
+      "sha256": "1ca26d47cb7cc3833d89d7d7062fe5dc99db74882c590751e956d534f243ac04"
+    },
+    {
+      "command": "npm run visual-qa:states:check",
+      "result": "PASS:1017/1017,0 pending,96719 combinations",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-states-r3.log",
+      "sha256": "919aa70c2dd6298f6a848c1e50b9009b2c05b340b2255a4a717f42dfbbbdca9b"
+    },
+    {
+      "command": "npm run uiux:policy:check",
+      "result": "PASS:all existing policy guards",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-policy-r3.log",
+      "sha256": "6a3f1ad1424607f2ce00427be75cb0740cf6113b5bd54646511824b65158dd50"
+    },
+    {
+      "command": "node --test scripts/reflow-320-audit.test.mjs",
+      "result": "PASS:26/26,0 fail/cancel/skip; normal exit0",
+      "rawEvidence": "artifacts/release-readiness-20261013/gate-reflow-tests-r3.log",
+      "sha256": "86adc9a6be6bfe7980755251b4b0df90645dea428227a4627365b28c3c475ce8"
+    },
+    {
+      "command": "npm run qa:reflow:320",
+      "result": "PASS:40/40,0 fail/untrusted; normal exit0; current production build",
+      "rawEvidence": "artifacts/release-readiness-20261013/reflow/current-r3.json",
+      "sha256": "7ead7c6b916066a982be07afb79a2eec1c9adfc02513f23ec45227fbb2d4ab30"
+    }
+  ],
+  "currentCheckpoint": {
+    "head": "5ab8439d6ae7baa36da94df02f5c1078730eeea9",
+    "snapshot": "/private/tmp/bega-release-unit-20261013-r3",
+    "filesCompared": 1593,
+    "unitRelevantMismatches": 0,
+    "outsideUnitMismatch": [
+      "scripts/postdeploy-workflow-security.test.ts"
+    ],
+    "unitStatus": "PASS:2515/2515,0 fail/cancel/skip; normal exit0;199427.393083ms",
+    "cheerBudget": {
+      "maxJsGzipBytes": 121600,
+      "totalJsGzipBytes": 119788,
+      "overageJsGzipBytes": 0,
+      "budgetSkipped": false,
+      "ok": true
+    },
+    "laterUnvalidatedConcurrentChanges": [
+      "src/visual-qa/stateAdapters.test.ts"
+    ]
+  },
+  "openProductIssue": {
+    "id": "DM-KEYBOARD-OCCLUSION",
+    "widths": [
+      320,
+      390
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "productFixed": false,
+    "proposalOnly": "real Tab and five interior hit points,8/8 controls pass",
+    "evidence": "docs/release-readiness-evidence/20261013/p2/dm-keyboard-proposal/",
+    "latestReproduction": {
+      "date": "2026-10-14",
+      "product": {
+        "pass": 4,
+        "fail": 4,
+        "total": 8
+      },
+      "prototypeOnly": {
+        "pass": 8,
+        "fail": 0,
+        "total": 8
+      },
+      "script": "scripts/visual-qa-dm-keyboard.integration.mjs",
+      "productFixApplied": false,
+      "patchCheck": "git apply --check passed"
+    }
+  }
+}
