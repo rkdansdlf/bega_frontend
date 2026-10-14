@@ -12518,7 +12518,7 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 42,
+      "count": 43,
       "sourceCount": 42
     },
     {
@@ -12848,7 +12848,7 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 131,
+      "count": 133,
       "sourceCount": 131
     },
     {
@@ -12890,6 +12890,16 @@
       "owner": "frontend/design-system",
       "count": 1,
       "sourceCount": 1
+    },
+    {
+      "file": "src/visual-qa/stateAdapters.ts",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "w-[960px]",
+      "disposition": "intentional-exception",
+      "reason": "Visual QA harness surface that models a fixed 960px desktop viewport for the MatePartyCard states; the width is the fixture, not product styling.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 0
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
