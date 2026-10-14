@@ -879,7 +879,7 @@ export default function CoachAnalysisResultView({
                 <div className="r3-body min-w-0 p-4 sm:p-6">
                     {/* A2: 핵심 결론 한 줄 — 첫 시선 집중 */}
                     <p
-                        className={`mb-4 min-w-0 break-keep text-16 font-extrabold leading-[1.35] tracking-normal sm:text-18 ${
+                        className={`mb-4 min-w-0 break-keep text-body font-extrabold leading-[1.35] tracking-normal sm:text-18 ${
                         isPositive ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'
                     }`}
                         style={{ overflowWrap: 'anywhere', textWrap: 'balance' }}

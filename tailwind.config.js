@@ -30,7 +30,7 @@ export default {
         caption: 'var(--font-caption-size)',  // 14px
         '8': '8px', '9': '9px', '10': '10px', '11': '11px', '12': '12px',
         '13': '13px', '15': '15px', '17': '17px', '18': '18px', '19': '19px',
-        '20': '20px', '22': '22px', '30': '30px', '32': '32px', '38': '38px',
+        '20': '20px', '22': '22px', '24': '24px', '30': '30px', '32': '32px', '38': '38px',
         '120': '120px', '160': '160px',
       },
       // Radius tokens for sizes without an exact Tailwind default (8/12/16/24
@@ -45,6 +45,12 @@ export default {
       opacity: {
         '8': '0.08', '12': '0.12', '18': '0.18',
         '72': '0.72', '78': '0.78', '82': '0.82', '88': '0.88', '92': '0.92',
+      },
+      // Spacing steps outside Tailwind's 4px scale that components already use (h-13/w-13 = 52px
+      // chatbot avatar, px-4.5 = 18px). Without an entry Tailwind 3.4 emits nothing for them.
+      spacing: {
+        '4.5': '1.125rem',
+        '13': '3.25rem',
       },
       boxShadow: {
         'cheer-mobile-chrome': 'var(--shadow-cheer-mobile-chrome)',
