@@ -1,0 +1,33 @@
+/* Layout classes used by page-primitives.tsx. They were defined in Landing.css until the landing
+   rebuild (064e4dd3) dropped them, leaving Container, Section and TextBlock unstyled. Restored
+   verbatim from that commit's parent. */
+.ds-container {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+  padding-inline: var(--layout-padding-mobile);
+}
+
+.ds-section {
+  padding-block: var(--space-80);
+}
+
+.ds-measure {
+  max-width: var(--content-max-width);
+}
+
+.ds-measure-narrow {
+  max-width: var(--content-max-width-narrow);
+}
+
+@media (min-width: 768px) {
+  .ds-container {
+    padding-inline: var(--layout-padding-desktop);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ds-section {
+    padding-block: var(--space-96);
+  }
+}
