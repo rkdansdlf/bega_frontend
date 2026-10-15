@@ -56,7 +56,7 @@
   border: 1px solid hsl(var(--border) / 0.78);
   border-radius: calc(var(--radius-base) + 0.5rem);
   background: hsl(var(--card));
-  box-shadow: var(--surface-shadow-soft);
+  box-shadow: var(--surface-shadow);
 }
 
 .landing-capability-media {

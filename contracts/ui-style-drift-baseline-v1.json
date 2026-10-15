@@ -4172,16 +4172,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/LandingCapabilityShowcase.css",
-      "rule": "undefined-css-token",
-      "value": "--surface-shadow-soft",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 1
-    },
-    {
       "file": "src/components/LandingFeaturesRuntime.css",
       "rule": "arbitrary-dimension-spacing",
       "value": "gap:0.375rem",
@@ -11532,16 +11522,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/ui/alert.tsx",
-      "rule": "undefined-css-token",
-      "value": "--spacing",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
       "file": "src/components/ui/plain-dialog.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "gap:12px",
@@ -13018,8 +12998,30 @@
       "count": 1,
       "sourceCount": 1,
       "resolution": "DS-1/DS-2 exact-value token reuse; new occurrences are rejected"
+    },
+    {
+      "file": "src/components/LandingCapabilityShowcase.css",
+      "rule": "undefined-css-token",
+      "value": "--surface-shadow-soft",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1,
+      "resolution": "Unmounted legacy showcase now uses the defined --surface-shadow token (X-7); an undefined token is rejected again"
+    },
+    {
+      "file": "src/components/ui/alert.tsx",
+      "rule": "undefined-css-token",
+      "value": "--spacing",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1,
+      "resolution": "Alert icon column uses the literal 1rem track (Phase 1); an undefined token is rejected again"
     }
   ],
-  "remainingOccurrences": 2568,
+  "remainingOccurrences": 2566,
   "sourceOccurrences": 2577
 }
