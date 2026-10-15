@@ -168,7 +168,9 @@ describe('SignUp availability checks', () => {
     cy.visit('/signup');
 
     cy.get('input#handle').clear().type('TakenFirst');
-    cy.wait(500);
+    // 고정 대기 대신 디바운스가 발동해 첫 요청이 시작됐다는 UI 신호를 기다린다.
+    // 부하가 걸리면 500ms 고정 대기는 디바운스(450ms)보다 짧아져서 요청이 취소된다.
+    cy.contains('핸들 중복 확인 중...').should('be.visible');
     cy.get('input#handle').clear().type('FreshFinal');
     cy.get('input#handle').should('have.value', '@freshfinal');
     cy.wait(500);
