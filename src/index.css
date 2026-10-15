@@ -15,7 +15,7 @@
     --primitive-color-green-700: 164 41% 23%;
     --primitive-color-green-600: 164 41% 27%;
     --primitive-color-green-500: 164 40% 42%;
-    --primitive-color-red-500: 0 84.2% 60.2%;
+    --primitive-color-red-600: 0 72.2% 50.6%;
     --surface-app-dark: 0 0% 0%;
     --surface-panel-dark: 0 0% 0%;
     --surface-panel-raised-dark: 0 0% 0%;
@@ -80,7 +80,7 @@
     --muted-foreground: var(--text-secondary);
     --accent: var(--surface-subtle);
     --accent-foreground: var(--text-primary);
-    --destructive: var(--primitive-color-red-500);
+    --destructive: var(--primitive-color-red-600);
     --destructive-foreground: var(--text-inverse);
     --border: var(--border-default);
     --input: var(--border-default);
