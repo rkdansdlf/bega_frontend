@@ -4,6 +4,8 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
+import "./page-primitives.css";
+
 type Measure = "default" | "narrow";
 type Align = "start" | "center";
 type Gap = "sm" | "md" | "lg" | "xl";
