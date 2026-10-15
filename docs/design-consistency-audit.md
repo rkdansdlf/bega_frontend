@@ -83,7 +83,7 @@ Admin slate/amber console, OAuth provider logos, compact 10.5px navigation label
 
 Confirmed DS-001–DS-010 findings were addressed: supported field surfaces; shared Button/PlainButton styles with lightweight rendering retained; exact-value badge/Home/Cheer/Mate tokens; visible default dark Skeleton; UI Kit specimens; and source drift prevention. The MyPage breakpoint discrepancy remains explicitly deferred because responsive behavior changes were prohibited.
 
-The drift baseline records **2,577 original occurrences / 2,568 remaining occurrences** across 1,293 exact file/rule/value budgets, with 5 fully resolved budget entries. Legacy findings are an inventory, not 2,568 visually proven defects. Removals cannot be reintroduced under their original allowance. Both detected undefined legacy variables remain tracked for separate evidence-based work.
+The drift baseline records **2,577 original occurrences / 2,566 remaining occurrences** across 1,291 exact file/rule/value budgets, with 7 fully resolved budget entries. Legacy findings are an inventory, not 2,566 visually proven defects. Removals cannot be reintroduced under their original allowance. Both detected undefined legacy variables are resolved (`--spacing` in `Alert`, `--surface-shadow-soft` in the unmounted `LandingCapabilityShowcase`) and now fail the check if reintroduced.
 
 ## Commands and results
 
