@@ -83,7 +83,10 @@ async function serveSpaAsset(request: Request, env: Env): Promise<Response> {
     return assetResponse;
   }
 
-  const fallbackUrl = new URL('/index.html', request.url);
+  // Fall back to "/" (not "/index.html": html_handling drop-trailing-slash 307s that to "/").
+  // Keep the query string so e.g. /oauth/callback?code=x still reaches the SPA intact.
+  const fallbackUrl = new URL(request.url);
+  fallbackUrl.pathname = '/';
   return env.ASSETS.fetch(new Request(fallbackUrl.toString(), request));
 }
 

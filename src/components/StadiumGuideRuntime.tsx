@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import NotFound from './NotFound';
+import { useParams } from 'react-router-dom';
+import { buildStadiumDetailSeo } from '../seo/stadiumDetailSeo';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { KAKAO_API_KEY, CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
@@ -122,6 +124,7 @@ function StadiumGuideCategorySelector({
 export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGuideRuntimeProps = {}) {
   const { theme, resolvedTheme } = useTheme();
   const runtimeState = useStadiumGuide();
+  const { stadiumId: routeStadiumId } = useParams<{ stadiumId?: string }>();
   const guideState = {
     ...runtimeState,
     ...(import.meta.env.PROD ? undefined : visualQaStateOverride),
@@ -224,7 +227,22 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     );
   }
 
+  const stadiumDetailSeo = routeStadiumId && selectedStadium?.stadiumId === routeStadiumId
+    ? buildStadiumDetailSeo(selectedStadium)
+    : null;
+
   return (
+    <>
+      {stadiumDetailSeo ? (
+        <Helmet>
+          <title>{stadiumDetailSeo.title}</title>
+          <meta name="description" content={stadiumDetailSeo.description} />
+          <meta property="og:title" content={stadiumDetailSeo.title} />
+          <meta property="og:description" content={stadiumDetailSeo.description} />
+          <meta name="twitter:title" content={stadiumDetailSeo.title} />
+          <meta name="twitter:description" content={stadiumDetailSeo.description} />
+        </Helmet>
+      ) : null}
     <div
       className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200"
       data-testid="stadium-guide-runtime"
@@ -595,5 +613,6 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
         </div>
       </div>
     </div>
+    </>
   );
 }

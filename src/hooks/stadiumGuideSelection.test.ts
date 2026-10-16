@@ -18,7 +18,9 @@ test('구장 선택 복구는 같은 id 객체를 유지하고 없으면 첫 구
   const first = makeStadium('first');
   const second = makeStadium('second');
 
-  assert.equal(resolveSelectedStadium([first, second], second), second);
+  // URL without id (/stadium) always resolves to the default stadium (sync with URL on back).
+  assert.equal(resolveSelectedStadium([first, second], second), first);
+  assert.equal(resolveSelectedStadium([first, second], second, null), first);
   assert.equal(resolveSelectedStadium([first, second], makeStadium('missing')), first);
   assert.equal(resolveSelectedStadium([], second), null);
 });

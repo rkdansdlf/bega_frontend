@@ -27,7 +27,7 @@ export const isUnknownRouteStadium = (
 
 export const resolveSelectedStadium = (
   stadiums: Stadium[],
-  previousSelected: Stadium | null,
+  _previousSelected: Stadium | null,
   preferredStadiumId?: string | null,
 ): Stadium | null => {
   if (stadiums.length === 0) {
@@ -40,5 +40,7 @@ export const resolveSelectedStadium = (
     return stadiums.find((stadium) => stadium.stadiumId === preferredId) ?? null;
   }
 
-  return stadiums.find((stadium) => stadium.stadiumId === previousSelected?.stadiumId) ?? stadiums[0];
+  // No id in the URL (/stadium): the URL is the source of truth, so going back from
+  // /stadium/<id> resets to the default (first) stadium instead of keeping the old one.
+  return stadiums[0];
 };

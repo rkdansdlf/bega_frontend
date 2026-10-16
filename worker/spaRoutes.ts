@@ -1,3 +1,5 @@
+import { STADIUM_ID_PATTERN } from '../src/utils/stadiumId';
+
 /**
  * Known SPA route matcher for the Cloudflare Worker.
  * Keep in sync with src/components/AppRoutes.tsx — unknown HTML navigations must 404.
@@ -67,8 +69,6 @@ export function isStaticAssetPath(pathname: string): boolean {
  * Stadium detail pages are only valid when prerendered at build time
  * (dist/stadium/<id>/index.html). They never fall back to the SPA shell.
  */
-import { STADIUM_ID_PATTERN } from '../src/utils/stadiumId';
-
 const STADIUM_DETAIL_PATTERN = new RegExp(`^/stadium/${STADIUM_ID_PATTERN.source.slice(1, -1)}$`);
 
 export function isPrerenderOnlyRoute(pathname: string): boolean {

@@ -198,7 +198,7 @@ test('worker falls back to index.html for known SPA routes missing a static asse
           const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
           seenUrls.push(url);
 
-          if (url.endsWith('/index.html')) {
+          if (new URL(url).pathname === '/') {
             return new Response('<html>ok</html>', {
               status: 200,
               headers: { 'content-type': 'text/html' },
@@ -214,7 +214,7 @@ test('worker falls back to index.html for known SPA routes missing a static asse
   assert.equal(response.status, 200);
   assert.deepEqual(seenUrls, [
     'https://www.begabaseball.xyz/mypage',
-    'https://www.begabaseball.xyz/index.html',
+    'https://www.begabaseball.xyz/',
   ]);
 });
 
@@ -340,4 +340,29 @@ test('worker spaRoutes stay in sync with AppRoutes', async () => {
     assert.ok([...samples].some((s) => pattern.test(s)), `worker pattern has no AppRoutes match: ${pattern}`);
   }
   assert.equal(isKnownSpaRoute('/payment'), false);
+});
+
+test('worker SPA fallback uses "/" (not /index.html, which assets 307 to "/") and keeps the query', async () => {
+  const seen: string[] = [];
+  const response = await worker.fetch(htmlNav('/oauth/callback?code=x'), {
+    ASSETS: {
+      fetch: async (input) => {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        seen.push(url);
+        const { pathname } = new URL(url);
+        if (pathname === '/index.html') {
+          return new Response(null, { status: 307, headers: { location: '/' } });
+        }
+        if (pathname === '/') {
+          return new Response('<html>shell</html>', { status: 200 });
+        }
+        return new Response('missing', { status: 404 });
+      },
+    },
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(seen, [
+    'https://www.begabaseball.xyz/oauth/callback?code=x',
+    'https://www.begabaseball.xyz/?code=x',
+  ]);
 });
