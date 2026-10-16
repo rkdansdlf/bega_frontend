@@ -95,6 +95,7 @@ export const fetchPublicStadiums = async (options = {}) => {
     }));
 };
 
+// Mirror of src/utils/stadiumId.ts (kept in sync by seo-dynamic-pages.test.mjs).
 export const STADIUM_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 export const isSafeStadiumId = (value) => typeof value === 'string' && STADIUM_ID_PATTERN.test(value);

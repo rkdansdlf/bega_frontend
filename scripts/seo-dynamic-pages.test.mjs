@@ -66,3 +66,10 @@ test('SEO_MIN_STADIUM_COUNT gate is env-configurable and disabled by default', a
   assert.doesNotThrow(() => assertMinStadiumCount(9, 9));
   assert.throws(() => assertMinStadiumCount(0, 9, 'api down'), /SEO_MIN_STADIUM_COUNT=9/);
 });
+
+test('script STADIUM_ID_PATTERN mirrors src/utils/stadiumId.ts', async () => {
+  const { STADIUM_ID_PATTERN } = await import('./seo-dynamic-pages.mjs');
+  const shared = await import('../src/utils/stadiumId.ts');
+  assert.equal(STADIUM_ID_PATTERN.source, shared.STADIUM_ID_PATTERN.source);
+  assert.equal(STADIUM_ID_PATTERN.flags, shared.STADIUM_ID_PATTERN.flags);
+});

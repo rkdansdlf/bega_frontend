@@ -67,7 +67,9 @@ export function isStaticAssetPath(pathname: string): boolean {
  * Stadium detail pages are only valid when prerendered at build time
  * (dist/stadium/<id>/index.html). They never fall back to the SPA shell.
  */
-const STADIUM_DETAIL_PATTERN = /^\/stadium\/[A-Za-z0-9_-]+$/;
+import { STADIUM_ID_PATTERN } from '../src/utils/stadiumId';
+
+const STADIUM_DETAIL_PATTERN = new RegExp(`^/stadium/${STADIUM_ID_PATTERN.source.slice(1, -1)}$`);
 
 export function isPrerenderOnlyRoute(pathname: string): boolean {
   return /^\/stadium\/[^/]+$/.test(normalizeSpaPathname(pathname));

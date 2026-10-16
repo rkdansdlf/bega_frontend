@@ -145,8 +145,6 @@ const isNoindexPath = (pathname: string): boolean => {
   return noindexRegexPatterns.some((pattern) => pattern.test(pathname));
 };
 
-const STADIUM_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
-
 const buildStadiumDetailConfig = (stadiumId: string): SeoRouteConfig => {
   const safeId = stadiumId.trim();
   return {
@@ -168,20 +166,13 @@ export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
     return buildRule(normalizedPath, routeConfig, true);
   }
 
-  const stadiumDetailMatch = normalizedPath.match(/^\/stadium\/([^/]+)$/);
+  // Only slug-shaped ids (STADIUM_ID_PATTERN in src/utils/stadiumId.ts) may be indexable;
+  // anything else falls through to noindex. Existence is enforced by the worker
+  // (non-prerendered ids -> 404) and the page (unknown ids -> NotFound + noindex).
+  // Inlined (no import) to keep the shared entry chunk within bundle budget.
+  const stadiumDetailMatch = normalizedPath.match(/^\/stadium\/([\w-]+)$/);
   if (stadiumDetailMatch) {
-    let stadiumId = '';
-    try {
-      stadiumId = decodeURIComponent(stadiumDetailMatch[1]);
-    } catch {
-      stadiumId = '';
-    }
-    // Only slug-shaped ids may be indexable; existence is enforced by the worker
-    // (non-prerendered ids -> 404) and the page (unknown ids -> NotFound + noindex).
-    if (STADIUM_ID_PATTERN.test(stadiumId)) {
-      return buildRule(normalizedPath, buildStadiumDetailConfig(stadiumId), true);
-    }
-    return buildRule(normalizedPath, null, false);
+    return buildRule(normalizedPath, buildStadiumDetailConfig(stadiumDetailMatch[1]), true);
   }
 
   if (isNoindexPath(normalizedPath)) {

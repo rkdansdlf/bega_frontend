@@ -1,7 +1,7 @@
 import type { Stadium } from '../types/stadium';
+import { STADIUM_ID_PATTERN } from '../utils/stadiumId';
 
-/** Stadium ids are URL/path-safe slugs only. */
-export const STADIUM_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+export { STADIUM_ID_PATTERN };
 
 export const isValidStadiumId = (value: unknown): value is string => (
   typeof value === 'string' && STADIUM_ID_PATTERN.test(value)
