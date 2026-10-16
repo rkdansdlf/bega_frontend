@@ -8,6 +8,7 @@ import {
   robotsDisallow,
   siteUrl as defaultSiteUrl,
 } from './seo-policy.mjs';
+import { STADIUM_ID_PATTERN } from './seo-dynamic-pages.mjs';
 
 const args = process.argv.slice(2);
 const argMap = new Map();
@@ -86,13 +87,14 @@ const addFailure = (message) => failures.push(message);
 const addWarning = (message) => warnings.push(message);
 const ORGANIZATION_LOGO_PATH = '/favicon.png';
 
-const fetchWithTimeout = async (url) => {
+const fetchWithTimeout = async (url, extraHeaders = {}) => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, {
       headers: {
         'user-agent': 'bega-seo-postdeploy-smoke/1.0',
+        ...extraHeaders,
       },
       redirect: 'manual',
       signal: controller.signal,
@@ -360,6 +362,61 @@ export const validatePrerenderedHtmlContract = (html, route, options = {}) => {
   return messages;
 };
 
+/**
+ * Splits sitemap URLs into static-policy matches, prerendered stadium detail pages
+ * (seo-dynamic-pages: `${siteUrl}/stadium/<slug>`, slug = STADIUM_ID_PATTERN) and truly unexpected URLs.
+ */
+export const classifySitemapUrls = (foundUrls, { expectedStaticUrls, expectedSiteUrl: siteBase }) => {
+  const expected = new Set(expectedStaticUrls);
+  const found = new Set(foundUrls);
+  const stadiumPrefix = `${normalizeSiteUrl(siteBase)}/stadium/`;
+  const missing = [...expected].filter((url) => !found.has(url));
+  const stadiumDetailPaths = [];
+  const unexpected = [];
+  for (const url of found) {
+    if (expected.has(url)) {
+      continue;
+    }
+    const stadiumId = url.startsWith(stadiumPrefix) ? url.slice(stadiumPrefix.length) : '';
+    if (stadiumId && STADIUM_ID_PATTERN.test(stadiumId)) {
+      stadiumDetailPaths.push(`/stadium/${stadiumId}`);
+    } else {
+      unexpected.push(url);
+    }
+  }
+  return { missing, unexpected, stadiumDetailPaths };
+};
+
+/** SEO_MIN_STADIUM_COUNT (same env as the build gate); 0/unset disables the count check. */
+export const resolveMinStadiumDetailCount = (env = process.env) => {
+  const parsed = Number.parseInt(String(env.SEO_MIN_STADIUM_COUNT ?? '').trim(), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+};
+
+/** Stadium detail HTML contract: 200 text/html, www canonical for that path, index,follow. */
+export const validateStadiumDetailResponse = ({ status, contentType, html }, routePath, siteBase) => {
+  const messages = [];
+  if (status !== 200) {
+    messages.push(`HTTP ${status}`);
+    return messages;
+  }
+  if (!String(contentType || '').toLowerCase().includes('text/html')) {
+    messages.push(`content-type 불일치: ${contentType || '<empty>'}`);
+  }
+  const canonical = `${normalizeSiteUrl(siteBase)}${routePath}`;
+  const canonicalTags = [...String(html).matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1]);
+  if (canonicalTags.length !== 1 || canonicalTags[0] !== canonical) {
+    messages.push(`canonical 불일치: expected=${canonical}, actual=${canonicalTags.join(',') || '<none>'}`);
+  }
+  if (!/<meta name="robots" content="index,follow">/.test(String(html))) {
+    messages.push('robots index,follow 누락');
+  }
+  return messages;
+};
+
+const HTML_ACCEPT = { accept: 'text/html,application/xhtml+xml' };
+let sitemapStadiumDetailPaths = [];
+
 const validateSitemapSet = (sitemapContent) => {
   const expected = new Set(indexableRoutes.map((route) => buildUrl(expectedSiteUrl, route.path)));
   const found = new Set(
@@ -367,18 +424,23 @@ const validateSitemapSet = (sitemapContent) => {
       .map((match) => match[1].trim()),
   );
 
-  for (const expectedUrl of expected) {
-    if (!found.has(expectedUrl)) {
-      addFailure(`sitemap 누락 URL: ${expectedUrl}`);
-    }
+  const { missing, unexpected, stadiumDetailPaths } = classifySitemapUrls(found, {
+    expectedStaticUrls: expected,
+    expectedSiteUrl,
+  });
+  for (const url of missing) {
+    addFailure(`sitemap 누락 URL: ${url}`);
   }
-  for (const foundUrl of found) {
-    if (!expected.has(foundUrl)) {
-      addFailure(`sitemap 예상 외 URL: ${foundUrl}`);
-    }
+  for (const url of unexpected) {
+    addFailure(`sitemap 예상 외 URL: ${url}`);
   }
-  if (expected.size === found.size && failures.every((message) => !message.startsWith('sitemap'))) {
-    addCheck('sitemap URL 집합이 SEO 정책과 일치');
+  const minStadiumCount = resolveMinStadiumDetailCount();
+  if (minStadiumCount > 0 && stadiumDetailPaths.length < minStadiumCount) {
+    addFailure(`sitemap 구장 상세 URL 부족: ${stadiumDetailPaths.length} < SEO_MIN_STADIUM_COUNT=${minStadiumCount}`);
+  }
+  sitemapStadiumDetailPaths = stadiumDetailPaths;
+  if (missing.length === 0 && unexpected.length === 0) {
+    addCheck(`sitemap URL 집합이 SEO 정책과 일치 (정적 ${expected.size} + 구장 상세 ${stadiumDetailPaths.length})`);
   }
 };
 
@@ -504,6 +566,42 @@ const main = async () => {
 
   if (routeChecks.every((route) => route.ok)) {
     addCheck('indexable route HTML contract가 SEO 정책/프리렌더 산출물과 일치');
+  }
+
+  // Stadium detail pages listed in the sitemap: all must be 200 + www canonical + index,follow.
+  const stadiumFailuresBefore = failures.length;
+  for (const routePath of sitemapStadiumDetailPaths) {
+    const url = `${baseUrl}${routePath}`;
+    try {
+      const response = await fetchWithTimeout(url, HTML_ACCEPT);
+      const html = response.status === 200 ? await response.text() : '';
+      const messages = validateStadiumDetailResponse({
+        status: response.status,
+        contentType: response.headers.get('content-type'),
+        html,
+      }, routePath, expectedSiteUrl);
+      routeChecks.push({ path: routePath, url, ok: messages.length === 0, status: response.status, failures: messages });
+      for (const message of messages) {
+        addFailure(`[${routePath}] ${message}`);
+      }
+    } catch (error) {
+      addFailure(`[${routePath}] 요청 예외: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  if (sitemapStadiumDetailPaths.length > 0 && failures.length === stadiumFailuresBefore) {
+    addCheck(`구장 상세 ${sitemapStadiumDetailPaths.length}개 200 + www canonical + index,follow`);
+  }
+
+  // Soft-404 guard: a non-prerendered (but slug-shaped) stadium id must be a real 404.
+  try {
+    const probe = await fetchWithTimeout(`${baseUrl}/stadium/__seo_smoke_missing__`, HTML_ACCEPT);
+    if (probe.status !== 404) {
+      addFailure(`[/stadium/__seo_smoke_missing__] 미등록 구장 id가 404가 아님: HTTP ${probe.status}`);
+    } else {
+      addCheck('미등록 구장 id는 HTTP 404');
+    }
+  } catch (error) {
+    addFailure(`미등록 구장 id 요청 예외: ${error instanceof Error ? error.message : String(error)}`);
   }
 
   addWarning('Post-deploy smoke는 단기 상태 점검이며, CWV 평가는 별도 기준선 리포트를 사용합니다.');
