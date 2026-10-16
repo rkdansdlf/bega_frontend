@@ -121,6 +121,7 @@ export default function AppRoutes() {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/stadium" element={<StadiumGuide />} />
+          <Route path="/stadium/:stadiumId" element={<StadiumGuide />} />
         </Route>
 
         <Route element={<Layout authenticated={true} />}>

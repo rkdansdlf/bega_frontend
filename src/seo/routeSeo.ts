@@ -145,12 +145,30 @@ const isNoindexPath = (pathname: string): boolean => {
   return noindexRegexPatterns.some((pattern) => pattern.test(pathname));
 };
 
+const buildStadiumDetailConfig = (stadiumId: string): SeoRouteConfig => {
+  const safeId = stadiumId.trim();
+  return {
+    path: `/stadium/${safeId}`,
+    title: `${safeId} 구장 가이드 | BEGA`,
+    description: `${safeId} 구장의 좌석·주변 시설·방문 정보를 BEGA 구장 가이드에서 확인하세요.`,
+    heading: `${safeId} 구장 가이드`,
+    schemaType: 'page',
+    changefreq: 'weekly',
+    priority: '0.7',
+  };
+};
+
 export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
   const normalizedPath = normalizePathname(pathname);
   const routeConfig = indexableRouteMap.get(normalizedPath) || null;
 
   if (routeConfig) {
     return buildRule(normalizedPath, routeConfig, true);
+  }
+
+  const stadiumDetailMatch = normalizedPath.match(/^\/stadium\/([^/]+)$/);
+  if (stadiumDetailMatch) {
+    return buildRule(normalizedPath, buildStadiumDetailConfig(decodeURIComponent(stadiumDetailMatch[1])), true);
   }
 
   if (isNoindexPath(normalizedPath)) {

@@ -77,6 +77,16 @@
       "priority": "0.4"
     },
     {
+      "path": "/stadium",
+      "title": "KBO 구장 가이드 | BEGA",
+      "description": "KBO 구장별 좌석·주변 맛집·편의시설 정보를 한곳에서 확인하세요.",
+      "heading": "KBO 구장 가이드",
+      "performanceShell": true,
+      "schemaType": "page",
+      "changefreq": "weekly",
+      "priority": "0.8"
+    },
+    {
       "path": "/leaderboard",
       "title": "팬 리더보드 | BEGA",
       "description": "활동 지표 기반 팬 리더보드를 확인해보세요.",

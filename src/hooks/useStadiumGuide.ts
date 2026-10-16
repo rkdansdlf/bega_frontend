@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Stadium, Place, CategoryType } from '../types/stadium';
 import { loadKakaoMapScript, searchNearbyPlaces, updateMapMarkers } from '../utils/kakaoMap';
@@ -18,6 +19,9 @@ import { resolveSelectedStadium } from './stadiumGuideSelection';
 const EMPTY_STADIUMS: Stadium[] = [];
 
 export const useStadiumGuide = () => {
+  const navigate = useNavigate();
+  const params = useParams<{ stadiumId?: string }>();
+  const routeStadiumId = params.stadiumId?.trim() || null;
   const [selectedStadium, setSelectedStadium] = useState<Stadium | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('food');
   const [places, setPlaces] = useState<Place[]>([]);
@@ -131,8 +135,10 @@ export const useStadiumGuide = () => {
       return;
     }
 
-    setSelectedStadium((previousSelected) => resolveSelectedStadium(stadiums, previousSelected));
-  }, [stadiums, stadiumsQuery.error, stadiumsQuery.isError, stadiumsQuery.isSuccess]);
+    setSelectedStadium((previousSelected) => (
+      resolveSelectedStadium(stadiums, previousSelected, routeStadiumId)
+    ));
+  }, [routeStadiumId, stadiums, stadiumsQuery.error, stadiumsQuery.isError, stadiumsQuery.isSuccess]);
 
   // ========== 지도 초기화 ==========
   useEffect(() => {
@@ -230,7 +236,14 @@ export const useStadiumGuide = () => {
 
   const handleStadiumChange = (stadiumId: string) => {
     const stadium = stadiums.find((s) => s.stadiumId === stadiumId);
-    if (stadium) setSelectedStadium(stadium);
+    if (!stadium) {
+      return;
+    }
+    setSelectedStadium(stadium);
+    const nextPath = `/stadium/${stadium.stadiumId}`;
+    if (routeStadiumId !== stadium.stadiumId) {
+      navigate(nextPath, { replace: Boolean(routeStadiumId) });
+    }
   };
 
   const retryStadiums = useCallback(() => {

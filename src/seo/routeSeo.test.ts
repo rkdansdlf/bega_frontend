@@ -41,3 +41,11 @@ test('canonical url normalizes trailing slash', () => {
   assert.equal(buildCanonicalUrl('/home/'), `${SITE_URL}/home`);
   assert.equal(buildCanonicalUrl('/'), SITE_URL);
 });
+
+test('stadium detail route is indexable with www canonical', () => {
+  const rule = getSeoRouteRule('/stadium/JAMSIL');
+  assert.equal(rule.isIndexable, true);
+  assert.equal(rule.robots, 'index,follow');
+  assert.equal(rule.canonicalUrl, `${SITE_URL}/stadium/JAMSIL`);
+  assert.match(rule.title, /JAMSIL/);
+});

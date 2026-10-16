@@ -1,3 +1,9 @@
+import {
+  isKnownSpaRoute,
+  isStaticAssetPath,
+  normalizeSpaPathname,
+} from './spaRoutes';
+
 interface AssetsBinding {
   fetch(input: Request | string | URL, init?: RequestInit): Promise<Response>;
 }
@@ -41,6 +47,34 @@ function isHtmlNavigation(request: Request): boolean {
   return accept.includes('text/html');
 }
 
+function buildNotFoundResponse(request: Request): Response {
+  const body = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>페이지를 찾을 수 없습니다 | BEGA</title>
+  <link rel="canonical" href="https://${CANONICAL_HOST}/404" />
+</head>
+<body>
+  <main>
+    <h1>404</h1>
+    <p>요청하신 페이지를 찾을 수 없습니다.</p>
+    <p><a href="https://${CANONICAL_HOST}/home">홈으로 이동</a></p>
+  </main>
+</body>
+</html>`;
+
+  return new Response(request.method === 'HEAD' ? null : body, {
+    status: 404,
+    headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'no-store',
+    },
+  });
+}
+
 async function serveSpaAsset(request: Request, env: Env): Promise<Response> {
   const assetResponse = await env.ASSETS.fetch(request);
   if (assetResponse.status !== 404 || !isHtmlNavigation(request)) {
@@ -54,6 +88,7 @@ async function serveSpaAsset(request: Request, env: Env): Promise<Response> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    const pathname = normalizeSpaPathname(url.pathname);
 
     if (shouldBlockPreviewHost(url)) {
       return new Response(null, { status: 404 });
@@ -63,8 +98,18 @@ export default {
       return buildCanonicalRedirect(url);
     }
 
-    if (isApiPath(url.pathname)) {
+    if (isApiPath(pathname)) {
       return new Response(null, { status: 404 });
+    }
+
+    // Static assets: never SPA-fallback; missing files stay real 404s.
+    if (isStaticAssetPath(pathname)) {
+      return env.ASSETS.fetch(request);
+    }
+
+    // Soft-404 fix: unknown HTML navigations must not fall through to index.html (200).
+    if (isHtmlNavigation(request) && !isKnownSpaRoute(pathname)) {
+      return buildNotFoundResponse(request);
     }
 
     return serveSpaAsset(request, env);
@@ -73,6 +118,7 @@ export default {
 
 export {
   buildCanonicalRedirect,
+  buildNotFoundResponse,
   isApiPath,
   isHtmlNavigation,
   serveSpaAsset,

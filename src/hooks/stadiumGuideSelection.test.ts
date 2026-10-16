@@ -22,3 +22,11 @@ test('구장 선택 복구는 같은 id 객체를 유지하고 없으면 첫 구
   assert.equal(resolveSelectedStadium([first, second], makeStadium('missing')), first);
   assert.equal(resolveSelectedStadium([], second), null);
 });
+
+test('URL preferred stadium id wins when present in the list', () => {
+  const first = makeStadium('first');
+  const second = makeStadium('second');
+
+  assert.equal(resolveSelectedStadium([first, second], first, 'second'), second);
+  assert.equal(resolveSelectedStadium([first, second], first, 'missing'), first);
+});
