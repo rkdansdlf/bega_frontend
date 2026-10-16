@@ -41,3 +41,23 @@ for (const variant of HOVER_VARIANTS) {
     assert.match(css, /:hover/, `${variant} dark hover utility generated no CSS`);
   });
 }
+
+test('secondary Button has a resting fill in dark that differs from the black surfaces', async () => {
+  // `bg-secondary` is black in dark, so a secondary Button looked exactly like `ghost`: label text
+  // on the page. It needs its own dark fill; the hover tint (input/50) must stay stronger than it.
+  const tokens = buttonVariantClasses.secondary.split(/\s+/);
+  const fills = tokens.filter((token) => token.startsWith('dark:bg-'));
+  assert.ok(fills.length > 0, 'secondary has no dark:bg-* resting fill');
+  for (const fill of fills) {
+    const [colour, alpha] = fill.slice('dark:bg-'.length).split('/');
+    assert.ok(!BLACK_IN_DARK.has(colour), `secondary dark fill uses a token that is black in dark: ${fill}`);
+    const hover = tokens.find((token) => token.startsWith('dark:hover:bg-'));
+    const hoverAlpha = Number(hover?.split('/')[1] ?? 0);
+    assert.ok(Number(alpha ?? 100) < hoverAlpha, `${fill} must stay weaker than ${hover} so hover still shows`);
+  }
+  const { css } = await postcss([tailwindcss({ ...config, content: [{ raw: fills.join(' ') }] })]).process(
+    '@tailwind utilities;',
+    { from: undefined },
+  );
+  assert.match(css, /background-color/, 'secondary dark fill generated no CSS');
+});
