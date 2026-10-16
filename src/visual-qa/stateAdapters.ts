@@ -27564,32 +27564,6 @@ const resolveConfirmDialogRendererAdapter = (
       theme,
     };
   },
-  'landing.feature-card': (context) => {
-    const copy = requireStateValueFromMap(context, 'data', featureCardCopy);
-    requireStateValueFromMap(context, 'interactions', {
-      default: 'default',
-      'focus-visible': 'focus-visible',
-      hover: 'hover',
-      pressed: 'pressed',
-    });
-    const iconKey = resolveDeclaredVariant(context, 'icon', featureCardIcons);
-    const image = resolveDeclaredVariant(context, 'image', featureCardImages);
-    const presentation = resolveDeclaredVariant(context, 'presentation', featureCardPresentations);
-    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
-      dark: 'dark',
-      light: 'light',
-    });
-    return {
-      props: {
-        feature: { ...copy, ...image, iconKey },
-        index: 0,
-        ...presentation,
-        onToggle: () => {},
-      },
-      surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-background p-0 text-foreground shadow-none',
-      theme,
-    };
-  },
   'landing.footer': (context) => {
     requireStateValueFromMap(context, 'data', { single: 'single' });
     requireStateValueFromMap(context, 'interactions', {
@@ -28847,36 +28821,6 @@ const resolveConfirmDialogRendererAdapter = (
     }
     return resolveLandingStatic(context, selectors[context.componentId]);
   },
-  'landing.laptop-mockup': (context) => {
-    const dataState = requireStateValueFromMap(context, 'data', {
-      empty: 'empty',
-      'long-korean': 'long-korean',
-      'maximum-supported': 'maximum-supported',
-      single: 'single',
-      'unbroken-token': 'unbroken-token',
-    } as const);
-    const preset = resolveDeclaredVariant(context, 'feature', laptopFeaturePresets);
-    const image = resolveDeclaredVariant(context, 'image', featureCardImages);
-    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
-      dark: 'dark',
-      light: 'light',
-    });
-    const copy = featureCardCopy[dataState];
-    const feature = dataState === 'single'
-      ? { ...preset, ...image, guide: copy.guide }
-      : {
-          ...preset,
-          ...image,
-          description: copy.description,
-          guide: copy.guide,
-          title: dataState === 'empty' ? '' : `${preset.title} · ${copy.title}`,
-        };
-    return {
-      props: { activeFeature: 0, features: [feature] },
-      surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-background p-0 text-foreground shadow-none',
-      theme,
-    };
-  },
   'landing.page': (context) => {
     requireStateValue(context, 'data', 'populated');
     requireStateValue(context, 'interactions', 'default');
@@ -28893,32 +28837,6 @@ const resolveConfirmDialogRendererAdapter = (
     '[data-testid="landing-app-preview"]',
     { fixedTheme: true },
   ),
-  'landing.capability-showcase': (context) => {
-    const visualQaStateOverride = requireStateValueFromMap(context, 'data', {
-      populated: undefined,
-      'long-korean': {
-        description: '경기 전 준비부터 현장 동선과 경기 후 기록까지 모든 기능을 좁은 모바일 화면에서도 차분하게 확인할 수 있도록 설명하는 긴 한국어 소개 문구입니다.',
-        heading: '경기 전과 현장과 경기 후의 모든 야구 경험을 한 화면에서 자연스럽게 이어서 확인합니다',
-        storyDescriptionSuffix: ' 좁은 화면에서도 세부 설명이 서로 겹치지 않고 여러 줄로 자연스럽게 이어집니다.',
-        storyTitleSuffix: ' 모바일 상세 기능 안내',
-      },
-      'unbroken-token': {
-        description: `CAPABILITY-DESCRIPTION-${'UNBROKEN'.repeat(18)}`,
-        heading: `CAPABILITY-HEADING-${'UNBROKEN'.repeat(18)}`,
-        storyDescriptionSuffix: ` CAPABILITY-STORY-DESCRIPTION-${'UNBROKEN'.repeat(18)}`,
-        storyTitleSuffix: ` CAPABILITY-STORY-TITLE-${'UNBROKEN'.repeat(18)}`,
-      },
-      'broken-image': {
-        imageSrc: '/__visual-qa__/missing-capability.webp',
-      },
-    });
-    return {
-      props: visualQaStateOverride ? { visualQaStateOverride } : {},
-      captureSelector: '[data-testid="landing-capability-showcase"]',
-      surfaceClassName: landingDirectSurface,
-      theme: resolveLandingTheme(context),
-    };
-  },
   'landing.closing': (context) => resolveLandingStatic(
     context,
     '[data-testid="landing-closing"]',
@@ -28981,28 +28899,6 @@ const resolveConfirmDialogRendererAdapter = (
         visualFirst,
       },
       captureSelector: `[data-testid="landing-feature-${number}"]`,
-      surfaceClassName: landingDirectSurface,
-      theme: resolveLandingTheme(context),
-    };
-  },
-  'landing.features-runtime': (context) => {
-    requireStateValue(context, 'data', 'maximum-supported');
-    const interaction = requireStateValueFromMap(context, 'interactions', {
-      default: 'default',
-      'focus-visible': 'focus-visible',
-      hover: 'hover',
-      pressed: 'pressed',
-      selected: 'selected',
-    });
-    if (
-      interaction !== 'default'
-      && !/^feature-[0-5]$/.test(context.interactionTargetId ?? '')
-    ) {
-      throw new Error(`지원하지 않는 Visual QA interaction target: ${context.interactionTargetId ?? '<missing>'}`);
-    }
-    return {
-      props: {},
-      captureSelector: '[data-testid="landing-features"]',
       surfaceClassName: landingDirectSurface,
       theme: resolveLandingTheme(context),
     };
@@ -35791,88 +35687,6 @@ const resolveConfirmDialogRendererAdapter = (
   'ui.card-title': (context) => ({
     props: { children: resolveCardCopy(context).title },
     surfaceClassName: cardPrimitiveSurface,
-  }),
-  'ui.page-container': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-cta-group': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        align: resolveDeclaredVariant(context, 'align', {
-          center: 'center',
-          start: 'start',
-        }),
-        children: pageCtaChildren(copy),
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-mockup-frame': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-section': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-section-header': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        align: resolveDeclaredVariant(context, 'align', {
-          center: 'center',
-          start: 'start',
-        }),
-        description: resolveDeclaredVariant(context, 'description', {
-          missing: undefined,
-          present: copy.description,
-        }),
-        measure: resolveDeclaredVariant(context, 'measure', {
-          default: 'default',
-          narrow: 'narrow',
-        }),
-        title: copy.title,
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-stack': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        children: [0, 1, 2].map((index) => createElement(
-          'div',
-          {
-            className: 'min-w-0 rounded-lg border bg-white p-3 [overflow-wrap:anywhere]',
-            key: index,
-          },
-          `${copy.body} ${index + 1}`,
-        )),
-        gap: resolveDeclaredVariant(context, 'gap', {
-          lg: 'lg',
-          md: 'md',
-          sm: 'sm',
-          xl: 'xl',
-        }),
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-text-block': (context) => ({
-    props: {
-      align: resolveDeclaredVariant(context, 'align', {
-        center: 'center',
-        start: 'start',
-      }),
-      children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)),
-      measure: resolveDeclaredVariant(context, 'measure', {
-        default: 'default',
-        narrow: 'narrow',
-      }),
-    },
-    surfaceClassName: pagePrimitiveSurface,
   }),
   'ui.status-badge': (context) => {
     const interaction = requireStateValueFromMap(context, 'interactions', {

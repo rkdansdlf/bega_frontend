@@ -86,7 +86,7 @@ KBO Platform 프론트엔드의 브랜드 색상은 **[src/index.css](../src/ind
 - `ui/button-styles.ts`를 Button과 PlainButton의 공통 variant·size 스타일 기준으로 사용합니다. PlainButton은 경량 class joining과 렌더러를 유지하며 공개 variant/size 범위를 확대하지 않습니다. `.bf`의 wrapping·disabled·SVG·모바일 44px 및 데스크톱 밀도 계약을 유지합니다.
 - Input·Textarea·ReviewDialog의 입력 표면은 지원되는 `bg-background`와 기존 `dark:bg-input/30`을 사용합니다. `bg-input-background`는 정의되지 않은 유틸리티이므로 사용하지 않습니다.
 - 기본 Skeleton은 라이트 `bg-gray-200`을 유지하고 다크에서는 `bg-input` 중립 톤으로 검정 카드와 구분합니다. 사용자 className override와 크기·motion 계약은 유지합니다.
-- Card의 `px-4` / `sm:px-6`, page-primitives의 Stack gap과 Section 간격을 먼저 재사용합니다. Prediction 헤더, Cheer feed, Admin 콘솔과 구장 레이아웃의 의도된 차이는 별도로 유지합니다.
+- Card의 `px-4` / `sm:px-6`을 먼저 재사용합니다. Prediction 헤더, Cheer feed, Admin 콘솔과 구장 레이아웃의 의도된 차이는 별도로 유지합니다.
 
 ## 8. Tone Baseline 감사 통합 기록 (2026-09-08)
 

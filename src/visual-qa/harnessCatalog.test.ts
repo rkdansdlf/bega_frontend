@@ -1077,7 +1077,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 95586);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 93785);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -1090,7 +1090,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    520,
+    509,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1260,12 +1260,6 @@ test('registered component states expand to executable adapter-backed scenarios'
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
-      componentId === 'src/components/FeatureCard.tsx#FeatureCard'
-    )).length,
-    1440,
-  );
-  assert.equal(
-    AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
       componentId === 'src/components/EndOfFeed.tsx#EndOfFeed'
     )).length,
     8,
@@ -1275,12 +1269,6 @@ test('registered component states expand to executable adapter-backed scenarios'
       componentId === 'src/components/Footer.tsx#Footer'
     )).length,
     14,
-  );
-  assert.equal(
-    AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
-      componentId === 'src/components/LaptopMockup.tsx#LaptopMockup'
-    )).length,
-    240,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1385,29 +1373,6 @@ test('registered component states expand to executable adapter-backed scenarios'
     CardFooter: 6,
     CardHeader: 12,
     CardTitle: 3,
-  });
-  const pagePrimitiveScenarioCounts = Object.fromEntries([
-    'Container',
-    'CTAGroup',
-    'MockupFrame',
-    'Section',
-    'SectionHeader',
-    'Stack',
-    'TextBlock',
-  ].map((exportName) => [
-    exportName,
-    AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
-      componentId === `src/components/ui/page-primitives.tsx#${exportName}`
-    )).length,
-  ]));
-  assert.deepEqual(pagePrimitiveScenarioCounts, {
-    Container: 3,
-    CTAGroup: 6,
-    MockupFrame: 3,
-    Section: 3,
-    SectionHeader: 24,
-    Stack: 12,
-    TextBlock: 12,
   });
   const adSlotScenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId === 'src/components/ads/AdSlot.tsx#AdSlot'
@@ -4101,36 +4066,6 @@ test('public landing tree classifies every visual symbol and reports new pending
     stateCombinationId === 'data=populated|interactions=open|variant.theme=light|interactionTarget=home'
   ));
   assert.equal(heroOpen?.interactionPlan?.waitForSelector, '[data-vqa-router-pathname="/home"]');
-});
-
-test('legacy landing showcases have exhaustive direct mobile scenarios', async () => {
-  const componentIds = [
-    'src/components/LandingCapabilityShowcase.tsx#LandingCapabilityShowcase',
-    'src/components/LandingFeaturesRuntime.tsx#LandingFeaturesRuntime',
-  ];
-  const manifest = JSON.parse(await readFile(
-    new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url),
-    'utf8',
-  )) as {
-    components: Array<{ id: string; status: string }>;
-  };
-  const pending = manifest.components.filter(({ id, status }) => (
-    componentIds.includes(id) && status !== 'registered'
-  ));
-  const scenarios = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
-    componentIds.includes(componentId)
-  ));
-
-  assert.deepEqual(pending, []);
-  assert.equal(scenarios.length, 58);
-  assert.equal(new Set(scenarios.map(({ componentId }) => componentId)).size, 2);
-  const selectedTargets = scenarios.filter(({ componentId, states }) => (
-    componentId === componentIds[1] && states.interactions === 'selected'
-  ));
-  assert.equal(selectedTargets.length, 12);
-  assert.ok(selectedTargets.every(({ interactionPlan }) => (
-    interactionPlan?.waitForSelector?.includes('[aria-expanded="true"]')
-  )));
 });
 
 test('lazy emoji picker has exhaustive mobile inventory, pressure, size, and interaction scenarios', async () => {

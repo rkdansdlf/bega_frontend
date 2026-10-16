@@ -4696,26 +4696,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/FeatureCard.tsx#FeatureCard",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/FeatureCard.tsx#FeatureCard.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/FeatureCard.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/figma/ImageWithFallback.tsx#ERROR_IMG_SRC",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
@@ -11484,45 +11464,6 @@
     },
     {
       "id": "src/components/landing/vignettes/LandingPredictionVignette.tsx#LandingPredictionVignette",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LandingCapabilityShowcase.tsx#FEATURE_STORIES",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/LandingCapabilityShowcase.tsx#LandingCapabilityShowcase",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LandingFeaturesRuntime.tsx#LandingFeaturesRuntime",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LaptopMockup.tsx#LaptopMockup",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -20769,76 +20710,6 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "Input"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#Container",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Container"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#CTAGroup",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "CTAGroup"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#MockupFrame",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "MockupFrame"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#Section",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Section"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#SectionHeader",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "SectionHeader"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#Stack",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Stack"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#TextBlock",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "TextBlock"
     },
     {
       "id": "src/components/ui/plain-button.tsx#Button",
