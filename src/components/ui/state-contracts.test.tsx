@@ -148,3 +148,28 @@ test('dark destructive text and borders keep at least 4.5:1 contrast on the blac
   assert.ok(contrastOnBlack >= 4.5, `destructive on black is ${contrastOnBlack.toFixed(2)}:1`);
   assert.match(cssSource, /--surface-app-dark:\s*0 0% 0%/);
 });
+
+test('light destructive keeps 4.5:1 for text on the light surfaces and for the white button label', () => {
+  const rootBlock = /\n {2}:root \{([\s\S]*?)\n {2}\}\n/.exec(cssSource);
+  assert.ok(rootBlock, 'expected a :root block in index.css');
+  const primitive = /--destructive:\s*var\((--primitive-color-red-\d+)\)/.exec(rootBlock[1]);
+  assert.ok(primitive, 'light --destructive must reference a red primitive');
+  const hsl = (name: string) => {
+    const match = new RegExp(`${name}:\\s*([\\d.]+)\\s+([\\d.]+)%\\s+([\\d.]+)%`).exec(rootBlock[1]);
+    assert.ok(match, `light mode must define ${name}`);
+    return hslToRgb(Number(match[1]), Number(match[2]), Number(match[3]));
+  };
+  const ratio = (a: number[], b: number[]) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const red = hsl(primitive[1]);
+  const white = hsl('--primitive-color-neutral-0');
+  const subtle = hsl('--primitive-color-neutral-50');
+  // text-destructive on the page/card, text-destructive on the subtle surface, and the white
+  // label of the destructive Button (text-15 semibold is not "large text", so 4.5:1 applies).
+  for (const [label, against] of [['white surface', white], ['subtle surface', subtle]] as const) {
+    assert.ok(ratio(red, against) >= 4.5, `light destructive on ${label} is ${ratio(red, against).toFixed(2)}:1`);
+  }
+  assert.ok(ratio(white, red) >= 4.5, `white on light destructive is ${ratio(white, red).toFixed(2)}:1`);
+});
