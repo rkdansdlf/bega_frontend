@@ -458,9 +458,11 @@ describe('Mate Visual QA', () => {
       } else {
         cy.get('[data-testid="mate-desktop-action-rail"]').should('not.be.visible');
         cy.get('[data-testid="mate-mobile-action-bar"]').should('be.visible');
-        cy.contains('자세히').click();
-        cy.contains('참여 현황').should('be.visible');
-        cy.get('.fixed.inset-0.z-\\[90\\]').click('topLeft');
+        cy.get('[data-testid="mate-detail-mobile-summary"]').should('be.visible').click();
+        cy.get('[data-testid="mate-detail-mobile-summary"]').should('have.attr', 'aria-expanded', 'true');
+        cy.get('[data-testid="mate-detail-action-sheet"]').should('be.visible');
+        cy.get('[data-testid="mate-detail-action-sheet-backdrop"]').click('topLeft');
+        cy.get('[data-testid="mate-detail-action-sheet-backdrop"]').should('not.exist');
       }
     });
   });
