@@ -1,4 +1,12 @@
-import rawSeoRoutes from '../../seo-routes.json';
+// Named imports only (no default import) so Vite tree-shakes headOnlyIndexableRoutes
+// out of the shared entry chunk.
+import {
+  defaultOgImagePath,
+  indexableRoutes,
+  noindexPrefixes,
+  noindexRegex,
+  robotsDisallow,
+} from '../../seo-routes.json';
 
 type SchemaType = 'home' | 'page';
 
@@ -26,7 +34,13 @@ const DEFAULT_DESCRIPTION = 'KBO 팬을 위한 경기 정보와 커뮤니티를 
 const DEFAULT_HEADING = 'BEGA';
 const FALLBACK_OG_IMAGE_PATH = '/favicon.png';
 
-const seoPolicy = rawSeoRoutes as SeoPolicy;
+const seoPolicy = {
+  defaultOgImagePath,
+  indexableRoutes,
+  noindexPrefixes,
+  noindexRegex,
+  robotsDisallow,
+} as SeoPolicy;
 const viteEnv = ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env || {});
 
 const normalizeSiteUrl = (value: string): string => value.replace(/\/+$/, '');
@@ -92,6 +106,8 @@ export type SeoRouteRule = {
   prerender: boolean;
   changefreq: string;
   priority: string;
+  /** SeoHead emits no tags (keeps prerendered head); canonical/robots here are for reference. */
+  headOnly?: boolean;
 };
 
 export const buildCanonicalUrl = (pathname: string): string => {
@@ -151,6 +167,13 @@ export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
 
   if (routeConfig) {
     return buildRule(normalizedPath, routeConfig, true);
+  }
+
+  // /stadium and stadium detail (slug ids only, = STADIUM_ID_PATTERN): headOnly rule — SeoHead keeps the
+  // prerendered head; the stadium chunk sets the Korean title/description/canonical/robots.
+  // Existence: worker 404s non-prerendered ids; the page renders NotFound + noindex.
+  if (/^\/stadium(\/[\w-]+)?$/.test(normalizedPath)) {
+    return { ...buildRule(normalizedPath, null, true), headOnly: true };
   }
 
   if (isNoindexPath(normalizedPath)) {

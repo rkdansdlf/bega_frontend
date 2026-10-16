@@ -422,7 +422,7 @@ describe('Stadium Guide Quality Flow', () => {
     cy.get('[data-testid="daegu-section-finder-item-daegu-away-cheering-1-1"]').filter(':visible').first().click();
     cy.contains('button', '시야 사진 올리기').click();
 
-    cy.location('pathname').should('eq', '/stadium');
+    cy.location('pathname').should('eq', '/stadium/DAEGU');
     cy.get('[data-testid="seat-view-direct-upload-modal"]', { timeout: 10000 })
       .should('be.visible')
       .and('contain', '시야 사진 올리기')
@@ -450,7 +450,7 @@ describe('Stadium Guide Quality Flow', () => {
     cy.window()
       .its('sessionStorage')
       .invoke('getItem', 'pendingLoginRedirect')
-      .should('eq', '/stadium');
+      .should('eq', '/stadium/DAEGU');
   });
 
   it('모바일에서 카드 탭 → 주소 상세 정보가 펼쳐지고 재탭 시 닫힌다', () => {
