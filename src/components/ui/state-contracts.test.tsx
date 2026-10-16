@@ -173,3 +173,42 @@ test('light destructive keeps 4.5:1 for text on the light surfaces and for the w
   }
   assert.ok(ratio(white, red) >= 4.5, `white on light destructive is ${ratio(white, red).toFixed(2)}:1`);
 });
+
+test('destructive hover and error text on tinted surfaces keep 4.5:1', () => {
+  const ratio = (a: number[], b: number[]) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const block = (pattern: RegExp) => {
+    const match = pattern.exec(cssSource);
+    assert.ok(match, `expected ${pattern} in index.css`);
+    return match[1];
+  };
+  const rootBlock = block(/\n {2}:root \{([\s\S]*?)\n {2}\}\n/);
+  const darkBlock = block(/\n {2}\.dark \{([\s\S]*?)\n {2}\}\n/);
+  const hslOf = (source: string, name: string) => {
+    const match = new RegExp(`${name}:\\s*([\\d.]+)\\s+([\\d.]+)%\\s+([\\d.]+)%`).exec(source);
+    assert.ok(match, `expected a literal hsl for ${name}`);
+    return hslToRgb(Number(match[1]), Number(match[2]), Number(match[3]));
+  };
+  const white = [1, 1, 1];
+
+  // Light: --destructive-hover points at --status-error-text; dark has its own literal.
+  assert.match(rootBlock, /--destructive-hover:\s*var\(--status-error-text\)/);
+  const lightHover = hslOf(rootBlock, '--status-error-text');
+  assert.ok(ratio(white, lightHover) >= 4.5, `white on light hover is ${ratio(white, lightHover).toFixed(2)}:1`);
+  const darkHover = hslOf(darkBlock, '--destructive-hover');
+  assert.ok(ratio(white, darkHover) >= 4.5, `white on dark hover is ${ratio(white, darkHover).toFixed(2)}:1`);
+
+  // Light error text on the strongest destructive tint the app uses (bg-destructive/20 over white).
+  const lightDestructive = hslOf(rootBlock, '--primitive-color-red-600');
+  const tint = lightDestructive.map((channel) => channel * 0.2 + 1 * 0.8);
+  assert.ok(ratio(lightHover, tint) >= 4.5, `error text on destructive/20 is ${ratio(lightHover, tint).toFixed(2)}:1`);
+  const plainOnTint = ratio(lightDestructive, tint);
+  assert.ok(plainOnTint < 4.5, 'plain destructive on its own tint was the reason status-error-text is used there');
+
+  // The Button must use the token, not the translucent shade that measured 4.32:1.
+  const html = renderToStaticMarkup(createElement(Button, { variant: 'destructive' }, 'x'));
+  assert.match(html, /hover:bg-destructive-hover/);
+  assert.doesNotMatch(html, /hover:bg-destructive\/90/);
+});

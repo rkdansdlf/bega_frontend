@@ -82,6 +82,7 @@
     --accent-foreground: var(--text-primary);
     --destructive: var(--primitive-color-red-600);
     --destructive-foreground: var(--text-inverse);
+    --destructive-hover: var(--status-error-text);
     --border: var(--border-default);
     --input: var(--border-default);
     --ring: var(--focus-ring);
@@ -222,6 +223,7 @@
     --accent-foreground: var(--text-primary);
     --destructive: var(--primitive-color-red-500);
     --destructive-foreground: var(--text-inverse);
+    --destructive-hover: 0 84.2% 50%;
     --border: var(--border-default);
     --input: var(--border-default);
     --ring: var(--focus-ring);
