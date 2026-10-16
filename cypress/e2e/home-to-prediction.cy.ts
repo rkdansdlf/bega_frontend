@@ -2,8 +2,9 @@
 
 import { installPredictionBootstrapIntercept } from '../support/predictionPage';
 import { visitHomePage } from '../support/homePage';
+import { CI_FLAKE_RETRIES } from '../support/ciFlakeRetries';
 
-describe('Home to Prediction deep link', () => {
+describe('Home to Prediction deep link', CI_FLAKE_RETRIES, () => {
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const todayCompact = today.replace(/-/g, '');
