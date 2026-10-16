@@ -43,7 +43,7 @@ export default function MateCreateMatchStep({
 
       <div className="space-y-4">
         <div>
-          <FieldLabel htmlFor="gameDate">경기 날짜 <span className="text-red-500 ml-0.5">*</span></FieldLabel>
+          <FieldLabel htmlFor="gameDate">경기 날짜 <span className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
           <Input
             id="gameDate"
             data-testid="mate-create-match-date"
@@ -59,7 +59,7 @@ export default function MateCreateMatchStep({
           <div className="grid gap-3 pt-2">
             {matchLoadErrorMessage && (
               <div className="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <p className="min-w-0 text-body text-red-500 [overflow-wrap:anywhere]">{matchLoadErrorMessage}</p>
+                <p className="min-w-0 text-body text-red-600 dark:text-red-500 [overflow-wrap:anywhere]">{matchLoadErrorMessage}</p>
                 <Button
                   data-testid="mate-create-match-retry"
                   variant="outline"

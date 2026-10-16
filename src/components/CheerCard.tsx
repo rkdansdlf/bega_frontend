@@ -355,7 +355,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                             </span>
                             {renderPostTypeBadge(effectivePostType, post.teamColor)}
                             {((post.repostType === 'SIMPLE' && post.originalPost && post.isHot) || (!post.repostType && post.isHot)) && (
-                                <span className="text-body font-bold text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/50 px-2 py-0.5 rounded-full">
+                                <span className="text-body font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/50 px-2 py-0.5 rounded-full">
                                     HOT
                                 </span>
                             )}
@@ -401,7 +401,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                         setIsOwnerMenuOpen(false);
                                         void handleDelete(event);
                                     }}
-                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-600 dark:text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                                 >
                                     <TrashIcon className="mr-2 h-4 w-4" />
                                     삭제하기

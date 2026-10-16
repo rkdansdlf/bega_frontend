@@ -73,7 +73,7 @@ export default function MateDetailQrPanel({
           </div>
         ) : null}
         {qrSessionError ? (
-          <p className="text-body text-center text-red-500">{qrSessionError}</p>
+          <p className="text-body text-center text-red-600 dark:text-red-500">{qrSessionError}</p>
         ) : null}
       </div>
     </PlainDialog>

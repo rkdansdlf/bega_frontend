@@ -29,7 +29,7 @@ export default function MateCreateSeatPricingFields({
       className="min-w-0 space-y-6 [overflow-wrap:anywhere]"
     >
       <div className="min-w-0 space-y-2">
-        <FieldLabel htmlFor="maxParticipants" className="text-base font-bold sm:text-lg">모집 인원 <span className="text-red-500 ml-0.5">*</span></FieldLabel>
+        <FieldLabel htmlFor="maxParticipants" className="text-base font-bold sm:text-lg">모집 인원 <span className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
         <select
           id="maxParticipants"
           data-testid="mate-create-max-participants"
@@ -46,7 +46,7 @@ export default function MateCreateSeatPricingFields({
       </div>
 
       <div className="min-w-0 space-y-2">
-        <FieldLabel htmlFor="ticketPrice" className="text-base font-bold sm:text-lg">티켓 가격 (1인당) <span className="text-red-500 ml-0.5">*</span></FieldLabel>
+        <FieldLabel htmlFor="ticketPrice" className="text-base font-bold sm:text-lg">티켓 가격 (1인당) <span className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
         <div className="relative min-w-0">
           <Input
             id="ticketPrice"

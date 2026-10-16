@@ -424,7 +424,7 @@ export default function OffseasonMovementAdminDialogs({
               data-vqa-min-touch="44"
               onClick={onDelete}
               disabled={submitting}
-              className={`${adminDialogControlClassName} bg-red-500 text-white hover:bg-red-400`}
+              className={`${adminDialogControlClassName} bg-red-600 text-white hover:bg-red-700`}
             >
               삭제
             </Button>

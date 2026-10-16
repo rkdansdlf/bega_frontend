@@ -165,7 +165,7 @@ export default function UserListModal({
                             </div>
                         ) : isError ? (
                             <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-10">
-                                <ProfileAlertCircleIcon className="mb-3 h-8 w-8 text-red-500" />
+                                <ProfileAlertCircleIcon className="mb-3 h-8 w-8 text-red-600 dark:text-red-500" />
                                 <p className="mb-3 font-semibold text-gray-900 dark:text-white">
                                     목록을 불러오지 못했습니다.
                                 </p>

@@ -304,7 +304,7 @@ export default function DirectMessageRuntime() {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4">
         <div className="rounded-2xl border border-gray-100 bg-white px-6 py-8 text-center shadow-sm dark:border-border dark:bg-card">
-          <XCircleIcon className="mx-auto mb-3 h-10 w-10 text-red-500" />
+          <XCircleIcon className="mx-auto mb-3 h-10 w-10 text-red-600 dark:text-red-500" />
           <p className="text-base text-gray-600 dark:text-white">대화 상대 핸들이 올바르지 않습니다.</p>
         </div>
       </div>
@@ -341,7 +341,7 @@ export default function DirectMessageRuntime() {
     return (
       <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-4 py-10">
         <div className="w-full rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-sm dark:border-border dark:bg-card">
-          <XCircleIcon className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <XCircleIcon className="mx-auto mb-4 h-12 w-12 text-red-600 dark:text-red-500" />
           <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             {isAccessIssue ? '메시지 대화방에 접근할 수 없습니다.' : '메시지 화면을 불러오지 못했습니다.'}
           </h1>

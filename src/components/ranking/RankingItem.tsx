@@ -108,7 +108,7 @@ const RankingItem = React.memo(function RankingItem({
       {index === PLAYOFF_TEAMS && (
         <div className="my-4 flex items-center gap-4 opacity-80">
           <div className="h-px flex-1 border-t border-dashed border-red-500 bg-red-400/50 dark:bg-red-500/50" />
-          <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-body font-bold text-red-500 dark:border-red-800 dark:bg-red-900/20">
+          <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-body font-bold text-red-600 dark:text-red-500 dark:border-red-800 dark:bg-red-900/20">
             가을야구 진출 (PS)
           </span>
           <div className="h-px flex-1 border-t border-dashed border-red-500 bg-red-400/50 dark:bg-red-500/50" />
@@ -183,7 +183,7 @@ const RankingItem = React.memo(function RankingItem({
                     size="iconTouch"
                     aria-label={`${team.name} 순위에서 제거`}
                     data-testid={`ranking-remove-${team.id}`}
-                    className="rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-input/50"
+                    className="rounded-lg text-red-600 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-input/50"
                   >
                     <RankingCloseIcon className="w-4 h-4" />
                   </Button>

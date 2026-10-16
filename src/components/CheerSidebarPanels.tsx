@@ -126,7 +126,7 @@ export default function CheerSidebarPanels({
                             type="button"
                             data-testid="cheer-sidebar-team-retry"
                             onClick={onRefetchTeamMetadata}
-                                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-600 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-input/50"
+                                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-700 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-input/50"
                         >
                             다시 시도
                         </button>

@@ -674,7 +674,7 @@ export default function Navbar(props: NavbarProps) {
                         <span className="flex items-center gap-2">
                           {item.label}
                           {item.id === 'mate' && chatUnreadCount > 0 && (
-                      <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-body font-bold leading-none text-white bg-red-500 rounded-full">
+                      <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-body font-bold leading-none text-white bg-red-600 rounded-full">
                               {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                             </span>
                           )}
@@ -754,7 +754,7 @@ export default function Navbar(props: NavbarProps) {
                         setIsMenuOpen(false);
                         handleLogout();
                       }}
-                      className="flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold"
+                      className="flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold"
                       aria-label="로그아웃"
                       data-testid={import.meta.env.DEV ? 'navbar-menu-logout' : undefined}
                     >

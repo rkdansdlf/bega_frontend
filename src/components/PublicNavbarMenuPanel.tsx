@@ -182,7 +182,7 @@ export default function PublicNavbarMenuPanel({
             <button
               type="button"
               onClick={handleLogout}
-              className={`flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold ${menuActionFocusClass}`}
+              className={`flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold ${menuActionFocusClass}`}
               aria-label="로그아웃"
               data-testid={isVisualQaDev ? 'public-navbar-menu-logout' : undefined}
             >

@@ -203,7 +203,7 @@ export default function QuoteRepostEditor({
                             data-testid="quote-repost-remaining"
                             className={`text-body ${
                                 isOverLimit
-                                    ? 'text-red-500'
+                                    ? 'text-red-600 dark:text-red-500'
                                     : remainingChars <= 50
                                     ? 'text-yellow-500'
                                     : 'text-gray-400'

@@ -29,10 +29,10 @@ type PredictionScoreboardSectionProps = {
 const inningTableClassName = 'min-w-[580px] w-full table-fixed border-collapse text-center text-body';
 const inningTeamHeaderClassName = 'w-[112px] whitespace-nowrap px-2 py-2 text-left font-bold';
 const inningHeaderCellClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-200 dark:border-border/70';
-const inningRunHeaderClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-200 dark:border-border font-bold text-red-600';
+const inningRunHeaderClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-200 dark:border-border font-bold text-red-700';
 const inningTeamCellBaseClassName = 'w-[112px] whitespace-nowrap px-2 py-2 text-left font-bold bg-gray-50/70 dark:bg-secondary/30';
 const inningCellClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-100 dark:border-border/60';
-const inningRunCellClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-200 dark:border-border font-bold text-red-600 bg-red-50/40 dark:bg-red-900/20';
+const inningRunCellClassName = 'whitespace-nowrap px-2 py-2 border-l border-gray-200 dark:border-border font-bold text-red-700 bg-red-50/40 dark:bg-red-900/20';
 
 export default function PredictionScoreboardSection({
   headingTextStyle,
