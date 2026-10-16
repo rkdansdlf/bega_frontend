@@ -459,7 +459,7 @@ export default function CheerFeedRuntimeContent({
                                 type="button"
                                 data-testid="cheer-feed-next-retry"
                                 onClick={requestNextPage}
-                                className="min-h-11 rounded-full border border-slate-200 px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                                className="min-h-11 rounded-full border border-slate-200 px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-input/50"
                             >
                                 다시 시도
                             </button>

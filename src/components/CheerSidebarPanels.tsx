@@ -126,7 +126,7 @@ export default function CheerSidebarPanels({
                             type="button"
                             data-testid="cheer-sidebar-team-retry"
                             onClick={onRefetchTeamMetadata}
-                                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-600 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-secondary"
+                                className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-red-200 px-3 py-2 text-body font-bold text-red-600 hover:bg-red-100 dark:border-border dark:text-red-300 dark:hover:bg-input/50"
                         >
                             다시 시도
                         </button>
@@ -157,7 +157,7 @@ export default function CheerSidebarPanels({
                                 }
                                 void refetchGames();
                             }}
-                            className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                            className="mt-3 flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-input/50"
                         >
                             다시 시도
                         </button>
@@ -206,7 +206,7 @@ export default function CheerSidebarPanels({
                         <button
                             type="button"
                             data-testid="cheer-sidebar-detail"
-                                className="flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-[#0F172A] hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                                className="flex min-h-11 w-full items-center justify-center rounded-full border border-slate-200 py-2 text-body font-bold text-[#0F172A] hover:bg-slate-50 dark:border-border dark:text-white dark:hover:bg-input/50"
                             onClick={onGoPrediction}
                         >
                             경기 상세 보기

@@ -331,7 +331,7 @@ export default function PredictionMatchPreviewTab({
             type="button"
             aria-label="이전 달 보기"
             data-testid="prediction-schedule-month-prev"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-secondary"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-input/50"
             onClick={() => handleMonthMove(-1)}
           >
             <PredictionChevronLeftIcon className="h-6 w-6 sm:h-7 sm:w-7" />
@@ -347,12 +347,12 @@ export default function PredictionMatchPreviewTab({
             type="button"
             aria-label="다음 달 보기"
             data-testid="prediction-schedule-month-next"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-secondary"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-input/50"
             onClick={() => handleMonthMove(1)}
           >
             <PredictionChevronRightIcon className="h-6 w-6 sm:h-7 sm:w-7" />
           </button>
-          <label className="relative inline-flex h-11 cursor-pointer items-center justify-center overflow-hidden rounded-full px-3 text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-secondary sm:px-4">
+          <label className="relative inline-flex h-11 cursor-pointer items-center justify-center overflow-hidden rounded-full px-3 text-slate-700 transition-colors hover:bg-white hover:shadow-sm dark:text-white dark:hover:bg-input/50 sm:px-4">
             <span className="sr-only">날짜 선택</span>
             <PredictionCalendarDaysIcon className="h-6 w-6" />
             <input
@@ -529,7 +529,7 @@ export default function PredictionMatchPreviewTab({
                               variant="outline"
                               size="sm"
                               data-testid="prediction-match-enter-detail-btn"
-                              className="h-11 min-h-11 min-w-11 scroll-mb-[136px] rounded-lg border-slate-200 bg-white px-2 text-12 font-black text-primary sm:h-9 sm:min-h-9 sm:px-3 sm:text-caption lg:h-10 lg:min-h-10 lg:min-w-[4.5rem] lg:px-4 lg:text-body dark:border-border dark:bg-card dark:text-primary-light dark:hover:bg-secondary hover:bg-emerald-50"
+                              className="h-11 min-h-11 min-w-11 scroll-mb-[136px] rounded-lg border-slate-200 bg-white px-2 text-12 font-black text-primary sm:h-9 sm:min-h-9 sm:px-3 sm:text-caption lg:h-10 lg:min-h-10 lg:min-w-[4.5rem] lg:px-4 lg:text-body dark:border-border dark:bg-card dark:text-primary-light dark:hover:bg-input/50 hover:bg-emerald-50"
                               onFocus={(event) => {
                                 const action = event.currentTarget;
                                 const keepActionVisible = () => {
@@ -644,7 +644,7 @@ export default function PredictionMatchPreviewTab({
                 type="button"
                 aria-label="날짜 선택 닫기"
                 data-testid="prediction-schedule-mobile-date-close"
-                className="flex h-11 w-11 items-center justify-center rounded-full px-2 py-1 text-xl font-bold leading-none text-slate-400 hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:text-white/60 dark:hover:bg-secondary sm:h-9 sm:w-8"
+                className="flex h-11 w-11 items-center justify-center rounded-full px-2 py-1 text-xl font-bold leading-none text-slate-400 hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:text-white/60 dark:hover:bg-input/50 sm:h-9 sm:w-8"
                 onClick={closeMobileDateSheet}
               >
                 x

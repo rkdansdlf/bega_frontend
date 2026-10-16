@@ -192,7 +192,7 @@ export default function TeamRecommendationTest({
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={!canGoPrevious || selectedAnswer !== null}
-                className="flex items-center gap-2 rounded-full px-4 py-2 dark:border-border dark:bg-card dark:text-white dark:hover:bg-secondary"
+                className="flex items-center gap-2 rounded-full px-4 py-2 dark:border-border dark:bg-card dark:text-white dark:hover:bg-input/50"
               >
                 <TeamRecommendationChevronLeftIcon className="w-4 h-4" />
                 이전
@@ -200,7 +200,7 @@ export default function TeamRecommendationTest({
               <Button
                 variant="ghost"
                 onClick={onClose}
-                className="text-gray-500 dark:text-white rounded-full px-4 py-2 dark:hover:bg-secondary"
+                className="text-gray-500 dark:text-white rounded-full px-4 py-2 dark:hover:bg-input/50"
               >
                 나중에 할게요
               </Button>
@@ -312,7 +312,7 @@ export default function TeamRecommendationTest({
                 >
                   다시 테스트하기
                 </Button>
-                <Button variant="ghost" onClick={onClose} className="text-gray-500 dark:text-white py-2 dark:hover:bg-secondary">
+                <Button variant="ghost" onClick={onClose} className="text-gray-500 dark:text-white py-2 dark:hover:bg-input/50">
                   나중에 선택하기
                 </Button>
               </div>

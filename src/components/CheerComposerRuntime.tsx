@@ -670,7 +670,7 @@ export default function CheerComposerRuntime({
                                     data-testid="cheer-composer-attach"
                                     className={`group relative flex h-11 w-11 items-center justify-center rounded-full transition-colors ${composerFiles.length >= 10
                                         ? 'cursor-not-allowed opacity-50'
-                                        : 'hover:bg-slate-100 dark:hover:bg-secondary'
+                                        : 'hover:bg-slate-100 dark:hover:bg-input/50'
                                         }`}
                                     onClick={() => fileInputRef.current?.click()}
                                     aria-label="이미지 첨부"

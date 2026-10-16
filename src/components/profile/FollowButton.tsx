@@ -241,7 +241,7 @@ export default function FollowButton({
                         role="menuitem"
                         onClick={handleToggleNotify}
                         data-testid="profile-follow-notify"
-                        className="flex w-full items-center rounded-sm px-3 py-2 text-body text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                        className="flex w-full items-center rounded-sm px-3 py-2 text-body text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-input/50"
                     >
                         {visibleNotifyNewPosts ? (
                             <>

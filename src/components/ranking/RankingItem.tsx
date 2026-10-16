@@ -183,7 +183,7 @@ const RankingItem = React.memo(function RankingItem({
                     size="iconTouch"
                     aria-label={`${team.name} 순위에서 제거`}
                     data-testid={`ranking-remove-${team.id}`}
-                    className="rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-secondary"
+                    className="rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-input/50"
                   >
                     <RankingCloseIcon className="w-4 h-4" />
                   </Button>

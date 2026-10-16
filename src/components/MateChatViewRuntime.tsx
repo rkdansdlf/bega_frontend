@@ -311,7 +311,7 @@ export default function MateChatViewRuntime({
                         data-testid="mate-chat-view-manage"
                         variant="outline"
                         size="touch"
-                        className="w-full justify-center border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary sm:w-auto"
+                        className="w-full justify-center border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-input/50 sm:w-auto"
                         onClick={onNavigateManage}
                       >
                         신청 관리

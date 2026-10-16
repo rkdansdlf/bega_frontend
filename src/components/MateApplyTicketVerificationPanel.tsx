@@ -144,7 +144,7 @@ export default function MateApplyTicketVerificationPanel({
         <div
           className={`rounded-2xl border-2 border-dashed p-5 text-center transition-colors sm:p-6 ${isScanning
             ? 'border-primary bg-slate-50 dark:bg-card/60'
-            : 'border-slate-300 dark:border-border hover:border-primary hover:bg-slate-50 dark:hover:bg-secondary'
+            : 'border-slate-300 dark:border-border hover:border-primary hover:bg-slate-50 dark:hover:bg-input/50'
             }`}
         >
           <input

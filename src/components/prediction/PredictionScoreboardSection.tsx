@@ -247,7 +247,7 @@ function ScoreboardTable({
         </tr>
       </thead>
       <tbody className="text-gray-700 dark:text-white">
-        <tr className="border-b border-gray-100 bg-white transition-colors hover:bg-emerald-50/50 dark:border-border/70 dark:bg-card dark:hover:bg-secondary/50">
+        <tr className="border-b border-gray-100 bg-white transition-colors hover:bg-emerald-50/50 dark:border-border/70 dark:bg-card dark:hover:bg-input/50">
           <td className={inningTeamCellBaseClassName} style={awayTeamNameStyle}>
             {awayTeamName}
           </td>
@@ -267,7 +267,7 @@ function ScoreboardTable({
             {awayScoreForDisplay}
           </td>
         </tr>
-        <tr className="border-b border-gray-100 bg-gray-50/70 transition-colors hover:bg-emerald-50/50 dark:border-border/70 dark:bg-secondary/50 dark:hover:bg-secondary/60">
+        <tr className="border-b border-gray-100 bg-gray-50/70 transition-colors hover:bg-emerald-50/50 dark:border-border/70 dark:bg-secondary/50 dark:hover:bg-input/50">
           <td className={inningTeamCellBaseClassName} style={homeTeamNameStyle}>
             {homeTeamName}
           </td>
