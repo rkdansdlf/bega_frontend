@@ -145,6 +145,8 @@ const isNoindexPath = (pathname: string): boolean => {
   return noindexRegexPatterns.some((pattern) => pattern.test(pathname));
 };
 
+const STADIUM_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+
 const buildStadiumDetailConfig = (stadiumId: string): SeoRouteConfig => {
   const safeId = stadiumId.trim();
   return {
@@ -168,7 +170,18 @@ export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
 
   const stadiumDetailMatch = normalizedPath.match(/^\/stadium\/([^/]+)$/);
   if (stadiumDetailMatch) {
-    return buildRule(normalizedPath, buildStadiumDetailConfig(decodeURIComponent(stadiumDetailMatch[1])), true);
+    let stadiumId = '';
+    try {
+      stadiumId = decodeURIComponent(stadiumDetailMatch[1]);
+    } catch {
+      stadiumId = '';
+    }
+    // Only slug-shaped ids may be indexable; existence is enforced by the worker
+    // (non-prerendered ids -> 404) and the page (unknown ids -> NotFound + noindex).
+    if (STADIUM_ID_PATTERN.test(stadiumId)) {
+      return buildRule(normalizedPath, buildStadiumDetailConfig(stadiumId), true);
+    }
+    return buildRule(normalizedPath, null, false);
   }
 
   if (isNoindexPath(normalizedPath)) {

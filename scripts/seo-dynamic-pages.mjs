@@ -95,6 +95,36 @@ export const fetchPublicStadiums = async (options = {}) => {
     }));
 };
 
+export const STADIUM_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+
+export const isSafeStadiumId = (value) => typeof value === 'string' && STADIUM_ID_PATTERN.test(value);
+
+/**
+ * Drop stadiums whose id is not a safe slug. Prevents path traversal when ids are
+ * used in path.join() for prerender output and sitemap paths.
+ */
+export const filterSafeStadiums = (stadiums, { warn = console.warn } = {}) => stadiums.filter((stadium) => {
+  if (isSafeStadiumId(stadium?.stadiumId)) {
+    return true;
+  }
+  warn(`[seo:dynamic] skip stadium with invalid id: ${JSON.stringify(stadium?.stadiumId)}`);
+  return false;
+});
+
+/** SEO_MIN_STADIUM_COUNT (default 0 = disabled): fail the build when fewer stadiums are available. */
+export const resolveMinStadiumCount = (env = process.env) => {
+  const raw = Number.parseInt(String(env.SEO_MIN_STADIUM_COUNT ?? '').trim(), 10);
+  return Number.isFinite(raw) && raw > 0 ? raw : 0;
+};
+
+export const assertMinStadiumCount = (count, minCount, reason = '') => {
+  if (minCount > 0 && count < minCount) {
+    throw new Error(
+      `[seo:dynamic] only ${count} stadium detail page(s) available, below SEO_MIN_STADIUM_COUNT=${minCount}${reason ? ` (${reason})` : ''}`,
+    );
+  }
+};
+
 export const buildStadiumDetailRoute = (stadium) => {
   const name = stadium.stadiumName || stadium.stadiumId;
   const teamSuffix = stadium.team ? ` (${stadium.team})` : '';
@@ -150,21 +180,26 @@ const preparePerformanceShellHtml = (html) => deferPerformanceShellModule(
  * Prerender public stadium detail pages into dist/ so curl sees unique title/meta.
  * Returns sitemap URL entries (path + meta). Fails soft when the API is unreachable.
  */
-export const prerenderDynamicStadiumPages = async () => {
+export const prerenderDynamicStadiumPages = async ({ fetchStadiums = fetchPublicStadiums } = {}) => {
+  const minCount = resolveMinStadiumCount();
   const templatePath = path.join(distDir, 'index.html');
   if (!fs.existsSync(templatePath)) {
     console.warn('[seo:dynamic] dist/index.html missing; skip stadium prerender');
+    assertMinStadiumCount(0, minCount, 'dist/index.html missing');
     return [];
   }
 
   let stadiums = [];
   try {
-    stadiums = await fetchPublicStadiums();
+    stadiums = filterSafeStadiums(await fetchStadiums());
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[seo:dynamic] stadium API unavailable (${message}); sitemap will omit stadium details`);
+    assertMinStadiumCount(0, minCount, `stadium API unavailable: ${message}`);
     return [];
   }
+
+  assertMinStadiumCount(stadiums.length, minCount);
 
   if (stadiums.length === 0) {
     console.warn('[seo:dynamic] stadium API returned no rows; skip stadium detail pages');
@@ -177,7 +212,9 @@ export const prerenderDynamicStadiumPages = async () => {
 
   for (const stadium of stadiums) {
     const route = buildStadiumDetailRoute(stadium);
-    // Use raw stadiumId in filesystem path (IDs are alphanumeric)
+    if (!isSafeStadiumId(stadium.stadiumId)) {
+      continue;
+    }
     const outputPath = `/stadium/${stadium.stadiumId}`;
     const fileRoute = { ...route, path: outputPath };
     let html = injectSeoHead(baseHtml, fileRoute);
@@ -186,6 +223,11 @@ export const prerenderDynamicStadiumPages = async () => {
       html = preparePerformanceShellHtml(html);
     }
     const outputFile = routeToOutputFile(outputPath);
+    const relative = path.relative(distDir, outputFile);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      console.warn(`[seo:dynamic] skip stadium outside dist: ${outputPath}`);
+      continue;
+    }
     ensureDir(path.dirname(outputFile));
     fs.writeFileSync(outputFile, html, 'utf-8');
     entries.push({

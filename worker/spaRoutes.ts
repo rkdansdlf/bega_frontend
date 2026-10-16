@@ -43,7 +43,6 @@ const SPA_ROUTE_PATTERNS: RegExp[] = [
   /^\/mate\/[^/]+\/(?:apply|checkin|chat|manage)$/,
   /^\/messages\/[^/]+$/,
   /^\/stadium\/[^/]+$/,
-  /^\/payment(?:\/.*)?$/,
 ];
 
 export function normalizeSpaPathname(pathname: string): string {
@@ -62,6 +61,20 @@ export function isStaticAssetPath(pathname: string): boolean {
   const normalized = normalizeSpaPathname(pathname);
   const lastSegment = normalized.split('/').pop() || '';
   return /\.[a-zA-Z0-9]{1,12}$/.test(lastSegment);
+}
+
+/**
+ * Stadium detail pages are only valid when prerendered at build time
+ * (dist/stadium/<id>/index.html). They never fall back to the SPA shell.
+ */
+const STADIUM_DETAIL_PATTERN = /^\/stadium\/[A-Za-z0-9_-]+$/;
+
+export function isPrerenderOnlyRoute(pathname: string): boolean {
+  return /^\/stadium\/[^/]+$/.test(normalizeSpaPathname(pathname));
+}
+
+export function isValidStadiumDetailPath(pathname: string): boolean {
+  return STADIUM_DETAIL_PATTERN.test(normalizeSpaPathname(pathname));
 }
 
 export function isKnownSpaRoute(pathname: string): boolean {

@@ -14,7 +14,7 @@ import {
   getStadiumGuideStadiumsQueryOptions,
   isStadiumGuideDbCategory,
 } from './stadiumGuideQueryOptions';
-import { resolveSelectedStadium } from './stadiumGuideSelection';
+import { isUnknownRouteStadium, resolveSelectedStadium } from './stadiumGuideSelection';
 
 const EMPTY_STADIUMS: Stadium[] = [];
 
@@ -276,6 +276,8 @@ export const useStadiumGuide = () => {
     selectedStadium,
   ]);
 
+  const routeStadiumNotFound = stadiumsQuery.isSuccess && isUnknownRouteStadium(stadiums, routeStadiumId);
+
   const stadiumsError = stadiumsQuery.isError
     ? '구장 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
     : null;
@@ -310,6 +312,7 @@ export const useStadiumGuide = () => {
     error,
     isMapReady,
     stadiumsStatus,
+    routeStadiumNotFound,
     placesStatus,
     nearbyStatus,
     mapStatus,

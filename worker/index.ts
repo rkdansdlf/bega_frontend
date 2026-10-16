@@ -1,5 +1,7 @@
 import {
   isKnownSpaRoute,
+  isPrerenderOnlyRoute,
+  isValidStadiumDetailPath,
   isStaticAssetPath,
   normalizeSpaPathname,
 } from './spaRoutes';
@@ -110,6 +112,15 @@ export default {
     // Soft-404 fix: unknown HTML navigations must not fall through to index.html (200).
     if (isHtmlNavigation(request) && !isKnownSpaRoute(pathname)) {
       return buildNotFoundResponse(request);
+    }
+
+    // Stadium details: only prerendered (known) ids get 200; everything else is a hard 404.
+    if (isHtmlNavigation(request) && isPrerenderOnlyRoute(pathname)) {
+      if (!isValidStadiumDetailPath(pathname)) {
+        return buildNotFoundResponse(request);
+      }
+      const prerendered = await env.ASSETS.fetch(request);
+      return prerendered.status === 404 ? buildNotFoundResponse(request) : prerendered;
     }
 
     return serveSpaAsset(request, env);

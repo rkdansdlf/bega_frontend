@@ -42,6 +42,12 @@ test('canonical url normalizes trailing slash', () => {
   assert.equal(buildCanonicalUrl('/'), SITE_URL);
 });
 
+test('malformed stadium detail ids are noindex', () => {
+  assert.equal(getSeoRouteRule('/stadium/..%2Fetc').isIndexable, false);
+  assert.equal(getSeoRouteRule('/stadium/a%20b').robots, 'noindex,nofollow');
+  assert.equal(getSeoRouteRule('/stadium/%E0%A4%A').isIndexable, false);
+});
+
 test('stadium detail route is indexable with www canonical', () => {
   const rule = getSeoRouteRule('/stadium/JAMSIL');
   assert.equal(rule.isIndexable, true);

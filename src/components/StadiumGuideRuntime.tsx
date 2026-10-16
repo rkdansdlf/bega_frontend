@@ -1,4 +1,6 @@
 import { lazy, Suspense } from 'react';
+import { Helmet } from 'react-helmet-async';
+import NotFound from './NotFound';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { KAKAO_API_KEY, CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
@@ -136,6 +138,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     handleStadiumChange,
     handlePlaceClick,
     stadiumsStatus,
+    routeStadiumNotFound,
     placesStatus,
     nearbyStatus,
     mapStatus,
@@ -208,6 +211,18 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
       </SeatMapRuntimeShell>
     );
   };
+
+  if (routeStadiumNotFound) {
+    return (
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex,nofollow" />
+          <title>페이지를 찾을 수 없습니다 | BEGA</title>
+        </Helmet>
+        <NotFound />
+      </>
+    );
+  }
 
   return (
     <div

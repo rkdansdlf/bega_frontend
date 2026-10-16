@@ -40,3 +40,29 @@ test('resolveApiBaseUrl normalizes /api and absolute API origins', () => {
     else process.env.BACKEND_BASE_URL = previousBackend;
   }
 });
+
+test('stadium ids are validated before being used in prerender/sitemap paths', async () => {
+  const { filterSafeStadiums, isSafeStadiumId } = await import('./seo-dynamic-pages.mjs');
+  assert.equal(isSafeStadiumId('JAMSIL'), true);
+  assert.equal(isSafeStadiumId('sajik_2-b'), true);
+  for (const bad of ['../../etc', '..', 'a/b', 'a\\b', 'a b', '', '%2e%2e', null, 7]) {
+    assert.equal(isSafeStadiumId(bad), false, String(bad));
+  }
+  const warnings = [];
+  const kept = filterSafeStadiums(
+    [{ stadiumId: 'JAMSIL' }, { stadiumId: '../../../tmp/pwn' }, { stadiumId: 'GOCHEOK' }],
+    { warn: (m) => warnings.push(m) },
+  );
+  assert.deepEqual(kept.map((s) => s.stadiumId), ['JAMSIL', 'GOCHEOK']);
+  assert.equal(warnings.length, 1);
+});
+
+test('SEO_MIN_STADIUM_COUNT gate is env-configurable and disabled by default', async () => {
+  const { assertMinStadiumCount, resolveMinStadiumCount } = await import('./seo-dynamic-pages.mjs');
+  assert.equal(resolveMinStadiumCount({}), 0);
+  assert.equal(resolveMinStadiumCount({ SEO_MIN_STADIUM_COUNT: 'abc' }), 0);
+  assert.equal(resolveMinStadiumCount({ SEO_MIN_STADIUM_COUNT: '9' }), 9);
+  assert.doesNotThrow(() => assertMinStadiumCount(0, 0));
+  assert.doesNotThrow(() => assertMinStadiumCount(9, 9));
+  assert.throws(() => assertMinStadiumCount(0, 9, 'api down'), /SEO_MIN_STADIUM_COUNT=9/);
+});
