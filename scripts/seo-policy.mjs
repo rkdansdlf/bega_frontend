@@ -21,7 +21,13 @@ const normalizePublicPath = (value) => {
 };
 export const defaultOgImagePath = normalizePublicPath(rawPolicy.defaultOgImagePath || '/favicon.png');
 export const defaultOgImageUrl = `${siteUrl}${defaultOgImagePath}`;
-export const indexableRoutes = rawPolicy.indexableRoutes;
+// headOnlyIndexableRoutes are prerendered + in the sitemap like indexableRoutes, but are NOT part
+// of the client bundle (routeSeo imports only the keys it needs, so Vite tree-shakes this one).
+// SeoHead keeps their prerendered head; the route chunk updates it (e.g. useStadiumDetailHead).
+export const indexableRoutes = [
+  ...rawPolicy.indexableRoutes,
+  ...(rawPolicy.headOnlyIndexableRoutes || []),
+];
 export const noindexPrefixes = rawPolicy.noindexPrefixes;
 export const noindexRegex = rawPolicy.noindexRegex;
 export const robotsDisallow = rawPolicy.robotsDisallow;

@@ -2,7 +2,9 @@ import { lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import NotFound from './NotFound';
 import { useParams } from 'react-router-dom';
-import { buildStadiumDetailSeo } from '../seo/stadiumDetailSeo';
+import { buildStadiumDetailSeo, STADIUM_INDEX_SEO } from '../seo/stadiumDetailSeo';
+import { useStadiumDetailHead } from '../seo/useStadiumDetailHead';
+import { buildCanonicalUrl } from '../seo/routeSeo';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { KAKAO_API_KEY, CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
@@ -154,6 +156,18 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     retryMap,
   } = guideState;
 
+  // /stadium -> listing copy; /stadium/:id -> Korean stadium name once that stadium is loaded.
+  // Until then (or if the API fails) the prerendered head is left untouched.
+  const stadiumDetailSeo = !routeStadiumId
+    ? STADIUM_INDEX_SEO
+    : !routeStadiumNotFound && selectedStadium?.stadiumId === routeStadiumId
+      ? buildStadiumDetailSeo(selectedStadium)
+      : null;
+  useStadiumDetailHead(
+    stadiumDetailSeo,
+    stadiumDetailSeo ? buildCanonicalUrl(routeStadiumId ? `/stadium/${routeStadiumId}` : '/stadium') : undefined,
+  );
+
   const { isLoggedIn } = useAuthSession();
   const { userId: authUserId } = useAuthProfileSnapshot();
   const selectedStadiumId = selectedStadium?.stadiumId ?? null;
@@ -227,22 +241,8 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     );
   }
 
-  const stadiumDetailSeo = routeStadiumId && selectedStadium?.stadiumId === routeStadiumId
-    ? buildStadiumDetailSeo(selectedStadium)
-    : null;
-
   return (
     <>
-      {stadiumDetailSeo ? (
-        <Helmet>
-          <title>{stadiumDetailSeo.title}</title>
-          <meta name="description" content={stadiumDetailSeo.description} />
-          <meta property="og:title" content={stadiumDetailSeo.title} />
-          <meta property="og:description" content={stadiumDetailSeo.description} />
-          <meta name="twitter:title" content={stadiumDetailSeo.title} />
-          <meta name="twitter:description" content={stadiumDetailSeo.description} />
-        </Helmet>
-      ) : null}
     <div
       className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200"
       data-testid="stadium-guide-runtime"

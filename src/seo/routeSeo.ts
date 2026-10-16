@@ -1,4 +1,12 @@
-import rawSeoRoutes from '../../seo-routes.json';
+// Named imports only (no default import) so Vite tree-shakes headOnlyIndexableRoutes
+// out of the shared entry chunk.
+import {
+  defaultOgImagePath,
+  indexableRoutes,
+  noindexPrefixes,
+  noindexRegex,
+  robotsDisallow,
+} from '../../seo-routes.json';
 
 type SchemaType = 'home' | 'page';
 
@@ -26,7 +34,13 @@ const DEFAULT_DESCRIPTION = 'KBO 팬을 위한 경기 정보와 커뮤니티를 
 const DEFAULT_HEADING = 'BEGA';
 const FALLBACK_OG_IMAGE_PATH = '/favicon.png';
 
-const seoPolicy = rawSeoRoutes as SeoPolicy;
+const seoPolicy = {
+  defaultOgImagePath,
+  indexableRoutes,
+  noindexPrefixes,
+  noindexRegex,
+  robotsDisallow,
+} as SeoPolicy;
 const viteEnv = ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env || {});
 
 const normalizeSiteUrl = (value: string): string => value.replace(/\/+$/, '');
@@ -92,6 +106,8 @@ export type SeoRouteRule = {
   prerender: boolean;
   changefreq: string;
   priority: string;
+  /** SeoHead emits no tags (keeps prerendered head); canonical/robots here are for reference. */
+  headOnly?: boolean;
 };
 
 export const buildCanonicalUrl = (pathname: string): string => {
@@ -145,19 +161,6 @@ const isNoindexPath = (pathname: string): boolean => {
   return noindexRegexPatterns.some((pattern) => pattern.test(pathname));
 };
 
-const buildStadiumDetailConfig = (stadiumId: string): SeoRouteConfig => {
-  const safeId = stadiumId.trim();
-  return {
-    path: `/stadium/${safeId}`,
-    title: `${safeId} 구장 가이드 | BEGA`,
-    description: `${safeId} 구장의 좌석·주변 시설·방문 정보를 BEGA 구장 가이드에서 확인하세요.`,
-    heading: `${safeId} 구장 가이드`,
-    schemaType: 'page',
-    changefreq: 'weekly',
-    priority: '0.7',
-  };
-};
-
 export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
   const normalizedPath = normalizePathname(pathname);
   const routeConfig = indexableRouteMap.get(normalizedPath) || null;
@@ -166,13 +169,11 @@ export const getSeoRouteRule = (pathname: string): SeoRouteRule => {
     return buildRule(normalizedPath, routeConfig, true);
   }
 
-  // Only slug-shaped ids (STADIUM_ID_PATTERN in src/utils/stadiumId.ts) may be indexable;
-  // anything else falls through to noindex. Existence is enforced by the worker
-  // (non-prerendered ids -> 404) and the page (unknown ids -> NotFound + noindex).
-  // Inlined (no import) to keep the shared entry chunk within bundle budget.
-  const stadiumDetailMatch = normalizedPath.match(/^\/stadium\/([\w-]+)$/);
-  if (stadiumDetailMatch) {
-    return buildRule(normalizedPath, buildStadiumDetailConfig(stadiumDetailMatch[1]), true);
+  // /stadium and stadium detail (slug ids only, = STADIUM_ID_PATTERN): headOnly rule — SeoHead keeps the
+  // prerendered head; the stadium chunk sets the Korean title/description/canonical/robots.
+  // Existence: worker 404s non-prerendered ids; the page renders NotFound + noindex.
+  if (/^\/stadium(\/[\w-]+)?$/.test(normalizedPath)) {
+    return { ...buildRule(normalizedPath, null, true), headOnly: true };
   }
 
   if (isNoindexPath(normalizedPath)) {

@@ -7,17 +7,9 @@ type HelmetProps = PropsWithChildren<{
 
 const MANAGED_ATTR = 'data-bega-helmet';
 
-// Selector for tags this one replaces (prerendered static or another Helmet's), so meta is
-// replaced rather than duplicated. Last applied Helmet wins per key.
-export const getDedupeSelector = (tag: string, props: Record<string, unknown>): string | null => {
-  if (tag === 'meta') {
-    const key = props.name ? 'name' : props.property ? 'property' : '';
-    return key ? `meta[${key}="${String(props[key])}"]` : null;
-  }
-  if (tag === 'link') {
-    return props.rel === 'canonical' ? 'link[rel="canonical"]' : null;
-  }
-  return props.type === 'application/ld+json' ? 'script[data-seo-jsonld]' : null;
+const cleanupManagedHeadTags = () => {
+  const existing = document.head.querySelectorAll(`[${MANAGED_ATTR}="true"]`);
+  existing.forEach((node) => node.parentNode?.removeChild(node));
 };
 
 const getElementText = (value: ReactNode): string => {
@@ -73,7 +65,8 @@ export function HelmetProvider({ children }: PropsWithChildren) {
 
 export function Helmet({ children }: HelmetProps) {
   useEffect(() => {
-    const created: HTMLElement[] = [];
+    cleanupManagedHeadTags();
+
     const nodes = Children.toArray(children);
     for (const node of nodes) {
       if (!isValidElement(node) || typeof node.type !== 'string') {
@@ -96,17 +89,12 @@ export function Helmet({ children }: HelmetProps) {
       }
 
       if (tag === 'meta' || tag === 'link' || tag === 'script') {
-        const selector = getDedupeSelector(tag, props);
-        if (selector) {
-          document.head.querySelectorAll(selector).forEach((node) => node.remove());
-        }
         const element = toManagedElement(tag, props);
         document.head.appendChild(element);
-        created.push(element);
       }
     }
 
-    return () => created.forEach((node) => node.remove());
+    return cleanupManagedHeadTags;
   }, [children]);
 
   return null;

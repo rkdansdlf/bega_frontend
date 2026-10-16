@@ -138,6 +138,12 @@ export default function SeoHead() {
     });
   }, [location.pathname, location.search, rule.title]);
 
+  if (rule.headOnly) {
+    // Clears the previous route's managed tags only. Prerendered canonical/robots/title/description
+    // stay as-is (no duplicates); the stadium chunk updates them in place (useStadiumDetailHead).
+    return <Helmet />;
+  }
+
   return (
     <Helmet prioritizeSeoTags>
       <html lang="ko" />

@@ -53,5 +53,11 @@ test('stadium detail route is indexable with www canonical', () => {
   assert.equal(rule.isIndexable, true);
   assert.equal(rule.robots, 'index,follow');
   assert.equal(rule.canonicalUrl, `${SITE_URL}/stadium/JAMSIL`);
-  assert.match(rule.title, /JAMSIL/);
+  assert.equal(rule.headOnly, true);
+});
+
+test('/stadium listing is headOnly so its prerendered head is kept', () => {
+  const rule = getSeoRouteRule('/stadium');
+  assert.equal(rule.headOnly, true);
+  assert.equal(rule.robots, 'index,follow');
 });
