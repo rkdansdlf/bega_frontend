@@ -40,7 +40,7 @@ Line references in this table refer to the starting HEAD. Priority P2 means a ve
 
 ## Existing layout conventions retained
 
-- Shared `Card` already owns mobile `px-4` / desktop `px-6`, radius, contained text and wrapping footer. `page-primitives.tsx` already owns Container, Section, SectionHeader, Stack gaps and CTAGroup.
+- Shared `Card` already owns mobile `px-4` / desktop `px-6`, radius, contained text and wrapping footer.
 - `.bf` already owns wrapping, bounded labels, disabled opacity and unsized SVG constraints. The existing 44px mobile and 32/36/40px desktop densities remain.
 - `PlainDialog` already owns focus trapping, Escape/backdrop close, scroll locking, responsive placement and safe area handling. Its interaction implementation is not to be rewritten.
 - Long text, loading skeleton layouts, page-specific container widths and feed borders require route evidence before being treated as defects.
@@ -59,7 +59,7 @@ The final command outcomes, expanded reviewed-file inventory, unresolved items a
 
 The audit covered the requested entry files and followed the actual `AppRoutes` public/query/authenticated shells. This is a source review of every route family with representative leaf components, not a claim that every state of every component was visually executed.
 
-- Foundation: `src/index.css`, `tailwind.config.js`, `docs/design-tokens.md`, `ui/{button,plain-button,input,textarea,card,status-badge,plain-dialog,page-primitives,skeleton,UIKitPreview}.tsx`, shared EmptyState and ErrorFeedbackPanel.
+- Foundation: `src/index.css`, `tailwind.config.js`, `docs/design-tokens.md`, `ui/{button,plain-button,input,textarea,card,status-badge,plain-dialog,skeleton,UIKitPreview}.tsx`, shared EmptyState and ErrorFeedbackPanel.
 - Shells: `Layout.tsx`, `Navbar.tsx`, `PublicNavbar.tsx`, `AppRoutes.tsx`; public Home/Prediction/Mate shells, public query Cheer/Stadium, authenticated Mate flows/MyPage/Admin.
 - Home: `HomeRuntime.tsx`, HomeGameCard (partial), HomeMatchPanel styles and `home/HomeSecondaryPanels.tsx`.
 - Prediction: `PredictionRuntime.tsx`, `prediction/{predictionUiTokens,coachStyleTokens,PredictionStatsPanel,PredictionLoadingView,PredictionMatchTab,PredictionMatchDetailPanel,PredictionVotePanel,AdvancedMatchCardContentRuntime}` (some leaf style portions).
@@ -83,7 +83,7 @@ Admin slate/amber console, OAuth provider logos, compact 10.5px navigation label
 
 Confirmed DS-001–DS-010 findings were addressed: supported field surfaces; shared Button/PlainButton styles with lightweight rendering retained; exact-value badge/Home/Cheer/Mate tokens; visible default dark Skeleton; UI Kit specimens; and source drift prevention. The MyPage breakpoint discrepancy remains explicitly deferred because responsive behavior changes were prohibited.
 
-The drift baseline records **2,577 original occurrences / 2,566 remaining occurrences** across 1,291 exact file/rule/value budgets, with 7 fully resolved budget entries. Legacy findings are an inventory, not 2,566 visually proven defects. Removals cannot be reintroduced under their original allowance. Both detected undefined legacy variables are resolved (`--spacing` in `Alert`, `--surface-shadow-soft` in the unmounted `LandingCapabilityShowcase`) and now fail the check if reintroduced.
+The drift baseline records **2,577 original occurrences / 2,533 remaining occurrences** across 1,263 exact file/rule/value budgets, with 36 fully resolved budget entries (29 of them because the unmounted legacy landing components and their CSS were deleted). Legacy findings are an inventory, not 2,533 visually proven defects. Removals cannot be reintroduced under their original allowance. Both detected undefined legacy variables are resolved (`--spacing` in `Alert`, `--surface-shadow-soft` in the unmounted `LandingCapabilityShowcase`) and now fail the check if reintroduced.
 
 ## Commands and results
 

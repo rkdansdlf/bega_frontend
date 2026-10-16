@@ -2029,17 +2029,13 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'jamsil.seat-map-svg',
     'jamsil.sun-overlay',
     'landing.app-preview',
-    'landing.capability-showcase',
     'landing.cheer-vignette',
     'landing.closing',
     'landing.diary-vignette',
-    'landing.feature-card',
     'landing.feature-section',
-    'landing.features-runtime',
     'landing.footer',
     'landing.game-data-vignette',
     'landing.hero',
-    'landing.laptop-mockup',
     'landing.mate-vignette',
     'landing.offseason',
     'landing.page',
@@ -2338,13 +2334,6 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'ui.card-header',
     'ui.card-title',
     'ui.input',
-    'ui.page-container',
-    'ui.page-cta-group',
-    'ui.page-mockup-frame',
-    'ui.page-section',
-    'ui.page-section-header',
-    'ui.page-stack',
-    'ui.page-text-block',
     'ui.plain-button',
     'ui.plain-dialog',
     'ui.plain-menu',
@@ -8716,36 +8705,6 @@ test('end-of-feed adapter pins the public empty terminus in both themes', () => 
   assert.match(String(result.surfaceClassName), /max-w-\[320px\]/);
 });
 
-test('landing feature card adapter resolves content, icon, image, and controlled presentation branches', () => {
-  const result = resolveComponentStateAdapter('landing.feature-card', {
-    componentId: 'src/components/FeatureCard.tsx#FeatureCard',
-    states: { data: 'unbroken-token', interactions: 'focus-visible' },
-    variants: {
-      icon: 'stadium',
-      image: 'mobile-fallback',
-      presentation: 'active-expanded',
-      theme: 'dark',
-    },
-  });
-  const feature = result.props.feature as {
-    description: string;
-    guide: string[];
-    iconKey: string;
-    image: string;
-    mobileImage?: string;
-  };
-
-  assert.equal(feature.iconKey, 'map');
-  assert.match(feature.description, /X{120}/);
-  assert.match(feature.guide[0], /X{120}/);
-  assert.match(String(feature.image), /^data:image\/svg\+xml/);
-  assert.equal(feature.mobileImage, 'data:image/png;base64,bm90LXZhbGlk');
-  assert.equal(result.props.isActive, true);
-  assert.equal(result.props.isExpanded, true);
-  assert.equal(result.theme, 'dark');
-  assert.match(String(result.surfaceClassName), /max-w-\[320px\]/);
-});
-
 test('footer adapter captures both link treatments in each theme', () => {
   const result = resolveComponentStateAdapter('layout.footer', {
     componentId: 'src/components/Footer.tsx#Footer',
@@ -8757,27 +8716,6 @@ test('footer adapter captures both link treatments in each theme', () => {
   assert.deepEqual(result.props, {});
   assert.equal(result.theme, 'dark');
   assert.match(String(result.surfaceClassName), /max-w-\[320px\]/);
-});
-
-test('laptop mockup adapter covers content pressure and image fallback inputs', () => {
-  const result = resolveComponentStateAdapter('landing.laptop-mockup', {
-    componentId: 'src/components/LaptopMockup.tsx#LaptopMockup',
-    states: { data: 'unbroken-token' },
-    variants: { feature: 'stadium', image: 'mobile-fallback', theme: 'light' },
-  });
-  const feature = (result.props.features as Array<{
-    description: string;
-    image: string;
-    mobileImage?: string;
-    title: string;
-  }>)[0];
-
-  assert.equal(result.props.activeFeature, 0);
-  assert.match(feature.title, /X{120}/);
-  assert.match(feature.description, /X{120}/);
-  assert.match(feature.image, /^data:image\/svg\+xml/);
-  assert.equal(feature.mobileImage, 'data:image/png;base64,bm90LXZhbGlk');
-  assert.equal(result.theme, 'light');
 });
 
 test('team logo adapter covers every franchise, fallback pressure, and public size', () => {
@@ -9736,60 +9674,6 @@ test('ui-card-scenarios cover content pressure, composition, action, and divider
     }),
     /지원하지 않는 Visual QA variant/,
   );
-});
-
-test('ui-page-primitive-scenarios cover copy, alignment, measure, gap, and optional description', () => {
-  const header = resolveComponentStateAdapter('ui.page-section-header', {
-    componentId: 'src/components/ui/page-primitives.tsx#SectionHeader',
-    states: { data: 'unbroken-token' },
-    variants: {
-      align: 'center',
-      description: 'present',
-      measure: 'narrow',
-    },
-  });
-  assert.equal(header.props.align, 'center');
-  assert.equal(header.props.measure, 'narrow');
-  assert.match(String(header.props.title), /^PAGE-TITLE-/);
-  assert.match(String(header.props.description), /^PAGE-DESCRIPTION-/);
-
-  const cta = resolveComponentStateAdapter('ui.page-cta-group', {
-    componentId: 'src/components/ui/page-primitives.tsx#CTAGroup',
-    states: { data: 'long-korean' },
-    variants: { align: 'start' },
-  });
-  assert.equal(cta.props.align, 'start');
-  assert.equal((cta.props.children as unknown[]).length, 2);
-
-  const stack = resolveComponentStateAdapter('ui.page-stack', {
-    componentId: 'src/components/ui/page-primitives.tsx#Stack',
-    states: { data: 'single' },
-    variants: { gap: 'xl' },
-  });
-  assert.equal(stack.props.gap, 'xl');
-  assert.equal((stack.props.children as unknown[]).length, 3);
-
-  const textBlock = resolveComponentStateAdapter('ui.page-text-block', {
-    componentId: 'src/components/ui/page-primitives.tsx#TextBlock',
-    states: { data: 'single' },
-    variants: { align: 'start', measure: 'default' },
-  });
-  assert.equal(textBlock.props.align, 'start');
-  assert.equal(textBlock.props.measure, 'default');
-
-  for (const adapterId of [
-    'ui.page-container',
-    'ui.page-mockup-frame',
-    'ui.page-section',
-  ]) {
-    const primitive = resolveComponentStateAdapter(adapterId, {
-      componentId: adapterId,
-      states: { data: 'unbroken-token' },
-      variants: {},
-    });
-    assert.equal((primitive.props.children as unknown[]).length, 2);
-    assert.match(primitive.surfaceClassName ?? '', /max-w-\[320px\]/);
-  }
 });
 
 test('ui-table-scenarios declare semantic hosts and cover content, composition, and row states', () => {
@@ -11738,45 +11622,6 @@ test('public landing adapters preserve direct surfaces, pressure copy, and navig
     }),
     /지원하지 않는 Visual QA state/,
   );
-});
-
-test('legacy landing showcase adapters preserve pressure, image failure, and card interactions', () => {
-  const capability = resolveComponentStateAdapter('landing.capability-showcase', {
-    componentId: 'src/components/LandingCapabilityShowcase.tsx#LandingCapabilityShowcase',
-    states: { data: 'unbroken-token' },
-    variants: { theme: 'dark' },
-  });
-  const capabilityOverride = capability.props.visualQaStateOverride as {
-    heading: string;
-    imageSrc?: string;
-    storyTitleSuffix: string;
-  };
-  assert.match(capabilityOverride.heading, /UNBROKEN/);
-  assert.match(capabilityOverride.storyTitleSuffix, /UNBROKEN/);
-  assert.equal(capabilityOverride.imageSrc, undefined);
-  assert.equal(capability.captureSelector, '[data-testid="landing-capability-showcase"]');
-  assert.equal(capability.theme, 'dark');
-
-  const brokenCapability = resolveComponentStateAdapter('landing.capability-showcase', {
-    componentId: 'src/components/LandingCapabilityShowcase.tsx#LandingCapabilityShowcase',
-    states: { data: 'broken-image' },
-    variants: { theme: 'light' },
-  });
-  assert.equal(
-    (brokenCapability.props.visualQaStateOverride as { imageSrc: string }).imageSrc,
-    '/__visual-qa__/missing-capability.webp',
-  );
-
-  const selectedFeature = resolveComponentStateAdapter('landing.features-runtime', {
-    componentId: 'src/components/LandingFeaturesRuntime.tsx#LandingFeaturesRuntime',
-    interactionTargetId: 'feature-5',
-    states: { data: 'maximum-supported', interactions: 'selected' },
-    variants: { theme: 'light' },
-  });
-  assert.deepEqual(selectedFeature.props, {});
-  assert.equal(selectedFeature.captureSelector, '[data-testid="landing-features"]');
-  assert.equal(selectedFeature.theme, 'light');
-  assert.match(selectedFeature.surfaceClassName ?? '', /\bp-0\b/);
 });
 
 test('lazy emoji picker adapter preserves inventory, search pressure, dimensions, and targets', () => {
