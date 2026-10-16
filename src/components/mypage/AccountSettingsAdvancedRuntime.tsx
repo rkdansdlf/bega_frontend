@@ -191,22 +191,22 @@ export default function AccountSettingsAdvancedRuntime({
           <div className="rounded-xl border border-destructive/35 bg-destructive/12 p-5">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <MyPageTrashIcon className="h-4 w-4 text-destructive" />
-                <p className="text-body font-semibold text-destructive">탈퇴 예약</p>
+                <MyPageTrashIcon className="h-4 w-4 text-status-error-text dark:text-destructive" />
+                <p className="text-body font-semibold text-status-error-text dark:text-destructive">탈퇴 예약</p>
               </div>
-              <span className="rounded-full bg-destructive/20 px-2.5 py-1 text-body text-destructive">
+              <span className="rounded-full bg-destructive/20 px-2.5 py-1 text-body text-red-800 dark:text-destructive">
                 7일 유예
               </span>
             </div>
             <div className="mb-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-destructive/35 bg-destructive/15 px-2.5 py-1 text-body text-destructive">
+              <span className="rounded-full border border-destructive/35 bg-destructive/15 px-2.5 py-1 text-body text-red-800 dark:text-destructive">
                 즉시 로그아웃
               </span>
-              <span className="rounded-full border border-destructive/35 bg-destructive/15 px-2.5 py-1 text-body text-destructive">
+              <span className="rounded-full border border-destructive/35 bg-destructive/15 px-2.5 py-1 text-body text-red-800 dark:text-destructive">
                 이메일 링크로 취소 가능
               </span>
             </div>
-            <p className="mb-4 text-body text-destructive">
+            <p className="mb-4 text-body text-status-error-text dark:text-destructive">
               정말 필요한 경우에만 진행하세요. 예약 즉시 로그아웃되며, 7일 동안은 이메일 복구 링크로 취소할 수 있습니다. 유예 기간이 지나면 최종 삭제 절차가 진행됩니다.
             </p>
             <Button

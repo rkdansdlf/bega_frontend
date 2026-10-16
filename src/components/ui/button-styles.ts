@@ -2,7 +2,7 @@ export const buttonBaseClass = "bf font-semibold outline-none focus-visible:bord
 
 export const buttonVariantClasses = {
   default: "focus-visible:ring-ring/50 bg-primary text-primary-foreground hover:bg-primary/90",
-  destructive: "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 dark:hover:bg-destructive/75",
+  destructive: "bg-destructive text-white hover:bg-destructive-hover focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 dark:hover:bg-destructive/75",
   outline: "focus-visible:ring-ring/50 border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:aria-[invalid=true]:border-destructive dark:hover:bg-input/50",
   secondary: "focus-visible:ring-ring/50 bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:bg-input/30 dark:hover:bg-input/50",
   ghost: "focus-visible:ring-ring/50 hover:bg-accent hover:text-accent-foreground dark:hover:bg-input/50",

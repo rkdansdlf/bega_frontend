@@ -95,6 +95,12 @@ export default {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+          hover: "hsl(var(--destructive-hover))",
+        },
+        // Error text for use on tinted error surfaces (bg-destructive/10..20), where the plain
+        // destructive colour is only 3.0-4.1:1.
+        status: {
+          "error-text": "hsl(var(--status-error-text))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",

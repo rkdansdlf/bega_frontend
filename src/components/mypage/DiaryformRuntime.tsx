@@ -619,7 +619,7 @@ export function DiaryReadMode({
         <Button
           data-testid="delete-diary-btn"
           onClick={handleDeleteDiary}
-          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          className="bg-destructive text-destructive-foreground hover:bg-destructive-hover"
           disabled={deleteMutation.isPending}
         >
           {deleteMutation.isPending ? '삭제 중...' : '삭제'}
