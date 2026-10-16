@@ -39,7 +39,7 @@ const RoomRow = ({ room, onClick }: { room: DmInboxRoom; onClick: () => void }) 
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors hover:bg-gray-50 dark:border-border dark:bg-card dark:hover:bg-secondary/50"
+      className="flex w-full items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors hover:bg-gray-50 dark:border-border dark:bg-card dark:hover:bg-input/50"
       data-testid="dm-inbox-room-row"
     >
       <div className="relative flex-shrink-0">

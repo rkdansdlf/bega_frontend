@@ -292,7 +292,7 @@ export default function OffSeasonHomeHighlightsRuntime({
                 {rankings.map((team: Ranking) => (
                   <tr
                     key={team.rank}
-                    className={`group border-b border-gray-100 dark:border-border/70 last:border-b-0 transition-colors odd:bg-white even:bg-gray-50/70 dark:odd:bg-card dark:even:bg-secondary/40 hover:bg-emerald-50/50 dark:hover:bg-secondary/70 dark:text-white ${team.rank <= 3 ? 'bg-emerald-50/30 dark:bg-emerald-900/10' : ''}`}
+                    className={`group border-b border-gray-100 dark:border-border/70 last:border-b-0 transition-colors odd:bg-white even:bg-gray-50/70 dark:odd:bg-card dark:even:bg-secondary/40 hover:bg-emerald-50/50 dark:hover:bg-input/50 dark:text-white ${team.rank <= 3 ? 'bg-emerald-50/30 dark:bg-emerald-900/10' : ''}`}
                   >
                     <td className="py-4 px-4 md:px-6">
                       <div className={`w-7 h-7 md:w-9 md:h-9 rounded-lg flex items-center justify-center text-white shadow-md font-black text-15 md:text-15 ${team.rank <= 3 ? 'bg-primary scale-105' : 'bg-gray-400 dark:bg-secondary'}`}>

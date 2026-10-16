@@ -70,7 +70,7 @@ export default function CheerHot({
                         }
                         void refetch();
                     }}
-                    className="mt-3 min-h-11 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-secondary"
+                    className="mt-3 min-h-11 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-input/50"
                 >
                     다시 시도
                 </button>

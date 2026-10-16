@@ -29234,7 +29234,7 @@ const resolveConfirmDialogRendererAdapter = (
     const usageProps = {
       default: {},
       'menu-panel': {
-        className: 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-secondary',
+        className: 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-input/50',
         iconClassName: 'h-6 w-6',
       },
       'private-navbar': {

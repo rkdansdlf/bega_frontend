@@ -450,7 +450,7 @@ export default function CheerDetailArticleRuntime({
                                             onOwnerMenuOpenChange(false);
                                             onDisplayEdit();
                                         }}
-                                        className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                                        className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-input/50"
                                         data-testid="cheer-detail-owner-edit"
                                     >
                                         <EditIcon className="mr-2 h-4 w-4" />

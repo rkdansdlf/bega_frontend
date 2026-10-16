@@ -68,7 +68,7 @@ export default function EmbeddedPost({ post, onClick, className, linkedContentVa
         <div
             onClick={handleClick}
             data-testid="cheer-embedded-post"
-            className={`mt-3 rounded-xl border border-gray-200 dark:border-border bg-gray-50 dark:bg-secondary p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-secondary transition-colors ${className || ''}`}
+            className={`mt-3 rounded-xl border border-gray-200 dark:border-border bg-gray-50 dark:bg-secondary p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-input/50 transition-colors ${className || ''}`}
             style={{
                 borderLeftColor: post.teamColor || 'var(--primary)',
                 borderLeftWidth: '3px',

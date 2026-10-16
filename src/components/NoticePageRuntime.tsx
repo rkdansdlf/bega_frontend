@@ -101,7 +101,7 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
               }}
               variant="outline"
               size="touch"
-              className="min-w-0 flex-1 border-gray-300 dark:border-border dark:text-white dark:hover:bg-secondary"
+              className="min-w-0 flex-1 border-gray-300 dark:border-border dark:text-white dark:hover:bg-input/50"
               disabled={isLoading}
               data-testid="notice-page-refresh"
             >
