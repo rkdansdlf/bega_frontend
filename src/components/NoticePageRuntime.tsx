@@ -143,7 +143,7 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
           </div>
         ) : isError ? (
           <div
-            className="min-w-0 break-words rounded-lg border border-red-200 bg-red-50 p-4 text-center text-red-600 [overflow-wrap:anywhere] dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+            className="min-w-0 break-words rounded-lg border border-red-200 bg-red-50 p-4 text-center text-red-700 [overflow-wrap:anywhere] dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
             data-testid="notice-page-error"
             role="alert"
           >

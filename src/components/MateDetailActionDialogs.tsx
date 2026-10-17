@@ -239,7 +239,7 @@ export default function MateDetailActionDialogs({
             className="mt-1 min-h-11"
           />
           {salePriceError && (
-            <p id="mate-detail-sale-price-error" role="alert" className="mt-1 text-body text-red-500 [overflow-wrap:anywhere] dark:text-red-300">
+            <p id="mate-detail-sale-price-error" role="alert" className="mt-1 text-body text-red-600 [overflow-wrap:anywhere] dark:text-red-300">
               {salePriceError}
             </p>
           )}

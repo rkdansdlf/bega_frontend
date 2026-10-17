@@ -55,7 +55,7 @@ interface MateDetailActionSectionProps {
 const getMobileActionClass = (actionKey: string) => {
   if (actionKey === 'checkin') return 'border-[#5b21b6] text-violet-800 hover:bg-[#5b21b6]/10 dark:border-violet-400/70 dark:text-violet-300 dark:hover:bg-violet-950/30';
   if (actionKey === 'sale') return 'border-orange-400 text-orange-600 hover:bg-orange-50 dark:border-orange-400/70 dark:text-orange-300 dark:hover:bg-orange-950/30';
-  if (actionKey === 'cancel') return 'border-red-200 text-red-500 hover:bg-red-50 dark:border-red-400/50 dark:text-red-300 dark:hover:bg-red-950/30';
+  if (actionKey === 'cancel') return 'border-red-200 text-red-600 hover:bg-red-50 dark:border-red-400/50 dark:text-red-300 dark:hover:bg-red-950/30';
   if (actionKey === 'back') return 'border-primary text-primary hover:bg-primary/10 dark:border-emerald-400/60 dark:text-emerald-300 dark:hover:bg-emerald-950/30';
   return 'bg-primary text-white';
 };

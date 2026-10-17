@@ -5,7 +5,7 @@ const HOME_MATCH_ERROR_PANEL_CLASS = 'flex flex-col items-center justify-center 
 const HOME_MATCH_ERROR_ICON_FRAME_CLASS = 'bg-red-50 dark:bg-red-900/20 p-4 rounded-full mb-4';
 const HOME_MATCH_ERROR_DESCRIPTION_CLASS = 'max-w-[32rem] px-4 text-sm font-semibold leading-5';
 const HOME_MATCH_REFRESH_ICON_CLASS = 'mr-1.5 inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent';
-const HOME_MATCH_WARNING_ICON_CLASS = 'text-4xl font-black leading-none text-red-500 dark:text-red-400';
+const HOME_MATCH_WARNING_ICON_CLASS = 'text-4xl font-black leading-none text-red-600 dark:text-red-400';
 const MATCH_PRIORITY_REGION_PROPS = {
   'aria-label': '오늘 경기 중심 영역',
   'data-priority': 'primary',

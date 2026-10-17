@@ -33,8 +33,8 @@ export default function CheerHot({
         return (
             <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-4">
-                    <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
-                    <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
+                    <FlameIcon className="w-5 h-5 text-red-600 fill-red-500 dark:text-red-400 dark:fill-red-400" />
+                    <h2 className="text-lg font-bold text-red-700 dark:text-red-400">인기 피드</h2>
                 </div>
                 <div className="space-y-3">
                     {[1, 2, 3].map((index) => (
@@ -53,8 +53,8 @@ export default function CheerHot({
         return (
             <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-3">
-                    <AlertCircleIcon className="w-5 h-5 text-red-500 dark:text-red-400" />
-                    <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
+                    <AlertCircleIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <h2 className="text-lg font-bold text-red-700 dark:text-red-400">인기 피드</h2>
                 </div>
                 <p className="text-body text-[#64748B] dark:text-white">데이터를 불러오지 못했습니다.</p>
                 <p className="mt-1 text-body text-slate-500 dark:text-white">
@@ -70,7 +70,7 @@ export default function CheerHot({
                         }
                         void refetch();
                     }}
-                    className="mt-3 min-h-11 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-input/50"
+                    className="mt-3 min-h-11 rounded-full border border-red-200 dark:border-border px-4 py-1.5 text-body font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-input/50"
                 >
                     다시 시도
                 </button>
@@ -82,8 +82,8 @@ export default function CheerHot({
         return (
             <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
                 <div className="flex items-center gap-2 mb-4">
-                    <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
-                    <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
+                    <FlameIcon className="w-5 h-5 text-red-600 fill-red-500 dark:text-red-400 dark:fill-red-400" />
+                    <h2 className="text-lg font-bold text-red-700 dark:text-red-400">인기 피드</h2>
                 </div>
                 <p className="text-body text-[#64748B] dark:text-white">지금은 표시할 인기 글이 없습니다.</p>
             </div>
@@ -93,8 +93,8 @@ export default function CheerHot({
     return (
         <div data-testid="cheer-hot" className="bg-red-50/50 dark:bg-[var(--cheer-sub-card)] rounded-2xl p-5 border border-red-100 dark:border-border">
             <div className="flex items-center gap-2 mb-4">
-                <FlameIcon className="w-5 h-5 text-red-500 fill-red-500 dark:text-red-400 dark:fill-red-400" />
-                <h2 className="text-lg font-bold text-red-500 dark:text-red-400">인기 피드</h2>
+                <FlameIcon className="w-5 h-5 text-red-600 fill-red-500 dark:text-red-400 dark:fill-red-400" />
+                <h2 className="text-lg font-bold text-red-700 dark:text-red-400">인기 피드</h2>
             </div>
 
             <div className="space-y-3">

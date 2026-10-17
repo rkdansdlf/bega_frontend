@@ -51,7 +51,7 @@ export default function UserProfilePostsSection({
     if (isPostsError) {
         return (
             <div className="rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-sub-card)] py-8 text-center sm:py-10">
-                <UserProfileXCircleIcon className="mx-auto mb-3 h-10 w-10 text-red-500" />
+                <UserProfileXCircleIcon className="mx-auto mb-3 h-10 w-10 text-red-600 dark:text-red-500" />
                 <p className="mb-4 text-gray-600 dark:text-white">
                     게시글을 불러오지 못했습니다.
                 </p>

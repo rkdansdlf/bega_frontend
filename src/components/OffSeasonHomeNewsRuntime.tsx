@@ -42,7 +42,7 @@ export default function OffSeasonHomeNewsRuntime({
             <TrendingUpIcon className="h-5 w-5 text-white md:h-6 md:w-6" />
           </div>
           <h3 className="min-w-0 text-xl font-black text-primary md:text-2xl">2025 주요 이적 소식</h3>
-          <OffseasonPill className="border-none px-2 py-1 text-15 text-white md:px-3 md:text-15" style={{ backgroundColor: '#ef4444' }}>
+          <OffseasonPill className="border-none bg-red-600 px-2 py-1 text-15 text-white md:px-3 md:text-15">
             Breaking
           </OffseasonPill>
         </div>

@@ -224,7 +224,7 @@ export default function UserProfile({
     if (profileError || !profile) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-                <UserProfileXCircleIcon className="h-12 w-12 text-red-500 mb-4" />
+                <UserProfileXCircleIcon className="h-12 w-12 text-red-600 dark:text-red-500 mb-4" />
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     사용자를 찾을 수 없습니다.
                 </h2>

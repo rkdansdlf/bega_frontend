@@ -106,7 +106,7 @@ export default function MateCreateSeatSelectionFields({
       className="min-w-0 space-y-6 [overflow-wrap:anywhere] sm:space-y-8"
     >
       <div className="space-y-3">
-        <FieldLabel id="mate-create-cheering-side-label" className="text-base font-bold sm:text-lg">응원 진영 선택 <span aria-hidden="true" className="text-red-500 ml-0.5">*</span></FieldLabel>
+        <FieldLabel id="mate-create-cheering-side-label" className="text-base font-bold sm:text-lg">응원 진영 선택 <span aria-hidden="true" className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
         <div
           role="group"
           aria-labelledby="mate-create-cheering-side-label"
@@ -208,7 +208,7 @@ export default function MateCreateSeatSelectionFields({
       </div>
 
       <div className="space-y-3">
-        <FieldLabel id="mate-create-seat-detail-label" className="text-base font-bold sm:text-lg">좌석 상세 <span aria-hidden="true" className="text-red-500 ml-0.5">*</span></FieldLabel>
+        <FieldLabel id="mate-create-seat-detail-label" className="text-base font-bold sm:text-lg">좌석 상세 <span aria-hidden="true" className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
         <div role="group" aria-labelledby="mate-create-seat-detail-label" aria-required="true" className="grid min-w-0 gap-3 sm:grid-cols-3">
           <div className="min-w-0">
             <label htmlFor="seatDetailBlock" className="mb-1 block text-body text-gray-600 dark:text-gray-300">구역/블록</label>
