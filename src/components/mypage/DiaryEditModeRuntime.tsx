@@ -367,7 +367,7 @@ export default function DiaryEditModeRuntime({
                 <button
                   type="button"
                   onClick={() => removePhoto(index)}
-                  className="absolute -right-2 -top-2 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive-hover p-1"
+                  className="absolute -right-2 -top-2 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive-hover dark:bg-destructive/60 dark:hover:bg-destructive/75 p-1"
                 >
                   <DiaryEditModeCloseIcon className="h-4 w-4" />
                 </button>
