@@ -1,6 +1,11 @@
 /// <reference types="cypress" />
 
 import { seedCypressAuthState } from '../support/auth';
+import {
+  beginSummaryClickDiagnostics,
+  flushSummaryClickDiagnostics,
+  snapshotSummaryClickDiagnostics,
+} from '../support/mateSummaryClickDiagnostics';
 
 describe('Mate Visual QA', () => {
   const fakeToken = 'visual-qa-token';
@@ -336,6 +341,11 @@ describe('Mate Visual QA', () => {
     setupMateMocks();
   });
 
+  afterEach(() => {
+    // CI-only: emits the pending mobile-summary click diagnostics even when the test failed.
+    flushSummaryClickDiagnostics('afterEach');
+  });
+
   it('captures the list page in desktop light mode', () => {
     cy.viewport(1440, 900);
     visitWithTheme('/mate', 'light');
@@ -449,7 +459,12 @@ describe('Mate Visual QA', () => {
       assertViewport(width, height);
       cy.contains('좌석 · 시야').should('be.visible');
       cy.contains('호스트에게 문의').should('be.visible');
+      if (!rail) {
+        beginSummaryClickDiagnostics({ width, height }, theme);
+        snapshotSummaryClickDiagnostics('beforeScrollIntoView');
+      }
       cy.contains('파티 소개').scrollIntoView().should('be.visible');
+      if (!rail) snapshotSummaryClickDiagnostics('afterScrollIntoView');
       assertNoHorizontalOverflow();
 
       if (rail) {
@@ -458,11 +473,16 @@ describe('Mate Visual QA', () => {
       } else {
         cy.get('[data-testid="mate-desktop-action-rail"]').should('not.be.visible');
         cy.get('[data-testid="mate-mobile-action-bar"]').should('be.visible');
-        cy.get('[data-testid="mate-detail-mobile-summary"]').should('be.visible').click();
+        cy.get('[data-testid="mate-detail-mobile-summary"]').should('be.visible');
+        snapshotSummaryClickDiagnostics('beforeClick');
+        cy.get('[data-testid="mate-detail-mobile-summary"]').click();
+        snapshotSummaryClickDiagnostics('afterClick');
         cy.get('[data-testid="mate-detail-mobile-summary"]').should('have.attr', 'aria-expanded', 'true');
+        snapshotSummaryClickDiagnostics('afterExpandedAssertion');
         cy.get('[data-testid="mate-detail-action-sheet"]').should('be.visible');
         cy.get('[data-testid="mate-detail-action-sheet-backdrop"]').click('topLeft');
         cy.get('[data-testid="mate-detail-action-sheet-backdrop"]').should('not.exist');
+        flushSummaryClickDiagnostics('passed');
       }
     });
   });

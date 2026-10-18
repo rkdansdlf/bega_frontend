@@ -206,6 +206,11 @@ export default defineConfig({
                     console.log(message);
                     return null;
                 },
+                // CI-only mate-visual summary click diagnostics (cypress/support/mateSummaryClickDiagnostics.ts).
+                'mateVisualDiagnostics:isEnabled'() {
+                    const ci = String(process.env.CI ?? '').trim().toLowerCase();
+                    return ci !== '' && ci !== 'false' && ci !== '0';
+                },
                 'predictionCoachVisualAudit:prepareReferenceHtml'(payload) {
                     const referencePath = String(payload?.referencePath || visualAuditReferencePath);
                     const preparedHtml = buildPreparedReferenceCanvasHtml(referencePath, config.projectRoot);
