@@ -549,6 +549,9 @@ export default function MateChatApprovedRuntime({
         <Card className={`mt-4 min-w-0 flex-1 overflow-hidden p-3 sm:p-4 ${mateSectionCardClass}`}>
           <Skeleton className="h-5 w-24 max-w-full dark:bg-white/10" />
           <Skeleton className="mt-2 h-4 w-56 max-w-full dark:bg-white/10" />
+          <div className="mt-4 flex justify-center">
+            <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" aria-hidden="true" />
+          </div>
           <div className="mt-4 space-y-4">
             {[0, 1, 2].map((index) => (
               <div key={`mate-chat-thread-fallback-${index}`} className="flex min-w-0 justify-start">
