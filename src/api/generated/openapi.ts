@@ -244,6 +244,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/mate-link-reconciliation-cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/mate-link-reconciliation-cases/payout-holds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPayoutHolds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/mates": {
         parameters: {
             query?: never;
@@ -349,6 +381,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Records an administrator-proposed reconciliation outcome only. The evidence reference and submitted provider tuple are not independently verified or fetched from a provider. Even after a second administrator reviews the proposal, this endpoint does not bind a payment key, change payment status, cancel or refund a payment, or call a provider; trusted provider proof is still required. */
         post: operations["resolve"];
         delete?: never;
         options?: never;
@@ -433,7 +466,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["decideReportAppeal"];
         trace?: never;
     };
     "/api/admin/roles/audit-logs": {
@@ -1182,6 +1215,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout/csrf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["issueLogoutCsrfCookie"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3724,6 +3773,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seat-views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seat-views/{seatViewId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOwnerPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/stadiums": {
         parameters: {
             query?: never;
@@ -4415,6 +4496,10 @@ export interface components {
             adminMemo?: string;
             visibleUntil?: string;
         };
+        AdminReportAppealDecisionReq: {
+            /** @enum {string} */
+            decision: "REVIEWING" | "ACCEPTED" | "REJECTED";
+        };
         AdminReportAppealReq: {
             appealReason?: string;
         };
@@ -4458,13 +4543,16 @@ export interface components {
             aiReason?: string;
             aiSuggestedLabel?: string;
             block?: string;
+            comment?: string | null;
             diaryDate?: string;
             /** Format: int64 */
-            diaryId?: number;
+            diaryId?: number | null;
             /** Format: int64 */
             id?: number;
             moderationStatus?: string;
-            photoUrl?: string;
+            photoUrl?: string | null;
+            /** Format: int32 */
+            rating?: number | null;
             reviewedAt?: string;
             /** Format: int64 */
             reviewedBy?: number;
@@ -4475,6 +4563,7 @@ export interface components {
             sourceType?: string;
             stadium?: string;
             storagePath?: string;
+            tags?: string[];
             ticketVerified?: boolean;
             ticketVerifiedAt?: string;
             /** Format: int64 */
@@ -4727,15 +4816,6 @@ export interface components {
             message?: string;
             success?: boolean;
         };
-        ApiResponseListAdminSeatViewDto: {
-            code?: string;
-            data?: components["schemas"]["AdminSeatViewDto"][];
-            errors?: {
-                [key: string]: string;
-            };
-            message?: string;
-            success?: boolean;
-        };
         ApiResponseListAdminUserDto: {
             code?: string;
             data?: components["schemas"]["AdminUserDto"][];
@@ -4877,6 +4957,15 @@ export interface components {
             message?: string;
             success?: boolean;
         };
+        ApiResponseMateLinkReconciliationCasePageDto: {
+            code?: string;
+            data?: components["schemas"]["MateLinkReconciliationCasePageDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
         ApiResponseMatePaymentCancelIntentResponse: {
             code?: string;
             data?: components["schemas"]["MatePaymentCancelIntentResponse"];
@@ -4933,7 +5022,16 @@ export interface components {
         };
         ApiResponsePageAdminReportDto: {
             code?: string;
-            data?: components["schemas"]["PageObject"];
+            data?: components["schemas"]["PageAdminReportDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponsePageAdminSeatViewDto: {
+            code?: string;
+            data?: components["schemas"]["PageAdminSeatViewDto"];
             errors?: {
                 [key: string]: string;
             };
@@ -4942,7 +5040,7 @@ export interface components {
         };
         ApiResponsePageAuditLogDto: {
             code?: string;
-            data?: components["schemas"]["PageObject"];
+            data?: components["schemas"]["PageAuditLogDto"];
             errors?: {
                 [key: string]: string;
             };
@@ -4970,6 +5068,15 @@ export interface components {
         ApiResponsePaymentIntentReconciliationReviewDto: {
             code?: string;
             data?: components["schemas"]["PaymentIntentReconciliationReviewDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponsePayoutHoldPageDto: {
+            code?: string;
+            data?: components["schemas"]["PayoutHoldPageDto"];
             errors?: {
                 [key: string]: string;
             };
@@ -5024,6 +5131,24 @@ export interface components {
         ApiResponseRoleChangeResponseDto: {
             code?: string;
             data?: components["schemas"]["RoleChangeResponseDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponseSeatViewPreviewDto: {
+            code?: string;
+            data?: components["schemas"]["SeatViewPreviewDto"];
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
+        };
+        ApiResponseSeatViewSubmissionDto: {
+            code?: string;
+            data?: components["schemas"]["SeatViewSubmissionDto"];
             errors?: {
                 [key: string]: string;
             };
@@ -5557,7 +5682,7 @@ export interface components {
         FinalizeMediaUploadResponse: {
             /** Format: int64 */
             assetId?: number;
-            publicUrl?: string;
+            publicUrl?: string | null;
             storagePath?: string;
         };
         FollowCountResponse: {
@@ -5921,7 +6046,7 @@ export interface components {
             contentLength: number;
             contentType: string;
             /** @enum {string} */
-            domain: "PROFILE" | "DIARY" | "CHEER" | "CHAT";
+            domain: "PROFILE" | "DIARY" | "SEAT_VIEW" | "CHEER" | "CHAT";
             fileName: string;
             /** Format: int32 */
             height: number;
@@ -6008,8 +6133,10 @@ export interface components {
             scope?: string;
         };
         MarkAllAsReadRequest: {
-            /** Format: date-time */
-            readThrough: string;
+            notificationIds: number[];
+        };
+        MarkAllAsReadResponse: {
+            notificationIds: number[];
         };
         MatchBoundsResponseDto: {
             /** Format: date */
@@ -6235,6 +6362,31 @@ export interface components {
             requestedAt?: string;
             /** @enum {string} */
             status?: "PENDING" | "REQUESTED" | "COMPLETED" | "FAILED" | "SKIPPED" | "REFUNDED_AFTER_SETTLEMENT";
+        };
+        MateLinkReconciliationCaseDto: {
+            /** Format: int64 */
+            applicationId?: number;
+            /** Format: int64 */
+            id?: number;
+            /** Format: date-time */
+            observedAt?: string;
+            /** Format: int64 */
+            partyId?: number;
+            /** Format: int64 */
+            paymentTransactionId?: number;
+            /** @enum {string} */
+            reasonCode?: "PAYMENT_TRANSACTION_MISSING" | "PAYMENT_LINK_INCOMPLETE" | "APPLICATION_LINK_MISSING" | "APPLICATION_LINK_INCOMPLETE" | "PARTY_LINK_MISSING" | "PARTY_LINK_MISMATCH" | "PAYMENT_APPLICATION_LINK_MISMATCH" | "PAYMENT_PARTY_LINK_MISMATCH" | "PAYMENT_BUYER_LINK_MISMATCH" | "PAYMENT_ORDER_LINK_MISMATCH" | "PAYMENT_SELLER_LINK_MISMATCH" | "PAYOUT_TRANSACTION_MISSING" | "PAYOUT_PAYMENT_LINK_MISMATCH" | "PAYOUT_SELLER_LINK_MISMATCH";
+        };
+        MateLinkReconciliationCasePageDto: {
+            items?: components["schemas"]["MateLinkReconciliationCaseDto"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         MatePartyCreateRequest: {
             awayTeam: string;
@@ -6567,7 +6719,7 @@ export interface components {
             /** Format: int32 */
             checkedCount?: number;
             /** @enum {string} */
-            domain?: "PROFILE" | "DIARY" | "CHEER" | "CHAT";
+            domain?: "PROFILE" | "DIARY" | "SEAT_VIEW" | "CHEER" | "CHAT";
             failedObjectKeys?: string[];
             /** Format: int32 */
             feedDerivativeMissingCount?: number;
@@ -6682,6 +6834,60 @@ export interface components {
             /** Format: int32 */
             wins?: number;
         };
+        PageAdminReportDto: {
+            content?: components["schemas"]["AdminReportDto"][];
+            empty?: boolean;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            number?: number;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            size?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
+        PageAdminSeatViewDto: {
+            content?: components["schemas"]["AdminSeatViewDto"][];
+            empty?: boolean;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            number?: number;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            size?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
+        PageAuditLogDto: {
+            content?: components["schemas"]["AuditLogDto"][];
+            empty?: boolean;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            number?: number;
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            size?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
         PageMetadata: {
             /** Format: int64 */
             number?: number;
@@ -6693,7 +6899,7 @@ export interface components {
             totalPages?: number;
         };
         PageObject: {
-            content?: components["schemas"]["AuditLogDto"][];
+            content?: components["schemas"]["AdminSeatViewDto"][];
             empty?: boolean;
             first?: boolean;
             last?: boolean;
@@ -6778,17 +6984,31 @@ export interface components {
             totalPages?: number;
         };
         PaymentIntentReconciliationResolutionRequest: {
+            /** @description Opaque administrator audit reference. The server does not dereference or verify this reference. */
             evidenceReference: string;
-            /** @enum {string} */
+            /**
+             * @description Administrator-proposed outcome only; this field does not assert a provider-verified result.
+             * @enum {string}
+             */
             outcome: "VERIFIED_PAYMENT" | "VERIFIED_CANCELED" | "VERIFIED_REFUNDED";
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Administrator-submitted candidate amount; must match the internal payment intent.
+             */
             verifiedAmount: number;
+            /** @description Administrator-submitted candidate order ID; must match the internal payment intent. */
             verifiedOrderId: string;
+            /** @description Administrator-submitted candidate payment key; not independently verified by the server. */
             verifiedPaymentKey: string;
+            /** @description Administrator-submitted candidate provider status; not independently verified by the server. */
             verifiedStatus: string;
         };
         PaymentIntentReconciliationResolutionResultDto: {
+            /** @description True until a different administrator records the same proposal; this review does not resolve the payment. */
             awaitingIndependentReview?: boolean;
+            /** @description Always true for this endpoint until trusted provider proof is independently obtained. */
+            awaitingTrustedProviderProof?: boolean;
+            /** @description The requested proposal type, not a verified provider outcome. */
             outcome?: string;
         };
         PaymentIntentReconciliationReviewDto: {
@@ -6807,6 +7027,28 @@ export interface components {
             intentId?: number;
             orderId?: string;
             requestedPaymentKey?: string;
+        };
+        PayoutHoldDto: {
+            /** Format: int64 */
+            paymentTransactionId?: number;
+            /** Format: int64 */
+            payoutId?: number;
+            reasonCode?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "REQUESTED" | "COMPLETED" | "FAILED" | "SKIPPED" | "REFUNDED_AFTER_SETTLEMENT";
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PayoutHoldPageDto: {
+            items?: components["schemas"]["PayoutHoldDto"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         PitcherDto: {
             era: string | null;
@@ -7229,10 +7471,17 @@ export interface components {
         };
         SeatViewPhotoDto: {
             block?: string;
+            comment?: string;
             diaryDate?: string;
             photoUrl?: string;
+            /** Format: int32 */
+            rating?: number;
             section?: string;
             stadium?: string;
+            tags?: string[];
+        };
+        SeatViewPreviewDto: {
+            photoUrl?: string;
         };
         SeatViewRewardDto: {
             firstContribution?: boolean;
@@ -7244,6 +7493,38 @@ export interface components {
         };
         SeatViewSelectionRequest: {
             candidateIds?: number[];
+        };
+        SeatViewSubmissionDto: {
+            /** Format: double */
+            aiConfidence?: number;
+            aiSuggestedLabel?: string;
+            block?: string;
+            comment?: string;
+            /** Format: int64 */
+            id?: number;
+            moderationStatus?: string;
+            photoUrl?: string | null;
+            /** Format: int32 */
+            rating?: number;
+            seatNumber?: string;
+            seatRow?: string;
+            section?: string;
+            sourceType?: string;
+            stadium?: string;
+            storagePath?: string;
+            tags?: string[];
+        };
+        SeatViewSubmissionRequest: {
+            block?: string;
+            comment?: string;
+            /** Format: int32 */
+            rating: number;
+            seatNumber?: string;
+            seatRow?: string;
+            section?: string;
+            stadium: string;
+            storagePath: string;
+            tags?: string[];
         };
         SignedUrlDto: {
             /** Format: date-time */
@@ -7457,6 +7738,9 @@ export interface components {
             sourceSnapshotType?: string;
             sourceTitle?: string;
             sourceUrl?: string;
+        };
+        UsePowerupRequest: {
+            gameId: string;
         };
         UserFollowSummaryDto: {
             favoriteTeam?: string;
@@ -7969,6 +8253,52 @@ export interface operations {
             };
         };
     };
+    list_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMateLinkReconciliationCasePageDto"];
+                };
+            };
+        };
+    };
+    listPayoutHolds: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePayoutHoldPageDto"];
+                };
+            };
+        };
+    };
     getMates: {
         parameters: {
             query?: never;
@@ -8327,6 +8657,32 @@ export interface operations {
             };
         };
     };
+    decideReportAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reportId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReportAppealDecisionReq"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseAdminReportDto"];
+                };
+            };
+        };
+    };
     getAuditLogs: {
         parameters: {
             query: {
@@ -8409,6 +8765,8 @@ export interface operations {
                 aiSuggestedLabel?: string;
                 adminLabel?: string;
                 ticketVerified?: boolean;
+                page?: number;
+                size?: number;
             };
             header?: never;
             path?: never;
@@ -8422,7 +8780,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ApiResponseListAdminSeatViewDto"];
+                    "*/*": components["schemas"]["ApiResponsePageAdminSeatViewDto"];
                 };
             };
         };
@@ -9512,6 +9870,24 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["ApiResponseVoid"];
                 };
+            };
+        };
+    };
+    issueLogoutCsrfCookie: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -11540,6 +11916,7 @@ export interface operations {
     getBootstrap: {
         parameters: {
             query?: {
+                /** @description 1982-01-01부터 2030-12-31까지의 날짜 */
                 date?: string;
             };
             header?: never;
@@ -11562,8 +11939,10 @@ export interface operations {
     getNavigation: {
         parameters: {
             query?: {
+                /** @description 1982-01-01부터 2030-12-31까지의 날짜 */
                 date?: string;
                 scope?: string;
+                /** @description 1982년부터 2030년까지의 시즌 연도 */
                 seasonYear?: number;
             };
             header?: never;
@@ -11586,7 +11965,9 @@ export interface operations {
     getWidgets: {
         parameters: {
             query?: {
+                /** @description 1982-01-01부터 2030-12-31까지의 날짜 */
                 date?: string;
+                /** @description 1982년부터 2030년까지의 시즌 연도 */
                 seasonYear?: number;
             };
             header?: never;
@@ -12089,20 +12470,16 @@ export interface operations {
     };
     usePowerup: {
         parameters: {
-            query?: {
-                gameId?: string;
-            };
+            query?: never;
             header?: never;
             path: {
                 type: string;
             };
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
-                "application/json": {
-                    [key: string]: unknown;
-                };
+                "application/json": components["schemas"]["UsePowerupRequest"];
             };
         };
         responses: {
@@ -12498,7 +12875,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "*/*": components["schemas"]["MarkAllAsReadResponse"];
+                };
             };
         };
     };
@@ -13444,6 +13823,52 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["MateReviewResponse"][];
+                };
+            };
+        };
+    };
+    submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeatViewSubmissionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSeatViewSubmissionDto"];
+                };
+            };
+        };
+    };
+    getOwnerPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seatViewId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSeatViewPreviewDto"];
                 };
             };
         };
