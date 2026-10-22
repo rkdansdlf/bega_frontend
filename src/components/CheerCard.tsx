@@ -288,7 +288,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                         navigate(`/cheer/${post.id}`);
                     }
                 }}
-                className="flex gap-3"
+                className="flex flex-wrap gap-3"
             >
                 <div className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center">
                     <div
@@ -329,7 +329,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                     )}
                 </div>
 
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-[9rem]">
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-body font-semibold">
                         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                             <span
