@@ -47,6 +47,8 @@
     "api:types": "node scripts/generate-openapi-types.mjs",
     "api:types:check": "node scripts/generate-openapi-types.mjs --check",
     "test:api-contract": "node --test scripts/openapi-types.test.mjs",
+    "hooks:install": "sh scripts/git-hooks/install.sh",
+    "test:git-hooks": "node --test scripts/git-hooks/commit-msg.test.mjs",
     "api:ai-stream:sync": "node scripts/sync-ai-stream-contract.mjs",
     "api:ai-stream:types": "node scripts/generate-ai-stream-types.mjs",
     "api:ai-stream:check": "node scripts/generate-ai-stream-types.mjs --check",
