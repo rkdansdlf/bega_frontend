@@ -239,8 +239,9 @@ describe('Landing hero and ticker foundation', () => {
     cy.get('.landing-ticker-track').should(($track) => {
       const [animation] = $track[0].getAnimations();
       const keyframes = (animation.effect as KeyframeEffect).getKeyframes();
-      expect(keyframes[keyframes.length - 1].transform).to.equal(
-        'translateX(calc(-50% - 22px))',
+      // Chromium serializes translateX(x) keyframes as translate(x); accept both spellings.
+      expect(keyframes[keyframes.length - 1].transform).to.match(
+        /^translate(?:X)?\(calc\(-50% - 22px\)\)$/,
       );
     });
   });
@@ -257,7 +258,8 @@ describe('Landing hero and ticker foundation', () => {
 
   it('renders the app preview as a code-rendered phone', () => {
     cy.viewport(1280, 900);
-    visitLanding();
+    // The preview auto-advances every 4.8s; reduced motion keeps screen 0 active so the text assertions are stable.
+    visitLanding({ reducedMotion: true });
 
     cy.getBySel('landing-app-preview').scrollIntoView().should('be.visible');
     cy.getBySel('landing-phone').should('be.visible');

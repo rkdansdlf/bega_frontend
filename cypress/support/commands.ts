@@ -30,7 +30,10 @@ declare global {
             /**
              * Custom command to select by data-testid.
              */
-            getBySel(selector: string): Chainable<JQuery<HTMLElement>>;
+            getBySel(
+                selector: string,
+                options?: Partial<Loggable & Timeoutable & Withinable & Shadow>,
+            ): Chainable<JQuery<HTMLElement>>;
 
             /**
              * Custom command to mock follow counts API for public profile.
@@ -529,8 +532,8 @@ Cypress.Commands.add('mockAPI', (options: { skipRankings?: boolean } = {}) => {
 
 });
 
-Cypress.Commands.add('getBySel', (selector) => {
-    return cy.get(`[data-testid=${selector}]`);
+Cypress.Commands.add('getBySel', (selector, options) => {
+    return cy.get(`[data-testid=${selector}]`, options);
 });
 
 export { };
