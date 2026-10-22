@@ -86,6 +86,7 @@ const appQueryProviderSource = readFileSync(new URL('../src/components/AppQueryP
 const uiButtonSource = readFileSync(new URL('../src/components/ui/button.tsx', import.meta.url), 'utf8');
 const uiInputSource = readFileSync(new URL('../src/components/ui/input.tsx', import.meta.url), 'utf8');
 const uiTextareaSource = readFileSync(new URL('../src/components/ui/textarea.tsx', import.meta.url), 'utf8');
+const uiButtonStylesSource = readFileSync(new URL('../src/components/ui/button-styles.ts', import.meta.url), 'utf8');
 const uiPlainButtonSource = readFileSync(new URL('../src/components/ui/plain-button.tsx', import.meta.url), 'utf8');
 const tailwindConfigSource = readFileSync(new URL('../tailwind.config.js', import.meta.url), 'utf8');
 const dialogShadowSources = [
@@ -1013,7 +1014,11 @@ test('keeps high-fanout chrome and home card CSS on named Tailwind tokens', () =
 });
 
 test('keeps shared focus rings on Tailwind default ring instead of arbitrary 3px rules', () => {
-  for (const source of [uiButtonSource, uiInputSource, uiTextareaSource, uiPlainButtonSource]) {
+  // Button focus classes live in the shared button-styles module that button.tsx imports.
+  const buttonSourceWithStyles = `${uiButtonSource}\n${uiButtonStylesSource}`;
+  const plainButtonSourceWithStyles = `${uiPlainButtonSource}\n${uiButtonStylesSource}`;
+
+  for (const source of [buttonSourceWithStyles, uiInputSource, uiTextareaSource, plainButtonSourceWithStyles]) {
     assert.equal(source.includes('focus-visible:ring-[3px]'), false);
     assert.ok(source.includes('focus-visible:ring'));
   }
