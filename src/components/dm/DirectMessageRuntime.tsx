@@ -501,7 +501,7 @@ export default function DirectMessageRuntime() {
                 <Button
                   onClick={() => void handleSendMessage()}
                   disabled={submitDisabled}
-                  className="w-full shrink-0 justify-center whitespace-nowrap sm:w-auto"
+                  className="w-full shrink-0 justify-center whitespace-normal text-center sm:w-auto sm:whitespace-nowrap"
                 >
                   {isSending ? <SpinnerIcon className="h-4 w-4 animate-spin" /> : <MessageCircleIcon className="h-4 w-4" />}
                   메시지 보내기
