@@ -298,11 +298,14 @@ const readCalls = (page: Page) => page.evaluate(() => (
 ).__GLOBAL_ERROR_DIALOG_TEST__.calls);
 
 const openPage = async (page: Page, port: number, query = '') => {
-  const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`);
+  // Playwright's own 30s defaults are hang guards too: a loaded runner starts Vite + Chromium slowly.
+  const response = await page.goto(`http://127.0.0.1:${port}${testPagePath}${query}`, {
+    timeout: scaledTimeout(30_000),
+  });
   assert.equal(response?.status(), 200);
   await page.waitForFunction(() => Boolean((window as unknown as {
     __GLOBAL_ERROR_DIALOG_TEST__?: TestRuntime;
-  }).__GLOBAL_ERROR_DIALOG_TEST__));
+  }).__GLOBAL_ERROR_DIALOG_TEST__), undefined, { timeout: scaledTimeout(30_000) });
 };
 
 const withActualBrowser = async (
