@@ -116,10 +116,13 @@ describe('SignUp availability checks', () => {
   });
 
   it('ignores stale handle availability responses and keeps the latest state', () => {
+    let staleHandleRequestReached = false;
+
     cy.intercept('GET', '**/api/auth/check-handle*', (req) => {
       const handle = String(req.query.handle ?? '');
 
       if (handle === '@takenfirst') {
+        staleHandleRequestReached = true;
         req.alias = 'staleHandleTaken';
         req.reply({
           delay: 700,
@@ -168,9 +171,11 @@ describe('SignUp availability checks', () => {
     cy.visit('/signup');
 
     cy.get('input#handle').clear().type('TakenFirst');
-    // 고정 대기 대신 디바운스가 발동해 첫 요청이 시작됐다는 UI 신호를 기다린다.
-    // 부하가 걸리면 500ms 고정 대기는 디바운스(450ms)보다 짧아져서 요청이 취소된다.
-    cy.contains('핸들 중복 확인 중...').should('be.visible');
+    // 값을 바꾸면 앱이 진행 중인 요청을 abort 하므로, 첫 요청이 프록시에 도달한 뒤에만 다음 입력을 한다.
+    // UI 신호만으로는 abort 가 요청 도달보다 먼저 올 수 있어서 intercept 도달 여부를 기다린다.
+    cy.wrap(null, { timeout: 10000 }).should(() => {
+      expect(staleHandleRequestReached).to.equal(true);
+    });
     cy.get('input#handle').clear().type('FreshFinal');
     cy.get('input#handle').should('have.value', '@freshfinal');
     cy.wait(500);
