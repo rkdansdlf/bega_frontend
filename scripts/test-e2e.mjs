@@ -295,6 +295,11 @@ const normalizeBackendBaseUrl = (value) => {
     return undefined;
   }
 
+  // 상대 경로(예: VITE_API_BASE_URL=/api)는 같은 origin 경로라 백엔드 호스트가 아니다.
+  if (trimmed.startsWith('/')) {
+    return undefined;
+  }
+
   const candidate = /^https?:\/\//i.test(trimmed)
     ? trimmed
     : `http://${trimmed}`;
