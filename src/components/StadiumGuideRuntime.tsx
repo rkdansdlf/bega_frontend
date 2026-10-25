@@ -17,7 +17,6 @@ import {
 } from './icons/StadiumGuideIcons';
 import { resolveStadiumSeatMapEntry } from './stadiumSeatMapRegistry';
 import { StadiumSeatMapManualRequired } from './StadiumSeatMapStates';
-import StadiumMapFallback from './StadiumMapFallback';
 import { SeatMapRuntimeShell } from './stadiumSeatMap/SeatMapRuntimeShell';
 import { getCategoryIcon } from '../utils/stadium';
 import { useStadiumGuide } from '../hooks/useStadiumGuide';
@@ -33,6 +32,8 @@ import './StadiumGuide.css';
 
 const AuthenticatedStadiumFavoriteToggle = lazy(() => import('./AuthenticatedStadiumFavoriteToggle'));
 const StadiumGuidePlacesRuntime = lazy(() => import('./StadiumGuidePlacesRuntime'));
+// 지도 SDK 를 못 쓸 때만 필요해서 첫 화면 청크에 싣지 않습니다.
+const StadiumMapFallback = lazy(() => import('./StadiumMapFallback'));
 const AdSlot = lazy(() => import('./ads/AdSlot'));
 
 export type StadiumGuideRuntimeVisualQaStateOverride = Partial<ReturnType<typeof useStadiumGuide>>;
@@ -411,14 +412,16 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                   />
                 </div>
               ) : mapFallbackReason && selectedStadium ? (
-                <StadiumMapFallback
-                  reason={mapFallbackReason}
-                  stadiumName={selectedStadium.stadiumName}
-                  lat={selectedStadium.lat}
-                  lng={selectedStadium.lng}
-                  onRetry={retryMap}
-                  isRetrying={mapStatus === 'loading'}
-                />
+                <Suspense fallback={null}>
+                  <StadiumMapFallback
+                    reason={mapFallbackReason}
+                    stadiumName={selectedStadium.stadiumName}
+                    lat={selectedStadium.lat}
+                    lng={selectedStadium.lng}
+                    onRetry={retryMap}
+                    isRetrying={mapStatus === 'loading'}
+                  />
+                </Suspense>
               ) : (
                 <Card
                   className="stadium-guide-map-frame stadium-guide-panel-strong flex flex-col items-center justify-center rounded-[1.75rem] border-2 p-6 sm:rounded-[2.5rem] sm:p-12"

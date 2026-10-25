@@ -325,6 +325,9 @@ test('keeps the /prediction shell outside the query provider critical path', () 
   assert.equal(appQueryProviderRouteGroup.includes('<Route path="/prediction" element={<Prediction />} />'), false);
 
   assert.ok(predictionRuntimeSource.includes("const AppQueryProvider = lazy(() => import('../AppQueryProvider'));"));
+  // The loading skeleton is its own chunk, not part of the Prediction route chunk.
+  assert.equal(predictionRuntimeSource.includes("import PredictionLoadingView from './PredictionLoadingView';"), false);
+  assert.ok(predictionRuntimeSource.includes('const LazyPredictionLoadingView = lazy(loadPredictionLoadingView);'));
   assert.match(
     predictionRuntimeSource,
     /<Suspense fallback={<PredictionLoadingView topNotice={null} \/>}>\s*<AppQueryProvider>[\s\S]*?<\/AppQueryProvider>\s*<\/Suspense>/,

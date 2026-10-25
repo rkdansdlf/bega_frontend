@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '../../lib/utils';
-import { AlertCircleIcon, RefreshIcon } from '../icons/PublicFeatureIcons';
+import { StateAlertCircleIcon, StateRefreshIcon } from '../icons/StateBlockIcons';
 import {
   EMPTY_BODY_CLASS,
   EMPTY_FRAME_CLASS,
@@ -52,7 +52,7 @@ export default function StateBlock({
   className,
   testId = 'state-block',
 }: StateBlockProps) {
-  const symbol = icon ?? (kind === 'error' ? <AlertCircleIcon className="h-5 w-5" /> : null);
+  const symbol = icon ?? (kind === 'error' ? <StateAlertCircleIcon className="h-5 w-5" /> : null);
   const retryButton = onRetry ? (
     <button
       type="button"
@@ -62,7 +62,7 @@ export default function StateBlock({
       className={cn(ERROR_RETRY_BUTTON_CLASS, 'h-auto min-h-11 shrink-0 sm:min-h-8 disabled:cursor-wait disabled:opacity-70')}
       data-testid={retryTestId ?? `${testId}-retry`}
     >
-      <RefreshIcon className={cn('h-3.5 w-3.5', isRetrying && 'animate-spin')} />
+      <StateRefreshIcon className={cn('h-3.5 w-3.5', isRetrying && 'animate-spin')} />
       {retryLabel}
     </button>
   ) : null;
