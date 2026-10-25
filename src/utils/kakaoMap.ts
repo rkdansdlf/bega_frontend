@@ -17,6 +17,40 @@ const hasPlaceCoordinates = (place: Place): place is Place & { lat: number; lng:
 
 let kakaoMapScriptPromise: Promise<void> | null = null;
 
+/**
+ * 지도 SDK 를 못 쓰는 이유. 화면 문구는 이 값으로만 고르고, 아래 진단 메시지는 콘솔에만 남깁니다.
+ *   offline      기기가 오프라인 — 연결되면 다시 시도할 만함
+ *   unavailable  스크립트 차단(CSP · 광고 차단 등) 또는 초기화 실패 — 다시 시도해도 같은 결과
+ *   missing-key  배포 설정에 키가 없음 — 다시 시도해도 같은 결과
+ */
+export type KakaoMapLoadFailureReason = 'offline' | 'unavailable' | 'missing-key';
+
+const resolveKakaoMapLoadFailureReason = (): KakaoMapLoadFailureReason => (
+  typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'unavailable'
+);
+
+const isValidLinkCoordinate = (value: number | null | undefined): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+/** 카카오맵 웹에서 해당 위치를 핀으로 보여주는 링크 (좌표가 없으면 이름 검색). */
+export const buildKakaoMapPlaceUrl = (name: string, lat?: number | null, lng?: number | null): string => (
+  isValidLinkCoordinate(lat) && isValidLinkCoordinate(lng)
+    ? `https://map.kakao.com/link/map/${encodeURIComponent(name)},${lat},${lng}`
+    : buildKakaoMapSearchUrl(name)
+);
+
+/** 카카오맵 웹 길찾기 링크 (도착지 = 해당 위치). */
+export const buildKakaoMapRouteUrl = (name: string, lat?: number | null, lng?: number | null): string | null => (
+  isValidLinkCoordinate(lat) && isValidLinkCoordinate(lng)
+    ? `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`
+    : null
+);
+
+/** 카카오맵 웹 검색 링크 — 예: "창원NC파크 편의점". */
+export const buildKakaoMapSearchUrl = (query: string): string => (
+  `https://map.kakao.com/?q=${encodeURIComponent(query)}`
+);
+
 const KAKAO_MAP_SCRIPT_SELECTOR = 'script[data-kakao-map-sdk="true"], script[src*="dapi.kakao.com/v2/maps/sdk.js"]';
 
 const getKakaoMapLoadErrorMessage = () => {
@@ -52,16 +86,22 @@ const waitForKakaoMapSdkReady = () => new Promise<void>((resolve, reject) => {
   });
 });
 
-export const loadKakaoMapScript = (onLoad?: () => void, onError?: (message?: string) => void) => {
+export const loadKakaoMapScript = (
+  onLoad?: () => void,
+  onError?: (message?: string, reason?: KakaoMapLoadFailureReason) => void,
+) => {
   if (!KAKAO_API_KEY) {
-    onError?.('카카오맵 API 키가 없습니다. 운영 환경의 VITE_KAKAO_MAP_KEY 설정을 확인해주세요.');
+    onError?.('카카오맵 API 키가 없습니다. 운영 환경의 VITE_KAKAO_MAP_KEY 설정을 확인해주세요.', 'missing-key');
     return;
   }
 
   if (window.kakao && window.kakao.maps) {
     waitForKakaoMapSdkReady()
       .then(() => onLoad?.())
-      .catch((error) => onError?.(error instanceof Error ? error.message : getKakaoMapLoadErrorMessage()));
+      .catch((error) => onError?.(
+        error instanceof Error ? error.message : getKakaoMapLoadErrorMessage(),
+        resolveKakaoMapLoadFailureReason(),
+      ));
     return;
   }
 
@@ -101,7 +141,10 @@ export const loadKakaoMapScript = (onLoad?: () => void, onError?: (message?: str
 
   kakaoMapScriptPromise
     .then(() => onLoad?.())
-    .catch((error) => onError?.(error instanceof Error ? error.message : getKakaoMapLoadErrorMessage()));
+    .catch((error) => onError?.(
+      error instanceof Error ? error.message : getKakaoMapLoadErrorMessage(),
+      resolveKakaoMapLoadFailureReason(),
+    ));
 };
 
 export const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
