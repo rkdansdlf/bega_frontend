@@ -26,6 +26,7 @@ interface StateBlockProps {
   icon?: ReactNode;
   onRetry?: () => void;
   retryLabel?: string;
+  retryTestId?: string;
   isRetrying?: boolean;
   /** 재시도 외의 다음 행동 (링크 · 버튼). */
   action?: ReactNode;
@@ -43,6 +44,7 @@ export default function StateBlock({
   icon,
   onRetry,
   retryLabel = '다시 시도',
+  retryTestId,
   isRetrying = false,
   action,
   layout = 'block',
@@ -57,8 +59,8 @@ export default function StateBlock({
       onClick={onRetry}
       disabled={isRetrying}
       aria-busy={isRetrying || undefined}
-      className={cn(ERROR_RETRY_BUTTON_CLASS, 'shrink-0 disabled:cursor-wait disabled:opacity-70')}
-      data-testid={`${testId}-retry`}
+      className={cn(ERROR_RETRY_BUTTON_CLASS, 'h-auto min-h-11 shrink-0 sm:min-h-8 disabled:cursor-wait disabled:opacity-70')}
+      data-testid={retryTestId ?? `${testId}-retry`}
     >
       <RefreshIcon className={cn('h-3.5 w-3.5', isRetrying && 'animate-spin')} />
       {retryLabel}

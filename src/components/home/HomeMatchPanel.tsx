@@ -53,8 +53,8 @@ export interface HomeMatchPanelEmptyNavigation {
   onOpenOffseason: () => void;
 }
 
-const HOME_STATE_ACTION_CLASS = 'inline-flex h-8 items-center justify-center gap-1.5 rounded-10 border border-primary/25 bg-white px-3 text-13 font-bold text-primary hover:bg-primary/5 dark:border-primary/40 dark:bg-card dark:text-emerald-300 dark:hover:bg-primary/10';
-const HOME_STATE_PRIMARY_ACTION_CLASS = 'inline-flex h-8 items-center justify-center gap-1.5 rounded-10 bg-primary px-3 text-13 font-bold text-white hover:bg-primary-hover';
+const HOME_STATE_ACTION_CLASS = 'inline-flex min-h-11 sm:min-h-8 items-center justify-center gap-1.5 rounded-10 border border-primary/25 bg-white px-3 text-13 font-bold text-primary hover:bg-primary/5 dark:border-primary/40 dark:bg-card dark:text-emerald-300 dark:hover:bg-primary/10';
+const HOME_STATE_PRIMARY_ACTION_CLASS = 'inline-flex min-h-11 sm:min-h-8 items-center justify-center gap-1.5 rounded-10 bg-primary px-3 text-13 font-bold text-white hover:bg-primary-hover';
 
 const formatGameDateLabel = (dateKey: string): string => {
   const [year, month, day] = dateKey.split('-').map(Number);
