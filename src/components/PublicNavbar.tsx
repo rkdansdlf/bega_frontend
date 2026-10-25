@@ -22,7 +22,10 @@ import {
 import { useScrollMetrics } from '../hooks/useScrollStage';
 import { useTheme } from '../hooks/useTheme';
 import { cn } from '../lib/utils';
-import { hasPersistedAuthBootstrapHint } from '../utils/authBootstrap';
+import {
+  hasPersistedAuthBootstrapHint,
+  shouldReserveAuthenticatedNavbarChrome,
+} from '../utils/authBootstrap';
 import { requestChatbotOpen } from '../utils/chatbotLauncher';
 import { buildNavbarNavPath, isNavbarNavItemActive } from '../utils/navbarNavigation';
 import { loadPredictionPage } from './lazyRouteLoaders';
@@ -280,9 +283,12 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
     viewportFitProgress,
   ]);
 
-  const shouldReserveAuthenticatedChrome = isAuthBootstrapPending
-    || isLoggedIn
-    || (visualQaStateOverride === undefined && hasPersistedAuthBootstrapHint());
+  const shouldReserveAuthenticatedChrome = shouldReserveAuthenticatedNavbarChrome({
+    isLoggedIn,
+    isAuthBootstrapPending,
+    isAuthLoading: visualQaStateOverride === undefined && liveAuthState.isAuthLoading,
+    hasPersistedAuthHint: visualQaStateOverride === undefined && hasPersistedAuthBootstrapHint(),
+  });
   const desktopCapsuleExpandedWidth = shouldReserveAuthenticatedChrome
     ? DESKTOP_NAVBAR_AUTH_WIDTH
     : DESKTOP_NAVBAR_GUEST_WIDTH;
