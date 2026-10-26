@@ -56,10 +56,13 @@ export default function StateBlock({
   const retryButton = onRetry ? (
     <button
       type="button"
-      onClick={onRetry}
-      disabled={isRetrying}
+      // disabled 를 쓰면 포커스가 body 로 빠지므로, 재시도 중에는 aria-disabled 로 막고 클릭을 무시합니다.
+      onClick={() => {
+        if (!isRetrying) onRetry();
+      }}
+      aria-disabled={isRetrying || undefined}
       aria-busy={isRetrying || undefined}
-      className={cn(ERROR_RETRY_BUTTON_CLASS, 'h-auto min-h-11 shrink-0 sm:min-h-8 disabled:cursor-wait disabled:opacity-70')}
+      className={cn(ERROR_RETRY_BUTTON_CLASS, 'h-auto min-h-11 shrink-0 sm:min-h-8 aria-disabled:cursor-wait aria-disabled:opacity-70')}
       data-testid={retryTestId ?? `${testId}-retry`}
     >
       <StateRefreshIcon className={cn('h-3.5 w-3.5', isRetrying && 'animate-spin')} />

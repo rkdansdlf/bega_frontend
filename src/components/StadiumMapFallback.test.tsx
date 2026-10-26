@@ -53,7 +53,9 @@ test('map fallback keeps retry for offline and marks it busy while retrying', ()
   const html = renderFallback({ reason: 'offline', isRetrying: true });
 
   assert.match(html, /인터넷 연결이 끊겨 지도를 못 불러왔어요/);
-  assert.match(html, /<button[^>]*disabled=""[^>]*aria-busy="true"[^>]*data-testid="stadium-map-fallback-retry"/);
+  // disabled 로 막으면 포커스가 body 로 빠지므로 aria-disabled 로만 표시합니다.
+  assert.match(html, /<button[^>]*aria-disabled="true"[^>]*aria-busy="true"[^>]*data-testid="stadium-map-fallback-retry"/);
+  assert.doesNotMatch(html, /<button[^>]*\sdisabled=""/);
 });
 
 test('map fallback falls back to a name search without coordinates', () => {

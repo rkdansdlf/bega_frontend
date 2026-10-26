@@ -159,6 +159,9 @@ function WidgetErrorState({
   );
 }
 
+// 팀 순위 한 줄의 lg 높이 — 실제 행과 로딩 골격이 같은 값을 씁니다.
+const RANKING_ROW_LG_HEIGHT_CLASS = 'lg:h-[65px] lg:min-h-[65px]';
+
 const getMateGameDateLabel = (gameDateValue: string) => {
   const gameDate = parseLocalDate(gameDateValue);
   return Number.isNaN(gameDate.getTime())
@@ -239,12 +242,12 @@ export default function HomeSecondaryPanels({
   const compactRankingRows = [
     ...displayedRankings.map((team) => ({
       key: team.teamId,
-      node: <TeamRankRow team={team} variant="compact" rowClassName="lg:h-[65px] lg:min-h-[65px] lg:px-4 lg:py-0 xl:h-auto xl:min-h-0" />,
+      node: <TeamRankRow team={team} variant="compact" rowClassName={`${RANKING_ROW_LG_HEIGHT_CLASS} lg:px-4 lg:py-0 xl:h-auto xl:min-h-0`} />,
     })),
     ...Array.from({ length: rankingPlaceholderRows }).map((_, index) => ({
       key: `team-rank-placeholder-${index}`,
       node: (
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-zinc-200/80 px-3 py-3 opacity-45 last:border-b-0 dark:border-zinc-800/80 lg:h-[65px] lg:min-h-[65px] lg:px-4 lg:py-0 xl:h-auto xl:min-h-0">
+        <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-zinc-200/80 px-3 py-3 opacity-45 last:border-b-0 dark:border-zinc-800/80 ${RANKING_ROW_LG_HEIGHT_CLASS} lg:px-4 lg:py-0 xl:h-auto xl:min-h-0`}>
           <div className="flex min-w-0 items-center gap-2">
             <span className="w-5 shrink-0 text-center text-15 font-black text-zinc-400 dark:text-white">
               {displayedRankings.length + index + 1}
@@ -569,7 +572,7 @@ export default function HomeSecondaryPanels({
 
       <Card className={rankingCardClassName}>
         {isRankingsLoading ? (
-          <RankingRowsSkeleton rowClassName={`lg:h-[65px] lg:min-h-[65px] ${homeDashboardRankingRowClass}`} />
+          <RankingRowsSkeleton rowClassName={`${RANKING_ROW_LG_HEIGHT_CLASS} ${homeDashboardRankingRowClass}`} />
         ) : rankingsError ? (
           <WidgetErrorState message="팀 순위를 불러오지 못했어요" onRetry={onRetryRanking} />
         ) : displayedRankings.length === 0 ? (

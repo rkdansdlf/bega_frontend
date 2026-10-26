@@ -114,6 +114,41 @@ const retroLeaderboardStyles = `
     animation: retroLeaderboardBlink 1.2s steps(2, end) infinite;
   }
 
+  .retro-leaderboard-skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .retro-leaderboard-skeleton-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .retro-leaderboard-skeleton-rank {
+    width: 28px;
+    height: 18px;
+  }
+
+  .retro-leaderboard-skeleton-avatar {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .retro-leaderboard-skeleton-score {
+    width: 64px;
+    justify-self: end;
+  }
+
+  .retro-leaderboard-skeleton-streak {
+    width: 20px;
+    justify-self: end;
+  }
+
   .retro-leaderboard-state-panel {
     margin: auto;
     max-width: 440px;
@@ -136,6 +171,30 @@ const retroLeaderboardStyles = `
     align-items: center;
     justify-content: space-between;
     gap: 14px;
+  }
+
+  .retro-leaderboard-nudge-copy {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .retro-leaderboard-action-button.retro-leaderboard-nudge-button {
+    font-size: 14px;
+  }
+
+  .retro-leaderboard-state-kicker {
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .retro-leaderboard-state-title {
+    margin: 14px 0 6px;
+    font-size: 18px;
+  }
+
+  .retro-leaderboard-state-body {
+    margin: 0 0 18px;
+    font-size: 13px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -388,10 +447,9 @@ export default function RetroLeaderboard({
           {isGuest ? (
             <div className="retro-leaderboard-nudge" data-testid="retro-leaderboard-guest-nudge">
               <p
+                className="retro-leaderboard-nudge-copy"
                 style={{
-                  margin: 0,
                   color: '#c8ffc8',
-                  fontSize: '14px',
                   lineHeight: 1.6,
                   fontFamily: retroText,
                   textShadow: textOutline,
@@ -402,8 +460,8 @@ export default function RetroLeaderboard({
               </p>
               <button
                 type="button"
-                className="retro-leaderboard-action-button"
-                style={{ flexShrink: 0, padding: '8px 18px', fontSize: '14px' }}
+                className="retro-leaderboard-action-button retro-leaderboard-nudge-button"
+                style={{ flexShrink: 0, padding: '8px 18px' }}
                 onClick={onLogin}
               >
                 로그인
@@ -534,31 +592,31 @@ export default function RetroLeaderboard({
                   role="status"
                   aria-busy="true"
                   data-testid="retro-leaderboard-loading"
-                  style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}
+                  className="retro-leaderboard-skeleton-list"
                 >
                   <span className="sr-only">순위를 불러오는 중이에요</span>
                   {RETRO_SKELETON_WIDTHS.map((nameWidth, index) => (
                     <div key={`retro-skeleton-${index}`} className="retro-leaderboard-skeleton-row" aria-hidden="true">
-                      <span className="retro-leaderboard-skeleton-bar" style={{ width: '28px', height: '18px' }} />
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                        <span className="retro-leaderboard-skeleton-bar" style={{ width: '24px', height: '24px', flexShrink: 0 }} />
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-rank" />
+                      <span className="retro-leaderboard-skeleton-name">
+                        <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-avatar" />
                         <span className="retro-leaderboard-skeleton-bar" style={{ width: `${nameWidth}%` }} />
                       </span>
-                      <span className="retro-leaderboard-skeleton-bar" style={{ width: '64px', justifySelf: 'end' }} />
-                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-streak" style={{ width: '20px', justifySelf: 'end' }} />
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-score" />
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-streak" />
                     </div>
                   ))}
                 </div>
               ) : isError && displayLeaderboard.length === 0 ? (
                 <div style={{ flex: 1, display: 'flex', padding: '20px 0' }}>
                   <div className="retro-leaderboard-state-panel" data-tone="error" role="alert" data-testid="retro-leaderboard-error">
-                    <p style={{ margin: 0, color: '#ff8fa3', fontFamily: retroDisplay, fontSize: '12px', letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
+                    <p className="retro-leaderboard-state-kicker" style={{ color: '#ff8fa3', fontFamily: retroDisplay, letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
                       CONNECTION LOST
                     </p>
-                    <p style={{ margin: '14px 0 6px', color: '#fff', fontFamily: retroText, fontSize: '18px', textShadow: textOutline, wordBreak: 'keep-all' }}>
+                    <p className="retro-leaderboard-state-title" style={{ color: '#fff', fontFamily: retroText, textShadow: textOutline, wordBreak: 'keep-all' }}>
                       순위를 불러오지 못했어요
                     </p>
-                    <p style={{ margin: '0 0 18px', color: '#ddd', fontFamily: retroText, fontSize: '13px', lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
+                    <p className="retro-leaderboard-state-body" style={{ color: '#ddd', fontFamily: retroText, lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
                       집계된 점수는 안전하게 저장되어 있어요. 잠시 후 다시 시도해 주세요.
                     </p>
                     <button type="button" className="retro-leaderboard-action-button" onClick={onRetry ?? onRefresh}>
@@ -579,13 +637,13 @@ export default function RetroLeaderboard({
                   {displayLeaderboard.length === 0 && (
                     <div style={{ flex: 1, display: 'flex', padding: '20px 0' }}>
                       <div className="retro-leaderboard-state-panel" role="status" data-testid="retro-leaderboard-empty">
-                        <p style={{ margin: 0, color: '#ffff00', fontFamily: retroDisplay, fontSize: '12px', letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
+                        <p className="retro-leaderboard-state-kicker" style={{ color: '#ffff00', fontFamily: retroDisplay, letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
                           READY?
                         </p>
-                        <p style={{ margin: '14px 0 6px', color: '#fff', fontFamily: retroText, fontSize: '18px', textShadow: textOutline, wordBreak: 'keep-all' }}>
+                        <p className="retro-leaderboard-state-title" style={{ color: '#fff', fontFamily: retroText, textShadow: textOutline, wordBreak: 'keep-all' }}>
                           아직 집계된 예측 결과가 없어요
                         </p>
-                        <p style={{ margin: '0 0 18px', color: '#ddd', fontFamily: retroText, fontSize: '13px', lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
+                        <p className="retro-leaderboard-state-body" style={{ color: '#ddd', fontFamily: retroText, lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
                           경기를 예측하고 결과가 나오면 이 순위표에 이름이 올라가요.
                         </p>
                         <button type="button" className="retro-leaderboard-action-button" onClick={onPredict}>

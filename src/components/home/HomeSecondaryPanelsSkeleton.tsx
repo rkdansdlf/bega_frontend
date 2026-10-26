@@ -99,6 +99,9 @@ export function FeaturedMateSkeleton() {
 
 const CARD_CLASS = 'rounded-2xl border border-zinc-200/80 bg-white/88 shadow-sm dark:border-zinc-800 dark:bg-card/82';
 const PANEL_TITLE_CLASS = 'flex min-h-11 items-center text-lg font-bold text-gray-900 dark:text-white';
+// 두 보조 카드(인기 응원글 · 메이트)가 같은 자리를 씁니다.
+const PANEL_SECTION_CLASS = 'w-[86vw] shrink-0 space-y-3 sm:w-[420px] lg:col-span-4 lg:w-auto';
+const PANEL_CARD_CLASS = `${CARD_CLASS} min-h-[238px] p-3 lg:h-[650px] lg:p-4`;
 
 /** 보조 패널 전체 골격 — 지연 마운트 전과 lazy chunk 로딩 중에 같은 자리를 지킵니다. */
 export default function HomeSecondaryPanelsSkeleton() {
@@ -129,15 +132,15 @@ export default function HomeSecondaryPanelsSkeleton() {
         </section>
         <div className="-mx-4 overflow-hidden px-4 pb-2 lg:contents lg:mx-0 lg:px-0 lg:pb-0">
           <div className="flex gap-4 lg:contents">
-            <section className="w-[86vw] shrink-0 space-y-3 sm:w-[420px] lg:order-1 lg:col-span-4 lg:w-auto">
+            <section className={`${PANEL_SECTION_CLASS} lg:order-1`}>
               <h3 className={PANEL_TITLE_CLASS}>실시간 인기 응원글</h3>
-              <div className={`${CARD_CLASS} min-h-[238px] p-3 lg:h-[650px] lg:p-4`}>
+              <div className={PANEL_CARD_CLASS}>
                 <HotCheerSkeleton />
               </div>
             </section>
-            <section className="w-[86vw] shrink-0 space-y-3 sm:w-[420px] lg:order-2 lg:col-span-4 lg:w-auto">
+            <section className={`${PANEL_SECTION_CLASS} lg:order-2`}>
               <h3 className={PANEL_TITLE_CLASS}>직관 메이트 찾기</h3>
-              <div className={`${CARD_CLASS} min-h-[238px] p-3 lg:h-[650px] lg:p-4`}>
+              <div className={PANEL_CARD_CLASS}>
                 <FeaturedMateSkeleton />
               </div>
             </section>

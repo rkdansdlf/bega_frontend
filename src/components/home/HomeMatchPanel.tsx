@@ -290,7 +290,7 @@ function HomeMatchEmptyState({
   return (
     <div role="status" data-testid="home-match-empty" className={`${EMPTY_FRAME_CLASS.filtered} ${EMPTY_LAYOUT_CLASS} py-8`}>
       <span className={EMPTY_SYMBOL_CLASS.filtered} aria-hidden="true">
-        <span className="relative block h-[18px] w-[18px] rounded-[4px] border-2 border-current">
+        <span className="relative block h-4.5 w-4.5 rounded border-2 border-current">
           <span className="absolute inset-x-0 top-[3px] block border-t-2 border-current" />
         </span>
       </span>

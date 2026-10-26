@@ -37,7 +37,7 @@ export const STADIUM_MAP_FALLBACK_COPY: Record<KakaoMapLoadFailureReason, Stadiu
 const FOOTPRINT_CLASS = 'min-h-[280px] lg:min-h-[528px]';
 // 반경·테두리 굵기는 라이브 지도 카드와 같고, 면은 옅은 slate 로 지도 자리임을 보여줍니다.
 const FRAME_CLASS =
-  'stadium-guide-panel-strong flex flex-col items-center justify-center rounded-[1.75rem] border-2 border-slate-200 bg-slate-50 px-6 py-10 text-center sm:rounded-[2.5rem]';
+  'stadium-guide-panel-strong flex flex-col items-center justify-center rounded-28 border-2 border-slate-200 bg-slate-50 px-6 py-10 text-center sm:rounded-40';
 const SYMBOL_CLASS =
   'flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 lg:h-14 lg:w-14 dark:bg-white/8 dark:text-slate-300 dark:ring-white/10';
 // 위치 카드의 '카카오맵 길찾기'(Button size="touch")와 같은 높이·반경.
@@ -99,10 +99,13 @@ export default function StadiumMapFallback({
         {copy.canRetry ? (
           <button
             type="button"
-            onClick={onRetry}
-            disabled={isRetrying}
+            // disabled 를 쓰면 포커스가 body 로 빠지므로, 재시도 중에는 aria-disabled 로 막고 클릭을 무시합니다.
+            onClick={() => {
+              if (!isRetrying) onRetry();
+            }}
+            aria-disabled={isRetrying || undefined}
             aria-busy={isRetrying || undefined}
-            className={cn(ACTION_BASE_CLASS, SECONDARY_ACTION_CLASS, 'disabled:cursor-wait disabled:opacity-70')}
+            className={cn(ACTION_BASE_CLASS, SECONDARY_ACTION_CLASS, 'aria-disabled:cursor-wait aria-disabled:opacity-70')}
             data-testid="stadium-map-fallback-retry"
           >
             <RefreshIcon className={cn('h-4 w-4', isRetrying && 'animate-spin')} />
