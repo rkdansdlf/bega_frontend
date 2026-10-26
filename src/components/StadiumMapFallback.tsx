@@ -1,9 +1,5 @@
 import { cn } from '../lib/utils';
-import {
-  buildKakaoMapPlaceUrl,
-  buildKakaoMapRouteUrl,
-  type KakaoMapLoadFailureReason,
-} from '../utils/kakaoMapLinks';
+import { buildKakaoMapPlaceUrl, type KakaoMapLoadFailureReason } from '../utils/kakaoMapLinks';
 import { ArrowSquareOutIcon, MapPinIcon, RefreshIcon } from './icons/StadiumGuideIcons';
 import {
   EMPTY_BODY_CLASS,
@@ -15,7 +11,8 @@ import {
 } from './status/statusTokens';
 
 // 카카오맵 SDK 를 못 쓸 때 지도 자리에 들어가는 블록.
-// 사유별 문구만 다르고, 위치 · 길찾기는 카카오맵 웹 링크로 넘깁니다.
+// 사유별 문구만 다르고, 위치는 카카오맵 웹 링크로 넘깁니다.
+// 길찾기는 바로 위 위치 카드의 '카카오맵 길찾기' 하나만 둡니다.
 // 진단 메시지는 화면에 내지 않습니다 — kakaoMap.ts 가 콘솔에 남깁니다.
 
 type StadiumMapFallbackCopy = {
@@ -32,16 +29,20 @@ export const STADIUM_MAP_FALLBACK_COPY: Record<KakaoMapLoadFailureReason, Stadiu
   },
   unavailable: {
     title: '지도를 불러오지 못했어요',
-    description: '위치와 길찾기는 카카오맵에서 볼 수 있어요.',
+    description: '구장 위치는 카카오맵에서 볼 수 있어요.',
     canRetry: true,
   },
   'missing-key': {
     title: '지금은 지도를 보여드릴 수 없어요',
-    description: '위치와 길찾기는 카카오맵에서 볼 수 있어요.',
+    description: '구장 위치는 카카오맵에서 볼 수 있어요.',
     canRetry: false,
   },
 };
 
+// 라이브 지도 카드와 같은 자리를 차지합니다.
+// lg+: 지도(500px) + 안쪽 여백(sm:p-3 × 2) + 테두리(border-2 × 2) = 528px — 오른쪽 열과 아래선이 맞습니다.
+// 모바일: 빈 상자처럼 길어지지 않게 적당한 최소 높이만.
+const FOOTPRINT_CLASS = 'min-h-[280px] justify-center lg:min-h-[528px]';
 // 모바일에서는 44px 터치 영역.
 const ACTION_SIZE_CLASS = 'min-h-11 sm:min-h-8';
 const SECONDARY_ACTION_CLASS =
@@ -66,7 +67,6 @@ export default function StadiumMapFallback({
 }: StadiumMapFallbackProps) {
   const copy = STADIUM_MAP_FALLBACK_COPY[reason];
   const placeUrl = buildKakaoMapPlaceUrl(stadiumName, lat, lng);
-  const routeUrl = buildKakaoMapRouteUrl(stadiumName, lat, lng);
 
   return (
     <div
@@ -74,11 +74,12 @@ export default function StadiumMapFallback({
       aria-live="polite"
       data-testid="stadium-map-fallback"
       data-map-failure-reason={reason}
-      className={cn(EMPTY_FRAME_CLASS.error, EMPTY_LAYOUT_CLASS, 'py-8')}
+      className={cn(EMPTY_FRAME_CLASS.error, EMPTY_LAYOUT_CLASS, FOOTPRINT_CLASS)}
     >
       <span className={EMPTY_SYMBOL_CLASS.filtered} aria-hidden="true">
         <MapPinIcon className="h-5 w-5" />
       </span>
+      <p className="text-12 font-semibold text-slate-500 dark:text-slate-400">{stadiumName}</p>
       <p className={cn(EMPTY_TITLE_CLASS, 'break-keep')}>{copy.title}</p>
       <p className={cn(EMPTY_BODY_CLASS, 'break-keep')}>{copy.description}</p>
       <div className="mt-1.5 flex flex-wrap items-center justify-center gap-2">
@@ -92,17 +93,6 @@ export default function StadiumMapFallback({
           카카오맵에서 보기
           <ArrowSquareOutIcon className="h-3.5 w-3.5" />
         </a>
-        {routeUrl ? (
-          <a
-            href={routeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(SECONDARY_ACTION_CLASS, ACTION_SIZE_CLASS)}
-            data-testid="stadium-map-fallback-route"
-          >
-            길찾기
-          </a>
-        ) : null}
         {copy.canRetry ? (
           <button
             type="button"

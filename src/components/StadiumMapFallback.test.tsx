@@ -17,15 +17,17 @@ const renderFallback = (props: Partial<Parameters<typeof StadiumMapFallback>[0]>
   }),
 );
 
-test('map fallback links the selected stadium to Kakao Map place and route pages', () => {
+test('map fallback links the selected stadium to its Kakao Map place page without a duplicate route action', () => {
   const html = renderFallback();
 
   assert.match(html, /data-map-failure-reason="unavailable"/);
   assert.match(html, /지도를 불러오지 못했어요/);
   assert.match(html, /href="https:\/\/map\.kakao\.com\/link\/map\/%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC,35\.2225,128\.5823"/);
-  assert.match(html, /href="https:\/\/map\.kakao\.com\/link\/to\/%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC,35\.2225,128\.5823"/);
+  assert.match(html, /창원NC파크/);
   assert.match(html, /카카오맵에서 보기/);
-  assert.match(html, /길찾기/);
+  // 길찾기는 위 위치 카드에만 있습니다.
+  assert.doesNotMatch(html, /map\.kakao\.com\/link\/to\//);
+  assert.doesNotMatch(html, /길찾기/);
   assert.match(html, /data-testid="stadium-map-fallback-retry"/);
   assert.match(html, /rel="noopener noreferrer"/);
 });
@@ -52,9 +54,8 @@ test('map fallback keeps retry for offline and marks it busy while retrying', ()
   assert.match(html, /<button[^>]*disabled=""[^>]*aria-busy="true"[^>]*data-testid="stadium-map-fallback-retry"/);
 });
 
-test('map fallback falls back to a name search without coordinates and drops the route link', () => {
+test('map fallback falls back to a name search without coordinates', () => {
   const html = renderFallback({ lat: null, lng: null });
 
   assert.match(html, /href="https:\/\/map\.kakao\.com\/\?q=%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC"/);
-  assert.doesNotMatch(html, /data-testid="stadium-map-fallback-route"/);
 });

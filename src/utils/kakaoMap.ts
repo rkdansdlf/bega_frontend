@@ -5,7 +5,7 @@ import { CategoryType, Place, Stadium } from '../types/stadium';
 import type { KakaoMapLoadFailureReason } from './kakaoMapLinks';
 
 export type { KakaoMapLoadFailureReason } from './kakaoMapLinks';
-export { buildKakaoMapPlaceUrl, buildKakaoMapRouteUrl, buildKakaoMapSearchUrl } from './kakaoMapLinks';
+export { buildKakaoMapPlaceUrl, buildKakaoMapSearchUrl } from './kakaoMapLinks';
 
 export interface KakaoMapOptions {
   lat: number;

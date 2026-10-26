@@ -19,13 +19,6 @@ export const buildKakaoMapPlaceUrl = (name: string, lat?: number | null, lng?: n
     : buildKakaoMapSearchUrl(name)
 );
 
-/** 카카오맵 웹 길찾기 링크 (도착지 = 해당 위치). */
-export const buildKakaoMapRouteUrl = (name: string, lat?: number | null, lng?: number | null): string | null => (
-  isValidLinkCoordinate(lat) && isValidLinkCoordinate(lng)
-    ? `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`
-    : null
-);
-
 /** 카카오맵 웹 검색 링크 — 예: "창원NC파크 편의점". */
 export const buildKakaoMapSearchUrl = (query: string): string => (
   `https://map.kakao.com/?q=${encodeURIComponent(query)}`
