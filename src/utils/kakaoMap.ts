@@ -81,8 +81,12 @@ export const loadKakaoMapScript = (
 
   if (!kakaoMapScriptPromise) {
     kakaoMapScriptPromise = new Promise<void>((resolve, reject) => {
-      const handleReady = () => {
-        waitForKakaoMapSdkReady().then(resolve).catch(reject);
+      const handleReady = (loadedScript: HTMLScriptElement) => () => {
+        waitForKakaoMapSdkReady().then(resolve).catch((error) => {
+          // 스크립트는 로드됐지만 SDK 객체가 없으면(도메인 미허용 등) 태그를 지워야 다시 시도할 때 새로 받습니다.
+          if (!window.kakao?.maps) loadedScript.remove();
+          reject(error);
+        });
       };
 
       const handleError = (failedScript: HTMLScriptElement) => () => {
@@ -95,7 +99,7 @@ export const loadKakaoMapScript = (
 
       const existingScript = document.querySelector(KAKAO_MAP_SCRIPT_SELECTOR) as HTMLScriptElement | null;
       if (existingScript) {
-        existingScript.addEventListener('load', handleReady, { once: true });
+        existingScript.addEventListener('load', handleReady(existingScript), { once: true });
         existingScript.addEventListener('error', handleError(existingScript), { once: true });
         return;
       }
@@ -105,7 +109,7 @@ export const loadKakaoMapScript = (
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&libraries=services&autoload=false`;
       script.async = true;
       script.dataset.kakaoMapSdk = 'true';
-      script.onload = handleReady;
+      script.onload = handleReady(script);
       script.onerror = handleError(script);
 
       document.head.appendChild(script);
