@@ -1,14 +1,6 @@
 import { cn } from '../lib/utils';
 import { buildKakaoMapPlaceUrl, type KakaoMapLoadFailureReason } from '../utils/kakaoMapLinks';
 import { ArrowSquareOutIcon, MapPinIcon, RefreshIcon } from './icons/StadiumGuideIcons';
-import {
-  EMPTY_BODY_CLASS,
-  EMPTY_FRAME_CLASS,
-  EMPTY_LAYOUT_CLASS,
-  EMPTY_SYMBOL_CLASS,
-  EMPTY_TITLE_CLASS,
-  ERROR_RETRY_BUTTON_CLASS,
-} from './status/statusTokens';
 
 // 카카오맵 SDK 를 못 쓸 때 지도 자리에 들어가는 블록.
 // 사유별 문구만 다르고, 위치는 카카오맵 웹 링크로 넘깁니다.
@@ -42,11 +34,18 @@ export const STADIUM_MAP_FALLBACK_COPY: Record<KakaoMapLoadFailureReason, Stadiu
 // 라이브 지도 카드와 같은 자리를 차지합니다.
 // lg+: 지도(500px) + 안쪽 여백(sm:p-3 × 2) + 테두리(border-2 × 2) = 528px — 오른쪽 열과 아래선이 맞습니다.
 // 모바일: 빈 상자처럼 길어지지 않게 적당한 최소 높이만.
-const FOOTPRINT_CLASS = 'min-h-[280px] justify-center lg:min-h-[528px]';
-// 모바일에서는 44px 터치 영역.
-const ACTION_SIZE_CLASS = 'min-h-11 sm:min-h-8';
+const FOOTPRINT_CLASS = 'min-h-[280px] lg:min-h-[528px]';
+// 반경·테두리 굵기는 라이브 지도 카드와 같고, 면은 옅은 slate 로 지도 자리임을 보여줍니다.
+const FRAME_CLASS =
+  'stadium-guide-panel-strong flex flex-col items-center justify-center rounded-[1.75rem] border-2 border-slate-200 bg-slate-50 px-6 py-10 text-center sm:rounded-[2.5rem]';
+const SYMBOL_CLASS =
+  'flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 lg:h-14 lg:w-14 dark:bg-white/8 dark:text-slate-300 dark:ring-white/10';
+// 위치 카드의 '카카오맵 길찾기'(Button size="touch")와 같은 높이·반경.
+const ACTION_BASE_CLASS =
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold transition-colors lg:text-15';
+const PRIMARY_ACTION_CLASS = 'bg-primary text-white hover:bg-primary-hover';
 const SECONDARY_ACTION_CLASS =
-  'inline-flex h-8 items-center justify-center gap-1.5 rounded-10 border border-slate-200 bg-white px-3 text-13 font-bold text-slate-700 hover:bg-slate-50 dark:border-border dark:bg-transparent dark:text-white dark:hover:bg-white/8';
+  'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-border dark:bg-transparent dark:text-white dark:hover:bg-white/8';
 
 interface StadiumMapFallbackProps {
   reason: KakaoMapLoadFailureReason;
@@ -74,24 +73,28 @@ export default function StadiumMapFallback({
       aria-live="polite"
       data-testid="stadium-map-fallback"
       data-map-failure-reason={reason}
-      className={cn(EMPTY_FRAME_CLASS.error, EMPTY_LAYOUT_CLASS, FOOTPRINT_CLASS)}
+      className={cn(FRAME_CLASS, FOOTPRINT_CLASS)}
     >
-      <span className={EMPTY_SYMBOL_CLASS.filtered} aria-hidden="true">
-        <MapPinIcon className="h-5 w-5" />
+      <span className={SYMBOL_CLASS} aria-hidden="true">
+        <MapPinIcon className="h-6 w-6 lg:h-7 lg:w-7" />
       </span>
-      <p className="text-12 font-semibold text-slate-500 dark:text-slate-400">{stadiumName}</p>
-      <p className={cn(EMPTY_TITLE_CLASS, 'break-keep')}>{copy.title}</p>
-      <p className={cn(EMPTY_BODY_CLASS, 'break-keep')}>{copy.description}</p>
-      <div className="mt-1.5 flex flex-wrap items-center justify-center gap-2">
+      <p className="mt-4 break-keep text-base font-bold text-slate-900 lg:mt-5 lg:text-lg dark:text-white">
+        {copy.title}
+      </p>
+      <p className="mt-1.5 max-w-80 break-keep text-13 font-medium leading-relaxed text-slate-600 lg:mt-2 lg:text-sm dark:text-slate-400">
+        {copy.description}
+      </p>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 lg:mt-6 lg:gap-2.5">
         <a
           href={placeUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={cn(ERROR_RETRY_BUTTON_CLASS, ACTION_SIZE_CLASS)}
+          aria-label={`${stadiumName} 카카오맵에서 보기`}
+          className={cn(ACTION_BASE_CLASS, PRIMARY_ACTION_CLASS)}
           data-testid="stadium-map-fallback-place"
         >
           카카오맵에서 보기
-          <ArrowSquareOutIcon className="h-3.5 w-3.5" />
+          <ArrowSquareOutIcon className="h-4 w-4" />
         </a>
         {copy.canRetry ? (
           <button
@@ -99,10 +102,10 @@ export default function StadiumMapFallback({
             onClick={onRetry}
             disabled={isRetrying}
             aria-busy={isRetrying || undefined}
-            className={cn(SECONDARY_ACTION_CLASS, ACTION_SIZE_CLASS, 'disabled:cursor-wait disabled:opacity-70')}
+            className={cn(ACTION_BASE_CLASS, SECONDARY_ACTION_CLASS, 'disabled:cursor-wait disabled:opacity-70')}
             data-testid="stadium-map-fallback-retry"
           >
-            <RefreshIcon className={cn('h-3.5 w-3.5', isRetrying && 'animate-spin')} />
+            <RefreshIcon className={cn('h-4 w-4', isRetrying && 'animate-spin')} />
             다시 시도
           </button>
         ) : null}

@@ -23,7 +23,9 @@ test('map fallback links the selected stadium to its Kakao Map place page withou
   assert.match(html, /data-map-failure-reason="unavailable"/);
   assert.match(html, /지도를 불러오지 못했어요/);
   assert.match(html, /href="https:\/\/map\.kakao\.com\/link\/map\/%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC,35\.2225,128\.5823"/);
-  assert.match(html, /창원NC파크/);
+  // 구장 이름은 위 위치 카드에 이미 있어 화면에는 다시 쓰지 않고, 링크 이름에만 둡니다.
+  assert.match(html, /aria-label="창원NC파크 카카오맵에서 보기"/);
+  assert.doesNotMatch(html, />창원NC파크</);
   assert.match(html, /카카오맵에서 보기/);
   // 길찾기는 위 위치 카드에만 있습니다.
   assert.doesNotMatch(html, /map\.kakao\.com\/link\/to\//);
