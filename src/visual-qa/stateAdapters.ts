@@ -31036,6 +31036,129 @@ const resolveConfirmDialogRendererAdapter = (
       surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
     };
   },
+  'stadium.map-fallback': (context) => {
+    if (context.componentId !== 'src/components/StadiumMapFallback.tsx#StadiumMapFallback'
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => key !== 'theme')) {
+      throw new Error('stadium.map-fallback only supports its declared data, interaction, system, and theme axes');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'null-optional' | 'populated' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      'null-optional': 'null-optional',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const system = requireStateValueFromMap<'error-recoverable' | 'missing' | 'offline'>(context, 'system', {
+      'error-recoverable': 'error-recoverable',
+      missing: 'missing',
+      offline: 'offline',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'retry'>(context, 'interactions', {
+      default: 'default',
+      retry: 'retry',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    const canRetry = system !== 'missing';
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('stadium.map-fallback default state does not accept interaction targets');
+    }
+    if (interaction === 'retry' && (!canRetry || context.interactionTargetId !== 'retry')) {
+      throw new Error(`stadium.map-fallback retry requires a retryable reason and the retry target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const hasCoordinates = data !== 'null-optional';
+    return {
+      props: {
+        reason: system === 'offline' ? 'offline' : system === 'error-recoverable' ? 'unavailable' : 'missing-key',
+        stadiumName: data === 'long-korean'
+          ? '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 합성 구장 이름'
+          : data === 'unbroken-token'
+            ? `STADIUM_${'UNBROKEN'.repeat(18)}`
+            : '합성 구장',
+        lat: hasCoordinates ? 37.5001 : null,
+        lng: hasCoordinates ? 127.0001 : null,
+        onRetry: () => undefined,
+        isRetrying: false,
+      },
+      captureSelector: '[data-testid="stadium-map-fallback"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-2xl overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'status.state-block': (context) => {
+    if (context.componentId !== 'src/components/status/StateBlock.tsx#StateBlock'
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['kind', 'layout', 'theme'].includes(key))) {
+      throw new Error('status.state-block only supports its declared data, interaction, system, kind, layout, and theme axes');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'populated' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const system = requireStateValueFromMap<'idle' | 'retrying'>(context, 'system', {
+      idle: 'idle',
+      retrying: 'retrying',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'retry'>(context, 'interactions', {
+      default: 'default',
+      retry: 'retry',
+    });
+    const kind = resolveDeclaredVariant<'error' | 'filtered' | 'gated'>(context, 'kind', {
+      error: 'error',
+      filtered: 'filtered',
+      gated: 'gated',
+    });
+    const layout = resolveDeclaredVariant<'block' | 'row'>(context, 'layout', {
+      block: 'block',
+      row: 'row',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    // 재시도 버튼은 kind="error" 에만 붙습니다. 나머지 kind 에서는 재시도 상태가 없습니다.
+    const isRetryable = kind === 'error';
+    if (system === 'retrying' && !isRetryable) {
+      throw new Error(`status.state-block retrying requires the error kind, received kind=${kind}`);
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('status.state-block default state does not accept interaction targets');
+    }
+    if (interaction === 'retry' && (!isRetryable || context.interactionTargetId !== 'retry')) {
+      throw new Error(`status.state-block retry requires the error kind and retry target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const copy = data === 'long-korean'
+      ? {
+        title: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 상태 제목입니다',
+        description: '모바일 화면에서 잘리지 않고 여러 줄로 표시되어야 하는 긴 상태 설명 문구입니다.',
+      }
+      : data === 'unbroken-token'
+        ? {
+          title: `STATE_BLOCK_${'UNBROKEN'.repeat(12)}`,
+          description: `STATE_BLOCK_DESCRIPTION_${'UNBROKEN'.repeat(12)}`,
+        }
+        : {
+          title: '표시할 내용이 아직 없어요',
+          description: '조건을 바꾸면 다른 결과를 볼 수 있어요.',
+        };
+    return {
+      props: {
+        kind,
+        layout,
+        title: copy.title,
+        description: copy.description,
+        onRetry: isRetryable ? () => undefined : undefined,
+        isRetrying: system === 'retrying',
+        testId: 'state-block',
+      },
+      captureSelector: '[data-testid="state-block"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-2xl overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
   'loading.no-props': () => ({ props: {} }),
   'loading.spinner': (context) => ({
     props: {

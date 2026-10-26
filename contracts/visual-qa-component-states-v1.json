@@ -47896,56 +47896,6 @@
       "constraints": []
     },
     {
-      "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleEmptyState",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=populated|interactions=default|system=idle|variant.tab=regular|variant.theme=light",
-          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=populated|interactions=default|system=idle|variant.tab=regular|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted home schedule empty state is mounted by its direct parent runtime; payload and interaction coverage stays with the parent or direct child contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child component contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-home",
-          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
       "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleErrorState",
       "status": "registered",
       "renderAccess": "hosted",
@@ -48189,6 +48139,156 @@
       "variants": {
         "notApplicable": {
           "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchEmptyActions",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=light",
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The date-jump buttons come from the parent emptyDateNavigation prop; the referenced empty host is the container they would render in, and the registered empty host does not pass navigation.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The date-jump actions do not make an authorization decision.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Known evidence gap: no registered host scenario passes emptyDateNavigation, so the next and previous date buttons have no mounted interaction state. Add a navigation-enabled host before claiming their states.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The date-jump actions perform no request of their own; the parent owns the selected date.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The buttons have no theme or tab branch of their own; theme is covered by the referenced parent hosts.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchEmptyState",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=light",
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "HomeMatchPanel mounts this empty state only when the selected date has no standard games, which is the referenced data=empty host.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The empty copy does not read identity or authorization.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The empty copy has no interactive element of its own; its action buttons are registered as HomeMatchEmptyActions.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The empty copy performs no request; the parent renders it only from idle data.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Off-season copy depends on the parent navigation prop, which the referenced host does not pass, so only the regular-empty copy is evidenced; theme is covered by the referenced hosts.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleStateShell",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=light",
+          "state:src/components/home/HomeMatchPanel.tsx#HomeMatchPanel:data=empty|interactions=default|system=idle|variant.tab=regular|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The shell is a frame that receives copy and count labels from its parent; the referenced empty host mounts it for the empty-date branch.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The shell does not make an authorization decision.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The shell has no interactive element; its children own any actions.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The parent mounts the shell for loading, error, and empty branches; the referenced hosts evidence only the empty branch.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeMatchPanel.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The warning tone used by the error and delayed branches has no registered host scenario; only the default tone of the empty branch is evidenced here.",
           "owner": "frontend-home",
           "testEvidence": "src/components/home/HomeMatchPanel.tsx"
         }
@@ -48554,106 +48654,6 @@
       "constraints": []
     },
     {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledEmptyState",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=single|interactions=default|variant.theme=light",
-          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=single|interactions=default|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted scheduled empty state is mounted by its direct parent runtime; payload and interaction coverage stays with the parent or direct child contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child component contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-home",
-          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledErrorState",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=single|interactions=default|variant.theme=light",
-          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=single|interactions=default|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted scheduled error state is mounted by its direct parent runtime; payload and interaction coverage stays with the parent or direct child contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child component contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-home",
-          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
       "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledGameList",
       "status": "registered",
       "renderAccess": "hosted",
@@ -48878,51 +48878,51 @@
       ]
     },
     {
-      "id": "src/components/home/HomeSecondaryPanels.tsx#EmptyState",
+      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledStateShell",
       "status": "registered",
       "renderAccess": "hosted",
       "render": {
         "mode": "hosted",
         "hostScenarioIds": [
-          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=light",
-          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=dark"
+          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=empty|interactions=default|variant.theme=light",
+          "state:src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledMatchPanel:data=empty|interactions=default|variant.theme=dark"
         ]
       },
       "axes": {
         "data": {
           "notApplicable": {
-            "reason": "The hosted home secondary empty state is mounted by its direct parent runtime; payload and interaction coverage stays with the parent or direct child contract.",
+            "reason": "HomeScheduledMatchPanel mounts this shell for the \"0경기\" branch, which the referenced data=empty hosts render.",
             "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
           }
         },
         "permissions": {
           "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "reason": "The shell does not make an authorization decision.",
             "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
           }
         },
         "interactions": {
           "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child component contract.",
+            "reason": "The shell has no interactive element; its child StateBlock owns any action.",
             "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
           }
         },
         "system": {
           "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
+            "reason": "The scheduled panel has no system axis; the shell is mounted from its empty data branch only.",
             "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+            "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
           }
         }
       },
       "variants": {
         "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "reason": "The shell has no variant branch; theme is covered by the referenced light and dark hosts.",
           "owner": "frontend-home",
-          "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+          "testEvidence": "src/components/home/HomeScheduledMatchPanel.tsx"
         }
       },
       "constraints": []
@@ -49244,56 +49244,6 @@
       "constraints": []
     },
     {
-      "id": "src/components/home/HomeSecondaryPanels.tsx#LoadingRows",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=light",
-          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=populated|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted home secondary loading rows is mounted by its direct parent runtime; payload and interaction coverage stays with the parent or direct child contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child component contract.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-home",
-            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-home",
-          "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
       "id": "src/components/home/HomeSecondaryPanels.tsx#PanelHeader",
       "status": "registered",
       "renderAccess": "hosted",
@@ -49387,6 +49337,56 @@
       "variants": {
         "notApplicable": {
           "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanels.tsx#PanelEmptyState",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=empty|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=light",
+          "state:src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels:data=empty|interactions=default|system=idle|variant.calendar=closed|variant.recovery=enabled|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "HomeSecondaryPanels renders this empty copy when the hot cheer or featured mate list is empty, which the referenced data=empty hosts cover for both panels.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The empty copy does not read identity or authorization.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The empty copy has no interactive element.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The empty copy renders only when the parent is idle, so the referenced hosts use system=idle.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The empty copy has no variant branch; theme is covered by the referenced light and dark hosts.",
           "owner": "frontend-home",
           "testEvidence": "src/components/home/HomeSecondaryPanels.tsx"
         }
@@ -49502,6 +49502,235 @@
             "testEvidence": "src/components/home/HomeSecondaryPanelsContainer.tsx"
           }
         ]
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#Bar",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/home/HomeSecondaryPanelsSkeleton.tsx#HomeSecondaryPanelsSkeleton:data=loading"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "Bar is a placeholder primitive used inside the skeleton; the referenced loading host mounts every Bar in the skeleton.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanelsSkeleton.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The placeholder bar does not make an authorization decision.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanelsSkeleton.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The placeholder bar has no interactive element.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanelsSkeleton.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The placeholder bar has no request state; the parent skeleton is shown during loading.",
+            "owner": "frontend-home",
+            "testEvidence": "src/components/home/HomeSecondaryPanelsSkeleton.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Size and tone come from each caller className; the referenced host renders every caller in the skeleton.",
+          "owner": "frontend-home",
+          "testEvidence": "src/components/home/HomeSecondaryPanelsSkeleton.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#FeaturedMateSkeleton",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "loading.no-props"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "loading"
+          ]
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Static loading presentation does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Static loading presentation exposes no component-local interaction state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The host selects when to show loading; the presentation itself has no system-state branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Static loading presentation has no component-local prop or visual variant branches.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#HomeSecondaryPanelsSkeleton",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "loading.no-props"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "loading"
+          ]
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Static loading presentation does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Static loading presentation exposes no component-local interaction state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The host selects when to show loading; the presentation itself has no system-state branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Static loading presentation has no component-local prop or visual variant branches.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#HotCheerSkeleton",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "loading.no-props"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "loading"
+          ]
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Static loading presentation does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Static loading presentation exposes no component-local interaction state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The host selects when to show loading; the presentation itself has no system-state branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Static loading presentation has no component-local prop or visual variant branches.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#RankingRowsSkeleton",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "loading.no-props"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "loading"
+          ]
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Static loading presentation does not inspect identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Static loading presentation exposes no component-local interaction state.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The host selects when to show loading; the presentation itself has no system-state branch.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered render uses the default row class; the rowClassName prop is supplied by HomeSecondaryPanels and is not a state axis.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios"
+        }
       },
       "constraints": []
     },
@@ -98109,6 +98338,57 @@
       "constraints": []
     },
     {
+      "id": "src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingRow",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView:data=loading|variant.topNotice=missing",
+          "state:src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView:data=loading|variant.topNotice=short",
+          "state:src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView:data=loading|variant.topNotice=long-korean"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "PredictionLoadingView renders five of these skeleton rows for its loading surface, and the referenced hosts mount them in every top-notice variant.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionLoadingView.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The skeleton row is static and does not read identity or authorization.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionLoadingView.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The skeleton row has no interactive element.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionLoadingView.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The skeleton row has no request state; PredictionLoadingView owns the loading surface.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionLoadingView.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The row has no variant branch; the top-notice variants of the referenced host render it unchanged.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionLoadingView.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/prediction/PredictionMatchDetailPanel.tsx#LazyAdvancedMatchCard",
       "status": "registered",
       "renderAccess": "hosted",
@@ -101329,6 +101609,104 @@
         ]
       },
       "interactionPlans": {},
+      "constraints": []
+    },
+    {
+      "id": "src/components/prediction/PredictionRuntime.tsx#LazyPredictionLoadingView",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView:data=loading|variant.topNotice=missing"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This lazy wrapper only loads PredictionLoadingView and forwards its props; the referenced host evidences the loading surface it renders.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy wrapper does not make an authorization decision.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The lazy wrapper has no interactive element.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The lazy wrapper holds no request state; it only waits for the PredictionLoadingView chunk.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The wrapper forwards topNotice unchanged; the referenced host uses the null topNotice that the runtime Suspense fallback passes.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/prediction/PredictionRuntime.tsx#PredictionLoadingView",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingView:data=loading|variant.topNotice=missing"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This wrapper renders LazyPredictionLoadingView as the runtime Suspense fallback; the referenced host evidences the loading surface it resolves to.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The wrapper does not make an authorization decision.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The wrapper has no interactive element.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The wrapper holds no request state; it only shows the loading surface while the runtime chunk loads.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The wrapper always passes topNotice null; the referenced host uses the same missing topNotice variant.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
+        }
+      },
       "constraints": []
     },
     {
@@ -116308,6 +116686,136 @@
       ]
     },
     {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "StadiumGuideRuntime mounts this lazy fallback when a stadium is selected but the map is unavailable; the referenced single-stadium idle hosts render it.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback does not make an authorization decision.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The retry and Kakao place actions belong to the StadiumMapFallback direct registration, not to this lazy wrapper.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The map-failure reason comes from the parent map status; the referenced idle hosts render the unavailable branch.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The theme is forwarded from the parent; both theme hosts are referenced.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium.map-fallback"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "populated",
+            "long-korean",
+            "null-optional",
+            "unbroken-token"
+          ],
+          "reason": "The block shows the stadium name and, when coordinates exist, the Kakao place link; null coordinates fall back to a name search link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback block renders from props only and does not read identity or authorization.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry"
+          ]
+        },
+        "system": {
+          "values": [
+            "offline",
+            "error-recoverable",
+            "missing"
+          ],
+          "reason": "Each failure reason maps to its copy: offline and unavailable offer retry, while missing-key only offers the Kakao place link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The block uses light slate surfaces and dark-mode slate and white tokens, so both themes are rendered.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumMapFallback.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"stadium-map-fallback-retry\"]",
+              "when": {
+                "system": [
+                  "offline",
+                  "error-recoverable"
+                ]
+              }
+            }
+          ],
+          "reason": "Only the retryable failure reasons render the retry button; the missing-key reason has no retry target.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
       "status": "registered",
       "renderAccess": "module-export",
@@ -118792,6 +119300,115 @@
         ]
       },
       "constraints": []
+    },
+    {
+      "id": "src/components/status/StateBlock.tsx#StateBlock",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "status.state-block"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "populated",
+            "long-korean",
+            "unbroken-token"
+          ],
+          "reason": "Copy length is the only payload that changes the block; short, long Korean, and unbroken copy are the layout-pressure cases.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "StateBlock is a presentational status surface and does not read identity or authorization.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry"
+          ]
+        },
+        "system": {
+          "values": [
+            "idle",
+            "retrying"
+          ],
+          "reason": "Retrying disables the retry action through aria-disabled and shows the spinner while the parent request is in flight.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "kind",
+            "values": [
+              "error",
+              "filtered",
+              "gated"
+            ],
+            "reason": "kind selects the solid error frame with retry or the dashed empty frame; each kind changes the frame and symbol tokens.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+          },
+          {
+            "name": "layout",
+            "values": [
+              "block",
+              "row"
+            ],
+            "reason": "layout switches between the centered block and the one-line row used inside cards.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+          },
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "Frame, title, and button tokens carry dark-mode variants.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"state-block-retry\"]",
+              "when": {
+                "variant.kind": "error"
+              }
+            }
+          ],
+          "reason": "The retry button is rendered only for kind=\"error\", which is the only kind that receives onRetry.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "system": "retrying",
+            "variant.kind": [
+              "filtered",
+              "gated"
+            ]
+          },
+          "reason": "The retrying system state exists only on the retry button, which non-error kinds do not render.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#status-state-block-adapter"
+        }
+      ]
     },
     {
       "id": "src/components/suwon/SuwonSeatMap.tsx#SuwonCompareAction",
@@ -123795,8 +124412,6 @@
               "usage-f413822a7ffe",
               "usage-ec033ca6eeab",
               "usage-217c597045a5",
-              "usage-9cb3b520b690",
-              "usage-d5b158857e0a",
               "usage-64f3144ae61e",
               "usage-c52d47c8b25e",
               "usage-24f348a35b35",

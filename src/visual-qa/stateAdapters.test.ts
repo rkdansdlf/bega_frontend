@@ -2311,6 +2311,8 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'stadium-seatmap.manual-required',
     'stadium.favorite-toggle',
     'stadium.guide',
+    'stadium.map-fallback',
+    'status.state-block',
     'suwon.seat-map',
     'suwon.seat-map-svg',
     'team-recommendation.test',
@@ -15666,7 +15668,7 @@ test('registered-loading-state-scenarios', async () => {
       && component.axes?.system?.notApplicable != null
   ));
 
-  assert.equal(loading.length, 4);
+  assert.equal(loading.length, 8);
   for (const component of loading) {
     assert.deepEqual(component.axes?.data?.values, ['loading']);
     for (const axis of ['permissions', 'interactions', 'system']) {
@@ -15689,6 +15691,87 @@ test('registered-loading-state-scenarios', async () => {
       'src/visual-qa/stateAdapters.test.ts#registered-loading-state-scenarios',
     );
   }
+});
+
+test('stadium-map-fallback-adapter', () => {
+  const componentId = 'src/components/StadiumMapFallback.tsx#StadiumMapFallback';
+  const offline = resolveComponentStateAdapter('stadium.map-fallback', {
+    componentId,
+    states: { data: 'populated', interactions: 'retry', system: 'offline' },
+    variants: { theme: 'dark' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(offline.props.reason, 'offline');
+  assert.equal(offline.props.stadiumName, '합성 구장');
+  assert.equal(offline.captureSelector, '[data-testid="stadium-map-fallback"]');
+  assert.equal(offline.theme, 'dark');
+
+  const nullCoordinates = resolveComponentStateAdapter('stadium.map-fallback', {
+    componentId,
+    states: { data: 'null-optional', interactions: 'default', system: 'error-recoverable' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(nullCoordinates.props.reason, 'unavailable');
+  assert.equal(nullCoordinates.props.lat, null);
+  assert.equal(nullCoordinates.props.lng, null);
+
+  const missingKey = resolveComponentStateAdapter('stadium.map-fallback', {
+    componentId,
+    states: { data: 'unbroken-token', interactions: 'default', system: 'missing' },
+    variants: { theme: 'light' },
+  });
+  assert.equal(missingKey.props.reason, 'missing-key');
+  assert.ok(String(missingKey.props.stadiumName).startsWith('STADIUM_'));
+
+  assert.throws(() => resolveComponentStateAdapter('stadium.map-fallback', {
+    componentId,
+    states: { data: 'populated', interactions: 'retry', system: 'missing' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /retry requires a retryable reason/);
+  assert.throws(() => resolveComponentStateAdapter('stadium.map-fallback', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', system: 'offline' },
+    variants: { theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /does not accept interaction targets/);
+});
+
+test('status-state-block-adapter', () => {
+  const componentId = 'src/components/status/StateBlock.tsx#StateBlock';
+  const retry = resolveComponentStateAdapter('status.state-block', {
+    componentId,
+    states: { data: 'long-korean', interactions: 'retry', system: 'retrying' },
+    variants: { kind: 'error', layout: 'row', theme: 'dark' },
+    interactionTargetId: 'retry',
+  });
+  assert.equal(retry.props.kind, 'error');
+  assert.equal(retry.props.layout, 'row');
+  assert.equal(retry.props.isRetrying, true);
+  assert.equal(typeof retry.props.onRetry, 'function');
+  assert.equal(retry.props.testId, 'state-block');
+  assert.equal(retry.captureSelector, '[data-testid="state-block"]');
+  assert.equal(retry.theme, 'dark');
+
+  const filtered = resolveComponentStateAdapter('status.state-block', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', system: 'idle' },
+    variants: { kind: 'filtered', layout: 'block', theme: 'light' },
+  });
+  assert.equal(filtered.props.onRetry, undefined);
+  assert.equal(filtered.props.isRetrying, false);
+
+  assert.throws(() => resolveComponentStateAdapter('status.state-block', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', system: 'retrying' },
+    variants: { kind: 'gated', layout: 'block', theme: 'light' },
+  }), /retrying requires the error kind/);
+  assert.throws(() => resolveComponentStateAdapter('status.state-block', {
+    componentId,
+    states: { data: 'populated', interactions: 'retry', system: 'idle' },
+    variants: { kind: 'filtered', layout: 'block', theme: 'light' },
+    interactionTargetId: 'retry',
+  }), /retry requires the error kind/);
 });
 
 test('global error root and content adapters fail closed outside the exact static matrix', async () => {
