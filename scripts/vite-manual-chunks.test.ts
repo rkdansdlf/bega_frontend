@@ -88,6 +88,7 @@ const uiButtonSource = readFileSync(new URL('../src/components/ui/button.tsx', i
 const uiInputSource = readFileSync(new URL('../src/components/ui/input.tsx', import.meta.url), 'utf8');
 const uiTextareaSource = readFileSync(new URL('../src/components/ui/textarea.tsx', import.meta.url), 'utf8');
 const uiPlainButtonSource = readFileSync(new URL('../src/components/ui/plain-button.tsx', import.meta.url), 'utf8');
+const uiButtonStylesSource = readFileSync(new URL('../src/components/ui/button-styles.ts', import.meta.url), 'utf8');
 const tailwindConfigSource = readFileSync(new URL('../tailwind.config.js', import.meta.url), 'utf8');
 const dialogShadowSources = [
   '../src/components/ui/plain-dialog.tsx',
@@ -1017,10 +1018,14 @@ test('keeps high-fanout chrome and home card CSS on named Tailwind tokens', () =
 });
 
 test('keeps shared focus rings on Tailwind default ring instead of arbitrary 3px rules', () => {
-  for (const source of [uiButtonSource, uiInputSource, uiTextareaSource, uiPlainButtonSource]) {
+  for (const source of [uiButtonSource, uiButtonStylesSource, uiInputSource, uiTextareaSource, uiPlainButtonSource]) {
     assert.equal(source.includes('focus-visible:ring-[3px]'), false);
+  }
+  for (const source of [uiButtonStylesSource, uiInputSource, uiTextareaSource]) {
     assert.ok(source.includes('focus-visible:ring'));
   }
+  // plain-button 은 포커스 링을 직접 정의하지 않고 공용 buttonBaseClass 를 가져다 쓴다.
+  assert.ok(uiPlainButtonSource.includes('buttonBaseClass'));
 });
 
 test('keeps repeated dialog shadows on the shared Tailwind token', () => {
