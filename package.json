@@ -266,6 +266,7 @@
     "test:e2e:mate:regression:extended": "node scripts/qa-presets.mjs mate-e2e extended",
     "test:e2e:mate:full": "npm run test:e2e:mate:regression:route && npm run test:e2e:mate:regression:create && npm run test:e2e:mate:regression:extended",
     "test:cypress-runner": "node --test scripts/cypress-run.test.mjs",
+    "test:vite-warmup": "node --test scripts/vite-warmup.test.mjs",
     "test:cypress-runner:docker-smoke": "npm run cy:run:docker -- --skip-verify --spec cypress/e2e/runner-docker-smoke.cy.ts",
     "test:mobile:summary": "node --import tsx --test scripts/mobile-playwright-summary.test.ts",
     "test:build-env": "node --import tsx --test scripts/tailwind-content.test.mjs scripts/vite-production-env-policy.test.ts scripts/react-dev-artifact-policy.test.mjs scripts/home-first-load-report-summary.test.ts scripts/vite-manual-chunks.test.ts scripts/landing-lcp-contract.test.mjs scripts/cwv-baseline.test.mjs scripts/cwv-lab-audit.test.mjs scripts/module-federation-config.test.ts scripts/module-federation-remote-smoke.test.mjs scripts/module-federation-types.test.mjs scripts/module-federation-artifacts-smoke.test.mjs scripts/module-federation-gate.test.mjs scripts/module-federation-probe-smoke.test.mjs scripts/module-federation-readiness.test.mjs scripts/module-federation-host-usage.test.mjs src/utils/authBootstrap.test.ts src/utils/coreWebVitalsTelemetry.test.ts",
