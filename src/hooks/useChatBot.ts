@@ -710,6 +710,9 @@ export const useChatBot = (initialOpen = false) => {
       });
 
       const { sendChatMessageStream } = await loadChatBotStreamModule();
+      if (streamAbortController.signal.aborted) {
+        throw streamAbortController.signal.reason ?? new DOMException('chat stream cancelled', 'AbortError');
+      }
       if (!isCurrentRequest()) return;
       await sendChatMessageStream(
         { question: userMessage.text, history: historyPayload },
