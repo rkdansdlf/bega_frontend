@@ -7,6 +7,7 @@ on:
       - "src/**"
       - "scripts/**"
       - "contracts/ui-ux-*.json"
+      - "contracts/ai-stream-v2.*"
       - "design-system/bega/**"
       - ".agents/skills/ui-ux-pro-max/**"
       - "docs/VISUAL_QA.md"
@@ -33,6 +34,7 @@ on:
       - "src/utils/validation.ts"
       - "cypress/e2e/auth*.cy.ts"
       - "cypress/e2e/stadium.cy.ts"
+      - "cypress/e2e/chatbot*.cy.ts"
       - "cypress/support/**"
       - "cypress.config.ts"
       - "scripts/auth-qa.mjs"
@@ -78,6 +80,7 @@ on:
           - auth
           - landing
           - stadium
+          - chatbot
           - pages
           - design-intent
 
@@ -93,6 +96,7 @@ jobs:
       auth_changed: ${{ steps.detect.outputs.auth_changed }}
       landing_changed: ${{ steps.detect.outputs.landing_changed }}
       stadium_changed: ${{ steps.detect.outputs.stadium_changed }}
+      chatbot_changed: ${{ steps.chatbot.outputs.chatbot_changed }}
       pages_changed: ${{ steps.detect.outputs.pages_changed }}
       design_intent_changed: ${{ steps.detect.outputs.design_intent_changed }}
       design_intent_profiles: ${{ steps.detect.outputs.design_intent_profiles }}
@@ -119,6 +123,26 @@ jobs:
 
           node scripts/frontend-ui-impact.mjs \
             --changed-file="${CHANGED_FILE_LIST}"
+
+      - name: Detect chatbot E2E impact
+        id: chatbot
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" != "pull_request" ]]; then
+            echo "chatbot_changed=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          git fetch --no-tags --prune --depth=1 origin "${BASE_SHA}" "${HEAD_SHA}" || true
+          CHANGED_FILES="$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")"
+          if grep -qE '^(cypress/e2e/chatbot(-mobile-dock|-modal-a11y|-session-isolation)?\.cy\.ts|cypress/support/|cypress\.config\.ts|scripts/(test-e2e|qa-presets)\.mjs|src/components/ChatBot|src/components/chatbot/|src/components/AuthenticatedLayoutChrome\.tsx|src/hooks/useChatBot|src/api/(sse|stream)\.ts|\.github/workflows/(frontend-ui-qa|_frontend-node-suite)\.yml|src/api/chatbot\.ts|src/api/aiStream[^/]*\.ts|src/api/generated/aiStreamV2\.ts|src/utils/chatbot[^/]*\.ts|src/types/chatbot\.ts|src/mock/chatbot[^/]*\.ts|contracts/ai-stream-v2\.[^/]*|package\.json$)' <<< "${CHANGED_FILES}"; then
+            echo "chatbot_changed=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "chatbot_changed=false" >> "${GITHUB_OUTPUT}"
+          fi
 
   pages-qa:
     needs: detect-changes
@@ -588,6 +612,32 @@ jobs:
         echo "### Frontend Stadium E2E Guard" >> "${GITHUB_STEP_SUMMARY}"
         echo "- Cypress spec: cypress/e2e/stadium.cy.ts" >> "${GITHUB_STEP_SUMMARY}"
       artifact_name: frontend-stadium-e2e-artifacts
+      artifact_paths: |
+        cypress/screenshots/**
+        cypress/videos/**
+
+  chatbot-e2e:
+    needs: detect-changes
+    if: ${{ (github.event_name == 'pull_request' && needs.detect-changes.outputs.chatbot_changed == 'true') || (github.event_name == 'workflow_dispatch' && (github.event.inputs.suite == 'chatbot' || github.event.inputs.suite == 'all')) }}
+    uses: ./.github/workflows/_frontend-node-suite.yml
+    permissions:
+      contents: read
+    with:
+      timeout_minutes: 25
+      env_exports: |
+        VITE_SITE_URL=http://127.0.0.1:5176
+        VITE_API_BASE_URL=/api
+        VITE_AI_EVENT_VERSION=2
+        VITE_MATE_REQUIRE_SOCIAL_VERIFICATION=false
+        VITE_GA4_MEASUREMENT_ID=G-CI00000000
+        VITE_GOOGLE_SITE_VERIFICATION=ciGoogleVerificationToken2026
+        VITE_NAVER_SITE_VERIFICATION=ciNaverVerificationToken2026
+        VITE_KAKAO_MAP_KEY=ciKakaoMapKey
+      run_script: npm run test:e2e:ai:dev
+      summary_script: |
+        echo "### Frontend Chatbot E2E Guard" >> "${GITHUB_STEP_SUMMARY}"
+        echo "- Cypress specs: cypress/e2e/chatbot.cy.ts, cypress/e2e/chatbot-mobile-dock.cy.ts, cypress/e2e/chatbot-modal-a11y.cy.ts, cypress/e2e/chatbot-session-isolation.cy.ts" >> "${GITHUB_STEP_SUMMARY}"
+      artifact_name: frontend-chatbot-e2e-artifacts
       artifact_paths: |
         cypress/screenshots/**
         cypress/videos/**
