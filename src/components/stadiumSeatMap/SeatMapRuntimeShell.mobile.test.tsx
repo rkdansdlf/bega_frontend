@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage } from '../browserTestTimeouts';
 
 const componentId = 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell';
 const pagePath = '/__seat-map-runtime-shell-test.html';
@@ -218,7 +219,7 @@ test('SeatMapRuntimeShell contains every synthetic runtime state at mobile width
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(resources.server);
     const externalRequests: string[] = [];
     const harnessOrigin = new URL(address).origin;

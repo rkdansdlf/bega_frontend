@@ -5,6 +5,7 @@ import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
 import { createViteCacheDir } from './viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from './browserTestTimeouts';
 
 const statusSource = readFileSync(new URL('./MateStatusTabs.tsx', import.meta.url), 'utf8');
 const sortSource = readFileSync(new URL('./MateSortDropdown.tsx', import.meta.url), 'utf8');
@@ -164,7 +165,7 @@ test('lower-camel Visual QA wrappers stay tree-shakeable and expose controlled a
 });
 
 test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard state valid', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const server = await createServer({
     cacheDir: createViteCacheDir('mate-list-control-leaves'),
@@ -180,14 +181,14 @@ test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
     });
     page.on('pageerror', (error) => diagnostics.push(error.message));
     // The first request after a cold Vite start transforms the module graph; 30 s is too tight on a loaded runner.
-    const response = await page.goto(`http://127.0.0.1:${address.port}${pagePath}`, { timeout: 90_000 });
+    const response = await page.goto(`http://127.0.0.1:${address.port}${pagePath}`, { timeout: scaledTimeout(90_000) });
     assert.equal(response?.status(), 200);
 
     const mount = (mode: string, initial = '') => page.evaluate(({ nextMode, nextInitial }) => {
@@ -208,7 +209,7 @@ test('actual mobile DOM keeps touch targets, menu, rail, callbacks, and keyboard
     const metrics: Record<string, unknown> = {};
 
     const statusGroup = page.getByRole('group', { name: '파티 상태 필터' });
-    await statusGroup.waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+    await statusGroup.waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
     });
     const statusButtons = statusGroup.getByRole('button');

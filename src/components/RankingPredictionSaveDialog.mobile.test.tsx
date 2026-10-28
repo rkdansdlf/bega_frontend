@@ -5,6 +5,7 @@ import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
 import { createViteCacheDir } from './viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from './browserTestTimeouts';
 
 const componentSource = readFileSync(
   new URL('./RankingPredictionSaveDialog.tsx', import.meta.url),
@@ -177,7 +178,7 @@ test('ranking and pre-harness gates include the focused actual test exactly once
 });
 
 test('actual save dialog is contained, touch-safe, focus-trapped, and callback-exact', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const server = await createServer({
     cacheDir: createViteCacheDir('ranking-save-dialog'),
@@ -193,7 +194,7 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
@@ -226,7 +227,7 @@ test('actual save dialog is contained, touch-safe, focus-trapped, and callback-e
       assert.deepEqual(await readCalls(), { close: 0, confirm: 0, unrelated: 0 }, label);
     };
 
-    await page.getByRole('dialog').waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+    await page.getByRole('dialog').waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
     });
     await settle();

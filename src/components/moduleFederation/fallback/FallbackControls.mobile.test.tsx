@@ -5,6 +5,7 @@ import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
 import { createViteCacheDir } from '../../viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from '../../browserTestTimeouts';
 
 const buttonSource = readFileSync(new URL('./Button.tsx', import.meta.url), 'utf8');
 const modalSource = readFileSync(new URL('./Modal.tsx', import.meta.url), 'utf8');
@@ -281,7 +282,7 @@ test('fallback controls keep stable QA targets, compatibility mappings, and pack
 });
 
 test('actual fallback Button contains every mobile presentation and isolates native activation', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const server = await createServer({
     cacheDir: createViteCacheDir('fallback-controls'),
@@ -297,7 +298,7 @@ test('actual fallback Button contains every mobile presentation and isolates nat
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
@@ -427,7 +428,7 @@ test('actual fallback Button contains every mobile presentation and isolates nat
 });
 
 test('actual fallback Modal applies one close branch and preserves portal lifecycle contracts', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   const server = await createServer({
     cacheDir: createViteCacheDir('fallback-controls'),
@@ -443,7 +444,7 @@ test('actual fallback Modal applies one close branch and preserves portal lifecy
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());

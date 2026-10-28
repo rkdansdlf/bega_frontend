@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage, scaledTimeout } from './browserTestTimeouts';
 
 const componentSource = readFileSync(new URL('./ImageLightbox.tsx', import.meta.url), 'utf8');
 const packageManifest = JSON.parse(
@@ -412,7 +413,7 @@ test('cleanup reports every closer failure after all cleanup attempts finish', a
 });
 
 test('actual ImageLightbox is contained, focus-safe, stateful, and callback-exact', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   let cacheDir: string | undefined;
   let server: ViteDevServer | undefined;
@@ -431,7 +432,7 @@ test('actual ImageLightbox is contained, focus-safe, stateful, and callback-exac
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     const externalImages: string[] = [];
     page.on('console', (message) => {
@@ -446,7 +447,7 @@ test('actual ImageLightbox is contained, focus-safe, stateful, and callback-exac
     const response = await page.goto(`http://127.0.0.1:${address.port}${pagePath}`);
     assert.equal(response?.status(), 200);
     const lightbox = page.getByTestId('image-lightbox');
-    await lightbox.waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+    await lightbox.waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
     });
     await settle(page);

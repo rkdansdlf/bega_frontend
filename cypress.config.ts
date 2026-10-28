@@ -165,6 +165,14 @@ window.addEventListener('unhandledrejection', function(event) {
         );
 };
 
+// Hang guards, not performance budgets: a loaded CI host (Docker + Vite dev server + Electron) needs
+// more than 10 s for a cy.wait('@alias') request or a first render. allowCypressEnv is false, so the
+// scale is read here from process.env (Docker runs receive it via scripts/cypress-run.mjs passthrough).
+// Unset (local default) keeps the original limits.
+const parsedTimeoutScale = Number(process.env.KBO_CYPRESS_TIMEOUT_SCALE);
+const timeoutScale = Number.isFinite(parsedTimeoutScale) && parsedTimeoutScale > 0 ? parsedTimeoutScale : 1;
+const scaledTimeout = (milliseconds: number) => Math.round(milliseconds * timeoutScale);
+
 export default defineConfig({
     allowCypressEnv: false,
     e2e: {
@@ -173,9 +181,9 @@ export default defineConfig({
         viewportHeight: 720,
         video: false,
         screenshotOnRunFailure: true,
-        defaultCommandTimeout: 10000,
-        requestTimeout: 10000,
-        responseTimeout: 30000,
+        defaultCommandTimeout: scaledTimeout(10000),
+        requestTimeout: scaledTimeout(10000),
+        responseTimeout: scaledTimeout(30000),
         setupNodeEvents(on, config) {
             on('before:browser:launch', (browser, launchOptions) => {
                 if (browser.name === 'electron' && browser.isHeadless) {

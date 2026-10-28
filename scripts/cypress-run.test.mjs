@@ -118,6 +118,7 @@ const runCypressRun = (project, args, env = {}) => {
     'CYPRESS_SKIP_VERIFY',
     'CYPRESS_USE_DOCKER',
     'CYPRESS_VERIFY_TIMEOUT',
+    'KBO_CYPRESS_TIMEOUT_SCALE',
   ]) {
     if (!Object.hasOwn(env, key)) {
       delete childEnv[key];
@@ -245,6 +246,28 @@ test('Docker Cypress run forwards CLI skip-verify to the container runtime', () 
   } finally {
     project.cleanup();
   }
+});
+
+test('Docker Cypress run forwards KBO_CYPRESS_TIMEOUT_SCALE only when it is set', () => {
+  const run = (env) => {
+    const project = createFakeProject();
+    try {
+      const result = runCypressRun(project, ['--docker', '--skip-verify', '--spec', 'cypress/e2e/example.cy.ts'], env);
+      assert.equal(result.status, 0, result.stderr || result.stdout);
+      return readCommandLog(project.logPath).find((entry) => entry.command === 'docker' && entry.args[0] === 'run');
+    } finally {
+      project.cleanup();
+    }
+  };
+
+  assert.ok(
+    run({ KBO_CYPRESS_TIMEOUT_SCALE: '2' }).args.includes('KBO_CYPRESS_TIMEOUT_SCALE=2'),
+    'cypress.config.ts runs inside the container, so the scale must be forwarded into docker run',
+  );
+  assert.ok(
+    !run({}).args.some((arg) => arg.startsWith('KBO_CYPRESS_TIMEOUT_SCALE')),
+    'an unset scale must not be forwarded as an empty value',
+  );
 });
 
 test('test-e2e Docker path forwards CYPRESS_SKIP_VERIFY through the Cypress runner script', () => {

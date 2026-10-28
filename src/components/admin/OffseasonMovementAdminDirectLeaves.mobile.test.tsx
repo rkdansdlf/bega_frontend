@@ -5,6 +5,7 @@ import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
 import { createViteCacheDir } from '../viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from '../browserTestTimeouts';
 
 const resultsSource = readFileSync(new URL('./OffseasonMovementAdminResultsRuntime.tsx', import.meta.url), 'utf8');
 const dialogsSource = readFileSync(new URL('./OffseasonMovementAdminDialogs.tsx', import.meta.url), 'utf8');
@@ -156,7 +157,7 @@ test('Dialogs owns mobile reflow, reachable lower fields, touch controls, and no
 });
 
 test('actual Results and Dialogs DOM forwards exact callbacks once and resize is read-only', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const server = await createServer({
     cacheDir: createViteCacheDir('offseason-admin-leaves'),
@@ -172,7 +173,7 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
@@ -182,7 +183,7 @@ test('actual Results and Dialogs DOM forwards exact callbacks once and resize is
     assert.equal(response?.status(), 200);
 
     const source = page.locator('[data-testid="admin-offseason-source-1"]');
-    await source.waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+    await source.waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\nBrowser diagnostics:\n${diagnostics.join('\n')}`);
     });
     await source.evaluate((node) => node.addEventListener('click', (event) => event.preventDefault(), { once: true }));
