@@ -6,7 +6,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
 
-// @ts-expect-error tailwind.config.js ships no declaration file
 import config from '../../../tailwind.config.js';
 import { Alert } from './alert';
 import { Card } from './card';
