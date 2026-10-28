@@ -584,6 +584,21 @@ describe('AI Chatbot', () => {
             cy.contains('Hello! I am the KBO AI Assistant.', { timeout: 10000 }).should('be.visible');
         });
 
+        it('saves and answers a message once when it is submitted twice before the save completes', () => {
+            const message = 'double submit should save once';
+
+            openChatbotAndWaitForGreeting();
+            cy.getBySel('chatbot-message-input').should('be.enabled').clear().type(message);
+            cy.getBySel('chatbot-message-input').closest('form').submit();
+            cy.getBySel('chatbot-message-input').closest('form').submit();
+
+            cy.wait('@saveUserChatMessage', { timeout: 10000 });
+            cy.wait('@sendMessage', { timeout: 15000 });
+            cy.contains(message, { timeout: 10000 }).should('exist');
+            cy.get('@saveUserChatMessage.all').should('have.length', 1);
+            cy.get('@sendMessage.all').should('have.length', 1);
+        });
+
         it('shows fast response badges for cached replies', () => {
             const message = 'please send cached response';
 
