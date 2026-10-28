@@ -1,5 +1,6 @@
 import type { ErrorSource } from '../types/error';
 import { getApiBaseUrl } from '../api/apiBase';
+import { redactQueryTokens, withoutRecoveryToken } from './accountRecoveryToken';
 
 const CLIENT_ERROR_ENDPOINT = `${getApiBaseUrl().replace(/\/$/, '')}/client-errors`;
 const CLIENT_ERROR_FEEDBACK_ENDPOINT = `${CLIENT_ERROR_ENDPOINT}/feedback`;
@@ -69,7 +70,8 @@ const truncate = (value: string | undefined, maxLength: number): string | undefi
     return undefined;
   }
 
-  return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
+  const safeValue = redactQueryTokens(value);
+  return safeValue.length > maxLength ? `${safeValue.slice(0, maxLength - 3)}...` : safeValue;
 };
 
 const normalizeText = (value: unknown): string | undefined => {
@@ -93,7 +95,7 @@ const normalizeEndpoint = (value: string | undefined): string | undefined => {
 
   try {
     const parsed = new URL(endpoint, window.location.origin);
-    return truncate(`${parsed.pathname}${parsed.search}`, ENDPOINT_MAX_LENGTH);
+    return truncate(withoutRecoveryToken(parsed.pathname, parsed.search), ENDPOINT_MAX_LENGTH);
   } catch {
     return truncate(endpoint, ENDPOINT_MAX_LENGTH);
   }
@@ -104,7 +106,7 @@ const getCurrentRoute = (): string => {
     return '/';
   }
 
-  return truncate(`${window.location.pathname}${window.location.search}${window.location.hash}`, ROUTE_MAX_LENGTH) || '/';
+  return truncate(withoutRecoveryToken(window.location.pathname, window.location.search, window.location.hash), ROUTE_MAX_LENGTH) || '/';
 };
 
 const buildFingerprint = (payload: AutomaticClientErrorPayload): string => {

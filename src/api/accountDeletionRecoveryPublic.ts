@@ -1,5 +1,5 @@
 import type { AccountDeletionRecoveryInfo } from '../types/profile';
-import { publicGet, publicPost } from './publicClient';
+import { publicPost } from './publicClient';
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -14,11 +14,9 @@ const getEnvelopeMessage = (fallback: string, error: unknown): string =>
 
 export async function getAccountDeletionRecoveryInfo(token: string): Promise<AccountDeletionRecoveryInfo> {
   try {
-    const response = await publicGet<ApiEnvelope<AccountDeletionRecoveryInfo>>(
-      '/auth/account/deletion/recovery',
-      {
-        params: { token },
-      },
+    const response = await publicPost<ApiEnvelope<AccountDeletionRecoveryInfo>, { token: string }>(
+      '/auth/account/deletion/recovery/info',
+      { token },
     );
 
     if (!response.success || !response.data) {

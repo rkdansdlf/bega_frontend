@@ -39,7 +39,7 @@ const Login = lazy(() => import('./Login'));
 const SignUp = lazy(() => import('./SignUp'));
 const PasswordReset = lazy(() => import('./PasswordReset'));
 const PasswordResetConfirm = lazy(() => import('./PasswordResetConfirm'));
-const AccountDeletionRecovery = lazy(() => import('./AccountDeletionRecovery'));
+const RecoveryEntry = lazy(() => import('./RecoveryEntry'));
 const StadiumGuide = lazy(() => import('./StadiumGuide'));
 const Prediction = lazy(() => initialPredictionModulePromise ?? loadPredictionPage());
 const Cheer = lazy(() => initialCheerModulePromise ?? import('./Cheer'));
@@ -92,8 +92,8 @@ export default function AppRoutes() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/password/reset" element={<PasswordReset />} />
         <Route path="/password/reset/confirm" element={<PasswordResetConfirm />} />
-        <Route path="/account/deletion/recovery" element={<AccountDeletionRecovery />} />
       </Route>
+      <Route path="/account/deletion/recovery" element={<RecoveryEntry />} />
       <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/oauth/email/confirm" element={<OAuthEmailChallengeConfirm />} />
 

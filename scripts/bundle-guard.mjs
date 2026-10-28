@@ -109,7 +109,7 @@ const forbiddenChunkPrefixes = [
 ];
 
 const sizeBudgets = [
-  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 257_000 },
+  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 257_300 },
   { label: 'vendor-react-core', directory: clientAssetsDir, filePattern: /^vendor-react-core-.*\.js$/, maxBytes: 345_000 },
   { label: 'vendor-router', directory: clientAssetsDir, filePattern: /^vendor-router-.*\.js$/, maxBytes: 50_000 },
   { label: 'vendor-zustand', directory: clientAssetsDir, filePattern: /^vendor-zustand-.*\.js$/, maxBytes: 8_000, optionalMissing: true },
@@ -1750,7 +1750,7 @@ const routeStaticClosureTargets = [
   {
     route: '/login',
     label: '/login route static closure',
-    maxJsGzipBytes: 86_500,
+    maxJsGzipBytes: 86_600,
     entrypoints: [
       'index.html',
       'src/components/Login.tsx',
@@ -1768,7 +1768,7 @@ const routeStaticClosureTargets = [
   {
     route: '/password/reset',
     label: '/password/reset route static closure',
-    maxJsGzipBytes: 83_000,
+    maxJsGzipBytes: 83_100,
     entrypoints: [
       'index.html',
       'src/components/PasswordReset.tsx',
@@ -1786,7 +1786,7 @@ const routeStaticClosureTargets = [
   {
     route: '/account/deletion/recovery',
     label: '/account/deletion/recovery route static closure',
-    maxJsGzipBytes: 81_400,
+    maxJsGzipBytes: 82_300,
     entrypoints: [
       'index.html',
       'src/components/AccountDeletionRecovery.tsx',

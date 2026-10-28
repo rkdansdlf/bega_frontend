@@ -1,4 +1,92 @@
 (function () {
+  const recoveryPath = {
+    test(pathname) {
+      let decoded;
+      try { decoded = decodeURIComponent(pathname); } catch { decoded = pathname; }
+      return /^\/account\/deletion\/recovery\/*$/i.test(decoded);
+    },
+  };
+  let freshNavigationStage = false;
+  const stageRecoveryToken = (token) => {
+    const generation = {};
+    window.__begaRecoveryToken = token;
+    window.__begaRecoveryTokenGeneration = generation;
+    freshNavigationStage = true;
+    queueMicrotask(() => { freshNavigationStage = false; });
+    window.dispatchEvent(new Event('bega:recovery-token'));
+    window.setTimeout(() => {
+      if (window.__begaRecoveryTokenGeneration === generation) {
+        delete window.__begaRecoveryToken;
+        delete window.__begaRecoveryTokenGeneration;
+      }
+    }, 60000);
+  };
+  const clearStagedRecoveryToken = () => {
+    delete window.__begaRecoveryToken;
+    delete window.__begaRecoveryTokenGeneration;
+  };
+  const leaveRecovery = () => {
+    clearStagedRecoveryToken();
+    window.__begaRecoveryNavigationEpoch = (window.__begaRecoveryNavigationEpoch || 0) + 1;
+    window.dispatchEvent(new Event('bega:recovery-token'));
+  };
+  window.addEventListener('popstate', () => {
+    if (!recoveryPath.test(window.location.pathname)) leaveRecovery();
+    else {
+      const query = new URLSearchParams(window.location.search);
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      if (query.has('token') || fragment.has('token')) window.history.replaceState(window.history.state, '', window.location.href);
+      else if (!freshNavigationStage) leaveRecovery();
+    }
+  });
+  window.addEventListener('hashchange', () => {
+    if (recoveryPath.test(window.location.pathname)) window.history.replaceState(window.history.state, '', window.location.href);
+  });
+  window.addEventListener('pagehide', leaveRecovery);
+  if (recoveryPath.test(window.location.pathname)) {
+    const params = new URLSearchParams(window.location.search);
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    if (params.has('token') || fragment.has('token')) {
+      stageRecoveryToken(fragment.get('token') ?? params.get('token') ?? '');
+      params.delete('token');
+      const hasFragmentToken = fragment.has('token');
+      fragment.delete('token');
+      const remaining = params.toString();
+      const remainingFragment = fragment.toString();
+      const hash = hasFragmentToken ? (remainingFragment ? '#' + remainingFragment : '') : window.location.hash;
+      window.history.replaceState(
+        window.history.state,
+        '',
+        window.location.pathname + (remaining ? '?' + remaining : '') + hash,
+      );
+    }
+  }
+
+  for (const method of ['pushState', 'replaceState']) {
+    const original = window.history[method];
+    window.history[method] = function (state, unused, target) {
+      if (target == null) return original.call(this, state, unused, target);
+      let url;
+      try { url = new URL(target, window.location.href); } catch { return original.call(this, state, unused, target); }
+      if (url.origin !== window.location.origin) return original.call(this, state, unused, target);
+      const query = new URLSearchParams(url.search);
+      const fragment = new URLSearchParams(url.hash.slice(1));
+      const hasToken = recoveryPath.test(url.pathname) && (query.has('token') || fragment.has('token'));
+      const token = hasToken ? (fragment.get('token') ?? query.get('token') ?? '') : null;
+      if (hasToken) {
+        query.delete('token');
+        const hasFragmentToken = fragment.has('token');
+        fragment.delete('token');
+        url.search = query.toString();
+        if (hasFragmentToken) url.hash = fragment.toString();
+      }
+      const result = original.call(this, state, unused, hasToken ? url.href : target);
+      if (hasToken) stageRecoveryToken(token);
+      else if (!recoveryPath.test(url.pathname)) leaveRecovery();
+      return result;
+    };
+  }
+
   const normalizeTheme = (value) => {
     if (typeof value !== 'string') {
       return null;

@@ -32,8 +32,9 @@ test('getAccountDeletionRecoveryInfo는 공개 recovery 조회 경로를 호출�
   const response = await getAccountDeletionRecoveryInfo('recovery-token');
 
   assert.equal(response.scheduledFor, '2026-04-02T09:00:00');
-  assert.match(requestUrl, /\/api\/auth\/account\/deletion\/recovery\?token=recovery-token$/);
-  assert.equal(requestInit?.method, 'GET');
+  assert.match(requestUrl, /\/api\/auth\/account\/deletion\/recovery\/info$/);
+  assert.equal(requestInit?.method, 'POST');
+  assert.equal(requestInit?.body, JSON.stringify({ token: 'recovery-token' }));
   assert.equal(requestInit?.credentials, 'include');
 });
 
