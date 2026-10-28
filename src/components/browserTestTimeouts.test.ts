@@ -80,3 +80,16 @@ test('Cypress config scales command, request and response timeouts from KBO_CYPR
   assert.deepEqual(readTimeouts('garbage'), original, 'invalid values keep the original limits');
   assert.deepEqual(readTimeouts('2'), { defaultCommandTimeout: 20_000, requestTimeout: 20_000, responseTimeout: 60_000 });
 });
+
+test('node test scripts carry the hang guard and the browser gates stay at concurrency 2', () => {
+  const packageJson = JSON.parse(readFileSync(join(frontendRoot, 'package.json'), 'utf8')) as {
+    scripts: Record<string, string>;
+  };
+
+  for (const name of ['test:unit', 'previsual-qa:harness:test', 'visual-qa:harness:test']) {
+    const command = packageJson.scripts[name] ?? '';
+    assert.match(command, /--test-timeout=300000\b/, `${name} needs a per-test timeout so a wedged test is cancelled`);
+    assert.match(command, /--test-force-exit\b/, `${name} needs --test-force-exit so a leaked handle cannot hold the runner`);
+    assert.match(command, /--test-concurrency=2\b/, `${name} launches real browsers and must stay at concurrency 2`);
+  }
+});
