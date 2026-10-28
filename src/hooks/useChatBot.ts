@@ -331,6 +331,7 @@ export const useChatBot = (initialOpen = false) => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const currentSessionIdRef = useRef<number | null>(currentSessionId);
   const currentSessionTitleRef = useRef<string>(currentSessionTitle);
+  const locallyCreatedSessionIdRef = useRef<number | null>(null);
   const activeStreamAbortControllerRef = useRef<AbortController | null>(null);
   const activeBotMessageIdRef = useRef<string | null>(null);
   const activeBotMessageIndexRef = useRef<number | null>(null);
@@ -522,6 +523,12 @@ export const useChatBot = (initialOpen = false) => {
       }
 
       if (currentSessionId === null) {
+        setIsLoadingMessages(false);
+        return;
+      }
+
+      if (locallyCreatedSessionIdRef.current === currentSessionId) {
+        locallyCreatedSessionIdRef.current = null;
         setIsLoadingMessages(false);
         return;
       }
@@ -920,6 +927,7 @@ export const useChatBot = (initialOpen = false) => {
     if (!isViewerQueryScopeCurrent(scope)) return null;
     currentSessionIdRef.current = created.sessionId;
     currentSessionTitleRef.current = created.title || AiChatSessionTitleFallback;
+    locallyCreatedSessionIdRef.current = created.sessionId;
     setCurrentSessionId(created.sessionId);
     setCurrentSessionTitle(created.title || AiChatSessionTitleFallback);
     setMessages([]);
