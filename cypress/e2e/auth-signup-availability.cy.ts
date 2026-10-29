@@ -116,10 +116,13 @@ describe('SignUp availability checks', () => {
   });
 
   it('ignores stale handle availability responses and keeps the latest state', () => {
+    let staleHandleRequestReached = false;
+
     cy.intercept('GET', '**/api/auth/check-handle*', (req) => {
       const handle = String(req.query.handle ?? '');
 
       if (handle === '@takenfirst') {
+        staleHandleRequestReached = true;
         req.alias = 'staleHandleTaken';
         req.reply({
           delay: 700,
@@ -168,7 +171,11 @@ describe('SignUp availability checks', () => {
     cy.visit('/signup');
 
     cy.get('input#handle').clear().type('TakenFirst');
-    cy.wait(500);
+    // 값을 바꾸면 앱이 진행 중인 요청을 abort 하므로, 첫 요청이 프록시에 도달한 뒤에만 다음 입력을 한다.
+    // UI 신호만으로는 abort 가 요청 도달보다 먼저 올 수 있어서 intercept 도달 여부를 기다린다.
+    cy.wrap(null, { timeout: 10000 }).should(() => {
+      expect(staleHandleRequestReached).to.equal(true);
+    });
     cy.get('input#handle').clear().type('FreshFinal');
     cy.get('input#handle').should('have.value', '@freshfinal');
     cy.wait(500);
