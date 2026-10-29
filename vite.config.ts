@@ -349,6 +349,8 @@ export default defineConfig(({ mode, command, isPreview }) => {
     server: {
       host: '0.0.0.0',
       port: 5176,
+      // Fail instead of silently moving to 5177, which docs/PORTS.md reserves for managed QA servers.
+      strictPort: true,
       allowedHosts: ['host.docker.internal'],
       open: false,
       proxy: createProxy(proxyTarget),
