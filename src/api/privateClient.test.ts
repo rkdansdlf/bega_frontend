@@ -318,3 +318,114 @@ test('privateDelete는 delete body와 query params를 함께 전송한다', asyn
   assert.equal(requestInit?.credentials, 'include');
   assert.equal(requestInit?.body, JSON.stringify({ password: 'Secret123!' }));
 });
+
+const captureAuthExpiryEvents = (t: { after: (fn: () => void) => void }) => {
+  const events: Array<Record<string, unknown> | undefined> = [];
+  const originalWindow = globalThis.window;
+
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: {
+      location: {
+        hostname: 'localhost',
+        origin: 'http://localhost',
+      },
+      dispatchEvent: (event: Event) => {
+        const customEvent = event as CustomEvent<Record<string, unknown> | undefined>;
+        events.push(customEvent.detail);
+        return true;
+      },
+    },
+  });
+
+  t.after(() => {
+    if (originalWindow === undefined) {
+      // @ts-expect-error test cleanup
+      delete globalThis.window;
+      return;
+    }
+
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: originalWindow,
+    });
+  });
+
+  return events;
+};
+
+test('privatePost는 reissue 후에도 401이면 request_unauthorized로 한 번만 알리고 재발급은 한 번만 한다', async (t) => {
+  markAuthSessionEstablished();
+  const events = captureAuthExpiryEvents(t);
+  const reissueUrls: string[] = [];
+  const followUrls: string[] = [];
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+    const url = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+    if (url.endsWith('/api/auth/reissue')) {
+      reissueUrls.push(url);
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { 'content-type': 'application/json' },
+        status: 200,
+      });
+    }
+
+    followUrls.push(url);
+    return new Response(JSON.stringify({ code: 'TOKEN_EXPIRED', message: 'Unauthorized' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 401,
+    });
+  });
+
+  await assert.rejects(
+    () => privatePost('/users/profile/%40slug/follow'),
+    (error: unknown) => {
+      assert.ok(error instanceof PrivateApiError);
+      assert.equal(error.status, 401);
+      return true;
+    },
+  );
+
+  assert.equal(reissueUrls.length, 1);
+  assert.equal(followUrls.length, 2);
+  assert.equal(events.length, 1);
+  assert.equal(events[0]?.cause, 'request_unauthorized');
+});
+
+test('skipAuthSessionHandling 요청은 401이어도 재발급하지 않고 만료 알림도 보내지 않는다', async (t) => {
+  markAuthSessionEstablished();
+  const events = captureAuthExpiryEvents(t);
+  const urls: string[] = [];
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+    const url = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    urls.push(url);
+
+    return new Response(JSON.stringify({ code: 'TOKEN_EXPIRED', message: 'Unauthorized' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 401,
+    });
+  });
+
+  await assert.rejects(
+    () => privateGet('/auth/mypage', { skipAuthSessionHandling: true }),
+    (error: unknown) => {
+      assert.ok(error instanceof PrivateApiError);
+      assert.equal(error.status, 401);
+      return true;
+    },
+  );
+
+  assert.equal(urls.length, 1);
+  assert.equal(urls.filter((url) => url.endsWith('/api/auth/reissue')).length, 0);
+  assert.equal(events.length, 0);
+});

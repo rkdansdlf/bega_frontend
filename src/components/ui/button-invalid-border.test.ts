@@ -4,7 +4,6 @@ import postcss from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 import tailwindcss from 'tailwindcss';
 
-// @ts-expect-error tailwind.config.js ships no declaration file
 import config from '../../../tailwind.config.js';
 import { buttonBaseClass, buttonVariantClasses } from './button-styles';
 

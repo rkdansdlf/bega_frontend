@@ -3,7 +3,6 @@ import test from 'node:test';
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
 
-// @ts-expect-error tailwind.config.js ships no declaration file
 import config from '../../../tailwind.config.js';
 import { buttonVariantClasses } from './button-styles';
 
