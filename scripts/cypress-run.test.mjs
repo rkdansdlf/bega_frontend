@@ -437,3 +437,25 @@ test('runner Docker smoke spec is explicit-only', () => {
     'Docker smoke spec should not be included in default Cypress spec collection',
   );
 });
+
+test('pages e2e shards cover every pages spec exactly once and use separate ports', () => {
+  const specsOf = (preset) => {
+    const { args } = printPreset('e2e', preset);
+    return args[args.indexOf('--spec') + 1].split(',');
+  };
+  const portOf = (preset) => {
+    const { args } = printPreset('e2e', preset);
+    return args.includes('--port') ? args[args.indexOf('--port') + 1] : undefined;
+  };
+
+  const all = specsOf('pages-dev');
+  const shard1 = specsOf('pages-dev-shard-1');
+  const shard2 = specsOf('pages-dev-shard-2');
+
+  assert.deepEqual([...shard1, ...shard2].sort(), [...all].sort(), 'shards must cover pages exactly once');
+  assert.ok(shard1.length > 0 && shard2.length > 0, 'neither shard may be empty');
+  assert.equal(portOf('pages-dev-shard-1'), undefined, 'shard 1 keeps the default port');
+  assert.ok(portOf('pages-dev-shard-2'), 'shard 2 needs its own port so both shards can run on one host');
+  assert.equal(packageJson.scripts['test:e2e:pages:dev:shard1'], 'node scripts/qa-presets.mjs e2e pages-dev-shard-1');
+  assert.equal(packageJson.scripts['test:e2e:pages:dev:shard2'], 'node scripts/qa-presets.mjs e2e pages-dev-shard-2');
+});

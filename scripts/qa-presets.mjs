@@ -151,6 +151,19 @@ const cypressDoctorStep = (args = []) => nodeStep(['scripts/cypress-doctor.mjs',
 
 const specArg = (specs) => ['--spec', specs.join(',')];
 
+// pages 스위트를 러너 두 대에서 나란히 돌리기 위한 분할. 스펙별 소요 시간(run 40928649176 기준 shard 1 ≈188s,
+// shard 2 ≈185s)으로 균형을 맞췄다. shard 2 는 pages 에서 shard 1 을 뺀 나머지라서, pages 에 스펙이 추가돼도
+// 어느 shard 에서도 빠지지 않는다. 두 shard 는 같은 Mac 에서 동시에 돌 수 있으므로 포트를 나눈다.
+const PAGES_SHARD_1_SPECS = [
+  'cypress/e2e/mypage-tab-health.cy.ts',
+  'cypress/e2e/stadium.cy.ts',
+  'cypress/e2e/profile.cy.ts',
+  'cypress/e2e/page-route-coverage.cy.ts',
+  'cypress/e2e/cheer-mobile-nav.cy.ts',
+  'cypress/e2e/dm.cy.ts',
+];
+const PAGES_SHARD_2_PORT = '5188';
+
 const buildE2ePreset = (suiteName, mode) => {
   const specs = E2E_SPECS[suiteName];
   if (!specs) {
@@ -161,6 +174,17 @@ const buildE2ePreset = (suiteName, mode) => {
   return {
     ...step,
     args: [...step.args, '--spec', specs.join(',')],
+  };
+};
+
+const buildPagesShardPreset = (shard) => {
+  const shardSpecs = shard === 1
+    ? PAGES_SHARD_1_SPECS
+    : E2E_SPECS.pages.filter((spec) => !PAGES_SHARD_1_SPECS.includes(spec));
+  const step = buildE2eRunnerPreset('dev');
+  return {
+    ...step,
+    args: [...step.args, ...(shard === 1 ? [] : ['--port', PAGES_SHARD_2_PORT]), '--spec', shardSpecs.join(',')],
   };
 };
 
@@ -364,6 +388,8 @@ const PRESETS = {
     'auth-prodlike': buildE2ePreset('auth', 'prodlike'),
     'smoke-dev': buildE2ePreset('smoke', 'dev'),
     'pages-dev': buildE2ePreset('pages', 'dev'),
+    'pages-dev-shard-1': buildPagesShardPreset(1),
+    'pages-dev-shard-2': buildPagesShardPreset(2),
     'smoke-prodlike': buildE2ePreset('smoke', 'prodlike'),
     'smoke-prodlike-docker': buildE2ePreset('smoke', 'prodlike-docker'),
     'smoke-prodlike-mac': buildE2ePreset('smoke', 'prodlike-mac'),

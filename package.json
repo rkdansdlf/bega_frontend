@@ -237,6 +237,8 @@
     "test:e2e:auth:prodlike": "node scripts/qa-presets.mjs e2e auth-prodlike",
     "test:e2e:smoke:dev": "node scripts/qa-presets.mjs e2e smoke-dev",
     "test:e2e:pages:dev": "node scripts/qa-presets.mjs e2e pages-dev",
+    "test:e2e:pages:dev:shard1": "node scripts/qa-presets.mjs e2e pages-dev-shard-1",
+    "test:e2e:pages:dev:shard2": "node scripts/qa-presets.mjs e2e pages-dev-shard-2",
     "test:e2e:smoke:prodlike": "node scripts/qa-presets.mjs e2e smoke-prodlike",
     "test:e2e:smoke:prodlike:docker": "node scripts/qa-presets.mjs e2e smoke-prodlike-docker",
     "test:e2e:smoke:prodlike:mac": "node scripts/qa-presets.mjs e2e smoke-prodlike-mac",
