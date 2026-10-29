@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage } from '../browserTestTimeouts';
 
 const pagePath = '/__stadium-seatmap-error-boundary-test.html';
 const entryPath = '/__stadium-seatmap-error-boundary-test.tsx';
@@ -178,7 +179,7 @@ test('StadiumSeatMapErrorBoundary contains real child render errors across mobil
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(resources.server);
     const externalRequests: string[] = [];
     const origin = new URL(address).origin;
@@ -241,7 +242,7 @@ test('StadiumSeatMapErrorBoundary mutation removes fallback handling and fails t
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     const address = serverAddress(resources.server);

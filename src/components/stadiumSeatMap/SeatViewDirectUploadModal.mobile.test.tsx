@@ -5,6 +5,7 @@ import { after, before, test } from 'node:test';
 import { chromium, type Browser, type Locator, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 import { createViteCacheDir } from '../viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from '../browserTestTimeouts';
 
 const packageManifest = JSON.parse(
   readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'),
@@ -252,7 +253,7 @@ after(async () => {
 });
 
 const openPage = async (viewport = { width: 320, height: 844 }) => {
-  const page = await browser.newPage({ viewport });
+  const page = await newScaledPage(browser, { viewport });
   const diagnostics: string[] = [];
   page.on('console', (message) => {
     if (message.type() === 'error') diagnostics.push(message.text());
@@ -260,7 +261,7 @@ const openPage = async (viewport = { width: 320, height: 844 }) => {
   page.on('pageerror', (error) => diagnostics.push(error.message));
   const response = await page.goto(baseUrl);
   assert.equal(response?.status(), 200);
-  await page.getByRole('dialog').waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+  await page.getByRole('dialog').waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
     throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
   });
   return { diagnostics, page };
@@ -302,7 +303,7 @@ test('seat-view direct upload focused test is included exactly once in the pre-h
 });
 
 test('actual modal stays within 320/390 viewports, locks background scroll, and keeps touch actions reachable', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const { diagnostics, page } = await openPage();
   try {
@@ -386,7 +387,7 @@ test('actual modal stays within 320/390 viewports, locks background scroll, and 
 });
 
 test('actual modal exposes visible keyboard focus and announces validation errors', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const { diagnostics, page } = await openPage();
   try {
@@ -420,7 +421,7 @@ test('actual modal exposes visible keyboard focus and announces validation error
 });
 
 test('actual modal renders deterministic nonproduction maximum, error, and submitting states', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const { diagnostics, page } = await openPage();
   try {
@@ -465,7 +466,7 @@ test('actual modal renders deterministic nonproduction maximum, error, and submi
 });
 
 test('actual modal accepts one submission when the same handler is invoked twice before rerender', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const { diagnostics, page } = await openPage();
   try {

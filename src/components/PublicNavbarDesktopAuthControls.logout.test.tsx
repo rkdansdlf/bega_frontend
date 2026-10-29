@@ -4,6 +4,7 @@ import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 import { createViteCacheDir } from './viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from './browserTestTimeouts';
 
 const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
 const pagePath = '/__desktop-logout-navigation-test.html';
@@ -104,7 +105,7 @@ const withActualBrowser = async (
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    const page = await newScaledPage(browser, { viewport: { width: 1280, height: 800 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
@@ -118,7 +119,7 @@ const withActualBrowser = async (
 };
 
 test('actual desktop logout button navigates to /home with the real auth store contract', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   await withActualBrowser(async ({ page, port, diagnostics }) => {
     const response = await page.goto(`http://127.0.0.1:${port}${pagePath}`);
@@ -134,7 +135,7 @@ test('actual desktop logout button navigates to /home with the real auth store c
     await page.waitForFunction(
       () => document.querySelector('[data-testid="probe-location"]')?.textContent === '/home',
       undefined,
-      { timeout: 5_000 },
+      { timeout: scaledTimeout(5_000) },
     ).catch(() => {});
     assert.equal(await probe.textContent(), '/home', 'logout did not navigate to /home');
 
