@@ -275,7 +275,7 @@
     "ci:workflow-policy": "node scripts/ci-workflow-policy.mjs",
     "qa:mate:regression:label": "node scripts/mate-regression-label-check.mjs",
     "test:seo": "node --import tsx --test \"src/seo/**/*.test.ts\" scripts/prerender-seo.test.mjs scripts/seo-dynamic-pages.test.mjs scripts/seo-postdeploy-smoke.test.mjs scripts/seo-csp-headers.test.mjs worker/index.test.ts",
-    "test:unit": "node --import tsx --test --test-concurrency=2 --test-timeout=300000 --test-force-exit \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
+    "test:unit": "node --import tsx --test --test-reporter=spec --test-concurrency=2 --test-timeout=300000 --test-force-exit \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
     "test:ranking:unit": "node --import tsx --test src/components/RankingPredictionCompletionPanel.mobile.test.tsx src/components/RankingPredictionSaveDialog.mobile.test.tsx src/components/ranking/RankingPredictionResultPanel.test.tsx src/components/prediction/PredictionRuntime.test.ts src/utils/rankingPredictionState.test.ts src/utils/ranking.test.ts src/api/ranking.test.ts",
     "deploy": "npm run build:artifact",
     "deploy:cloudflare:legacy": "npm run build && wrangler deploy",
