@@ -111,7 +111,8 @@ const startServer = async (
     appType: 'custom',
     cacheDir,
     plugins: [createPreviewPlugin()],
-    server: { host: '127.0.0.1', port: 0 },
+    // vite.config.ts 의 strictPort: true 가 port 0 을 기본 5173 고정으로 바꾸지 않도록 끈다(다른 harness 와 동일).
+    server: { host: '127.0.0.1', port: 0, strictPort: false },
   });
   resources.server = server;
   await server.listen();
