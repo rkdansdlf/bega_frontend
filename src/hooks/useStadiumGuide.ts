@@ -2,7 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Stadium, Place, CategoryType } from '../types/stadium';
-import { loadKakaoMapScript, searchNearbyPlaces, updateMapMarkers } from '../utils/kakaoMap';
+import {
+  loadKakaoMapScript,
+  searchNearbyPlaces,
+  updateMapMarkers,
+  type KakaoMapLoadFailureReason,
+} from '../utils/kakaoMap';
 import { useKakaoMap } from './useKakaoMap';
 import {
   AsyncStatus,
@@ -30,6 +35,7 @@ export const useStadiumGuide = () => {
   const [mapStatus, setMapStatus] = useState<AsyncStatus>('idle');
   const [nearbyError, setNearbyError] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapFailureReason, setMapFailureReason] = useState<KakaoMapLoadFailureReason | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const stadiumsQuery = useQuery(getStadiumGuideStadiumsQueryOptions());
   const stadiums = stadiumsQuery.data ?? EMPTY_STADIUMS;
@@ -55,9 +61,11 @@ export const useStadiumGuide = () => {
       () => {
         setIsMapReady(true);
         setMapStatus('success');
+        setMapFailureReason(null);
       },
-      (message) => {
+      (message, reason) => {
         setMapStatus('error');
+        setMapFailureReason(reason ?? 'unavailable');
         setMapError(sanitizeStadiumGuideErrorMessage(
           message,
           '지도를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.',
@@ -115,6 +123,14 @@ export const useStadiumGuide = () => {
     loadMapSdk();
   }, [loadMapSdk]);
 
+  // 오프라인이라 실패했다면 연결이 돌아왔을 때 한 번 더 불러옵니다.
+  useEffect(() => {
+    if (mapFailureReason !== 'offline') return undefined;
+
+    window.addEventListener('online', loadMapSdk);
+    return () => window.removeEventListener('online', loadMapSdk);
+  }, [mapFailureReason, loadMapSdk]);
+
   useEffect(() => {
     if (stadiumsQuery.isError) {
       console.error('구장 목록 로드 실패:', stadiumsQuery.error);
@@ -148,9 +164,11 @@ export const useStadiumGuide = () => {
       initializeMap();
       setMapStatus('success');
       setMapError(null);
+      setMapFailureReason(null);
     } catch (error) {
       console.error('지도 초기화 실패:', error);
       setMapStatus('error');
+      setMapFailureReason('unavailable');
       setMapError(sanitizeStadiumGuideErrorMessage(
         error,
         '지도를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.',
@@ -320,6 +338,7 @@ export const useStadiumGuide = () => {
     placesError,
     nearbyError,
     mapError,
+    mapFailureReason,
 
     // Map
     mapContainer,
