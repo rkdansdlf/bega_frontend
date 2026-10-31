@@ -349,12 +349,13 @@ describe('Stadium Guide Quality Flow', () => {
     cy.get('[data-testid="stadium-map-fallback"]')
       .should('be.visible')
       .invoke('attr', 'data-map-failure-reason')
-      .should('be.oneOf', ['unavailable', 'offline', 'missing-key'])
+      .should('be.oneOf', ['unavailable', 'offline', 'missing-key', 'no-coordinates'])
       .then((reason) => {
         const fallbackTitles: Record<string, string> = {
           unavailable: '지도를 불러오지 못했어요',
           offline: '인터넷 연결이 끊겨 지도를 못 불러왔어요',
           'missing-key': '지금은 지도를 보여드릴 수 없어요',
+          'no-coordinates': '지도에 구장 위치를 표시할 수 없어요',
         };
         cy.get('[data-testid="stadium-map-fallback"]')
           .should('contain', fallbackTitles[reason as string]);

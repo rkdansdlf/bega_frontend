@@ -12,6 +12,7 @@ test('resolves to missing-key when API key is missing', () => {
     mapFailureReason: null,
     hasApiKey: false,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reason, 'missing-key');
 });
@@ -24,6 +25,7 @@ test('resolves to unavailable when API key is present and mapStatus is error', (
     mapFailureReason: null,
     hasApiKey: true,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reason, 'unavailable');
 });
@@ -36,6 +38,7 @@ test('explicit mapFailureReason takes precedence over missing-key or error statu
     mapFailureReason: 'offline',
     hasApiKey: false,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reasonOfflineWithMissingKey, 'offline');
 
@@ -45,6 +48,7 @@ test('explicit mapFailureReason takes precedence over missing-key or error statu
     mapFailureReason: 'offline',
     hasApiKey: true,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reasonOfflineWithKey, 'offline');
 });
@@ -57,6 +61,7 @@ test('returns null when no stadium is selected', () => {
     mapFailureReason: 'offline',
     hasApiKey: false,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reason, null);
 });
@@ -69,15 +74,12 @@ test('returns null when map can render', () => {
     mapFailureReason: null,
     hasApiKey: true,
     mapStatus,
+    hasStadiumCoordinates: true,
   });
   assert.equal(reason, null);
 });
 
-test('returns null with no failure reason when key is present and mapStatus is success but coordinates are invalid (canRenderMap is false)', () => {
-  // 실제 동작: API 키가 있고 mapStatus는 'success'이나 구장 좌표가 유효하지 않아
-  // canRenderMap이 false인 경우, 스크립트 로드 자체의 오류가 아니므로
-  // mapFallbackReason은 null을 반환합니다.
-  // 런타임 UI에서는 StadiumMapFallback 대신 좌표 미제공 안내 Card 프레임을 렌더링합니다.
+test('resolves to no-coordinates when key is present and mapStatus is success but coordinates are invalid (canRenderMap is false)', () => {
   const mapStatus: AsyncStatus = 'success';
   const reason = resolveMapFallbackReason({
     hasSelectedStadium: true,
@@ -85,6 +87,26 @@ test('returns null with no failure reason when key is present and mapStatus is s
     mapFailureReason: null,
     hasApiKey: true,
     mapStatus,
+    hasStadiumCoordinates: false,
   });
-  assert.equal(reason, null);
+  assert.equal(reason, 'no-coordinates');
+});
+
+test('no-coordinates takes precedence over missing-key, unavailable and SDK failure reasons', () => {
+  const cases: Array<{ hasApiKey: boolean; mapStatus: AsyncStatus; mapFailureReason: 'offline' | 'unavailable' | null }> = [
+    { hasApiKey: false, mapStatus: 'idle', mapFailureReason: null },
+    { hasApiKey: true, mapStatus: 'error', mapFailureReason: null },
+    { hasApiKey: true, mapStatus: 'error', mapFailureReason: 'offline' },
+    { hasApiKey: true, mapStatus: 'error', mapFailureReason: 'unavailable' },
+    { hasApiKey: true, mapStatus: 'loading', mapFailureReason: null },
+  ];
+  for (const c of cases) {
+    const reason = resolveMapFallbackReason({
+      hasSelectedStadium: true,
+      canRenderMap: false,
+      hasStadiumCoordinates: false,
+      ...c,
+    });
+    assert.equal(reason, 'no-coordinates', JSON.stringify(c));
+  }
 });
