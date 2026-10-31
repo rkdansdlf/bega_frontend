@@ -302,6 +302,37 @@ test('test-e2e Docker path forwards CYPRESS_SKIP_VERIFY through the Cypress runn
   }
 });
 
+test('test-e2e wraps the server-managed Cypress command with the Vite warm-up only when KBO_VITE_WARMUP=1', () => {
+  const serverModeArgs = ['--docker', '--host', '127.0.0.1', '--port', '5391', '--spec', 'cypress/e2e/example.cy.ts'];
+  const startServerCommand = (project) => {
+    const entry = readCommandLog(project.logPath).find((command) => command.command === 'npx' && command.args[0] === 'start-server-and-test');
+    assert.ok(entry, 'test-e2e should run start-server-and-test');
+    return entry.args;
+  };
+
+  const warmed = createFakeProject();
+  try {
+    const result = runTestE2e(warmed, serverModeArgs, { KBO_VITE_WARMUP: '1' });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const [, , url, testCommand] = startServerCommand(warmed);
+    assert.equal(url, 'http://127.0.0.1:5391');
+    assert.match(testCommand, /^node scripts\/vite-warmup\.mjs http:\/\/127\.0\.0\.1:5391 && npm run cy:run:docker/);
+  } finally {
+    warmed.cleanup();
+  }
+
+  const plain = createFakeProject();
+  try {
+    const result = runTestE2e(plain, serverModeArgs, { KBO_VITE_WARMUP: '' });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const [, , , testCommand] = startServerCommand(plain);
+    assert.match(testCommand, /^npm run cy:run:docker/);
+    assert.doesNotMatch(testCommand, /vite-warmup/);
+  } finally {
+    plain.cleanup();
+  }
+});
+
 test('Cypress qa presets keep global cache and Docker flows distinct', () => {
   assert.deepEqual(printPreset('cypress', 'run'), {
     command: 'node',
