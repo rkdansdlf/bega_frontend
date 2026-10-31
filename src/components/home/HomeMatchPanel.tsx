@@ -5,6 +5,14 @@ import type { Game } from '../../types/home';
 import type { LeagueTab } from '../../utils/homeScheduleClassification';
 import type { HomeLoadFailureReason } from '../../api/home';
 
+import {
+  EMPTY_BODY_CLASS,
+  EMPTY_FRAME_CLASS,
+  EMPTY_LAYOUT_CLASS,
+  EMPTY_SYMBOL_CLASS,
+  EMPTY_TITLE_CLASS,
+} from '../status/statusTokens';
+
 const LazyHomeScheduledMatchPanel = lazy(() => import('./HomeScheduledMatchPanel'));
 const LazyHomeMatchPanelErrorState = lazy(() => import('./HomeMatchPanelErrorState'));
 
@@ -12,6 +20,10 @@ interface HomeMatchPanelProps {
   activeLeagueTab: LeagueTab;
   isLoading: boolean;
   isGamesError: boolean;
+  /** 6초 안에 응답이 오지 않았지만 요청은 아직 진행 중. */
+  isGamesDelayed?: boolean;
+  /** 경기가 없는 날 보여줄 다음 행동. */
+  emptyDateNavigation?: HomeMatchPanelEmptyNavigation;
   loadFailureReason: HomeLoadFailureReason | null;
   isScheduledLoading: boolean;
   isScheduledError: boolean;
@@ -30,6 +42,91 @@ interface HomeMatchPanelProps {
   onRetry: () => void;
   onSelectPrediction: (game: Game) => void;
   onToggleSecondarySection: () => void;
+}
+
+export interface HomeMatchPanelEmptyNavigation {
+  nextGameDate: string | null;
+  prevGameDate: string | null;
+  isOffSeason: boolean;
+  onJumpToDate: (dateKey: string) => void;
+  onOpenScheduled: () => void;
+  onOpenOffseason: () => void;
+}
+
+const HOME_STATE_ACTION_CLASS = 'inline-flex min-h-11 sm:min-h-8 items-center justify-center gap-1.5 rounded-10 border border-primary/25 bg-white px-3 text-13 font-bold text-primary hover:bg-primary/5 dark:border-primary/40 dark:bg-card dark:text-emerald-300 dark:hover:bg-primary/10';
+const HOME_STATE_PRIMARY_ACTION_CLASS = 'inline-flex min-h-11 sm:min-h-8 items-center justify-center gap-1.5 rounded-10 bg-primary px-3 text-13 font-bold text-white hover:bg-primary-hover';
+
+const formatGameDateLabel = (dateKey: string): string => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  if (!year || !month || !day) {
+    return dateKey;
+  }
+  const weekday = ['일', '월', '화', '수', '목', '금', '토'][new Date(year, month - 1, day, 12).getDay()];
+  return `${month}월 ${day}일 (${weekday})`;
+};
+
+function HomeMatchEmptyActions({ navigation }: { navigation: HomeMatchPanelEmptyNavigation }) {
+  const { nextGameDate, prevGameDate, isOffSeason } = navigation;
+  if (nextGameDate) {
+    return (
+      <>
+        <button
+          type="button"
+          data-testid="home-empty-next-game"
+          onClick={() => navigation.onJumpToDate(nextGameDate)}
+          className={HOME_STATE_PRIMARY_ACTION_CLASS}
+        >
+          다음 경기 {formatGameDateLabel(nextGameDate)} 보기
+        </button>
+        {prevGameDate ? (
+          <button
+            type="button"
+            data-testid="home-empty-prev-game"
+            onClick={() => navigation.onJumpToDate(prevGameDate)}
+            className={HOME_STATE_ACTION_CLASS}
+          >
+            지난 경기 보기
+          </button>
+        ) : null}
+      </>
+    );
+  }
+
+  if (isOffSeason) {
+    return (
+      <button
+        type="button"
+        data-testid="home-empty-offseason"
+        onClick={navigation.onOpenOffseason}
+        className={HOME_STATE_PRIMARY_ACTION_CLASS}
+      >
+        스토브리그 소식 보기
+      </button>
+    );
+  }
+
+  return (
+    <>
+      {prevGameDate ? (
+        <button
+          type="button"
+          data-testid="home-empty-prev-game"
+          onClick={() => navigation.onJumpToDate(prevGameDate)}
+          className={HOME_STATE_ACTION_CLASS}
+        >
+          지난 경기 {formatGameDateLabel(prevGameDate)} 보기
+        </button>
+      ) : null}
+      <button
+        type="button"
+        data-testid="home-empty-scheduled"
+        onClick={navigation.onOpenScheduled}
+        className={prevGameDate ? HOME_STATE_ACTION_CLASS : HOME_STATE_PRIMARY_ACTION_CLASS}
+      >
+        예정경기 보기
+      </button>
+    </>
+  );
 }
 
 const HOME_MATCH_PANEL_COPY: Record<LeagueTab, { context: string; title: string; description: string }> = {
@@ -108,18 +205,20 @@ function HomeScheduleBoardHeader({
   );
 }
 
-function HomeScheduleEmptyState({
+function HomeScheduleStateShell({
   children,
   style,
   copy,
   countLabel,
   detailLabel,
+  tone,
 }: {
   children: ReactNode;
-  style: CSSProperties;
+  style?: CSSProperties;
   copy?: { context: string; title: string; description: string };
   countLabel?: string;
   detailLabel?: string;
+  tone?: 'default' | 'warning';
 }) {
   return (
     <div className={BOARD_SHELL_CLASS} style={style} {...MATCH_PRIORITY_REGION_PROPS}>
@@ -128,47 +227,81 @@ function HomeScheduleEmptyState({
           copy={copy}
           countLabel={countLabel || '0경기'}
           detailLabel={detailLabel}
+          tone={tone}
         />
       ) : null}
-      <div className="flex min-h-[160px] items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center text-body font-bold text-gray-500 dark:border-white/12 dark:bg-white/[0.04] dark:text-white">
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
 
 function HomeScheduleErrorState({
-  style,
+  copy,
+  countLabel,
   title,
   description,
-  suppressRecoveryActions,
-  compact = false,
+  variant = 'error',
   onRetry,
 }: {
-  style: CSSProperties;
+  copy: { context: string; title: string; description: string };
+  countLabel: string;
   title: string;
   description: string;
-  suppressRecoveryActions: boolean;
-  compact?: boolean;
+  variant?: 'error' | 'delayed';
   onRetry: () => void;
 }) {
+  const header = <HomeScheduleBoardHeader copy={copy} countLabel={countLabel} tone="warning" />;
   return (
     <Suspense
       fallback={(
-        <HomeScheduleEmptyState style={style}>
-          경기 상태를 확인하고 있습니다.
-        </HomeScheduleEmptyState>
+        <HomeScheduleStateShell copy={copy} countLabel={countLabel} tone="warning">
+          <div className={`${EMPTY_FRAME_CLASS.error} ${EMPTY_LAYOUT_CLASS}`}>
+            <p className={EMPTY_TITLE_CLASS}>경기 상태를 확인하고 있습니다.</p>
+          </div>
+        </HomeScheduleStateShell>
       )}
     >
       <LazyHomeMatchPanelErrorState
-        style={style}
+        header={header}
         title={title}
         description={description}
-        suppressRecoveryActions={suppressRecoveryActions}
-        compact={compact}
+        variant={variant}
+        suppressRecoveryActions={false}
         onRetry={onRetry}
       />
     </Suspense>
+  );
+}
+
+// 경기가 없는 날 — 첫 카드 경로라서 아이콘 라이브러리 없이 토큰 문자열만 씁니다.
+function HomeMatchEmptyState({
+  isOffSeason,
+  navigation,
+}: {
+  isOffSeason: boolean;
+  navigation?: HomeMatchPanelEmptyNavigation;
+}) {
+  const description = isOffSeason
+    ? '새 시즌 일정이 나오면 이 자리에 경기가 표시돼요.'
+    : navigation?.nextGameDate
+      ? '가장 가까운 경기 날짜로 바로 이동할 수 있어요.'
+      : '다가오는 일정은 예정경기에서 확인할 수 있어요.';
+
+  return (
+    <div role="status" data-testid="home-match-empty" className={`${EMPTY_FRAME_CLASS.filtered} ${EMPTY_LAYOUT_CLASS} py-8`}>
+      <span className={EMPTY_SYMBOL_CLASS.filtered} aria-hidden="true">
+        <span className="relative block h-4.5 w-4.5 rounded border-2 border-current">
+          <span className="absolute inset-x-0 top-[3px] block border-t-2 border-current" />
+        </span>
+      </span>
+      <p className={`${EMPTY_TITLE_CLASS} break-keep`}>{isOffSeason ? '지금은 비시즌이에요' : '이 날은 경기가 없어요'}</p>
+      <p className={`${EMPTY_BODY_CLASS} break-keep`}>{description}</p>
+      {navigation ? (
+        <div className="mt-1.5 flex flex-wrap items-center justify-center gap-2">
+          <HomeMatchEmptyActions navigation={navigation} />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -220,18 +353,25 @@ function HomeScheduleGameList({
 
 function HomeScheduledPanelFallback({
   matchSectionMinHeightStyle,
+  loadingMatchCardCount,
+  LoadingCardComponent,
 }: {
   matchSectionMinHeightStyle: CSSProperties;
+  loadingMatchCardCount: number;
+  LoadingCardComponent: ComponentType;
 }) {
   return (
-    <HomeScheduleEmptyState
+    <HomeScheduleStateShell
       style={matchSectionMinHeightStyle}
       copy={HOME_MATCH_PANEL_COPY.scheduled}
       countLabel="예정 경기 확인 중"
       detailLabel="7일 일정"
     >
-      예정 경기 화면을 준비하고 있습니다.
-    </HomeScheduleEmptyState>
+      <HomeScheduleListHeader />
+      <div className={BOARD_GRID_CLASS}>
+        {Array.from({ length: loadingMatchCardCount }, (_, index) => <LoadingCardComponent key={`scheduled-fallback-${index}`} />)}
+      </div>
+    </HomeScheduleStateShell>
   );
 }
 
@@ -239,10 +379,11 @@ export default function HomeMatchPanel({
   activeLeagueTab,
   isLoading,
   isGamesError,
+  isGamesDelayed = false,
+  emptyDateNavigation,
   loadFailureReason,
   isScheduledLoading,
   isScheduledError,
-  suppressRecoveryActions = false,
   isSecondarySectionExpanded,
   loadingMatchCardCount,
   matchSectionMinHeightStyle,
@@ -285,12 +426,25 @@ export default function HomeMatchPanel({
   if (isGamesError) {
     return (
       <HomeScheduleErrorState
-        style={matchSectionMinHeightStyle}
-        title={isManualDataError ? '야구 데이터 준비가 필요합니다' : '경기 일정을 불러오지 못했습니다'}
+        copy={activePanelCopy}
+        countLabel="확인 필요"
+        title={isManualDataError ? '경기 데이터를 준비하고 있어요' : '경기 일정을 불러오지 못했어요'}
         description={isManualDataError
-          ? '운영자가 데이터를 제공하면 다시 확인할 수 있습니다.'
-          : '서비스 연결이 불안정합니다. 잠시 후 다시 시도해주세요.'}
-        suppressRecoveryActions={suppressRecoveryActions}
+          ? '데이터가 준비되면 이 자리에 일정이 표시돼요.'
+          : '잠깐 연결이 불안정했어요. 다시 시도하면 최신 일정을 불러와요.'}
+        onRetry={onRetry}
+      />
+    );
+  }
+
+  if (isGamesDelayed && !activeTabIsScheduled) {
+    return (
+      <HomeScheduleErrorState
+        copy={activePanelCopy}
+        countLabel="불러오는 중"
+        variant="delayed"
+        title="경기 정보가 늦게 도착하고 있어요"
+        description="계속 불러오는 중이에요. 오래 걸리면 다시 시도해 주세요."
         onRetry={onRetry}
       />
     );
@@ -302,6 +456,8 @@ export default function HomeMatchPanel({
         fallback={(
           <HomeScheduledPanelFallback
             matchSectionMinHeightStyle={matchSectionMinHeightStyle}
+            loadingMatchCardCount={loadingMatchCardCount}
+            LoadingCardComponent={LoadingCardComponent}
           />
         )}
       >
@@ -309,7 +465,6 @@ export default function HomeMatchPanel({
           isScheduledLoading={isScheduledLoading}
           isScheduledError={isScheduledError}
           loadFailureReason={loadFailureReason}
-          suppressRecoveryActions={suppressRecoveryActions}
           isSecondarySectionExpanded={isSecondarySectionExpanded}
           loadingMatchCardCount={loadingMatchCardCount}
           matchSectionMinHeightStyle={matchSectionMinHeightStyle}
@@ -328,15 +483,15 @@ export default function HomeMatchPanel({
   }
 
   if (activeStandardGames.length === 0) {
+    const isOffSeason = Boolean(emptyDateNavigation?.isOffSeason && !emptyDateNavigation.nextGameDate);
     return (
-      <HomeScheduleEmptyState
-        style={matchSectionMinHeightStyle}
+      <HomeScheduleStateShell
         copy={activePanelCopy}
         countLabel="0경기"
         detailLabel="선택 날짜"
       >
-        경기가 없는 날입니다.
-      </HomeScheduleEmptyState>
+        <HomeMatchEmptyState isOffSeason={isOffSeason} navigation={emptyDateNavigation} />
+      </HomeScheduleStateShell>
     );
   }
 

@@ -2122,6 +2122,16 @@
       "sourceCount": 1
     },
     {
+      "file": "src/components/home/HomeMatchPanel.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "top-[3px]",
+      "disposition": "unresolved",
+      "reason": "Empty-state glyph inner rule sits 3px from the top; the Tailwind scale and config have no 3px step. Keep shipped geometry until the glyph is redrawn.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
       "file": "src/components/home/HomeMatchPanelErrorState.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "max-w-[32rem]",
@@ -2178,8 +2188,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
+      "count": 1,
+      "sourceCount": 1
     },
     {
       "file": "src/components/home/HomeSecondaryPanels.tsx",
@@ -2238,8 +2248,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
+      "count": 1,
+      "sourceCount": 1
     },
     {
       "file": "src/components/home/HomeSecondaryPanels.tsx",
@@ -2310,6 +2320,66 @@
       "owner": "frontend/design-system",
       "count": 1,
       "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[65px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[65px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[100px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "w-[420px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[238px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/home/HomeSecondaryPanelsSkeleton.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[650px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton mirrors the HomeSecondaryPanels geometry so placeholder and loaded content keep the same footprint; no spacing token covers this value. Do not round sizes.",
+      "owner": "frontend/home",
+      "count": 2,
+      "sourceCount": 2
     },
     {
       "file": "src/components/home/TeamRankRow.tsx",
@@ -2478,6 +2548,16 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/HomeRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[86px]",
+      "disposition": "intentional-exception",
+      "reason": "Home match fallback card keeps its shipped 86px desktop minimum height; the nearest scale steps (80px, 96px) would visibly resize the card.",
+      "owner": "frontend/home",
       "count": 1,
       "sourceCount": 1
     },
@@ -8262,6 +8342,16 @@
       "sourceCount": 1
     },
     {
+      "file": "src/components/prediction/PredictionLoadingView.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "w-[72px]",
+      "disposition": "intentional-exception",
+      "reason": "Loading skeleton action slot keeps its shipped 72px width; the nearest scale steps (64px, 80px) would visibly resize the placeholder.",
+      "owner": "frontend/prediction",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
       "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "h-[34px]",
@@ -11039,6 +11129,26 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[280px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint mobile minimum of the map fallback block, kept at its shipped 280px. Existing seat-map presentation/geometry requires precision review; do not round sizes.",
+      "owner": "frontend/stadium",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[528px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint lg height mirrors the live stadium map card (500px map + sm:p-3 padding + border-2 = 528px) so the fallback holds the same row; do not round sizes.",
+      "owner": "frontend/stadium",
+      "count": 1,
       "sourceCount": 1
     },
     {

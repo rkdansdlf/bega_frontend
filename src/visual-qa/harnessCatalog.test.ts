@@ -1077,7 +1077,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 93785);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 93899);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -1090,7 +1090,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    509,
+    515,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -2082,8 +2082,8 @@ test('registered component states expand to executable adapter-backed scenarios'
   const skeletons = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId.endsWith('ui/skeleton.tsx#Skeleton')
   ));
-  assert.equal(skeletons.length, 86);
-  assert.equal(new Set(skeletons.map(({ variants }) => variants.usage)).size, 86);
+  assert.equal(skeletons.length, 84);
+  assert.equal(new Set(skeletons.map(({ variants }) => variants.usage)).size, 84);
   const loadingSpinners = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId.endsWith('LoadingSpinner.tsx#LoadingSpinner')
   ));
