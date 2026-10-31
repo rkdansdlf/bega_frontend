@@ -2291,7 +2291,9 @@ const resolvePredictionMatchesError = (context: ComponentStateAdapterContext) =>
   if (!state || !Object.prototype.hasOwnProperty.call(declared, state)) {
     throw new Error(`지원하지 않는 Visual QA state: data=${state ?? '<missing>'}`);
   }
-  return declared[state as keyof typeof declared];
+  // 운영 화면은 경기 ID가 있을 때만 복구 링크를 보여 준다(PredictionMatchInteractiveContentRuntime).
+  // 하네스는 복구 상호작용을 검사하므로 경기가 선택된 상태와 같이 링크를 켠다.
+  return { ...declared[state as keyof typeof declared], showRecoveryLink: true };
 };
 
 const resolveMyPageSeasonEmptyContent = (context: ComponentStateAdapterContext) => {
