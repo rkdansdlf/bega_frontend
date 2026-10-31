@@ -98,9 +98,109 @@ const retroLeaderboardStyles = `
     box-shadow: 2px 2px 0 #000;
   }
 
-  .retro-leaderboard-loading,
-  .retro-leaderboard-empty {
-    animation: retroLeaderboardBlink 1.2s infinite;
+  .retro-leaderboard-skeleton-row {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr) 100px 80px;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .retro-leaderboard-skeleton-bar {
+    display: block;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+    animation: retroLeaderboardBlink 1.2s steps(2, end) infinite;
+  }
+
+  .retro-leaderboard-skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .retro-leaderboard-skeleton-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .retro-leaderboard-skeleton-rank {
+    width: 28px;
+    height: 18px;
+  }
+
+  .retro-leaderboard-skeleton-avatar {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .retro-leaderboard-skeleton-score {
+    width: 64px;
+    justify-self: end;
+  }
+
+  .retro-leaderboard-skeleton-streak {
+    width: 20px;
+    justify-self: end;
+  }
+
+  .retro-leaderboard-state-panel {
+    margin: auto;
+    max-width: 440px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 28px 24px;
+    background: rgba(0, 0, 0, 0.72);
+    border: 3px solid #fff;
+    box-shadow: 6px 6px 0 #000;
+    text-align: center;
+    image-rendering: pixelated;
+  }
+
+  .retro-leaderboard-state-panel[data-tone="error"] {
+    border-color: #ff5c7a;
+  }
+
+  .retro-leaderboard-nudge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .retro-leaderboard-nudge-copy {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .retro-leaderboard-action-button.retro-leaderboard-nudge-button {
+    font-size: 14px;
+  }
+
+  .retro-leaderboard-state-kicker {
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .retro-leaderboard-state-title {
+    margin: 14px 0 6px;
+    font-size: 18px;
+  }
+
+  .retro-leaderboard-state-body {
+    margin: 0 0 18px;
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .retro-leaderboard-skeleton-bar {
+      animation: none;
+    }
   }
 
   @media (max-width: 768px) {
@@ -132,8 +232,19 @@ const retroLeaderboardStyles = `
       padding: 12px 8px;
     }
 
-    .retro-leaderboard-streak-header {
+    .retro-leaderboard-streak-header,
+    .retro-leaderboard-skeleton-streak {
       display: none;
+    }
+
+    .retro-leaderboard-skeleton-row {
+      grid-template-columns: 50px minmax(0, 1fr) 80px;
+      padding: 12px 8px;
+    }
+
+    .retro-leaderboard-nudge {
+      flex-direction: column;
+      text-align: center;
     }
 
     .retro-leaderboard-button-group {
@@ -145,6 +256,8 @@ const retroLeaderboardStyles = `
 
 type LeaderboardType = 'season' | 'monthly' | 'weekly';
 
+const RETRO_SKELETON_WIDTHS = [62, 48, 55, 40, 58, 45, 52, 38];
+
 export interface RetroLeaderboardProps {
   leaderboard?: LeaderboardEntry[];
   userStats?: UserLeaderboardStats | null;
@@ -153,6 +266,12 @@ export interface RetroLeaderboardProps {
   powerups?: PowerupInventoryState;
   activePowerups?: string[];
   isLoading?: boolean;
+  /** 순위 목록 요청이 실패했고 보여줄 데이터가 없음. */
+  isError?: boolean;
+  /** 로그인하지 않은 방문자 — 개인 기록 대신 로그인 안내를 보여줍니다. */
+  isGuest?: boolean;
+  onRetry?: () => void;
+  onLogin?: () => void;
   currentUserHandle?: string;
   onTypeChange?: (type: LeaderboardType) => void;
   onPageChange?: (page: number) => void;
@@ -178,6 +297,10 @@ export default function RetroLeaderboard({
   onPredict,
   onUsePowerup,
   isLoading = false,
+  isError = false,
+  isGuest = false,
+  onRetry,
+  onLogin,
   currentUserHandle,
   containerTestId,
   deferFooter = true,
@@ -299,7 +422,14 @@ export default function RetroLeaderboard({
           </div>
         </div>
 
-        <NewsTicker messages={tickerMessages} />
+        <NewsTicker
+          messages={tickerMessages}
+          emptyText={isLoading
+            ? '최근 적중 소식을 불러오는 중이에요'
+            : isError
+              ? '최근 적중 소식을 잠시 불러올 수 없어요'
+              : '아직 새로운 적중 소식이 없어요'}
+        />
 
         <div
           style={{
@@ -314,48 +444,73 @@ export default function RetroLeaderboard({
             position: 'relative',
           }}
         >
-          <div className="retro-leaderboard-stat-grid" style={{ display: 'grid', gap: '10px' }}>
-            {[
-              ['적중률', predictionAccuracy],
-              ['연승', predictionStreak],
-              ['누적 예측', predictionTotal],
-              ['적중 횟수', predictionCorrect],
-            ].map(([label, value]) => (
-              <div
-                key={label}
+          {isGuest ? (
+            <div className="retro-leaderboard-nudge" data-testid="retro-leaderboard-guest-nudge">
+              <p
+                className="retro-leaderboard-nudge-copy"
                 style={{
-                  border: '2px solid #00b800',
-                  borderRadius: '4px',
-                  background: 'rgba(0, 0, 0, 0.35)',
-                  padding: '10px',
-                  textAlign: 'center',
+                  color: '#c8ffc8',
+                  lineHeight: 1.6,
+                  fontFamily: retroText,
+                  textShadow: textOutline,
+                  wordBreak: 'keep-all',
                 }}
               >
+                로그인하면 내 적중률과 연승 기록을 여기서 볼 수 있어요.
+              </p>
+              <button
+                type="button"
+                className="retro-leaderboard-action-button retro-leaderboard-nudge-button"
+                style={{ flexShrink: 0, padding: '8px 18px' }}
+                onClick={onLogin}
+              >
+                로그인
+              </button>
+            </div>
+          ) : (
+            <div className="retro-leaderboard-stat-grid" style={{ display: 'grid', gap: '10px' }}>
+              {[
+                ['적중률', predictionAccuracy],
+                ['연승', predictionStreak],
+                ['누적 예측', predictionTotal],
+                ['적중 횟수', predictionCorrect],
+              ].map(([label, value]) => (
                 <div
+                  key={label}
                   style={{
-                    color: '#66ff66',
-                    fontSize: '11px',
-                    fontFamily: retroText,
-                    marginBottom: '6px',
-                    imageRendering: 'pixelated',
+                    border: '2px solid #00b800',
+                    borderRadius: '4px',
+                    background: 'rgba(0, 0, 0, 0.35)',
+                    padding: '10px',
+                    textAlign: 'center',
                   }}
                 >
-                  {label}
+                  <div
+                    style={{
+                      color: '#66ff66',
+                      fontSize: '11px',
+                      fontFamily: retroText,
+                      marginBottom: '6px',
+                      imageRendering: 'pixelated',
+                    }}
+                  >
+                    {label}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '20px',
+                      fontFamily: retroDisplay,
+                      color: '#fff',
+                      textShadow: '0 0 8px rgba(255, 255, 255, 0.35)',
+                      imageRendering: 'pixelated',
+                    }}
+                  >
+                    {value}
+                  </div>
                 </div>
-                <div
-                  style={{
-                    fontSize: '20px',
-                    fontFamily: retroDisplay,
-                    color: '#fff',
-                    textShadow: '0 0 8px rgba(255, 255, 255, 0.35)',
-                    imageRendering: 'pixelated',
-                  }}
-                >
-                  {value}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{ width: '90%', maxWidth: '800px', position: 'relative' }}>
@@ -433,21 +588,40 @@ export default function RetroLeaderboard({
               </div>
 
               {isLoading ? (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                  <div
-                    className="retro-leaderboard-loading"
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      padding: '40px 60px',
-                      borderRadius: '12px',
-                      color: '#fff',
-                      fontSize: '18px',
-                      fontFamily: retroText,
-                      textShadow: '2px 2px 0 #000',
-                      imageRendering: 'pixelated',
-                    }}
-                  >
-                    로딩중...
+                <div
+                  role="status"
+                  aria-busy="true"
+                  data-testid="retro-leaderboard-loading"
+                  className="retro-leaderboard-skeleton-list"
+                >
+                  <span className="sr-only">순위를 불러오는 중이에요</span>
+                  {RETRO_SKELETON_WIDTHS.map((nameWidth, index) => (
+                    <div key={`retro-skeleton-${index}`} className="retro-leaderboard-skeleton-row" aria-hidden="true">
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-rank" />
+                      <span className="retro-leaderboard-skeleton-name">
+                        <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-avatar" />
+                        <span className="retro-leaderboard-skeleton-bar" style={{ width: `${nameWidth}%` }} />
+                      </span>
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-score" />
+                      <span className="retro-leaderboard-skeleton-bar retro-leaderboard-skeleton-streak" />
+                    </div>
+                  ))}
+                </div>
+              ) : isError && displayLeaderboard.length === 0 ? (
+                <div style={{ flex: 1, display: 'flex', padding: '20px 0' }}>
+                  <div className="retro-leaderboard-state-panel" data-tone="error" role="alert" data-testid="retro-leaderboard-error">
+                    <p className="retro-leaderboard-state-kicker" style={{ color: '#ff8fa3', fontFamily: retroDisplay, letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
+                      CONNECTION LOST
+                    </p>
+                    <p className="retro-leaderboard-state-title" style={{ color: '#fff', fontFamily: retroText, textShadow: textOutline, wordBreak: 'keep-all' }}>
+                      순위를 불러오지 못했어요
+                    </p>
+                    <p className="retro-leaderboard-state-body" style={{ color: '#ddd', fontFamily: retroText, lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
+                      집계된 점수는 안전하게 저장되어 있어요. 잠시 후 다시 시도해 주세요.
+                    </p>
+                    <button type="button" className="retro-leaderboard-action-button" onClick={onRetry ?? onRefresh}>
+                      다시 시도
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -461,21 +635,20 @@ export default function RetroLeaderboard({
                     />
                   ))}
                   {displayLeaderboard.length === 0 && (
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                      <div
-                        className="retro-leaderboard-empty"
-                        style={{
-                          background: 'rgba(0, 0, 0, 0.4)',
-                          padding: '40px 60px',
-                          borderRadius: '12px',
-                          color: '#fff',
-                          fontSize: '18px',
-                          fontFamily: retroText,
-                          textShadow: '2px 2px 0 #000',
-                          imageRendering: 'pixelated',
-                        }}
-                      >
-                        데이터가 없습니다
+                    <div style={{ flex: 1, display: 'flex', padding: '20px 0' }}>
+                      <div className="retro-leaderboard-state-panel" role="status" data-testid="retro-leaderboard-empty">
+                        <p className="retro-leaderboard-state-kicker" style={{ color: '#ffff00', fontFamily: retroDisplay, letterSpacing: '1px', textShadow: '2px 2px 0 #000' }}>
+                          READY?
+                        </p>
+                        <p className="retro-leaderboard-state-title" style={{ color: '#fff', fontFamily: retroText, textShadow: textOutline, wordBreak: 'keep-all' }}>
+                          아직 집계된 예측 결과가 없어요
+                        </p>
+                        <p className="retro-leaderboard-state-body" style={{ color: '#ddd', fontFamily: retroText, lineHeight: 1.6, textShadow: '1px 1px 0 #000', wordBreak: 'keep-all' }}>
+                          경기를 예측하고 결과가 나오면 이 순위표에 이름이 올라가요.
+                        </p>
+                        <button type="button" className="retro-leaderboard-action-button" onClick={onPredict}>
+                          예측하러 가기
+                        </button>
                       </div>
                     </div>
                   )}
