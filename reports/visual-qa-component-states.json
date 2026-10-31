@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-26T15:44:30.449Z",
+  "generatedAt": "2026-10-31T16:54:11.045Z",
   "ok": true,
-  "total": 1018,
-  "registered": 1018,
+  "total": 1016,
+  "registered": 1016,
   "pending": [],
   "duplicates": [],
   "missing": [],
   "stale": [],
   "errors": [],
-  "validCombinations": 95002
+  "validCombinations": 94964
 }
