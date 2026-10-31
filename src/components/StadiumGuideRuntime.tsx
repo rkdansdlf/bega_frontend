@@ -18,6 +18,7 @@ import {
 import { resolveStadiumSeatMapEntry } from './stadiumSeatMapRegistry';
 import { StadiumSeatMapManualRequired } from './StadiumSeatMapStates';
 import { SeatMapRuntimeShell } from './stadiumSeatMap/SeatMapRuntimeShell';
+import { resolveMapFallbackReason } from './stadiumMapFallbackReason';
 import { getCategoryIcon } from '../utils/stadium';
 import { useStadiumGuide } from '../hooks/useStadiumGuide';
 import { useTheme } from '../hooks/useTheme';
@@ -198,10 +199,13 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
   const selectedStadiumPhone = normalizeOptionalText(selectedStadium?.phone);
   const canRenderMap = Boolean(selectedStadium && KAKAO_API_KEY && isMapReady && mapStatus === 'success' && hasStadiumCoordinates);
   // SDK 를 못 쓰면 회색 지도 자리 대신 사유별 안내 + 카카오맵 링크. 다시 시도 중에도 블록을 유지합니다.
-  const mapFallbackReason: KakaoMapLoadFailureReason | null = !selectedStadium || canRenderMap
-    ? null
-    : mapFailureReason
-      ?? (!KAKAO_API_KEY ? 'missing-key' : mapStatus === 'error' ? 'unavailable' : null);
+  const mapFallbackReason: KakaoMapLoadFailureReason | null = resolveMapFallbackReason({
+    hasSelectedStadium: Boolean(selectedStadium),
+    canRenderMap,
+    mapFailureReason,
+    hasApiKey: Boolean(KAKAO_API_KEY),
+    mapStatus,
+  });
   const stadiumControlsDisabled = stadiumsStatus === 'loading' || stadiumsStatus === 'empty' || stadiumsStatus === 'error';
   const listControlsDisabled = stadiumControlsDisabled || !selectedStadium;
   const renderSeatMap = () => {
