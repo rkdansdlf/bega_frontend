@@ -33,8 +33,8 @@ export const STADIUM_MAP_FALLBACK_COPY: Record<KakaoMapLoadFailureReason, Stadiu
 
 // 라이브 지도 카드와 같은 자리를 차지합니다.
 // lg+: 지도(500px) + 안쪽 여백(sm:p-3 × 2) + 테두리(border-2 × 2) = 528px — 오른쪽 열과 아래선이 맞습니다.
-// 모바일: 빈 상자처럼 길어지지 않게 적당한 최소 높이만.
-const FOOTPRINT_CLASS = 'min-h-[280px] lg:min-h-[528px]';
+// 모바일: 빈 상자처럼 길어지지 않게 적당한 최소 높이만(280px).
+const FOOTPRINT_CLASS = 'min-h-70 lg:min-h-132';
 // 반경·테두리 굵기는 라이브 지도 카드와 같고, 면은 옅은 slate 로 지도 자리임을 보여줍니다.
 const FRAME_CLASS =
   'stadium-guide-panel-strong flex flex-col items-center justify-center rounded-28 border-2 border-slate-200 bg-slate-50 px-6 py-10 text-center sm:rounded-40';
