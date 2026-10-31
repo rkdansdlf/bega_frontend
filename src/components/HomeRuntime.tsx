@@ -26,6 +26,10 @@ import {
     coerceHomeRouteTab,
     resolveHomeRouteState,
 } from '../utils/homeRouteState';
+import {
+    normalizeSameSeasonNavigationDate,
+    resolveNavigationTargetDate,
+} from '../utils/homeNavigationLogic';
 import type { Game, HomeBootstrapLoadState, HomeScopedNavigationResponse, LeagueStartDates } from '../types/home';
 import type { ManualBaseballDataRequest } from '../types/manualBaseballData';
 import {
@@ -316,19 +320,6 @@ const buildHomeLivePollingCandidateKey = (
     return candidateKey;
 };
 
-const normalizeSameSeasonNavigationDate = (value: string | null | undefined, seasonYear: number): string | null => {
-    if (!value) {
-        return null;
-    }
-
-    const parsedDate = toLocalMiddayDate(value);
-    if (Number.isNaN(parsedDate.getTime()) || parsedDate.getFullYear() !== seasonYear) {
-        return null;
-    }
-
-    return formatDateForAPI(parsedDate);
-};
-
 const isVisibleLeagueTab = (tabValue: LeagueTab, visibleLeagueTabs: typeof HOME_LEAGUE_TABS) => (
     visibleLeagueTabs.some((tab) => tab.value === tabValue)
 );
@@ -490,7 +481,6 @@ export default function HomeRuntime() {
     const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
     const [isGamesError, setIsGamesError] = useState(false);
     const [isGamesDelayed, setIsGamesDelayed] = useState(false);
-    const [connectionError, setConnectionError] = useState(false);
     const [loadFailureReason, setLoadFailureReason] = useState<HomeLoadFailureReason | null>(null);
     const [manualDataRequest, setManualDataRequest] = useState<ManualBaseballDataRequest | null>(null);
     const [homeAuthSnapshot, setHomeAuthSnapshot] = useState<HomeAuthSnapshot>(EMPTY_HOME_AUTH_SNAPSHOT);
@@ -692,8 +682,10 @@ export default function HomeRuntime() {
             : null;
 
     const changeDate = (direction: 'prev' | 'next') => {
-        const targetDateKey = normalizeSameSeasonNavigationDate(
-            direction === 'prev' ? currentDateNavigation?.prev : currentDateNavigation?.next,
+        // 헤더의 이전/다음 버튼은 사용자가 직접 누르는 동작이라 지연 중에도 허용합니다.
+        const targetDateKey = resolveNavigationTargetDate(
+            direction,
+            currentDateNavigation,
             selectedDate.getFullYear(),
         );
         if (!targetDateKey) {
@@ -710,7 +702,7 @@ export default function HomeRuntime() {
         replaceHomeRouteState(targetDate, activeLeagueTab);
     };
 
-    const applyHomeSnapshot = useCallback((date: Date, snapshot: HomeLoadSnapshot) => {
+    const applyHomeSnapshot = useCallback((date: Date, snapshot: HomeLoadSnapshot, options: { isDelayedPlaceholder?: boolean } = {}) => {
         const normalizedGames = snapshot.games.map((game) => ({
             ...game,
             sourceDate: game.sourceDate || game.gameDate || formatDateForAPI(date),
@@ -726,7 +718,8 @@ export default function HomeRuntime() {
         setNavInfo(snapshot.navigation);
         setGames(normalizedGames);
 
-        if (!hasUserChangedTabRef.current) {
+        // 지연 표시용 임시 스냅샷(빈 경기 목록)으로는 탭을 자동 전환하지 않습니다.
+        if (!hasUserChangedTabRef.current && !options.isDelayedPlaceholder) {
             const automaticTab = resolveAutomaticLeagueTab(
                 normalizedGames,
                 normalizedScheduledGames,
@@ -748,7 +741,6 @@ export default function HomeRuntime() {
         setIsGamesError(!snapshot.success.games && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'games'));
         setIsScheduledLoading(false);
         setIsScheduledError(!snapshot.success.scheduledGames && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'scheduledGamesWindow'));
-        setConnectionError(showConnectionError);
         setLoadFailureReason(snapshot.loadState.failureReason);
         setManualDataRequest(snapshot.loadState.manualDataRequest);
 
@@ -825,12 +817,12 @@ export default function HomeRuntime() {
         let didResolve = false;
         let timeoutId: number | null = null;
 
-        const applyTransientSnapshotIfCurrent = (snapshot: HomeLoadSnapshot) => {
+        const applyTransientSnapshotIfCurrent = (snapshot: HomeLoadSnapshot, isDelayedPlaceholder = false) => {
             if (requestId !== bootstrapRequestIdRef.current) {
                 return false;
             }
 
-            applyHomeSnapshot(date, snapshot);
+            applyHomeSnapshot(date, snapshot, { isDelayedPlaceholder });
             return true;
         };
 
@@ -849,7 +841,6 @@ export default function HomeRuntime() {
         setIsGamesDelayed(false);
         setIsScheduledLoading(true);
         setIsScheduledError(false);
-        setConnectionError(false);
         setLoadFailureReason(null);
         setManualDataRequest(null);
         setIsHomeFirstCardReady(false);
@@ -871,9 +862,8 @@ export default function HomeRuntime() {
             }
             // 요청은 계속 진행 중입니다. "경기 없음"이나 "실패"로 보이지 않도록 지연 상태로 표시하고,
             // 응답이 도착하면 applySnapshotIfCurrent 가 실제 결과로 교체합니다.
-            if (applyTransientSnapshotIfCurrent(buildLegacyFailureSnapshot(date, timedOut, 'request-failed'))) {
+            if (applyTransientSnapshotIfCurrent(buildLegacyFailureSnapshot(date, timedOut, 'request-failed'), true)) {
                 setIsGamesDelayed(true);
-                setConnectionError(false);
             }
         }, HOME_BOOTSTRAP_SOFT_FALLBACK_DELAY_MS);
 
@@ -987,6 +977,9 @@ export default function HomeRuntime() {
     // 운영자가 데이터를 넣어야 하는 관리자 전용 상황에만 씁니다.
     const showConnectionRecoveryBanner = showAdminManualDataRecoveryBanner;
     const handleJumpToGameDate = (dateKey: string) => {
+        if (isGamesDelayed) {
+            return;
+        }
         const targetDate = toLocalMiddayDate(dateKey);
         if (Number.isNaN(targetDate.getTime())) {
             return;
@@ -1008,7 +1001,12 @@ export default function HomeRuntime() {
         prevGameDate: dateNavigation.prev,
         isOffSeason: isTodayOffSeason,
         onJumpToDate: handleJumpToGameDate,
-        onOpenScheduled: () => handleTabChange('scheduled'),
+        onOpenScheduled: () => {
+            if (isGamesDelayed) {
+                return;
+            }
+            handleTabChange('scheduled');
+        },
         onOpenOffseason: () => navigate('/offseason'),
     };
 
@@ -1335,6 +1333,7 @@ export default function HomeRuntime() {
             hasUserChangedTab: hasUserChangedTabRef.current,
             isLoading,
             isScheduledLoading,
+            isGamesDelayed,
             regularCount: regularSeasonCount,
             postseasonCount: postSeasonCount,
             koreanSeriesCount,
@@ -1346,6 +1345,7 @@ export default function HomeRuntime() {
         }
     }, [
         activeLeagueTab,
+        isGamesDelayed,
         isLoading,
         isScheduledLoading,
         regularSeasonCount,
@@ -1367,7 +1367,6 @@ export default function HomeRuntime() {
                         loadFailureReason={loadFailureReason}
                         manualDataRequest={manualDataRequest}
                         onRetry={() => {
-                            setConnectionError(false);
                             setManualDataRequest(null);
                             void loadHomeBootstrap(selectedDate);
                         }}
@@ -1541,7 +1540,7 @@ export default function HomeRuntime() {
               </HomePullToRefresh>
 
                 {shouldMountDeferredSurfaces || showCalendar ? (
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<HomeSecondaryPanelsSkeleton />}>
                         <LazyHomeDeferredSurfaces
                             selectedDate={selectedDate}
                             selectedDateKey={selectedDateKey}

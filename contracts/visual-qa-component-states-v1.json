@@ -48684,7 +48684,7 @@
           "targets": [
             {
               "id": "retry",
-              "selector": "[data-testid=\"home-scheduled-retry\"]",
+              "selector": "[data-testid=\"home-scheduled-error-retry\"]",
               "waitForSelector": "[data-testid=\"visual-qa-home-scheduled-panel-interaction\"]"
             }
           ],

@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import HomeGameCard from './HomeGameCard';
 import { GameCardSkeleton } from './GameCardSkeleton';
 import StateBlock from '../status/StateBlock';
-import { CalendarDaysIcon } from '../icons/PublicFeatureIcons';
+import { CalendarDaysIcon, ClockIcon } from '../icons/PublicFeatureIcons';
 import { formatSourceDateLabel } from '../../utils/homeSeasonLogic';
 import type { Game } from '../../types/home';
 import type { HomeLoadFailureReason } from '../../api/home';
@@ -11,6 +11,7 @@ import type { HomeLoadFailureReason } from '../../api/home';
 interface HomeScheduledMatchPanelProps {
   isScheduledLoading: boolean;
   isScheduledError: boolean;
+  isGamesDelayed?: boolean;
   loadFailureReason: HomeLoadFailureReason | null;
   suppressRecoveryActions?: boolean;
   isSecondarySectionExpanded: boolean;
@@ -152,7 +153,9 @@ function HomeScheduledGameList({
 export default function HomeScheduledMatchPanel({
   isScheduledLoading,
   isScheduledError,
+  isGamesDelayed = false,
   loadFailureReason,
+  suppressRecoveryActions = false,
   isSecondarySectionExpanded,
   loadingMatchCardCount,
   matchSectionMinHeightStyle,
@@ -200,9 +203,26 @@ export default function HomeScheduledMatchPanel({
           description={isManualDataError
             ? '데이터가 준비되면 이 자리에 일정이 표시돼요.'
             : '잠깐 연결이 불안정했어요. 다시 시도하면 최신 일정을 불러와요.'}
-          onRetry={onRetry}
+          onRetry={suppressRecoveryActions ? undefined : onRetry}
           className="py-8"
           testId="home-scheduled-error"
+        />
+      </HomeScheduledStateShell>
+    );
+  }
+
+  if (isGamesDelayed) {
+    return (
+      <HomeScheduledStateShell countLabel="불러오는 중">
+        <StateBlock
+          kind="filtered"
+          icon={<ClockIcon className="h-5 w-5" />}
+          title="경기 정보가 늦게 도착하고 있어요"
+          description="계속 불러오는 중이에요. 오래 걸리면 다시 시도해 주세요."
+          onRetry={suppressRecoveryActions ? undefined : onRetry}
+          retryLabel="다시 불러오기"
+          className="py-8"
+          testId="home-scheduled-delayed"
         />
       </HomeScheduledStateShell>
     );

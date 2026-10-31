@@ -241,6 +241,7 @@ function HomeScheduleErrorState({
   title,
   description,
   variant = 'error',
+  suppressRecoveryActions = false,
   onRetry,
 }: {
   copy: { context: string; title: string; description: string };
@@ -248,6 +249,7 @@ function HomeScheduleErrorState({
   title: string;
   description: string;
   variant?: 'error' | 'delayed';
+  suppressRecoveryActions?: boolean;
   onRetry: () => void;
 }) {
   const header = <HomeScheduleBoardHeader copy={copy} countLabel={countLabel} tone="warning" />;
@@ -266,7 +268,7 @@ function HomeScheduleErrorState({
         title={title}
         description={description}
         variant={variant}
-        suppressRecoveryActions={false}
+        suppressRecoveryActions={suppressRecoveryActions}
         onRetry={onRetry}
       />
     </Suspense>
@@ -384,6 +386,7 @@ export default function HomeMatchPanel({
   loadFailureReason,
   isScheduledLoading,
   isScheduledError,
+  suppressRecoveryActions = false,
   isSecondarySectionExpanded,
   loadingMatchCardCount,
   matchSectionMinHeightStyle,
@@ -432,6 +435,7 @@ export default function HomeMatchPanel({
         description={isManualDataError
           ? '데이터가 준비되면 이 자리에 일정이 표시돼요.'
           : '잠깐 연결이 불안정했어요. 다시 시도하면 최신 일정을 불러와요.'}
+        suppressRecoveryActions={suppressRecoveryActions}
         onRetry={onRetry}
       />
     );
@@ -445,6 +449,7 @@ export default function HomeMatchPanel({
         variant="delayed"
         title="경기 정보가 늦게 도착하고 있어요"
         description="계속 불러오는 중이에요. 오래 걸리면 다시 시도해 주세요."
+        suppressRecoveryActions={suppressRecoveryActions}
         onRetry={onRetry}
       />
     );
@@ -464,7 +469,9 @@ export default function HomeMatchPanel({
         <LazyHomeScheduledMatchPanel
           isScheduledLoading={isScheduledLoading}
           isScheduledError={isScheduledError}
+          isGamesDelayed={isGamesDelayed}
           loadFailureReason={loadFailureReason}
+          suppressRecoveryActions={suppressRecoveryActions}
           isSecondarySectionExpanded={isSecondarySectionExpanded}
           loadingMatchCardCount={loadingMatchCardCount}
           matchSectionMinHeightStyle={matchSectionMinHeightStyle}

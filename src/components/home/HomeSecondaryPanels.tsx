@@ -144,7 +144,7 @@ function WidgetErrorState({
   onRetry,
 }: {
   message: string;
-  onRetry: () => void;
+  onRetry?: () => void;
 }) {
   return (
     <StateBlock
@@ -183,6 +183,7 @@ export default function HomeSecondaryPanels({
   calendarDialogTitleId,
   loggedIn,
   userId,
+  suppressRecoveryActions = false,
   currentYear,
   todayKey,
   isHotCheerLoading,
@@ -279,7 +280,7 @@ export default function HomeSecondaryPanels({
         {isHotCheerLoading ? (
           <HotCheerSkeleton />
         ) : hotCheerError ? (
-          <WidgetErrorState message={hotCheerError} onRetry={onRetryWidgets} />
+          <WidgetErrorState message={hotCheerError} onRetry={suppressRecoveryActions ? undefined : onRetryWidgets} />
         ) : hotCheerPosts.length === 0 ? (
           <PanelEmptyState
             title="아직 인기 응원글이 없어요"
@@ -445,7 +446,7 @@ export default function HomeSecondaryPanels({
         {isFeaturedMatesLoading ? (
           <FeaturedMateSkeleton />
         ) : featuredMatesError ? (
-          <WidgetErrorState message={featuredMatesError} onRetry={onRetryWidgets} />
+          <WidgetErrorState message={featuredMatesError} onRetry={suppressRecoveryActions ? undefined : onRetryWidgets} />
         ) : featuredMates.length === 0 ? (
           <PanelEmptyState
             title="모집 중인 직관 메이트가 없어요"
@@ -574,7 +575,7 @@ export default function HomeSecondaryPanels({
         {isRankingsLoading ? (
           <RankingRowsSkeleton rowClassName={`${RANKING_ROW_LG_HEIGHT_CLASS} ${homeDashboardRankingRowClass}`} />
         ) : rankingsError ? (
-          <WidgetErrorState message="팀 순위를 불러오지 못했어요" onRetry={onRetryRanking} />
+          <WidgetErrorState message="팀 순위를 불러오지 못했어요" onRetry={suppressRecoveryActions ? undefined : onRetryRanking} />
         ) : displayedRankings.length === 0 ? (
           <StateBlock
             kind="filtered"
