@@ -10972,76 +10972,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "h-[86px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[108px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[132px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[1.35rem]",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[1.75rem]",
-      "count": 2,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[2.5rem]",
-      "count": 2,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[2rem]",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 1
-    },
-    {
       "file": "src/components/stadiumSeatMap/SeatMapBottomSheet.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "h-[18px]",
@@ -12638,6 +12568,96 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[86px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[108px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[132px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[1.35rem]",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[1.75rem]",
+      "count": 2,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[2.5rem]",
+      "count": 2,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[2rem]",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[280px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint mobile minimum of the map fallback block, kept at its shipped 280px. Existing seat-map presentation/geometry requires precision review; do not round sizes.",
+      "owner": "frontend/stadium",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[528px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint lg height mirrors the live stadium map card (500px map + sm:p-3 padding + border-2 = 528px) so the fallback holds the same row; do not round sizes.",
+      "owner": "frontend/stadium",
       "count": 1,
       "sourceCount": 1
     }

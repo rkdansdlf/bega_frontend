@@ -115863,451 +115863,6 @@
       ]
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The selected-stadium parent state mounts the optional slot; creative and content rendering states belong to the direct AdSlot contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "Login metadata is analytics context only; the ad slot makes no authorization decision.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/ads/AdSlot.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "The owned ad shell has no controls; opaque provider iframe interactions are outside this component contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/ads/AdSlot.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The stable owned shell is captured independently of opaque ad-provider outcomes, which are covered by the direct AdSlot contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/ads/AdSlot.test.ts"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "The parent scenarios cover both themes; creative and height variants belong to the direct AdSlot component contract.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/ads/AdSlot.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=default|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=default|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=hover|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=hover|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=focus-visible|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=focus-visible|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=pressed|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=pressed|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=submitting|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=submitting|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=default|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=default|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=hover|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=hover|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=focus-visible|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=focus-visible|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=pressed|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=pressed|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=submitting|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=submitting|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=default|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=default|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=hover|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=hover|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=focus-visible|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=focus-visible|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=pressed|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=pressed|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=submitting|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=submitting|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=default|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=default|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=hover|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=hover|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=focus-visible|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=focus-visible|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=pressed|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=pressed|variant.theme=dark",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=submitting|variant.theme=light",
-          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=submitting|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "empty",
-            "error-503",
-            "loading",
-            "single"
-          ],
-          "reason": "The query can be empty, failed, pending, or contain the current stadium as a favorite.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-        },
-        "permissions": {
-          "values": [
-            "user"
-          ],
-          "reason": "Only the authenticated stadium guide mounts the favorite mutation control.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "interactions": {
-          "values": [
-            "default",
-            "hover",
-            "focus-visible",
-            "pressed",
-            "submitting"
-          ]
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "Query loading and failure plus mutation pending are represented by the data and interaction axes.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.tsx"
-          }
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "The heart tone, hover surface, and focus offset are checked against both supported page themes.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-          }
-        ]
-      },
-      "interactionPlans": {
-        "hover": {
-          "action": "hover",
-          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
-          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-        },
-        "focus-visible": {
-          "action": "focus-visible",
-          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
-          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-        },
-        "pressed": {
-          "action": "pressed",
-          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
-          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-        },
-        "submitting": {
-          "action": "click",
-          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
-          "waitForSelector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"][aria-busy=\"true\"]",
-          "reason": "A deterministic non-resolving mutation proves the disabled busy state without external requests.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=light",
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime; payload coverage remains with the parent contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=light",
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The hosted leaf is mounted by direct parent src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime; payload coverage remains with the parent contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The hosted leaf does not make an independent authorization decision.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the direct parent or child contract.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The hosted leaf performs no independent transport request.",
-            "owner": "frontend-platform",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
-          "owner": "frontend-platform",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
-      "status": "registered",
-      "renderAccess": "module-export",
-      "render": {
-        "mode": "direct",
-        "adapterId": "stadium-guide-runtime"
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "empty",
-            "single",
-            "long-korean",
-            "unbroken-token",
-            "maximum-supported"
-          ],
-          "reason": "The parent page owns the selected stadium copy, place-list pressure, and mobile layout density around the map and seat-map surfaces.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "Authentication is delegated to the favorite and ad children; the public guide shell does not make an independent access decision.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "interactions": {
-          "values": [
-            "default",
-            "hover",
-            "focus-visible",
-            "pressed",
-            "retry"
-          ],
-          "reason": "The parent owns category controls, map fallback recovery, and the surrounding touch layout while child maps retain their own direct contracts.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "system": {
-          "values": [
-            "idle",
-            "loading",
-            "error-503",
-            "manual-required"
-          ],
-          "reason": "The real runtime has loading and failed stadium-list branches plus explicit map/manual-data fallback surfaces.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "The guide hero, map fallback, category controls, panels, and long copy expose both supported themes.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        ]
-      },
-      "interactionPlans": {
-        "hover": {
-          "action": "hover",
-          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
-          "when": {
-            "system": [
-              "idle",
-              "manual-required"
-            ]
-          },
-          "reason": "The category control is the parent-owned pointer surface shown in both desktop and mobile guide layouts.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "focus-visible": {
-          "action": "focus-visible",
-          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
-          "when": {
-            "system": [
-              "idle",
-              "manual-required"
-            ]
-          },
-          "reason": "The category control keeps keyboard focus visible inside the parent guide surface.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "pressed": {
-          "action": "pressed",
-          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
-          "when": {
-            "system": [
-              "idle",
-              "manual-required"
-            ]
-          },
-          "reason": "The category control exposes its actual active pointer state without replacing the production button.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        "retry": {
-          "action": "click",
-          "targets": [
-            {
-              "id": "stadiums-retry",
-              "selector": "button:has-text(\"재시도\")",
-              "when": {
-                "system": "error-503"
-              }
-            },
-            {
-              "id": "map-retry",
-              "selector": "button:has-text(\"지도 다시 시도\")",
-              "when": {
-                "system": [
-                  "idle",
-                  "manual-required"
-                ]
-              }
-            }
-          ],
-          "reason": "The parent keeps separate recovery actions for the stadium list and the map fallback.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      },
-      "constraints": [
-        {
-          "excludeWhen": {
-            "system": "loading",
-            "interactions": [
-              "hover",
-              "focus-visible",
-              "pressed",
-              "retry"
-            ]
-          },
-          "reason": "The loading branch has no selected stadium, map fallback action, or enabled category interaction.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        },
-        {
-          "excludeWhen": {
-            "system": "error-503",
-            "interactions": [
-              "hover",
-              "focus-visible",
-              "pressed"
-            ]
-          },
-          "reason": "The stadium-list error branch renders recovery for the failed list and disables the dependent guide controls.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      ]
-    },
-    {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
       "status": "registered",
       "renderAccess": "module-export",
@@ -126029,6 +125584,581 @@
           "testEvidence": "src/visual-qa/stateAdapters.test.ts#leaderboard-page-runtime"
         }
       ]
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The selected-stadium parent state mounts the optional slot; creative and content rendering states belong to the direct AdSlot contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Login metadata is analytics context only; the ad slot makes no authorization decision.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/ads/AdSlot.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The owned ad shell has no controls; opaque provider iframe interactions are outside this component contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/ads/AdSlot.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The stable owned shell is captured independently of opaque ad-provider outcomes, which are covered by the direct AdSlot contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/ads/AdSlot.test.ts"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The parent scenarios cover both themes; creative and height variants belong to the direct AdSlot component contract.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/ads/AdSlot.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=default|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=default|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=hover|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=hover|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=focus-visible|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=focus-visible|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=pressed|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=pressed|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=submitting|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=empty|permissions=user|interactions=submitting|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=default|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=default|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=hover|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=hover|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=focus-visible|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=focus-visible|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=pressed|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=pressed|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=submitting|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=error-503|permissions=user|interactions=submitting|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=default|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=default|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=hover|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=hover|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=focus-visible|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=focus-visible|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=pressed|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=pressed|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=submitting|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=loading|permissions=user|interactions=submitting|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=default|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=default|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=hover|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=hover|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=focus-visible|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=focus-visible|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=pressed|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=pressed|variant.theme=dark",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=submitting|variant.theme=light",
+          "state:src/components/AuthenticatedStadiumFavoriteToggle.tsx#AuthenticatedStadiumFavoriteToggle:data=single|permissions=user|interactions=submitting|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "error-503",
+            "loading",
+            "single"
+          ],
+          "reason": "The query can be empty, failed, pending, or contain the current stadium as a favorite.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "user"
+          ],
+          "reason": "Only the authenticated stadium guide mounts the favorite mutation control.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "submitting"
+          ]
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "Query loading and failure plus mutation pending are represented by the data and interaction axes.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.tsx"
+          }
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The heart tone, hover surface, and focus offset are checked against both supported page themes.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
+          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
+          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
+          "reason": "The 44px favorite control exposes its real pointer or keyboard treatment.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+        },
+        "submitting": {
+          "action": "click",
+          "selector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"]",
+          "waitForSelector": "[data-testid=\"visual-qa-stadium-favorite-toggle\"][aria-busy=\"true\"]",
+          "reason": "A deterministic non-resolving mutation proves the disabled busy state without external requests.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/AuthenticatedStadiumFavoriteToggle.mobile.test.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The hosted leaf is mounted by direct parent src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime; payload coverage remains with the parent contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The hosted leaf performs no independent transport request.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=empty|interactions=default|system=error-503|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The hosted leaf is mounted by direct parent src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime; payload coverage remains with the parent contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The hosted leaf does not make an independent authorization decision.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the direct parent or child contract.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The hosted leaf performs no independent transport request.",
+            "owner": "frontend-platform",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and state dimensions are covered by the referenced direct parent scenarios.",
+          "owner": "frontend-platform",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium-guide-runtime"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "empty",
+            "single",
+            "long-korean",
+            "unbroken-token",
+            "maximum-supported"
+          ],
+          "reason": "The parent page owns the selected stadium copy, place-list pressure, and mobile layout density around the map and seat-map surfaces.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authentication is delegated to the favorite and ad children; the public guide shell does not make an independent access decision.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed",
+            "retry"
+          ],
+          "reason": "The parent owns category controls, map fallback recovery, and the surrounding touch layout while child maps retain their own direct contracts.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "system": {
+          "values": [
+            "idle",
+            "loading",
+            "error-503",
+            "manual-required"
+          ],
+          "reason": "The real runtime has loading and failed stadium-list branches plus explicit map/manual-data fallback surfaces.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The guide hero, map fallback, category controls, panels, and long copy expose both supported themes.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
+          "when": {
+            "system": [
+              "idle",
+              "manual-required"
+            ]
+          },
+          "reason": "The category control is the parent-owned pointer surface shown in both desktop and mobile guide layouts.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
+          "when": {
+            "system": [
+              "idle",
+              "manual-required"
+            ]
+          },
+          "reason": "The category control keeps keyboard focus visible inside the parent guide surface.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "selector": "[aria-label=\"구장 먹거리 주변 정보 보기\"]",
+          "when": {
+            "system": [
+              "idle",
+              "manual-required"
+            ]
+          },
+          "reason": "The category control exposes its actual active pointer state without replacing the production button.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "stadiums-retry",
+              "selector": "button:has-text(\"재시도\")",
+              "when": {
+                "system": "error-503"
+              }
+            },
+            {
+              "id": "map-retry",
+              "selector": "button:has-text(\"지도 다시 시도\")",
+              "when": {
+                "system": [
+                  "idle",
+                  "manual-required"
+                ]
+              }
+            }
+          ],
+          "reason": "The parent keeps separate recovery actions for the stadium list and the map fallback.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": [
+        {
+          "excludeWhen": {
+            "system": "loading",
+            "interactions": [
+              "hover",
+              "focus-visible",
+              "pressed",
+              "retry"
+            ]
+          },
+          "reason": "The loading branch has no selected stadium, map fallback action, or enabled category interaction.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        },
+        {
+          "excludeWhen": {
+            "system": "error-503",
+            "interactions": [
+              "hover",
+              "focus-visible",
+              "pressed"
+            ]
+          },
+          "reason": "The stadium-list error branch renders recovery for the failed list and disables the dependent guide controls.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      ]
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "StadiumGuideRuntime mounts this lazy fallback when a stadium is selected but the map is unavailable; the referenced single-stadium idle hosts render it.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback does not make an authorization decision.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The retry and Kakao place actions belong to the StadiumMapFallback direct registration, not to this lazy wrapper.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The map-failure reason comes from the parent map status; the referenced idle hosts render the unavailable branch.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The theme is forwarded from the parent; both theme hosts are referenced.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium.map-fallback"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "populated",
+            "long-korean",
+            "null-optional",
+            "unbroken-token"
+          ],
+          "reason": "The block shows the stadium name and, when coordinates exist, the Kakao place link; null coordinates fall back to a name search link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback block renders from props only and does not read identity or authorization.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry"
+          ]
+        },
+        "system": {
+          "values": [
+            "offline",
+            "error-recoverable",
+            "missing"
+          ],
+          "reason": "Each failure reason maps to its copy: offline and unavailable offer retry, while missing-key only offers the Kakao place link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The block uses light slate surfaces and dark-mode slate and white tokens, so both themes are rendered.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumMapFallback.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"stadium-map-fallback-retry\"]",
+              "when": {
+                "system": [
+                  "offline",
+                  "error-recoverable"
+                ]
+              }
+            }
+          ],
+          "reason": "Only the retryable failure reasons render the retry button; the missing-key reason has no retry target.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "constraints": []
     }
   ]
 }
