@@ -2311,6 +2311,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'stadium-seatmap.manual-required',
     'stadium.favorite-toggle',
     'stadium.guide',
+    'stadium.map-fallback',
     'suwon.seat-map',
     'suwon.seat-map-svg',
     'team-recommendation.test',
