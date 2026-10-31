@@ -7312,106 +7312,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "height:24px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "height:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[14px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[16px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 3,
-      "sourceCount": 3
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minHeight:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minWidth:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "padding:10px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "width:24px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "width:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/Navbar.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "text-[10.5px]",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Public and authenticated mobile tab labels intentionally share 10.5px compact chrome geometry.",
-      "owner": "frontend/navigation",
-      "sourceCount": 2
-    },
-    {
       "file": "src/components/NavbarNotificationControls.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "max-w-[360px]",
@@ -8262,196 +8162,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "h-[34px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "left:0px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "max-h-[40rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[15rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[18rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[3.75rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[4.5rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[58px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[10.5rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[3.25rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[4.5rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[4.85rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[5.5rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[60rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[8.5rem]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-w-[920px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "top:0px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "w-[34px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "text-[2.35rem]",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 1
-    },
-    {
       "file": "src/components/prediction/PredictionMatchTab.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "min-h-[170px]",
@@ -8475,36 +8185,6 @@
       "file": "src/components/prediction/PredictionMatchTab.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "min-h-[250px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[220px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[260px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[300px]",
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
@@ -9062,86 +8742,6 @@
       "sourceCount": 1
     },
     {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "height:24px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "height:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minHeight:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minWidth:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "padding:10px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "width:24px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "width:44px",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/PublicNavbar.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "text-[10.5px]",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Public and authenticated mobile tab labels intentionally share 10.5px compact chrome geometry.",
-      "owner": "frontend/navigation",
-      "sourceCount": 2
-    },
-    {
       "file": "src/components/PublicNavbarDesktopAuthControls.tsx",
       "rule": "arbitrary-dimension-spacing",
       "value": "h-[26px]",
@@ -9440,76 +9040,6 @@
       "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
       "owner": "frontend/retro",
       "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "gap:8px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginBottom:20px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "maxWidth:800px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minWidth:0px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "paddingRight:50px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "width:40px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/NewsTicker.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:12px",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 2
     },
     {
       "file": "src/components/retro/PixelProgressBar.tsx",
@@ -9845,266 +9375,6 @@
       "file": "src/components/retro/PowerUpInventory.tsx",
       "rule": "arbitrary-typography-radius",
       "value": "fontSize:9px",
-      "count": 1,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "gap:10px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "gap:20px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "gap:4px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "margin:0px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginBottom:15px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginBottom:20px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginBottom:6px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginTop:10px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "marginTop:20px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "maxWidth:800px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 3,
-      "sourceCount": 3
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minHeight:220px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "minHeight:500px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "padding:10px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 2,
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "padding:14px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "padding:4px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "paddingBottom:10px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "paddingTop:60px",
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "borderRadius:12px",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "borderRadius:4px",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "borderRadius:6px",
-      "count": 1,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "borderRadius:8px",
-      "count": 1,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:11px",
-      "count": 1,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:12px",
-      "count": 1,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:14px",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:18px",
-      "count": 2,
-      "disposition": "intentional-exception",
-      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
-      "owner": "frontend/retro",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/retro/RetroLeaderboard.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "fontSize:20px",
       "count": 1,
       "disposition": "intentional-exception",
       "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
@@ -10969,76 +10239,6 @@
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
       "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "h-[86px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[108px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-dimension-spacing",
-      "value": "min-h-[132px]",
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "count": 1,
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[1.35rem]",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 1
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[1.75rem]",
-      "count": 2,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[2.5rem]",
-      "count": 2,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
-      "sourceCount": 2
-    },
-    {
-      "file": "src/components/StadiumGuideRuntime.tsx",
-      "rule": "arbitrary-typography-radius",
-      "value": "rounded-[2rem]",
-      "count": 1,
-      "disposition": "unresolved",
-      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
-      "owner": "frontend/design-system",
       "sourceCount": 1
     },
     {
@@ -12638,6 +11838,826 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "height:24px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "height:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[14px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[16px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 3,
+      "sourceCount": 3
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minHeight:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minWidth:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "padding:10px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "width:24px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "width:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "text-[10.5px]",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Public and authenticated mobile tab labels intentionally share 10.5px compact chrome geometry.",
+      "owner": "frontend/navigation",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[34px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "left:0px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "max-h-[40rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[15rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[18rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[3.75rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[4.5rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[58px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[10.5rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[3.25rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[4.5rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[4.85rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[5.5rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[60rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[8.5rem]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-w-[920px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "top:0px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "w-[34px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchPreviewTab.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "text-[2.35rem]",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[220px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[260px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/prediction/PredictionMatchTabEmptyState.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[300px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "height:24px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "height:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minHeight:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minWidth:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "padding:10px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "width:24px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "width:44px",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/PublicNavbar.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "text-[10.5px]",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Public and authenticated mobile tab labels intentionally share 10.5px compact chrome geometry.",
+      "owner": "frontend/navigation",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "gap:8px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginBottom:20px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "maxWidth:800px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minWidth:0px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "paddingRight:50px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "width:40px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/NewsTicker.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:12px",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "gap:10px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "gap:20px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "gap:4px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "margin:0px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginBottom:15px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginBottom:20px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginBottom:6px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginTop:10px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "marginTop:20px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "maxWidth:800px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 3,
+      "sourceCount": 3
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minHeight:220px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "minHeight:500px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "padding:10px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 2,
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "padding:14px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "padding:4px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "paddingBottom:10px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "paddingTop:60px",
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "borderRadius:12px",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "borderRadius:4px",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "borderRadius:6px",
+      "count": 1,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "borderRadius:8px",
+      "count": 1,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:11px",
+      "count": 1,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:12px",
+      "count": 1,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:14px",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:18px",
+      "count": 2,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/retro/RetroLeaderboard.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "fontSize:20px",
+      "count": 1,
+      "disposition": "intentional-exception",
+      "reason": "Retro presentation intentionally keeps its existing palette and type geometry.",
+      "owner": "frontend/retro",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "h-[86px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[108px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[132px]",
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[1.35rem]",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[1.75rem]",
+      "count": 2,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[2.5rem]",
+      "count": 2,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 2
+    },
+    {
+      "file": "src/components/StadiumGuideRuntime.tsx",
+      "rule": "arbitrary-typography-radius",
+      "value": "rounded-[2rem]",
+      "count": 1,
+      "disposition": "unresolved",
+      "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
+      "owner": "frontend/design-system",
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[280px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint mobile minimum of the map fallback block, kept at its shipped 280px. Existing seat-map presentation/geometry requires precision review; do not round sizes.",
+      "owner": "frontend/stadium",
+      "count": 1,
+      "sourceCount": 1
+    },
+    {
+      "file": "src/components/StadiumMapFallback.tsx",
+      "rule": "arbitrary-dimension-spacing",
+      "value": "min-h-[528px]",
+      "disposition": "intentional-exception",
+      "reason": "Map-footprint lg height mirrors the live stadium map card (500px map + sm:p-3 padding + border-2 = 528px) so the fallback holds the same row; do not round sizes.",
+      "owner": "frontend/stadium",
       "count": 1,
       "sourceCount": 1
     }
