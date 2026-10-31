@@ -2,6 +2,10 @@
 import { KAKAO_API_KEY, MAP_CONFIG } from './constants';
 
 import { CategoryType, Place, Stadium } from '../types/stadium';
+import type { KakaoMapLoadFailureReason } from './kakaoMapLinks';
+
+export type { KakaoMapLoadFailureReason } from './kakaoMapLinks';
+export { buildKakaoMapPlaceUrl, buildKakaoMapSearchUrl } from './kakaoMapLinks';
 
 export interface KakaoMapOptions {
   lat: number;
@@ -16,6 +20,10 @@ const hasPlaceCoordinates = (place: Place): place is Place & { lat: number; lng:
   isValidCoordinate(place.lat) && isValidCoordinate(place.lng);
 
 let kakaoMapScriptPromise: Promise<void> | null = null;
+
+const resolveKakaoMapLoadFailureReason = (): KakaoMapLoadFailureReason => (
+  typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'unavailable'
+);
 
 const KAKAO_MAP_SCRIPT_SELECTOR = 'script[data-kakao-map-sdk="true"], script[src*="dapi.kakao.com/v2/maps/sdk.js"]';
 
@@ -52,35 +60,47 @@ const waitForKakaoMapSdkReady = () => new Promise<void>((resolve, reject) => {
   });
 });
 
-export const loadKakaoMapScript = (onLoad?: () => void, onError?: (message?: string) => void) => {
+export const loadKakaoMapScript = (
+  onLoad?: () => void,
+  onError?: (message?: string, reason?: KakaoMapLoadFailureReason) => void,
+) => {
   if (!KAKAO_API_KEY) {
-    onError?.('카카오맵 API 키가 없습니다. 운영 환경의 VITE_KAKAO_MAP_KEY 설정을 확인해주세요.');
+    onError?.('카카오맵 API 키가 없습니다. 운영 환경의 VITE_KAKAO_MAP_KEY 설정을 확인해주세요.', 'missing-key');
     return;
   }
 
   if (window.kakao && window.kakao.maps) {
     waitForKakaoMapSdkReady()
       .then(() => onLoad?.())
-      .catch((error) => onError?.(error instanceof Error ? error.message : getKakaoMapLoadErrorMessage()));
+      .catch((error) => onError?.(
+        error instanceof Error ? error.message : getKakaoMapLoadErrorMessage(),
+        resolveKakaoMapLoadFailureReason(),
+      ));
     return;
   }
 
   if (!kakaoMapScriptPromise) {
     kakaoMapScriptPromise = new Promise<void>((resolve, reject) => {
-      const handleReady = () => {
-        waitForKakaoMapSdkReady().then(resolve).catch(reject);
+      const handleReady = (loadedScript: HTMLScriptElement) => () => {
+        waitForKakaoMapSdkReady().then(resolve).catch((error) => {
+          // 스크립트는 로드됐지만 SDK 객체가 없으면(도메인 미허용 등) 태그를 지워야 다시 시도할 때 새로 받습니다.
+          if (!window.kakao?.maps) loadedScript.remove();
+          reject(error);
+        });
       };
 
-      const handleError = () => {
+      const handleError = (failedScript: HTMLScriptElement) => () => {
         const message = getKakaoMapLoadErrorMessage();
         console.error('카카오맵 스크립트 로드 실패:', message);
+        // 실패한 태그를 남겨두면 다시 시도할 때 이미 끝난 태그에 리스너만 붙고 영원히 대기합니다.
+        failedScript.remove();
         reject(new Error(message));
       };
 
       const existingScript = document.querySelector(KAKAO_MAP_SCRIPT_SELECTOR) as HTMLScriptElement | null;
       if (existingScript) {
-        existingScript.addEventListener('load', handleReady, { once: true });
-        existingScript.addEventListener('error', handleError, { once: true });
+        existingScript.addEventListener('load', handleReady(existingScript), { once: true });
+        existingScript.addEventListener('error', handleError(existingScript), { once: true });
         return;
       }
 
@@ -89,8 +109,8 @@ export const loadKakaoMapScript = (onLoad?: () => void, onError?: (message?: str
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&libraries=services&autoload=false`;
       script.async = true;
       script.dataset.kakaoMapSdk = 'true';
-      script.onload = handleReady;
-      script.onerror = handleError;
+      script.onload = handleReady(script);
+      script.onerror = handleError(script);
 
       document.head.appendChild(script);
     }).catch((error) => {
@@ -101,7 +121,10 @@ export const loadKakaoMapScript = (onLoad?: () => void, onError?: (message?: str
 
   kakaoMapScriptPromise
     .then(() => onLoad?.())
-    .catch((error) => onError?.(error instanceof Error ? error.message : getKakaoMapLoadErrorMessage()));
+    .catch((error) => onError?.(
+      error instanceof Error ? error.message : getKakaoMapLoadErrorMessage(),
+      resolveKakaoMapLoadFailureReason(),
+    ));
 };
 
 export const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {

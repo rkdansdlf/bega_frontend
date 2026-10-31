@@ -19532,80 +19532,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
-      "classification": "nonvisual",
-      "basis": "proven-static-runtime-value",
-      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -20999,6 +20925,163 @@
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
       "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#ACTION_BASE_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#FOOTPRINT_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#FRAME_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#PRIMARY_ACTION_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#SECONDARY_ACTION_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#STADIUM_MAP_FALLBACK_COPY",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "STADIUM_MAP_FALLBACK_COPY"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#StadiumMapFallback",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#SYMBOL_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
