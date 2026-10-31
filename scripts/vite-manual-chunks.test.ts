@@ -326,6 +326,9 @@ test('keeps the /prediction shell outside the query provider critical path', () 
   assert.equal(appQueryProviderRouteGroup.includes('<Route path="/prediction" element={<Prediction />} />'), false);
 
   assert.ok(predictionRuntimeSource.includes("const AppQueryProvider = lazy(() => import('../AppQueryProvider'));"));
+  // The loading skeleton is its own chunk, not part of the Prediction route chunk.
+  assert.equal(predictionRuntimeSource.includes("import PredictionLoadingView from './PredictionLoadingView';"), false);
+  assert.ok(predictionRuntimeSource.includes('const LazyPredictionLoadingView = lazy(loadPredictionLoadingView);'));
   assert.match(
     predictionRuntimeSource,
     /<Suspense fallback={<PredictionLoadingView topNotice={null} \/>}>\s*<AppQueryProvider>[\s\S]*?<\/AppQueryProvider>\s*<\/Suspense>/,
@@ -707,9 +710,10 @@ test('defers home match error UI outside the successful first-card static path',
   assert.ok(homeMatchPanelSource.includes('경기 상태를 확인하고 있습니다.'));
   assert.ok(homeMatchPanelErrorStateSource.includes('HOME_MATCH_ERROR_PANEL_CLASS'));
   assert.ok(homeMatchPanelErrorStateSource.includes('HOME_MATCH_ERROR_DESCRIPTION_CLASS'));
-  assert.ok(homeMatchPanelErrorStateSource.includes('text-sm font-semibold leading-5'));
-  assert.equal(homeMatchPanelErrorStateSource.includes('text-body font-bold mb-4'), false);
-  assert.ok(homeMatchPanelErrorStateSource.includes('HOME_MATCH_RETRY_BUTTON_CLASS'));
+  // The shared state block (and its icon set) only loads with the lazy error chunk.
+  assert.ok(homeMatchPanelErrorStateSource.includes("import StateBlock from '../status/StateBlock';"));
+  assert.equal(homeMatchPanelSource.includes('StateBlock'), false);
+  assert.equal(homeMatchPanelErrorStateSource.includes('위의 전체 다시 시도 버튼'), false);
   assert.ok(homeMatchPanelErrorStateSource.includes('다시 시도'));
   assert.ok(bundleGuardSource.includes("'HomeMatchPanelErrorState-'"));
 });
@@ -737,7 +741,7 @@ test('keeps GameCardSkeleton outside the /home first-card static path', () => {
   assert.ok(homeMatchPanelSource.includes('LoadingCardComponent: ComponentType'));
   assert.ok(homeMatchPanelSource.includes('<LoadingCardComponent key='));
   assert.equal(homeMatchPanelSource.includes('scheduled-loading-card'), false);
-  assert.ok(homeMatchPanelSource.includes('예정 경기 화면을 준비하고 있습니다.'));
+  assert.ok(homeMatchPanelSource.includes('<LoadingCardComponent key={`scheduled-fallback-${index}`} />'));
   assert.ok(homeRuntimeSource.includes('LoadingCardComponent={HomeMatchPanelFallbackCard}'));
   assert.ok(homeScheduledMatchPanelSource.includes("import { GameCardSkeleton } from './GameCardSkeleton';"));
   assert.ok(bundleGuardSource.includes("'src/components/home/GameCardSkeleton.tsx'"));
@@ -824,7 +828,7 @@ test('keeps public shell icon bundle out of the /home first-card path', () => {
   assert.ok(homeRuntimeSource.includes('HOME_CSS_CHEVRON_RIGHT_CLASS'));
   assert.ok(homeRuntimeSource.includes('HOME_CSS_FLAME_CLASS'));
   assert.ok(homeRecoveryBannerSource.includes('HOME_RECOVERY_REFRESH_ICON_CLASS'));
-  assert.ok(homeMatchPanelErrorStateSource.includes('HOME_MATCH_REFRESH_ICON_CLASS'));
+  assert.equal(homeMatchPanelErrorStateSource.includes('PublicShellIcons'), false);
   assert.ok(homeGameCardSource.includes('HOME_GAME_CLOCK_ICON_CLASS'));
   assert.ok(bundleGuardSource.includes('Home route manifest avoids public shell icons'));
   assert.ok(bundleGuardSource.includes('HomeMatchPanel manifest avoids public shell icons'));

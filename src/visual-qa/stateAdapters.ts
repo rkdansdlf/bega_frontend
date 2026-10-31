@@ -2291,7 +2291,9 @@ const resolvePredictionMatchesError = (context: ComponentStateAdapterContext) =>
   if (!state || !Object.prototype.hasOwnProperty.call(declared, state)) {
     throw new Error(`지원하지 않는 Visual QA state: data=${state ?? '<missing>'}`);
   }
-  return declared[state as keyof typeof declared];
+  // 운영 화면은 경기 ID가 있을 때만 복구 링크를 보여 준다(PredictionMatchInteractiveContentRuntime).
+  // 하네스는 복구 상호작용을 검사하므로 경기가 선택된 상태와 같이 링크를 켠다.
+  return { ...declared[state as keyof typeof declared], showRecoveryLink: true };
 };
 
 const resolveMyPageSeasonEmptyContent = (context: ComponentStateAdapterContext) => {
@@ -31083,6 +31085,78 @@ const resolveConfirmDialogRendererAdapter = (
         isRetrying: false,
       },
       captureSelector: '[data-testid="stadium-map-fallback"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-2xl overflow-visible bg-transparent p-0 shadow-none',
+      theme,
+    };
+  },
+  'status.state-block': (context) => {
+    if (context.componentId !== 'src/components/status/StateBlock.tsx#StateBlock'
+      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
+      || Object.keys(context.variants).some((key) => !['kind', 'layout', 'theme'].includes(key))) {
+      throw new Error('status.state-block only supports its declared data, interaction, system, kind, layout, and theme axes');
+    }
+    const data = requireStateValueFromMap<'long-korean' | 'populated' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      populated: 'populated',
+      'unbroken-token': 'unbroken-token',
+    });
+    const system = requireStateValueFromMap<'idle' | 'retrying'>(context, 'system', {
+      idle: 'idle',
+      retrying: 'retrying',
+    });
+    const interaction = requireStateValueFromMap<'default' | 'retry'>(context, 'interactions', {
+      default: 'default',
+      retry: 'retry',
+    });
+    const kind = resolveDeclaredVariant<'error' | 'filtered' | 'gated'>(context, 'kind', {
+      error: 'error',
+      filtered: 'filtered',
+      gated: 'gated',
+    });
+    const layout = resolveDeclaredVariant<'block' | 'row'>(context, 'layout', {
+      block: 'block',
+      row: 'row',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    // 재시도 버튼은 kind="error" 에만 붙습니다. 나머지 kind 에서는 재시도 상태가 없습니다.
+    const isRetryable = kind === 'error';
+    if (system === 'retrying' && !isRetryable) {
+      throw new Error(`status.state-block retrying requires the error kind, received kind=${kind}`);
+    }
+    if (interaction === 'default' && context.interactionTargetId !== undefined) {
+      throw new Error('status.state-block default state does not accept interaction targets');
+    }
+    if (interaction === 'retry' && (!isRetryable || context.interactionTargetId !== 'retry')) {
+      throw new Error(`status.state-block retry requires the error kind and retry target, received ${context.interactionTargetId ?? '<missing>'}`);
+    }
+    const copy = data === 'long-korean'
+      ? {
+        title: '모바일 화면에서 자연스럽게 줄바꿈되어야 하는 매우 긴 상태 제목입니다',
+        description: '모바일 화면에서 잘리지 않고 여러 줄로 표시되어야 하는 긴 상태 설명 문구입니다.',
+      }
+      : data === 'unbroken-token'
+        ? {
+          title: `STATE_BLOCK_${'UNBROKEN'.repeat(12)}`,
+          description: `STATE_BLOCK_DESCRIPTION_${'UNBROKEN'.repeat(12)}`,
+        }
+        : {
+          title: '표시할 내용이 아직 없어요',
+          description: '조건을 바꾸면 다른 결과를 볼 수 있어요.',
+        };
+    return {
+      props: {
+        kind,
+        layout,
+        title: copy.title,
+        description: copy.description,
+        onRetry: isRetryable ? () => undefined : undefined,
+        isRetrying: system === 'retrying',
+        testId: 'state-block',
+      },
+      captureSelector: '[data-testid="state-block"]',
       surfaceClassName: 'block min-h-0 w-full max-w-2xl overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };

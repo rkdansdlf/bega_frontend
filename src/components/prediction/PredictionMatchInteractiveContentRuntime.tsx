@@ -246,6 +246,7 @@ export default function PredictionMatchInteractiveContentRuntime({
           matchesLoadErrorMessage={matchesLoadErrorMessage}
           matchesLoadErrorCode={matchesLoadErrorCode}
           predictionRecoveryPath={predictionRecoveryPath}
+          showRecoveryLink={Boolean(currentGameId)}
           onReloadMatches={reloadMatches}
         />
       </Suspense>

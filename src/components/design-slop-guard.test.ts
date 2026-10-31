@@ -169,6 +169,7 @@ const inlineSvgAllowedFiles = new Set([
   'icons/OptimizedImageIcons.tsx',
   'icons/SeatCategoryIcons.tsx',
   'icons/StadiumGuideIcons.tsx',
+  'icons/StateBlockIcons.tsx',
   'icons/TeamRecommendationTestIcons.tsx',
   'icons/TicketUploadIcons.tsx',
   'icons/VerificationDialogIcons.tsx',

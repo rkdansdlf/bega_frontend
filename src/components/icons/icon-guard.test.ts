@@ -58,6 +58,7 @@ const routeScopedInlineIconModulePaths = [
   'components/icons/OptimizedImageIcons.tsx',
   'components/icons/SeatCategoryIcons.tsx',
   'components/icons/StadiumGuideIcons.tsx',
+  'components/icons/StateBlockIcons.tsx',
   'components/icons/TeamRecommendationTestIcons.tsx',
   'components/icons/TicketUploadIcons.tsx',
   'components/icons/VerificationDialogIcons.tsx',

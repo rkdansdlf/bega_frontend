@@ -5463,15 +5463,6 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleEmptyState",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleErrorState",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -5535,43 +5526,7 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/home/HomeMatchPanelErrorState.tsx#HOME_MATCH_ERROR_ICON_FRAME_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/home/HomeMatchPanelErrorState.tsx#HOME_MATCH_ERROR_PANEL_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeMatchPanelErrorState.tsx#HOME_MATCH_REFRESH_ICON_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeMatchPanelErrorState.tsx#HOME_MATCH_RETRY_BUTTON_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeMatchPanelErrorState.tsx#HOME_MATCH_WARNING_ICON_CLASS",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
@@ -5719,47 +5674,11 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_ERROR_ICON_FRAME_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_ERROR_PANEL_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_PANEL_COPY",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
       "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_REFRESH_ICON_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_RETRY_BUTTON_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -5782,34 +5701,7 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HOME_SCHEDULED_WARNING_ICON_CLASS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledBoardHeader",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledEmptyState",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledErrorState",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -5942,15 +5834,6 @@
       "exportName": "HomeSecondaryUsersIcon"
     },
     {
-      "id": "src/components/home/HomeSecondaryPanels.tsx#EmptyState",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/home/HomeSecondaryPanels.tsx#HomeSecondaryPanels",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -5975,15 +5858,6 @@
       "basis": "reviewed-react-wrapper",
       "reason": "The declaration is created with the React lazy component wrapper.",
       "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/home/HomeSecondaryPanels.tsx#LoadingRows",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -15897,6 +15771,117 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/Navbar.tsx#CHAT_UNREAD_UPDATED_EVENT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_AUTH_COMPACT_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_AUTH_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_GUEST_COMPACT_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_GUEST_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#EMPTY_ACTIVE_PILL_METRICS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#MOBILE_MENU_TRANSITION_MS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#Navbar",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/Navbar.tsx#NAVBAR_MOTION_EASE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#NAVBAR_NAV_ITEMS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#Navbar.Icon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/Navbar.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/Navbar.tsx#Navbar.Icon~2",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/Navbar.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/NavbarNotificationControls.tsx#NavbarNotificationControls",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -17109,6 +17094,61 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#MOBILE_DATE_SHEET_SIZE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PREDICTION_SCHEDULE_INITIAL_RECT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab.ESTIMATED_ROW_HEIGHT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#ScheduleTeamLogo",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#TeamLogo",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/prediction/PredictionMatchRuntime.tsx#PredictionMatchRuntime",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -17347,6 +17387,16 @@
     },
     {
       "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionMatchTabDetailSection",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -18575,6 +18625,125 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_AUTH_COMPACT_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_AUTH_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_GUEST_COMPACT_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_GUEST_WIDTH",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#EMPTY_ACTIVE_PILL_METRICS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#MOBILE_MENU_TRANSITION_MS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#NAV_ITEM_ICONS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#NAVBAR_MOTION_EASE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#PublicNavbar",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#PublicNavbar.Icon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/PublicNavbar.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#PublicNavbarDesktopAuthControls",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#PublicNavbarDmUnreadBadge",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/PublicNavbar.tsx#PublicNavbarMenuPanel",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/PublicNavbarDesktopAuthControls.tsx#COMPACT_AUTH_BUTTON_SIZE",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
@@ -18951,6 +19120,16 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/retro/NewsTicker.tsx#NewsTicker",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
       "id": "src/components/retro/PixelProgressBar.tsx#PixelProgressBar",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -18976,6 +19155,43 @@
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
       "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboard",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardDecorations",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardFooterPanels",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardRulesOverlay",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -19530,6 +19746,80 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
     },
     {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
@@ -20578,70 +20868,16 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/Navbar.tsx#CHAT_UNREAD_UPDATED_EVENT",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "id": "src/pages/LeaderboardPageRuntime.tsx#AuthenticatedRetroLeaderboard",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_AUTH_COMPACT_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_AUTH_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_GUEST_COMPACT_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#DESKTOP_NAVBAR_GUEST_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#EMPTY_ACTIVE_PILL_METRICS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#MOBILE_MENU_TRANSITION_MS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/Navbar.tsx#Navbar",
+      "id": "src/pages/LeaderboardPageRuntime.tsx#LeaderboardPageRuntime",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -20651,7 +20887,7 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/Navbar.tsx#NAVBAR_MOTION_EASE",
+      "id": "src/components/home/HomeMatchPanel.tsx#HOME_STATE_ACTION_CLASS",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
@@ -20660,18 +20896,195 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/Navbar.tsx#NAVBAR_NAV_ITEMS",
+      "id": "src/components/home/HomeMatchPanel.tsx#HOME_STATE_PRIMARY_ACTION_CLASS",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/Navbar.tsx#Navbar.Icon",
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchEmptyActions",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchEmptyState",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeMatchPanel.tsx#HomeScheduleStateShell",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeScheduledMatchPanel.tsx#HomeScheduledStateShell",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanels.tsx#PanelEmptyState",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanels.tsx#RANKING_ROW_LG_HEIGHT_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#Bar",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#BLOCK",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#CARD_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#FeaturedMateSkeleton",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "FeaturedMateSkeleton"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#HOME_DASHBOARD_TEAM_COUNT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#HomeSecondaryPanelsSkeleton",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#HotCheerSkeleton",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "HotCheerSkeleton"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#PANEL_CARD_CLASS",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a other value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=other",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#PANEL_SECTION_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#PANEL_TITLE_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/home/HomeSecondaryPanelsSkeleton.tsx#RankingRowsSkeleton",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "RankingRowsSkeleton"
+    },
+    {
+      "id": "src/components/HomeRuntime.tsx#HOME_FALLBACK_BLOCK_CLASS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/icons/StateBlockIcons.tsx#StateAlertCircleIcon",
       "classification": "grouped-gallery",
-      "galleryId": "src/components/Navbar.tsx#icon-gallery",
+      "galleryId": "src/components/icons/StateBlockIcons.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "module-export",
+      "exportName": "StateAlertCircleIcon"
+    },
+    {
+      "id": "src/components/icons/StateBlockIcons.tsx#StateBlockSvgIcon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/icons/StateBlockIcons.tsx#icon-gallery",
       "basis": "icon-symbol-or-module",
       "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
       "owner": "frontend-platform",
@@ -20679,45 +21092,18 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/Navbar.tsx#Navbar.Icon~2",
+      "id": "src/components/icons/StateBlockIcons.tsx#StateRefreshIcon",
       "classification": "grouped-gallery",
-      "galleryId": "src/components/Navbar.tsx#icon-gallery",
+      "galleryId": "src/components/icons/StateBlockIcons.tsx#icon-gallery",
       "basis": "icon-symbol-or-module",
       "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
       "owner": "frontend-platform",
       "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#MOBILE_DATE_SHEET_SIZE",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PREDICTION_SCHEDULE_INITIAL_RECT",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
       "renderAccess": "module-export",
-      "exportName": "default"
+      "exportName": "StateRefreshIcon"
     },
     {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#PredictionMatchPreviewTab.ESTIMATED_ROW_HEIGHT",
+      "id": "src/components/prediction/PredictionLoadingView.tsx#BLOCK",
       "classification": "nonvisual",
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
@@ -20726,7 +21112,25 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#ScheduleTeamLogo",
+      "id": "src/components/prediction/PredictionLoadingView.tsx#DAY_STRIP_COUNT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionLoadingView.tsx#LOADING_ROW_COUNT",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/prediction/PredictionLoadingView.tsx#PredictionLoadingRow",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -20735,7 +21139,7 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/prediction/PredictionMatchPreviewTab.tsx#TeamLogo",
+      "id": "src/components/prediction/PredictionRuntime.tsx#LazyPredictionLoadingView",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
       "reason": "The declaration is created with the React lazy component wrapper.",
@@ -20744,178 +21148,11 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState",
+      "id": "src/components/prediction/PredictionRuntime.tsx#PredictionLoadingView",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
       "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_AUTH_COMPACT_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_AUTH_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_GUEST_COMPACT_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#DESKTOP_NAVBAR_GUEST_WIDTH",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#EMPTY_ACTIVE_PILL_METRICS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#MOBILE_MENU_TRANSITION_MS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#NAV_ITEM_ICONS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#NAVBAR_MOTION_EASE",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#PublicNavbar",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#PublicNavbar.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/PublicNavbar.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#PublicNavbarDesktopAuthControls",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#PublicNavbarDmUnreadBadge",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/PublicNavbar.tsx#PublicNavbarMenuPanel",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/retro/NewsTicker.tsx#NewsTicker",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboard",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardDecorations",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardFooterPanels",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/retro/RetroLeaderboard.tsx#RetroLeaderboardRulesOverlay",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -20925,80 +21162,6 @@
       "basis": "static-non-callable-runtime-shape",
       "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
       "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
-      "classification": "nonvisual",
-      "basis": "proven-static-runtime-value",
-      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
@@ -21086,16 +21249,7 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/pages/LeaderboardPageRuntime.tsx#AuthenticatedRetroLeaderboard",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/pages/LeaderboardPageRuntime.tsx#LeaderboardPageRuntime",
+      "id": "src/components/status/StateBlock.tsx#StateBlock",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
