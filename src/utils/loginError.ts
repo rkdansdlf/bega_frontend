@@ -31,6 +31,10 @@ export const getLoginQueryErrorMessage = (search: string): string | null => {
     case 'oauth2_email_required':
     case 'oauth2_email_verification_required':
       return '이메일 확인 요청 정보를 찾지 못했습니다. 소셜 로그인을 다시 시도해주세요.';
+    case 'oauth2_email_challenge_rate_limited':
+      return '이메일 확인 요청이 너무 많습니다. 잠시 후(최대 1시간) 다시 시도해주세요.';
+    case 'oauth2_email_challenge_unavailable':
+      return '이메일 확인 기능을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.';
     case 'oauth2_state_store_unavailable':
       return '로그인 상태를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.';
     case 'user_not_found_after_auth':
