@@ -47,3 +47,17 @@ test('challengeId가 누락된 OAuth 이메일 오류에도 재시도 안내를 
     '이메일 확인 요청 정보를 찾지 못했습니다. 소셜 로그인을 다시 시도해주세요.',
   );
 });
+
+test('oauth2_email_challenge_rate_limited를 사용자 안내 문구로 매핑한다', () => {
+  assert.equal(
+    getLoginQueryErrorMessage('?error=oauth2_email_challenge_rate_limited'),
+    '이메일 확인 요청이 너무 많습니다. 잠시 후(최대 1시간) 다시 시도해주세요.',
+  );
+});
+
+test('oauth2_email_challenge_unavailable를 사용자 안내 문구로 매핑한다', () => {
+  assert.equal(
+    getLoginQueryErrorMessage('?error=oauth2_email_challenge_unavailable'),
+    '이메일 확인 기능을 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.',
+  );
+});
