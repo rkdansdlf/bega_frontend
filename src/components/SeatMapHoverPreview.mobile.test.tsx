@@ -111,7 +111,7 @@ const startServer = async (
     appType: 'custom',
     cacheDir,
     plugins: [createPreviewPlugin()],
-    server: { host: '127.0.0.1', port: 0 },
+    server: { host: '127.0.0.1', port: 0, strictPort: false },
   });
   resources.server = server;
   await server.listen();
