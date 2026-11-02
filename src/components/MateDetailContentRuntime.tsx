@@ -419,7 +419,7 @@ export default function MateDetailContentRuntime({
         onClick: handleCancelApplication,
         disabled: isCancelling,
         variant: 'outline',
-        className: 'w-full min-h-11 border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30',
+        className: 'w-full min-h-11 border-red-200 text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30',
       });
     }
   } else if (isAwaitingApproval) {
@@ -429,7 +429,7 @@ export default function MateDetailContentRuntime({
       onClick: handleCancelApplication,
       disabled: isCancelling,
       variant: 'ghost',
-      className: 'w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 text-body',
+      className: 'w-full text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 text-body',
     });
   } else if (myApplication?.isRejected) {
     actionButtons.push({

@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { createViteCacheDir } from './viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from './browserTestTimeouts';
 
 const componentSource = readFileSync(new URL('./MateMobileDateFilter.tsx', import.meta.url), 'utf8');
 const frontendRoot = fileURLToPath(new URL('../../', import.meta.url));
@@ -154,9 +156,10 @@ test('mobile date filter declares stable semantic targets and emitted interactio
 });
 
 test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback contracts', {
-  timeout: 90_000,
+  timeout: scaledTimeout(90_000),
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('mate-mobile-date-filter'),
     configFile: fileURLToPath(new URL('../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createDateFilterPlugin()],
@@ -169,7 +172,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const diagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text());
@@ -199,7 +202,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
     const metrics: Record<string, unknown> = {};
 
     const initialSection = page.getByRole('region', { name: '경기 날짜' });
-    await initialSection.waitFor({ timeout: 15_000 });
+    await initialSection.waitFor({ timeout: scaledTimeout(15_000) });
     await settleMountEffects();
     const initialCalls = await readCalls();
     assert.deepEqual(initialCalls, {
@@ -211,7 +214,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
     }, 'initial StrictMode render must not replay callbacks or start network work');
 
     await mount('boundary');
-    await initialSection.waitFor({ timeout: 15_000 });
+    await initialSection.waitFor({ timeout: scaledTimeout(15_000) });
     await settleMountEffects();
     assert.deepEqual(
       await readCalls(),
@@ -223,7 +226,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
       await page.setViewportSize({ width: viewportWidth, height: viewportWidth === 320 ? 844 : 1000 });
       await mount(fixture);
       const section = page.getByRole('region', { name: '경기 날짜' });
-      await section.waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+      await section.waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
         throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
       });
       const scroller = section.getByLabel('경기 날짜 빠른 선택, 좌우로 스크롤');
@@ -332,7 +335,7 @@ test('actual mobile date filter keeps touch, rail, badge, keyboard, and callback
     await page.waitForFunction(
       () => document.querySelector('[data-testid="mate-mobile-date-filter-selected-label"]')?.textContent?.includes('1월 7일'),
       undefined,
-      { timeout: 5_000 },
+      { timeout: scaledTimeout(5_000) },
     );
     if (!/1월 7일/.test(await outsideLabel.textContent() ?? '')) problems.push('outside-range label missing');
     if (await page.getByRole('group', { name: '경기 날짜 필터' }).locator('button[aria-pressed="true"]:not([aria-label^="전체"])').count() !== 0) {

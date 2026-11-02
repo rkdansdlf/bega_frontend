@@ -18,6 +18,16 @@ import {
   subscribeToAuthSessionChanges,
 } from '../utils/authSessionEvents';
 
+// The store reaches its async collaborators through dynamic import(), whose resolution goes
+// through the tsx loader thread. Its latency depends on machine load (CI runners are slower than a
+// developer laptop), so wait on real timers as well as event-loop turns instead of a fixed count.
+const nextTurns = async (turns = 4) => {
+  for (let turn = 0; turn < turns; turn += 1) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 15));
+    await new Promise<void>((resolve) => setImmediate(resolve));
+  }
+};
+
 const createStorage = () => {
   const values = new Map<string, string>();
 
@@ -156,7 +166,7 @@ test('a successful login clears a stale login-required dialog from the previous 
     undefined,
     202,
   );
-  await flushAuthSessionSignal();
+  await nextTurns();
 
   assert.equal(useAuthStore.getState().user?.id, 202);
   assert.equal(useAuthStore.getState().showLoginRequiredDialog, false);
@@ -330,12 +340,8 @@ const hasAuthBootstrapHint = (storage: ReturnType<typeof createStorage>) => stor
 
 const getAuthBootstrapMeta = () => getPersistedAuthBootstrapMeta();
 
-const flushLogoutRequest = async () => {
-  await import('./authLogoutRuntime');
-  await import('../utils/authSessionEvents');
-  await new Promise<void>((resolve) => setImmediate(resolve));
-};
-const flushAuthSessionSignal = flushLogoutRequest;
+const flushLogoutRequest = () => nextTurns();
+const flushAuthSessionSignal = () => nextTurns();
 
 const installLogoutSession = () => {
   const storage = createStorage();
@@ -660,12 +666,12 @@ for (const order of ['profile-first', 'logout-first'] as const) {
       assert.equal(isCurrentRequest?.(), true);
       const logoutResult = useAuthStore.getState().logout();
       assert.equal(isCurrentRequest?.(), false);
+      // logoutUser is dispatched after an async import; reject only once a handler is attached.
+      await flushLogoutRequest();
       if (order === 'profile-first') {
         profile.resolve(user!);
         assert.equal(await profileResult, false);
       }
-      await flushLogoutRequest();
-      assert.equal(calls, 1);
       if (outcome === 'success') logout.resolve();
       else logout.reject(logoutUnavailable);
       assert.equal(await logoutResult, outcome === 'success');

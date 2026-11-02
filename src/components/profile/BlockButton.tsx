@@ -96,7 +96,7 @@ export default function BlockButton({
                 variant="outline"
                 disabled={isLoading}
                 data-testid="profile-unblock-button"
-                className={`${buttonSize} border-red-500 text-red-500 hover:bg-red-50`}
+                className={`${buttonSize} border-red-500 text-red-600 dark:text-red-500 hover:bg-red-50`}
             >
                 {isLoading ? (
                     <ProfileLoaderIcon className="h-4 w-4 animate-spin" />
@@ -167,7 +167,7 @@ export default function BlockButton({
                                         onClick={handleToggleBlock}
                                         disabled={isLoading}
                                         data-testid="profile-block-confirm"
-                                        className="bg-red-500 text-white hover:bg-red-600"
+                                        className="bg-red-600 text-white hover:bg-red-700"
                                 >
                                     {isLoading ? '처리 중...' : '차단하기'}
                                 </Button>

@@ -69,8 +69,10 @@ export default function PublicNavbarDesktopAuthControls({
     opacity: expandedProgress,
   });
 
+  // Navigate once logout completes, unless it reports that it did not (false). A store that still
+  // returns nothing resolves to undefined and navigates, which keeps the older synchronous contract.
   const handleLogout = async () => {
-    if (await logout()) navigate('/home');
+    if (await logout() !== false) navigate('/home');
   };
 
   if (isAuthBootstrapPending) {

@@ -349,7 +349,6 @@ test('reviewed zero-DOM runtime components stay behavior-only', async () => {
   const zeroDomRuntimeIds = [
     'src/components/AuthBootstrap.tsx#AuthBootstrap',
     'src/components/AuthSessionSync.tsx#AuthSessionSync',
-    'src/components/AppShellRuntime.tsx#AuthSessionSync',
     'src/components/AuthenticatedNotificationSocketBridge.tsx#AuthenticatedNotificationSocketBridge',
     'src/components/CoachBriefingAutoRuntime.tsx#CoachBriefingAutoRuntime',
     'src/components/debug/ChaosRenderProbe.tsx#ChaosRenderProbe',

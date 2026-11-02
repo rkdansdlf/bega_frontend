@@ -136,3 +136,47 @@ test('postdeploy smoke rejects missing prerender marker and wrong JSON-LD shape'
   assert.ok(failures.some((failure) => failure.includes('SEO 프리렌더 본문 마커 누락')));
   assert.ok(failures.some((failure) => failure.includes('JSON-LD[0] 값 불일치')));
 });
+
+test('sitemap classification accepts prerendered stadium detail URLs but still flags unexpected URLs', async () => {
+  const { classifySitemapUrls } = await import('./seo-postdeploy-smoke.mjs');
+  const site = 'https://www.begabaseball.xyz';
+  const expectedStaticUrls = [`${site}/stadium`, `${site}/cheer`];
+  const result = classifySitemapUrls([
+    `${site}/stadium`,
+    `${site}/stadium/JAMSIL`,
+    `${site}/stadium/JAMSIL_TEMP`,
+    `${site}/stadium/MOKDONG`,
+    `${site}/stadium/a%20b`,
+    `${site}/stadium/x/y`,
+    `${site}/random`,
+    'https://begabaseball.xyz/stadium/SAJIK',
+  ], { expectedStaticUrls, expectedSiteUrl: site });
+  assert.deepEqual(result.missing, [`${site}/cheer`]);
+  assert.deepEqual(result.stadiumDetailPaths, ['/stadium/JAMSIL', '/stadium/JAMSIL_TEMP', '/stadium/MOKDONG']);
+  assert.deepEqual(result.unexpected, [
+    `${site}/stadium/a%20b`,
+    `${site}/stadium/x/y`,
+    `${site}/random`,
+    'https://begabaseball.xyz/stadium/SAJIK',
+  ]);
+});
+
+test('SEO_MIN_STADIUM_COUNT gate for sitemap stadium details', async () => {
+  const { resolveMinStadiumDetailCount } = await import('./seo-postdeploy-smoke.mjs');
+  assert.equal(resolveMinStadiumDetailCount({}), 0);
+  assert.equal(resolveMinStadiumDetailCount({ SEO_MIN_STADIUM_COUNT: '22' }), 22);
+  assert.equal(resolveMinStadiumDetailCount({ SEO_MIN_STADIUM_COUNT: 'x' }), 0);
+});
+
+test('stadium detail response contract: 200 html + single www canonical + index,follow', async () => {
+  const { validateStadiumDetailResponse } = await import('./seo-postdeploy-smoke.mjs');
+  const site = 'https://www.begabaseball.xyz';
+  const good = `<link rel="canonical" href="${site}/stadium/JAMSIL">\n<meta name="robots" content="index,follow">`;
+  assert.deepEqual(validateStadiumDetailResponse({ status: 200, contentType: 'text/html; charset=utf-8', html: good }, '/stadium/JAMSIL', site), []);
+  assert.deepEqual(validateStadiumDetailResponse({ status: 404, contentType: 'text/html', html: '' }, '/stadium/JAMSIL', site), ['HTTP 404']);
+  const wrongCanonical = good.replace(`${site}/stadium/JAMSIL`, 'https://begabaseball.xyz/stadium/JAMSIL');
+  assert.equal(validateStadiumDetailResponse({ status: 200, contentType: 'text/html', html: wrongCanonical }, '/stadium/JAMSIL', site).length, 1);
+  const noindex = good.replace('index,follow', 'noindex,nofollow');
+  assert.match(validateStadiumDetailResponse({ status: 200, contentType: 'text/html', html: noindex }, '/stadium/JAMSIL', site)[0], /robots/);
+  assert.match(validateStadiumDetailResponse({ status: 200, contentType: 'application/json', html: good }, '/stadium/JAMSIL', site)[0], /content-type/);
+});

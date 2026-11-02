@@ -54,7 +54,7 @@ const HOME_BUTTON_BASE_CLASS = 'inline-flex shrink-0 items-center justify-center
 // becomes 88px at 200%, which pushes the date controls outside 320px and
 // makes the header feel like it is colliding with the first content row.
 const HOME_BUTTON_OUTLINE_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-[44px] min-h-[44px] rounded-xl border bg-background px-4 text-15 text-foreground hover:bg-accent hover:text-accent-foreground has-[>svg]:px-3 dark:border-input dark:bg-input/30 dark:hover:bg-input/50`;
-const HOME_BUTTON_GHOST_ICON_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-[44px] min-h-[44px] w-[44px] min-w-[44px] rounded-xl p-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50`;
+const HOME_BUTTON_GHOST_ICON_TOUCH_CLASS = `${HOME_BUTTON_BASE_CLASS} h-[44px] min-h-[44px] w-[44px] min-w-[44px] rounded-xl p-0 hover:bg-accent hover:text-accent-foreground dark:hover:bg-input/50`;
 const HOME_BUTTON_LINK_SM_CLASS = `${HOME_BUTTON_BASE_CLASS} h-8 rounded-md px-3 text-primary underline-offset-4 hover:underline has-[>svg]:px-2.5`;
 const HOME_CSS_CHEVRON_LEFT_CLASS = 'block h-3.5 w-3.5 -rotate-45 border-l-2 border-t-2 border-current';
 const HOME_CSS_CHEVRON_RIGHT_CLASS = 'block h-3.5 w-3.5 rotate-45 border-r-2 border-t-2 border-current';

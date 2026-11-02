@@ -132,7 +132,7 @@ export default function MateDetailRuntime({
       >
         <div className="w-full max-w-md px-4 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
-            <MateAlertTriangleIcon className="h-8 w-8 text-red-500" />
+            <MateAlertTriangleIcon className="h-8 w-8 text-red-600 dark:text-red-500" />
           </div>
           <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">파티를 불러오지 못했습니다</h2>
           <p className="mb-4 text-body text-gray-500 dark:text-white/60">

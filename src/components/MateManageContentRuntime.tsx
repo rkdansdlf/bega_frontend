@@ -248,7 +248,7 @@ export default function MateManageContentRuntime({
                   data-testid="mate-manage-content-edit-secondary"
                   onClick={onStartEdit}
                   variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-input/50"
                 >
                   <MatePencilIcon className="mr-2 h-4 w-4" />
                   파티 정보 수정

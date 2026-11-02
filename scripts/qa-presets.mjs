@@ -79,6 +79,9 @@ const E2E_SPECS = {
   ],
   ai: [
     'cypress/e2e/chatbot.cy.ts',
+    'cypress/e2e/chatbot-mobile-dock.cy.ts',
+    'cypress/e2e/chatbot-modal-a11y.cy.ts',
+    'cypress/e2e/chatbot-session-isolation.cy.ts',
   ],
   'ai-real': [
     'cypress/e2e/chatbot-real.cy.ts',

@@ -182,7 +182,7 @@ export default function MateChatConversationPanel({
                 size="sm"
                 disabled={isLoadingOlderMessages}
                 onClick={onLoadOlderMessages}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-secondary"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-border dark:text-white dark:hover:bg-input/50"
                 data-testid="mate-chat-load-older"
               >
                 {isLoadingOlderMessages ? '이전 메시지 불러오는 중…' : '이전 메시지 불러오기'}

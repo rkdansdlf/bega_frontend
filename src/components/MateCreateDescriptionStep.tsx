@@ -29,7 +29,7 @@ export default function MateCreateDescriptionStep({
       </h2>
 
       <div className="space-y-2">
-        <FieldLabel htmlFor="description">소개글 <span className="text-red-500 ml-0.5">*</span></FieldLabel>
+        <FieldLabel htmlFor="description">소개글 <span className="text-red-600 dark:text-red-500 ml-0.5">*</span></FieldLabel>
         <Textarea
           id="description"
           data-testid="mate-create-description-input"
@@ -69,7 +69,7 @@ export default function MateCreateDescriptionStep({
           <span
             id="description-hint"
             className={`min-w-0 [overflow-wrap:anywhere] ${
-              formErrors.description ? 'text-red-500' : 'text-gray-500'
+              formErrors.description ? 'text-red-600 dark:text-red-500' : 'text-gray-500'
             }`}
           >
             {formErrors.description || '10자 이상 200자 이하'}
@@ -78,7 +78,7 @@ export default function MateCreateDescriptionStep({
             id="description-count"
             className={
               formData.description.length > 190
-                ? 'min-w-0 font-semibold text-red-500 [overflow-wrap:anywhere]'
+                ? 'min-w-0 font-semibold text-red-600 dark:text-red-500 [overflow-wrap:anywhere]'
                 : formData.description.length > 160
                   ? 'min-w-0 text-amber-500 [overflow-wrap:anywhere]'
                   : 'min-w-0 text-gray-500 [overflow-wrap:anywhere]'

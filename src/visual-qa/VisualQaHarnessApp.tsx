@@ -260,12 +260,14 @@ export default function VisualQaHarnessApp() {
       };
     }
     if (scenario?.kind === 'component-state') {
-      return resolveComponentStateAdapter(scenario.adapterId, {
+      const result = resolveComponentStateAdapter(scenario.adapterId, {
         componentId: scenario.componentId,
         interactionTargetId: scenario.interactionPlan?.targetId,
         states: scenario.states,
         variants: scenario.variants,
       });
+      result.queryData?.forEach(({ queryKey, data }) => queryClient.setQueryData(queryKey, data));
+      return result;
     }
     return { props: {} };
   }, [scenario]);

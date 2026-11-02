@@ -1,0 +1,25 @@
+#!/bin/sh
+# commit-msg hook: reject AI co-author / attribution trailers.
+#
+# CLAUDE.md ("Git Commit & Co-author Policy") requires every commit to be authored by the
+# operator alone: no `Co-authored-by: Claude ...` or similar AI attribution trailer. Agent
+# harnesses suggest adding one, so the rule is enforced here instead of relying on memory.
+#
+# Install once per clone:  npm run hooks:install
+# Emergency bypass (not for agents): git commit --no-verify
+msg_file="$1"
+[ -f "$msg_file" ] || exit 0
+
+# Comment lines (git's editor template) are not part of the final message.
+offending=$(grep -v '^[[:space:]]*#' "$msg_file" |
+  grep -Ein '^[[:space:]]*co-authored-by:.*(claude|anthropic)|^[[:space:]]*(🤖[[:space:]]*)?generated (with|by)[^[:alnum:]]*(\[)?claude' || true)
+
+if [ -n "$offending" ]; then
+  {
+    echo "commit-msg: AI co-author/attribution trailer is not allowed in this repository."
+    echo "$offending" | sed 's/^/  /'
+    echo "Remove the line and commit again. See CLAUDE.md, \"Git Commit & Co-author Policy\"."
+  } >&2
+  exit 1
+fi
+exit 0

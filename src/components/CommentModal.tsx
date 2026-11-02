@@ -206,7 +206,7 @@ export default function CommentModal({
                                     data-testid="comment-modal-emoji"
                                     aria-label="이모지 선택"
                                     aria-expanded={showEmojiPicker}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:bg-secondary"
+                                    className="flex h-11 w-11 items-center justify-center rounded-full text-indigo-500 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:bg-input/50"
                                 >
                                     <SmileIcon className="w-5 h-5" />
                                 </button>

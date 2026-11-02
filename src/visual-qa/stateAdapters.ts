@@ -4,17 +4,14 @@ import {
   lazy,
   Suspense,
   useEffect,
-  useLayoutEffect,
   useState,
   type ComponentProps,
   type FormEvent,
   type ReactNode,
 } from 'react';
-import { useQueryClient, type UseMutationResult } from '@tanstack/react-query';
+import type { UseMutationResult } from '@tanstack/react-query';
 import { toast, type ToastOptions } from 'sonner';
 
-import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
-import { useViewerQueryScope } from '../hooks/useViewerQueryScope';
 import type { AdminStadium, Place, PlaceFormData } from '../api/admin';
 import type { CheerPost, Comment as CheerComment, EmbeddedPost, LinkedContent } from '../api/cheerApi';
 import type { SeatViewPhoto } from '../api/diary';
@@ -109,6 +106,8 @@ import {
 } from '../components/StadiumSeatMapStates';
 import { MyPageTicketIcon } from '../components/mypage/MyPageFlowIcons';
 import PredictionMatchTabEmptyState from '../components/prediction/PredictionMatchTabEmptyState';
+import { PRIVATE_QUERY_KEYS } from '../utils/privateQueryKeys';
+import { getViewerQueryScope } from '../utils/viewerQueryScope';
 import type { SeatViewDirectUploadVisualQaStateOverride } from '../components/stadiumSeatMap/SeatViewDirectUploadModal';
 import type { SeatMapFilterGroup } from '../components/stadiumSeatMap/seatMapCommonTypes';
 import { AlertDescription, AlertTitle } from '../components/ui/alert';
@@ -379,22 +378,6 @@ function VisualQaInteractionMarker({ eventName, testId }: { eventName: string; t
   );
 }
 
-function VisualQaGamePowerupSeed({ data, gameId }: { data: string; gameId: string }) {
-  const queryClient = useQueryClient();
-  const scope = useViewerQueryScope();
-  useLayoutEffect(() => {
-    queryClient.setQueryData(PRIVATE_QUERY_KEYS.powerupInventory(scope), {
-      MAGIC_BAT: data === 'empty' ? 0 : 2,
-      GOLDEN_GLOVE: data === 'empty' ? 0 : 1,
-      SCOUTER: 0,
-    });
-    queryClient.setQueryData(PRIVATE_QUERY_KEYS.activePowerups(scope), data === 'empty' ? [] : [{
-      type: 'MAGIC_BAT',
-      gameId: data === 'active-other-game' ? 'VISUAL_QA_OTHER_GAME' : gameId,
-    }]);
-  }, [data, gameId, queryClient, scope]);
-  return null;
-}
 
 export type ComponentStateValues = Partial<Record<
   'data' | 'permissions' | 'interactions' | 'system',
@@ -436,6 +419,8 @@ export type ComponentStateAdapterResult = {
     } | null;
   };
   initialPathname?: string;
+  /** Seeded into the harness QueryClient before render, for components that read hook-backed data. */
+  queryData?: ReadonlyArray<{ queryKey: readonly unknown[]; data: unknown }>;
   semanticHost?: VisualQaSemanticHost;
   surfaceClassName?: string;
   theme?: 'light' | 'dark';
@@ -535,6 +520,62 @@ const requireStateValueFromMap = <T>(
 };
 
 const landingDirectSurface = 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none';
+
+// Mate party fixtures shared by the MatePartyCard direct adapters. Only the copy and
+// status vary; ids, dates, and participant counts stay fixed so captures are deterministic.
+const matePartyFixture = (
+  data: 'long-korean' | 'single' | 'unbroken-token',
+  favorite: boolean,
+  status: 'MATCHED' | 'SELLING',
+) => {
+  const stadium = data === 'long-korean'
+    ? '서울특별시 종합운동장 야구장 공식 좌석 안내 경기장'
+    : data === 'unbroken-token'
+      ? `STADIUM${'UNBROKEN'.repeat(20)}`
+      : '잠실';
+  const section = data === 'long-korean'
+    ? '1루 내야 응원단상 바로 아래 통로와 좌석 열이 매우 길게 이어지는 공식 좌석 안내 구역'
+    : data === 'unbroken-token'
+      ? `SECTION${'UNBROKEN'.repeat(24)}`
+      : '1루 내야 101구역';
+  const hostName = data === 'long-korean'
+    ? '매우 긴 한국어 호스트 이름 비주얼 테스트'
+    : data === 'unbroken-token'
+      ? `HOST${'TOKEN'.repeat(16)}`
+      : '비주얼 QA 호스트';
+  const description = data === 'long-korean'
+    ? '긴 한국어 소개 문장이 두 줄 이상으로 이어지며 카드 안에서 잘리지 않고 감싸지는지 확인합니다.'
+    : data === 'unbroken-token'
+      ? `DESCRIPTION${'UNBROKEN'.repeat(18)}`
+      : '승인 전 짧은 파티 소개입니다.';
+  return {
+    id: 77,
+    hostId: 11,
+    hostHandle: '@visual_qa_host',
+    hostName,
+    hostBadge: 'TRUSTED' as const,
+    hostAverageRating: 4.9,
+    hostReviewCount: 27,
+    teamId: 'LG',
+    cheeringSide: 'HOME' as const,
+    gameDate: '2026-09-05',
+    gameTime: '18:30:00',
+    stadium,
+    homeTeam: 'LG',
+    awayTeam: 'OB',
+    section,
+    maxParticipants: 4,
+    currentParticipants: 2,
+    description,
+    ticketVerified: true,
+    status,
+    ticketPrice: 28000,
+    favorited: favorite,
+    createdAt: '2026-08-27T00:00:00+09:00',
+  };
+};
+const matePartyTodayKey = '2026-09-03';
+const matePartyDesktopSurface = 'block w-[960px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none';
 
 const resolveLandingTheme = (context: ComponentStateAdapterContext) => (
   resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
@@ -23267,6 +23308,119 @@ const resolveConfirmDialogRendererAdapter = (
       theme,
     };
   },
+  'mate.party-card': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 MatePartyCard state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-card"]',
+      surfaceClassName: 'block w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
+  'mate.party-row': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 PartyRow state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-row"]',
+      surfaceClassName: matePartyDesktopSurface,
+      theme,
+    };
+  },
+  'mate.party-compact': (context) => {
+    const data = requireStateValueFromMap<'long-korean' | 'single' | 'unbroken-token'>(context, 'data', {
+      'long-korean': 'long-korean',
+      single: 'single',
+      'unbroken-token': 'unbroken-token',
+    });
+    const favorite = resolveDeclaredVariant<boolean>(context, 'favorite', { off: false, on: true });
+    const status = resolveDeclaredVariant<'MATCHED' | 'SELLING'>(context, 'status', {
+      matched: 'MATCHED',
+      selling: 'SELLING',
+    });
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.interactions !== undefined || context.states.system !== undefined
+      || context.interactionTargetId !== undefined) {
+      throw new Error(`지원하지 않는 PartyCompact state: ${data}:${favorite}:${status}`);
+    }
+    return {
+      props: {
+        party: matePartyFixture(data, favorite, status),
+        todayKey: matePartyTodayKey,
+        onClick: () => {},
+        onFavoriteToggle: () => {},
+        favoriteUpdating: false,
+      },
+      captureSelector: '[data-testid="mate-party-compact"]',
+      surfaceClassName: matePartyDesktopSurface,
+      theme,
+    };
+  },
+  'mate.guest-sample-list': (context) => {
+    requireStateValue(context, 'data', 'single');
+    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
+      dark: 'dark',
+      light: 'light',
+    });
+    if (context.states.permissions !== undefined || context.states.interactions !== undefined
+      || context.states.system !== undefined || context.interactionTargetId !== undefined) {
+      throw new Error('지원하지 않는 MateGuestSampleList state');
+    }
+    return {
+      props: {},
+      captureSelector: '[data-testid="mate-guest-sample-list"]',
+      surfaceClassName: 'block w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-4 shadow-none',
+      theme,
+    };
+  },
   'mate.check-in-page': (context) => {
     requireStateValue(context, 'data', 'single');
     const phase = resolveDeclaredVariant<'fallback' | 'runtime'>(context, 'phase', {
@@ -23523,32 +23677,6 @@ const resolveConfirmDialogRendererAdapter = (
       },
       captureSelector: '[data-testid="mate-check-in-status"]',
       surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
-      theme,
-    };
-  },
-  'mate.guest-sample-list': (context) => {
-    if (context.componentId !== 'src/components/MateGuestSampleList.tsx#MateGuestSampleList') {
-      throw new Error('mate.guest-sample-list only supports MateGuestSampleList');
-    }
-    if (Object.keys(context.states).some((key) => !['data', 'interactions'].includes(key))) {
-      throw new Error('mate.guest-sample-list only supports data and interactions states');
-    }
-    if (Object.keys(context.variants).some((key) => key !== 'theme')) {
-      throw new Error('mate.guest-sample-list only supports its theme variant');
-    }
-    requireStateValue(context, 'data', 'populated');
-    const interaction = requireStateValueFromMap(context, 'interactions', { default: 'default' });
-    if (context.interactionTargetId !== undefined) {
-      throw new Error(`mate.guest-sample-list ${interaction} state does not accept interaction targets`);
-    }
-    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
-      dark: 'dark',
-      light: 'light',
-    });
-    return {
-      props: {},
-      captureSelector: '[data-testid="mate-guest-sample-list"]',
-      surfaceClassName: 'block min-h-0 w-full max-w-[640px] overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -26776,21 +26904,6 @@ const resolveConfirmDialogRendererAdapter = (
     };
   },
   'mate.filter-bottom-sheet': (context) => resolveMateFilterBottomSheetAdapter(context),
-  'mate.party-compact': (context) => resolveMatePartyCardAdapter(
-    context,
-    'src/components/MatePartyCard.tsx#PartyCompact',
-    'compact',
-  ),
-  'mate.party-card': (context) => resolveMatePartyCardAdapter(
-    context,
-    MATE_PARTY_CARD_COMPONENT_ID,
-    'card',
-  ),
-  'mate.party-row': (context) => resolveMatePartyCardAdapter(
-    context,
-    'src/components/MatePartyCard.tsx#PartyRow',
-    'row',
-  ),
   'mate.popular-searches-panel': (context) => {
     if (context.componentId !== 'src/components/MatePopularSearchesPanel.tsx#MatePopularSearchesPanel') {
       throw new Error('mate.popular-searches-panel only supports MatePopularSearchesPanel');
@@ -27455,32 +27568,6 @@ const resolveConfirmDialogRendererAdapter = (
       theme,
     };
   },
-  'landing.feature-card': (context) => {
-    const copy = requireStateValueFromMap(context, 'data', featureCardCopy);
-    requireStateValueFromMap(context, 'interactions', {
-      default: 'default',
-      'focus-visible': 'focus-visible',
-      hover: 'hover',
-      pressed: 'pressed',
-    });
-    const iconKey = resolveDeclaredVariant(context, 'icon', featureCardIcons);
-    const image = resolveDeclaredVariant(context, 'image', featureCardImages);
-    const presentation = resolveDeclaredVariant(context, 'presentation', featureCardPresentations);
-    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
-      dark: 'dark',
-      light: 'light',
-    });
-    return {
-      props: {
-        feature: { ...copy, ...image, iconKey },
-        index: 0,
-        ...presentation,
-        onToggle: () => {},
-      },
-      surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-background p-0 text-foreground shadow-none',
-      theme,
-    };
-  },
   'landing.footer': (context) => {
     requireStateValueFromMap(context, 'data', { single: 'single' });
     requireStateValueFromMap(context, 'interactions', {
@@ -27967,29 +28054,6 @@ const resolveConfirmDialogRendererAdapter = (
         testId: 'visual-qa-prediction-match-detail-interaction',
       }),
       surfaceClassName: 'block min-h-0 w-full max-w-[1080px] overflow-visible bg-transparent p-0 shadow-none',
-      theme,
-    };
-  },
-  'prediction.game-powerup-inventory': (context) => {
-    if (context.componentId !== 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory'
-      || Object.keys(context.states).some((key) => !['data', 'interactions', 'system'].includes(key))
-      || Object.keys(context.variants).some((key) => !['theme', 'activeGame'].includes(key))) {
-      throw new Error('prediction.game-powerup-inventory received unsupported dimensions');
-    }
-    const data = requireStateValueFromMap(context, 'data', {
-      empty: 'empty', populated: 'populated',
-    });
-    requireStateValue(context, 'interactions', 'default');
-    requireStateValue(context, 'system', 'idle');
-    const theme = resolveDeclaredVariant(context, 'theme', { light: 'light', dark: 'dark' });
-    const activeGame = resolveDeclaredVariant(context, 'activeGame', { current: 'current', other: 'other' });
-    if (data === 'empty' && activeGame === 'other') throw new Error('empty inventory has no active game');
-    const gameId = 'VISUAL_QA_GAME_POWERUP';
-    return {
-      props: { gameId },
-      companion: createElement(VisualQaGamePowerupSeed, { data: activeGame === 'other' ? 'active-other-game' : data, gameId }),
-      captureSelector: '[data-testid="prediction-game-powerup-inventory"]',
-      surfaceClassName: 'block min-h-0 w-full overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -28761,36 +28825,6 @@ const resolveConfirmDialogRendererAdapter = (
     }
     return resolveLandingStatic(context, selectors[context.componentId]);
   },
-  'landing.laptop-mockup': (context) => {
-    const dataState = requireStateValueFromMap(context, 'data', {
-      empty: 'empty',
-      'long-korean': 'long-korean',
-      'maximum-supported': 'maximum-supported',
-      single: 'single',
-      'unbroken-token': 'unbroken-token',
-    } as const);
-    const preset = resolveDeclaredVariant(context, 'feature', laptopFeaturePresets);
-    const image = resolveDeclaredVariant(context, 'image', featureCardImages);
-    const theme = resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', {
-      dark: 'dark',
-      light: 'light',
-    });
-    const copy = featureCardCopy[dataState];
-    const feature = dataState === 'single'
-      ? { ...preset, ...image, guide: copy.guide }
-      : {
-          ...preset,
-          ...image,
-          description: copy.description,
-          guide: copy.guide,
-          title: dataState === 'empty' ? '' : `${preset.title} · ${copy.title}`,
-        };
-    return {
-      props: { activeFeature: 0, features: [feature] },
-      surfaceClassName: 'block min-h-0 w-full max-w-[320px] overflow-visible bg-background p-0 text-foreground shadow-none',
-      theme,
-    };
-  },
   'landing.page': (context) => {
     requireStateValue(context, 'data', 'populated');
     requireStateValue(context, 'interactions', 'default');
@@ -28807,32 +28841,6 @@ const resolveConfirmDialogRendererAdapter = (
     '[data-testid="landing-app-preview"]',
     { fixedTheme: true },
   ),
-  'landing.capability-showcase': (context) => {
-    const visualQaStateOverride = requireStateValueFromMap(context, 'data', {
-      populated: undefined,
-      'long-korean': {
-        description: '경기 전 준비부터 현장 동선과 경기 후 기록까지 모든 기능을 좁은 모바일 화면에서도 차분하게 확인할 수 있도록 설명하는 긴 한국어 소개 문구입니다.',
-        heading: '경기 전과 현장과 경기 후의 모든 야구 경험을 한 화면에서 자연스럽게 이어서 확인합니다',
-        storyDescriptionSuffix: ' 좁은 화면에서도 세부 설명이 서로 겹치지 않고 여러 줄로 자연스럽게 이어집니다.',
-        storyTitleSuffix: ' 모바일 상세 기능 안내',
-      },
-      'unbroken-token': {
-        description: `CAPABILITY-DESCRIPTION-${'UNBROKEN'.repeat(18)}`,
-        heading: `CAPABILITY-HEADING-${'UNBROKEN'.repeat(18)}`,
-        storyDescriptionSuffix: ` CAPABILITY-STORY-DESCRIPTION-${'UNBROKEN'.repeat(18)}`,
-        storyTitleSuffix: ` CAPABILITY-STORY-TITLE-${'UNBROKEN'.repeat(18)}`,
-      },
-      'broken-image': {
-        imageSrc: '/__visual-qa__/missing-capability.webp',
-      },
-    });
-    return {
-      props: visualQaStateOverride ? { visualQaStateOverride } : {},
-      captureSelector: '[data-testid="landing-capability-showcase"]',
-      surfaceClassName: landingDirectSurface,
-      theme: resolveLandingTheme(context),
-    };
-  },
   'landing.closing': (context) => resolveLandingStatic(
     context,
     '[data-testid="landing-closing"]',
@@ -28895,28 +28903,6 @@ const resolveConfirmDialogRendererAdapter = (
         visualFirst,
       },
       captureSelector: `[data-testid="landing-feature-${number}"]`,
-      surfaceClassName: landingDirectSurface,
-      theme: resolveLandingTheme(context),
-    };
-  },
-  'landing.features-runtime': (context) => {
-    requireStateValue(context, 'data', 'maximum-supported');
-    const interaction = requireStateValueFromMap(context, 'interactions', {
-      default: 'default',
-      'focus-visible': 'focus-visible',
-      hover: 'hover',
-      pressed: 'pressed',
-      selected: 'selected',
-    });
-    if (
-      interaction !== 'default'
-      && !/^feature-[0-5]$/.test(context.interactionTargetId ?? '')
-    ) {
-      throw new Error(`지원하지 않는 Visual QA interaction target: ${context.interactionTargetId ?? '<missing>'}`);
-    }
-    return {
-      props: {},
-      captureSelector: '[data-testid="landing-features"]',
       surfaceClassName: landingDirectSurface,
       theme: resolveLandingTheme(context),
     };
@@ -29148,7 +29134,7 @@ const resolveConfirmDialogRendererAdapter = (
     const usageProps = {
       default: {},
       'menu-panel': {
-        className: 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-secondary',
+        className: 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-input/50',
         iconClassName: 'h-6 w-6',
       },
       'private-navbar': {
@@ -33946,6 +33932,28 @@ const resolveConfirmDialogRendererAdapter = (
       surfaceClassName: 'block min-h-20 w-full max-w-[288px] overflow-visible bg-[#1a1a2e] p-4',
     };
   },
+  'prediction.game-powerup-inventory': (context) => {
+    if (context.componentId !== 'src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory') {
+      throw new Error('prediction.game-powerup-inventory only supports PredictionGamePowerupInventory');
+    }
+    const gameId = 'visual-qa-game';
+    const inventory = resolveDeclaredVariant(context, 'inventory', retroFooterInventories);
+    const viewerScope = getViewerQueryScope();
+    return {
+      props: { gameId },
+      // usePowerups reads these two queries; seeding them keeps the scenario free of transport.
+      queryData: [
+        { queryKey: PRIVATE_QUERY_KEYS.powerupInventory(viewerScope), data: inventory.powerups },
+        {
+          queryKey: PRIVATE_QUERY_KEYS.activePowerups(viewerScope),
+          data: inventory.activePowerups.map((type) => ({ type, gameId })),
+        },
+      ],
+      captureSelector: '[data-testid="prediction-game-powerup-inventory"]',
+      surfaceClassName: 'block w-full max-w-[320px] overflow-visible bg-[#1a1a2e] p-0',
+      theme: resolveDeclaredVariant<'dark' | 'light'>(context, 'theme', { dark: 'dark', light: 'light' }),
+    };
+  },
   'retro.power-up-inventory': (context) => {
     const interaction = requireStateValueFromMap(context, 'interactions', {
       default: 'default',
@@ -35683,88 +35691,6 @@ const resolveConfirmDialogRendererAdapter = (
   'ui.card-title': (context) => ({
     props: { children: resolveCardCopy(context).title },
     surfaceClassName: cardPrimitiveSurface,
-  }),
-  'ui.page-container': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-cta-group': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        align: resolveDeclaredVariant(context, 'align', {
-          center: 'center',
-          start: 'start',
-        }),
-        children: pageCtaChildren(copy),
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-mockup-frame': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-section': (context) => ({
-    props: { children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)) },
-    surfaceClassName: pagePrimitiveSurface,
-  }),
-  'ui.page-section-header': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        align: resolveDeclaredVariant(context, 'align', {
-          center: 'center',
-          start: 'start',
-        }),
-        description: resolveDeclaredVariant(context, 'description', {
-          missing: undefined,
-          present: copy.description,
-        }),
-        measure: resolveDeclaredVariant(context, 'measure', {
-          default: 'default',
-          narrow: 'narrow',
-        }),
-        title: copy.title,
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-stack': (context) => {
-    const copy = resolvePagePrimitiveCopy(context);
-    return {
-      props: {
-        children: [0, 1, 2].map((index) => createElement(
-          'div',
-          {
-            className: 'min-w-0 rounded-lg border bg-white p-3 [overflow-wrap:anywhere]',
-            key: index,
-          },
-          `${copy.body} ${index + 1}`,
-        )),
-        gap: resolveDeclaredVariant(context, 'gap', {
-          lg: 'lg',
-          md: 'md',
-          sm: 'sm',
-          xl: 'xl',
-        }),
-      },
-      surfaceClassName: pagePrimitiveSurface,
-    };
-  },
-  'ui.page-text-block': (context) => ({
-    props: {
-      align: resolveDeclaredVariant(context, 'align', {
-        center: 'center',
-        start: 'start',
-      }),
-      children: pagePrimitiveChildren(resolvePagePrimitiveCopy(context)),
-      measure: resolveDeclaredVariant(context, 'measure', {
-        default: 'default',
-        narrow: 'narrow',
-      }),
-    },
-    surfaceClassName: pagePrimitiveSurface,
   }),
   'ui.status-badge': (context) => {
     const interaction = requireStateValueFromMap(context, 'interactions', {

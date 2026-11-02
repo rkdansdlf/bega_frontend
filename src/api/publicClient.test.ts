@@ -106,10 +106,11 @@ test('publicGet preserves caller cancellation while reading a response body', as
   });
 });
 
-test('publicGet still reports an internal deadline as a timeout', { timeout: 5_000 }, async (t) => {
-  // Native AbortSignal deadlines do not keep Node alive; real fetch owns a socket.
-  const requestHandle = setInterval(() => {}, 1_000);
-  t.after(() => clearInterval(requestHandle));
+test('publicGet still reports an internal deadline as a timeout', async (t) => {
+  // AbortSignal.timeout() timers are unref'd; with nothing else pending the runner sees an idle
+  // event loop and cancels this test (and every later one) before the 25ms deadline fires.
+  const keepAlive = setTimeout(() => {}, 1000);
+  t.after(() => clearTimeout(keepAlive));
   t.mock.method(globalThis, 'fetch', async (_input: string | URL | Request, init?: RequestInit) => (
     new Promise<Response>((_resolve, reject) => {
       const signal = init?.signal;

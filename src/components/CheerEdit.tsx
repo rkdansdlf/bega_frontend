@@ -112,7 +112,7 @@ export default function CheerEdit({
             {!hasAccess ? (
               <Card className="rounded-xl bg-white dark:bg-card p-12 text-center shadow-sm">
                 <div className="mx-auto w-20 rounded-full bg-red-100 p-6">
-                  <MessageSquareIcon className="h-10 w-10 text-red-500" />
+                  <MessageSquareIcon className="h-10 w-10 text-red-600 dark:text-red-500" />
                 </div>
                 <h2 className="mt-6 mb-4 text-gray-900 dark:text-white">수정 권한이 없습니다</h2>
                 <p className="mb-6 text-gray-600 dark:text-white leading-relaxed">

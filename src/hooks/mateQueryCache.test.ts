@@ -1,3 +1,4 @@
+import './mateQueryCacheTestStorage';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { QueryClient } from '@tanstack/react-query';

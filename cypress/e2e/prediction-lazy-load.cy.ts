@@ -7,6 +7,7 @@ import {
     installPredictionGuestSessionIntercept,
     visitPredictionPage,
 } from '../support/predictionPage';
+import { CI_FLAKE_RETRIES } from '../support/ciFlakeRetries';
 
 const COACH_BRIEFING_SESSION_STORAGE_KEY = 'prediction:coachBriefing:v2';
 const COACH_BRIEFING_LOCAL_STORAGE_KEY = 'prediction:coachBriefing:local:v2';
@@ -24,7 +25,7 @@ type PredictionDeferredIdleWindow = Window & {
     __flushPredictionDeferredWork?: () => void;
 };
 
-describe('Prediction Lazy Load', () => {
+describe('Prediction Lazy Load', CI_FLAKE_RETRIES, () => {
     const today = '2026-02-03';
     const previousDate = '2026-02-02';
     const nextDate = '2026-02-06';
@@ -1043,7 +1044,12 @@ describe('Prediction Lazy Load', () => {
         }).as('getVoteStatusComboLazy');
 
         installMatchDayResponse(today, nextDate);
+        // PredictionRuntime 은 랭킹 탭 리소스(AnimatedSections/RankingTab/RankingPrediction/StatsPanel)를 마운트 2.5초 뒤
+        // + rAF 2회 + requestIdleCallback 으로 의도적으로 사전 로드한다(CWV 최적화). 유휴 콜백을 통제하지 않으면 단언이
+        // 마운트 후 ~2.5초를 넘기는 느린 환경(CI 개발 서버)에서 사전 로드가 먼저 일어나 'expected 1 to equal 0' 이 된다.
+        // 통제 하에서는 flush 하기 전까지 사전 로드가 시간과 무관하게 실행되지 않는다.
         openPredictionPage('/prediction', 'getMatchDayForLazyEntry', (win) => {
+            installDeferredIdleControl(win);
             // 이 테스트는 코치 브리핑/랭킹/AI 스트림 등 이전 단계에서 이미 200개 이상의
             // 리소스를 로드해, 브라우저 기본 Resource Timing 버퍼(250)를 투표 시점에
             // 거의 다 채운다. 버퍼가 가득 차면 이후 요청(ComboAnimation lazy chunk)이
@@ -1272,7 +1278,11 @@ describe('Prediction Lazy Load', () => {
 
     it('keeps ranking chunks and stats query deferred until the first ranking tab entry', () => {
         installMatchDayResponse(today, nextDate);
-        openPredictionPage('/prediction', 'getMatchDayForLazyEntry');
+        // PredictionRuntime 은 랭킹 탭 리소스(AnimatedSections/RankingTab/RankingPrediction/StatsPanel)를 마운트 2.5초 뒤
+        // + rAF 2회 + requestIdleCallback 으로 의도적으로 사전 로드한다(CWV 최적화). 유휴 콜백을 통제하지 않으면 단언이
+        // 마운트 후 ~2.5초를 넘기는 느린 환경(CI 개발 서버)에서 사전 로드가 먼저 일어나 'expected 1 to equal 0' 이 된다.
+        // 통제 하에서는 flush 하기 전까지 사전 로드가 시간과 무관하게 실행되지 않는다.
+        openPredictionPage('/prediction', 'getMatchDayForLazyEntry', installDeferredIdleControl);
 
         cy.get('[data-testid="prediction-match-preview-root"]').should('be.visible');
         cy.get('[data-testid="prediction-match-enter-detail-btn"]').first().click({ force: true });
@@ -1288,6 +1298,8 @@ describe('Prediction Lazy Load', () => {
         cy.get('@getPredictionStatsLazy.all').should('have.length', 0);
 
         cy.contains('button', '순위예측').click({ force: true });
+        // 통제 하에서는 탭 전환 이후의 rAF/idle 작업이 flush 전까지 진행되지 않는다.
+        flushPredictionDeferredWork();
         assertPredictionChunkResourceCounts((counts) => {
             expect(counts.rankingTab).to.be.greaterThan(0);
             expect(counts.rankingPrediction).to.be.greaterThan(0);

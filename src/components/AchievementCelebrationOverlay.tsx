@@ -127,7 +127,7 @@ export default function AchievementCelebrationOverlay({
             type="button"
             data-testid="achievement-celebration-confirm"
             onClick={onClose}
-            className="mt-5 min-h-11 w-full shrink-0 rounded-xl bg-[#2d5f4f] px-4 py-2.5 text-14 font-bold text-white transition-colors hover:bg-[#2f6c5c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2d5f4f]"
+            className="mt-5 min-h-11 w-full shrink-0 rounded-xl bg-[#2d5f4f] px-4 py-2.5 text-caption font-bold text-white transition-colors hover:bg-[#2f6c5c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2d5f4f]"
           >
             확인
           </button>

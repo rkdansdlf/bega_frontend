@@ -10,6 +10,8 @@ import { createServer, type Plugin } from 'vite';
 import * as contentModule from './OffseasonMovementAdminPanelContent';
 import type { OffseasonMovementAdminPanelContentProps } from './OffseasonMovementAdminPanelContent';
 import { resolveComponentStateAdapter } from '../../visual-qa/stateAdapters';
+import { createViteCacheDir } from '../viteTestCacheDir';
+import { newScaledPage, scaledTimeout } from '../browserTestTimeouts';
 
 const contentSource = readFileSync(new URL('./OffseasonMovementAdminPanelContent.tsx', import.meta.url), 'utf8');
 const resultsSource = readFileSync(new URL('./OffseasonMovementAdminResultsRuntime.tsx', import.meta.url), 'utf8');
@@ -150,9 +152,10 @@ test('standalone content and leaves remain prop-only without transport imports',
 });
 
 test('actual Content DOM routes controlled callbacks exactly once without replay after resize', {
-  timeout: 60_000,
+  timeout: scaledTimeout(60_000),
 }, async () => {
   const server = await createServer({
+    cacheDir: createViteCacheDir('offseason-admin-panel'),
     configFile: fileURLToPath(new URL('../../../vite.visual-qa.config.ts', import.meta.url)),
     logLevel: 'silent',
     plugins: [createCallbackTestPlugin()],
@@ -165,7 +168,7 @@ test('actual Content DOM routes controlled callbacks exactly once without replay
     const address = server.httpServer?.address();
     assert.ok(address && typeof address !== 'string');
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
+    const page = await newScaledPage(browser, { viewport: { width: 320, height: 844 } });
     const browserDiagnostics: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') browserDiagnostics.push(message.text());
@@ -176,7 +179,7 @@ test('actual Content DOM routes controlled callbacks exactly once without replay
 
     const search = page.locator('[data-testid="admin-offseason-search"]');
     const team = page.locator('[data-testid="admin-offseason-team-trigger"]');
-    await search.waitFor({ timeout: 10_000 }).catch((error: unknown) => {
+    await search.waitFor({ timeout: scaledTimeout(10_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\nBrowser diagnostics:\n${browserDiagnostics.join('\n')}`);
     });
     await search.fill('MOCK 모바일 검색 입력');

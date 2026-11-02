@@ -255,7 +255,7 @@ export function TicketUploadModal({
 
                     {!isLoading && analysisError && (
                         <div
-                            className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-body font-semibold text-destructive"
+                            className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-body font-semibold text-status-error-text dark:text-destructive"
                             role="alert"
                             data-testid="ticket-upload-error"
                         >

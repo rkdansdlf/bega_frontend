@@ -5,6 +5,7 @@ import test from 'node:test';
 const packageJsonSource = readFileSync(new URL('../package.json', import.meta.url), 'utf8');
 const packageJson = JSON.parse(packageJsonSource) as { scripts: Record<string, string> };
 const indexHtmlSource = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const pretendardLoaderSource = readFileSync(new URL('../public/pretendard-loader.js', import.meta.url), 'utf8');
 const indexCssSource = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
 const viteConfigSource = readFileSync(new URL('../vite.config.ts', import.meta.url), 'utf8');
 const bundleGuardSource = readFileSync(new URL('./bundle-guard.mjs', import.meta.url), 'utf8');
@@ -554,8 +555,11 @@ test('keeps the app critical path free of font requests and defers Pretendard un
   assert.ok(tailwindConfigSource.includes(`sans: ['"Pretendard Variable"', 'Pretendard', ${systemFontStack}]`));
   assert.ok(tailwindConfigSource.includes(`native: [${systemFontStack}]`));
   assert.ok(indexCssSource.includes("font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"));
-  assert.ok(indexHtmlSource.includes("var events = ['scroll', 'pointerdown', 'keydown', 'touchstart'];"));
-  assert.ok(indexHtmlSource.includes('function loadPretendard()'));
+  // The loader lives in a self-hosted file (not an inline <script>) so CSP script-src 'self' allows it (#89).
+  assert.match(indexHtmlSource, /<script async src="\/pretendard-loader\.js"><\/script>/);
+  assert.equal(indexHtmlSource.includes('function loadPretendard()'), false);
+  assert.ok(pretendardLoaderSource.includes("var events = ['scroll', 'pointerdown', 'keydown', 'touchstart'];"));
+  assert.ok(pretendardLoaderSource.includes('function loadPretendard()'));
   // The only static stylesheet reference is the <noscript> fallback; nothing blocks first paint.
   assert.equal(/<link[^>]*rel="stylesheet"[^>]*cdn\.jsdelivr\.net/.test(indexHtmlSource.replace(/<noscript>[\s\S]*?<\/noscript>/g, '')), false);
   assert.equal(appShellRuntimeSource.includes('DeferredPretendardFont'), false);
@@ -1014,14 +1018,14 @@ test('keeps high-fanout chrome and home card CSS on named Tailwind tokens', () =
 });
 
 test('keeps shared focus rings on Tailwind default ring instead of arbitrary 3px rules', () => {
-  // Button focus classes live in the shared button-styles module that button.tsx imports.
-  const buttonSourceWithStyles = `${uiButtonSource}\n${uiButtonStylesSource}`;
-  const plainButtonSourceWithStyles = `${uiPlainButtonSource}\n${uiButtonStylesSource}`;
-
-  for (const source of [buttonSourceWithStyles, uiInputSource, uiTextareaSource, plainButtonSourceWithStyles]) {
+  for (const source of [uiButtonSource, uiButtonStylesSource, uiInputSource, uiTextareaSource, uiPlainButtonSource]) {
     assert.equal(source.includes('focus-visible:ring-[3px]'), false);
+  }
+  for (const source of [uiButtonStylesSource, uiInputSource, uiTextareaSource]) {
     assert.ok(source.includes('focus-visible:ring'));
   }
+  // plain-button 은 포커스 링을 직접 정의하지 않고 공용 buttonBaseClass 를 가져다 쓴다.
+  assert.ok(uiPlainButtonSource.includes('buttonBaseClass'));
 });
 
 test('keeps repeated dialog shadows on the shared Tailwind token', () => {

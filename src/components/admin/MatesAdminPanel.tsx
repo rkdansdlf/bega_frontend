@@ -132,7 +132,7 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
                 handleDeleteMate(pendingDeleteMate.id);
                 setPendingDeleteMate(null);
               }}
-              className="min-h-11 bg-red-500 text-white border-0 shadow-sm hover:bg-red-600 sm:min-h-9"
+              className="min-h-11 bg-red-600 text-white border-0 shadow-sm hover:bg-red-700 sm:min-h-9"
             >
               삭제
             </Button>

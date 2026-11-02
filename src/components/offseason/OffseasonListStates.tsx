@@ -35,7 +35,7 @@ export function OffseasonErrorState({
     return (
         <Card className="rounded-3xl border border-red-200 bg-red-50/60 p-6 text-center shadow-sm sm:p-8 dark:border-red-900/50 dark:bg-red-950/20">
             <div className="mx-auto flex max-w-md flex-col items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-red-500 shadow-sm dark:bg-zinc-900">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-red-600 dark:text-red-500 shadow-sm dark:bg-zinc-900">
                     <AlertCircleIcon className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">

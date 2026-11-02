@@ -35,10 +35,8 @@ const authFlowFiles = [
 ] as const;
 
 const landingHeaderFiles = [
-  'ui/page-primitives.tsx',
   'Landing.tsx',
   'Landing.css',
-  'LandingFeaturesRuntime.tsx',
 ] as const;
 
 const threeCardRhythmFiles = [

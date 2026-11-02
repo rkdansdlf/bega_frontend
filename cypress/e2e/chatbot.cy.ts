@@ -574,6 +574,15 @@ describe('AI Chatbot', () => {
             visitLoggedInShell();
         });
 
+        // 실패한 테스트는 화면 텍스트를 파일로 남긴다. 스크린샷 폴더 안이라 CI 아티팩트에 함께 올라간다.
+        afterEach(function () {
+            if (this.currentTest?.state !== 'failed') return;
+            const fileName = this.currentTest.title.replace(/[^a-zA-Z0-9가-힣]+/g, '-');
+            cy.get('body').then(($body) => {
+                cy.writeFile(`cypress/screenshots/diagnostics/${fileName}.txt`, $body.text());
+            });
+        });
+
         it('opens the panel and sends a message', () => {
             const message = 'Who is the best player?';
 
@@ -582,6 +591,21 @@ describe('AI Chatbot', () => {
 
             cy.wait('@sendMessage', { timeout: 15000 });
             cy.contains('Hello! I am the KBO AI Assistant.', { timeout: 10000 }).should('be.visible');
+        });
+
+        it('saves and answers a message once when it is submitted twice before the save completes', () => {
+            const message = 'double submit should save once';
+
+            openChatbotAndWaitForGreeting();
+            cy.getBySel('chatbot-message-input').should('be.enabled').clear().type(message);
+            cy.getBySel('chatbot-message-input').closest('form').submit();
+            cy.getBySel('chatbot-message-input').closest('form').submit();
+
+            cy.wait('@saveUserChatMessage', { timeout: 10000 });
+            cy.wait('@sendMessage', { timeout: 15000 });
+            cy.contains(message, { timeout: 10000 }).should('exist');
+            cy.get('@saveUserChatMessage.all').should('have.length', 1);
+            cy.get('@sendMessage.all').should('have.length', 1);
         });
 
         it('shows fast response badges for cached replies', () => {
@@ -1089,14 +1113,13 @@ describe('AI Chatbot', () => {
             }).as('serviceUnavailableRequest');
 
             openChatbotAndWaitForGreeting();
-            cy.clock(Date.now(), ['Date', 'setTimeout', 'clearTimeout']);
 
             typeAndSend(message);
-            cy.wait('@serviceUnavailableRequest');
-            cy.tick(1000);
-            cy.wait('@serviceUnavailableRequest');
-            cy.tick(2000);
-            cy.wait('@serviceUnavailableRequest');
+            // 재시도 간격(1초, 2초)은 실제 시간으로 기다린다. cy.clock/cy.tick 을 쓰면 앱이 503 응답을 받고
+            // 재시도 타이머를 등록하기 전에 tick 이 먼저 실행돼 두 번째 요청이 영원히 오지 않을 수 있다.
+            cy.wait('@serviceUnavailableRequest', { timeout: 10000 });
+            cy.wait('@serviceUnavailableRequest', { timeout: 10000 });
+            cy.wait('@serviceUnavailableRequest', { timeout: 10000 });
             cy.wait('@saveAssistantChatMessage').its('request.body').should((body) => {
                 expect(body.status).to.eq('ERROR');
                 expect(body.content).to.eq('AI 서비스가 현재 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');

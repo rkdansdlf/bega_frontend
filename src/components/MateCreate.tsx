@@ -257,7 +257,7 @@ export default function MateCreate({
             )}
           </div>
           {blockedStepMessage && (
-            <p className={`mt-3 min-w-0 text-center text-body [overflow-wrap:anywhere] ${createStep === 4 ? 'text-red-500' : 'text-amber-600'}`}>
+            <p className={`mt-3 min-w-0 text-center text-body [overflow-wrap:anywhere] ${createStep === 4 ? 'text-red-600 dark:text-red-500' : 'text-amber-600'}`}>
               {blockedStepMessage}
             </p>
           )}

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { chromium } from 'playwright';
 import { createServer, type Plugin } from 'vite';
+import { applyTimeoutScale, scaledTimeout } from './browserTestTimeouts';
 
 const packageManifest = JSON.parse(
   readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
@@ -220,7 +221,7 @@ test('ranking and pre-harness gates include the completion panel actual test exa
 });
 
 test('actual completion panel is mobile-contained, accessible, and callback-exact', {
-  timeout: 120_000,
+  timeout: scaledTimeout(120_000),
 }, async () => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'ranking-completion-vite-'));
   const server = await createServer({
@@ -241,6 +242,7 @@ test('actual completion panel is mobile-contained, accessible, and callback-exac
       reducedMotion: 'reduce',
       viewport: { width: 320, height: 844 },
     });
+    applyTimeoutScale(context);
     const page = await context.newPage();
     const diagnostics: string[] = [];
     page.on('console', (message) => {
@@ -278,7 +280,7 @@ test('actual completion panel is mobile-contained, accessible, and callback-exac
       await reset();
     };
 
-    await page.getByTestId('ranking-completion-panel').waitFor({ timeout: 15_000 }).catch((error: unknown) => {
+    await page.getByTestId('ranking-completion-panel').waitFor({ timeout: scaledTimeout(15_000) }).catch((error: unknown) => {
       throw new Error(`${String(error)}\n${diagnostics.join('\n')}`);
     });
     await settle();

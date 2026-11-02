@@ -104,7 +104,7 @@ export default function OffSeasonHomePrimaryRuntime({
         className="group mb-2 flex min-h-11 max-w-full items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-15 text-primary transition-all hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-gray-800"
         data-testid="offseason-home-back"
       >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10/10 transition-all group-hover:scale-110">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:scale-110">
           <ChevronLeftIcon className="h-4 w-4" />
         </span>
         <span className="font-bold group-hover:underline">메인페이지로 돌아가기</span>

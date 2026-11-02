@@ -56,6 +56,8 @@ test('a submodule pointer bump (bare gitlink path) fans out to every suite', () 
     home_changed: true,
     landing_changed: true,
     stadium_changed: true,
+    design_intent_changed: true,
+    design_intent_profiles: 'admin,auth,home,landing,mate,mypage,prediction,stadium',
   });
   // The gitlink must not make unrelated deploy-repository paths select UI suites.
   assert.deepEqual(detectFrontendUiImpact(['bega_backend', 'bega_AI', 'docs/README.md'], 'all', 'pull_request'), {
@@ -65,6 +67,8 @@ test('a submodule pointer bump (bare gitlink path) fans out to every suite', () 
     home_changed: false,
     landing_changed: false,
     stadium_changed: false,
+    design_intent_changed: false,
+    design_intent_profiles: '',
   });
 });
 

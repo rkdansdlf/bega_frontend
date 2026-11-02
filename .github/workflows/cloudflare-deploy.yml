@@ -79,6 +79,10 @@ jobs:
           done
 
       - name: Run strict SEO gate
+        env:
+          # Production build must prerender every stadium detail page; otherwise the worker
+          # would 404 them. Fail the deploy instead (bump when stadiums are added).
+          SEO_MIN_STADIUM_COUNT: '22'
         run: |
           npm run seo:env:check:strict
           npm run seo:gate

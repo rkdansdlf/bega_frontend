@@ -852,6 +852,15 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewsPanel",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -1553,15 +1562,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/AppRoutes.tsx#AccountDeletionRecovery",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/AppRoutes.tsx#AdminPagePage",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -1978,6 +1978,15 @@
       "renderAccess": "hosted"
     },
     {
+      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/auth/AuthLayout.tsx#AuthLayout",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -2175,6 +2184,16 @@
       "testEvidence": "visual-qa-component-inventory wrapper=lazy",
       "owner": "frontend-platform",
       "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/AuthSessionSync.tsx#AuthSessionSync",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Subscribes to cross-tab auth session signals and returns null without producing DOM.",
+      "owner": "frontend-platform",
+      "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "renderAccess": "module-export",
+      "exportName": "default"
     },
     {
       "id": "src/components/changwon/ChangwonSeatMap.tsx#BlockSearch",
@@ -4666,26 +4685,6 @@
       "owner": "frontend-platform",
       "renderAccess": "module-export",
       "exportName": "default"
-    },
-    {
-      "id": "src/components/FeatureCard.tsx#FeatureCard",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/FeatureCard.tsx#FeatureCard.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/FeatureCard.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
     },
     {
       "id": "src/components/figma/ImageWithFallback.tsx#ERROR_IMG_SRC",
@@ -11456,45 +11455,6 @@
     },
     {
       "id": "src/components/landing/vignettes/LandingPredictionVignette.tsx#LandingPredictionVignette",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LandingCapabilityShowcase.tsx#FEATURE_STORIES",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable array-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=array-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/LandingCapabilityShowcase.tsx#LandingCapabilityShowcase",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LandingFeaturesRuntime.tsx#LandingFeaturesRuntime",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "default"
-    },
-    {
-      "id": "src/components/LaptopMockup.tsx#LaptopMockup",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
       "reason": "The callable contains JSX and is included as a visual React render unit.",
@@ -20743,76 +20703,6 @@
       "exportName": "Input"
     },
     {
-      "id": "src/components/ui/page-primitives.tsx#Container",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Container"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#CTAGroup",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "CTAGroup"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#MockupFrame",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "MockupFrame"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#Section",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Section"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#SectionHeader",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "SectionHeader"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#Stack",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "Stack"
-    },
-    {
-      "id": "src/components/ui/page-primitives.tsx#TextBlock",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "module-export",
-      "exportName": "TextBlock"
-    },
-    {
       "id": "src/components/ui/plain-button.tsx#Button",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -21114,32 +21004,32 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/AppShellRuntime.tsx#AuthSessionSync",
-      "classification": "behavior-only",
-      "basis": "reviewed-zero-dom-runtime",
-      "reason": "Subscribes to cross-tab session events and refreshes shared-cookie state, returns null; the lazy alias also has a null Suspense fallback.",
-      "owner": "frontend-auth",
-      "testEvidence": "src/components/AuthSessionSync.tsx; scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "id": "src/components/AppRoutes.tsx#RecoveryEntry",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/AuthSessionSync.tsx#AuthSessionSync",
+      "id": "src/components/RecoveryEntry.tsx#AccountDeletionRecovery",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/RecoveryEntry.tsx#RecoveryEntry",
       "classification": "behavior-only",
       "basis": "reviewed-zero-dom-runtime",
-      "reason": "Subscribes to cross-tab session events and refreshes shared-cookie state, returns null; the lazy alias also has a null Suspense fallback.",
-      "owner": "frontend-auth",
-      "testEvidence": "src/components/AuthSessionSync.tsx; scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
+      "reason": "Captures the account-recovery token from the URL and renders nothing itself; the recovery screen it mounts is registered as AccountDeletionRecovery.",
+      "owner": "frontend-platform",
+      "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
       "renderAccess": "module-export",
       "exportName": "default"
-    },
-    {
-      "id": "src/components/admin/AdminSeatViewsPanel.tsx#AdminSeatViewPhoto",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "Renders the candidate photo or an accessible missing/failed-image placeholder inside AdminSeatViewsPanel.",
-      "testEvidence": "src/components/admin/AdminSeatViewsPanel.mobile.test.tsx",
-      "owner": "frontend-admin",
-      "renderAccess": "hosted"
     }
   ]
 }

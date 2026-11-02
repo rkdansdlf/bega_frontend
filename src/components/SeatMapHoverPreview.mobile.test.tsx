@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage } from './browserTestTimeouts';
 
 const pagePath = '/__seat-map-hover-preview-test.html';
 const entryPath = '/__seat-map-hover-preview-test.tsx';
@@ -265,7 +266,7 @@ test('SeatMapHoverPreview constrains an unbroken badge at mobile widths in a rea
   try {
     const started = await startServer(resources);
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(started.server);
     const externalRequests: string[] = [];
     const harnessOrigin = new URL(address).origin;
@@ -285,7 +286,7 @@ test('SeatMapHoverPreview renders every adapter-backed semantic state across bot
   try {
     const started = await startServer(resources);
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(started.server);
     const externalRequests: string[] = [];
     const themeBackgrounds = new Map<string, string>();

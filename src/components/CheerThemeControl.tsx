@@ -72,7 +72,7 @@ export default function CheerThemeControl({
                 'min-h-11 whitespace-nowrap rounded-full px-2 text-caption font-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cheer-panel-bg)] active:scale-[0.98]',
                 isActive
                   ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
-                  : 'text-slate-600 hover:bg-white dark:text-white dark:hover:bg-card',
+                  : 'text-slate-600 hover:bg-white dark:text-white dark:hover:bg-input/50',
               )}
               style={isActive ? { color: activeAccentText } : undefined}
             >

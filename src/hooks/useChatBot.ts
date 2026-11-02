@@ -331,6 +331,7 @@ export const useChatBot = (initialOpen = false) => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const currentSessionIdRef = useRef<number | null>(currentSessionId);
   const currentSessionTitleRef = useRef<string>(currentSessionTitle);
+  const locallyCreatedSessionIdRef = useRef<number | null>(null);
   const activeStreamAbortControllerRef = useRef<AbortController | null>(null);
   const activeBotMessageIdRef = useRef<string | null>(null);
   const activeBotMessageIndexRef = useRef<number | null>(null);
@@ -526,6 +527,12 @@ export const useChatBot = (initialOpen = false) => {
         return;
       }
 
+      if (locallyCreatedSessionIdRef.current === currentSessionId) {
+        locallyCreatedSessionIdRef.current = null;
+        setIsLoadingMessages(false);
+        return;
+      }
+
       setIsLoadingMessages(true);
 
       try {
@@ -703,6 +710,9 @@ export const useChatBot = (initialOpen = false) => {
       });
 
       const { sendChatMessageStream } = await loadChatBotStreamModule();
+      if (streamAbortController.signal.aborted) {
+        throw streamAbortController.signal.reason ?? new DOMException('chat stream cancelled', 'AbortError');
+      }
       if (!isCurrentRequest()) return;
       await sendChatMessageStream(
         { question: userMessage.text, history: historyPayload },
@@ -920,6 +930,7 @@ export const useChatBot = (initialOpen = false) => {
     if (!isViewerQueryScopeCurrent(scope)) return null;
     currentSessionIdRef.current = created.sessionId;
     currentSessionTitleRef.current = created.title || AiChatSessionTitleFallback;
+    locallyCreatedSessionIdRef.current = created.sessionId;
     setCurrentSessionId(created.sessionId);
     setCurrentSessionTitle(created.title || AiChatSessionTitleFallback);
     setMessages([]);
@@ -931,7 +942,20 @@ export const useChatBot = (initialOpen = false) => {
     return created;
   };
 
+  // 저장이 끝나기 전에 들어온 두 번째 전송(더블 클릭·연속 Enter)이 같은 문장을 다시 저장하지 않도록
+  // 렌더링과 무관하게 동기적으로 막는다. isProcessing 상태는 저장 중에는 아직 true가 아니다.
+  const submitInFlightRef = useRef(false);
   const submitMessage = async (trimmedInput: string) => {
+    if (submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
+    try {
+      await submitMessageOnce(trimmedInput);
+    } finally {
+      submitInFlightRef.current = false;
+    }
+  };
+
+  const submitMessageOnce = async (trimmedInput: string) => {
     const scope = viewerScope;
     const pendingMessageStorageKey = getChatBotPendingMessageStorageKey(scope.viewerId);
     if (!isViewerStateReady || !trimmedInput || !isLoggedIn || scope.viewerId === null || !pendingMessageStorageKey) return;

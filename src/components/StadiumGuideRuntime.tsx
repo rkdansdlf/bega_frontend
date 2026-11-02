@@ -1,4 +1,10 @@
 import { lazy, Suspense } from 'react';
+import { Helmet } from 'react-helmet-async';
+import NotFound from './NotFound';
+import { useParams } from 'react-router-dom';
+import { buildStadiumDetailSeo, STADIUM_INDEX_SEO } from '../seo/stadiumDetailSeo';
+import { useStadiumDetailHead } from '../seo/useStadiumDetailHead';
+import { buildCanonicalUrl } from '../seo/routeSeo';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { KAKAO_API_KEY, CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
@@ -120,6 +126,7 @@ function StadiumGuideCategorySelector({
 export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGuideRuntimeProps = {}) {
   const { theme, resolvedTheme } = useTheme();
   const runtimeState = useStadiumGuide();
+  const { stadiumId: routeStadiumId } = useParams<{ stadiumId?: string }>();
   const guideState = {
     ...runtimeState,
     ...(import.meta.env.PROD ? undefined : visualQaStateOverride),
@@ -136,6 +143,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     handleStadiumChange,
     handlePlaceClick,
     stadiumsStatus,
+    routeStadiumNotFound,
     placesStatus,
     nearbyStatus,
     mapStatus,
@@ -147,6 +155,18 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     retryPlaces,
     retryMap,
   } = guideState;
+
+  // /stadium -> listing copy; /stadium/:id -> Korean stadium name once that stadium is loaded.
+  // Until then (or if the API fails) the prerendered head is left untouched.
+  const stadiumDetailSeo = !routeStadiumId
+    ? STADIUM_INDEX_SEO
+    : !routeStadiumNotFound && selectedStadium?.stadiumId === routeStadiumId
+      ? buildStadiumDetailSeo(selectedStadium)
+      : null;
+  useStadiumDetailHead(
+    stadiumDetailSeo,
+    stadiumDetailSeo ? buildCanonicalUrl(routeStadiumId ? `/stadium/${routeStadiumId}` : '/stadium') : undefined,
+  );
 
   const { isLoggedIn } = useAuthSession();
   const { userId: authUserId } = useAuthProfileSnapshot();
@@ -209,7 +229,20 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     );
   };
 
+  if (routeStadiumNotFound) {
+    return (
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex,nofollow" />
+          <title>페이지를 찾을 수 없습니다 | BEGA</title>
+        </Helmet>
+        <NotFound />
+      </>
+    );
+  }
+
   return (
+    <>
     <div
       className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200"
       data-testid="stadium-guide-runtime"
@@ -580,5 +613,6 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
         </div>
       </div>
     </div>
+    </>
   );
 }

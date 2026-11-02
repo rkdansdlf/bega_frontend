@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage } from '../browserTestTimeouts';
 
 const componentId = 'src/components/stadiumSeatMap/SeatMapTemplateShell.tsx#SeatMapTemplateShell';
 const pagePath = '/__seat-map-template-shell-test.html';
@@ -354,7 +355,7 @@ test('SeatMapTemplateShell contains all 264 approved composition states at mobil
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(resources.server);
     const harnessOrigin = new URL(address).origin;
     const externalRequests: string[] = [];

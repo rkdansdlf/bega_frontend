@@ -16,7 +16,7 @@ import { Button } from './ui/button';
 import { ProfileAvatar } from './ui/ProfileAvatar';
 import { publicNavbarNavItems, type PublicNavbarNavItemId } from './publicNavbarNavItems';
 
-const navIconToggleClass = 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-secondary';
+const navIconToggleClass = 'relative h-11 w-11 p-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-600 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-input/50';
 const navIconSizeClass = 'h-6 w-6';
 const menuActionFocusClass = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
@@ -182,7 +182,7 @@ export default function PublicNavbarMenuPanel({
             <button
               type="button"
               onClick={handleLogout}
-              className={`flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold ${menuActionFocusClass}`}
+              className={`flex items-center justify-center gap-2 w-full py-4 px-4 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 font-semibold ${menuActionFocusClass}`}
               aria-label="로그아웃"
               data-testid={isVisualQaDev ? 'public-navbar-menu-logout' : undefined}
             >

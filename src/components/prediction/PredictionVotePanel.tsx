@@ -88,7 +88,7 @@ export default function PredictionVotePanel({
     >
       <div className="mb-3 flex flex-col gap-1.5 sm:mb-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 id={votePanelTitleId} className="text-16 font-black tracking-normal text-slate-950 dark:text-white">승리 팀 예측</h3>
+          <h3 id={votePanelTitleId} className="text-body font-black tracking-normal text-slate-950 dark:text-white">승리 팀 예측</h3>
           <p className="mt-1 text-body font-semibold text-slate-700 dark:text-white/80">
             승리할 것으로 예상하는 팀을 선택해 주세요.
           </p>
@@ -149,7 +149,7 @@ export default function PredictionVotePanel({
                       <span className="mb-1 inline-flex rounded-full border border-slate-200 bg-white px-2 py-0.5 text-11 font-black tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white/55">
                         {sideLabel}
                       </span>
-                      <span className="block truncate text-16 font-black text-slate-700 dark:text-white">{teamName}</span>
+                      <span className="block truncate text-body font-black text-slate-700 dark:text-white">{teamName}</span>
                     </span>
                   </span>
                   <span className="shrink-0 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-12 font-bold dark:border-slate-700 dark:bg-slate-950/60 dark:text-white">

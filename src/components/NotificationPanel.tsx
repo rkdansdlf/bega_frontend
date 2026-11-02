@@ -222,7 +222,7 @@ export default function NotificationPanel({
     switch (type) {
       case 'APPLICATION_RECEIVED': return <NotificationBellIcon className="h-5 w-5 text-blue-500" />;
       case 'APPLICATION_APPROVED': return <NotificationCheckIcon className="h-5 w-5 text-green-500" />;
-      case 'APPLICATION_REJECTED': return <NotificationCloseIcon className="h-5 w-5 text-red-500" />;
+      case 'APPLICATION_REJECTED': return <NotificationCloseIcon className="h-5 w-5 text-red-600 dark:text-red-500" />;
       case 'PARTY_EXPIRED': return <NotificationAlertTriangleIcon className="h-5 w-5 text-orange-500" />;
       case 'PARTY_AUTO_COMPLETED': return <NotificationCheckIcon className="h-5 w-5 text-gray-500" />;
       case 'GAME_TOMORROW_REMINDER': return <NotificationCalendarIcon className="h-5 w-5 text-blue-500" />;
@@ -235,7 +235,7 @@ export default function NotificationPanel({
       case 'POST_REPOST': return <NotificationRepeatIcon className="h-5 w-5 text-emerald-500" />;
       case 'NEW_FOLLOWER': return <NotificationUserPlusIcon className="h-5 w-5 text-green-500" />;
       case 'FOLLOWING_NEW_POST': return <NotificationFileTextIcon className="h-5 w-5 text-blue-500" />;
-      case 'NEW_DEVICE_LOGIN': return <NotificationShieldAlertIcon className="h-5 w-5 text-red-500" />;
+      case 'NEW_DEVICE_LOGIN': return <NotificationShieldAlertIcon className="h-5 w-5 text-red-600 dark:text-red-500" />;
       case 'RANKING_PREDICTION_SETTLED': return <NotificationCheckCheckIcon className="h-5 w-5 text-emerald-500" />;
       default: return <NotificationBellIcon className="h-5 w-5 text-gray-500" />;
     }

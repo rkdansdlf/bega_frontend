@@ -93,7 +93,7 @@ const CheerFeedTabs = memo(function CheerFeedTabs({
                             }}
                             className={`relative flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 py-0 text-caption font-bold transition-all duration-200 sm:px-3.5 sm:text-15 ${isActive
                                     ? 'bg-[var(--cheer-seg-on)] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
-                                    : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-white dark:hover:bg-secondary dark:hover:text-white active:scale-[0.98]'
+                                    : 'text-slate-500 hover:bg-white/70 hover:text-slate-900 dark:text-white dark:hover:bg-input/50 dark:hover:text-white active:scale-[0.98]'
                             }`}
                             style={isActive ? { color: activeAccentText } : undefined}
                         >
@@ -496,7 +496,7 @@ export default function CheerRuntime({
                                         onClick={() => navigate(item.path)}
                                         className={`flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors ${isActive
                                                 ? 'bg-slate-100 text-slate-900 dark:bg-secondary dark:text-white'
-                                                : 'text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary'
+                                                : 'text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-input/50'
                                         }`}
                                         style={isActive ? { backgroundColor: `${teamColor}1A` } : undefined}
                                     >
@@ -569,7 +569,7 @@ export default function CheerRuntime({
                                                 <p className="text-caption font-black text-slate-700 dark:text-white">최근 검색</p>
                                                 <button
                                                     type="button"
-                                                    className="min-h-11 rounded-full px-3 text-caption font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-secondary"
+                                                    className="min-h-11 rounded-full px-3 text-caption font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-input/50"
                                                     onClick={clearRecentSearches}
                                                 >
                                                     전체 삭제
@@ -580,7 +580,7 @@ export default function CheerRuntime({
                                                     <li key={term} className="flex items-center gap-1">
                                                         <button
                                                             type="button"
-                                                            className="min-h-11 min-w-0 flex-1 truncate rounded-xl px-3 text-left text-body font-bold text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-secondary"
+                                                            className="min-h-11 min-w-0 flex-1 truncate rounded-xl px-3 text-left text-body font-bold text-slate-700 hover:bg-slate-100 dark:text-white dark:hover:bg-input/50"
                                                             onClick={() => setSearchQuery(term)}
                                                         >
                                                             {term}
@@ -588,7 +588,7 @@ export default function CheerRuntime({
                                                         <button
                                                             type="button"
                                                             aria-label={`${term} 최근 검색 삭제`}
-                                                            className="flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-secondary dark:hover:text-white"
+                                                            className="flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-input/50 dark:hover:text-white"
                                                             onClick={() => removeRecentSearch(term)}
                                                         >
                                                             <XIcon className="h-4 w-4" />

@@ -132,7 +132,7 @@ function CommentItemComponent({
               onClick={() => onCommentLike(comment.id)}
               disabled={!canLike || isCommentLikePending}
               aria-label={`댓글 좋아요 ${likeCount}`}
-              className={`flex min-h-11 min-w-11 items-center justify-center gap-1 transition-colors hover:text-red-500 ${isCommentLiked ? 'text-red-500' : ''
+              className={`flex min-h-11 min-w-11 items-center justify-center gap-1 transition-colors hover:text-red-500 ${isCommentLiked ? 'text-red-600 dark:text-red-500' : ''
                 } ${!canLike ? 'cursor-not-allowed text-gray-400 dark:text-white hover:text-gray-400 dark:hover:text-gray-600' : ''}`}
             >
               <span className="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors">
@@ -140,7 +140,7 @@ function CommentItemComponent({
                   <span className="pointer-events-none absolute inset-0 rounded-full bg-red-500/20 animate-like-ring" />
                 )}
                 <CommentHeartIcon
-                  className={`h-4 w-4 ${isCommentLiked ? 'fill-red-500 text-red-500' : ''} ${isCommentLikeAnimating ? 'animate-like-pop' : ''}`}
+                  className={`h-4 w-4 ${isCommentLiked ? 'fill-red-500 text-red-600 dark:text-red-500' : ''} ${isCommentLikeAnimating ? 'animate-like-pop' : ''}`}
                 />
               </span>
               <span>{likeCount}</span>

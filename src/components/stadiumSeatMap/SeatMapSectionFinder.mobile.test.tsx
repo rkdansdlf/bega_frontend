@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
+import { newScaledPage } from '../browserTestTimeouts';
 
 const pagePath = '/__seat-map-section-finder-test.html';
 const entryPath = '/__seat-map-section-finder-test.tsx';
@@ -341,7 +342,7 @@ test('SeatMapSectionFinder contains every approved mobile state and invokes each
     resources.server = started.server;
     resources.cacheDir = started.cacheDir;
     resources.browser = await chromium.launch({ headless: true });
-    const page = await resources.browser.newPage();
+    const page = await newScaledPage(resources.browser);
     const address = serverAddress(resources.server);
     const harnessOrigin = new URL(address).origin;
     const externalRequests: string[] = [];

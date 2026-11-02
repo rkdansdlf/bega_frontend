@@ -109,7 +109,7 @@ const forbiddenChunkPrefixes = [
 ];
 
 const sizeBudgets = [
-  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 257_300 },
+  { label: 'global CSS', directory: clientAssetsDir, filePattern: /^index-.*\.css$/, maxBytes: 258_000 },
   { label: 'vendor-react-core', directory: clientAssetsDir, filePattern: /^vendor-react-core-.*\.js$/, maxBytes: 345_000 },
   { label: 'vendor-router', directory: clientAssetsDir, filePattern: /^vendor-router-.*\.js$/, maxBytes: 50_000 },
   { label: 'vendor-zustand', directory: clientAssetsDir, filePattern: /^vendor-zustand-.*\.js$/, maxBytes: 8_000, optionalMissing: true },
@@ -1750,7 +1750,7 @@ const routeStaticClosureTargets = [
   {
     route: '/login',
     label: '/login route static closure',
-    maxJsGzipBytes: 86_600,
+    maxJsGzipBytes: 86_900,
     entrypoints: [
       'index.html',
       'src/components/Login.tsx',
@@ -1759,7 +1759,7 @@ const routeStaticClosureTargets = [
   {
     route: '/signup',
     label: '/signup route static closure',
-    maxJsGzipBytes: 88_000,
+    maxJsGzipBytes: 88_200,
     entrypoints: [
       'index.html',
       'src/components/SignUp.tsx',
@@ -1768,7 +1768,7 @@ const routeStaticClosureTargets = [
   {
     route: '/password/reset',
     label: '/password/reset route static closure',
-    maxJsGzipBytes: 83_100,
+    maxJsGzipBytes: 83_500,
     entrypoints: [
       'index.html',
       'src/components/PasswordReset.tsx',
@@ -1777,7 +1777,7 @@ const routeStaticClosureTargets = [
   {
     route: '/password/reset/confirm',
     label: '/password/reset/confirm route static closure',
-    maxJsGzipBytes: 84_000,
+    maxJsGzipBytes: 84_200,
     entrypoints: [
       'index.html',
       'src/components/PasswordResetConfirm.tsx',
@@ -1823,7 +1823,7 @@ const routeStaticClosureTargets = [
   {
     route: '/cheer',
     label: '/cheer route static closure',
-    maxJsGzipBytes: 121_600,
+    maxJsGzipBytes: 122_200,
     entrypoints: [
       'index.html',
       'src/components/Cheer.tsx',

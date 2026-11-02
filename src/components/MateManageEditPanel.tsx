@@ -130,7 +130,7 @@ export default function MateManageEditPanel({
           className={cn(descriptionError && 'border-red-400 focus-visible:ring-red-200')}
         />
         {descriptionError && (
-          <p className="text-body text-red-500">{descriptionError}</p>
+          <p className="text-body text-red-600 dark:text-red-500">{descriptionError}</p>
         )}
       </div>
 

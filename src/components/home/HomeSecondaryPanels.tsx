@@ -277,7 +277,7 @@ export default function HomeSecondaryPanels({
     <section data-home-panel-priority="secondary" className="w-[86vw] shrink-0 snap-start space-y-3 sm:w-[420px] lg:order-1 lg:col-span-4 lg:w-auto">
       <PanelHeader
         title="실시간 인기 응원글"
-        icon={<FlameIcon className="h-5 w-5 text-red-500" />}
+        icon={<FlameIcon className="h-5 w-5 text-red-600 dark:text-red-500" />}
         onMore={onNavigateToCheer}
         moreLabel="전체 보기"
         testId="home-secondary-cheer-more"

@@ -104,7 +104,7 @@ export default function CheerCommunityPulse({
                 <button
                   type="button"
                   data-testid="cheer-community-pulse-leader"
-                  className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-left hover:bg-slate-50 dark:hover:bg-secondary"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-left hover:bg-slate-50 dark:hover:bg-input/50"
                   onClick={() => goTo(leader.handle ? `/profile/${leader.handle.startsWith('@') ? leader.handle : `@${leader.handle}`}` : '/leaderboard')}
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-caption font-black text-slate-700 dark:bg-secondary dark:text-white">

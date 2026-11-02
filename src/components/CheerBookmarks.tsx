@@ -100,7 +100,7 @@ export default function CheerBookmarks({
                     'flex items-center justify-center xl:justify-start gap-3 h-11 px-2 rounded-full xl:rounded-xl text-18 font-bold transition-colors',
                     isActive
                       ? 'bg-slate-100 text-slate-900 dark:bg-secondary dark:text-white'
-                      : 'text-[#334155] hover:bg-[#F1F5F9] dark:text-white dark:hover:bg-secondary'
+                      : 'text-[#334155] hover:bg-[#F1F5F9] dark:text-white dark:hover:bg-input/50'
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -169,7 +169,7 @@ export default function CheerBookmarks({
                     }
                     void refetch();
                   }}
-                  className="mt-3 min-h-11 rounded-full border border-[var(--cheer-line-10)] px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:text-white dark:hover:bg-secondary"
+                  className="mt-3 min-h-11 rounded-full border border-[var(--cheer-line-10)] px-4 py-2 text-body font-bold text-slate-600 hover:bg-slate-50 dark:text-white dark:hover:bg-input/50"
                 >
                   다시 시도
                 </button>

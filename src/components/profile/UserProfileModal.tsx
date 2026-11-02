@@ -238,7 +238,7 @@ export default function UserProfileModal({
                                 <p className="mt-2 text-body text-gray-500">프로필 불러오는 중...</p>
                             </div>
                         ) : visibleError ? (
-                            <div className="py-8 text-center text-red-500">
+                            <div className="py-8 text-center text-red-600 dark:text-red-500">
                                 <p>{visibleError}</p>
                             </div>
                         ) : visibleProfile ? (

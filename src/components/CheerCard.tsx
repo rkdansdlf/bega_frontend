@@ -205,7 +205,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                     }
                     navigate(`/cheer/${isSimpleRepost && post.originalPost ? post.originalPost.id : post.id}`);
                 }}
-                className="px-2 py-3 transition-all duration-200 cursor-pointer hover:bg-slate-50 dark:hover:bg-secondary rounded-lg dark:bg-card dark:border dark:border-border"
+                className="px-2 py-3 transition-all duration-200 cursor-pointer hover:bg-slate-50 dark:hover:bg-input/50 rounded-lg dark:bg-card dark:border dark:border-border"
             >
                 <div className="flex items-center justify-between mb-2 text-body font-semibold text-[#536471] dark:text-white">
                     <span className="flex min-w-0 items-center gap-2 font-bold">
@@ -329,7 +329,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                     )}
                 </div>
 
-                <div className="flex-1 min-w-[9rem]">
+                <div className="flex-1 min-w-36">
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-body font-semibold">
                         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                             <span
@@ -355,7 +355,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                             </span>
                             {renderPostTypeBadge(effectivePostType, post.teamColor)}
                             {((post.repostType === 'SIMPLE' && post.originalPost && post.isHot) || (!post.repostType && post.isHot)) && (
-                                <span className="text-body font-bold text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/50 px-2 py-0.5 rounded-full">
+                                <span className="text-body font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/50 px-2 py-0.5 rounded-full">
                                     HOT
                                 </span>
                             )}
@@ -373,7 +373,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                             event.stopPropagation();
                                             setIsOwnerMenuOpen((prev) => !prev);
                                         }}
-                                        className="flex h-11 w-11 items-center justify-center rounded-full text-[#64748B] transition-colors hover:bg-slate-100 hover:text-[#0f1419] dark:text-white dark:hover:bg-secondary dark:hover:text-white"
+                                        className="flex h-11 w-11 items-center justify-center rounded-full text-[#64748B] transition-colors hover:bg-slate-100 hover:text-[#0f1419] dark:text-white dark:hover:bg-input/50 dark:hover:text-white"
                                         aria-label="게시글 옵션"
                                         aria-expanded={isOwnerMenuOpen}
                                         aria-haspopup="menu"
@@ -389,7 +389,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                         setIsOwnerMenuOpen(false);
                                         handleEdit(event);
                                     }}
-                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-secondary"
+                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-input/50"
                                 >
                                     <EditIcon className="mr-2 h-4 w-4" />
                                     수정하기
@@ -401,7 +401,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                         setIsOwnerMenuOpen(false);
                                         void handleDelete(event);
                                     }}
-                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                                    className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-body font-bold text-red-600 dark:text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                                 >
                                     <TrashIcon className="mr-2 h-4 w-4" />
                                     삭제하기

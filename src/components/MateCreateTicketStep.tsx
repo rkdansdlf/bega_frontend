@@ -114,14 +114,14 @@ export default function MateCreateTicketStep({
               </div>
             ) : isScanFailed ? (
               <div className="flex min-w-0 flex-col items-center gap-3">
-                <MateAlertCircleIcon className="h-10 w-10 text-red-500 sm:h-14 sm:w-14" />
+                <MateAlertCircleIcon className="h-10 w-10 text-red-600 dark:text-red-500 sm:h-14 sm:w-14" />
                 <p
                   className="line-clamp-3 break-all text-base font-bold text-red-700 dark:text-red-300 sm:text-lg"
                   title={ticketFile?.name}
                 >
                   {ticketFile?.name}
                 </p>
-                <p className="text-body font-semibold text-red-600 dark:text-red-400 sm:text-base">
+                <p className="text-body font-semibold text-red-700 dark:text-red-400 sm:text-base">
                   파일 업로드 완료, AI 분석 실패
                 </p>
                 <p className="text-body text-gray-500">클릭 또는 Enter로 다른 파일 선택</p>
