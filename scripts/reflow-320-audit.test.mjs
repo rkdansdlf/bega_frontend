@@ -166,6 +166,7 @@ test('every route in AppRoutes.tsx is either audited or explicitly excluded', ()
     .replace(/\/20\d{6}[A-Z]+\d/g, '/:gameId')
     .replace(/\/abc\/2026/, '/:shareId/:seasonYear')
     .replace(/\/@[^/]+/g, '/:handle')
+    .replace(/\/stadium\/[a-z]+/g, '/stadium/:stadiumId')
     .replace(/\/\d+/g, '/:id')));
 
   const missing = declared.filter((p) => {
