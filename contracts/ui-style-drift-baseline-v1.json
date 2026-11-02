@@ -12468,8 +12468,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 10,
-      "sourceCount": 10
+      "count": 6,
+      "sourceCount": 6
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
@@ -12578,8 +12578,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 16,
-      "sourceCount": 16
+      "count": 14,
+      "sourceCount": 14
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
@@ -12648,8 +12648,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 16,
-      "sourceCount": 16
+      "count": 10,
+      "sourceCount": 10
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
@@ -12658,8 +12658,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 77,
-      "sourceCount": 77
+      "count": 68,
+      "sourceCount": 68
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
@@ -12688,8 +12688,8 @@
       "disposition": "unresolved",
       "reason": "Existing source at the pinned HEAD; resolve with scoped design evidence and preserve behavior.",
       "owner": "frontend/design-system",
-      "count": 28,
-      "sourceCount": 28
+      "count": 25,
+      "sourceCount": 25
     },
     {
       "file": "src/visual-qa/stateAdapters.ts",
