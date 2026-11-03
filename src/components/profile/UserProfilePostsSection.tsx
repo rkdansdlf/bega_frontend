@@ -55,7 +55,7 @@ export default function UserProfilePostsSection({
                 <p className="mb-4 text-gray-600 dark:text-white">
                     게시글을 불러오지 못했습니다.
                 </p>
-                <Button variant="outline" onClick={onRetryPosts}>
+                <Button variant="outline" className="sm:min-h-11" onClick={onRetryPosts}>
                     다시 시도
                 </Button>
             </div>
