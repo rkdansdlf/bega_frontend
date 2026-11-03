@@ -52,7 +52,7 @@ export const LOGGED_OUT_ROUTES = [
 /** Routes reachable without a session. */
 export const PUBLIC_ROUTES = [
   '/', '/home', ...LOGGED_OUT_ROUTES,
-  '/prediction', '/mate', '/cheer', '/stadium', '/leaderboard',
+  '/prediction', '/mate', '/cheer', '/stadium', '/stadium/jamsil', '/leaderboard',
   '/offseason', '/offseason/list', '/notice', '/terms', '/privacy',
 ];
 
