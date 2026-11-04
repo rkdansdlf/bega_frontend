@@ -134,7 +134,7 @@ export default function MateApplyTicketVerificationPanel({
           <Button
             data-testid="mate-ticket-reset"
             variant="ghost"
-            className="w-full text-body text-gray-500 focus-visible:ring-inset dark:text-white sm:w-auto"
+            className="w-full text-body text-gray-500 focus-visible:ring-inset dark:text-white sm:w-auto sm:min-h-11"
             onClick={onReset}
           >
             다시 인증하기

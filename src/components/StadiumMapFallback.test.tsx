@@ -35,7 +35,7 @@ test('map fallback links the selected stadium to its Kakao Map place page withou
 });
 
 test('map fallback never shows operator diagnostics', () => {
-  for (const reason of ['offline', 'unavailable', 'missing-key'] as const) {
+  for (const reason of ['offline', 'unavailable', 'missing-key', 'no-coordinates'] as const) {
     const html = renderFallback({ reason });
     assert.doesNotMatch(html, /API 키|도메인|광고 차단|스크립트|VITE_/);
   }
@@ -62,4 +62,17 @@ test('map fallback falls back to a name search without coordinates', () => {
   const html = renderFallback({ lat: null, lng: null });
 
   assert.match(html, /href="https:\/\/map\.kakao\.com\/\?q=%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC"/);
+});
+
+test('map fallback renders no-coordinates without retry button and with kakao search link', () => {
+  const html = renderFallback({
+    reason: 'no-coordinates',
+    lat: null,
+    lng: null,
+  });
+
+  assert.match(html, /data-map-failure-reason="no-coordinates"/);
+  assert.match(html, /지도에 구장 위치를 표시할 수 없어요/);
+  assert.match(html, /href="https:\/\/map\.kakao\.com\/\?q=%EC%B0%BD%EC%9B%90NC%ED%8C%8C%ED%81%AC"/);
+  assert.doesNotMatch(html, /data-testid="stadium-map-fallback-retry"/);
 });

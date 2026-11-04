@@ -478,7 +478,7 @@ export default function CheerRuntime({
         >
             <div className="px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
                 <div className="mx-auto w-full max-w-[1008px] xl:max-w-[1136px] lg:-translate-x-4">
-                    <div className="grid grid-cols-1 gap-0 md:grid-cols-[1fr_264px] md:gap-x-4 lg:grid-cols-[68px_1fr_264px] xl:grid-cols-[200px_1fr_270px]">
+                    <div className="grid grid-cols-1 gap-0 lg:grid-cols-[68px_minmax(0,1fr)_264px] lg:gap-x-4 xl:grid-cols-[200px_minmax(0,1fr)_270px]">
                         <aside className="hidden lg:flex w-[68px] xl:w-[200px] flex-col gap-3 sticky top-24 self-start px-2 xl:px-3">
                             {[
                                 { id: 'home', label: '홈', icon: HomeIcon, path: '/home' },
@@ -519,7 +519,7 @@ export default function CheerRuntime({
                             </button>
                         </aside>
 
-                        <div className="relative flex w-full flex-col gap-0 bg-slate-50/50 dark:bg-card md:pb-24 lg:pb-0">
+                        <div className="relative flex w-full min-w-0 flex-col gap-0 bg-slate-50/50 dark:bg-card md:pb-24 lg:pb-0">
                             <header className="border-b border-slate-200 bg-white px-4 py-3 dark:border-border dark:bg-card">
                                 <div
                                     className="relative"
@@ -709,7 +709,7 @@ export default function CheerRuntime({
                         </div>
 
                         {shouldRenderSidebar ? (
-                            <aside className="sticky top-24 hidden w-[264px] self-start md:flex xl:w-[270px]">
+                            <aside className="sticky top-24 hidden w-[264px] min-w-0 self-start lg:flex xl:w-[270px]">
                                 <Suspense
                                     fallback={(
                                         <div className="flex w-full flex-col gap-4">

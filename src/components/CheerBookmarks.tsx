@@ -86,7 +86,7 @@ export default function CheerBookmarks({
       className="min-h-screen bg-[var(--cheer-page-bg)] pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0"
     >
       <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 py-6 sm:py-8">
-        <div className="grid grid-cols-1 gap-0 md:grid-cols-[1fr_264px] md:gap-x-4 lg:grid-cols-[68px_1fr_264px] xl:grid-cols-[200px_1fr_270px]">
+        <div className="grid grid-cols-1 gap-0 md:grid-cols-[minmax(0,1fr)_264px] md:gap-x-4 lg:grid-cols-[68px_minmax(0,1fr)_264px] xl:grid-cols-[200px_minmax(0,1fr)_270px]">
           <aside className="hidden lg:flex w-[68px] xl:w-[200px] flex-col gap-3 sticky top-6 self-start px-2 xl:px-3">
             {navItems.map((item) => {
               const Icon = item.icon;

@@ -1,0 +1,67 @@
+@media (max-width: 639px) {
+  .cheer-card-mobile {
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: theme(spacing.3);
+  }
+
+  .cheer-card-mobile-layout {
+    flex-direction: column;
+    gap: theme(spacing.3);
+  }
+
+  .cheer-card-mobile-content {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .cheer-card-mobile-copy {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .cheer-card-mobile-interactions {
+    flex-wrap: wrap;
+    row-gap: theme(spacing.1);
+  }
+
+  .cheer-card-mobile-interactions > button,
+  .cheer-card-mobile-interactions > div > button {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+
+  .cheer-card-mobile-interactions > button > span.relative,
+  .cheer-card-mobile-interactions > div > button > span.relative {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    flex-shrink: 0;
+  }
+
+  .cheer-card-mobile-interactions [data-testid='rolling-number'] {
+    min-width: max-content;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .cheer-card-mobile-label {
+    margin-left: 0;
+    min-width: 0;
+  }
+
+  .cheer-card-mobile-label > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .cheer-card-mobile-label > svg {
+    flex-shrink: 0;
+  }
+
+  .mypage-season-cheer-list {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+}

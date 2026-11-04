@@ -306,7 +306,7 @@ export default function UserProfile({
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                             {profile.name}
                         </h1>
-                        <p className="text-gray-500 dark:text-white">{profile.handle}</p>
+                        <p className="text-gray-500 dark:text-white [overflow-wrap:anywhere]">{profile.handle}</p>
                     </div>
 
                     {/* Badges */}
@@ -397,7 +397,7 @@ export default function UserProfile({
                                     onFollowChange={handleFollowChange}
                                     size="default"
                                     showNotifyOption={true}
-                                    className="flex-1"
+                                    className="flex-1 sm:min-h-11"
                                     style={{
                                         backgroundColor: theme.primary,
                                         color: theme.contrastText,
@@ -406,7 +406,7 @@ export default function UserProfile({
                             </Suspense>
                             <Button
                                 variant="outline"
-                                className="flex-1"
+                                className="flex-1 sm:min-h-11"
                                 onClick={scrollToPostsSection}
                             >
                                 <UserProfilePenSquareIcon className="w-4 h-4 mr-2" />

@@ -169,7 +169,7 @@
     --provider-kakao-text: 0 0% 10%;
     --provider-google-bg: 0 0% 100%;
     --provider-google-text: 215 16% 24%;
-    --provider-naver-bg: 142 97% 39%;
+    --provider-naver-bg: 145 97% 40%;
     --provider-naver-text: 0 0% 100%;
   }
 
@@ -240,6 +240,8 @@
 
     --provider-google-bg: 220 18% 14%;
     --provider-google-text: 0 0% 100%;
+    --provider-naver-bg: 145 97% 40%;
+    --provider-naver-text: 0 0% 100%;
 
     /* Cheer board (design v2) */
     --cheer-page-bg: #0a0a0a;
