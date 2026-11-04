@@ -378,6 +378,7 @@ function VisualQaInteractionMarker({ eventName, testId }: { eventName: string; t
   );
 }
 
+
 export type ComponentStateValues = Partial<Record<
   'data' | 'permissions' | 'interactions' | 'system',
   string
@@ -12578,6 +12579,7 @@ const resolveConfirmDialogRendererAdapter = (
       'maximum-supported': 'maximum-supported',
       'null-optional': 'null-optional',
       populated: 'populated',
+      'broken-image': 'broken-image',
       'unbroken-token': 'unbroken-token',
     });
     requireStateValue(context, 'permissions', 'admin');
@@ -12683,8 +12685,10 @@ const resolveConfirmDialogRendererAdapter = (
       AdminSeatView
     > = {
       populated: baseSeatView,
+      'broken-image': { ...baseSeatView, photoUrl: 'data:image/png;base64,bm90LXZhbGlk' },
       'null-optional': {
         ...baseSeatView,
+        photoUrl: null,
         id: 43,
         diaryId: null,
         aiSuggestedLabel: null,

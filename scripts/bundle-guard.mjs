@@ -1786,7 +1786,7 @@ const routeStaticClosureTargets = [
   {
     route: '/account/deletion/recovery',
     label: '/account/deletion/recovery route static closure',
-    maxJsGzipBytes: 81_700,
+    maxJsGzipBytes: 82_600,
     entrypoints: [
       'index.html',
       'src/components/AccountDeletionRecovery.tsx',

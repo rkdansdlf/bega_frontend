@@ -127,12 +127,13 @@ export const fetchAdminUsers = async (search?: string): Promise<AdminUser[]> => 
 };
 
 /**
- * 유저 삭제
+ * 유저 삭제. 서버 메시지를 반환한다 (게시물 정리 대기 중이면 202 보류 안내 문구).
  */
-export const deleteAdminUser = async (userId: number): Promise<void> => {
+export const deleteAdminUser = async (userId: number): Promise<string> => {
   try {
     const response = await privateDelete<AdminApiResponse<unknown>>(`/admin/users/${userId}`);
     unwrapAdminResponse(response, '유저 삭제 실패');
+    return response.message || '유저가 삭제되었습니다.';
   } catch (error) {
     throw new Error(readErrorMessage(error, '유저 삭제 실패'));
   }

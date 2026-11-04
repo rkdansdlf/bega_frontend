@@ -7110,7 +7110,8 @@
             "boundary-maximum",
             "long-korean",
             "unbroken-token",
-            "maximum-supported"
+            "maximum-supported",
+            "broken-image"
           ],
           "reason": "The panel owns empty and populated candidate lists, nullable review metadata, identifier and confidence boundaries, long Korean and unbroken seat values, and the maximum supported 50-row inventory.",
           "owner": "frontend-admin",
@@ -7455,6 +7456,15 @@
             "system": "loading"
           },
           "reason": "Loading replaces candidate rows with one canonical announced status surface while preserving each filter variant.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "system": "loading"
+          },
+          "reason": "Loading hides the photo row; the existing empty/loading scenarios cover the identical surface.",
           "owner": "frontend-admin",
           "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
         }
@@ -25182,64 +25192,6 @@
       ]
     },
     {
-      "id": "src/components/AppRoutes.tsx#AccountDeletionRecovery",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
-          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "single"
-          ],
-          "reason": "The route binding delegates its canonical ready recovery surface to AccountDeletionRecovery.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
-        },
-        "permissions": {
-          "values": [
-            "anonymous"
-          ],
-          "reason": "The tokenized recovery route is intentionally reachable before login.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AppRoutes.tsx"
-        },
-        "interactions": {
-          "values": [
-            "default"
-          ]
-        },
-        "system": {
-          "values": [
-            "online"
-          ],
-          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "The bound full-page recovery surface is reachable in both document themes.",
-            "owner": "frontend-auth",
-            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
-          }
-        ]
-      },
-      "constraints": []
-    },
-    {
       "id": "src/components/AppRoutes.tsx#AdminPagePage",
       "status": "registered",
       "renderAccess": "hosted",
@@ -27468,6 +27420,64 @@
           "owner": "frontend-platform",
           "testEvidence": "src/components/RankingPredictionSharePage.tsx"
         }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/AppRoutes.tsx#RecoveryEntry",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The route binding delegates to RecoveryEntry, which mounts the canonical ready recovery surface from AccountDeletionRecovery.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "anonymous"
+          ],
+          "reason": "The tokenized recovery route is intentionally reachable before login.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default"
+          ]
+        },
+        "system": {
+          "values": [
+            "online"
+          ],
+          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The bound full-page recovery surface is reachable in both document themes.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -100426,6 +100436,56 @@
       "constraints": []
     },
     {
+      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The lazy alias resolves to PredictionGamePowerupInventory; payload coverage remains with that direct component's scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy alias does not make an independent authorization decision.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the referenced direct component.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The lazy alias performs no independent transport request.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and inventory dimensions are covered by the referenced direct scenarios.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionMatchDetailFallback",
       "status": "registered",
       "renderAccess": "hosted",
@@ -100637,56 +100697,6 @@
           "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
         }
       ]
-    },
-    {
-      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=light",
-          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The lazy alias resolves to PredictionGamePowerupInventory; payload coverage remains with that direct component's scenarios.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The lazy alias does not make an independent authorization decision.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the referenced direct component.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The lazy alias performs no independent transport request.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and inventory dimensions are covered by the referenced direct scenarios.",
-          "owner": "frontend-prediction",
-          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-        }
-      },
-      "constraints": []
     },
     {
       "id": "src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState",
@@ -108818,6 +108828,64 @@
           "owner": "frontend-platform",
           "testEvidence": "src/components/RankingPredictionSharePage.tsx"
         }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/RecoveryEntry.tsx#AccountDeletionRecovery",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The lazy binding inside RecoveryEntry delegates its canonical ready recovery surface to AccountDeletionRecovery.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "anonymous"
+          ],
+          "reason": "The tokenized recovery route is intentionally reachable before login.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default"
+          ]
+        },
+        "system": {
+          "values": [
+            "online"
+          ],
+          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The bound full-page recovery surface is reachable in both document themes.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
