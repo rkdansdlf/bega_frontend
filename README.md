@@ -223,8 +223,13 @@ npm run dev
 
 ### Docker로 실행
 ```bash
-# 이미지 빌드 및 실행
-docker build -t bega-frontend .
+# 이미지 빌드 및 실행 (빌드 환경 검사가 VITE_SITE_URL, VITE_API_BASE_URL 을 요구하며 둘 다 절대 HTTPS URL 이어야 한다)
+docker build \
+  --build-arg VITE_SITE_URL=https://www.example.com \
+  --build-arg VITE_API_BASE_URL=https://api.example.com \
+  -t bega-frontend .
+# nginx 가 backend, ai-chatbot 호스트를 업스트림으로 해석하므로 compose 네트워크 안에서 실행하거나
+# 단독 확인 시 --add-host backend:127.0.0.1 --add-host ai-chatbot:127.0.0.1 을 지정한다
 docker run -p 5176:3000 bega-frontend
 
 # 또는 docker-compose 사용
