@@ -28,6 +28,7 @@ import {
     getReadableAccent,
     normalizeHexColor,
 } from '../utils/teamColors';
+import './CheerCard.mobile.css';
 
 const LazyCheerCardInteractionsRuntime = lazy(() => import('./CheerCardInteractionsRuntime'));
 
@@ -253,12 +254,12 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
     // Main Feed Tweet Style
     return (
         <div
-            className="group rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-4 py-3 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#cbd5e1] hover:shadow-lg dark:hover:border-[#64748b]"
+            className="cheer-card-mobile group rounded-2xl border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-4 py-3 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#cbd5e1] hover:shadow-lg dark:hover:border-[#64748b]"
             data-testid="cheer-post-card"
         >
             {/* 리포스트 표시 */}
             {post.repostType && (
-                <div className="flex items-center gap-1.5 text-body font-semibold text-gray-500 dark:text-white mb-2 ml-14">
+                <div className="cheer-card-mobile-label flex items-center gap-1.5 text-body font-semibold text-gray-500 dark:text-white mb-2 ml-14">
                     <RepeatIcon className="w-3.5 h-3.5" />
                     <span>
                         {(post.authorHandle === post.originalPost?.authorHandle || post.author === post.originalPost?.author)
@@ -269,7 +270,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
             )}
 
             {post.shareMode?.startsWith('EXTERNAL_') && post.sourceInfo?.url && (
-                <div className="mb-2 ml-14 text-body font-semibold text-sky-600 dark:text-sky-300 truncate">
+                <div className="cheer-card-mobile-label mb-2 ml-14 text-body font-semibold text-sky-600 dark:text-sky-300 truncate">
                     출처: {post.sourceInfo.url}
                 </div>
             )}
@@ -288,7 +289,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                         navigate(`/cheer/${post.id}`);
                     }
                 }}
-                className="flex gap-3"
+                className="cheer-card-mobile-layout flex flex-wrap gap-3"
             >
                 <div className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center">
                     <div
@@ -329,7 +330,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                     )}
                 </div>
 
-                <div className="flex-1 min-w-0">
+                <div className="cheer-card-mobile-content flex-1 min-w-36">
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-body font-semibold">
                         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                             <span
@@ -412,7 +413,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
 
                     {/* Title Display Removed */}
                     <div
-                        className="mt-1 min-w-0 text-body font-bold leading-7 text-[#0f1419] dark:text-white transition-all duration-300 [overflow-wrap:anywhere]"
+                        className="cheer-card-mobile-copy mt-1 min-w-0 text-body font-bold leading-7 text-[#0f1419] dark:text-white transition-all duration-300 [overflow-wrap:anywhere]"
                     >
                         {(post.repostType === 'SIMPLE' && post.originalPost)
                             ? (post.originalPost.content ? renderCheerContent(post.originalPost.content, accentText, handleTagClick) : '')
@@ -472,7 +473,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                         {shouldLoadInteractions ? (
                             <Suspense
                                 fallback={(
-                                <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
+                                <div className="cheer-card-mobile-interactions mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
                                         <button type="button" className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full sm:gap-1.5" aria-label={`댓글 ${commentCount}개`}>
                                             <span className="relative flex h-11 w-11 items-center justify-center rounded-full">
                                                 <RepeatIcon className="h-5 w-5 opacity-0" />
@@ -507,7 +508,7 @@ function CheerCardComponent({ post, isHotItem = false, teamColor }: CheerCardPro
                                 />
                             </Suspense>
                         ) : (
-                            <div className="mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
+                            <div className="cheer-card-mobile-interactions mt-1.5 flex max-w-[420px] flex-wrap items-center justify-between gap-x-2 gap-y-1 text-body font-semibold text-[#536471] dark:text-white">
                                 <button
                                     type="button"
                                     className="group/comment flex min-h-11 min-w-11 items-center gap-1 rounded-full transition-colors hover:text-sky-500 sm:gap-1.5"

@@ -205,6 +205,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     mapFailureReason,
     hasApiKey: Boolean(KAKAO_API_KEY),
     mapStatus,
+    hasStadiumCoordinates,
   });
   const stadiumControlsDisabled = stadiumsStatus === 'loading' || stadiumsStatus === 'empty' || stadiumsStatus === 'error';
   const listControlsDisabled = stadiumControlsDisabled || !selectedStadium;
@@ -447,9 +448,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                       ? '구장 선택 필요'
                       : mapStatus === 'loading'
                         ? '지도 로딩 중'
-                        : !hasStadiumCoordinates
-                          ? '좌표 정보 없음'
-                          : '지도 준비 중'}
+                        : '지도 준비 중'}
                   </span>
                   <h4 className="mt-3 text-center text-lg sm:text-xl" style={{ color: stadiumTitleColor, fontWeight: 800 }}>
                     {selectedStadiumDisplayName || '구장을 선택하세요'}
@@ -457,9 +456,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                   <p className="stadium-guide-muted mt-3 max-w-sm text-center text-sm leading-relaxed text-gray-500 dark:text-white sm:text-body">
                     {!selectedStadium
                       ? '구장을 선택하면 주변 지도를 표시합니다.'
-                      : !hasStadiumCoordinates
-                        ? '구장의 좌표 정보가 없어 지도를 표시할 수 없습니다.'
-                        : '지도를 불러오고 있어요.'}
+                      : '지도를 불러오고 있어요.'}
                   </p>
                   {!selectedStadium && (
                     <p className="stadium-guide-muted mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:bg-[rgba(0,0,0,0.82)] dark:text-white">

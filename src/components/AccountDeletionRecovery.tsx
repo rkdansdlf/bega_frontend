@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { buildLoginPath, getStoredLoginRedirect } from '../utils/loginRedirect';
+import { peekInitialRecoveryToken, withoutRecoveryToken } from '../utils/accountRecoveryToken';
 import AuthLayout from './auth/AuthLayout';
 import {
   ArrowLeftIcon,
@@ -83,8 +84,9 @@ export default function AccountDeletionRecovery({
   runtimeOverride,
 }: AccountDeletionRecoveryProps = {}) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const token = tokenOverride ?? searchParams.get('token') ?? '';
+  const [token, setToken] = useState(() => tokenOverride ?? new URLSearchParams(location.hash.slice(1)).get('token') ?? searchParams.get('token') ?? peekInitialRecoveryToken() ?? '');
   const redirectPath = redirectPathOverride
     ?? searchParams.get('redirect')
     ?? getStoredLoginRedirect()
@@ -98,20 +100,60 @@ export default function AccountDeletionRecovery({
   const [isRecovering, setIsRecovering] = useState(initialStateOverride?.isRecovering ?? false);
   const [isRecovered, setIsRecovered] = useState(initialStateOverride?.isRecovered ?? false);
   const [error, setError] = useState(initialStateOverride?.error ?? '');
+  const [retryCount, setRetryCount] = useState(0);
+  const infoRequestRef = useRef<{ token: string; promise: Promise<{ scheduledFor: string }> } | null>(null);
+  const generationRef = useRef(0);
+  const mountedRef = useRef(true);
+
+  useLayoutEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      generationRef.current += 1;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const fragment = new URLSearchParams(location.hash.slice(1));
+    if (!params.has('token') && !fragment.has('token')) return;
+
+    if (tokenOverride === undefined) {
+      const nextToken = fragment.get('token') ?? params.get('token') ?? '';
+      if (nextToken !== token) {
+        generationRef.current += 1;
+        setCanRecover(false);
+        setIsRecovered(false);
+        setIsRecovering(false);
+        setIsLoading(true);
+        setError('');
+      }
+      setToken(nextToken);
+    }
+    const safeUrl = withoutRecoveryToken(location.pathname, location.search, location.hash);
+    window.history.replaceState(window.history.state, '', safeUrl);
+    navigate(safeUrl, { replace: true, state: location.state });
+  }, [location.pathname, location.search, location.hash, location.state, navigate, token, tokenOverride]);
 
   useEffect(() => {
     if (initialStateOverride) return;
+    if (isRecovered) return;
     let cancelled = false;
 
     const loadRecoveryInfo = async () => {
       if (!token) {
-        setError('유효하지 않거나 만료된 복구 링크입니다.');
+        setError('유효하지 않거나 만료된 복구 링크입니다. 이메일의 링크를 다시 열어 주세요.');
         setIsLoading(false);
         return;
       }
 
+      let pending = infoRequestRef.current;
+      if (!pending || pending.token !== token) {
+        pending = { token, promise: Promise.resolve().then(() => runtime.getRecoveryInfo(token)) };
+        infoRequestRef.current = pending;
+      }
       try {
-        const info = await runtime.getRecoveryInfo(token);
+        const info = await pending.promise;
         if (!cancelled) {
           setScheduledFor(info.scheduledFor);
           setCanRecover(true);
@@ -121,6 +163,9 @@ export default function AccountDeletionRecovery({
           setError(loadError instanceof Error ? loadError.message : '계정 복구 정보를 확인하지 못했습니다.');
         }
       } finally {
+        if (infoRequestRef.current === pending) {
+          infoRequestRef.current = null;
+        }
         if (!cancelled) {
           setIsLoading(false);
         }
@@ -131,24 +176,32 @@ export default function AccountDeletionRecovery({
     return () => {
       cancelled = true;
     };
-  }, [initialStateOverride, runtime, token]);
+  }, [initialStateOverride, isRecovered, retryCount, runtime, token]);
 
   const handleRecover = async () => {
     if (!token) {
-      setError('유효하지 않거나 만료된 복구 링크입니다.');
+      setError('유효하지 않거나 만료된 복구 링크입니다. 이메일의 링크를 다시 열어 주세요.');
       return;
     }
 
     setIsRecovering(true);
     setError('');
+    const generation = generationRef.current;
 
     try {
       await runtime.requestRecovery(token);
-      setIsRecovered(true);
+      if (mountedRef.current && generationRef.current === generation) {
+        setIsRecovered(true);
+        setToken('');
+      }
     } catch (recoverError) {
-      setError(recoverError instanceof Error ? recoverError.message : '계정 복구에 실패했습니다.');
+      if (mountedRef.current && generationRef.current === generation) {
+        setError(recoverError instanceof Error ? recoverError.message : '계정 복구에 실패했습니다.');
+      }
     } finally {
-      setIsRecovering(false);
+      if (mountedRef.current && generationRef.current === generation) {
+        setIsRecovering(false);
+      }
     }
   };
 
@@ -224,6 +277,15 @@ export default function AccountDeletionRecovery({
                 <p className="min-w-0 break-words text-body font-semibold [overflow-wrap:anywhere]">
                   {error}
                 </p>
+                {token ? (
+                  <Button type="button" variant="brand" onClick={() => {
+                    setError('');
+                    setIsLoading(true);
+                    setRetryCount((count) => count + 1);
+                  }}>
+                    다시 확인하기
+                  </Button>
+                ) : null}
               </AuthStatusPanel>
             ) : (
               <>

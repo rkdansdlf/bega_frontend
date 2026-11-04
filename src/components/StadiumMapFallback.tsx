@@ -29,6 +29,11 @@ export const STADIUM_MAP_FALLBACK_COPY: Record<KakaoMapLoadFailureReason, Stadiu
     description: '구장 위치는 카카오맵에서 볼 수 있어요.',
     canRetry: false,
   },
+  'no-coordinates': {
+    title: '지도에 구장 위치를 표시할 수 없어요',
+    description: '구장 위치는 카카오맵에서 검색해 볼 수 있어요.',
+    canRetry: false,
+  },
 };
 
 // 라이브 지도 카드와 같은 자리를 차지합니다.

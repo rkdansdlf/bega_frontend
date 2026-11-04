@@ -248,9 +248,10 @@ export default function Login(props: LoginProps) {
           disabled={isLoading}
           className="auth-provider-button auth-provider-naver"
           data-testid="login-social-naver"
+          aria-label="네이버 로그인"
         >
-          <span className="mr-1 text-lg font-bold italic">N</span>
-          네이버로 로그인
+          <img src="/icons/naver/naver-login-n-white.png" alt="" aria-hidden="true" width={16} height={16} className="auth-provider-naver-logo" />
+          네이버 로그인
         </button>
 
         <button

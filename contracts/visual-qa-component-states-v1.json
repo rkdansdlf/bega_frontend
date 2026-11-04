@@ -7110,7 +7110,8 @@
             "boundary-maximum",
             "long-korean",
             "unbroken-token",
-            "maximum-supported"
+            "maximum-supported",
+            "broken-image"
           ],
           "reason": "The panel owns empty and populated candidate lists, nullable review metadata, identifier and confidence boundaries, long Korean and unbroken seat values, and the maximum supported 50-row inventory.",
           "owner": "frontend-admin",
@@ -7455,6 +7456,15 @@
             "system": "loading"
           },
           "reason": "Loading replaces candidate rows with one canonical announced status surface while preserving each filter variant.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
+        },
+        {
+          "excludeWhen": {
+            "data": "broken-image",
+            "system": "loading"
+          },
+          "reason": "Loading hides the photo row; the existing empty/loading scenarios cover the identical surface.",
           "owner": "frontend-admin",
           "testEvidence": "src/components/admin/AdminSeatViewsPanel.tsx"
         }
@@ -25182,64 +25192,6 @@
       ]
     },
     {
-      "id": "src/components/AppRoutes.tsx#AccountDeletionRecovery",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
-          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "single"
-          ],
-          "reason": "The route binding delegates its canonical ready recovery surface to AccountDeletionRecovery.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
-        },
-        "permissions": {
-          "values": [
-            "anonymous"
-          ],
-          "reason": "The tokenized recovery route is intentionally reachable before login.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AppRoutes.tsx"
-        },
-        "interactions": {
-          "values": [
-            "default"
-          ]
-        },
-        "system": {
-          "values": [
-            "online"
-          ],
-          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
-          "owner": "frontend-auth",
-          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "The bound full-page recovery surface is reachable in both document themes.",
-            "owner": "frontend-auth",
-            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
-          }
-        ]
-      },
-      "constraints": []
-    },
-    {
       "id": "src/components/AppRoutes.tsx#AdminPagePage",
       "status": "registered",
       "renderAccess": "hosted",
@@ -27468,6 +27420,64 @@
           "owner": "frontend-platform",
           "testEvidence": "src/components/RankingPredictionSharePage.tsx"
         }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/AppRoutes.tsx#RecoveryEntry",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The route binding delegates to RecoveryEntry, which mounts the canonical ready recovery surface from AccountDeletionRecovery.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "anonymous"
+          ],
+          "reason": "The tokenized recovery route is intentionally reachable before login.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default"
+          ]
+        },
+        "system": {
+          "values": [
+            "online"
+          ],
+          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The bound full-page recovery surface is reachable in both document themes.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -100176,6 +100186,56 @@
       "constraints": []
     },
     {
+      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=light",
+          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The lazy alias resolves to PredictionGamePowerupInventory; payload coverage remains with that direct component's scenarios.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The lazy alias does not make an independent authorization decision.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "Interaction ownership remains with the referenced direct component.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The lazy alias performs no independent transport request.",
+            "owner": "frontend-prediction",
+            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "Theme and inventory dimensions are covered by the referenced direct scenarios.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionMatchDetailFallback",
       "status": "registered",
       "renderAccess": "hosted",
@@ -100387,56 +100447,6 @@
           "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
         }
       ]
-    },
-    {
-      "id": "src/components/prediction/PredictionMatchTabDetailSection.tsx#PredictionGamePowerupInventory",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=light",
-          "state:src/components/prediction/PredictionGamePowerupInventory.tsx#PredictionGamePowerupInventory:variant.inventory=available|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "The lazy alias resolves to PredictionGamePowerupInventory; payload coverage remains with that direct component's scenarios.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The lazy alias does not make an independent authorization decision.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "Interaction ownership remains with the referenced direct component.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The lazy alias performs no independent transport request.",
-            "owner": "frontend-prediction",
-            "testEvidence": "src/components/prediction/PredictionMatchTabDetailSection.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "Theme and inventory dimensions are covered by the referenced direct scenarios.",
-          "owner": "frontend-prediction",
-          "testEvidence": "src/components/prediction/PredictionGamePowerupInventory.tsx"
-        }
-      },
-      "constraints": []
     },
     {
       "id": "src/components/prediction/PredictionMatchTabEmptyState.tsx#PredictionMatchTabEmptyState",
@@ -108568,6 +108578,64 @@
           "owner": "frontend-platform",
           "testEvidence": "src/components/RankingPredictionSharePage.tsx"
         }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/RecoveryEntry.tsx#AccountDeletionRecovery",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=light",
+          "state:src/components/AccountDeletionRecovery.tsx#AccountDeletionRecovery:data=single|permissions=anonymous|interactions=default|system=online|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "single"
+          ],
+          "reason": "The lazy binding inside RecoveryEntry delegates its canonical ready recovery surface to AccountDeletionRecovery.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+        },
+        "permissions": {
+          "values": [
+            "anonymous"
+          ],
+          "reason": "The tokenized recovery route is intentionally reachable before login.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AppRoutes.tsx"
+        },
+        "interactions": {
+          "values": [
+            "default"
+          ]
+        },
+        "system": {
+          "values": [
+            "online"
+          ],
+          "reason": "The lazy route binding owns only module delivery; mutation failures remain direct component states.",
+          "owner": "frontend-auth",
+          "testEvidence": "src/components/AccountDeletionRecovery.tsx"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The bound full-page recovery surface is reachable in both document themes.",
+            "owner": "frontend-auth",
+            "testEvidence": "src/components/AccountDeletionRecovery.mobile.test.tsx"
+          }
+        ]
       },
       "constraints": []
     },
@@ -125779,6 +125847,136 @@
       ]
     },
     {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
+          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "StadiumGuideRuntime mounts this lazy fallback when a stadium is selected but the map is unavailable; the referenced single-stadium idle hosts render it.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback does not make an authorization decision.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The retry and Kakao place actions belong to the StadiumMapFallback direct registration, not to this lazy wrapper.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The map-failure reason comes from the parent map status; the referenced idle hosts render the unavailable branch.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The theme is forwarded from the parent; both theme hosts are referenced.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
+        }
+      },
+      "constraints": []
+    },
+    {
+      "id": "src/components/StadiumMapFallback.tsx#StadiumMapFallback",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "stadium.map-fallback"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "populated",
+            "long-korean",
+            "null-optional",
+            "unbroken-token"
+          ],
+          "reason": "The block shows the stadium name and, when coordinates exist, the Kakao place link; null coordinates fall back to a name search link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The fallback block renders from props only and does not read identity or authorization.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "retry"
+          ]
+        },
+        "system": {
+          "values": [
+            "offline",
+            "error-recoverable",
+            "missing"
+          ],
+          "reason": "Each failure reason maps to its copy: offline and unavailable offer retry, while missing-key only offers the Kakao place link.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "variants": {
+        "dimensions": [
+          {
+            "name": "theme",
+            "values": [
+              "light",
+              "dark"
+            ],
+            "reason": "The block uses light slate surfaces and dark-mode slate and white tokens, so both themes are rendered.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/components/StadiumMapFallback.tsx"
+          }
+        ]
+      },
+      "interactionPlans": {
+        "retry": {
+          "action": "click",
+          "targets": [
+            {
+              "id": "retry",
+              "selector": "[data-testid=\"stadium-map-fallback-retry\"]",
+              "when": {
+                "system": [
+                  "offline",
+                  "error-recoverable"
+                ]
+              }
+            }
+          ],
+          "reason": "Only the retryable failure reasons render the retry button; the missing-key reason has no retry target.",
+          "owner": "frontend-stadium",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/home/HomeMatchPanel.tsx#HomeMatchEmptyActions",
       "status": "registered",
       "renderAccess": "hosted",
@@ -126402,136 +126600,6 @@
           "reason": "The wrapper always passes topNotice null; the referenced host uses the same missing topNotice variant.",
           "owner": "frontend-prediction",
           "testEvidence": "src/components/prediction/PredictionRuntime.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",
-      "status": "registered",
-      "renderAccess": "hosted",
-      "render": {
-        "mode": "hosted",
-        "hostScenarioIds": [
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=light",
-          "state:src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime:data=single|interactions=default|system=idle|variant.theme=dark"
-        ]
-      },
-      "axes": {
-        "data": {
-          "notApplicable": {
-            "reason": "StadiumGuideRuntime mounts this lazy fallback when a stadium is selected but the map is unavailable; the referenced single-stadium idle hosts render it.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The fallback does not make an authorization decision.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "interactions": {
-          "notApplicable": {
-            "reason": "The retry and Kakao place actions belong to the StadiumMapFallback direct registration, not to this lazy wrapper.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        },
-        "system": {
-          "notApplicable": {
-            "reason": "The map-failure reason comes from the parent map status; the referenced idle hosts render the unavailable branch.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-          }
-        }
-      },
-      "variants": {
-        "notApplicable": {
-          "reason": "The theme is forwarded from the parent; both theme hosts are referenced.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/components/StadiumGuideRuntime.tsx"
-        }
-      },
-      "constraints": []
-    },
-    {
-      "id": "src/components/StadiumMapFallback.tsx#StadiumMapFallback",
-      "status": "registered",
-      "renderAccess": "module-export",
-      "render": {
-        "mode": "direct",
-        "adapterId": "stadium.map-fallback"
-      },
-      "axes": {
-        "data": {
-          "values": [
-            "populated",
-            "long-korean",
-            "null-optional",
-            "unbroken-token"
-          ],
-          "reason": "The block shows the stadium name and, when coordinates exist, the Kakao place link; null coordinates fall back to a name search link.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
-        },
-        "permissions": {
-          "notApplicable": {
-            "reason": "The fallback block renders from props only and does not read identity or authorization.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
-          }
-        },
-        "interactions": {
-          "values": [
-            "default",
-            "retry"
-          ]
-        },
-        "system": {
-          "values": [
-            "offline",
-            "error-recoverable",
-            "missing"
-          ],
-          "reason": "Each failure reason maps to its copy: offline and unavailable offer retry, while missing-key only offers the Kakao place link.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
-        }
-      },
-      "variants": {
-        "dimensions": [
-          {
-            "name": "theme",
-            "values": [
-              "light",
-              "dark"
-            ],
-            "reason": "The block uses light slate surfaces and dark-mode slate and white tokens, so both themes are rendered.",
-            "owner": "frontend-stadium",
-            "testEvidence": "src/components/StadiumMapFallback.tsx"
-          }
-        ]
-      },
-      "interactionPlans": {
-        "retry": {
-          "action": "click",
-          "targets": [
-            {
-              "id": "retry",
-              "selector": "[data-testid=\"stadium-map-fallback-retry\"]",
-              "when": {
-                "system": [
-                  "offline",
-                  "error-recoverable"
-                ]
-              }
-            }
-          ],
-          "reason": "Only the retryable failure reasons render the retry button; the missing-key reason has no retry target.",
-          "owner": "frontend-stadium",
-          "testEvidence": "src/visual-qa/stateAdapters.test.ts#stadium-map-fallback-adapter"
         }
       },
       "constraints": []

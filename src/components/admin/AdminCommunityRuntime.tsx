@@ -220,8 +220,8 @@ export default function AdminCommunityRuntime({
       return;
     }
     try {
-      await deleteAdminUser(userId);
-      onSuccessMessageChange('유저가 삭제되었습니다.');
+      const message = await deleteAdminUser(userId);
+      onSuccessMessageChange(message);
       void loadUsers(searchTerm || undefined);
       void refreshStats();
       clearSuccessMessageLater();

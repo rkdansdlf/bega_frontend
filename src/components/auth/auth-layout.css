@@ -343,6 +343,14 @@
 .auth-provider-naver {
   background: hsl(var(--provider-naver-bg));
   color: hsl(var(--provider-naver-text));
+  gap: var(--space-8);
+}
+
+.auth-provider-naver-logo {
+  width: var(--space-16);
+  height: var(--space-16);
+  flex-shrink: 0;
+  display: block;
 }
 
 .auth-support-row {

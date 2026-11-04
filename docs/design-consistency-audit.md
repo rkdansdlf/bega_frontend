@@ -40,7 +40,7 @@ Line references in this table refer to the starting HEAD. Priority P2 means a ve
 
 ## Existing layout conventions retained
 
-- Shared `Card` already owns mobile `px-4` / desktop `px-6`, radius, contained text and wrapping footer.
+- Shared `Card` already owns mobile `px-4` / desktop `px-6`, radius, contained text and wrapping footer. `page-primitives.tsx` already owns Container, Section, SectionHeader, Stack gaps and CTAGroup.
 - `.bf` already owns wrapping, bounded labels, disabled opacity and unsized SVG constraints. The existing 44px mobile and 32/36/40px desktop densities remain.
 - `PlainDialog` already owns focus trapping, Escape/backdrop close, scroll locking, responsive placement and safe area handling. Its interaction implementation is not to be rewritten.
 - Long text, loading skeleton layouts, page-specific container widths and feed borders require route evidence before being treated as defects.
@@ -59,7 +59,7 @@ The final command outcomes, expanded reviewed-file inventory, unresolved items a
 
 The audit covered the requested entry files and followed the actual `AppRoutes` public/query/authenticated shells. This is a source review of every route family with representative leaf components, not a claim that every state of every component was visually executed.
 
-- Foundation: `src/index.css`, `tailwind.config.js`, `docs/design-tokens.md`, `ui/{button,plain-button,input,textarea,card,status-badge,plain-dialog,skeleton,UIKitPreview}.tsx`, shared EmptyState and ErrorFeedbackPanel.
+- Foundation: `src/index.css`, `tailwind.config.js`, `docs/design-tokens.md`, `ui/{button,plain-button,input,textarea,card,status-badge,plain-dialog,page-primitives,skeleton,UIKitPreview}.tsx`, shared EmptyState and ErrorFeedbackPanel.
 - Shells: `Layout.tsx`, `Navbar.tsx`, `PublicNavbar.tsx`, `AppRoutes.tsx`; public Home/Prediction/Mate shells, public query Cheer/Stadium, authenticated Mate flows/MyPage/Admin.
 - Home: `HomeRuntime.tsx`, HomeGameCard (partial), HomeMatchPanel styles and `home/HomeSecondaryPanels.tsx`.
 - Prediction: `PredictionRuntime.tsx`, `prediction/{predictionUiTokens,coachStyleTokens,PredictionStatsPanel,PredictionLoadingView,PredictionMatchTab,PredictionMatchDetailPanel,PredictionVotePanel,AdvancedMatchCardContentRuntime}` (some leaf style portions).

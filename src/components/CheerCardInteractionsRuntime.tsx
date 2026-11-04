@@ -257,7 +257,7 @@ export default function CheerCardInteractionsRuntime({
     return (
         <div
             data-testid="cheer-card-interactions"
-            className="mt-1.5 flex max-w-[420px] items-center justify-between gap-x-2 text-body font-semibold text-[#536471] dark:text-white"
+            className="cheer-card-mobile-interactions mt-1.5 flex max-w-[420px] items-center justify-between gap-x-2 text-body font-semibold text-[#536471] dark:text-white"
         >
             <button
                 type="button"
