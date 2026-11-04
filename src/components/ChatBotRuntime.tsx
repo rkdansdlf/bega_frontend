@@ -9,6 +9,7 @@ import {
 } from './chatbot/ChatBotSessionIcons';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useAuthSession } from '../store/authStore';
 import { buildLoginPath, getCurrentRelativeUrl } from '../utils/loginRedirect';
 import ChatBotFloatingButton from './ChatBotFloatingButton';
 
@@ -25,13 +26,15 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocus
   const location = useLocation();
   const navigate = useNavigate();
   const isPublicHomeRoute = /^\/home\/?$/.test(location.pathname);
+  const { isLoggedIn, isAuthLoading } = useAuthSession();
+  const shouldShowLoginGate = isPublicHomeRoute && !isLoggedIn;
   const [isOpen, setIsOpen] = useState(autoOpen);
   const [isClosing, setIsClosing] = useState(false);
-  const [hasMountedAuthenticatedPanel, setHasMountedAuthenticatedPanel] = useState(autoOpen && !isPublicHomeRoute);
+  const [hasMountedAuthenticatedPanel, setHasMountedAuthenticatedPanel] = useState(autoOpen && !shouldShowLoginGate);
   const closeTimerRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(returnFocusTo ?? null);
-  const isMobileModal = isOpen && isMobile && !isPublicHomeRoute;
+  const isMobileModal = isOpen && isMobile && !shouldShowLoginGate;
 
   useEffect(() => {
     if (returnFocusTo) {
@@ -49,17 +52,17 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocus
   useEffect(() => {
     if (autoOpen) {
       setIsOpen(true);
-      if (!isPublicHomeRoute) {
+      if (!shouldShowLoginGate) {
         setHasMountedAuthenticatedPanel(true);
       }
     }
-  }, [autoOpen, isPublicHomeRoute]);
+  }, [autoOpen, shouldShowLoginGate]);
 
   useEffect(() => {
-    if (isOpen && !isPublicHomeRoute) {
+    if (isOpen && !shouldShowLoginGate) {
       setHasMountedAuthenticatedPanel(true);
     }
-  }, [isOpen, isPublicHomeRoute]);
+  }, [isOpen, shouldShowLoginGate]);
 
   useEffect(() => {
     if (isOpen && isMobile) {
@@ -185,7 +188,7 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocus
       aria-label={isMobileModal ? 'BEGA 야구 가이드 챗봇' : undefined}
       tabIndex={isMobileModal ? -1 : undefined}
     >
-      {isPublicHomeRoute && isOpen && (
+      {shouldShowLoginGate && !isAuthLoading && isOpen && (
         <div data-testid="chatbot-panel" className={panelClassName}>
           <div className="p-3 md:p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-primary">
             <div className="flex items-center gap-3">
