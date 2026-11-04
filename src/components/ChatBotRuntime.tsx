@@ -65,6 +65,12 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocus
   }, [isOpen, shouldShowLoginGate]);
 
   useEffect(() => {
+    if (shouldShowLoginGate) {
+      setHasMountedAuthenticatedPanel(false);
+    }
+  }, [shouldShowLoginGate]);
+
+  useEffect(() => {
     if (isOpen && isMobile) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -260,7 +266,7 @@ export default function ChatBotRuntime({ autoOpen = false, onClosed, returnFocus
         </div>
       )}
 
-      {hasMountedAuthenticatedPanel && (
+      {hasMountedAuthenticatedPanel && !shouldShowLoginGate && (
         <Suspense fallback={isOpen || isClosing ? authenticatedPanelFallback : null}>
           <ChatBotAuthenticatedPanel
             isOpen={isOpen}
