@@ -1562,15 +1562,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/AppRoutes.tsx#AccountDeletionRecovery",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/AppRoutes.tsx#AdminPagePage",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
@@ -19874,6 +19865,80 @@
       "exportName": "default"
     },
     {
+      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
+      "classification": "grouped-gallery",
+      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
+      "basis": "icon-symbol-or-module",
+      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
+      "owner": "frontend-platform",
+      "testEvidence": "visual-qa icon gallery exact symbol coverage",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
+      "classification": "visual",
+      "basis": "reviewed-react-wrapper",
+      "reason": "The declaration is created with the React lazy component wrapper.",
+      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
+      "classification": "nonvisual",
+      "basis": "proven-static-runtime-value",
+      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -20939,7 +21004,7 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#AdSlot",
+      "id": "src/components/AppRoutes.tsx#RecoveryEntry",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
       "reason": "The declaration is created with the React lazy component wrapper.",
@@ -20948,7 +21013,7 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#AuthenticatedStadiumFavoriteToggle",
+      "id": "src/components/RecoveryEntry.tsx#AccountDeletionRecovery",
       "classification": "visual",
       "basis": "reviewed-react-wrapper",
       "reason": "The declaration is created with the React lazy component wrapper.",
@@ -20957,60 +21022,14 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#STADIUM_DARK_COLORS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "id": "src/components/RecoveryEntry.tsx#RecoveryEntry",
+      "classification": "behavior-only",
+      "basis": "reviewed-zero-dom-runtime",
+      "reason": "Captures the account-recovery token from the URL and renders nothing itself; the recovery screen it mounts is registered as AccountDeletionRecovery.",
       "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideCategorySelector.Icon",
-      "classification": "grouped-gallery",
-      "galleryId": "src/components/StadiumGuideRuntime.tsx#icon-gallery",
-      "basis": "icon-symbol-or-module",
-      "reason": "The symbol is an icon render unit covered by its file-local icon gallery.",
-      "owner": "frontend-platform",
-      "testEvidence": "visual-qa icon gallery exact symbol coverage",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuidePlacesRuntime",
-      "classification": "visual",
-      "basis": "reviewed-react-wrapper",
-      "reason": "The declaration is created with the React lazy component wrapper.",
-      "testEvidence": "visual-qa-component-inventory wrapper=lazy",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime",
-      "classification": "visual",
-      "basis": "reviewed-jsx-callable",
-      "reason": "The callable contains JSX and is included as a visual React render unit.",
-      "testEvidence": "visual-qa-component-inventory containsJsx=true",
-      "owner": "frontend-platform",
+      "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
       "renderAccess": "module-export",
       "exportName": "default"
-    },
-    {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
-      "classification": "nonvisual",
-      "basis": "proven-static-runtime-value",
-      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
     },
     {
       "id": "src/components/StadiumGuideRuntime.tsx#StadiumMapFallback",

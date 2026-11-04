@@ -87,8 +87,8 @@ const appQueryProviderSource = readFileSync(new URL('../src/components/AppQueryP
 const uiButtonSource = readFileSync(new URL('../src/components/ui/button.tsx', import.meta.url), 'utf8');
 const uiInputSource = readFileSync(new URL('../src/components/ui/input.tsx', import.meta.url), 'utf8');
 const uiTextareaSource = readFileSync(new URL('../src/components/ui/textarea.tsx', import.meta.url), 'utf8');
-const uiPlainButtonSource = readFileSync(new URL('../src/components/ui/plain-button.tsx', import.meta.url), 'utf8');
 const uiButtonStylesSource = readFileSync(new URL('../src/components/ui/button-styles.ts', import.meta.url), 'utf8');
+const uiPlainButtonSource = readFileSync(new URL('../src/components/ui/plain-button.tsx', import.meta.url), 'utf8');
 const tailwindConfigSource = readFileSync(new URL('../tailwind.config.js', import.meta.url), 'utf8');
 const dialogShadowSources = [
   '../src/components/ui/plain-dialog.tsx',
