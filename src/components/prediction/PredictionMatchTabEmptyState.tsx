@@ -71,7 +71,7 @@ export default function PredictionMatchTabEmptyState({
       <p className="relative max-w-md text-13 font-medium leading-relaxed text-white/75 sm:text-body">
         {nearestNavigationDate
           ? `가장 가까운 경기일은 ${formatDate(nearestNavigationDate.date)}입니다. ${nearestNavigationDate.isPast ? '이전' : '다음'} 날짜로 이동해 확인해보세요.`
-          : '다른 날짜를 확인해보세요.'}
+          : '위 날짜 목록에서 다른 날을 골라 경기 일정을 확인해 보세요.'}
       </p>
       {nearestNavigationDate ? (
         <Button

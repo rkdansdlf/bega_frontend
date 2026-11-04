@@ -13,6 +13,7 @@ import {
   shouldHoldAuthUiDuringBootstrap,
   shouldInitializeAuthLoading,
   shouldMountAuthBootstrapRuntime,
+  shouldReserveAuthenticatedNavbarChrome,
   setPersistedAuthBootstrapMeta,
   setPersistedAuthBootstrapHint,
 } from './authBootstrap';
@@ -561,4 +562,23 @@ test('보호 라우트를 포함한 비홈 경로는 기존 즉시 인증 확인
     }),
     'immediate',
   );
+});
+
+test('navbar reserves authenticated chrome for a persisted hint only until bootstrap settles', () => {
+  const base = {
+    isLoggedIn: false,
+    isAuthBootstrapPending: false,
+    isAuthLoading: false,
+    hasPersistedAuthHint: false,
+  };
+
+  // 첫 렌더: 부트스트랩 전 + 힌트 → 폭을 잡아둔다
+  assert.equal(shouldReserveAuthenticatedNavbarChrome({ ...base, isAuthLoading: true, hasPersistedAuthHint: true }), true);
+  // 공개 경로 지연 부트스트랩 진행 중
+  assert.equal(shouldReserveAuthenticatedNavbarChrome({ ...base, isAuthBootstrapPending: true, hasPersistedAuthHint: true }), true);
+  // 로그아웃으로 결론 + 5xx 등으로 힌트가 남음 → 손님 헤더
+  assert.equal(shouldReserveAuthenticatedNavbarChrome({ ...base, hasPersistedAuthHint: true }), false);
+  // 힌트 없이 로딩 중 → 손님 헤더
+  assert.equal(shouldReserveAuthenticatedNavbarChrome({ ...base, isAuthLoading: true }), false);
+  assert.equal(shouldReserveAuthenticatedNavbarChrome({ ...base, isLoggedIn: true }), true);
 });

@@ -127,8 +127,9 @@ export default function Navbar(props: NavbarProps) {
   };
   const shouldShowMobileMenuThemeToggle = !isDesktop && isMobileMenuMounted;
   const shouldShowTopThemeToggle = isDesktop;
-  const shouldShowDesktopNotificationButton = authenticatedShell && isDesktop;
-  const shouldShowMobileNotificationButton = authenticatedShell && !isDesktop && !shouldShowMobileMenuThemeToggle;
+  // 인증 셸이라도 실제 로그인 사용자에게만 (ProtectedRoute 리다이렉트 전 · 세션 만료 직후 포함).
+  const shouldShowDesktopNotificationButton = authenticatedShell && isLoggedIn && isDesktop;
+  const shouldShowMobileNotificationButton = authenticatedShell && isLoggedIn && !isDesktop && !shouldShowMobileMenuThemeToggle;
   const shouldDeferMobileBottomTabbar =
     location.pathname === '/cheer'
     || location.pathname === '/cheer/write'

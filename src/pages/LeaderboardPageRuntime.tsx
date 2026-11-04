@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useLeaderboard } from '../hooks/useLeaderboardPublic';
 import { isLoggedInUser, useAuthStore } from '../store/authStore';
+import { buildLoginPath } from '../utils/loginRedirect';
 import RetroLeaderboard from '../components/retro/RetroLeaderboard';
 import type { LeaderboardEntry, HotStreak } from '../api/leaderboard';
 import type { TickerMessage } from '../components/retro/NewsTicker';
@@ -30,6 +31,7 @@ interface LeaderboardPageRuntimeDataOverride {
   hotStreaks: HotStreak[];
   tickerMessages: TickerMessage[];
   isLoading: boolean;
+  isError?: boolean;
 }
 
 export interface LeaderboardPageRuntimeProps {
@@ -64,6 +66,9 @@ export default function LeaderboardPageRuntime({
     tickerMessages,
     isLoading,
   } = leaderboardStateOverride ?? leaderboardQuery;
+  const isError = leaderboardStateOverride
+    ? Boolean(leaderboardStateOverride.isError)
+    : Boolean(leaderboardQuery.error) && !isLoading;
   const isLoggedIn = authStateOverride?.isLoggedIn ?? storeIsLoggedIn;
   const isAuthLoading = authStateOverride?.isAuthLoading ?? storeIsAuthLoading;
   const currentUserHandle = authStateOverride?.currentUserHandle ?? storeCurrentUserHandle;
@@ -83,6 +88,10 @@ export default function LeaderboardPageRuntime({
     navigate('/prediction');
   }, [navigate]);
 
+  const handleLogin = useCallback(() => {
+    navigate(buildLoginPath('/leaderboard'));
+  }, [navigate]);
+
   const hotStreakEntries = useMemo(() => hotStreaks.map((hs) => ({
     handle: hs.handle,
     userName: hs.userName,
@@ -98,8 +107,12 @@ export default function LeaderboardPageRuntime({
     tickerMessages,
     hotStreaks: hotStreakEntries,
     isLoading,
+    isError,
+    isGuest: !isLoggedIn && !isAuthLoading,
     currentUserHandle,
     onRefresh: handleRefresh,
+    onRetry: handleRefresh,
+    onLogin: handleLogin,
     onPredict: handlePredict,
     containerTestId: 'leaderboard-page-runtime',
   } as const;
