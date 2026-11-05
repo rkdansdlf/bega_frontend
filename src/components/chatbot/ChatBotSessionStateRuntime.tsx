@@ -196,13 +196,14 @@ export default function ChatBotSessionStateRuntime({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => setActiveTab(value)}
                   onKeyDown={(event) => handleTabKeyDown(event, index)}
-                  className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
+                  className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 break-keep rounded-xl px-2 py-2 text-body font-semibold transition-colors xs:px-3 ${
                     isActive
                       ? 'bg-white text-gray-900 shadow-sm dark:bg-white/15 dark:text-white'
                       : 'text-gray-600 hover:bg-white/70 dark:text-white dark:hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
+                  {/* 375px 미만에서는 탭 폭(약 93px)에 아이콘까지 넣으면 4글자 라벨이 끊기므로 아이콘을 숨긴다. */}
+                  <Icon className="hidden h-3.5 w-3.5 xs:block" />
                   {label}
                 </button>
               );
