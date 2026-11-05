@@ -2,6 +2,20 @@
 
 describe('Theme visual checks for public pages', () => {
   type ThemeMode = 'light' | 'dark';
+  type ViewportCase = {
+    id: string;
+    width: number;
+    height: number;
+    rootFontSize: number;
+  };
+
+  const viewportCases: ViewportCase[] = [
+    { id: 'desktop-1280-16px', width: 1280, height: 900, rootFontSize: 16 },
+    { id: 'mobile-390-16px', width: 390, height: 844, rootFontSize: 16 },
+    { id: 'mobile-390-32px', width: 390, height: 844, rootFontSize: 32 },
+    { id: 'mobile-320-16px', width: 320, height: 844, rootFontSize: 16 },
+    { id: 'mobile-320-32px', width: 320, height: 844, rootFontSize: 32 },
+  ];
 
   const offseasonMovements = [
     {
@@ -227,6 +241,7 @@ describe('Theme visual checks for public pages', () => {
   const previousPredictionDate = '2026-03-21';
   const nextPredictionDate = '2026-03-23';
   const predictionGameId = `${predictionDate.replace(/-/g, '')}HHSS0`;
+  let unmatchedLocalApiRequests: string[] = [];
 
   const buildMatchDayResponse = (
     date: string,
@@ -246,33 +261,41 @@ describe('Theme visual checks for public pages', () => {
     win.localStorage.setItem('kbo-theme', theme);
     win.localStorage.removeItem('bega-theme');
     win.localStorage.removeItem('theme');
+    const nativeMatchMedia = win.matchMedia.bind(win);
 
     Object.defineProperty(win, 'matchMedia', {
       configurable: true,
       writable: true,
-      value: ((query: string) => ({
-        matches: query === '(prefers-color-scheme: dark)' ? theme === 'dark' : false,
-        media: query,
-        onchange: null,
-        addListener: () => { },
-        removeListener: () => { },
-        addEventListener: () => { },
-        removeEventListener: () => { },
-        dispatchEvent: () => false,
-      })) as unknown as MediaQueryList,
+      value: ((query: string) => {
+        const nativeMediaQuery = nativeMatchMedia(query);
+        return {
+          matches: query === '(prefers-color-scheme: dark)'
+            ? theme === 'dark'
+            : nativeMediaQuery.matches,
+          media: query,
+          onchange: null,
+          addListener: nativeMediaQuery.addListener.bind(nativeMediaQuery),
+          removeListener: nativeMediaQuery.removeListener.bind(nativeMediaQuery),
+          addEventListener: nativeMediaQuery.addEventListener.bind(nativeMediaQuery),
+          removeEventListener: nativeMediaQuery.removeEventListener.bind(nativeMediaQuery),
+          dispatchEvent: nativeMediaQuery.dispatchEvent.bind(nativeMediaQuery),
+        };
+      }) as typeof win.matchMedia,
     });
   };
 
-  const visitWithTheme = (path: string, theme: ThemeMode) => {
+  const visitWithTheme = (path: string, theme: ThemeMode, rootFontSize: number) => {
     cy.visit(path, {
       onBeforeLoad(win) {
         seedTheme(win, theme);
+        win.document.documentElement.style.fontSize = `${rootFontSize}px`;
       },
     });
 
     cy.window().then((win) => {
       seedTheme(win, theme);
       const root = win.document.documentElement;
+      root.style.fontSize = `${rootFontSize}px`;
       if (theme === 'dark') {
         root.classList.add('dark');
       } else {
@@ -290,6 +313,11 @@ describe('Theme visual checks for public pages', () => {
       statusCode: 200,
       body: cheerPosts,
     }).as('getCheerHotPosts');
+
+    cy.intercept({ method: 'GET', pathname: '/api/leaderboard' }, {
+      statusCode: 200,
+      body: leaderboardData,
+    }).as('getHomeWeeklyLeaderboard');
 
     cy.intercept('GET', '**/parties*', {
       statusCode: 200,
@@ -326,14 +354,9 @@ describe('Theme visual checks for public pages', () => {
       body: offseasonMetadata,
     }).as('getOffseasonMetadata');
 
-    cy.intercept('GET', '**/kbo/rankings/snapshot*', {
+    cy.intercept('GET', '**/kbo/rankings/2025*', {
       statusCode: 200,
-      body: {
-        rankingSeasonYear: 2025,
-        rankingSourceMessage: '2025 시즌 순위 데이터',
-        isOffSeason: false,
-        rankings: offseasonMetadata.finalRankings,
-      },
+      body: offseasonMetadata.finalRankings,
     }).as('getOffseasonRankings');
   };
 
@@ -342,6 +365,14 @@ describe('Theme visual checks for public pages', () => {
       statusCode: 200,
       body: leaderboardData,
     }).as('getLeaderboard');
+
+    cy.intercept('GET', '**/api/matches/day*', (req) => {
+      const date = new URL(req.url).searchParams.get('date') || predictionDate;
+      req.reply({
+        statusCode: 200,
+        body: buildMatchDayResponse(date, [], null, null),
+      });
+    }).as('getLeaderboardMatchDay');
 
     cy.intercept({ method: 'GET', pathname: '/api/leaderboard/me' }, {
       statusCode: 200,
@@ -513,12 +544,86 @@ describe('Theme visual checks for public pages', () => {
     setup: () => void,
     assert: () => void
   ) => {
-    ['light', 'dark'].forEach((mode) => {
-      it(`${label} - ${mode}`, () => {
-        setup();
-        visitWithTheme(path, mode as ThemeMode);
-        assert();
-        cy.screenshot(`theme-page-visual-${label}-${mode}`);
+    viewportCases.forEach((viewport) => {
+      (['light', 'dark'] as const).forEach((mode) => {
+        it(`${label} - ${viewport.id} - ${mode}`, () => {
+          cy.viewport(viewport.width, viewport.height);
+          setup();
+          visitWithTheme(path, mode, viewport.rootFontSize);
+          assert();
+          cy.get('[data-testid="navbar-capsule"]', { timeout: 20000 })
+            .should('be.visible');
+          cy.get('[data-testid="site-footer"]', { timeout: 20000 }).should('exist');
+          cy.document().should((document) => {
+            expect(document.documentElement.scrollWidth, 'document horizontal overflow')
+              .to.be.at.most(viewport.width);
+            expect(document.body.scrollWidth, 'body horizontal overflow')
+              .to.be.at.most(viewport.width);
+          });
+          cy.window().then((win) => {
+            win.document.documentElement.style.scrollBehavior = 'auto';
+            win.document.body.style.scrollBehavior = 'auto';
+            win.scrollTo(0, 0);
+          });
+          cy.window().should((win) => expect(win.scrollY).to.eq(0));
+          if (label === 'home' && viewport.rootFontSize === 32) {
+            cy.get('[data-testid="home-date-prev"]').parent().find('h2').then(($heading) => {
+              const heading = $heading[0] as HTMLElement;
+              const document = heading.ownerDocument;
+              const dock = document.querySelector<HTMLElement>('[data-testid="public-mobile-bottom-nav"]');
+
+              expect(dock, 'Home fixed public dock').not.to.equal(null);
+              if (!dock) return;
+
+              expect(
+                heading.getBoundingClientRect().bottom,
+                `Home date-card heading remains above the fixed dock at ${viewport.width}px / 32px`,
+              ).to.be.at.most(dock.getBoundingClientRect().top - 8);
+            });
+            cy.contains('button', '날짜 변경').then(($dateChange) => {
+              const dateChange = $dateChange[0] as HTMLElement;
+              const document = dateChange.ownerDocument;
+              const dock = document.querySelector<HTMLElement>('[data-testid="public-mobile-bottom-nav"]');
+
+              expect(dock, 'Home fixed public dock').not.to.equal(null);
+              if (!dock) return;
+
+              expect(
+                dateChange.getBoundingClientRect().bottom,
+                `Home date-change control remains above the fixed dock at ${viewport.width}px / 32px`,
+              ).to.be.at.most(dock.getBoundingClientRect().top - 8);
+            });
+          }
+          cy.screenshot(`theme-page-visual-${label}-${viewport.id}-${mode}-top`, { capture: 'viewport' });
+          cy.window().then((win) => {
+            const documentHeight = Math.max(
+              win.document.documentElement.scrollHeight,
+              win.document.body.scrollHeight,
+            );
+            win.scrollTo(0, documentHeight);
+          });
+          cy.window().should((win) => {
+            const documentHeight = Math.max(
+              win.document.documentElement.scrollHeight,
+              win.document.body.scrollHeight,
+            );
+            expect(win.scrollY + win.innerHeight)
+              .to.be.at.least(documentHeight - 2);
+          });
+          cy.document().should((document) => {
+            expect(document.documentElement.scrollWidth, 'document horizontal overflow at page end')
+              .to.be.at.most(viewport.width);
+            expect(document.body.scrollWidth, 'body horizontal overflow at page end')
+              .to.be.at.most(viewport.width);
+          });
+          cy.screenshot(`theme-page-visual-${label}-${viewport.id}-${mode}-bottom`, { capture: 'viewport' });
+          cy.then(() => {
+            expect(
+              unmatchedLocalApiRequests,
+              `${label} must not fall through to the local API proxy without a synthetic fixture`,
+            ).to.deep.equal([]);
+          });
+        });
       });
     });
   };
@@ -526,13 +631,36 @@ describe('Theme visual checks for public pages', () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.clearLocalStorage();
+    const configuredBaseUrl = Cypress.config('baseUrl');
+    if (typeof configuredBaseUrl !== 'string') {
+      throw new Error('A loopback baseUrl is required for this synthetic visual spec.');
+    }
+    const localUrl = new URL(configuredBaseUrl);
+    if (!['localhost', '127.0.0.1'].includes(localUrl.hostname)) {
+      throw new Error('A loopback baseUrl is required for this synthetic visual spec.');
+    }
+    const localOrigin = localUrl.origin;
+    unmatchedLocalApiRequests = [];
+    cy.intercept({ url: /^https?:\/\// }, (request) => {
+      if (new URL(request.url).origin !== localOrigin) request.destroy();
+    });
+    cy.intercept({ method: 'GET', url: `${localOrigin}/api/**` }, (request) => {
+      unmatchedLocalApiRequests.push(`${request.method} ${new URL(request.url).pathname}`);
+      request.reply({
+        statusCode: 599,
+        body: { message: 'Missing synthetic API fixture in theme visual test.' },
+      });
+    });
     cy.mockAPI();
     setupCommonMocks();
   });
 
   captureThemeCases('home', '/home', () => {}, () => {
+    cy.wait('@getHomeBootstrap');
+    cy.wait('@getHomeWidgets', { timeout: 15000 });
     cy.contains('KBO LEAGUE', { timeout: 20000 }).should('be.visible');
-    cy.contains(/예정경기/).should('be.visible');
+    cy.contains('경기가 없는 날입니다.', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-testid="home-game-card"]').should('not.exist');
   });
 
   captureThemeCases('offseason', '/offseason', () => {
@@ -540,6 +668,7 @@ describe('Theme visual checks for public pages', () => {
   }, () => {
     cy.wait('@getOffseasonMovements');
     cy.wait('@getOffseasonMetadata');
+    cy.wait('@getOffseasonRankings');
     cy.contains(/스토브리그 하이라이트|2025 주요 이적 소식|2026 시즌 개막까지/, { timeout: 20000 }).should('be.visible');
     cy.contains('KBO').should('be.visible');
   });
@@ -588,8 +717,10 @@ describe('Theme visual checks for public pages', () => {
     setupStadiumMocks();
   }, () => {
     cy.wait('@getStadiums');
+    cy.wait('@getStadiumPlaces');
     cy.contains('구장 가이드', { timeout: 20000 }).should('be.visible');
     cy.contains('서울 · 잠실야구장', { timeout: 20000 }).should('be.visible');
+    cy.contains('잠실한식당', { timeout: 20000 }).should('exist');
   });
 
   captureThemeCases('prediction', '/prediction', () => {
@@ -598,6 +729,22 @@ describe('Theme visual checks for public pages', () => {
   }, () => {
     cy.wait('@getMatchDay');
     cy.contains('h2', '전력분석실', { timeout: 20000 }).should('be.visible');
+    cy.contains('h2', '전력분석실').should(($heading) => {
+      const heading = $heading[0] as HTMLElement;
+      const rootFontSize = Number.parseFloat(
+        heading.ownerDocument.defaultView?.getComputedStyle(heading.ownerDocument.documentElement).fontSize ?? '16px',
+      );
+
+      if (rootFontSize >= 32) {
+        expect(heading.scrollWidth, 'prediction title has no clipped horizontal text')
+          .to.be.at.most(heading.clientWidth + 1);
+        expect(heading.scrollHeight, 'prediction title has no clipped vertical text')
+          .to.be.at.most(heading.clientHeight + 1);
+      }
+    });
+    cy.get('[data-testid="prediction-schedule-match-row"]', { timeout: 20000 })
+      .should('have.length', 1)
+      .and('be.visible');
     cy.get('@getUserVotes.all').should('have.length', 0);
     cy.get('@getUserVotePredictionTheme.all').should('have.length', 0);
   });

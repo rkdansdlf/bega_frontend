@@ -47,4 +47,52 @@ describe('Public navbar deferred loading', () => {
       expect(chunkCounts.desktopAuth).to.eq(0);
     });
   });
+
+  it('keeps public mobile navigation labels readable at 320px with enlarged root text', () => {
+    cy.viewport(320, 844);
+    visitHomePage({
+      path: '/home',
+      authenticated: false,
+      resetStorage: true,
+    });
+    cy.wait('@getHomeBootstrap');
+    cy.document().then((document) => {
+      document.documentElement.style.fontSize = '32px';
+      expect(
+        document.defaultView?.getComputedStyle(document.documentElement).fontSize,
+        'root text stress setting is active',
+      ).to.eq('32px');
+    });
+
+    cy.get('[data-testid="public-mobile-bottom-nav"]').should('be.visible').within(() => {
+      cy.get('[data-mobile-chrome-label]').each(($label) => {
+        const label = $label[0] as HTMLElement;
+        const style = label.ownerDocument.defaultView?.getComputedStyle(label);
+        expect(style?.whiteSpace, 'public bottom-navigation label wraps').not.to.eq('nowrap');
+        expect(style?.textOverflow, 'public bottom-navigation label is not ellipsized').not.to.eq('ellipsis');
+        expect(Number.parseFloat(style?.fontSize ?? '0'), 'public bottom-navigation label follows enlarged root text')
+          .to.be.at.least(20);
+        expect(label.scrollWidth, 'public bottom-navigation label has no horizontal clipping')
+          .to.be.at.most(label.clientWidth + 1);
+        expect(label.scrollHeight, 'public bottom-navigation label has no vertical clipping')
+          .to.be.at.most(label.clientHeight + 1);
+      });
+      cy.get('[data-testid="public-mobile-chatbot-tab"]')
+        .should('have.attr', 'aria-label', 'BEGA 챗봇 열기')
+        .find('[data-mobile-chrome-label]')
+        .should('have.text', '챗봇');
+    });
+
+    cy.screenshot('public-navbar-labels-320-32px', { capture: 'viewport' });
+    cy.document().then((document) => {
+      document.documentElement.style.fontSize = '16px';
+    });
+    cy.get('[data-testid="public-mobile-bottom-nav"] [data-mobile-chrome-label]').each(($label) => {
+      const label = $label[0] as HTMLElement;
+      expect(
+        Number.parseFloat(label.ownerDocument.defaultView?.getComputedStyle(label).fontSize ?? '0'),
+        'public bottom-navigation labels retain their baseline size',
+      ).to.eq(10.5);
+    });
+  });
 });
