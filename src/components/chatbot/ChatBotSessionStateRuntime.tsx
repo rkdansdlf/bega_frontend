@@ -196,7 +196,7 @@ export default function ChatBotSessionStateRuntime({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => setActiveTab(value)}
                   onKeyDown={(event) => handleTabKeyDown(event, index)}
-                  className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 break-keep rounded-xl px-2 py-2 text-body font-semibold transition-colors xs:px-3 ${
+                  className={`flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 break-keep rounded-xl px-2 py-2 text-body font-semibold transition-colors [overflow-wrap:anywhere] xs:px-3 ${
                     isActive
                       ? 'bg-white text-gray-900 shadow-sm dark:bg-white/15 dark:text-white'
                       : 'text-gray-600 hover:bg-white/70 dark:text-white dark:hover:bg-white/10'

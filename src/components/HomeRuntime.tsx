@@ -1394,7 +1394,7 @@ export default function HomeRuntime() {
                                             aria-selected={isActive}
                                             aria-controls={`home-tabpanel-${tab.value}`}
                                             id={`home-tab-${tab.value}`}
-                                            className={`min-h-11 break-keep rounded-lg px-1 py-2 text-caption font-bold transition-all sm:px-2 sm:text-body ${
+                                            className={`min-h-11 break-keep rounded-lg px-1 py-2 text-caption font-bold transition-all [overflow-wrap:anywhere] sm:px-2 sm:text-body ${
                                                 isActive
                                                     ? 'bg-primary text-white shadow-sm'
                                                     : 'text-muted-foreground hover:text-foreground'
