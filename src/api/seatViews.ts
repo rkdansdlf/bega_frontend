@@ -1,6 +1,6 @@
 import { getApiErrorMessage } from '../utils/errorUtils';
 import { uploadMediaFile } from './media';
-import { privateDelete, privatePost } from './privateClient';
+import { privateDelete, privateGet, privatePost } from './privateClient';
 
 interface ApiEnvelope<T> {
   success?: boolean;
@@ -67,17 +67,35 @@ export interface SeatViewSubmission {
   tags: SeatViewUploadTag[];
 }
 
+interface SeatViewPreviewResponse {
+  photoUrl: string;
+}
+
 const cleanOptional = (value?: string | null) => {
   const normalized = value?.trim();
   return normalized ? normalized : undefined;
 };
 
-export async function submitDirectSeatViewUpload(input: DirectSeatViewUploadInput): Promise<SeatViewSubmission> {
+async function fetchOwnerSeatViewPreview(seatViewId: number): Promise<string> {
+  const response = await privateGet<ApiEnvelope<SeatViewPreviewResponse>>(
+    `/seat-views/${seatViewId}/preview`,
+  );
+  if (!response.success || !response.data?.photoUrl) {
+    throw new Error(response.message || '시야뷰 미리보기를 불러오지 못했습니다.');
+  }
+  return response.data.photoUrl;
+}
+
+export async function submitDirectSeatViewUpload(
+  input: DirectSeatViewUploadInput,
+  options: { signal?: AbortSignal } = {},
+): Promise<SeatViewSubmission> {
   let uploadedAssetId: number | null = null;
 
   try {
-    const uploaded = await uploadMediaFile('SEAT_VIEW', input.file);
+    const uploaded = await uploadMediaFile('SEAT_VIEW', input.file, options);
     uploadedAssetId = uploaded.assetId;
+    if (options.signal?.aborted) throw new Error('업로드가 취소되었습니다.');
     const payload: CreateSeatViewRequest = {
       storagePath: uploaded.storagePath,
       stadium: input.stadium.trim(),
@@ -99,7 +117,14 @@ export async function submitDirectSeatViewUpload(input: DirectSeatViewUploadInpu
       throw new Error(response.message || '시야뷰 저장에 실패했습니다.');
     }
 
-    return response.data;
+    try {
+      return {
+        ...response.data,
+        photoUrl: await fetchOwnerSeatViewPreview(response.data.id),
+      };
+    } catch {
+      return response.data;
+    }
   } catch (error) {
     if (uploadedAssetId != null) {
       try {
