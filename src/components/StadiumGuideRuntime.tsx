@@ -8,7 +8,7 @@ import { buildCanonicalUrl } from '../seo/routeSeo';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { KAKAO_API_KEY, CATEGORY_CONFIGS, THEME_COLORS } from '../utils/constants';
-import { openKakaoMapRoute } from '../utils/kakaoMap';
+import { openKakaoMapRoute, type KakaoMapLoadFailureReason } from '../utils/kakaoMap';
 import {
   CaretDownIcon,
   MapPinIcon,
@@ -18,12 +18,12 @@ import {
 import { resolveStadiumSeatMapEntry } from './stadiumSeatMapRegistry';
 import { StadiumSeatMapManualRequired } from './StadiumSeatMapStates';
 import { SeatMapRuntimeShell } from './stadiumSeatMap/SeatMapRuntimeShell';
+import { resolveMapFallbackReason } from './stadiumMapFallbackReason';
 import { getCategoryIcon } from '../utils/stadium';
 import { useStadiumGuide } from '../hooks/useStadiumGuide';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthSession, useAuthProfileSnapshot } from '../store/authStore';
 import {
-  formatOptionalText,
   hasValidCoordinates,
   normalizeOptionalText,
 } from '../utils/stadiumGuideUtils';
@@ -33,6 +33,8 @@ import './StadiumGuide.css';
 
 const AuthenticatedStadiumFavoriteToggle = lazy(() => import('./AuthenticatedStadiumFavoriteToggle'));
 const StadiumGuidePlacesRuntime = lazy(() => import('./StadiumGuidePlacesRuntime'));
+// 지도 SDK 를 못 쓸 때만 필요해서 첫 화면 청크에 싣지 않습니다.
+const StadiumMapFallback = lazy(() => import('./StadiumMapFallback'));
 const AdSlot = lazy(() => import('./ads/AdSlot'));
 
 export type StadiumGuideRuntimeVisualQaStateOverride = Partial<ReturnType<typeof useStadiumGuide>>;
@@ -150,7 +152,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
     stadiumsError,
     placesError,
     nearbyError,
-    mapError,
+    mapFailureReason,
     retryStadiums,
     retryPlaces,
     retryMap,
@@ -196,7 +198,15 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
   const selectedStadiumAddress = normalizeOptionalText(selectedStadium?.address);
   const selectedStadiumPhone = normalizeOptionalText(selectedStadium?.phone);
   const canRenderMap = Boolean(selectedStadium && KAKAO_API_KEY && isMapReady && mapStatus === 'success' && hasStadiumCoordinates);
-  const canShowMapFallbackActions = Boolean(selectedStadium && hasStadiumCoordinates && !canRenderMap);
+  // SDK 를 못 쓰면 회색 지도 자리 대신 사유별 안내 + 카카오맵 링크. 다시 시도 중에도 블록을 유지합니다.
+  const mapFallbackReason: KakaoMapLoadFailureReason | null = resolveMapFallbackReason({
+    hasSelectedStadium: Boolean(selectedStadium),
+    canRenderMap,
+    mapFailureReason,
+    hasApiKey: Boolean(KAKAO_API_KEY),
+    mapStatus,
+    hasStadiumCoordinates,
+  });
   const stadiumControlsDisabled = stadiumsStatus === 'loading' || stadiumsStatus === 'empty' || stadiumsStatus === 'error';
   const listControlsDisabled = stadiumControlsDisabled || !selectedStadium;
   const renderSeatMap = () => {
@@ -406,6 +416,17 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                     aria-busy={mapStatus === 'loading'}
                   />
                 </div>
+              ) : mapFallbackReason && selectedStadium ? (
+                <Suspense fallback={null}>
+                  <StadiumMapFallback
+                    reason={mapFallbackReason}
+                    stadiumName={selectedStadium.stadiumName}
+                    lat={selectedStadium.lat}
+                    lng={selectedStadium.lng}
+                    onRetry={retryMap}
+                    isRetrying={mapStatus === 'loading'}
+                  />
+                </Suspense>
               ) : (
                 <Card
                   className="stadium-guide-map-frame stadium-guide-panel-strong flex flex-col items-center justify-center rounded-[1.75rem] border-2 p-6 sm:rounded-[2.5rem] sm:p-12"
@@ -427,11 +448,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                       ? '구장 선택 필요'
                       : mapStatus === 'loading'
                         ? '지도 로딩 중'
-                        : !KAKAO_API_KEY
-                          ? '지도 설정 필요'
-                          : !hasStadiumCoordinates
-                            ? '좌표 정보 없음'
-                            : '지도 표시 불가'}
+                        : '지도 준비 중'}
                   </span>
                   <h4 className="mt-3 text-center text-lg sm:text-xl" style={{ color: stadiumTitleColor, fontWeight: 800 }}>
                     {selectedStadiumDisplayName || '구장을 선택하세요'}
@@ -439,47 +456,12 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                   <p className="stadium-guide-muted mt-3 max-w-sm text-center text-sm leading-relaxed text-gray-500 dark:text-white sm:text-body">
                     {!selectedStadium
                       ? '구장을 선택하면 주변 지도를 표시합니다.'
-                      : !KAKAO_API_KEY
-                        ? '카카오맵 API 키가 설정되지 않았습니다.'
-                        : !hasStadiumCoordinates
-                          ? '구장의 좌표 정보가 없어 지도를 표시할 수 없습니다.'
-                          : mapStatus === 'loading'
-                            ? '지도를 로딩 중입니다...'
-                            : formatOptionalText(mapError, '지도를 불러올 수 없습니다.')}
+                      : '지도를 불러오고 있어요.'}
                   </p>
                   {!selectedStadium && (
                     <p className="stadium-guide-muted mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:bg-[rgba(0,0,0,0.82)] dark:text-white">
                       상단의 구장 선택 메뉴에서 원하는 구장을 먼저 선택하세요.
                     </p>
-                  )}
-                  {selectedStadium && !KAKAO_API_KEY && (
-                    <p className="stadium-guide-muted mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:bg-[rgba(0,0,0,0.82)] dark:text-white">
-                      운영 환경의 카카오맵 JavaScript API 키 설정을 확인해야 합니다.
-                    </p>
-                  )}
-                  {canShowMapFallbackActions && selectedStadium && (
-                    <div className="mt-5 flex w-full max-w-sm flex-col gap-2 sm:flex-row sm:justify-center">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="touch"
-                        className="rounded-xl border-primary/25 bg-white px-5 font-bold text-primary hover:bg-primary/10 dark:bg-transparent dark:hover:bg-[rgba(126,211,179,0.1)]"
-                        onClick={retryMap}
-                        style={{ borderColor: isDark ? STADIUM_DARK_COLORS.borderStrong : undefined, color: stadiumAccentColor }}
-                      >
-                        <RefreshIcon className="mr-2 h-4 w-4" />
-                        지도 다시 시도
-                      </Button>
-                      <Button
-                        type="button"
-                        size="touch"
-                        className="rounded-xl px-5 font-bold text-white shadow-sm"
-                        style={stadiumActionStyle}
-                        onClick={() => openKakaoMapRoute(selectedStadium.stadiumName, selectedStadium.lat, selectedStadium.lng)}
-                      >
-                        카카오맵에서 열기
-                      </Button>
-                    </div>
                   )}
                 </Card>
               )}
