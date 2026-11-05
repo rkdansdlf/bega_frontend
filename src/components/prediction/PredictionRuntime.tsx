@@ -183,17 +183,19 @@ export default function PredictionRuntime({
       <Toaster position="top-right" />
       <div className="mx-auto max-w-7xl px-0 pb-5 sm:px-6 sm:pt-5 lg:px-8">
         <div className={`${PREDICTION_BRAND_GRADIENT_CLASS} mb-4 overflow-hidden px-4 pb-4 pt-5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.9)] sm:rounded-3xl sm:px-5 sm:pt-5 dark:shadow-none`}>
-          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="rounded-xl border border-white/20 bg-white/10 p-2.5 shadow-sm">
-              <PredictionLineChartIcon className="h-5 w-5 text-emerald-200" />
+          <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <div className="h-8 w-8 shrink-0 rounded-xl border border-white/20 bg-white/10 p-1.5 shadow-sm sm:h-auto sm:w-auto sm:p-2.5">
+                <PredictionLineChartIcon className="h-4 w-4 text-emerald-200 sm:h-5 sm:w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="block text-13 font-semibold text-emerald-100/75">
+                  ANALYSIS LAB
+                </span>
+                <h2 className="break-words text-xl font-extrabold leading-tight tracking-normal text-white sm:text-2xl">전력분석실</h2>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="block text-13 font-semibold text-emerald-100/75">
-                ANALYSIS LAB
-              </span>
-              <h2 className="truncate text-xl font-extrabold tracking-normal text-white sm:text-2xl">전력분석실</h2>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 self-end sm:ml-auto sm:self-auto">
               <Link
                 to="/leaderboard"
                 aria-label="랭킹 보기"

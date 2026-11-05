@@ -363,7 +363,7 @@ describe('Prediction Range Recovery', () => {
 
         openPredictionPage();
         cy.window().then((win) => {
-            win.sessionStorage.setItem('prediction:run-session:v1', staleRunSession);
+            win.sessionStorage.setItem('prediction:run-session:v1:viewer:123', staleRunSession);
         });
         cy.tick(100);
         cy.window().then((win) => {

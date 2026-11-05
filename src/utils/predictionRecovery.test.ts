@@ -6,12 +6,25 @@ import {
   canSchedulePredictionRetry,
   createPredictionRetryAttemptState,
   getPredictionRetryDelayMs,
+  hasPredictionRunSession,
   hasExceededPredictionRetryLimit,
   increasePredictionRetryAttempt,
   isPredictionRunSessionStale,
+  readPredictionRunSession,
   parsePredictionRunSession,
   resetPredictionRetryAttempt,
+  removePredictionRunSession,
+  writePredictionRunSession,
 } from './predictionRecovery';
+
+const createStorage = () => {
+  const values = new Map<string, string>();
+  return {
+    getItem: (key: string) => values.get(key) ?? null,
+    removeItem: (key: string) => values.delete(key),
+    setItem: (key: string, value: string) => values.set(key, value),
+  };
+};
 
 test('retry counter는 동작별로 증가하고 초기화할 수 있다', () => {
   const state = createPredictionRetryAttemptState();
@@ -74,4 +87,66 @@ test('run session JSON 파싱은 스키마가 맞지 않으면 null을 반환한
   assert.equal(parsed?.timeoutStage, 'warning');
   assert.equal(parsePredictionRunSession(invalid), null);
   assert.equal(parsePredictionRunSession('{invalid-json'), null);
+});
+
+test('run session은 viewer별 저장소에서만 읽고 지운다', () => {
+  const storage = createStorage();
+  const viewerAScope = { viewerId: 101, sessionEpoch: 3 };
+  const viewerBscope = { viewerId: 202, sessionEpoch: 4 };
+  const viewerASession = {
+    flowId: 'flow-a',
+    gameId: 'synthetic-game-a',
+    action: 'vote' as const,
+    startedAt: 1_700_000_000_000,
+    team: 'home' as const,
+    bannerDismissed: false,
+    timeoutStage: 'warning' as const,
+  };
+  const serialized = JSON.stringify(viewerASession);
+
+  assert.equal(writePredictionRunSession(viewerAScope, viewerASession, () => true, storage), true);
+  assert.equal(readPredictionRunSession(viewerAScope.viewerId, storage), serialized);
+  assert.equal(readPredictionRunSession(viewerBscope.viewerId, storage), null);
+  assert.equal(hasPredictionRunSession(viewerAScope.viewerId, storage), true);
+  assert.equal(hasPredictionRunSession(viewerBscope.viewerId, storage), false);
+  assert.equal(storage.getItem('prediction:run-session:v1'), null);
+  assert.equal(removePredictionRunSession(viewerAScope, () => true, storage), true);
+  assert.equal(readPredictionRunSession(viewerAScope.viewerId, storage), null);
+});
+
+test('viewer 전환 뒤 도착한 이전 세션 쓰기·삭제 응답은 현재 저장값을 건드리지 않는다', () => {
+  const storage = createStorage();
+  const viewerAScope = { viewerId: 101, sessionEpoch: 3 };
+  let currentScope = viewerAScope;
+  const isCurrentScope = () => (
+    viewerAScope.viewerId === currentScope.viewerId
+    && viewerAScope.sessionEpoch === currentScope.sessionEpoch
+  );
+  const viewerASession = {
+    flowId: 'flow-a',
+    gameId: 'synthetic-game-a',
+    action: 'vote' as const,
+    startedAt: 1_700_000_000_000,
+    team: 'home' as const,
+    bannerDismissed: false,
+    timeoutStage: 'warning' as const,
+  };
+  const delayedViewerASession = { ...viewerASession, flowId: 'late-flow-a' };
+
+  assert.equal(writePredictionRunSession(viewerAScope, viewerASession, isCurrentScope, storage), true);
+  currentScope = { viewerId: 202, sessionEpoch: 4 };
+
+  assert.equal(writePredictionRunSession(viewerAScope, delayedViewerASession, isCurrentScope, storage), false);
+  assert.equal(removePredictionRunSession(viewerAScope, isCurrentScope, storage), false);
+  assert.equal(readPredictionRunSession(101, storage), JSON.stringify(viewerASession));
+  assert.equal(readPredictionRunSession(202, storage), null);
+});
+
+test('legacy ownerless run session is never restored for any viewer', () => {
+  const storage = createStorage();
+  storage.setItem('prediction:run-session:v1', 'legacy-ownerless-value');
+  storage.setItem('prediction:run-session', 'legacy-value');
+
+  assert.equal(readPredictionRunSession(101, storage), null);
+  assert.equal(hasPredictionRunSession(101, storage), false);
 });

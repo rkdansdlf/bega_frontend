@@ -46,7 +46,7 @@ export default function PredictionMatchesErrorView({
         title={title}
         description={description}
         tone={isManualDataRequired ? 'warning' : 'danger'}
-        className="relative min-h-0 border-0 bg-transparent p-0 shadow-none"
+        className={`relative min-h-0 border-0 bg-transparent p-0 shadow-none${isManualDataRequired ? ' [&_h3]:break-keep' : ''}`}
         icon={(
           <div className="flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm dark:border-border dark:bg-secondary">
             <PredictionTrendingUpIcon className={`h-7 w-7 ${
