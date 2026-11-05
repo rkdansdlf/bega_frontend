@@ -8,7 +8,9 @@ import {
   fetchAdminGameStatusMismatches,
   fetchAdminPlaces,
   fetchAdminStadiums,
+  fetchAdminSeatViews,
   fetchAdminUsers,
+  decideAdminReportAppeal,
   repairAdminGameStatusMismatches,
   fetchReleaseDecisionPresets,
   upsertAdminNonCanonicalCleanupTracker,
@@ -45,6 +47,64 @@ test('fetchAdminUsers는 관리자 검색 쿼리를 same-origin fetch로 전달�
   assert.equal(response[0]?.email, 'admin@example.com');
   assert.match(requestUrl, /\/api\/admin\/users\?search=admin$/);
   assert.equal(requestInit?.credentials, 'include');
+});
+
+test('fetchAdminSeatViews requests a bounded page and preserves Spring page metadata', async (t) => {
+  let requestUrl = '';
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    return buildJsonResponse({
+      success: true,
+      data: {
+        content: [],
+        totalElements: 21,
+        totalPages: 2,
+        size: 20,
+        number: 1,
+        last: true,
+      },
+    });
+  });
+
+  const page = await fetchAdminSeatViews({ moderationStatus: 'PENDING', page: 1, size: 20 });
+
+  assert.equal(page.number, 1);
+  assert.equal(page.totalElements, 21);
+  assert.match(requestUrl, /\/api\/admin\/seat-views\?/);
+  assert.match(requestUrl, /moderationStatus=PENDING/);
+  assert.match(requestUrl, /page=1/);
+  assert.match(requestUrl, /size=20/);
+});
+
+test('decideAdminReportAppeal PATCHes the selected decision to the report appeal endpoint', async (t) => {
+  let requestUrl = '';
+  let requestInit: RequestInit | undefined;
+
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    requestUrl = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+    requestInit = init;
+
+    return buildJsonResponse({
+      success: true,
+      data: { id: 73, appealStatus: 'REVIEWING' },
+    });
+  });
+
+  const report = await decideAdminReportAppeal(73, 'REVIEWING');
+
+  assert.equal(report.appealStatus, 'REVIEWING');
+  assert.match(requestUrl, /\/api\/admin\/reports\/73\/appeal$/);
+  assert.equal(requestInit?.method, 'PATCH');
+  assert.equal(requestInit?.credentials, 'include');
+  assert.deepEqual(JSON.parse(String(requestInit?.body)), { decision: 'REVIEWING' });
 });
 
 test('fetchAdminUsers는 403 응답을 관리자 권한 메시지로 변환한다', async (t) => {

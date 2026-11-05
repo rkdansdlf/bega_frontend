@@ -8,6 +8,7 @@ import TeamLogo from '../TeamLogo';
 import { TEAM_DATA } from '../../constants/teams';
 import { formatDate } from '../../utils/formatters';
 import { isAdminUserDeletionBlocked } from './adminUserDeletionPolicy';
+import { revealAdminUserControlFocus } from './adminUserFocusVisibility';
 import {
   AdminSearchIcon,
   AdminTrashIcon,
@@ -38,6 +39,7 @@ interface UsersAdminPanelProps {
   setSearchTerm: (term: string) => void;
   users: AdminUser[];
   loading: boolean;
+  error?: string | null;
   isSuperAdmin: boolean;
   currentUserId: number | null;
   handleDeleteUser: (userId: number) => void;
@@ -47,7 +49,7 @@ interface UsersAdminPanelProps {
   visualQaInteractive?: boolean;
 }
 
-const adminNativeSelectClassName = 'w-[120px] rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-60';
+const adminNativeSelectClassName = 'w-42 min-h-11 rounded-lg border border-slate-700 bg-slate-800/60 px-1.5 py-1.5 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-60';
 
 type AdminUserRoleSelectionArgs = {
   user: Pick<AdminUser, 'id' | 'email' | 'name' | 'role'>;
@@ -122,6 +124,7 @@ export function UsersAdminPanel({
   setSearchTerm,
   users,
   loading,
+  error = null,
   isSuperAdmin,
   currentUserId,
   handleDeleteUser,
@@ -157,18 +160,24 @@ export function UsersAdminPanel({
           </div>
         </div>
 
+        {error && !loading && (
+          <div data-testid="admin-users-error"
+            className="flex min-h-40 min-w-0 items-center justify-center px-2 py-10 text-center text-red-300 break-keep [overflow-wrap:anywhere]">
+            {error}
+          </div>
+        )}
         {loading ? (
           <div
             data-testid="admin-users-loading"
             role="status"
             aria-live="polite"
             aria-busy="true"
-            className="flex items-center justify-center gap-3 py-16 text-slate-400"
+            className="flex min-w-0 flex-col items-center justify-center gap-3 px-2 py-16 text-center text-slate-400 sm:flex-row"
           >
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent motion-reduce:animate-none" />
-            <span>사용자 목록을 불러오는 중...</span>
+            <div className="h-8 w-8 shrink-0 animate-spin rounded-full border-2 border-amber-500 border-t-transparent motion-reduce:animate-none" />
+            <span className="min-w-0 break-keep [overflow-wrap:anywhere]">사용자 목록을 불러오는 중...</span>
           </div>
-        ) : users.length === 0 ? (
+        ) : users.length === 0 ? (error ? null : (
           <div
             data-testid="admin-users-empty"
             role="status"
@@ -178,7 +187,7 @@ export function UsersAdminPanel({
             <AdminUsersIcon className="mb-3 h-12 w-12 opacity-30" />
             유저가 없습니다.
           </div>
-        ) : (
+        )) : (
           <div className="max-w-full overflow-hidden rounded-xl border border-slate-800">
             <Table aria-label="관리자 사용자 목록" className={tableClassName ?? 'min-w-[860px]'}>
             <TableHeader>
@@ -284,6 +293,7 @@ export function UsersAdminPanel({
                               });
                             }}
                             className={adminNativeSelectClassName}
+                            onFocus={(event) => revealAdminUserControlFocus(event.currentTarget)}
                           >
                             <option value="ROLE_USER">일반 사용자</option>
                             <option value="ROLE_ADMIN">관리자</option>
@@ -294,10 +304,11 @@ export function UsersAdminPanel({
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="iconTouch"
                         data-testid={`admin-user-delete-${user.id}`}
                         aria-label={`사용자 ${user.name} 삭제`}
-                        className="min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 sm:min-w-8"
+                        className="min-h-11 min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
+                        onFocus={(event) => revealAdminUserControlFocus(event.currentTarget)}
                         disabled={isAdminUserDeletionBlocked(user.id, user.role, currentUserId)}
                         title={isAdminUserDeletionBlocked(user.id, user.role, currentUserId)
                           ? '일반 사용자로 확인되고 현재 계정이 아닌 경우에만 삭제할 수 있습니다.'
@@ -321,14 +332,15 @@ export function UsersAdminPanel({
         title="유저를 삭제하시겠습니까?"
         description="이 작업은 되돌릴 수 없습니다. 계정 정보와 비금융 콘텐츠를 즉시 비식별 처리합니다. 결제·지급 및 감사 기록과 보존 대상 콘텐츠는 유지될 수 있습니다."
         contentTestId="admin-user-delete-dialog"
-        className="sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
+        className="dark sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
+        contentStyle={{ backgroundColor: '#0f172a' }}
         footer={(
           <>
             <Button
               variant="outline"
               data-testid="admin-user-delete-cancel"
               onClick={() => setPendingDeleteUser(null)}
-              className="min-h-11 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 sm:min-h-9"
+              className="min-h-11 border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 sm:min-h-11"
             >
               취소
             </Button>
@@ -339,7 +351,7 @@ export function UsersAdminPanel({
                 handleDeleteUser(pendingDeleteUser.id);
                 setPendingDeleteUser(null);
               }}
-              className="min-h-11 bg-red-600 text-white border-0 shadow-sm hover:bg-red-700 sm:min-h-9"
+              className="min-h-11 bg-red-600 text-white border-0 shadow-sm hover:bg-red-700 sm:min-h-11"
             >
               삭제
             </Button>

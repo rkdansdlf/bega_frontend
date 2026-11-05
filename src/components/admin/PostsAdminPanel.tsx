@@ -21,20 +21,35 @@ interface AdminPost {
 
 interface PostsAdminPanelProps {
   posts: AdminPost[];
+  loading?: boolean;
+  error?: string | null;
   handleDeletePost: (postId: number) => void;
   tableClassName?: string;
 }
 
-export function PostsAdminPanel({ posts, handleDeletePost, tableClassName }: PostsAdminPanelProps) {
+export function PostsAdminPanel({ posts, loading = false, error = null, handleDeletePost, tableClassName }: PostsAdminPanelProps) {
   const [pendingDeletePost, setPendingDeletePost] = useState<AdminPost | null>(null);
 
   return (
     <>
       <div
         data-testid="admin-posts-panel"
+        aria-busy={loading || undefined}
         className="min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-800"
       >
-        {posts.length === 0 ? (
+        {loading && (
+          <div data-testid="admin-posts-loading" role="status" aria-live="polite"
+            className="flex min-h-40 min-w-0 items-center justify-center px-4 py-10 text-center text-slate-400 break-keep [overflow-wrap:anywhere]">
+            게시글 조회 중
+          </div>
+        )}
+        {error && (
+          <div data-testid="admin-posts-error"
+            className="flex min-h-40 min-w-0 items-center justify-center px-4 py-10 text-center text-red-300 break-keep [overflow-wrap:anywhere]">
+            {error}
+          </div>
+        )}
+        {posts.length === 0 ? (loading || error ? null : (
           <div
             data-testid="admin-posts-empty"
             role="status"
@@ -44,7 +59,7 @@ export function PostsAdminPanel({ posts, handleDeletePost, tableClassName }: Pos
             <AdminMessageSquareIcon className="mb-3 h-12 w-12 opacity-30" />
             게시글이 없습니다.
           </div>
-        ) : (
+        )) : (
           <Table aria-label="커뮤니티 게시글 목록" className={tableClassName ?? 'min-w-[860px]'}>
           <TableHeader>
             <TableRow className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/50">
@@ -102,10 +117,10 @@ export function PostsAdminPanel({ posts, handleDeletePost, tableClassName }: Pos
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="iconTouch"
                       data-testid={`admin-post-delete-${post.id}`}
                       aria-label={`게시글 ${post.id} 삭제`}
-                      className="min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 sm:min-w-8"
+                      className="min-h-11 min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
                       onClick={() => setPendingDeletePost(post)}
                     >
                       <AdminTrashIcon className="w-4 h-4" />

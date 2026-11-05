@@ -177,14 +177,14 @@ function ClientErrorInsightsSkeleton({ compact = false }: { compact?: boolean })
     >
       {[1, 2].map((item) => (
         <section key={item} className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
-          <div className="animate-pulse space-y-3">
-            <div className="h-5 w-32 rounded bg-slate-800" />
-            <div className="h-4 w-56 rounded bg-slate-800" />
+          <div className="min-w-0 animate-pulse space-y-3">
+            <div className="h-5 w-32 max-w-full rounded bg-slate-800" />
+            <div className="h-4 w-56 max-w-full rounded bg-slate-800" />
             {!compact ? (
-              <div className="space-y-3 pt-2">
+              <div className="min-w-0 space-y-3 pt-2">
                 {[1, 2].map((card) => (
                   <div key={card} className="min-w-0 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                    <div className="h-4 w-24 rounded bg-slate-800" />
+                    <div className="h-4 w-24 max-w-full rounded bg-slate-800" />
                     <div className="mt-3 h-4 w-full rounded bg-slate-800" />
                     <div className="mt-2 h-4 w-5/6 rounded bg-slate-800" />
                   </div>
@@ -531,18 +531,23 @@ export function ClientErrorAdminPanel({
     <div
       data-testid="admin-client-error-panel"
       aria-busy={loadingDashboard || loadingEvents || detailLoading || undefined}
-      className="min-w-0 space-y-6 overflow-x-hidden"
+      className="min-w-0 space-y-6 overflow-x-hidden pb-[calc(var(--mobile-chrome-height)+var(--mobile-chrome-bottom-offset)+env(safe-area-inset-bottom)+128px)] lg:pb-0"
     >
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="min-w-0">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-rose-300">
-              <AdminBugIcon className="h-6 w-6" />
+          <div className="flex min-w-0 items-start gap-2 sm:gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-300">
+              <AdminBugIcon className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-2xl font-black text-white">클라이언트 에러 관제</h2>
-              <p className="text-caption text-slate-400 [overflow-wrap:anywhere]">
-                브라우저가 보고한 API/Runtime/Feedback 이벤트를 한 화면에서 추적합니다.
+              <h2
+                className="min-w-0 break-words text-lg font-black text-white sm:text-2xl"
+                style={{ wordBreak: 'keep-all' }}
+              >
+                클라이언트 에러 관제
+              </h2>
+              <p className="text-caption text-slate-400">
+                브라우저가 보고한 API, Runtime, Feedback 이벤트를 한 화면에서 추적합니다.
               </p>
             </div>
           </div>
@@ -594,7 +599,7 @@ export function ClientErrorAdminPanel({
         <section className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
           <div className="mb-4 flex min-w-0 flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <h3 className="text-lg font-bold text-white">Bucket별 발생 추이</h3>
+              <h3 className="min-w-0 break-words text-lg font-bold text-white">Bucket별 발생 추이</h3>
               <p className="text-caption text-slate-400 [overflow-wrap:anywhere]">
                 {WINDOW_LABEL[windowKey]} 기준 집계. 피드백은 별도 row로 적재된 사용자 제보 수입니다.
               </p>
@@ -611,7 +616,7 @@ export function ClientErrorAdminPanel({
         </section>
 
         <section className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
-          <h3 className="text-lg font-bold text-white">상위 Fingerprints</h3>
+          <h3 className="min-w-0 break-words text-lg font-bold text-white">상위 Fingerprints</h3>
           <p className="mb-4 text-caption text-slate-400 [overflow-wrap:anywhere]">
             동일 오류를 hash fingerprint로 묶어 상위 재발 패턴을 확인합니다.
           </p>
@@ -667,20 +672,20 @@ export function ClientErrorAdminPanel({
         <div className="mb-4 flex min-w-0 items-start gap-3">
           <AdminFilterIcon className="h-5 w-5 text-slate-400" />
           <div className="min-w-0">
-            <h3 className="text-lg font-bold text-white">이벤트 탐색</h3>
+            <h3 className="min-w-0 break-words text-lg font-bold text-white">이벤트 탐색</h3>
             <p className="text-caption text-slate-400 [overflow-wrap:anywhere]">
               bucket, source, status group, route, fingerprint, 전문 검색으로 raw event를 좁힙니다.
             </p>
           </div>
         </div>
 
-        <div data-testid="admin-client-error-filter-tab-path" className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-6">
+        <div data-testid="admin-client-error-filter-tab-path" className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
           <select
             data-testid="admin-client-error-bucket"
             aria-label="Bucket 필터"
             value={filters.bucket}
             onChange={(event) => setFilters((prev) => ({ ...prev, bucket: event.target.value as ClientErrorAdminEventFilters['bucket'] }))}
-            className={`min-h-11 ${adminNativeSelectClassName}`}
+            className={`min-h-11 min-w-0 max-w-full ${adminNativeSelectClassName}`}
           >
             <option value="all">Bucket 전체</option>
             <option value="api">API</option>
@@ -692,7 +697,7 @@ export function ClientErrorAdminPanel({
             aria-label="Source 필터"
             value={filters.source}
             onChange={(event) => setFilters((prev) => ({ ...prev, source: event.target.value as ClientErrorAdminEventFilters['source'] }))}
-            className={`min-h-11 ${adminNativeSelectClassName}`}
+            className={`min-h-11 min-w-0 max-w-full ${adminNativeSelectClassName}`}
           >
             <option value="all">Source 전체</option>
             <option value="api">api</option>
@@ -705,7 +710,7 @@ export function ClientErrorAdminPanel({
             aria-label="Status 필터"
             value={filters.statusGroup}
             onChange={(event) => setFilters((prev) => ({ ...prev, statusGroup: event.target.value as ClientErrorAdminEventFilters['statusGroup'] }))}
-            className={`min-h-11 ${adminNativeSelectClassName}`}
+            className={`min-h-11 min-w-0 max-w-full ${adminNativeSelectClassName}`}
           >
             <option value="all">Status 전체</option>
             <option value="5xx">5xx</option>
@@ -719,7 +724,7 @@ export function ClientErrorAdminPanel({
             value={filters.route}
             onChange={(event) => setFilters((prev) => ({ ...prev, route: event.target.value }))}
             placeholder="Route filter"
-            className="min-h-11 rounded-xl border-slate-700 bg-slate-800/70 text-slate-100 placeholder:text-slate-500"
+            className="min-h-11 min-w-0 max-w-full rounded-xl border-slate-700 bg-slate-800/70 text-slate-100 placeholder:text-slate-500"
           />
 
           <Input
@@ -728,10 +733,10 @@ export function ClientErrorAdminPanel({
             value={filters.fingerprint}
             onChange={(event) => setFilters((prev) => ({ ...prev, fingerprint: event.target.value }))}
             placeholder="Fingerprint"
-            className="min-h-11 rounded-xl border-slate-700 bg-slate-800/70 font-mono text-slate-100 placeholder:text-slate-500"
+            className="min-h-11 min-w-0 max-w-full rounded-xl border-slate-700 bg-slate-800/70 font-mono text-slate-100 placeholder:text-slate-500"
           />
 
-          <div className="relative">
+          <div className="relative min-w-0">
             <AdminSearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <Input
               data-testid="admin-client-error-search"
@@ -739,7 +744,7 @@ export function ClientErrorAdminPanel({
               value={filters.search}
               onChange={(event) => setFilters((prev) => ({ ...prev, search: event.target.value }))}
               placeholder="message / route / eventId"
-              className="min-h-11 rounded-xl border-slate-700 bg-slate-800/70 pl-10 text-slate-100 placeholder:text-slate-500"
+              className="min-h-11 min-w-0 max-w-full rounded-xl border-slate-700 bg-slate-800/70 pl-10 text-slate-100 placeholder:text-slate-500"
             />
           </div>
         </div>

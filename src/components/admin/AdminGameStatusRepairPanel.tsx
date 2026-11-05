@@ -68,6 +68,7 @@ const cleanupStatusLabel: Record<AdminNonCanonicalCleanupTrackerStatus, string> 
 };
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
+const adminActionButtonClassName = 'min-w-0 max-w-full whitespace-normal text-center [overflow-wrap:anywhere]';
 const formatTimeLabel = (value: string | null | undefined) => value ? value.slice(0, 5) : '-';
 
 const formatScoreLabel = (homeScore: number | null, awayScore: number | null) => {
@@ -1107,24 +1108,24 @@ export function AdminGameStatusRepairPanel({
   };
 
   return (
-    <div data-testid="admin-game-status-panel" className="min-w-0 space-y-6 overflow-hidden [overflow-wrap:anywhere]">
-      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 shadow-2xl sm:p-6">
+    <div data-testid="admin-game-status-panel" className="min-w-0 space-y-6 overflow-hidden pb-[calc(var(--mobile-chrome-height)+var(--mobile-chrome-bottom-offset)+env(safe-area-inset-bottom)+128px)] lg:pb-0 [overflow-wrap:anywhere]">
+      <section className="rounded-3xl border border-slate-800 bg-slate-950/70 p-3 shadow-2xl sm:p-6">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-caption font-semibold text-emerald-300">
-              <AdminShieldAlertIcon className="h-4 w-4" />
+          <div className="min-w-0 space-y-3">
+            <div className="inline-flex max-w-full min-w-0 flex-wrap items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-caption font-semibold text-emerald-300 [overflow-wrap:anywhere]">
+              <AdminShieldAlertIcon className="h-4 w-4 shrink-0" />
               Prediction 경기 상태 복구
             </div>
             <div>
-              <h2 className="text-2xl font-black text-white">경기 상태 mismatch 진단 및 복구</h2>
+              <h2 className="min-w-0 break-words text-xl font-black text-white sm:text-2xl">경기 상태 mismatch 진단 및 복구</h2>
               <p className="mt-2 max-w-3xl text-caption text-slate-400">
                 raw game status와 점수/이닝 데이터가 어긋난 경기, 팀 코드가 비정상인 raw row를 날짜 범위 기준으로 진단하고 dry-run 또는 실제 복구를 바로 실행할 수 있습니다.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:min-w-[540px]">
-            <label className="space-y-2">
+          <div className="grid min-w-0 w-full gap-3 md:grid-cols-2 xl:min-w-[540px]">
+            <label className="min-w-0 space-y-2">
               <span className="flex items-center gap-2 text-caption font-semibold text-slate-400">
                 <AdminCalendarIcon className="h-4 w-4" />
                 시작일
@@ -1137,10 +1138,10 @@ export function AdminGameStatusRepairPanel({
                   setStartDate(event.target.value);
                   setNonCanonicalCopyState('idle');
                 }}
-                className="border-slate-700 bg-slate-900 text-slate-100"
+                className="min-w-0 max-w-full border-slate-700 bg-slate-900 text-slate-100"
               />
             </label>
-            <label className="space-y-2">
+            <label className="min-w-0 space-y-2">
               <span className={adminFieldLabelClassName}>종료일</span>
               <Input
                 data-testid="admin-game-status-end-date"
@@ -1150,7 +1151,7 @@ export function AdminGameStatusRepairPanel({
                   setEndDate(event.target.value);
                   setNonCanonicalCopyState('idle');
                 }}
-                className="border-slate-700 bg-slate-900 text-slate-100"
+                className="min-w-0 max-w-full border-slate-700 bg-slate-900 text-slate-100"
               />
             </label>
           </div>
@@ -1160,7 +1161,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-diagnose"
             variant="outline"
-            className="border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800"
+            className={`${adminActionButtonClassName} border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800`}
             onClick={() => {
               void runDiagnosis();
             }}
@@ -1172,7 +1173,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-dry-run"
             variant="outline"
-            className="border-sky-500/30 bg-sky-500/10 text-sky-200 hover:bg-sky-500/20"
+            className={`${adminActionButtonClassName} border-sky-500/30 bg-sky-500/10 text-sky-200 hover:bg-sky-500/20`}
             onClick={() => {
               void runRepair(true);
             }}
@@ -1183,7 +1184,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-apply"
             variant="destructive"
-            className="bg-rose-600 text-white hover:bg-rose-500"
+            className={`${adminActionButtonClassName} bg-rose-600 text-white hover:bg-rose-500`}
             onClick={() => {
               void runRepair(false);
             }}
@@ -1194,7 +1195,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-download-mismatches"
             variant="outline"
-            className="border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20"
+            className={`${adminActionButtonClassName} border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20`}
             onClick={handleMismatchCsvDownload}
             disabled={isBusy || mismatchDownloadDisabled}
           >
@@ -1204,7 +1205,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-download-non-canonical"
             variant="outline"
-            className="border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
+            className={`${adminActionButtonClassName} border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20`}
             onClick={handleNonCanonicalCsvDownload}
             disabled={isBusy || nonCanonicalDownloadDisabled}
           >
@@ -1214,7 +1215,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-copy-non-canonical-template"
             variant="outline"
-            className="border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
+            className={`${adminActionButtonClassName} border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20`}
             onClick={() => {
               void handleNonCanonicalCleanupCopy();
             }}
@@ -1230,7 +1231,7 @@ export function AdminGameStatusRepairPanel({
           <Button
             data-testid="admin-game-status-download-repairs"
             variant="outline"
-            className="border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
+            className={`${adminActionButtonClassName} border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20`}
             onClick={handleRepairCsvDownload}
             disabled={isBusy || repairDownloadDisabled}
           >
@@ -1257,7 +1258,7 @@ export function AdminGameStatusRepairPanel({
             <AdminShieldAlertIcon className="h-4 w-4 text-amber-300" />
             <h3 className="text-15 font-semibold">운영 메모</h3>
           </div>
-          <div className="mt-3 space-y-2 text-caption text-slate-400">
+          <div className="mt-3 space-y-2 text-caption text-slate-400 [overflow-wrap:anywhere]">
             <p>1. `dry-run`으로 mismatch 반영 건수와 비정상 팀 코드 row 수를 먼저 확인합니다.</p>
             <p>2. `정제 요청 복사`는 raw 데이터 정제 티켓 본문으로, `비정상 row CSV`는 첨부 파일로 사용합니다.</p>
             <p>3. `정제 티켓 추적`에 티켓 URL, 담당자, 상태를 남겨 관리자 공용 처리 이력을 서버에 저장합니다.</p>
@@ -1274,7 +1275,7 @@ export function AdminGameStatusRepairPanel({
               </p>
             )}
             <p>
-              runbook: <span className="font-mono text-slate-300">{predictionGameStatusRunbookPath}</span>
+              runbook: <span className="font-mono text-slate-300 [overflow-wrap:anywhere]">{predictionGameStatusRunbookPath}</span>
             </p>
           </div>
         </div>

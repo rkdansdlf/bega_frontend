@@ -35,6 +35,7 @@ test('owns a bounded mobile root and announced lifecycle surfaces', () => {
   assert.match(panelSource, /data-testid="admin-offseason-movement-panel"/);
   assert.match(panelSource, /min-w-0/);
   assert.match(panelSource, /max-w-full/);
+  assert.match(panelSource, /pb-\[calc\(var\(--mobile-chrome-height\)\+var\(--mobile-chrome-bottom-offset\)\+env\(safe-area-inset-bottom\)\+128px\)\]/);
   assert.match(contentSource, /role="status"/);
   assert.match(contentSource, /aria-live="polite"/);
   assert.match(contentSource, /role="alert"/);
@@ -96,7 +97,7 @@ test('owns its 44px mobile controls without relying on dirty shared primitives',
   assert.match(contentSource, /adminNativeSelectClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
   assert.match(dialogsSource, /adminDialogControlClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
   assert.match(dialogsSource, /adminDialogSelectClassName\s*=\s*['"][^'"]*min-h-11[^'"]*text-base/);
-  assert.match(resultsSource, /size="sm"[\s\S]*className="[^"]*min-h-11 min-w-11/);
+  assert.match(resultsSource, /size="iconTouch"[\s\S]*className="[^"]*min-h-11 min-w-11/);
 });
 
 test('requires both root select changes to prove values different from the initial fixture', () => {

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import {
@@ -6,16 +6,20 @@ import {
   fetchAdminReports,
   fetchAdminSeatViewDetail,
   fetchAdminSeatViews,
+  decideAdminReportAppeal,
   handleAdminReport,
   handleAdminSeatView,
 } from '../../api/admin';
 import type {
   AdminReport,
+  AdminReportAppealDecision,
   AdminReportFilters,
   AdminSeatView,
+  AdminSeatViewPage,
   AdminSeatViewFilters,
 } from '../../types/admin';
 import type { AdminTabValue } from './adminPageTabs';
+import { normalizeAdminSeatViewPageNumber } from './adminSeatViewPagination';
 
 const OffseasonMovementAdminPanel = lazy(() =>
   import('./OffseasonMovementAdminPanel').then((module) => ({
@@ -61,6 +65,16 @@ const DEFAULT_SEAT_VIEW_FILTERS: AdminSeatViewFilters = {
   ticketVerified: 'all',
 };
 
+const EMPTY_SEAT_VIEW_PAGE: AdminSeatViewPage = {
+  content: [],
+  totalElements: 0,
+  totalPages: 0,
+  size: 20,
+  number: 0,
+  last: true,
+};
+const ADMIN_SEAT_VIEW_PAGE_SIZE = 20;
+
 interface AdminModerationRuntimeProps {
   activeTab: AdminTabValue;
   onErrorChange: (next: string | null) => void;
@@ -87,16 +101,28 @@ export default function AdminModerationRuntime({
 
   const [reports, setReports] = useState<AdminReport[]>([]);
   const [seatViews, setSeatViews] = useState<AdminSeatView[]>([]);
+  const [seatViewsPage, setSeatViewsPage] = useState<AdminSeatViewPage>(EMPTY_SEAT_VIEW_PAGE);
+  const [seatViewsPageNumber, setSeatViewsPageNumber] = useState(0);
   const [reportFilters, setReportFilters] = useState<AdminReportFilters>(DEFAULT_REPORT_FILTERS);
   const [reportsLoading, setReportsLoading] = useState(false);
+  const [reportsError, setReportsError] = useState<string | null>(null);
+  const reportsErrorRequestRef = useRef(0);
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
   const [selectedReportDetail, setSelectedReportDetail] = useState<AdminReport | null>(null);
   const [reportDetailLoading, setReportDetailLoading] = useState(false);
+  const [reportDetailError, setReportDetailError] = useState<string | null>(null);
+  const reportDetailErrorRequestRef = useRef(0);
+  const appealDecisionInFlightRef = useRef(false);
+  const [appealDecisionLoading, setAppealDecisionLoading] = useState(false);
   const [seatViewFilters, setSeatViewFilters] = useState<AdminSeatViewFilters>(DEFAULT_SEAT_VIEW_FILTERS);
   const [seatViewsLoading, setSeatViewsLoading] = useState(false);
+  const [seatViewsError, setSeatViewsError] = useState<string | null>(null);
+  const seatViewsErrorRequestRef = useRef(0);
   const [selectedSeatViewId, setSelectedSeatViewId] = useState<number | null>(null);
   const [selectedSeatViewDetail, setSelectedSeatViewDetail] = useState<AdminSeatView | null>(null);
   const [seatViewDetailLoading, setSeatViewDetailLoading] = useState(false);
+  const [seatViewDetailError, setSeatViewDetailError] = useState<string | null>(null);
+  const seatViewDetailErrorRequestRef = useRef(0);
   const [adminMemo, setAdminMemo] = useState('');
   const [hasMountedGameStatusRuntime, setHasMountedGameStatusRuntime] = useState(
     activeTab === 'gameStatus',
@@ -111,15 +137,19 @@ export default function AdminModerationRuntime({
   };
 
   const updateSeatViewFilters = (next: Partial<AdminSeatViewFilters>) => {
+    setSeatViewsPageNumber(0);
     setSeatViewFilters((prev) => ({ ...prev, ...next }));
   };
 
   const resetSeatViewFilters = () => {
+    setSeatViewsPageNumber(0);
     setSeatViewFilters(DEFAULT_SEAT_VIEW_FILTERS);
   };
 
   const loadReports = useCallback(async () => {
+    const errorRequest = ++reportsErrorRequestRef.current;
     setReportsLoading(true);
+    setReportsError(null);
     onErrorChange(null);
     try {
       const data = await fetchAdminReports({
@@ -131,8 +161,10 @@ export default function AdminModerationRuntime({
         size: 100,
       });
       setReports(data.content || []);
+      if (errorRequest === reportsErrorRequestRef.current) setReportsError(null);
     } catch (error) {
       console.error('신고 조회 오류:', error);
+      if (errorRequest === reportsErrorRequestRef.current) setReportsError('신고 목록을 불러오는데 실패했습니다.');
       onErrorChange('신고 목록을 불러오는데 실패했습니다.');
     } finally {
       setReportsLoading(false);
@@ -140,13 +172,18 @@ export default function AdminModerationRuntime({
   }, [onErrorChange, reportFilters]);
 
   const openReportDetail = async (reportId: number) => {
+    const errorRequest = ++reportDetailErrorRequestRef.current;
     setSelectedReportId(reportId);
+    setSelectedReportDetail(null);
+    setReportDetailError(null);
     setReportDetailLoading(true);
     try {
       const detail = await fetchAdminReportDetail(reportId);
       setSelectedReportDetail(detail);
+      if (errorRequest === reportDetailErrorRequestRef.current) setReportDetailError(null);
     } catch (error) {
       console.error('신고 상세 조회 오류:', error);
+      if (errorRequest === reportDetailErrorRequestRef.current) setReportDetailError('신고 상세를 불러오는데 실패했습니다.');
       onErrorChange('신고 상세를 불러오는데 실패했습니다.');
     } finally {
       setReportDetailLoading(false);
@@ -154,8 +191,10 @@ export default function AdminModerationRuntime({
   };
 
   const closeReportDetail = () => {
+    reportDetailErrorRequestRef.current++;
     setSelectedReportId(null);
     setSelectedReportDetail(null);
+    setReportDetailError(null);
   };
 
   const refreshSelectedReportDetail = useCallback(async () => {
@@ -163,12 +202,17 @@ export default function AdminModerationRuntime({
       return;
     }
 
+    const errorRequest = ++reportDetailErrorRequestRef.current;
+    setReportDetailError(null);
     setReportDetailLoading(true);
     try {
       const detail = await fetchAdminReportDetail(selectedReportId);
       setSelectedReportDetail(detail);
+      if (errorRequest === reportDetailErrorRequestRef.current) setReportDetailError(null);
     } catch (error) {
       console.error('신고 상세 재조회 오류:', error);
+      setSelectedReportDetail(null);
+      if (errorRequest === reportDetailErrorRequestRef.current) setReportDetailError('신고 상세를 갱신하지 못했습니다.');
       onErrorChange('신고 상세를 갱신하지 못했습니다.');
     } finally {
       setReportDetailLoading(false);
@@ -194,8 +238,35 @@ export default function AdminModerationRuntime({
     }
   };
 
+  const handleAppealDecision = async (
+    reportId: number,
+    decision: AdminReportAppealDecision,
+  ) => {
+    if (appealDecisionInFlightRef.current) return;
+    appealDecisionInFlightRef.current = true;
+    setAppealDecisionLoading(true);
+
+    try {
+      await decideAdminReportAppeal(reportId, decision);
+      onSuccessMessageChange('이의제기 상태가 갱신되었습니다.');
+      await loadReports();
+      if (selectedReportId === reportId) {
+        await refreshSelectedReportDetail();
+      }
+      window.setTimeout(() => onSuccessMessageChange(null), 3000);
+    } catch (error) {
+      console.error('이의제기 처리 오류:', error);
+      onErrorChange('이의제기 결정에 실패했습니다.');
+    } finally {
+      appealDecisionInFlightRef.current = false;
+      setAppealDecisionLoading(false);
+    }
+  };
+
   const loadSeatViews = useCallback(async () => {
+    const errorRequest = ++seatViewsErrorRequestRef.current;
     setSeatViewsLoading(true);
+    setSeatViewsError(null);
     onErrorChange(null);
     try {
       const data = await fetchAdminSeatViews({
@@ -214,24 +285,38 @@ export default function AdminModerationRuntime({
           seatViewFilters.ticketVerified === 'all'
             ? undefined
             : seatViewFilters.ticketVerified === 'verified',
+        page: seatViewsPageNumber,
+        size: ADMIN_SEAT_VIEW_PAGE_SIZE,
       });
-      setSeatViews(data);
+      const validPageNumber = normalizeAdminSeatViewPageNumber(seatViewsPageNumber, data.totalPages);
+      if (validPageNumber !== seatViewsPageNumber) {
+        setSeatViewsPageNumber(validPageNumber);
+        return;
+      }
+      setSeatViews(data.content || []);
+      setSeatViewsPage(data);
+      if (errorRequest === seatViewsErrorRequestRef.current) setSeatViewsError(null);
     } catch (error) {
       console.error('시야뷰 후보 조회 오류:', error);
+      if (errorRequest === seatViewsErrorRequestRef.current) setSeatViewsError('시야뷰 후보를 불러오는데 실패했습니다.');
       onErrorChange('시야뷰 후보를 불러오는데 실패했습니다.');
     } finally {
       setSeatViewsLoading(false);
     }
-  }, [onErrorChange, seatViewFilters]);
+  }, [onErrorChange, seatViewFilters, seatViewsPageNumber]);
 
   const openSeatViewDetail = async (seatViewId: number) => {
+    const errorRequest = ++seatViewDetailErrorRequestRef.current;
     setSelectedSeatViewId(seatViewId);
+    setSeatViewDetailError(null);
     setSeatViewDetailLoading(true);
     try {
       const detail = await fetchAdminSeatViewDetail(seatViewId);
       setSelectedSeatViewDetail(detail);
+      if (errorRequest === seatViewDetailErrorRequestRef.current) setSeatViewDetailError(null);
     } catch (error) {
       console.error('시야뷰 후보 상세 조회 오류:', error);
+      if (errorRequest === seatViewDetailErrorRequestRef.current) setSeatViewDetailError('시야뷰 후보 상세를 불러오는데 실패했습니다.');
       onErrorChange('시야뷰 후보 상세를 불러오는데 실패했습니다.');
     } finally {
       setSeatViewDetailLoading(false);
@@ -239,8 +324,10 @@ export default function AdminModerationRuntime({
   };
 
   const closeSeatViewDetail = () => {
+    seatViewDetailErrorRequestRef.current++;
     setSelectedSeatViewId(null);
     setSelectedSeatViewDetail(null);
+    setSeatViewDetailError(null);
   };
 
   const refreshSelectedSeatViewDetail = useCallback(async () => {
@@ -248,12 +335,16 @@ export default function AdminModerationRuntime({
       return;
     }
 
+    const errorRequest = ++seatViewDetailErrorRequestRef.current;
+    setSeatViewDetailError(null);
     setSeatViewDetailLoading(true);
     try {
       const detail = await fetchAdminSeatViewDetail(selectedSeatViewId);
       setSelectedSeatViewDetail(detail);
+      if (errorRequest === seatViewDetailErrorRequestRef.current) setSeatViewDetailError(null);
     } catch (error) {
       console.error('시야뷰 후보 상세 재조회 오류:', error);
+      if (errorRequest === seatViewDetailErrorRequestRef.current) setSeatViewDetailError('시야뷰 후보 상세를 갱신하지 못했습니다.');
       onErrorChange('시야뷰 후보 상세를 갱신하지 못했습니다.');
     } finally {
       setSeatViewDetailLoading(false);
@@ -320,6 +411,7 @@ export default function AdminModerationRuntime({
             <AdminReportsPanel
               reportFilters={reportFilters}
               reportsLoading={reportsLoading}
+              reportsError={reportsError}
               reports={reports}
               updateReportFilters={updateReportFilters}
               resetReportFilters={resetReportFilters}
@@ -331,7 +423,7 @@ export default function AdminModerationRuntime({
       )}
 
       {hasMountedGameStatusRuntime && (
-        <div className={activeTab === 'gameStatus' ? 'p-6' : 'hidden'}>
+        <div className={activeTab === 'gameStatus' ? 'px-3 py-4 sm:p-6' : 'hidden'}>
           <Suspense fallback={<div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">경기 복구 패널 로딩 중...</div>}>
             <AdminGameStatusRepairPanel active={activeTab === 'gameStatus'} />
           </Suspense>
@@ -339,7 +431,7 @@ export default function AdminModerationRuntime({
       )}
 
       {activeTab === 'clientErrors' && (
-        <div className="p-6">
+        <div className="px-3 py-4 sm:p-6">
           <Suspense fallback={<div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">클라이언트 에러 관제 로딩 중...</div>}>
             <ClientErrorAdminPanel active />
           </Suspense>
@@ -352,7 +444,10 @@ export default function AdminModerationRuntime({
             <AdminSeatViewsPanel
               seatViewFilters={seatViewFilters}
               seatViewsLoading={seatViewsLoading}
+              seatViewsError={seatViewsError}
               seatViews={seatViews}
+              seatViewsPage={seatViewsPage}
+              onSeatViewsPageChange={setSeatViewsPageNumber}
               updateSeatViewFilters={updateSeatViewFilters}
               resetSeatViewFilters={resetSeatViewFilters}
               openSeatViewDetail={openSeatViewDetail}
@@ -363,7 +458,7 @@ export default function AdminModerationRuntime({
       )}
 
       {activeTab === 'offseason' && (
-        <div className="p-6">
+        <div className="px-0 py-4 sm:p-6">
           <Suspense fallback={<div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-16 text-center text-slate-400">스토브리그 관리 로딩 중...</div>}>
             <OffseasonMovementAdminPanel active />
           </Suspense>
@@ -376,10 +471,13 @@ export default function AdminModerationRuntime({
             selectedReportId={selectedReportId}
             selectedReportDetail={selectedReportDetail}
             reportDetailLoading={reportDetailLoading}
+            reportDetailError={reportDetailError}
             adminMemo={adminMemo}
             setAdminMemo={setAdminMemo}
             closeReportDetail={closeReportDetail}
             handleReportAction={handleReportAction}
+            handleAppealDecision={handleAppealDecision}
+            appealDecisionLoading={appealDecisionLoading}
           />
         </Suspense>
       )}
@@ -390,6 +488,7 @@ export default function AdminModerationRuntime({
             selectedSeatViewId={selectedSeatViewId}
             selectedSeatViewDetail={selectedSeatViewDetail}
             seatViewDetailLoading={seatViewDetailLoading}
+            seatViewDetailError={seatViewDetailError}
             adminMemo={adminMemo}
             setAdminMemo={setAdminMemo}
             closeSeatViewDetail={closeSeatViewDetail}

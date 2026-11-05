@@ -5,11 +5,13 @@ import { formatStadiumDisplayName } from '../../utils/stadiumDisplay';
 import { Button } from '../ui/button';
 import PlainDialog from '../ui/plain-dialog';
 import { AdminCameraIcon } from './AdminPanelIcons';
+import './AdminSeatViewDetailDrawer.css';
 
 interface AdminSeatViewDetailDrawerProps {
   selectedSeatViewId: number;
   selectedSeatViewDetail: AdminSeatView | null;
   seatViewDetailLoading: boolean;
+  seatViewDetailError?: string | null;
   adminMemo: string;
   setAdminMemo: (value: string) => void;
   closeSeatViewDetail: () => void;
@@ -27,13 +29,14 @@ export type AdminSeatViewDetailDrawerVisualQaStateOverride = {
   interactive: boolean;
 };
 
-const actionClassName = 'min-h-11 w-full whitespace-normal px-3 py-2 leading-tight [overflow-wrap:anywhere] sm:min-h-9';
+const actionClassName = 'min-h-11 w-full whitespace-normal px-3 py-2 leading-tight [overflow-wrap:anywhere] sm:min-h-11';
 const valueClassName = 'mt-1 min-w-0 text-slate-200 [overflow-wrap:anywhere]';
 
 export default function AdminSeatViewDetailDrawer({
   selectedSeatViewId,
   selectedSeatViewDetail,
   seatViewDetailLoading,
+  seatViewDetailError = null,
   adminMemo,
   setAdminMemo,
   closeSeatViewDetail,
@@ -62,7 +65,7 @@ export default function AdminSeatViewDetailDrawer({
     }
   }, [adminMemo, visualQaInteractive]);
 
-  const actions = selectedSeatViewDetail && !seatViewDetailLoading ? (
+  const actions = selectedSeatViewDetail && !seatViewDetailLoading && !seatViewDetailError ? (
     <div className="grid w-full grid-cols-2 gap-2">
       <Button
         type="button"
@@ -133,7 +136,7 @@ export default function AdminSeatViewDetailDrawer({
       )}
       description="좌석 시야와 제출 정보를 검토한 뒤 적절한 분류를 선택하세요."
       contentTestId="admin-seat-view-detail-drawer"
-      className="max-w-xl border-slate-700 bg-slate-900 text-slate-100 focus:outline-none"
+      className="max-w-xl dark admin-seat-view-detail-dialog border-slate-700 text-slate-100 focus:outline-none"
       bodyClassName="p-4 sm:p-5"
       footer={actions}
     >
@@ -149,6 +152,13 @@ export default function AdminSeatViewDetailDrawer({
           >
             상세 정보를 불러오는 중...
           </div>
+        ) : seatViewDetailError ? (
+          <p
+            data-testid="admin-seat-view-detail-error"
+            className="break-keep rounded-lg border border-slate-800 bg-slate-800/40 px-4 py-6 text-center text-slate-300 [overflow-wrap:anywhere]"
+          >
+            {seatViewDetailError}
+          </p>
         ) : !selectedSeatViewDetail ? (
           <div
             role="status"

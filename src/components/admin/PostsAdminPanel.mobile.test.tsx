@@ -22,7 +22,8 @@ test('posts admin panel exposes named stable touch-safe delete controls and dial
 
   assert.match(source, /data-testid=\{`admin-post-delete-\$\{post\.id\}`\}/);
   assert.match(source, /aria-label=\{`게시글 \$\{post\.id\} 삭제`\}/);
-  assert.match(source, /min-w-11[^'"\n]*sm:min-w-8/);
+  assert.match(source, /size="iconTouch"/);
+  assert.match(source, /className="min-h-11 min-w-11/);
   assert.match(source, /contentTestId="admin-post-delete-dialog"/);
   assert.match(source, /data-testid="admin-post-delete-cancel"/);
   assert.match(source, /data-testid="admin-post-delete-confirm"/);

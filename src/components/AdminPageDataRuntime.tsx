@@ -25,11 +25,6 @@ const MODERATION_TABS = new Set<AdminTabValue>([
   'seatViews',
   'offseason',
 ]);
-const DEFAULT_ADMIN_STATS: AdminStats = {
-  totalUsers: 0,
-  totalPosts: 0,
-  totalMates: 0,
-};
 
 interface AdminPageDataRuntimeProps {
   activeTab: AdminTabValue;
@@ -59,7 +54,7 @@ export default function AdminPageDataRuntime({
     ...getAdminStatsQueryOptions(),
     enabled: !hasStatsOverride,
   });
-  const stats = statsOverride ?? statsData ?? DEFAULT_ADMIN_STATS;
+  const stats = statsOverride ?? statsData;
   const [error, setError] = useState<string | null>(initialErrorOverride ?? null);
   const [successMessage, setSuccessMessage] = useState<string | null>(initialSuccessMessageOverride ?? null);
   const [hasMountedCommunityRuntime, setHasMountedCommunityRuntime] = useState(
@@ -81,6 +76,7 @@ export default function AdminPageDataRuntime({
       ? '통계를 불러오는데 실패했습니다.'
       : null;
   const displayedError = error ?? statsError;
+  const unavailableStatsState = statsError ? 'error' : 'loading';
 
   useEffect(() => {
     if (COMMUNITY_TABS.has(activeTab)) {
@@ -118,10 +114,10 @@ export default function AdminPageDataRuntime({
       )}
 
       <div className="mb-10 grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
-        <StatCard animate={animateStatsOverride} icon={AdminUsersIcon} label="전체 사용자" value={stats.totalUsers} color="amber" testId="admin-stat-users" />
+        <StatCard animate={animateStatsOverride} icon={AdminUsersIcon} label="전체 사용자" value={stats?.totalUsers} unavailableState={unavailableStatsState} color="amber" testId="admin-stat-users" />
         <div className="grid gap-6">
-          <StatCard animate={animateStatsOverride} icon={AdminMessageSquareIcon} label="전체 게시글" value={stats.totalPosts} color="emerald" testId="admin-stat-posts" />
-          <StatCard animate={animateStatsOverride} icon={AdminCalendarIcon} label="메이트 모임" value={stats.totalMates} color="sky" testId="admin-stat-mates" />
+          <StatCard animate={animateStatsOverride} icon={AdminMessageSquareIcon} label="전체 게시글" value={stats?.totalPosts} unavailableState={unavailableStatsState} color="emerald" testId="admin-stat-posts" />
+          <StatCard animate={animateStatsOverride} icon={AdminCalendarIcon} label="메이트 모임" value={stats?.totalMates} unavailableState={unavailableStatsState} color="sky" testId="admin-stat-mates" />
         </div>
       </div>
 

@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import type { AdminSeatView, AdminSeatViewFilters } from '../../types/admin';
+import type { AdminSeatView, AdminSeatViewFilters, AdminSeatViewPage } from '../../types/admin';
 import { AdminSeatViewsPanel } from './AdminSeatViewsPanel';
+import { normalizeAdminSeatViewPageNumber } from './adminSeatViewPagination';
 
 const defaultFilters: AdminSeatViewFilters = {
   moderationStatus: 'all',
@@ -44,21 +46,37 @@ const baseSeatView: AdminSeatView = {
   tags: ['MOCK 시야 좋음'],
 };
 
+const defaultPage: AdminSeatViewPage = {
+  content: [baseSeatView],
+  totalElements: 1,
+  totalPages: 1,
+  size: 20,
+  number: 0,
+  last: true,
+};
+
 const renderPanel = ({
   filters = defaultFilters,
   loading = false,
+  error = null,
   seatViews = [baseSeatView],
+  page = defaultPage,
 }: {
   filters?: AdminSeatViewFilters;
   loading?: boolean;
+  error?: string | null;
   seatViews?: AdminSeatView[];
+  page?: AdminSeatViewPage;
 } = {}) => renderToStaticMarkup(createElement(AdminSeatViewsPanel, {
   handleSeatViewAction: () => undefined,
   openSeatViewDetail: () => undefined,
   resetSeatViewFilters: () => undefined,
   seatViewFilters: filters,
   seatViews,
+  seatViewsPage: page,
+  onSeatViewsPageChange: () => undefined,
   seatViewsLoading: loading,
+  seatViewsError: error,
   updateSeatViewFilters: () => undefined,
 }));
 
@@ -125,6 +143,23 @@ test('admin seat-view row actions have explicit names and 44px mobile targets', 
   assert.ok((html.match(/min-w-11/g) ?? []).length >= 2);
 });
 
+test('admin seat-view list exposes bounded previous/next pagination', () => {
+  const html = renderPanel({
+    page: { ...defaultPage, totalElements: 41, totalPages: 3, number: 1, last: false },
+  });
+
+  assert.match(html, /총 41건 · 2 \/ 3 페이지/);
+  assert.match(html, /data-testid="admin-seat-views-previous-page"/);
+  assert.match(html, /data-testid="admin-seat-views-next-page"/);
+});
+
+test('admin seat-view pagination moves to the last remaining page after moderation shrinks results', () => {
+  assert.equal(normalizeAdminSeatViewPageNumber(2, 2), 1);
+  assert.equal(normalizeAdminSeatViewPageNumber(1, 0), 0);
+  assert.equal(normalizeAdminSeatViewPageNumber(0, 0), 0);
+  assert.equal(normalizeAdminSeatViewPageNumber(1, 3), 1);
+});
+
 test('admin seat-view rows show an accessible placeholder when a photo URL is missing', () => {
   for (const photoUrl of ['', null]) {
     const html = renderPanel({
@@ -135,4 +170,50 @@ test('admin seat-view rows show an accessible placeholder when a photo URL is mi
     assert.match(html, /data-testid="admin-seat-view-photo-fallback-42"/);
     assert.match(html, /role="img"[^>]*aria-label="시야뷰 후보 42번 사진을 불러올 수 없습니다"/);
   }
+});
+
+test('admin seat-view failed query has local guidance instead of healthy empty or duplicate live alert', () => {
+  const html = renderPanel({ seatViews: [], error: '시야뷰 후보 조회 실패' });
+  assert.match(html, /admin-seat-views-error/);
+  assert.match(html, /시야뷰 후보 조회 실패/);
+  assert.match(html, /break-keep px-3/);
+  assert.doesNotMatch(html, /시야뷰 후보가 없습니다|role="alert"|aria-live/);
+});
+
+test('admin seat-view cached rows survive failed refresh with local guidance', () => {
+  const html = renderPanel({ error: '시야뷰 후보 조회 실패' });
+  assert.match(html, /admin-seat-views-error/);
+  assert.match(html, /admin-seat-view-row-42/);
+  assert.doesNotMatch(html, /시야뷰 후보가 없습니다/);
+});
+
+test('admin seat-view loading does not expose an old failure or healthy empty', () => {
+  const html = renderPanel({ loading: true, seatViews: [], error: 'old failure' });
+  assert.match(html, /시야뷰 후보 로딩 중/);
+  assert.doesNotMatch(html, /admin-seat-views-error|시야뷰 후보가 없습니다/);
+});
+
+test('admin seat-view controls keep local desktop44px targets', () => {
+  const html = renderPanel();
+  assert.match(html, /sm:min-h-11/);
+  assert.doesNotMatch(html, /sm:min-h-8|sm:min-h-9|sm:min-w-8/);
+});
+
+test('admin seat-view drawer separates failed detail and scopes its own dark background', async () => {
+  const source = await readFile(new URL('./AdminSeatViewDetailDrawer.tsx', import.meta.url), 'utf8');
+  assert.match(source, /seatViewDetailError\?: string \| null/);
+  assert.match(source, /data-testid="admin-seat-view-detail-error"/);
+  assert.match(source, /seatViewDetailError \? \([\s\S]*!selectedSeatViewDetail/);
+  assert.match(source, /className="max-w-xl dark admin-seat-view-detail-dialog/);
+  const css = await readFile(new URL('./AdminSeatViewDetailDrawer.css', import.meta.url), 'utf8');
+  assert.match(css, /\.admin-seat-view-detail-dialog\[data-testid="admin-seat-view-detail-drawer"\]/);
+  assert.match(css, /background-color: #0f172a !important/);
+});
+
+test('admin seat-view local errors are wired and cleared only for their current requests', async () => {
+  const source = await readFile(new URL('./AdminModerationRuntime.tsx', import.meta.url), 'utf8');
+  assert.match(source, /seatViewsError=\{seatViewsError\}/);
+  assert.match(source, /seatViewDetailError=\{seatViewDetailError\}/);
+  assert.match(source, /if \(errorRequest === seatViewsErrorRequestRef.current\) setSeatViewsError\(null\)/);
+  assert.match(source, /if \(errorRequest === seatViewDetailErrorRequestRef.current\) setSeatViewDetailError\(null\)/);
 });

@@ -1,0 +1,59 @@
+.admin-ai-preset-card h3,
+.admin-ai-preset-card p,
+.admin-ai-preset-card label {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.admin-ai-preset-card [data-testid='admin-ai-refresh-presets'],
+.admin-ai-preset-card [data-testid='admin-ai-generate-draft'] {
+  min-width: theme(spacing.11);
+  min-height: max(theme(spacing.11), 2.25rem);
+  height: auto;
+  white-space: normal;
+}
+
+.admin-ai-preset-card [data-testid='admin-ai-refresh-presets'] {
+  flex-shrink: 0;
+  padding-inline: theme(spacing.3);
+}
+
+.admin-ai-preset-card [data-testid='admin-ai-scenario-trigger'] {
+  min-height: theme(spacing.11);
+}
+
+.admin-ai-preset-card textarea,
+.admin-ai-preset-card select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .admin-ai-preset-card[data-testid='admin-ai-release-composer-card'] {
+    padding: theme(spacing.3);
+  }
+
+  .admin-ai-preset-card .admin-ai-preset-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: theme(spacing.3);
+  }
+
+  .admin-ai-preset-card h3 {
+    display: block;
+  }
+
+  .admin-ai-preset-card h3 > svg {
+    display: block;
+    margin-bottom: theme(spacing.2);
+  }
+
+  .admin-ai-preset-card [data-testid='admin-ai-refresh-presets'] {
+    align-self: flex-end;
+  }
+
+  .admin-ai-preset-card textarea,
+  .admin-ai-preset-card select {
+    padding-inline: theme(spacing.2);
+  }
+}

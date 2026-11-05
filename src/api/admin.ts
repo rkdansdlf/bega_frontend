@@ -14,8 +14,10 @@ import {
   AdminOffseasonMovementPayload,
   AdminPost,
   AdminReport,
+  AdminReportAppealDecision,
   AdminReportPage,
   AdminSeatView,
+  AdminSeatViewPage,
   AdminStats,
   AdminUser,
   ReleaseDecisionArtifactRecord,
@@ -253,15 +255,33 @@ export const appealAdminReport = async (reportId: number, appealReason: string):
   }
 };
 
+export const decideAdminReportAppeal = async (
+  reportId: number,
+  decision: AdminReportAppealDecision,
+): Promise<AdminReport> => {
+  try {
+    const payload = { decision };
+    const response = await privatePatch<AdminApiResponse<AdminReport>, typeof payload>(
+      `/admin/reports/${reportId}/appeal`,
+      payload,
+    );
+    return unwrapAdminResponse(response, '이의제기 결정 실패');
+  } catch (error) {
+    throw new Error(readErrorMessage(error, '이의제기 결정 실패'));
+  }
+};
+
 export const fetchAdminSeatViews = async (params?: {
   moderationStatus?: string;
   stadium?: string;
   aiSuggestedLabel?: string;
   adminLabel?: string;
   ticketVerified?: boolean;
-}): Promise<AdminSeatView[]> => {
+  page?: number;
+  size?: number;
+}): Promise<AdminSeatViewPage> => {
   try {
-    const response = await privateGet<AdminApiResponse<AdminSeatView[]>>('/admin/seat-views', {
+    const response = await privateGet<AdminApiResponse<AdminSeatViewPage>>('/admin/seat-views', {
       params,
     });
     return unwrapAdminResponse(response, '시야뷰 후보 조회 실패');

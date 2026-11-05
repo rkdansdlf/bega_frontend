@@ -165,11 +165,11 @@ export default function OffseasonMovementAdminDialogs({
               data-testid="admin-offseason-dialog-cancel"
               data-vqa-min-touch="44"
               onClick={onDialogClose}
-              className={`${adminDialogControlClassName} border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
+              className={`${adminDialogControlClassName} sm:min-h-11 border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
             >
               취소
             </Button>
-            <Button type="button" data-testid="admin-offseason-dialog-submit" data-vqa-min-touch="44" onClick={onSubmit} disabled={submitting} className={`${adminDialogControlClassName} bg-emerald-500 text-slate-950 hover:bg-emerald-400`}>
+            <Button type="button" data-testid="admin-offseason-dialog-submit" data-vqa-min-touch="44" onClick={onSubmit} disabled={submitting} className={`${adminDialogControlClassName} sm:min-h-11 bg-emerald-500 text-slate-950 hover:bg-emerald-400`}>
               {submitting ? (
                 <>
                   <AdminRefreshIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -414,7 +414,7 @@ export default function OffseasonMovementAdminDialogs({
               data-testid="admin-offseason-delete-cancel"
               data-vqa-min-touch="44"
               onClick={() => onDeleteTargetChange(null)}
-              className={`${adminDialogControlClassName} border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
+              className={`${adminDialogControlClassName} sm:min-h-11 border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800`}
             >
               취소
             </Button>
@@ -424,7 +424,7 @@ export default function OffseasonMovementAdminDialogs({
               data-vqa-min-touch="44"
               onClick={onDelete}
               disabled={submitting}
-              className={`${adminDialogControlClassName} bg-red-600 text-white hover:bg-red-700`}
+              className={`${adminDialogControlClassName} sm:min-h-11 bg-red-600 text-white hover:bg-red-700`}
             >
               삭제
             </Button>

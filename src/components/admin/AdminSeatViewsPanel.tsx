@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import type { AdminSeatView, AdminSeatViewFilters } from '../../types/admin';
+import type { AdminSeatView, AdminSeatViewFilters, AdminSeatViewPage } from '../../types/admin';
 import { formatStadiumDisplayName } from '../../utils/stadiumDisplay';
 import { AdminEyeIcon } from './AdminDetailIcons';
 import { AdminCameraIcon } from './AdminPanelIcons';
@@ -25,7 +25,10 @@ type SeatViewModerationPayload = {
 interface AdminSeatViewsPanelProps {
   seatViewFilters: AdminSeatViewFilters;
   seatViewsLoading: boolean;
+  seatViewsError?: string | null;
   seatViews: AdminSeatView[];
+  seatViewsPage: AdminSeatViewPage;
+  onSeatViewsPageChange: (page: number) => void;
   updateSeatViewFilters: (next: Partial<AdminSeatViewFilters>) => void;
   resetSeatViewFilters: () => void;
   openSeatViewDetail: (seatViewId: number) => void;
@@ -48,8 +51,8 @@ const defaultSeatViewFilters: AdminSeatViewFilters = {
   ticketVerified: 'all',
 };
 const filterLabelClassName = 'mb-1 block text-caption font-medium text-slate-400';
-const seatViewSelectClassName = `${adminNativeSelectClassName} min-h-11 sm:min-h-9`;
-const seatViewRowActionClassName = 'min-h-11 min-w-11 whitespace-normal [overflow-wrap:anywhere] sm:min-h-8 sm:min-w-8';
+const seatViewSelectClassName = `${adminNativeSelectClassName} min-h-11`;
+const seatViewRowActionClassName = 'min-h-11 min-w-11 whitespace-normal [overflow-wrap:anywhere] sm:min-h-11';
 
 function AdminSeatViewPhoto({ id, photoUrl }: { id: number; photoUrl: string | null }) {
   const [failedPhotoUrl, setFailedPhotoUrl] = useState<string | null>(null);
@@ -84,7 +87,10 @@ function AdminSeatViewPhoto({ id, photoUrl }: { id: number; photoUrl: string | n
 export function AdminSeatViewsPanel({
   seatViewFilters,
   seatViewsLoading,
+  seatViewsError = null,
   seatViews,
+  seatViewsPage,
+  onSeatViewsPageChange,
   updateSeatViewFilters,
   resetSeatViewFilters,
   openSeatViewDetail,
@@ -141,7 +147,7 @@ export function AdminSeatViewsPanel({
             value={effectiveSeatViewFilters.stadium}
             onChange={(e) => applySeatViewFilters({ stadium: e.target.value })}
             placeholder="구장명 필터"
-            className="min-h-11 border-slate-700 bg-slate-800/50 text-slate-200 sm:min-h-9"
+            className="min-h-11 border-slate-700 bg-slate-800/50 text-slate-200 sm:min-h-11"
           />
         </label>
         <label htmlFor="admin-seat-views-ai-filter" className="min-w-0">
@@ -193,7 +199,7 @@ export function AdminSeatViewsPanel({
         <Button
           variant="outline"
           data-testid="admin-seat-views-reset-filters"
-          className="min-h-11 w-full border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-9"
+          className="min-h-11 w-full border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-11"
           onClick={clearSeatViewFilters}
         >
           필터 초기화
@@ -205,6 +211,11 @@ export function AdminSeatViewsPanel({
         className="max-h-[320px] min-w-0 overflow-y-auto rounded-xl border border-slate-800"
         aria-busy={seatViewsLoading}
       >
+        {!seatViewsLoading && seatViewsError && (
+          <p data-testid="admin-seat-views-error" className="break-keep px-3 py-6 text-center text-slate-300 [overflow-wrap:anywhere]">
+            {seatViewsError}
+          </p>
+        )}
         {seatViewsLoading ? (
           <div
             className="flex min-h-40 items-center justify-center px-4 text-center text-slate-500"
@@ -213,14 +224,14 @@ export function AdminSeatViewsPanel({
           >
             시야뷰 후보 로딩 중...
           </div>
-        ) : seatViews.length === 0 ? (
+        ) : seatViews.length === 0 ? (seatViewsError ? null : (
           <div
             className="flex min-h-40 items-center justify-center px-4 text-center text-slate-500"
             role="status"
           >
             시야뷰 후보가 없습니다.
           </div>
-        ) : (
+        )) : (
         <Table aria-label="시야뷰 후보 목록" className="min-w-[1088px] table-fixed">
           <TableHeader>
             <TableRow className="border-slate-700 bg-slate-800/50 hover:bg-slate-800/50">
@@ -330,6 +341,31 @@ export function AdminSeatViewsPanel({
           </TableBody>
         </Table>
         )}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2" aria-label="시야뷰 페이지 이동">
+        <span className="text-caption text-slate-400">
+          총 {seatViewsPage.totalElements.toLocaleString()}건 · {seatViewsPage.number + 1} / {Math.max(seatViewsPage.totalPages, 1)} 페이지
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            data-testid="admin-seat-views-previous-page"
+            className="min-h-11 border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-11"
+            disabled={seatViewsLoading || seatViewsPage.number <= 0}
+            onClick={() => onSeatViewsPageChange(seatViewsPage.number - 1)}
+          >
+            이전
+          </Button>
+          <Button
+            variant="outline"
+            data-testid="admin-seat-views-next-page"
+            className="min-h-11 border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-11"
+            disabled={seatViewsLoading || seatViewsPage.totalPages === 0 || seatViewsPage.last}
+            onClick={() => onSeatViewsPageChange(seatViewsPage.number + 1)}
+          >
+            다음
+          </Button>
+        </div>
       </div>
     </div>
   );

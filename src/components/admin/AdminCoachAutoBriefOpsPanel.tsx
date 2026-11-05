@@ -1,3 +1,5 @@
+import type { FocusEvent } from 'react';
+
 import type {
   AdminCoachAutoBriefOpsHealth,
   AdminCoachAutoBriefOpsWindow,
@@ -28,6 +30,20 @@ interface AdminCoachAutoBriefOpsPanelProps {
 }
 
 const formatCount = (value?: number) => value ?? 0;
+
+const handleHealthControlFocus = (event: FocusEvent<HTMLDivElement>) => {
+  const target = event.target as HTMLElement;
+  if (!event.currentTarget.contains(target) || !target.matches('[data-testid="admin-ai-auto-brief-refresh"],[data-testid="admin-ai-auto-brief-window-trigger"],[data-testid="admin-ai-auto-brief-start-date"],[data-testid="admin-ai-auto-brief-end-date"],[data-testid="admin-ai-auto-brief-apply-custom"]')) return;
+  requestAnimationFrame(() => {
+    const doc = target.ownerDocument;
+    if (doc.activeElement !== target || !target.isConnected) return;
+    const rect = target.getBoundingClientRect();
+    const hit = doc.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    if (!hit || (hit !== target && !target.contains(hit))) {
+      target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    }
+  });
+};
 
 const cacheStateTone = (cacheState: string): string => {
   const normalized = cacheState.toUpperCase();
@@ -90,7 +106,8 @@ export function AdminCoachAutoBriefOpsPanel({
     <div
       data-testid="admin-coach-auto-brief-ops-panel"
       aria-busy={loading}
-      className="min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
+      onFocusCapture={handleHealthControlFocus}
+      className="admin-ai-health-window-panel min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
     >
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
@@ -117,7 +134,7 @@ export function AdminCoachAutoBriefOpsPanel({
       </div>
 
       <div className="mt-5 space-y-4">
-        <div className="grid min-w-0 gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+        <div className="admin-ai-health-controls grid min-w-0 gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
           <div className="grid min-w-0 gap-1.5">
             <label htmlFor="admin-ai-auto-brief-window" className="text-caption text-slate-400">조회 window</label>
             <select
@@ -131,10 +148,13 @@ export function AdminCoachAutoBriefOpsPanel({
               <option value="tomorrow">tomorrow</option>
               <option value="custom">custom</option>
             </select>
+            <p data-testid="admin-ai-auto-brief-window-value" aria-hidden="true" className="admin-ai-health-current-value text-caption text-slate-400">
+              현재 선택: {selectedWindow}
+            </p>
           </div>
 
           {selectedWindow === 'custom' ? (
-            <div className="grid min-w-0 gap-3 md:grid-cols-[1fr_1fr_auto]">
+            <div className="admin-ai-health-date-grid grid min-w-0 gap-3 md:grid-cols-[1fr_1fr_auto]">
               <label htmlFor="admin-ai-auto-brief-start-date" className="grid min-w-0 gap-1.5 text-caption text-slate-400">
                 시작일
                 <input
@@ -145,6 +165,9 @@ export function AdminCoachAutoBriefOpsPanel({
                   onChange={(event) => onStartDateChange(event.target.value)}
                   className="min-w-0 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 />
+                <span data-testid="admin-ai-auto-brief-start-date-value" aria-hidden="true" className="admin-ai-health-current-value">
+                  {startDate || '날짜 미선택'}
+                </span>
               </label>
               <label htmlFor="admin-ai-auto-brief-end-date" className="grid min-w-0 gap-1.5 text-caption text-slate-400">
                 종료일
@@ -156,6 +179,9 @@ export function AdminCoachAutoBriefOpsPanel({
                   onChange={(event) => onEndDateChange(event.target.value)}
                   className="min-w-0 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-caption text-slate-200 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 />
+                <span data-testid="admin-ai-auto-brief-end-date-value" aria-hidden="true" className="admin-ai-health-current-value">
+                  {endDate || '날짜 미선택'}
+                </span>
               </label>
               <div className="flex items-end">
                 <Button
@@ -170,7 +196,7 @@ export function AdminCoachAutoBriefOpsPanel({
               </div>
             </div>
           ) : (
-            <div className="flex min-w-0 items-start gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-caption text-slate-400">
+            <div className="admin-ai-health-window-summary flex min-w-0 items-start gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-caption text-slate-400">
               <AdminCalendarIcon className="h-4 w-4 shrink-0 text-amber-300" />
               <span className="min-w-0 [overflow-wrap:anywhere]">
                 {health?.date_window ?? '선택된 window를 불러오는 중입니다.'}
