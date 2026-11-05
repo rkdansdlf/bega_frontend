@@ -15,6 +15,7 @@ import {
 } from './ui/auth-primitives';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import './Login.css';
 
 const OAuthEmailChallengePanel = lazy(() => import('./auth/OAuthEmailChallengePanel'));
 
@@ -127,7 +128,7 @@ export default function Login(props: LoginProps) {
               <LockIcon className="h-4 w-4 text-primary" />
               Password
             </label>
-            <div className="relative" data-vqa-overlap="allowed">
+            <div className="login-password-field relative" data-vqa-overlap="allowed">
               <Input
                 id="password"
                 name="password"
@@ -239,7 +240,7 @@ export default function Login(props: LoginProps) {
             <path d="M5.14 10.02a5.26 5.26 0 0 1 0-3.36L2.15 4.35a8.76 8.76 0 0 0 0 7.98l2.99-2.31z" fill="#FBBC05" />
             <path d="M10.13 4.96c1.39 0 2.63.48 3.61 1.42l2.71-2.71A8.76 8.76 0 0 0 2.15 4.35l2.99 2.31a5.26 5.26 0 0 1 5.14-1.7z" fill="#EA4335" />
           </svg>
-          Google로 로그인
+          <span className="auth-provider-label" data-testid="login-social-google-label">Google로 로그인</span>
         </button>
 
         <button
@@ -251,7 +252,7 @@ export default function Login(props: LoginProps) {
           aria-label="네이버 로그인"
         >
           <img src="/icons/naver/naver-login-n-white.png" alt="" aria-hidden="true" width={16} height={16} className="auth-provider-naver-logo" />
-          네이버 로그인
+          <span className="auth-provider-label" data-testid="login-social-naver-label">네이버 로그인</span>
         </button>
 
         <button
@@ -264,7 +265,7 @@ export default function Login(props: LoginProps) {
           <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M10 3C5.589 3 2 5.792 2 9.22c0 2.155 1.396 4.046 3.505 5.146-.15.554-.976 3.505-1.122 4.045-.174.646.237.637.501.463.21-.138 3.429-2.282 3.996-2.657.373.053.754.08 1.12.08 4.411 0 8-2.792 8-6.22C18 5.793 14.411 3 10 3z" fill="currentColor" />
           </svg>
-          카카오로 로그인
+          <span className="auth-provider-label" data-testid="login-social-kakao-label">카카오로 로그인</span>
         </button>
       </div>
     </AuthLayout>

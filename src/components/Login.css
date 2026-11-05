@@ -1,0 +1,18 @@
+@media (max-width: 639px) {
+  .login-password-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: theme(spacing.1);
+  }
+
+  .login-password-field input {
+    padding-right: theme(spacing.3);
+  }
+
+  .login-password-field button {
+    position: static;
+    translate: none;
+    transform: none;
+  }
+}
