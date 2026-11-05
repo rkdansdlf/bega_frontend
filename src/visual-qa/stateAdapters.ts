@@ -7527,7 +7527,7 @@ const resolveMatePartyCardAdapter = (
     captureSelector: density === 'card'
       ? '[data-testid="mate-party-card"]'
       : `[data-testid="mate-party-${density}"]`,
-    surfaceClassName: 'block min-h-0 w-full max-w-[720px] overflow-visible bg-background p-3 shadow-none',
+    surfaceClassName: 'block min-h-0 w-[calc(100%_+_3rem)] max-w-[720px] -mx-6 min-[768px]:mx-auto overflow-visible bg-background p-3 shadow-none',
     theme,
   };
 };
@@ -12807,6 +12807,14 @@ const resolveConfirmDialogRendererAdapter = (
         resetSeatViewFilters: () => undefined,
         seatViewFilters,
         seatViews,
+        seatViewsPage: {
+          content: seatViews,
+          totalElements: seatViews.length,
+          totalPages: seatViews.length === 0 ? 0 : 1,
+          size: data === 'maximum-supported' ? 50 : 20,
+          number: 0,
+          last: true,
+        },
         seatViewsLoading: system === 'loading',
         updateSeatViewFilters: () => undefined,
         visualQaStateOverride: { interactive: true },
@@ -18735,7 +18743,9 @@ const resolveConfirmDialogRendererAdapter = (
         nowOverride: visualQaNotificationNow,
         runtimeOverride: {
           deleteNotification: async () => {},
-          markAllAsRead: async () => {},
+          markAllAsRead: async () => ({
+            notificationIds: notificationsOverride.filter((notification) => !notification.isRead).map((notification) => notification.id),
+          }),
           markAsRead: async () => {},
           navigate: () => {},
           requestBrowserNotificationPermission: async () => 'granted',
@@ -18917,7 +18927,9 @@ const resolveConfirmDialogRendererAdapter = (
         nowOverride: visualQaNotificationNow,
         runtimeOverride: {
           deleteNotification: async () => {},
-          markAllAsRead: async () => {},
+          markAllAsRead: async () => ({
+            notificationIds: notificationsOverride.filter((notification) => !notification.isRead).map((notification) => notification.id),
+          }),
           markAsRead: async () => {},
           navigate: () => {},
           requestBrowserNotificationPermission: async () => 'granted',
@@ -19792,7 +19804,7 @@ const resolveConfirmDialogRendererAdapter = (
           hasPassword: true,
         },
       },
-      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      surfaceClassName: 'block min-h-0 w-[calc(100%_+_3rem)] max-w-[960px] -mx-6 min-[1008px]:mx-auto overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -20279,7 +20291,7 @@ const resolveConfirmDialogRendererAdapter = (
       initialPathname: surface === 'live'
         ? '/cheer?tab=live'
         : surface === 'search' ? '/cheer?q=LG' : '/cheer',
-      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible bg-background p-0 shadow-none',
+      surfaceClassName: 'block min-h-[844px] w-screen max-w-none -mx-6 overflow-visible rounded-none border-0 bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -26561,6 +26573,29 @@ const resolveConfirmDialogRendererAdapter = (
     '개인 랭킹을 불러오는 중입니다.',
     'AuthenticatedRetroLeaderboard 위임 경계가 준비되었습니다.',
   ),
+  'retro.powerup-game-selector': (context) => {
+    if (context.componentId !== 'src/components/retro/PowerupGameSelector.tsx#PowerupGameSelector'
+      || Object.keys(context.variants).length > 0) {
+      throw new Error('retro.powerup-game-selector only supports its declared data and interaction states');
+    }
+    requireStateValue(context, 'data', 'manual-required');
+    requireStateValueFromMap(context, 'interactions', {
+      default: 'default',
+      hover: 'hover',
+      'focus-visible': 'focus-visible',
+      pressed: 'pressed',
+    });
+    requireStateValue(context, 'system', 'online');
+    return {
+      props: {
+        onSelectGame: () => {},
+        selectedGameId: '',
+      },
+      captureSelector: '[data-testid="retro-powerup-game-selector"]',
+      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-transparent p-0 shadow-none',
+      theme: 'dark',
+    };
+  },
   'retro.leaderboard': (context) => resolvePredictionRuntimeBoundary(
     context,
     'src/components/retro/RetroLeaderboard.tsx#RetroLeaderboard',
@@ -27201,7 +27236,7 @@ const resolveConfirmDialogRendererAdapter = (
         scenarioKey: `${interaction}:${target ?? 'none'}:${activeTab}:${theme}`,
       },
       captureSelector: '[data-testid="mate-status-tabs"]',
-      surfaceClassName: 'block min-h-[844px] w-[320px] max-w-none overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
+      surfaceClassName: 'block min-h-[844px] w-[calc(100%_+_3rem)] max-w-[320px] -mx-6 min-[368px]:mx-auto overflow-visible rounded-none border-0 bg-background p-0 shadow-none',
       theme,
     };
   },
@@ -32247,7 +32282,7 @@ const resolveConfirmDialogRendererAdapter = (
       props: { visualQaStateOverride } satisfies DiaryViewSectionProps,
       captureSelector: '[data-testid="diary-editor-calendar-card"]',
       initialPathname: '/mypage?view=diary',
-      surfaceClassName: 'block min-h-0 w-full max-w-[960px] overflow-visible bg-background p-0 shadow-none',
+      surfaceClassName: 'block min-h-0 w-full max-w-5xl overflow-visible bg-background p-0 shadow-none',
       theme,
     };
   },
@@ -35619,7 +35654,7 @@ const resolveConfirmDialogRendererAdapter = (
     return {
       props: {},
       captureSelector: '[data-testid="ui-kit-preview"]',
-      surfaceClassName: 'block min-h-0 w-full max-w-[1024px] overflow-visible bg-transparent p-0 shadow-none',
+      surfaceClassName: 'block min-h-0 w-[calc(100%_+_3rem)] max-w-[1024px] -mx-6 min-[1072px]:mx-auto overflow-visible bg-transparent p-0 shadow-none',
       theme,
     };
   },
@@ -36068,7 +36103,7 @@ const resolveConfirmDialogRendererAdapter = (
       captureSelector: ring.showRing
         ? '[data-testid="profile-avatar-frame"]'
         : '[data-testid="profile-avatar-image"], [data-testid="profile-avatar-fallback"]',
-      surfaceClassName: 'flex min-h-32 w-full max-w-[320px] items-center justify-center overflow-visible bg-transparent p-4 shadow-none',
+      surfaceClassName: 'flex min-h-32 w-full max-w-xs items-center justify-center overflow-visible bg-transparent p-4 shadow-none',
     };
   },
   'ui.table': (context) => {

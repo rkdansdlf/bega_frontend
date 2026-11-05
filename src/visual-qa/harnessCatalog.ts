@@ -44,6 +44,7 @@ export type AutomaticComponentStateScenario = {
   styleModuleKeys: string[];
   states: ComponentStateValues;
   variants: ComponentVariantValues;
+  expectedRender?: 'absent';
   interactionPlan?: {
     action: 'click' | 'hover' | 'focus-visible' | 'pressed' | 'drag' | 'fill' | 'press-key';
     selector: string;
@@ -80,6 +81,10 @@ type StateManifestEntry = {
   axes?: Partial<Record<'data' | 'permissions' | 'interactions' | 'system', {
     values?: string[];
   }>>;
+  renderExpectations?: Array<{
+    outcome: 'absent';
+    when: Record<string, string | string[]>;
+  }>;
   variants?: {
     dimensions?: Array<{
       name: string;
@@ -335,18 +340,24 @@ export const resolveInteractionPlan = (
 type StateCombination = {
   states: ComponentStateValues;
   variants: ComponentVariantValues;
+  expectedRender?: 'absent';
   interactionTarget?: InteractionTarget;
 };
 
-const matchesInteractionTarget = (
-  target: InteractionTarget,
+const matchesStateCondition = (
+  when: Record<string, string | string[]>,
   combination: StateCombination,
-) => target.when == null || Object.entries(target.when).every(([key, expected]) => {
+) => Object.entries(when).every(([key, expected]) => {
   const actual = key.startsWith('variant.')
     ? combination.variants[key.slice('variant.'.length)]
     : combination.states[key as keyof ComponentStateValues];
   return (Array.isArray(expected) ? expected : [expected]).includes(actual ?? '');
 });
+
+const matchesInteractionTarget = (
+  target: InteractionTarget,
+  combination: StateCombination,
+) => target.when == null || matchesStateCondition(target.when, combination);
 
 export const expandInteractionTargets = (
   entry: Pick<StateManifestEntry, 'interactionPlans'>,
@@ -383,7 +394,16 @@ const expandStateCombinations = (entry: StateManifestEntry) => {
         ? variants[key.slice('variant.'.length)]
         : states[key as keyof ComponentStateValues];
       return (Array.isArray(value) ? value : [value]).includes(actual ?? '');
-    }))).flatMap((combination) => expandInteractionTargets(entry, combination));
+    }))).flatMap((combination) => {
+      const expectsNoRender = (entry.renderExpectations ?? []).some((expectation) => (
+        expectation.outcome === 'absent'
+        && matchesStateCondition(expectation.when, combination)
+      ));
+      return expandInteractionTargets(entry, {
+        ...combination,
+        ...(expectsNoRender ? { expectedRender: 'absent' as const } : {}),
+      });
+    });
 };
 
 const classificationsById = new Map(
@@ -404,7 +424,7 @@ export const AUTOMATIC_COMPONENT_STATE_SCENARIOS: AutomaticComponentStateScenari
     const exportName = entry.render.exportName ?? classification.exportName;
     const moduleFile = resolveDirectModuleFile(file, entry.render.moduleFile, exportName);
     const adapterId = entry.render.adapterId;
-    return expandStateCombinations(entry).map(({ states, variants, interactionTarget }) => {
+    return expandStateCombinations(entry).map(({ states, variants, interactionTarget, expectedRender }) => {
       const stateCombinationId = [
         ...stateAxisOrder
           .filter((axisName) => states[axisName] !== undefined)
@@ -424,6 +444,7 @@ export const AUTOMATIC_COMPONENT_STATE_SCENARIOS: AutomaticComponentStateScenari
         styleModuleKeys: componentStyleModuleKeys(entry.render.styles ?? []),
         states,
         variants,
+        ...(expectedRender ? { expectedRender } : {}),
         interactionPlan: resolveInteractionPlan(entry, states, interactionTarget),
         stateCombinationId,
         finalCoverage: false as const,

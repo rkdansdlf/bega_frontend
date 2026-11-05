@@ -50190,6 +50190,17 @@
         "mode": "direct",
         "adapterId": "image.grid"
       },
+      "renderExpectations": [
+        {
+          "outcome": "absent",
+          "when": {
+            "data": "empty"
+          },
+          "reason": "An empty image gallery intentionally returns null so the parent post flow controls the surrounding spacing.",
+          "owner": "frontend-cheer",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts"
+        }
+      ],
       "axes": {
         "data": {
           "values": [
@@ -83903,6 +83914,56 @@
       "constraints": []
     },
     {
+      "id": "src/components/mypage/AccountSettingsReadError.tsx#AccountSettingsReadError",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection:data=populated|permissions=user|interactions=default|system=idle|variant.theme=dark",
+          "state:src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection:data=populated|permissions=user|interactions=default|system=idle|variant.theme=light"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "The read-error panel appears only when the providers, sessions or security-events query fails with no harness override; the Cypress read-override harness forces that state against the real parent.",
+            "owner": "frontend-auth",
+            "testEvidence": "cypress/e2e/account-read-override.cy.ts; cypress/e2e/mypage-account-read-design.cy.ts"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Authentication is inherited from the signed-in account-settings parent scenario.",
+            "owner": "frontend-auth",
+            "testEvidence": "cypress/e2e/account-read-override.cy.ts; cypress/e2e/mypage-account-read-design.cy.ts"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The retry button is exercised by the Cypress read-override specs, not by a harness interaction target.",
+            "owner": "frontend-auth",
+            "testEvidence": "cypress/e2e/account-read-override.cy.ts; cypress/e2e/mypage-account-read-design.cy.ts"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The failing-query lifecycle is owned by the Cypress read-override harness rather than a harness system state.",
+            "owner": "frontend-auth",
+            "testEvidence": "cypress/e2e/account-read-override.cy.ts; cypress/e2e/mypage-account-read-design.cy.ts"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/mypage/AccountSettingsSection.tsx#AccountSettingsSection",
       "status": "registered",
       "renderAccess": "module-export",
@@ -97876,6 +97937,17 @@
         "mode": "direct",
         "adapterId": "prediction.error-overlay"
       },
+      "renderExpectations": [
+        {
+          "outcome": "absent",
+          "when": {
+            "data": "empty"
+          },
+          "reason": "The overlay's empty data state means it is closed and must not mount a portal surface.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts"
+        }
+      ],
       "axes": {
         "data": {
           "values": [
@@ -101678,6 +101750,44 @@
         "mode": "direct",
         "adapterId": "prediction.top-notice"
       },
+      "renderExpectations": [
+        {
+          "outcome": "absent",
+          "when": {
+            "data": "empty",
+            "variant.kind": [
+              "INFO",
+              "RUN"
+            ]
+          },
+          "reason": "INFO without a notice and RUN without an active run intentionally return null.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts"
+        },
+        {
+          "outcome": "absent",
+          "when": {
+            "data": "loading",
+            "variant.kind": "INFO"
+          },
+          "reason": "The INFO loading fixture is not at the past-range boundary and has no notice to render.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts"
+        },
+        {
+          "outcome": "absent",
+          "when": {
+            "data": "error-503",
+            "variant.kind": [
+              "INFO",
+              "RUN"
+            ]
+          },
+          "reason": "INFO renders only a deep-link, partial result, or past-range loading notice, while RUN renders only during an active run; standalone request failures use ERROR or FUTURE and this INFO/RUN error fixture has no visible notice.",
+          "owner": "frontend-prediction",
+          "testEvidence": "src/components/prediction/PredictionMatchSchedulePreviewRuntime.tsx"
+        }
+      ],
       "axes": {
         "data": {
           "values": [
@@ -109698,6 +109808,79 @@
       "constraints": []
     },
     {
+      "id": "src/components/retro/PowerupGameSelector.tsx#PowerupGameSelector",
+      "status": "registered",
+      "renderAccess": "module-export",
+      "render": {
+        "mode": "direct",
+        "adapterId": "retro.powerup-game-selector"
+      },
+      "axes": {
+        "data": {
+          "values": [
+            "manual-required"
+          ],
+          "reason": "The local harness uses the canonical manual-data-required response and never fabricates a baseball schedule.",
+          "owner": "frontend-retro",
+          "testEvidence": "src/visual-qa/stateAdapters.test.ts#retro-powerup-game-selector"
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "The selector does not inspect the viewer identity or permission state.",
+            "owner": "frontend-retro",
+            "testEvidence": "src/components/retro/PowerupGameSelector.tsx"
+          }
+        },
+        "interactions": {
+          "values": [
+            "default",
+            "hover",
+            "focus-visible",
+            "pressed"
+          ]
+        },
+        "system": {
+          "values": [
+            "online"
+          ],
+          "reason": "The request successfully returns the explicit manual-data-required contract; no live schedule is present in this synthetic visual fixture.",
+          "owner": "frontend-retro",
+          "testEvidence": "scripts/visual-qa-harness-smoke.ts"
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The selector owns a fixed inline retro palette rather than a theme-dependent visual branch.",
+          "owner": "frontend-retro",
+          "testEvidence": "src/components/retro/PowerupGameSelector.tsx"
+        }
+      },
+      "interactionPlans": {
+        "hover": {
+          "action": "hover",
+          "selector": "[data-testid=\"retro-powerup-game-date\"]",
+          "reason": "The enabled date input exposes the native pointer hover state when schedule data requires operator input.",
+          "owner": "frontend-retro",
+          "testEvidence": "src/components/retro/PowerupGameSelector.tsx"
+        },
+        "focus-visible": {
+          "action": "focus-visible",
+          "selector": "[data-testid=\"retro-powerup-game-date\"]",
+          "reason": "The enabled date input remains keyboard reachable while the game selector is unavailable.",
+          "owner": "frontend-retro",
+          "testEvidence": "src/components/retro/PowerupGameSelector.tsx"
+        },
+        "pressed": {
+          "action": "pressed",
+          "selector": "[data-testid=\"retro-powerup-game-date\"]",
+          "reason": "The enabled date input exposes its native pressed pointer state.",
+          "owner": "frontend-retro",
+          "testEvidence": "scripts/visual-qa-harness-interactions.test.ts#pressed-interaction"
+        }
+      },
+      "constraints": []
+    },
+    {
       "id": "src/components/retro/PowerUpInventory.tsx#PowerUpInventory",
       "status": "registered",
       "renderAccess": "module-export",
@@ -114371,6 +114554,56 @@
           "testEvidence": "src/components/SeatViewGallery.tsx"
         }
       ]
+    },
+    {
+      "id": "src/components/SeatViewGallery.tsx#SeatViewImage",
+      "status": "registered",
+      "renderAccess": "hosted",
+      "render": {
+        "mode": "hosted",
+        "hostScenarioIds": [
+          "state:src/components/SeatViewGallery.tsx#SeatViewGallery:data=single|permissions=anonymous|interactions=default|system=online|variant.compact=compact|variant.presentation=gallery|variant.theme=dark",
+          "state:src/components/SeatViewGallery.tsx#SeatViewGallery:data=single|permissions=anonymous|interactions=default|system=online|variant.compact=compact|variant.presentation=gallery|variant.theme=light"
+        ]
+      },
+      "axes": {
+        "data": {
+          "notApplicable": {
+            "reason": "This hosted leaf renders the photo of the exact parent gallery scenario and owns no independent payload matrix.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#hosted-leaf-reconciliation"
+          }
+        },
+        "permissions": {
+          "notApplicable": {
+            "reason": "Photo visibility is inherited from the anonymous parent gallery scenario.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#hosted-leaf-reconciliation"
+          }
+        },
+        "interactions": {
+          "notApplicable": {
+            "reason": "The registered parent owns the photo-to-lightbox interaction matrix.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#hosted-leaf-reconciliation"
+          }
+        },
+        "system": {
+          "notApplicable": {
+            "reason": "The registered parent owns loading and online lifecycle states.",
+            "owner": "frontend-stadium",
+            "testEvidence": "src/visual-qa/harnessCatalog.test.ts#hosted-leaf-reconciliation"
+          }
+        }
+      },
+      "variants": {
+        "notApplicable": {
+          "reason": "The registered parent owns every visual variant for this hosted leaf.",
+          "owner": "frontend-admin",
+          "testEvidence": "src/visual-qa/harnessCatalog.test.ts#admin-hosted-leaf-reconciliation"
+        }
+      },
+      "constraints": []
     },
     {
       "id": "src/components/SignUp.tsx#AvailabilityMessage",
@@ -123923,10 +124156,10 @@
               "usage-c52c31c7bb3f",
               "usage-e84820b7b5cc",
               "usage-358e9cecd41a",
-              "usage-56546e2d7373",
-              "usage-d4c80f918b82",
-              "usage-5c117d4355f5",
-              "usage-0a2daf45e624",
+              "usage-43c068675605",
+              "usage-51df3750697e",
+              "usage-78582db10f12",
+              "usage-b09d0f2f006b",
               "usage-696e8b2bf143",
               "usage-c7a3543c30ff",
               "usage-0df24e5a5bcf",

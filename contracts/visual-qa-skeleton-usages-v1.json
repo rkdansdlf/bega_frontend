@@ -308,20 +308,20 @@
       "className": "mx-auto h-6 w-10"
     },
     {
-      "id": "usage-56546e2d7373",
-      "className": "order-1 col-span-2 h-10 rounded-md lg:order-4 lg:col-span-1 lg:w-28"
+      "id": "usage-43c068675605",
+      "className": "order-1 col-span-2 h-10 w-full rounded-md 2xl:order-4 2xl:col-span-1 2xl:w-32"
     },
     {
-      "id": "usage-d4c80f918b82",
-      "className": "order-2 h-10 rounded-md lg:order-1 lg:w-28"
+      "id": "usage-51df3750697e",
+      "className": "order-2 h-10 w-full rounded-md 2xl:order-1 2xl:w-32"
     },
     {
-      "id": "usage-5c117d4355f5",
-      "className": "order-3 h-10 rounded-md lg:order-2 lg:w-32"
+      "id": "usage-78582db10f12",
+      "className": "order-3 h-10 w-full rounded-md 2xl:order-2 2xl:w-32"
     },
     {
-      "id": "usage-0a2daf45e624",
-      "className": "order-4 col-span-2 h-10 rounded-md lg:order-3 lg:col-span-1 lg:w-28"
+      "id": "usage-b09d0f2f006b",
+      "className": "order-4 col-span-2 h-10 w-full rounded-md 2xl:order-3 2xl:col-span-1 2xl:w-32"
     },
     {
       "id": "usage-696e8b2bf143",

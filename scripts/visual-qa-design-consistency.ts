@@ -92,6 +92,23 @@ export const designEnvironmentCases = (phase: 'before' | 'after'): MatrixCase[] 
   return cases;
 };
 
+export const restoreDesignEnvironmentViewport = async (
+  page: {
+    viewportSize: () => { width: number; height: number } | null;
+    setViewportSize: (size: { width: number; height: number }) => Promise<void>;
+    evaluate: (pageFunction: () => Promise<void>) => Promise<void>;
+  },
+  expected: { width: number; height: number },
+) => {
+  const current = page.viewportSize();
+  if (current?.width !== expected.width || current.height !== expected.height) {
+    await page.setViewportSize(expected);
+  }
+  await page.evaluate(() => new Promise<void>((resolveFrame) => (
+    requestAnimationFrame(() => requestAnimationFrame(() => resolveFrame()))
+  )));
+};
+
 const main = async () => {
   const phase = process.env.DESIGN_QA_PHASE === 'before' ? 'before' : 'after';
   const baseUrl = process.env.DESIGN_QA_BASE_URL ?? (phase === 'before' ? 'http://127.0.0.1:5183' : 'http://127.0.0.1:5182');
@@ -141,6 +158,7 @@ const main = async () => {
         reuseForAttempt = false;
         return result;
       });
+      await restoreDesignEnvironmentViewport(activePage, { width: entry.width, height: 900 });
       if (probe.status === 'fail') previousEnvironment = '';
       const geometry = probe.status === 'pass' ? await page.evaluate(() => {
         const surface = document.querySelector<HTMLElement>('[data-vqa-harness-surface]');
