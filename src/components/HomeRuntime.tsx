@@ -26,6 +26,10 @@ import {
     coerceHomeRouteTab,
     resolveHomeRouteState,
 } from '../utils/homeRouteState';
+import {
+    normalizeSameSeasonNavigationDate,
+    resolveNavigationTargetDate,
+} from '../utils/homeNavigationLogic';
 import type { Game, HomeBootstrapLoadState, HomeScopedNavigationResponse, LeagueStartDates } from '../types/home';
 import type { ManualBaseballDataRequest } from '../types/manualBaseballData';
 import {
@@ -39,6 +43,7 @@ import type { HomeNavigationState } from '../utils/homeErrorContext';
 import type { HomeAuthSnapshot } from './home/HomeAuthBridge';
 import HomePullToRefresh from './home/HomePullToRefresh';
 import HomeRecoveryBanner from './home/HomeRecoveryBanner';
+import HomeSecondaryPanelsSkeleton from './home/HomeSecondaryPanelsSkeleton';
 import {
     MANUAL_BASEBALL_DATA_REQUIRED_CODE,
 } from '../utils/manualBaseballDataContract';
@@ -88,21 +93,74 @@ const EMPTY_SCHEDULED_GAME_PARTITIONS: ScheduledGamePartitions = {
     excluded: EMPTY_SCHEDULED_GAMES,
 };
 
+const HOME_FALLBACK_BLOCK_CLASS = 'animate-pulse bg-gray-200 dark:bg-white/10';
+
+// 실제 HomeGameCard 행(시간 · 원정 로고+이름 · vs · 홈 이름+로고 · 구장 · 상태)과 같은 골격.
+// 공용 카드 스켈레톤을 가져오지 않는 이유: 첫 카드 경로의 정적 의존성을 늘리지 않기 위해서입니다.
 function HomeMatchPanelFallbackCard() {
     return (
-        <div className="min-h-[168px] animate-pulse rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-card">
-            <div className="flex items-center justify-between gap-4">
-                <div className="h-5 w-20 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+        <div className="min-h-[168px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-white/10 dark:bg-card lg:min-h-[86px]">
+            <div className="flex h-full flex-col gap-3 p-3 sm:p-4 lg:hidden">
+                <div className="flex items-center justify-between gap-2">
+                    <div className={`h-5 w-16 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className={`h-6 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
+                {/* 원정 · VS · 홈 — 실제 모바일 카드처럼 위아래로 쌓습니다. */}
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-gray-100 bg-gray-50/60 px-2.5 py-2 dark:border-white/8 dark:bg-white/[0.025]">
+                    <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                        <div className={`h-9 w-9 shrink-0 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                        <div className="min-w-0 space-y-2">
+                            <div className={`h-5 w-16 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                            <div className={`h-3 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                        </div>
+                    </div>
+                    <div className={`h-8 w-10 rounded-md ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
+                <div className={`mx-auto h-4 w-8 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-gray-100 bg-gray-50/60 px-2.5 py-2 dark:border-white/8 dark:bg-white/[0.025]">
+                    <div className={`h-8 w-10 rounded-md ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5">
+                        <div className="flex min-w-0 flex-col items-end space-y-2">
+                            <div className={`h-5 w-16 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                            <div className={`h-3 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                        </div>
+                        <div className={`h-9 w-9 shrink-0 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    </div>
+                </div>
+                <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-2 dark:border-white/8">
+                    <div className={`h-4 w-32 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className={`h-8 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
             </div>
-            {/* minmax(0,…) because a bare `1fr` is `minmax(auto,1fr)`, which floors the
-                track at the item's own width and overflows once text is scaled up. */}
-            <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
-                <div className="h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="h-6 w-10 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
-                <div className="ml-auto h-5 w-24 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
+            <div className="hidden h-full grid-cols-home-game-card items-center gap-4 px-4 py-3 lg:grid">
+                <div className="space-y-2">
+                    <div className={`h-5 w-14 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className={`h-4 w-12 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
+                <div className="flex min-w-0 items-center gap-4">
+                    <div className={`h-10 w-10 shrink-0 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className="min-w-0 space-y-2">
+                        <div className={`h-5 w-14 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                        <div className={`h-3 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    </div>
+                </div>
+                <div className={`mx-auto h-5 w-8 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                <div className="flex min-w-0 items-center justify-end gap-4">
+                    <div className="flex min-w-0 flex-col items-end space-y-2">
+                        <div className={`h-5 w-14 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                        <div className={`h-3 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    </div>
+                    <div className={`h-10 w-10 shrink-0 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
+                <div className="space-y-2">
+                    <div className={`h-4 w-28 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className={`h-3 w-14 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                    <div className={`h-6 w-16 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                    <div className={`h-6 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                </div>
             </div>
-            <div className="mt-6 h-4 w-32 max-w-full rounded-full bg-gray-200 dark:bg-white/10" />
         </div>
     );
 }
@@ -113,10 +171,15 @@ function HomeMatchPanelSuspenseFallback({
 }: HomeMatchPanelSuspenseFallbackProps) {
     return (
         <div
-            className="rounded-2xl border border-gray-100 dark:border-white/15 bg-white/70 dark:bg-card/45 p-4 md:p-5 shadow-sm"
+            className="rounded-3xl border border-primary/20 bg-white p-4 shadow-home-board ring-1 ring-primary/10 dark:border-primary/25 dark:bg-card md:p-5"
             style={matchSectionMinHeightStyle}
+            aria-busy="true"
         >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-0 items-stretch">
+            <div className="mb-4 space-y-2 border-b border-gray-100 pb-4 dark:border-white/8">
+                <div className={`h-4 w-20 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+                <div className={`h-7 w-40 rounded-full ${HOME_FALLBACK_BLOCK_CLASS}`} />
+            </div>
+            <div className="grid grid-cols-1 items-stretch gap-2.5">
                 {Array.from({ length: loadingMatchCardCount }, (_, i) => (
                     <HomeMatchPanelFallbackCard key={`fallback-card-${i}`} />
                 ))}
@@ -255,19 +318,6 @@ const buildHomeLivePollingCandidateKey = (
     }
 
     return candidateKey;
-};
-
-const normalizeSameSeasonNavigationDate = (value: string | null | undefined, seasonYear: number): string | null => {
-    if (!value) {
-        return null;
-    }
-
-    const parsedDate = toLocalMiddayDate(value);
-    if (Number.isNaN(parsedDate.getTime()) || parsedDate.getFullYear() !== seasonYear) {
-        return null;
-    }
-
-    return formatDateForAPI(parsedDate);
 };
 
 const isVisibleLeagueTab = (tabValue: LeagueTab, visibleLeagueTabs: typeof HOME_LEAGUE_TABS) => (
@@ -430,7 +480,7 @@ export default function HomeRuntime() {
     const [isLoading, setIsLoading] = useState(true);
     const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
     const [isGamesError, setIsGamesError] = useState(false);
-    const [connectionError, setConnectionError] = useState(false);
+    const [isGamesDelayed, setIsGamesDelayed] = useState(false);
     const [loadFailureReason, setLoadFailureReason] = useState<HomeLoadFailureReason | null>(null);
     const [manualDataRequest, setManualDataRequest] = useState<ManualBaseballDataRequest | null>(null);
     const [homeAuthSnapshot, setHomeAuthSnapshot] = useState<HomeAuthSnapshot>(EMPTY_HOME_AUTH_SNAPSHOT);
@@ -632,8 +682,10 @@ export default function HomeRuntime() {
             : null;
 
     const changeDate = (direction: 'prev' | 'next') => {
-        const targetDateKey = normalizeSameSeasonNavigationDate(
-            direction === 'prev' ? currentDateNavigation?.prev : currentDateNavigation?.next,
+        // 헤더의 이전/다음 버튼은 사용자가 직접 누르는 동작이라 지연 중에도 허용합니다.
+        const targetDateKey = resolveNavigationTargetDate(
+            direction,
+            currentDateNavigation,
             selectedDate.getFullYear(),
         );
         if (!targetDateKey) {
@@ -650,7 +702,7 @@ export default function HomeRuntime() {
         replaceHomeRouteState(targetDate, activeLeagueTab);
     };
 
-    const applyHomeSnapshot = useCallback((date: Date, snapshot: HomeLoadSnapshot) => {
+    const applyHomeSnapshot = useCallback((date: Date, snapshot: HomeLoadSnapshot, options: { isDelayedPlaceholder?: boolean } = {}) => {
         const normalizedGames = snapshot.games.map((game) => ({
             ...game,
             sourceDate: game.sourceDate || game.gameDate || formatDateForAPI(date),
@@ -666,7 +718,8 @@ export default function HomeRuntime() {
         setNavInfo(snapshot.navigation);
         setGames(normalizedGames);
 
-        if (!hasUserChangedTabRef.current) {
+        // 지연 표시용 임시 스냅샷(빈 경기 목록)으로는 탭을 자동 전환하지 않습니다.
+        if (!hasUserChangedTabRef.current && !options.isDelayedPlaceholder) {
             const automaticTab = resolveAutomaticLeagueTab(
                 normalizedGames,
                 normalizedScheduledGames,
@@ -684,10 +737,10 @@ export default function HomeRuntime() {
         }
 
         setIsLoading(false);
+        setIsGamesDelayed(false);
         setIsGamesError(!snapshot.success.games && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'games'));
         setIsScheduledLoading(false);
         setIsScheduledError(!snapshot.success.scheduledGames && !isHomeBootstrapSectionTimedOut(snapshot.loadState, 'scheduledGamesWindow'));
-        setConnectionError(showConnectionError);
         setLoadFailureReason(snapshot.loadState.failureReason);
         setManualDataRequest(snapshot.loadState.manualDataRequest);
 
@@ -764,12 +817,12 @@ export default function HomeRuntime() {
         let didResolve = false;
         let timeoutId: number | null = null;
 
-        const applyTransientSnapshotIfCurrent = (snapshot: HomeLoadSnapshot) => {
+        const applyTransientSnapshotIfCurrent = (snapshot: HomeLoadSnapshot, isDelayedPlaceholder = false) => {
             if (requestId !== bootstrapRequestIdRef.current) {
                 return false;
             }
 
-            applyHomeSnapshot(date, snapshot);
+            applyHomeSnapshot(date, snapshot, { isDelayedPlaceholder });
             return true;
         };
 
@@ -785,9 +838,9 @@ export default function HomeRuntime() {
 
         setIsLoading(true);
         setIsGamesError(false);
+        setIsGamesDelayed(false);
         setIsScheduledLoading(true);
         setIsScheduledError(false);
-        setConnectionError(false);
         setLoadFailureReason(null);
         setManualDataRequest(null);
         setIsHomeFirstCardReady(false);
@@ -807,7 +860,11 @@ export default function HomeRuntime() {
                 applyTransientSnapshotIfCurrent(cachedSnapshot);
                 return;
             }
-            applyTransientSnapshotIfCurrent(buildLegacyFailureSnapshot(date, timedOut, 'request-failed'));
+            // 요청은 계속 진행 중입니다. "경기 없음"이나 "실패"로 보이지 않도록 지연 상태로 표시하고,
+            // 응답이 도착하면 applySnapshotIfCurrent 가 실제 결과로 교체합니다.
+            if (applyTransientSnapshotIfCurrent(buildLegacyFailureSnapshot(date, timedOut, 'request-failed'), true)) {
+                setIsGamesDelayed(true);
+            }
         }, HOME_BOOTSTRAP_SOFT_FALLBACK_DELAY_MS);
 
         try {
@@ -829,9 +886,11 @@ export default function HomeRuntime() {
                 applySnapshotIfCurrent(cachedSnapshot);
                 return;
             }
+            // 여기까지 왔다면 요청이 실제로 실패한 것입니다. 앞서 지연 표시가 있었더라도
+            // "시간 초과"가 아니라 실패로 분류해야 경기 보드가 오류와 재시도를 보여줍니다.
             applySnapshotIfCurrent(buildLegacyFailureSnapshot(
                 date,
-                timedOut,
+                false,
                 errorContext.responseCode === MANUAL_BASEBALL_DATA_REQUIRED_CODE || errorContext.status === 409
                     ? 'manual-data-required'
                     : 'request-failed',
@@ -914,9 +973,21 @@ export default function HomeRuntime() {
     const showAdminManualDataRecoveryBanner = isAdmin
         && loadFailureReason === 'manual-data-required'
         && manualDataRequest !== null;
-    const showConnectionRecoveryBanner = (
-        connectionError && (loadFailureReason !== 'manual-data-required' || isAdmin)
-    ) || showAdminManualDataRecoveryBanner;
+    // 연결 실패는 경기 보드 안의 오류 블록(다시 시도 포함)이 설명합니다. 상단 배너는
+    // 운영자가 데이터를 넣어야 하는 관리자 전용 상황에만 씁니다.
+    const showConnectionRecoveryBanner = showAdminManualDataRecoveryBanner;
+    const handleJumpToGameDate = (dateKey: string) => {
+        if (isGamesDelayed) {
+            return;
+        }
+        const targetDate = toLocalMiddayDate(dateKey);
+        if (Number.isNaN(targetDate.getTime())) {
+            return;
+        }
+        hasUserChangedTabRef.current = true;
+        setSelectedDate(targetDate);
+        replaceHomeRouteState(targetDate, activeLeagueTab);
+    };
     const visibleLeagueTabGridClass = visibleLeagueTabs.length >= 4
         ? 'grid-cols-4'
         : visibleLeagueTabs.length === 3
@@ -925,6 +996,19 @@ export default function HomeRuntime() {
     const isTodayOffSeason = useMemo(() => {
         return isOffSeasonByDate(getTodayMidday(), leagueStartDates);
     }, [leagueStartDates]);
+    const emptyDateNavigation = {
+        nextGameDate: dateNavigation.next,
+        prevGameDate: dateNavigation.prev,
+        isOffSeason: isTodayOffSeason,
+        onJumpToDate: handleJumpToGameDate,
+        onOpenScheduled: () => {
+            if (isGamesDelayed) {
+                return;
+            }
+            handleTabChange('scheduled');
+        },
+        onOpenOffseason: () => navigate('/offseason'),
+    };
 
     const handleNavigateToTodayPrediction = () => {
         const today = getTodayMidday();
@@ -1240,6 +1324,8 @@ export default function HomeRuntime() {
     const desktopHeight = (desktopRows * activeCardHeight) + ((desktopRows - 1) * 12);
     const calculatedMatchSectionMinHeight = Math.max(Math.max(mobileHeight, desktopHeight) + 24, 100);
     const matchSectionMinHeightStyle = { minHeight: `${calculatedMatchSectionMinHeight}px` };
+    // 로딩 중에만 자리를 예약합니다. 빈 날 · 오류는 문구 높이만큼만.
+    const shouldReserveMatchSectionHeight = isLoading || (activeTabIsScheduled && isScheduledLoading);
 
     useEffect(() => {
         const shouldSwitch = shouldAutoSwitchToScheduled({
@@ -1247,6 +1333,7 @@ export default function HomeRuntime() {
             hasUserChangedTab: hasUserChangedTabRef.current,
             isLoading,
             isScheduledLoading,
+            isGamesDelayed,
             regularCount: regularSeasonCount,
             postseasonCount: postSeasonCount,
             koreanSeriesCount,
@@ -1258,6 +1345,7 @@ export default function HomeRuntime() {
         }
     }, [
         activeLeagueTab,
+        isGamesDelayed,
         isLoading,
         isScheduledLoading,
         regularSeasonCount,
@@ -1279,7 +1367,6 @@ export default function HomeRuntime() {
                         loadFailureReason={loadFailureReason}
                         manualDataRequest={manualDataRequest}
                         onRetry={() => {
-                            setConnectionError(false);
                             setManualDataRequest(null);
                             void loadHomeBootstrap(selectedDate);
                         }}
@@ -1411,7 +1498,7 @@ export default function HomeRuntime() {
                             role="tabpanel"
                             aria-labelledby={`home-tab-${activeLeagueTab}`}
                             className="animate-in fade-in duration-150"
-                            style={matchSectionMinHeightStyle}
+                            style={shouldReserveMatchSectionHeight ? matchSectionMinHeightStyle : undefined}
                         >
                             <Suspense
                                 fallback={(
@@ -1425,6 +1512,8 @@ export default function HomeRuntime() {
                                     activeLeagueTab={activeLeagueTab}
                                     isLoading={isLoading}
                                     isGamesError={isGamesError}
+                                    isGamesDelayed={isGamesDelayed}
+                                    emptyDateNavigation={emptyDateNavigation}
                                     loadFailureReason={loadFailureReason}
                                     isScheduledLoading={isScheduledLoading}
                                     isScheduledError={isScheduledError}
@@ -1451,7 +1540,7 @@ export default function HomeRuntime() {
               </HomePullToRefresh>
 
                 {shouldMountDeferredSurfaces || showCalendar ? (
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<HomeSecondaryPanelsSkeleton />}>
                         <LazyHomeDeferredSurfaces
                             selectedDate={selectedDate}
                             selectedDateKey={selectedDateKey}
@@ -1469,7 +1558,9 @@ export default function HomeRuntime() {
                             }}
                         />
                     </Suspense>
-                ) : null}
+                ) : (
+                    <HomeSecondaryPanelsSkeleton />
+                )}
                 <div
                     className="h-[var(--mobile-content-safe-bottom)] lg:hidden"
                     aria-hidden="true"

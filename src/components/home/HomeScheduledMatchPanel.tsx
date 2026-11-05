@@ -2,6 +2,8 @@ import type { CSSProperties, ReactNode } from 'react';
 
 import HomeGameCard from './HomeGameCard';
 import { GameCardSkeleton } from './GameCardSkeleton';
+import StateBlock from '../status/StateBlock';
+import { CalendarDaysIcon, ClockIcon } from '../icons/PublicFeatureIcons';
 import { formatSourceDateLabel } from '../../utils/homeSeasonLogic';
 import type { Game } from '../../types/home';
 import type { HomeLoadFailureReason } from '../../api/home';
@@ -9,6 +11,7 @@ import type { HomeLoadFailureReason } from '../../api/home';
 interface HomeScheduledMatchPanelProps {
   isScheduledLoading: boolean;
   isScheduledError: boolean;
+  isGamesDelayed?: boolean;
   loadFailureReason: HomeLoadFailureReason | null;
   suppressRecoveryActions?: boolean;
   isSecondarySectionExpanded: boolean;
@@ -32,11 +35,6 @@ const HOME_SCHEDULED_PANEL_COPY = {
 };
 const BOARD_SHELL_CLASS = 'rounded-3xl border border-primary/20 bg-white p-4 shadow-home-board ring-1 ring-primary/10 dark:border-primary/25 dark:bg-card md:p-5';
 const BOARD_GRID_CLASS = 'grid grid-cols-1 items-stretch gap-2.5';
-const HOME_SCHEDULED_RETRY_BUTTON_CLASS = 'inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-background px-4 text-15 font-semibold text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 dark:border-input dark:bg-input/30 dark:hover:bg-input/50 mt-3 border-primary/30 font-bold text-primary hover:bg-primary/5';
-const HOME_SCHEDULED_ERROR_PANEL_CLASS = 'flex flex-col items-center justify-center py-16 text-center bg-white dark:bg-card rounded-2xl border border-red-100 dark:border-red-900/40 shadow-sm';
-const HOME_SCHEDULED_ERROR_ICON_FRAME_CLASS = 'bg-red-50 dark:bg-red-900/20 p-4 rounded-full mb-4';
-const HOME_SCHEDULED_REFRESH_ICON_CLASS = 'mr-1.5 inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent';
-const HOME_SCHEDULED_WARNING_ICON_CLASS = 'text-4xl font-black leading-none text-red-600 dark:text-red-400';
 const HOME_SCHEDULED_WARNING_BADGE_CLASS = 'inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-current text-11 font-black leading-none';
 const HOME_SCHEDULED_CLOCK_ICON_CLASS = 'inline-block h-4 w-4 shrink-0 rounded-full border-2 border-current';
 const HOME_SCHEDULED_TOGGLE_ICON_CLASS = 'inline-block min-w-3.5 text-center text-12 font-black leading-none';
@@ -89,65 +87,21 @@ function HomeScheduledBoardHeader({
   );
 }
 
-function HomeScheduledEmptyState({
+function HomeScheduledStateShell({
   children,
-  style,
+  countLabel,
 }: {
   children: ReactNode;
-  style: CSSProperties;
+  countLabel: string;
 }) {
+  // 빈 · 오류 상태는 문구 높이만큼만 차지합니다 (로딩용 최소 높이를 쓰지 않음).
   return (
-    <div className={BOARD_SHELL_CLASS} style={style} {...MATCH_PRIORITY_REGION_PROPS}>
+    <div className={BOARD_SHELL_CLASS} {...MATCH_PRIORITY_REGION_PROPS}>
       <HomeScheduledBoardHeader
-        countLabel="0경기"
+        countLabel={countLabel}
         detailLabel="7일 일정"
       />
-      <div className="flex min-h-[160px] items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center text-body font-bold text-gray-500 dark:border-white/12 dark:bg-white/[0.04] dark:text-white">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function HomeScheduledErrorState({
-  style,
-  title,
-  description,
-  suppressRecoveryActions,
-  onRetry,
-}: {
-  style: CSSProperties;
-  title: string;
-  description: string;
-  suppressRecoveryActions: boolean;
-  onRetry: () => void;
-}) {
-  return (
-    <div className={HOME_SCHEDULED_ERROR_PANEL_CLASS} style={style} {...MATCH_PRIORITY_REGION_PROPS}>
-      <div className={HOME_SCHEDULED_ERROR_ICON_FRAME_CLASS}>
-        <span className={HOME_SCHEDULED_WARNING_ICON_CLASS} aria-hidden="true">!</span>
-      </div>
-      <p className="text-gray-700 dark:text-white font-bold mb-1">
-        {title}
-      </p>
-      <p className="text-gray-500 dark:text-white text-body font-bold mt-1">
-        {description}
-      </p>
-      {suppressRecoveryActions ? (
-        <p className="mt-3 text-body font-bold text-gray-500 dark:text-white">
-          위의 전체 다시 시도 버튼으로 한 번에 확인하세요.
-        </p>
-      ) : (
-        <button
-          type="button"
-          data-testid="home-scheduled-retry"
-          onClick={onRetry}
-          className={HOME_SCHEDULED_RETRY_BUTTON_CLASS}
-        >
-          <span className={HOME_SCHEDULED_REFRESH_ICON_CLASS} aria-hidden="true" />
-          다시 시도
-        </button>
-      )}
+      {children}
     </div>
   );
 }
@@ -199,6 +153,7 @@ function HomeScheduledGameList({
 export default function HomeScheduledMatchPanel({
   isScheduledLoading,
   isScheduledError,
+  isGamesDelayed = false,
   loadFailureReason,
   suppressRecoveryActions = false,
   isSecondarySectionExpanded,
@@ -241,23 +196,50 @@ export default function HomeScheduledMatchPanel({
 
   if (isScheduledError) {
     return (
-      <HomeScheduledErrorState
-        style={matchSectionMinHeightStyle}
-        title={isManualDataError ? '야구 데이터 준비가 필요합니다' : '예정 경기를 불러오지 못했습니다'}
-        description={isManualDataError
-          ? '운영자가 데이터를 제공하면 다시 확인할 수 있습니다.'
-          : '서비스 연결이 불안정합니다. 잠시 후 다시 시도해주세요.'}
-        suppressRecoveryActions={suppressRecoveryActions}
-        onRetry={onRetry}
-      />
+      <HomeScheduledStateShell countLabel="확인 필요">
+        <StateBlock
+          kind="error"
+          title={isManualDataError ? '경기 데이터를 준비하고 있어요' : '예정 경기를 불러오지 못했어요'}
+          description={isManualDataError
+            ? '데이터가 준비되면 이 자리에 일정이 표시돼요.'
+            : '잠깐 연결이 불안정했어요. 다시 시도하면 최신 일정을 불러와요.'}
+          onRetry={suppressRecoveryActions ? undefined : onRetry}
+          className="py-8"
+          testId="home-scheduled-error"
+        />
+      </HomeScheduledStateShell>
+    );
+  }
+
+  if (isGamesDelayed) {
+    return (
+      <HomeScheduledStateShell countLabel="불러오는 중">
+        <StateBlock
+          kind="filtered"
+          icon={<ClockIcon className="h-5 w-5" />}
+          title="경기 정보가 늦게 도착하고 있어요"
+          description="계속 불러오는 중이에요. 오래 걸리면 다시 시도해 주세요."
+          onRetry={suppressRecoveryActions ? undefined : onRetry}
+          retryLabel="다시 불러오기"
+          className="py-8"
+          testId="home-scheduled-delayed"
+        />
+      </HomeScheduledStateShell>
     );
   }
 
   if (scheduledPrimaryGames.length === 0 && scheduledSecondaryGames.length === 0) {
     return (
-      <HomeScheduledEmptyState style={matchSectionMinHeightStyle}>
-        선택한 날짜부터 7일 내 예정 경기가 없습니다.
-      </HomeScheduledEmptyState>
+      <HomeScheduledStateShell countLabel="0경기">
+        <StateBlock
+          kind="filtered"
+          icon={<CalendarDaysIcon className="h-5 w-5" />}
+          title="앞으로 7일 동안 예정된 경기가 없어요"
+          description="위의 날짜 변경에서 다른 날짜의 일정을 볼 수 있어요."
+          className="py-8"
+          testId="home-scheduled-empty"
+        />
+      </HomeScheduledStateShell>
     );
   }
 

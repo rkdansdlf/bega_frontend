@@ -1,5 +1,5 @@
 import { lazy, Suspense, startTransition, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { Card } from '../ui/card';
@@ -15,7 +15,6 @@ import {
 import { buildPredictionListPath } from '../../utils/predictionDeepLink';
 import { scheduleAfterNextPaint } from '../../utils/afterNextPaint';
 import { schedulePredictionPostPaintIdleWork } from '../../utils/predictionDeferredWork';
-import PredictionLoadingView from './PredictionLoadingView';
 import { PREDICTION_BRAND_GRADIENT_CLASS } from './predictionUiTokens';
 
 const AppQueryProvider = lazy(() => import('../AppQueryProvider'));
@@ -24,10 +23,26 @@ const loadPredictionRankingTab = () => import('./PredictionRankingTab');
 const loadPredictionAnimatedSections = () => import('../PredictionAnimatedSections');
 const loadRankingPrediction = () => import('../RankingPrediction');
 const loadPredictionStatsPanel = () => import('./PredictionStatsPanel');
+const loadPredictionLoadingView = () => import('./PredictionLoadingView');
 
 const PredictionRankingTab = lazy(loadPredictionRankingTab);
 const PredictionAnimatedSections = lazy(loadPredictionAnimatedSections);
+const LazyPredictionLoadingView = lazy(loadPredictionLoadingView);
 const PREDICTION_RANKING_PRELOAD_DELAY_MS = 2500;
+
+// 로딩 골격은 경기 데이터 단계에서도 쓰는 별도 청크라, 라우트 청크에 싣지 않고 바로 받아둡니다.
+// 자체 Suspense 로 감싸 두어 골격 청크를 기다리는 동안 상위(라우트) 폴백으로 번지지 않습니다.
+if (typeof window !== 'undefined') {
+  void loadPredictionLoadingView();
+}
+
+function PredictionLoadingView(props: ComponentProps<typeof LazyPredictionLoadingView>) {
+  return (
+    <Suspense fallback={null}>
+      <LazyPredictionLoadingView {...props} />
+    </Suspense>
+  );
+}
 
 export function preloadPredictionRankingTabResources(includeUserStats: boolean) {
   void loadPredictionAnimatedSections();

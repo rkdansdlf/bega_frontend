@@ -15,6 +15,7 @@ interface AutoSwitchInput {
   hasUserChangedTab: boolean;
   isLoading: boolean;
   isScheduledLoading: boolean;
+  isGamesDelayed?: boolean;
   regularCount: number;
   postseasonCount: number;
   koreanSeriesCount: number;
@@ -132,13 +133,14 @@ export const shouldAutoSwitchToScheduled = ({
   hasUserChangedTab,
   isLoading,
   isScheduledLoading,
+  isGamesDelayed = false,
   regularCount,
   postseasonCount,
   koreanSeriesCount,
   scheduledPrimaryCount,
 }: AutoSwitchInput) => {
   if (hasUserChangedTab) return false;
-  if (isLoading || isScheduledLoading) return false;
+  if (isLoading || isScheduledLoading || isGamesDelayed) return false;
   if (activeLeagueTab === 'scheduled') return false;
 
   const currentTabCount = getCurrentTabCount(

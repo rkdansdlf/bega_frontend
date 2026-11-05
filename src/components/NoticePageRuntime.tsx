@@ -15,6 +15,7 @@ import {
   NoticeRefreshIcon as RefreshIcon,
 } from './icons/NoticePageIcons';
 import { Button } from './ui/button';
+import StateBlock from './status/StateBlock';
 
 const ITEMS_PER_PAGE = 15;
 
@@ -42,6 +43,7 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
     data: queriedNoticeData,
     isLoading: isQueryLoading,
     isError: isQueryError,
+    isFetching: isQueryFetching,
     refetch,
   } = useQuery({
     queryKey: ['noticePostsPage'],
@@ -123,40 +125,49 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4" data-testid="notice-page-loading" role="status">
+          <div className="space-y-4" data-testid="notice-page-loading" role="status" aria-busy="true">
+            <span className="sr-only">공지사항을 불러오고 있어요</span>
             {Array.from({ length: 5 }).map((_, idx) => (
               <div
                 key={idx}
-                className="animate-pulse rounded-xl border border-border/80 p-4 dark:border-border dark:bg-card"
+                aria-hidden="true"
+                className="animate-pulse rounded-xl border border-border/80 bg-white p-4 dark:border-border dark:bg-card"
                 data-testid="notice-page-skeleton"
               >
-                <div className="flex gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 dark:bg-zinc-700" />
-                  <div className="flex-1 space-y-3">
-                    <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-secondary" />
-                    <div className="h-3 w-1/3 rounded bg-gray-100 dark:bg-secondary" />
-                    <div className="h-3 w-2/3 rounded bg-gray-100 dark:bg-secondary" />
+                {/* 공지 행과 같은 구조: 아이콘 원 · 제목 한 줄 · 작성자/시간/반응 한 줄 */}
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 shrink-0 rounded-full bg-gray-200 dark:bg-zinc-700" />
+                  <div className="min-w-0 flex-1 space-y-2.5 pt-1">
+                    <div className={`h-5 rounded bg-gray-200 dark:bg-secondary ${['w-2/3', 'w-1/2', 'w-3/5', 'w-2/5', 'w-1/2'][idx]}`} />
+                    <div className="flex items-center gap-3">
+                      <div className="h-3.5 w-20 rounded bg-gray-100 dark:bg-secondary" />
+                      <div className="h-3.5 w-14 rounded bg-gray-100 dark:bg-secondary" />
+                      <div className="hidden h-3.5 w-16 rounded bg-gray-100 dark:bg-secondary sm:block" />
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : isError ? (
-          <div
-            className="min-w-0 break-words rounded-lg border border-red-200 bg-red-50 p-4 text-center text-red-700 [overflow-wrap:anywhere] dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
-            data-testid="notice-page-error"
-            role="alert"
-          >
-            공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
-          </div>
+          <StateBlock
+            kind="error"
+            title="공지사항을 불러오지 못했어요"
+            description="잠시 연결이 불안정했어요. 다시 시도하면 최신 공지를 불러와요."
+            onRetry={() => {
+              if (visualQaStateOverride === undefined) void refetch();
+            }}
+            isRetrying={visualQaStateOverride === undefined && isQueryFetching}
+            testId="notice-page-error"
+          />
         ) : posts.length === 0 ? (
-          <div
-            className="min-w-0 break-words rounded-lg border-2 border-dashed border-gray-200 px-4 py-12 text-center text-gray-500 [overflow-wrap:anywhere] sm:p-12 dark:border-white/10 dark:text-white"
-            data-testid="notice-page-empty"
-          >
-            <MegaphoneIcon className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-white" />
-            <h3 className="text-lg font-semibold text-zinc-800 dark:text-white">등록된 공지사항이 없습니다.</h3>
-          </div>
+          <StateBlock
+            kind="filtered"
+            icon={<MegaphoneIcon className="h-5 w-5" />}
+            title="아직 등록된 공지가 없어요"
+            description="서비스 점검이나 새 기능 소식이 생기면 이곳에 올려 드릴게요."
+            testId="notice-page-empty"
+          />
         ) : (
           <div className="space-y-4">
             {paginatedPosts.map((post: CheerPost) => (
