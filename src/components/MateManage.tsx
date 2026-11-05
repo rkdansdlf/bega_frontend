@@ -284,6 +284,7 @@ export default function MateManage({ visualQaStateOverride: requestedVisualQaSta
       description: confirmMessage,
       confirmLabel: '삭제',
       variant: 'destructive',
+      touchTargets: true,
     });
     if (!confirmed) {
       return;

@@ -8,6 +8,10 @@
   display: none;
 }
 
+.stadium-guide-content-shell {
+  padding-inline: clamp(theme(spacing.3), 4vw, 32px);
+}
+
 .stadium-guide-page {
   --stadium-dark-base: #020403;
   --stadium-dark-surface: #07100c;
@@ -28,6 +32,7 @@
   position: relative;
   overflow: hidden;
   margin-bottom: 1.25rem;
+  padding-inline: clamp(theme(spacing.3), 4vw, theme(spacing.6));
 }
 
 .dark .stadium-hero-container {
@@ -105,6 +110,20 @@
 @media (max-width: 639px) {
   .stadium-hero-container {
     margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 359px) {
+  [data-testid="stadium-guide-mobile-panels"] .stadium-guide-category-button > div:first-child {
+    box-sizing: border-box;
+    width: theme(spacing.11);
+    height: theme(spacing.11);
+    padding: theme(spacing.2);
+  }
+
+  [data-testid="stadium-guide-mobile-panels"] .stadium-guide-category-button > div:first-child > svg {
+    width: theme(spacing.6);
+    height: theme(spacing.6);
   }
 }
 

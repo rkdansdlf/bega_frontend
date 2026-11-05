@@ -71,7 +71,7 @@ const primaryActionButtonClass =
 
 function LoadingProfileCard() {
   return (
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,_1fr)_auto] lg:items-start">
+    <div className="grid gap-4 2xl:grid-cols-[minmax(0,_1fr)_minmax(0,_560px)] 2xl:items-start">
       <div className="flex min-w-0 items-start gap-3 md:gap-4">
         <Skeleton className="h-20 w-20 flex-shrink-0 rounded-full md:h-24 md:w-24" />
         <div className="min-w-0 flex-1 space-y-2 pt-0.5">
@@ -81,7 +81,7 @@ function LoadingProfileCard() {
           <Skeleton className="h-7 w-24 rounded-full" />
         </div>
       </div>
-      <div className="flex w-full flex-col gap-3 lg:w-auto lg:min-w-[440px] lg:items-end">
+      <div className="flex w-full min-w-0 flex-col gap-3 2xl:items-end">
         <div className="flex items-center gap-4 md:gap-5">
           <div className="space-y-1 text-center">
             <Skeleton className="mx-auto h-6 w-10" />
@@ -93,11 +93,11 @@ function LoadingProfileCard() {
             <Skeleton className="mx-auto h-4 w-16" />
           </div>
         </div>
-        <div className="grid w-full grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-nowrap lg:justify-end">
-          <Skeleton className="order-1 col-span-2 h-10 rounded-md lg:order-4 lg:col-span-1 lg:w-28" />
-          <Skeleton className="order-2 h-10 rounded-md lg:order-1 lg:w-28" />
-          <Skeleton className="order-3 h-10 rounded-md lg:order-2 lg:w-32" />
-          <Skeleton className="order-4 col-span-2 h-10 rounded-md lg:order-3 lg:col-span-1 lg:w-28" />
+        <div className="grid w-full grid-cols-2 gap-2 2xl:flex 2xl:flex-wrap 2xl:justify-end">
+          <Skeleton className="order-1 col-span-2 h-10 w-full rounded-md 2xl:order-4 2xl:col-span-1 2xl:w-32" />
+          <Skeleton className="order-2 h-10 w-full rounded-md 2xl:order-1 2xl:w-32" />
+          <Skeleton className="order-3 h-10 w-full rounded-md 2xl:order-2 2xl:w-32" />
+          <Skeleton className="order-4 col-span-2 h-10 w-full rounded-md 2xl:order-3 2xl:col-span-1 2xl:w-32" />
         </div>
       </div>
     </div>

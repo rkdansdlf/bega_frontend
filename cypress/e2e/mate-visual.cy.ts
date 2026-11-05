@@ -186,6 +186,14 @@ describe('Mate Visual QA', () => {
     cy.screenshot(name, { capture: 'viewport' });
   };
 
+  const assertDesktopFavoriteDimensions = () => {
+    cy.get('[data-testid="mate-party-card-favorite"]').each(($button) => {
+      const rect = $button[0].getBoundingClientRect();
+      expect(Math.round(rect.width), 'desktop favorite width remains unchanged').to.eq(32);
+      expect(Math.round(rect.height), 'desktop favorite height remains unchanged').to.eq(32);
+    });
+  };
+
   const visitWithTheme = (path: string, theme: 'light' | 'dark') => {
     cy.visit(path, {
       onBeforeLoad(win) {
@@ -345,6 +353,7 @@ describe('Mate Visual QA', () => {
     cy.contains('비주얼 호스트').should('be.visible');
     cy.contains('4.7').should('be.visible');
     cy.contains(/2\s*\/\s*4명/).should('be.visible');
+    assertDesktopFavoriteDimensions();
     captureViewport('mate-visual-list-desktop-light');
   });
 
@@ -357,6 +366,7 @@ describe('Mate Visual QA', () => {
     cy.contains('판매 호스트').should('be.visible');
     cy.contains('판매 중').should('be.visible');
     cy.contains('54,000').should('be.visible');
+    assertDesktopFavoriteDimensions();
     captureViewport('mate-visual-list-desktop-dark');
   });
 
@@ -369,6 +379,100 @@ describe('Mate Visual QA', () => {
     cy.contains('비주얼 호스트').should('be.visible');
     assertNoHorizontalOverflow();
     captureViewport('mate-visual-list-mobile-light');
+  });
+
+  [
+    { width: 320, theme: 'light' as const, rootTextSize: 16 },
+    { width: 320, theme: 'light' as const, rootTextSize: 32 },
+    { width: 320, theme: 'dark' as const, rootTextSize: 16 },
+    { width: 320, theme: 'dark' as const, rootTextSize: 32 },
+    { width: 390, theme: 'light' as const, rootTextSize: 16 },
+    { width: 390, theme: 'light' as const, rootTextSize: 32 },
+    { width: 390, theme: 'dark' as const, rootTextSize: 16 },
+    { width: 390, theme: 'dark' as const, rootTextSize: 32 },
+  ].forEach(({ width, theme, rootTextSize }) => {
+    it(`keeps Mate card actions reachable at ${width}px ${theme} with ${rootTextSize}px root text`, () => {
+      const navSelector = '[data-testid="public-mobile-bottom-nav"], [data-testid="auth-mobile-bottom-nav"]';
+      const scrollAndAssertTargetIsUncovered = (selector: string, position: 'first' | 'last', label: string) => {
+        const targets = cy.get<HTMLElement>(selector);
+        const targetQuery = position === 'first' ? targets.first() : targets.last();
+        targetQuery.then(($target) => {
+          const target = $target[0];
+          const doc = target.ownerDocument;
+          doc.documentElement.style.scrollBehavior = 'auto';
+          target.scrollIntoView({ block: 'center', inline: 'nearest' });
+
+          const nav = Array.from(doc.querySelectorAll<HTMLElement>(navSelector))
+            .find((candidate) => candidate.getBoundingClientRect().height > 0);
+          expect(nav, 'visible mobile bottom navigation exists').to.not.be.undefined;
+          const targetRect = target.getBoundingClientRect();
+          const navRect = nav!.getBoundingClientRect();
+          const x = targetRect.left + targetRect.width / 2;
+          const y = targetRect.top + targetRect.height / 2;
+          const hitTarget = doc.elementFromPoint(x, y);
+
+          expect(y, `${label} center is above the fixed navigation`).to.be.lessThan(navRect.top - 4);
+          expect(
+            hitTarget === target || (hitTarget !== null && target.contains(hitTarget)),
+            `${label} center receives the pointer instead of the fixed navigation`,
+          ).to.eq(true);
+        });
+      };
+      const assertVenueCopyClearsFavorite = (position: 'first' | 'last') => {
+        const cards = cy.get<HTMLElement>('[data-testid="mate-party-card"]');
+        const cardQuery = position === 'first' ? cards.first() : cards.last();
+        cardQuery.then(($card) => {
+          const card = $card[0];
+          const favorite = card.querySelector<HTMLElement>('[data-testid="mate-party-card-favorite"]');
+          const venueRow = card.querySelector<HTMLElement>('.mate-party-card__venue-row');
+          const venueText = venueRow?.querySelectorAll<HTMLElement>('p');
+
+          expect(favorite, `${position} card favorite exists`).not.to.be.null;
+          expect(venueRow, `${position} card venue row exists`).not.to.be.null;
+          expect(venueText?.length, `${position} card venue labels exist`).to.be.greaterThan(0);
+
+          const favoriteRect = favorite!.getBoundingClientRect();
+          expect(Math.round(favoriteRect.width), `${position} card favorite touch width`).to.eq(44);
+          expect(Math.round(favoriteRect.height), `${position} card favorite touch height`).to.eq(44);
+          const venueRect = venueRow!.getBoundingClientRect();
+          expect(
+            venueRect.top,
+            `${position} card venue row starts below the favorite target`,
+          ).to.be.at.least(favoriteRect.bottom + 4);
+
+          const stadiumLabel = venueText![0].querySelector<HTMLElement>('span');
+          const zoneLabel = venueText![1];
+          expect(stadiumLabel, `${position} card stadium label exists`).not.to.be.null;
+          expect(
+            stadiumLabel!.scrollWidth,
+            `${position} card stadium label is not clipped`,
+          ).to.be.at.most(stadiumLabel!.clientWidth);
+          expect(
+            zoneLabel.scrollWidth,
+            `${position} card zone and price are not clipped`,
+          ).to.be.at.most(zoneLabel.clientWidth);
+        });
+      };
+
+      cy.viewport(width, 844);
+      visitWithTheme('/mate', theme);
+      cy.wait('@getMateParties');
+      cy.document().then((doc) => {
+        doc.documentElement.style.fontSize = `${rootTextSize}px`;
+      });
+      cy.get('[data-testid="mate-party-card"]').should('have.length', 2);
+
+      scrollAndAssertTargetIsUncovered('[data-testid="mate-party-card-detail"]', 'first', 'first Mate card');
+      scrollAndAssertTargetIsUncovered('[data-testid="mate-party-card-detail"]', 'last', 'last Mate card');
+      scrollAndAssertTargetIsUncovered('[data-testid="mate-party-card-favorite"]', 'last', 'last Mate card favorite');
+      assertVenueCopyClearsFavorite('first');
+      assertVenueCopyClearsFavorite('last');
+
+      cy.get<HTMLElement>('[data-testid="mate-party-card"]').first().then(($card) => {
+        $card[0].scrollIntoView({ block: 'center', inline: 'nearest' });
+      });
+      captureViewport(`mate-visual-list-mobile-actions-reachable-${width}-${theme}-${rootTextSize}`);
+    });
   });
 
   [
@@ -474,14 +578,35 @@ describe('Mate Visual QA', () => {
     assertViewport(390, 844);
     cy.contains('파티 참여 신청').should('be.visible');
     cy.contains('정책 안내').should('be.visible');
+    captureViewport('mate-visual-apply-mobile-light-form-top');
     cy.get('textarea#message').type('시각 QA를 위한 신청 메시지입니다.');
     cy.get('button:visible')
       .filter((_, button) => /결제하기|신청하기/.test(button.textContent ?? ''))
       .first()
-      .scrollIntoView()
-      .should('be.visible');
+      .then(($button) => {
+        const submit = $button[0];
+        const doc = submit.ownerDocument;
+        doc.documentElement.style.scrollBehavior = 'auto';
+        submit.scrollIntoView({ block: 'center', inline: 'nearest' });
+
+        const nav = Array.from(doc.querySelectorAll<HTMLElement>(
+          '[data-testid="public-mobile-bottom-nav"], [data-testid="auth-mobile-bottom-nav"]',
+        )).find((candidate) => candidate.getBoundingClientRect().height > 0);
+        expect(nav, 'visible mobile bottom navigation exists').to.not.be.undefined;
+        const buttonRect = submit.getBoundingClientRect();
+        const navRect = nav!.getBoundingClientRect();
+        const x = buttonRect.left + buttonRect.width / 2;
+        const y = buttonRect.top + buttonRect.height / 2;
+        const hitTarget = doc.elementFromPoint(x, y);
+
+        expect(y, 'application submit center is above fixed navigation').to.be.lessThan(navRect.top - 4);
+        expect(
+          hitTarget === submit || submit.contains(hitTarget),
+          'application submit center receives pointer input instead of fixed navigation',
+        ).to.eq(true);
+      });
     assertNoHorizontalOverflow();
-    captureViewport('mate-visual-apply-mobile-light');
+    captureViewport('mate-visual-apply-mobile-light-form-actions');
   });
 
   it('captures the apply page in desktop dark mode', () => {
@@ -576,20 +701,79 @@ describe('Mate Visual QA', () => {
   });
 
   [
-    { name: 'mobile-light', width: 390, height: 844, theme: 'light' as const },
-    { name: 'mobile-dark', width: 390, height: 844, theme: 'dark' as const },
-    { name: 'desktop-light', width: 1440, height: 900, theme: 'light' as const },
-    { name: 'desktop-dark', width: 1440, height: 900, theme: 'dark' as const },
-  ].forEach(({ name, width, height, theme }) => {
+    { name: 'mobile-light', width: 390, height: 844, theme: 'light' as const, rootTextSize: 16 },
+    { name: 'mobile-dark', width: 390, height: 844, theme: 'dark' as const, rootTextSize: 16 },
+    { name: 'mobile-320-light-32px', width: 320, height: 844, theme: 'light' as const, rootTextSize: 32 },
+    { name: 'mobile-320-dark-32px', width: 320, height: 844, theme: 'dark' as const, rootTextSize: 32 },
+    { name: 'desktop-light', width: 1440, height: 900, theme: 'light' as const, rootTextSize: 16 },
+    { name: 'desktop-dark', width: 1440, height: 900, theme: 'dark' as const, rootTextSize: 16 },
+  ].forEach(({ name, width, height, theme, rootTextSize }) => {
     it(`captures the initial create page in ${name}`, () => {
       cy.viewport(width, height);
       visitWithTheme('/mate/create', theme);
+      if (rootTextSize) {
+        cy.document().then((doc) => {
+          doc.documentElement.style.fontSize = `${rootTextSize}px`;
+        });
+      }
       assertViewport(width, height);
       cy.contains('직관메이트 파티 만들기').should('be.visible');
       cy.get('[data-testid="mate-create-ticket-picker"]').should('be.visible');
       cy.get('[data-testid="mate-create-next"]').should('be.disabled');
       assertNoHorizontalOverflow();
       captureViewport(`mate-visual-create-${name}`);
+      if (width < 768) {
+        cy.get('[data-testid="auth-mobile-bottom-nav"]').should('be.visible').within(() => {
+          cy.get('[data-mobile-chrome-label]').should('have.length', 5).each(($label) => {
+            const label = $label[0] as HTMLElement;
+            const style = label.ownerDocument.defaultView?.getComputedStyle(label);
+            expect(style?.whiteSpace, 'bottom-navigation label wraps').not.to.eq('nowrap');
+            expect(style?.textOverflow, 'bottom-navigation label is not ellipsized').not.to.eq('ellipsis');
+            if (rootTextSize === 32) {
+              expect(
+                label.ownerDocument.defaultView?.getComputedStyle(label.ownerDocument.documentElement).fontSize,
+                'root text stress setting is active',
+              ).to.eq('32px');
+              expect(Number.parseFloat(style?.fontSize ?? '0'), 'bottom-navigation label follows enlarged root text')
+                .to.be.at.least(20);
+            } else {
+              expect(Number.parseFloat(style?.fontSize ?? '0'), 'baseline bottom-navigation label size remains unchanged')
+                .to.eq(10.5);
+            }
+            expect(label.scrollWidth, 'bottom-navigation label has no horizontal clipping')
+              .to.be.at.most(label.clientWidth + 1);
+            expect(label.scrollHeight, 'bottom-navigation label has no vertical clipping')
+              .to.be.at.most(label.clientHeight + 1);
+          });
+          cy.get('[data-testid="auth-mobile-chatbot-tab"]')
+            .should('have.attr', 'aria-label', 'BEGA 챗봇 열기')
+            .find('[data-mobile-chrome-label]')
+            .should('have.text', '챗봇');
+        });
+
+        cy.get<HTMLElement>('[data-testid="mate-create-ticket-picker"]').then(($picker) => {
+          const picker = $picker[0];
+          const doc = picker.ownerDocument;
+          doc.documentElement.style.scrollBehavior = 'auto';
+          picker.scrollIntoView({ block: 'center', inline: 'nearest' });
+
+          const nav = Array.from(doc.querySelectorAll<HTMLElement>(
+            '[data-testid="public-mobile-bottom-nav"], [data-testid="auth-mobile-bottom-nav"]',
+          )).find((candidate) => candidate.getBoundingClientRect().height > 0);
+          expect(nav, 'visible mobile bottom navigation exists').to.not.be.undefined;
+          const pickerRect = picker.getBoundingClientRect();
+          const navRect = nav!.getBoundingClientRect();
+          const x = pickerRect.left + pickerRect.width / 2;
+          const y = pickerRect.top + pickerRect.height / 2;
+          const hitTarget = doc.elementFromPoint(x, y);
+
+          expect(y, 'ticket picker center is above fixed navigation').to.be.lessThan(navRect.top - 4);
+          expect(
+            hitTarget === picker || (hitTarget !== null && picker.contains(hitTarget)),
+            'ticket picker center receives pointer input instead of fixed navigation',
+          ).to.eq(true);
+        });
+      }
     });
   });
 });

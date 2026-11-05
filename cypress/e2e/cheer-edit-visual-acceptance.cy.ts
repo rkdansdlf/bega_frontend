@@ -22,12 +22,36 @@ const post = {
   imageUrls: [],
 };
 
-const scenarios = [
+type VisualScenario = {
+  id: string;
+  viewport: [number, number];
+  theme: ThemeMode;
+  rootFontSize?: number;
+};
+
+const scenarios: VisualScenario[] = [
   { id: 'mobile-390-light', viewport: [390, 844] as [number, number], theme: 'light' as ThemeMode },
   { id: 'mobile-390-dark', viewport: [390, 844] as [number, number], theme: 'dark' as ThemeMode },
   { id: 'desktop-1400-light', viewport: [1400, 900] as [number, number], theme: 'light' as ThemeMode },
   { id: 'desktop-1400-dark', viewport: [1400, 900] as [number, number], theme: 'dark' as ThemeMode },
+  { id: 'mobile-320-light-200-text', viewport: [320, 844], theme: 'light', rootFontSize: 32 },
+  { id: 'mobile-320-dark-200-text', viewport: [320, 844], theme: 'dark', rootFontSize: 32 },
 ];
+
+const scrollToCenterAndExpectHit = (element: HTMLElement) => {
+  const document = element.ownerDocument;
+  const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior = 'auto';
+  element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+
+  const rect = element.getBoundingClientRect();
+  const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+  expect(rect.left, 'target left edge').to.be.at.least(0);
+  expect(rect.right, 'target right edge').to.be.at.most(document.documentElement.clientWidth);
+  expect(hit === element || element.contains(hit), 'target center receives pointer hit').to.eq(true);
+  document.documentElement.style.scrollBehavior = previousScrollBehavior;
+};
 
 describe('Cheer edit responsive visual acceptance', () => {
   beforeEach(() => {
@@ -52,6 +76,9 @@ describe('Cheer edit responsive visual acceptance', () => {
       cy.visit(`/cheer/edit/${postId}`, {
         onBeforeLoad(win) {
           win.localStorage.setItem('kbo-theme', scenario.theme);
+          if (scenario.rootFontSize) {
+            win.document.documentElement.style.fontSize = `${scenario.rootFontSize}px`;
+          }
         },
       });
 
@@ -71,6 +98,21 @@ describe('Cheer edit responsive visual acceptance', () => {
       });
       cy.document().then((document) => document.fonts.ready);
       cy.screenshot(`cheer-edit-visual-acceptance/${scenario.id}`, { capture: 'viewport' });
+
+      if (scenario.rootFontSize) {
+        cy.document().should((document) => {
+          expect(document.documentElement.style.fontSize).to.eq(`${scenario.rootFontSize}px`);
+        });
+        cy.get('textarea').should('be.visible').then(($target) => {
+          scrollToCenterAndExpectHit($target[0] as HTMLTextAreaElement);
+        });
+        cy.contains('button', '취소').should('be.visible').then(($target) => {
+          scrollToCenterAndExpectHit($target[0] as HTMLButtonElement);
+        });
+        cy.contains('button', '수정 완료').should('be.visible').then(($target) => {
+          scrollToCenterAndExpectHit($target[0] as HTMLButtonElement);
+        });
+      }
     });
   }
 });

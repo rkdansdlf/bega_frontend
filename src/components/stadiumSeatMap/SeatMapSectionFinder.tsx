@@ -36,6 +36,7 @@ interface SeatMapSectionFinderProps<TSection> {
   accentColor: string;
   stadiumShortLabel: string;
   autoFocusInput?: boolean;
+  reserveMobileDockSpace?: boolean;
 }
 
 export function SeatMapSectionFinder<TSection>({
@@ -51,6 +52,7 @@ export function SeatMapSectionFinder<TSection>({
   accentColor,
   stadiumShortLabel,
   autoFocusInput = false,
+  reserveMobileDockSpace = false,
 }: SeatMapSectionFinderProps<TSection>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [inputFocused, setInputFocused] = useState(false);
@@ -119,7 +121,12 @@ export function SeatMapSectionFinder<TSection>({
           />
         </label>
       </div>
-      <div className="max-h-[520px] overflow-y-auto p-2">
+      <div
+        className="max-h-[520px] overflow-y-auto p-2"
+        style={reserveMobileDockSpace ? {
+          paddingBottom: 'var(--mobile-content-safe-bottom)',
+        } : undefined}
+      >
         {visibleBlocks.length > 0 ? (
           <div className="space-y-1.5">
             {visibleBlocks.map((block) => {
@@ -151,6 +158,9 @@ export function SeatMapSectionFinder<TSection>({
                   style={{
                     borderColor: isActive ? accent : 'transparent',
                     background: isActive ? `${accent}14` : 'transparent',
+                    scrollMarginBottom: reserveMobileDockSpace
+                      ? 'calc(var(--mobile-content-safe-bottom) + 2rem)'
+                      : undefined,
                   }}
                 >
                   <div className="flex items-start gap-3">

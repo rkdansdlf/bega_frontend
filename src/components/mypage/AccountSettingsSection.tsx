@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, type ReactElement } from 'react';
+import { lazy, Suspense, useState, type FocusEvent, type ReactElement } from 'react';
 import { Button } from '../ui/button';
 import '../common/autofill-input.css';
 import {
@@ -25,6 +25,8 @@ import {
 } from './MyPageFlowIcons';
 import { PRIVATE_QUERY_KEYS } from '../../utils/privateQueryKeys';
 import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
+import AccountSettingsReadError from './AccountSettingsReadError';
+import './AccountSettingsSection.css';
 
 export interface AccountSettingsSectionVisualQaStateOverride {
   connectedProviders?: UserProviderDto[];
@@ -140,6 +142,8 @@ export default function AccountSettingsSection({
   });
   const connectedProviders = visualQaStateOverride?.connectedProviders ?? providersQuery.data ?? [];
   const isProvidersLoading = visualQaStateOverride?.isProvidersLoading ?? providersQuery.isLoading;
+  const isProvidersUnknown = visualQaStateOverride === undefined && providersQuery.data === undefined;
+  const isProvidersError = visualQaStateOverride === undefined && providersQuery.isError;
   const isLinking = visualQaStateOverride?.isLinking ?? isLinkingState;
   const refetchProviders = providersQuery.refetch;
 
@@ -244,7 +248,7 @@ export default function AccountSettingsSection({
     const isConnected = hasLinkedProvider(provider.key);
     const connectedEmail = getConnectedEmail(provider.key);
     const disabled = isLastLoginMethod(provider.key, isConnected);
-    const isButtonDisabled = unlinkMutation.isPending || isProvidersLoading || (!isConnected ? isLinking : disabled);
+    const isButtonDisabled = unlinkMutation.isPending || isProvidersLoading || isProvidersUnknown || (!isConnected ? isLinking : disabled);
     const helperTextId = `${provider.key}-provider-helper`;
     const button = (
       <Button
@@ -262,7 +266,7 @@ export default function AccountSettingsSection({
         className="h-auto min-h-11 px-3 sm:h-9"
         aria-describedby={disabled && isConnected ? helperTextId : undefined}
       >
-        {isConnected ? (
+        {isProvidersUnknown ? (isProvidersLoading ? '확인 중...' : '확인 필요') : isConnected ? (
           disabled ? (
             <>
               <MyPageShieldAlertIcon className="w-4 h-4 mr-2" />
@@ -286,20 +290,21 @@ export default function AccountSettingsSection({
     return (
       <div
         key={provider.key}
-        className={`rounded-xl border px-4 py-3 bg-gradient-to-br ${isConnected ? provider.connectedClass : provider.disconnectedClass}`}
+        className={`mypage-account-provider-card rounded-xl border px-4 py-3 bg-gradient-to-br ${isConnected ? provider.connectedClass : provider.disconnectedClass}`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <span className={isConnected ? '' : 'grayscale opacity-70'}>{provider.icon}</span>
-            <div className="min-w-0">
+        <div className="mypage-account-provider-layout flex items-start justify-between gap-3">
+          <div className="mypage-account-provider-identity flex items-center gap-3 min-w-0">
+            <span className={`mypage-account-provider-icon ${isConnected ? '' : 'grayscale opacity-70'}`}>{provider.icon}</span>
+            <div className="mypage-account-provider-copy min-w-0">
               <p className="font-semibold text-body">{provider.label}</p>
               <p className={`text-body ${isConnected ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {isConnected ? '연동됨' : '연동되지 않음'}
+                {isProvidersUnknown ? (isProvidersLoading ? '확인 중' : '확인하지 못함') : isConnected ? '연동됨' : '연동되지 않음'}
               </p>
               {isConnected && connectedEmail && (
                 <p className="text-body text-muted-foreground truncate mt-1">{connectedEmail}</p>
               )}
-              {!isConnected && (
+              {isProvidersUnknown && <p className="text-body text-muted-foreground mt-1">연동 정보를 확인해 주세요.</p>}
+              {!isConnected && !isProvidersUnknown && (
                 <p className="text-body text-muted-foreground mt-1">
                   3초 만에 연결하고 로그인 편하게 하기
                 </p>
@@ -320,8 +325,22 @@ export default function AccountSettingsSection({
     );
   };
 
+  const handlePanelFocus = (event: FocusEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (!event.currentTarget.contains(target) || !target.matches('button,a[href],input,select,textarea,[tabindex]')) return;
+    requestAnimationFrame(() => {
+      const doc = target.ownerDocument;
+      if (doc.activeElement !== target || !target.isConnected) return;
+      const rect = target.getBoundingClientRect();
+      const hit = doc.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (!hit || (hit !== target && !target.contains(hit))) {
+        target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+      }
+    });
+  };
+
   return (
-    <div data-testid="account-settings-section" className="mypage-card-panel mypage-account-panel">
+    <div data-testid="account-settings-section" className="mypage-card-panel mypage-account-panel" onFocusCapture={handlePanelFocus}>
       <div className="flex items-center gap-3 mb-6">
         <MyPageShieldAlertIcon className="w-6 h-6 text-primary" />
         <h2 className="text-xl font-bold text-primary">계정 설정</h2>
@@ -329,6 +348,9 @@ export default function AccountSettingsSection({
 
       <section className="mb-8">
         <h3 className="text-body font-semibold text-muted-foreground mb-4">로그인 연동 관리</h3>
+        {isProvidersLoading && <p className="text-body text-muted-foreground" role="status">연동 정보를 불러오는 중입니다.</p>}
+        {isProvidersError && <AccountSettingsReadError source="providers" title="연동 정보를 불러오지 못했습니다."
+          isRetrying={providersQuery.isFetching} onRetry={refetchProviders} />}
         <div className="space-y-3">{PROVIDERS.map(renderProviderCard)}</div>
       </section>
 
