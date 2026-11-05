@@ -246,7 +246,7 @@ export default function StadiumGuidePlacesRuntime({
                         >
                           <div className="flex items-center gap-2 mb-1">
                             <Icon className="w-5 h-5 flex-shrink-0" style={{ color: placeAccent }} />
-                            <h4 className="dark:text-white text-balance" style={{ fontWeight: 700 }}>{place.name}</h4>
+                            <h4 className="min-w-0 break-keep break-words dark:text-white text-balance" style={{ fontWeight: 700 }}>{place.name}</h4>
                           </div>
                           {placeDescription ? (
                             <p className={`text-gray-600 dark:text-white text-sm mb-1 text-balance ${isExpanded ? '' : 'line-clamp-1 sm:line-clamp-none'}`} style={{ color: mutedColor }}>
