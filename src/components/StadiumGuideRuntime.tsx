@@ -71,7 +71,7 @@ function StadiumGuideCategorySelector({
     ? 'grid grid-cols-4 gap-2'
     : `grid grid-cols-2 gap-3 sm:gap-4 ${columns === 'four' ? 'lg:grid-cols-4' : ''}`;
   const buttonClass = compact
-    ? 'stadium-guide-category-button flex h-[86px] flex-col items-center justify-center gap-2.5 rounded-xl border px-2 py-3 shadow-sm transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:hover:translate-y-0'
+    ? 'stadium-guide-category-button flex min-h-20 flex-col items-center justify-center gap-2.5 rounded-xl border px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:hover:translate-y-0'
     : 'stadium-guide-category-button flex min-h-[108px] flex-col items-center justify-center gap-2.5 rounded-2xl border-2 px-3 py-5 shadow-sm transition-all hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:hover:translate-y-0 sm:min-h-[132px] sm:gap-3 sm:py-8';
   const iconWrapClass = compact
     ? 'rounded-full p-2.5'
@@ -354,10 +354,10 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                   <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                     <div className="flex-1">
                       <div className="mb-3 flex items-center gap-3">
-                        <div className="p-1.5 bg-primary/10 rounded-lg dark:bg-[rgba(126,211,179,0.08)]">
+                        <div className="shrink-0 p-1.5 bg-primary/10 rounded-lg dark:bg-[rgba(126,211,179,0.08)]">
                           <MapPinIcon className="w-5 h-5" style={{ color: stadiumAccentColor }} />
                         </div>
-                        <h4 className="text-xl dark:text-white" style={{ fontWeight: 800, color: stadiumTitleColor }}>
+                        <h4 className="min-w-0 break-keep break-words text-xl dark:text-white" style={{ fontWeight: 800, color: stadiumTitleColor }}>
                           {selectedStadiumDisplayName}
                         </h4>
                         {isLoggedIn && selectedStadiumId && (
