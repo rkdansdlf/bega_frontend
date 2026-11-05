@@ -357,7 +357,7 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                         <div className="shrink-0 p-1.5 bg-primary/10 rounded-lg dark:bg-[rgba(126,211,179,0.08)]">
                           <MapPinIcon className="w-5 h-5" style={{ color: stadiumAccentColor }} />
                         </div>
-                        <h4 className="min-w-0 break-keep break-words text-xl dark:text-white" style={{ fontWeight: 800, color: stadiumTitleColor }}>
+                        <h4 className="min-w-0 break-keep text-xl [overflow-wrap:anywhere] dark:text-white" style={{ fontWeight: 800, color: stadiumTitleColor }}>
                           {selectedStadiumDisplayName}
                         </h4>
                         {isLoggedIn && selectedStadiumId && (
