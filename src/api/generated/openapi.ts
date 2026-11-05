@@ -1051,9 +1051,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getDeletionRecoveryInfo"];
+        get?: never;
         put?: never;
         post: operations["recoverDeletedAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/account/deletion/recovery/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getDeletionRecoveryInfo"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1630,6 +1646,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 사용자별 체크인 기록을 페이지 단위로 조회합니다. */
         get: operations["getCheckInsByUserId"];
         put?: never;
         post?: never;
@@ -3118,6 +3135,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 내 알림을 페이지 단위로 조회합니다. */
         get: operations["getMyNotifications"];
         put?: never;
         post?: never;
@@ -4452,6 +4470,15 @@ export interface components {
             /** Format: int64 */
             postCount?: number;
             role?: string;
+        };
+        ApiResponse: {
+            code?: string;
+            data?: unknown;
+            errors?: {
+                [key: string]: string;
+            };
+            message?: string;
+            success?: boolean;
         };
         ApiResponseAccountDeletionRecoveryInfoDto: {
             code?: string;
@@ -6075,6 +6102,14 @@ export interface components {
             data?: number;
             success?: boolean;
         };
+        MateCheckInHistoryPageResponse: {
+            content: components["schemas"]["MateCheckInResponse"][];
+            hasNext: boolean;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            size: number;
+        };
         MateCheckInQrSessionRequest: {
             /** Format: int64 */
             partyId: number;
@@ -7052,16 +7087,17 @@ export interface components {
             roomId: number;
         };
         Response: {
-            clientMessageId?: string;
-            content?: string;
             /** Format: date-time */
             createdAt?: string;
             /** Format: int64 */
             id?: number;
+            isRead?: boolean;
+            message?: string;
             /** Format: int64 */
-            roomId?: number;
-            /** Format: int64 */
-            senderId?: number;
+            relatedId?: number;
+            title?: string;
+            /** @enum {string} */
+            type?: "APPLICATION_RECEIVED" | "APPLICATION_APPROVED" | "APPLICATION_REJECTED" | "PARTY_EXPIRED" | "PARTY_AUTO_COMPLETED" | "GAME_TOMORROW_REMINDER" | "GAME_DAY_REMINDER" | "HOST_RESPONSE_NUDGE" | "REVIEW_REQUEST" | "PARTY_CANCELLED_HOST_DELETED" | "PARTY_PARTICIPANT_LEFT" | "POST_COMMENT" | "COMMENT_REPLY" | "POST_LIKE" | "POST_REPOST" | "NEW_FOLLOWER" | "FOLLOWING_NEW_POST" | "NEW_DEVICE_LOGIN" | "RANKING_PREDICTION_SETTLED";
         };
         RoleChangeRequestDto: {
             reason?: string;
@@ -7272,7 +7308,7 @@ export interface components {
             teamShortName?: string;
         };
         TeamUserAnswersDto: {
-            answers?: {
+            answers: {
                 [key: string]: string;
             };
         };
@@ -9151,28 +9187,6 @@ export interface operations {
             };
         };
     };
-    getDeletionRecoveryInfo: {
-        parameters: {
-            query: {
-                token: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponseAccountDeletionRecoveryInfoDto"];
-                };
-            };
-        };
-    };
     recoverDeletedAccount: {
         parameters: {
             query?: never;
@@ -9193,6 +9207,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    getDeletionRecoveryInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountDeletionRecoveryRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseAccountDeletionRecoveryInfoDto"];
                 };
             };
         };
@@ -10029,7 +10067,18 @@ export interface operations {
     };
     getCheckInsByUserId: {
         parameters: {
-            query?: never;
+            query?: {
+                /**
+                 * @description 0부터 시작하는 페이지 번호 (page × size는 2147483647 이하)
+                 * @example 0
+                 */
+                page?: number;
+                /**
+                 * @description 페이지 크기(1~100)
+                 * @example 30
+                 */
+                size?: number;
+            };
             header?: never;
             path: {
                 userId: number;
@@ -10038,13 +10087,31 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 체크인 기록 페이지 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MateCheckInResponse"][];
+                    "*/*": components["schemas"]["MateCheckInHistoryPageResponse"];
+                };
+            };
+            /** @description page 또는 size가 허용 범위를 벗어났습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponse"];
+                };
+            };
+            /** @description 본인의 체크인 기록만 조회할 수 있습니다. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponse"];
                 };
             };
         };
@@ -10227,13 +10294,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 게시글 변경 정보 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "*/*": components["schemas"]["PostChangesResponse"];
+                };
+            };
+            /** @description 게시글 변경 폴링 요청 한도 초과 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponse"];
                 };
             };
         };
@@ -12290,8 +12366,16 @@ export interface operations {
     };
     getMyNotifications: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
+            query?: {
+                /**
+                 * @description 기본 30건입니다. 숫자 100 초과는 거부하며 0 이하 또는 숫자가 아닌 값은 기본값을 사용합니다.
+                 * @example 30
+                 */
+                size?: number;
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
             };
             header?: never;
             path?: never;
@@ -12299,13 +12383,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description 알림 목록 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "*/*": components["schemas"]["Response"][];
+                };
+            };
+            /** @description 페이지 크기가 허용 범위를 벗어났습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponse"];
                 };
             };
         };

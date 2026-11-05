@@ -14,7 +14,11 @@ export const SESSION_SCOPED_QUERY_KEY_ROOTS = [
   ['dm', 'inbox'],
   ['dmRoomBootstrap'],
   ['dmMessages'],
+  ['chat', 'unread-count'],
   ['cheer-bookmarks'],
+  ['cheer'],
+  ['cheer-post'],
+  ['cheer-posts'],
   ['cheer', 'my-posts'],
 ] as const;
 

@@ -37,6 +37,15 @@ test('parseResponseBody preserves existing JSON, text, empty, and 204 response h
   assert.equal(await parseResponseBody(new Response(null, { status: 204 })), null);
 });
 
+test('parseResponseBody keeps malformed JSON as a message instead of throwing', async () => {
+  assert.deepEqual(await parseResponseBody(new Response('{"message":', {
+    headers: { 'content-type': 'application/json' },
+    status: 401,
+  })), {
+    message: 'Invalid JSON response body',
+  });
+});
+
 test('request body helpers preserve BodyInit values and only add JSON content type for non-FormData bodies', () => {
   const formData = new FormData();
   formData.set('file', new Blob(['x']), 'x.txt');

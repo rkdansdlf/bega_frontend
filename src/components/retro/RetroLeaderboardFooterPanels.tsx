@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import PowerUpInventory from './PowerUpInventory';
 import type {
   PowerupInventory as PowerupInventoryState,
@@ -8,6 +9,9 @@ interface RetroLeaderboardFooterPanelsProps {
   hotStreaks: LeaderboardEntry[];
   powerups: PowerupInventoryState;
   activePowerups: string[];
+  gameId?: string;
+  gameSelector?: ReactNode;
+  powerupsDisabled?: boolean;
   onUsePowerup?: (type: string) => Promise<void>;
   containerTestId?: string;
 }
@@ -16,6 +20,9 @@ export default function RetroLeaderboardFooterPanels({
   hotStreaks,
   powerups,
   activePowerups,
+  gameId,
+  gameSelector,
+  powerupsDisabled = false,
   onUsePowerup,
   containerTestId,
 }: RetroLeaderboardFooterPanelsProps) {
@@ -110,10 +117,13 @@ export default function RetroLeaderboardFooterPanels({
       )}
 
       <div style={{ width: '90%', maxWidth: '800px', margin: '20px auto 40px' }}>
+        {gameSelector}
         <PowerUpInventory
           powerups={powerups}
           activePowerups={activePowerups}
+          gameId={gameId}
           onUsePowerup={onUsePowerup}
+          disabled={powerupsDisabled}
         />
       </div>
     </div>

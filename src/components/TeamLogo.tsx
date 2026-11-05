@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import hanwhaLogo from '../assets/d94cd6cb1a915d591b57bbca900f8268281068e3.png';
 import kiwoomLogo from '../assets/d97539563d3c93f568cb7a4331c9e607cfafe914.png';
 import samsungLogo from '../assets/24a312517fb1be189f3fae2611b33f19a72d9401.png';
@@ -114,6 +115,19 @@ const teamLogoImages: Record<string, string> = {
   'kt': ktLogo,
   'kt wiz': ktLogo,
   '롯데 자이언츠': lotteLogo,
+};
+
+const teamLogoFallbackShortLabels: Record<string, string> = {
+  [hanwhaLogo]: 'HH',
+  [kiwoomLogo]: 'KH',
+  [samsungLogo]: 'SS',
+  [lotteLogo]: 'LT',
+  [doosanLogo]: 'DB',
+  [kiaLogo]: 'KIA',
+  [ssgLogo]: 'SSG',
+  [ncLogo]: 'NC',
+  [lgLogo]: 'LG',
+  [ktLogo]: 'KT',
 };
 
 // 영어 ID -> 한글 이름 매핑
@@ -277,6 +291,7 @@ const sizeMap: Record<string, number> = {
 };
 
 export default function TeamLogo({ team, teamId, size = 64, className = '' }: TeamLogoProps) {
+  const [failedLogoSrc, setFailedLogoSrc] = useState<string | null>(null);
   const rawTeamValue = teamId ?? team;
   const teamName = resolveTeamDisplayName(rawTeamValue);
   const canonicalKey = normalizeTeamLabel(rawTeamValue ?? teamName);
@@ -290,12 +305,15 @@ export default function TeamLogo({ team, teamId, size = 64, className = '' }: Te
   const logoImage = canonicalKey ? teamLogoImages[canonicalKey] : undefined;
   const isResponsive = size === 'full';
   const fallbackLabel = teamName || team || '?';
+  const fallbackVisualLabel = resolvedNumericSize <= 24 && logoImage
+    ? teamLogoFallbackShortLabels[logoImage] || fallbackLabel
+    : fallbackLabel;
   const surfaceStyle = isResponsive
     ? { maxWidth: '100%', aspectRatio: '1 / 1' }
     : { width: resolvedNumericSize, maxWidth: '100%', aspectRatio: '1 / 1' };
 
-  if (!logoImage) {
-    // 로고가 없는 경우 기본 표시
+  if (!logoImage || failedLogoSrc === logoImage) {
+    // 로고가 없거나 불러오지 못한 경우 팀 이름으로 대체 표시
     return (
       <div
         className={`flex min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/90 text-primary ${className}`}
@@ -306,7 +324,7 @@ export default function TeamLogo({ team, teamId, size = 64, className = '' }: Te
       >
         <span
           aria-hidden="true"
-          className="max-w-full overflow-hidden px-1 text-center leading-tight [overflow-wrap:anywhere]"
+          className={`max-w-full overflow-hidden text-center leading-tight ${resolvedNumericSize === 24 && logoImage ? 'whitespace-nowrap px-0' : 'px-1 [overflow-wrap:anywhere]'}`}
           style={{
             display: '-webkit-box',
             fontSize: isResponsive ? 10 : Math.min(20, Math.max(8, resolvedNumericSize * 0.28)),
@@ -315,7 +333,7 @@ export default function TeamLogo({ team, teamId, size = 64, className = '' }: Te
             WebkitLineClamp: 2,
           }}
         >
-          {fallbackLabel}
+          {fallbackVisualLabel}
         </span>
       </div>
     );
@@ -330,6 +348,9 @@ export default function TeamLogo({ team, teamId, size = 64, className = '' }: Te
         src={logoImage}
         alt={`${fallbackLabel} 로고`}
         className="block h-full w-full max-w-full image-render-quality"
+        onError={() => {
+          if (logoImage) setFailedLogoSrc(logoImage);
+        }}
         style={{
           width: '100%',
           height: '100%',

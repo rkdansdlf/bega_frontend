@@ -22,7 +22,8 @@ export default function ConfirmDialogRenderer({
       title={options.title}
       description={options.description}
       contentTestId="confirm-dialog"
-      className="max-w-md"
+      className={cn('max-w-md', options.theme === 'dark' && 'dark text-slate-100')}
+      contentStyle={options.theme === 'dark' ? { backgroundColor: '#0f172a' } : undefined}
       bodyClassName="hidden"
       footer={(
         <>
@@ -30,7 +31,7 @@ export default function ConfirmDialogRenderer({
             type="button"
             variant="outline"
             data-testid="confirm-dialog-cancel"
-            className="w-full sm:w-auto"
+            className={cn('w-full sm:w-auto', options.touchTargets && 'sm:min-h-11')}
             onClick={() => onResult(false)}
           >
             {options.cancelLabel || '취소'}
@@ -42,7 +43,8 @@ export default function ConfirmDialogRenderer({
             className={cn(
               'w-full sm:w-auto',
               options.variant === 'destructive'
-                && buttonVariants({ variant: 'destructive' })
+                && buttonVariants({ variant: 'destructive' }),
+              options.touchTargets && 'sm:min-h-11'
             )}
           >
             {options.confirmLabel || '확인'}

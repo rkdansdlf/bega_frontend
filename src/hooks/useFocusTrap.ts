@@ -15,11 +15,23 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
         .filter((el) => el.offsetParent !== null || el.getClientRects().length > 0);
 }
 
+export function selectInitialFocus(
+    container: HTMLElement,
+    focusable: HTMLElement[],
+    initialFocus: 'container' | 'first',
+    preferred?: HTMLElement | null,
+): HTMLElement {
+    if (initialFocus === 'container') return container;
+    return preferred && focusable.includes(preferred) ? preferred : focusable[0] ?? container;
+}
+
 interface UseFocusTrapOptions {
     /** true 일 때만 트랩 활성화 (예: 다이얼로그 open) */
     active: boolean;
     /** 긴 스크롤 다이얼로그는 컨테이너를 먼저 포커스해 상단 위치를 보존합니다. */
     initialFocus?: 'container' | 'first';
+    /** 선택한 초기 포커스가 다이얼로그 안에 있으면 첫 요소 대신 사용합니다. */
+    initialFocusRef?: RefObject<HTMLElement | null>;
     /** 지정하면 비활성화 시 이 요소로 포커스를 돌려보냅니다. */
     restoreFocusTo?: HTMLElement | null;
     /** 컨테이너 밖에서 시작된 Tab 입력도 가로챕니다. */
@@ -37,6 +49,7 @@ export function useFocusTrap(
     {
         active,
         initialFocus = 'first',
+        initialFocusRef,
         restoreFocusTo,
         listenOnDocument = false,
     }: UseFocusTrapOptions,
@@ -49,13 +62,11 @@ export function useFocusTrap(
         const previouslyFocused = document.activeElement as HTMLElement | null;
 
         // 초기 포커스: 첫 focusable, 없으면 컨테이너 자체.
-        const initial = getFocusable(container);
+        const initial = selectInitialFocus(container, getFocusable(container), initialFocus, initialFocusRef?.current);
         if (initialFocus === 'container') {
-            container.focus({ preventScroll: true });
-        } else if (initial.length > 0) {
-            initial[0].focus();
+            initial.focus({ preventScroll: true });
         } else {
-            container.focus();
+            initial.focus();
         }
 
         const handleKeyDown = (nativeEvent: Event) => {
@@ -94,5 +105,5 @@ export function useFocusTrap(
                 focusTarget.focus();
             }
         };
-    }, [active, containerRef, initialFocus, listenOnDocument, restoreFocusTo]);
+    }, [active, containerRef, initialFocus, initialFocusRef, listenOnDocument, restoreFocusTo]);
 }

@@ -39,15 +39,15 @@ export default function UIKitPreview() {
       {/* Typography Section */}
       <section className="space-y-4">
         <h2 className="border-l-4 border-primary pl-3 text-xl font-bold sm:text-2xl">Typography</h2>
-        <div className="grid gap-6 rounded-xl bg-muted/50 p-4 sm:p-6">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 rounded-xl bg-muted/50 p-4 sm:p-6">
           <div>
             <p className="text-sm text-muted-foreground mb-2">Pretendard (Sans)</p>
             <p className="break-words text-2xl sm:text-3xl">The quick brown fox jumps over the lazy dog.</p>
             <p className="break-words text-lg font-bold sm:text-xl">다람쥐 헌 쳇바퀴에 타고파 (나랏말싸미)</p>
           </div>
-          <div className="font-retro">
+          <div className="font-retro min-w-0">
             <p className="mb-2 font-sans text-sm text-muted-foreground">Press Start 2P (Retro)</p>
-            <p className="text-lg">KBO CHAMPIONSHIP 2026</p>
+            <p className="break-words text-lg">KBO CHAMPIONSHIP 2026</p>
           </div>
           <div className="font-pixel">
             <p className="mb-2 font-sans text-sm text-muted-foreground">Galmuri (Pixel)</p>
@@ -60,7 +60,7 @@ export default function UIKitPreview() {
       <section className="space-y-4">
         <h2 className="border-l-4 border-primary pl-3 text-xl font-bold sm:text-2xl">Color Palette</h2>
         <div
-          className="grid grid-cols-2 gap-4 md:grid-cols-4"
+          className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,6rem),1fr))] gap-4 md:grid-cols-4"
           data-testid="ui-kit-color-palette"
           role="list"
         >
@@ -78,12 +78,12 @@ export default function UIKitPreview() {
         <div className="grid gap-4 rounded-xl border p-4 sm:p-6" data-testid="ui-kit-button-comparison">
           <p className="text-sm text-muted-foreground">같은 variant: Button / PlainButton. Tab 키로 포커스 상태를 비교합니다.</p>
           {(['default', 'outline', 'ghost', 'secondary', 'destructive', 'link'] as const).map((variant) => (
-            <div key={variant} className="grid min-w-0 grid-cols-2 items-start gap-3">
+            <div key={variant} className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,6rem),1fr))] items-start gap-3">
               <Button variant={variant}>{variant}</Button>
               <PlainButton variant={variant}>{variant}</PlainButton>
             </div>
           ))}
-          <div className="grid min-w-0 grid-cols-2 items-start gap-3">
+          <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,6rem),1fr))] items-start gap-3">
             <Button disabled>비활성화</Button>
             <PlainButton disabled>비활성화</PlainButton>
             <Button variant="outline" aria-invalid="true">입력 오류</Button>

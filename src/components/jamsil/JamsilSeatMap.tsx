@@ -443,6 +443,7 @@ export default function JamsilSeatMap({ stateOverride }: JamsilSeatMapProps = {}
       accentColor="#1F5C4A"
       stadiumShortLabel="잠실"
       autoFocusInput={sectionFinderAutoFocus}
+      reserveMobileDockSpace
     />
   );
 

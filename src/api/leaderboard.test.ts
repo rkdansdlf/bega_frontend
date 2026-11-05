@@ -89,3 +89,16 @@ test('usePowerup은 인증 POST 요청으로 powerup 사용 결과를 반환한�
   assert.equal(requestInit?.credentials, 'include');
   assert.equal(requestInit?.body, JSON.stringify({ gameId: 'game-123' }));
 });
+
+test('usePowerup은 누락되거나 공백인 경기 ID를 전송하지 않는다', async (t) => {
+  let requestCount = 0;
+  t.mock.method(globalThis, 'fetch', async () => {
+    requestCount += 1;
+    return new Response('{}', { status: 200 });
+  });
+
+  await assert.rejects(usePowerup('MAGIC_BAT', ''));
+  await assert.rejects(usePowerup('MAGIC_BAT', '   '));
+
+  assert.equal(requestCount, 0);
+});
