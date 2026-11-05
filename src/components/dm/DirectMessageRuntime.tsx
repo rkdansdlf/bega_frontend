@@ -247,7 +247,8 @@ export default function DirectMessageRuntime() {
   }, [bootstrapQuery.error, inlineAccessError, messagesQuery.error]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const messageViewport = messagesEndRef.current?.closest<HTMLElement>('[data-testid="dm-message-viewport"]');
+    messageViewport?.scrollTo({ top: messageViewport.scrollHeight, behavior: 'smooth' });
   }, [messages.length]);
 
   const handleRetry = () => {
@@ -366,12 +367,12 @@ export default function DirectMessageRuntime() {
   const submitDisabled = isSending || messageText.trim().length === 0 || roomId == null;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 transition-colors duration-200 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background px-4 pb-8 pt-8 transition-colors duration-200 sm:px-6 md:pt-14 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-4">
         <button
           type="button"
           onClick={() => navigate(profilePath)}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 transition-colors hover:text-gray-700 dark:text-white dark:hover:text-gray-100"
+          className="-ml-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-white dark:hover:text-gray-100"
         >
           <ArrowLeftIcon className="h-4 w-4" />
           프로필로 돌아가기
@@ -426,36 +427,38 @@ export default function DirectMessageRuntime() {
                       key={`${message.id}-${message.clientMessageId || 'no-client'}`}
                       className={`group flex ${isMine ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="relative min-w-0 max-w-[80%]">
-                        <div
-                          className={`max-w-full rounded-2xl px-4 py-3 shadow-sm ${
+                      <div className={`flex min-w-0 items-start gap-1 ${isMine ? 'w-full justify-end' : 'max-w-[80%]'}`}>
+                        <div className={`min-w-0 w-fit ${isMine ? 'max-w-[calc(100%_-_3rem)]' : 'max-w-full'}`}>
+                          <div
+                            className={`max-w-full rounded-2xl px-4 py-3 shadow-sm ${
                             isMine
                               ? 'bg-primary text-primary-foreground'
                               : 'border border-gray-100 bg-white text-gray-900 dark:border-border dark:bg-secondary/40 dark:text-white'
-                          } ${message.isPending ? 'opacity-70' : ''}`}
-                        >
-                          <div className={`mb-1 text-xs font-semibold ${isMine ? 'text-primary-foreground/80' : 'text-gray-500 dark:text-white'}`}>
-                            {authorName}
-                          </div>
-                          <p className="whitespace-pre-wrap break-words text-sm leading-6">
-                            {message.content}
-                          </p>
-                          <div className={`mt-2 text-11 ${isMine ? 'text-primary-foreground/80' : 'text-gray-400 dark:text-white'}`}>
-                            {new Date(message.createdAt).toLocaleTimeString('ko-KR', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                            {message.isPending ? ' · 전송 중' : ''}
+                            } ${message.isPending ? 'opacity-70' : ''}`}
+                          >
+                            <div className={`mb-1 text-xs font-semibold ${isMine ? 'text-primary-foreground/80' : 'text-gray-500 dark:text-white'}`}>
+                              {authorName}
+                            </div>
+                            <p className="whitespace-pre-wrap break-words text-sm leading-6">
+                              {message.content}
+                            </p>
+                            <div className={`mt-2 text-11 ${isMine ? 'text-primary-foreground/80' : 'text-gray-400 dark:text-white'}`}>
+                              {new Date(message.createdAt).toLocaleTimeString('ko-KR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                              {message.isPending ? ' · 전송 중' : ''}
+                            </div>
                           </div>
                         </div>
                         {isMine && !message.isPending && (
                           <button
                             type="button"
                             onClick={() => void handleDeleteMessage(message.id)}
-                            className="absolute -right-2 -top-2 rounded-full border border-border bg-white p-1 text-muted-foreground opacity-100 shadow transition-opacity hover:text-destructive focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100 dark:bg-secondary"
+                            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-white text-muted-foreground shadow transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40 dark:bg-secondary md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
                             aria-label="메시지 삭제"
                           >
-                            <TrashIcon className="h-3 w-3" />
+                            <TrashIcon className="h-4 w-4" />
                           </button>
                         )}
                       </div>

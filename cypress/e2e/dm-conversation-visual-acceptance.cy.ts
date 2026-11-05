@@ -5,6 +5,7 @@ const viewports = [
     { name: 'mobile-320-short', width: 320, height: 568 },
     { name: 'mobile-390', width: 390, height: 844 },
     { name: 'mobile-landscape-640', width: 640, height: 360 },
+    { name: 'short-landscape-844', width: 844, height: 390 },
     { name: 'desktop', width: 1280, height: 900 },
 ] as const;
 
@@ -57,6 +58,28 @@ const assertNoHorizontalOverflow = () => {
         const viewportWidth = document.documentElement.clientWidth;
         expect(document.documentElement.scrollWidth).to.be.at.most(viewportWidth);
         expect(document.body.scrollWidth).to.be.at.most(viewportWidth);
+    });
+};
+
+const assertBackButtonBelowStickyHeader = () => {
+    cy.get('main div.mx-auto.max-w-4xl > button', { timeout: 6000 }).should('exist');
+    cy.document().then((document) => {
+        const header = document.querySelector('header.sticky');
+        const backButton = document.querySelector<HTMLElement>('main div.mx-auto.max-w-4xl > button');
+        expect(header, 'sticky site header should exist').not.to.equal(null);
+        expect(backButton, 'profile back button should exist').not.to.equal(null);
+        const headerRect = header!.getBoundingClientRect();
+        const backRect = backButton!.getBoundingClientRect();
+        expect(backRect.top, 'profile back button should not sit behind the sticky header')
+            .to.be.at.least(headerRect.bottom);
+        const hit = document.elementFromPoint(
+            backRect.left + backRect.width / 2,
+            backRect.top + backRect.height / 2,
+        );
+        expect(
+            hit === backButton || backButton!.contains(hit),
+            'profile back button should not be occluded by page chrome',
+        ).to.equal(true);
     });
 };
 
@@ -229,6 +252,7 @@ describe('DM conversation responsive visual acceptance', () => {
             cy.wait('@getDmMessages');
             cy.contains('응원 친구 긴 이름 화면 확인용').should('be.visible');
             cy.contains('첫 메시지를 보내보세요.').should('be.visible');
+            assertBackButtonBelowStickyHeader();
             assertRecipientHeaderReadable(viewport.width);
             assertMessageViewportHasMinimumHeight(viewport.width);
             assertNoHorizontalOverflow();
@@ -259,6 +283,7 @@ describe('DM conversation responsive visual acceptance', () => {
             });
             cy.wait('@bootstrapDmRoom');
             cy.wait('@getDmMessages');
+            assertBackButtonBelowStickyHeader();
             cy.contains('긴 합성 DM입니다').should('be.visible');
             cy.contains('확인했습니다! 경기장에서 만나요.').should('be.visible');
             assertNoHorizontalOverflow();

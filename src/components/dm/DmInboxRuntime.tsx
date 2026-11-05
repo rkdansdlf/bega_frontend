@@ -39,6 +39,22 @@ const RoomRow = ({ room, onClick }: { room: DmInboxRoom; onClick: () => void }) 
     <button
       type="button"
       onClick={onClick}
+      onFocus={(event) => {
+        const target = event.currentTarget;
+        if (!target.matches(':focus-visible')) return;
+        const doc = target.ownerDocument;
+        doc.defaultView?.requestAnimationFrame(() => {
+          if (!target.isConnected || doc.activeElement !== target) return;
+          const header = doc.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+          if (!header) return;
+          const rect = target.getBoundingClientRect();
+          const headerRect = header.getBoundingClientRect();
+          if (headerRect.bottom > 0 && rect.top < headerRect.bottom + 4 && rect.bottom > headerRect.top
+            && rect.left < headerRect.right && rect.right > headerRect.left) {
+            target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+          }
+        });
+      }}
       className="flex w-full items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors hover:bg-gray-50 dark:border-border dark:bg-card dark:hover:bg-input/50"
       data-testid="dm-inbox-room-row"
     >
