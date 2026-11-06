@@ -307,7 +307,7 @@ export default function SignUp(props: SignUpProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="favoriteTeam" className="text-foreground">
+            <label htmlFor="favoriteTeam" className="flex items-center gap-2 text-foreground">
               응원팀 선택
             </label>
             <select
@@ -316,7 +316,7 @@ export default function SignUp(props: SignUpProps) {
               value={formData.favoriteTeam}
               onChange={(event) => handleFieldChange('favoriteTeam', event.target.value)}
               disabled={isFormLocked}
-              className={`auth-select-trigger ${fieldErrors.favoriteTeam ? 'auth-input-error' : ''}`}
+              className={`auth-select-trigger w-full px-3 text-body ${fieldErrors.favoriteTeam ? 'auth-input-error' : ''}`}
               data-testid="signup-favorite-team"
             >
               <option value="" disabled>
