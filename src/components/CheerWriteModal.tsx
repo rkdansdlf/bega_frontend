@@ -450,7 +450,8 @@ export function CheerWriteModalContent({
                                 </div>
                             )}
 
-                            <div className="mt-4 flex items-center justify-between border-t border-[var(--cheer-line-10)] pt-3">
+                            {/* 본문 열이 좁은 320px대에서는 게시 버튼이 쪼그라들어 라벨이 접히므로, 자리가 모자라면 다음 줄로 내린다. */}
+                            <div className="mt-4 flex flex-wrap items-center justify-between gap-y-2 border-t border-[var(--cheer-line-10)] pt-3">
                                 <div className="flex items-center gap-1">
                                     <button
                                         type="button"
@@ -493,7 +494,8 @@ export function CheerWriteModalContent({
                                     data-testid="cheer-write-submit"
                                     onClick={handleSubmit}
                                     disabled={!content.trim() || isSubmitting}
-                                    className="rounded-full px-6 font-bold shadow-md hover:shadow-lg transition-all"
+                                    // 주의: cn()은 마진(ml-*)을 padding 계열로 오분류해, ml-auto가 px-6보다 앞에 있으면 지워 버린다. 순서를 바꾸지 말 것.
+                                    className="rounded-full px-6 ml-auto font-bold shadow-md hover:shadow-lg transition-all"
                                     style={{ backgroundColor: teamAccent, color: teamContrastText }}
                                 >
                                     {isSubmitting ? '게시 중...' : '게시하기'}
