@@ -152,9 +152,9 @@ export default function ChatBotSessionStateRuntime({
             />
           </span>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <h3 className="text-white font-bold text-body md:text-17 m-0">야구 가이드 BEGA</h3>
-              <span className="inline-flex items-center rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-body font-semibold text-white">
+              <span className="inline-flex shrink-0 items-center rounded-full border border-white/30 bg-white/20 px-1 py-0.5 text-caption font-semibold text-white">
                 Beta
               </span>
             </div>
