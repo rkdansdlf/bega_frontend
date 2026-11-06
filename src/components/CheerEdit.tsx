@@ -159,7 +159,7 @@ export default function CheerEdit({
 
                 {/* Images */}
                 <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                     <label className="block text-body text-primary">
                       첨부 이미지
                     </label>
@@ -186,7 +186,7 @@ export default function CheerEdit({
                       }`}
                   >
                     <UploadIcon className="h-6 w-6" />
-                    <span>클릭, Enter 또는 드래그하여 이미지 추가</span>
+                    <span className="px-3 text-center break-keep [overflow-wrap:anywhere]">클릭, Enter 또는 드래그하여 이미지 추가</span>
                     <input
                       type="file"
                       accept="image/*"

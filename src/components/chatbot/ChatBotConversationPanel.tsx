@@ -400,7 +400,7 @@ export default function ChatBotConversationPanel({
             placeholder={isProcessing ? '답변을 기다리는 중...' : '메시지를 입력하세요...'}
             inputMode="text"
             autoComplete="off"
-            className="flex-1 border-none bg-transparent px-1 py-2 text-body text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+            className="min-w-0 flex-1 border-none bg-transparent px-1 py-2 text-body text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
           />
           {isProcessing && (
             <button

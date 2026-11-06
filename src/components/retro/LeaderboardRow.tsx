@@ -28,7 +28,7 @@ const leaderboardRowStyles = `
     min-width: 0;
     width: 100%;
     display: grid;
-    grid-template-columns: 60px minmax(0, 1fr) 100px 80px;
+    grid-template-columns: 60px minmax(0, 1fr) minmax(100px, max-content) 80px;
     align-items: center;
     gap: 10px;
     padding: 8px 16px;
@@ -111,6 +111,13 @@ const leaderboardRowStyles = `
     text-align: right;
   }
 
+  /* 7자리(100만) 이상 점수는 칸에 들어가지 않아 말줄임되므로, 글자를 줄여 값 전체를 보존한다.
+     점수 칸은 minmax(최소, max-content)라 그래도 모자란 만큼만 넓어지고 이름 칸이 그만큼 줄어든다. */
+  .retro-leaderboard-score-cell[data-long-score='true'] {
+    font-size: 0.8em;
+    letter-spacing: 0;
+  }
+
   .retro-leaderboard-streak-cell {
     display: flex;
     justify-content: center;
@@ -119,7 +126,7 @@ const leaderboardRowStyles = `
 
   @media (max-width: 640px) {
     .retro-leaderboard-row {
-      grid-template-columns: 50px minmax(0, 1fr) 80px;
+      grid-template-columns: 50px minmax(0, 1fr) minmax(80px, max-content);
       gap: 8px;
       padding: 8px 4px;
     }
@@ -130,6 +137,23 @@ const leaderboardRowStyles = `
 
     .retro-leaderboard-streak-cell {
       display: none;
+    }
+  }
+
+  /* 320px대에서는 이름 칸이 약 50px(3글자)뿐이라 평범한 닉네임도 말줄임된다.
+     아바타(36px + 간격 12px)를 숨겨 칸을 넓히고, 그래도 긴 닉네임은 2줄까지 보여 준다. */
+  @media (max-width: 359px) {
+    .retro-leaderboard-avatar {
+      display: none;
+    }
+
+    .retro-leaderboard-name {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
     }
   }
 `;
@@ -240,7 +264,12 @@ const LeaderboardRow = forwardRef<HTMLDivElement, LeaderboardRowProps>(({
         </div>
       </div>
 
-      <div className="retro-leaderboard-score-cell">{entry.score.toLocaleString()}</div>
+      <div
+        className="retro-leaderboard-score-cell"
+        data-long-score={entry.score.toLocaleString().length > 8 ? 'true' : undefined}
+      >
+        {entry.score.toLocaleString()}
+      </div>
 
       <div className="retro-leaderboard-streak-cell">{entry.streak}</div>
     </div>

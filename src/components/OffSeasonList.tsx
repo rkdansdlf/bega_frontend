@@ -363,13 +363,14 @@ export default function OffSeasonList(props: OffSeasonListProps = {}) {
                                 ))}
                             </select>
 
-                            <div className="grid grid-cols-3 gap-2">
+                            {/* 균등 3열이면 320px에서 '헤드라인순'(약 99px)이 열(약 84px)에 안 들어가 음절 중간에서 끊긴다. 내용 폭 기준으로 배치하고 모자라면 줄바꿈한다. */}
+                            <div className="flex flex-wrap gap-2">
                                 {SORT_OPTIONS.map((option) => (
                                     <button
                                         key={option.value}
                                         type="button"
                                         onClick={() => setSortOrder(option.value)}
-                                        className={`min-h-11 rounded-2xl px-3 py-3 text-15 font-bold transition-colors ${sortOrder === option.value
+                                        className={`min-h-11 flex-1 whitespace-nowrap rounded-2xl px-2 py-3 text-15 font-bold transition-colors sm:px-3 ${sortOrder === option.value
                                             ? 'bg-primary text-white shadow-sm'
                                             : 'border border-zinc-200 bg-zinc-50 text-zinc-500 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white dark:hover:text-zinc-100'
                                             }`}
