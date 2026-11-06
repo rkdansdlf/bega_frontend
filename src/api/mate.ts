@@ -509,7 +509,7 @@ export async function uploadChatImage(file: File): Promise<{ path: string; url?:
   const response = await uploadMediaFile('CHAT', file);
   return {
     path: response.storagePath,
-    url: response.publicUrl,
+    url: response.publicUrl ?? undefined,
   };
 }
 
@@ -520,15 +520,9 @@ export async function updateChatReadTimestamp(partyId: number | string): Promise
 export async function getChatUnreadCounts(
   requestOptions: { signal?: AbortSignal; timeoutMs?: number } = {},
 ): Promise<number> {
-  try {
-    const response = await privateGet<ChatUnreadCountWireResponse>('/chat/my/unread-counts', requestOptions);
-
-    if (response.success && typeof response.data === 'number') {
-      return response.data;
-    }
-
-    return 0;
-  } catch {
-    return 0;
+  const response = await privateGet<ChatUnreadCountWireResponse>('/chat/my/unread-counts', requestOptions);
+  if (response.success && typeof response.data === 'number' && Number.isFinite(response.data)) {
+    return response.data;
   }
+  throw new Error('Invalid unread count response');
 }

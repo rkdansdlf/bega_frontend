@@ -32,7 +32,7 @@ export function usePowerups(gameId?: string) {
   });
 
   const usePowerupMutation = useMutation({
-    mutationFn: ({ type, gameId }: { type: string; gameId?: string }) =>
+    mutationFn: ({ type, gameId }: { type: string; gameId: string }) =>
       usePowerupApi(type, gameId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['powerups'] });
@@ -42,9 +42,13 @@ export function usePowerups(gameId?: string) {
     },
   });
 
-  const usePowerup = useCallback((type: string, gameId?: string) => (
-    usePowerupMutation.mutateAsync({ type, gameId })
-  ), [usePowerupMutation]);
+  const usePowerup = useCallback((type: string, selectedGameId?: string) => {
+    const resolvedGameId = selectedGameId ?? gameId;
+    if (!resolvedGameId?.trim()) {
+      return Promise.reject(new Error('Select a game before using a powerup.'));
+    }
+    return usePowerupMutation.mutateAsync({ type, gameId: resolvedGameId });
+  }, [gameId, usePowerupMutation]);
 
   return {
     powerups: inventoryQuery.data ?? DEFAULT_POWERUPS,

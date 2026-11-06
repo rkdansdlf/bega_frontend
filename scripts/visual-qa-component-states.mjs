@@ -123,16 +123,22 @@ export const expandComponentStateCombinations = (entry, coverageContract) => {
   return combinations
     .filter((combination) => !constraints.some((constraint) => matchesConstraint(combination, constraint)))
     .flatMap((combination) => {
+      const expectedAbsent = (entry.renderExpectations ?? []).some((expectation) => (
+        expectation.outcome === 'absent' && matchesWhen(combination, expectation.when)
+      ));
+      const expectedCombination = expectedAbsent
+        ? { ...combination, expectedRender: 'absent' }
+        : combination;
       const interaction = combination.states.interactions;
-      if (interaction === undefined || interaction === 'default') return [combination];
+      if (interaction === undefined || interaction === 'default') return [expectedCombination];
       const plan = entry.interactionPlans?.[interaction];
       const targets = interactionTargets(plan, combination);
-      if (targets === null) return [combination];
+      if (targets === null) return [expectedCombination];
       if (Array.isArray(plan?.targets) && targets.length === 0) return [];
-      if (targets.length === 0) return [combination];
-      return targets.map((target) => ({ ...combination, interactionTarget: target }));
+      if (targets.length === 0) return [expectedCombination];
+      return targets.map((target) => ({ ...expectedCombination, interactionTarget: target }));
     })
-    .map(({ states, variants, interactionTarget }) => ({
+    .map(({ states, variants, interactionTarget, expectedRender }) => ({
       id: [
         ...Object.entries(states).map(([axisName, value]) => `${axisName}=${value}`),
         ...Object.entries(variants).map(([name, value]) => `variant.${name}=${value}`),
@@ -140,6 +146,7 @@ export const expandComponentStateCombinations = (entry, coverageContract) => {
       ].join('|') || 'default',
       states,
       variants,
+      ...(expectedRender ? { expectedRender } : {}),
       ...(interactionTarget ? { interactionTarget } : {}),
     }));
 };
@@ -320,6 +327,26 @@ const validateRegisteredEntry = (entry, coverageContract) => {
       }
     }
   };
+  if (entry.renderExpectations !== undefined && !Array.isArray(entry.renderExpectations)) {
+    errors.push(`${entry.id} renderExpectations must be an array`);
+  } else {
+    (entry.renderExpectations ?? []).forEach((expectation, index) => {
+      const label = `${entry.id} render expectation ${index}`;
+      if (expectation?.outcome !== 'absent') {
+        errors.push(`${label} outcome must be absent`);
+      }
+      if (expectation?.when === undefined) {
+        errors.push(`${label} requires when`);
+      } else {
+        validateWhen(expectation.when, label);
+      }
+      errors.push(...evidenceErrors(
+        expectation,
+        coverageContract.combinationPolicy.constraintRequirements,
+        label,
+      ));
+    });
+  }
   if (interactionPlans != null
     && (typeof interactionPlans !== 'object' || Array.isArray(interactionPlans))) {
     errors.push(`${entry.id} interactionPlans must be an object`);
@@ -431,6 +458,16 @@ const validateRegisteredEntry = (entry, coverageContract) => {
 
   if (errors.length === 0 && expandComponentStateCombinations(entry, coverageContract).length === 0) {
     errors.push(`${entry.id} constraints exclude every declared combination`);
+  }
+  if (errors.length === 0 && Array.isArray(entry.renderExpectations)) {
+    for (const combination of expandComponentStateCombinations(entry, coverageContract)) {
+      const matchingExpectations = entry.renderExpectations.filter((expectation) => (
+        matchesWhen(combination, expectation.when)
+      ));
+      if (matchingExpectations.length > 1) {
+        errors.push(`${entry.id} has overlapping render expectations for ${combination.id}`);
+      }
+    }
   }
   return errors;
 };

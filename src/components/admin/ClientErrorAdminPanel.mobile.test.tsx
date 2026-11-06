@@ -445,3 +445,12 @@ test('announces resolved chart loading and empty states in QA and live parent pa
   assert.match(emptyHtml, /data-testid="client-error-chart-probe"/);
   assert.match(source, /<ClientErrorChartResolvedState[^>]*>[\s\S]*<ClientErrorTrendChart/);
 });
+
+test('reserves the fixed mobile dock and reading clearance below the final body copy', () => {
+  const source = readFileSync(new URL('./ClientErrorAdminPanel.tsx', import.meta.url), 'utf8');
+
+  assert.match(
+    source,
+    /data-testid="admin-client-error-panel"[\s\S]*?pb-\[calc\(var\(--mobile-chrome-height\)\+var\(--mobile-chrome-bottom-offset\)\+env\(safe-area-inset-bottom\)\+128px\)\]/,
+  );
+});

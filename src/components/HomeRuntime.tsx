@@ -648,6 +648,37 @@ export default function HomeRuntime() {
         hasUserChangedTabRef.current = true;
         setSelectedDate(targetDate);
         replaceHomeRouteState(targetDate, activeLeagueTab);
+        const adjustTitleForStickyNavbar = () => {
+            if (window.location.pathname !== '/home') {
+                return;
+            }
+            const title = document.querySelector<HTMLElement>('main h1')
+                ?? document.querySelector<HTMLElement>('h1');
+            const navbar = document.querySelector<HTMLElement>('[data-testid="navbar-capsule"]')
+                ?? document.querySelector<HTMLElement>('header');
+            if (!title || !navbar) {
+                return;
+            }
+
+            const titleRect = title.getBoundingClientRect();
+            const navbarRect = navbar.getBoundingClientRect();
+            const overlapHeight = Math.min(titleRect.bottom, navbarRect.bottom)
+                - Math.max(titleRect.top, navbarRect.top);
+            if (overlapHeight > 0) {
+                const scrollBy = Math.ceil(navbarRect.bottom - titleRect.top + 8);
+                const rootStyle = document.documentElement.style;
+                const previousScrollBehavior = rootStyle.scrollBehavior;
+                rootStyle.scrollBehavior = 'auto';
+                window.scrollTo({
+                    top: Math.max(0, window.scrollY - scrollBy),
+                    left: window.scrollX,
+                    behavior: 'instant',
+                });
+                rootStyle.scrollBehavior = previousScrollBehavior;
+            }
+        };
+        window.requestAnimationFrame(() => window.requestAnimationFrame(adjustTitleForStickyNavbar));
+        window.setTimeout(adjustTitleForStickyNavbar, 120);
     };
 
     const applyHomeSnapshot = useCallback((date: Date, snapshot: HomeLoadSnapshot) => {
@@ -1268,9 +1299,9 @@ export default function HomeRuntime() {
 
     return (
         <div className="min-h-screen overflow-x-clip bg-gray-50 dark:bg-background transition-colors duration-300 pb-[var(--mobile-content-safe-bottom)] lg:pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
               <HomePullToRefresh
-                contentClassName="space-y-5"
+                contentClassName="space-y-3 sm:space-y-5"
                 lastRefreshedLabel={lastRefreshedAt ? lastRefreshedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : null}
                 onRefresh={() => refreshHomeSilently(selectedDate)}
               >
@@ -1285,7 +1316,7 @@ export default function HomeRuntime() {
                         }}
                     />
                 )}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border/70 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border/70 pb-3 sm:pb-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
                     <div>
                         <div className="flex items-center gap-3">
                             <span className="h-9 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-primary to-primary/50" aria-hidden="true" />

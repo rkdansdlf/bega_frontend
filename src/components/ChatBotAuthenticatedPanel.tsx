@@ -36,11 +36,11 @@ export default function ChatBotAuthenticatedPanel({
       data-testid="chatbot-panel"
       className={`
         ${isClosing ? 'animate-fade-out-down' : 'animate-fade-in-up'}
-        fixed z-[9999] flex flex-col overflow-hidden
+        fixed z-[9999] flex flex-col overflow-clip
         bg-white dark:bg-black border border-gray-200 dark:border-white/10
         ${isMobile
-          ? 'inset-0 rounded-none max-h-[100dvh] max-w-full'
-          : 'bottom-[calc(1rem+env(safe-area-inset-bottom))] right-[calc(1rem+env(safe-area-inset-right))] sm:bottom-[calc(1.125rem+env(safe-area-inset-bottom))] sm:right-[calc(1.125rem+env(safe-area-inset-right))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] lg:right-[calc(1.5rem+env(safe-area-inset-right))] w-[min(400px,calc(100vw-2rem))] sm:w-[min(420px,calc(100vw-2.25rem))] h-[600px] rounded-3xl shadow-2xl'
+          ? 'inset-0 w-full min-w-0 rounded-none max-h-[100dvh] max-w-full'
+          : 'bottom-[calc(1rem+env(safe-area-inset-bottom))] right-[calc(1rem+env(safe-area-inset-right))] sm:bottom-[calc(1.125rem+env(safe-area-inset-bottom))] sm:right-[calc(1.125rem+env(safe-area-inset-right))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] lg:right-[calc(1.5rem+env(safe-area-inset-right))] w-[min(400px,calc(100vw-2rem))] sm:w-[min(420px,calc(100vw-2.25rem))] h-[600px] min-w-0 rounded-3xl shadow-2xl'
         }
       `}
     >

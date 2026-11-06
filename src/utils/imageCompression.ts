@@ -10,10 +10,11 @@ export interface CompressionOptions {
   initialQuality?: number;
   /** 하위 호환용 옵션이며 현재 로컬 압축기에서는 무시됩니다. */
   useWebWorker?: boolean;
+  signal?: AbortSignal;
 }
 
 /** 기본 압축 설정 */
-const DEFAULT_OPTIONS: Required<CompressionOptions> = {
+const DEFAULT_OPTIONS: Required<Omit<CompressionOptions, 'signal'>> = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1920,
   initialQuality: 0.8,
@@ -57,20 +58,39 @@ function renameFileForType(fileName: string, mimeType: string): string {
   return fileName.replace(/\.[^.]+$/, '') + extension;
 }
 
-async function loadImageElement(file: File): Promise<HTMLImageElement> {
+function throwIfAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) throw new DOMException('이미지 압축이 취소되었습니다.', 'AbortError');
+}
+
+async function loadImageElement(file: File, signal?: AbortSignal): Promise<HTMLImageElement> {
+  throwIfAborted(signal);
   const imageUrl = URL.createObjectURL(file);
 
   return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => {
+    let image: HTMLImageElement | null = null;
+    let settled = false;
+    const finish = (complete: () => void) => {
+      if (settled) return;
+      settled = true;
+      signal?.removeEventListener('abort', cancel);
+      if (image) {
+        image.onload = null;
+        image.onerror = null;
+      }
       URL.revokeObjectURL(imageUrl);
-      resolve(image);
+      complete();
     };
-    image.onerror = () => {
-      URL.revokeObjectURL(imageUrl);
-      reject(new Error('이미지 디코딩에 실패했습니다.'));
-    };
-    image.src = imageUrl;
+    const cancel = () => finish(() => reject(new DOMException('이미지 압축이 취소되었습니다.', 'AbortError')));
+    try {
+      image = new Image();
+      const loadedImage = image;
+      image.onload = () => finish(() => resolve(loadedImage));
+      image.onerror = () => finish(() => reject(new Error('이미지 디코딩에 실패했습니다.')));
+      signal?.addEventListener('abort', cancel, { once: true });
+      image.src = imageUrl;
+    } catch (error) {
+      finish(() => reject(error));
+    }
   });
 }
 
@@ -78,13 +98,24 @@ async function canvasToBlob(
   canvas: HTMLCanvasElement,
   mimeType: string,
   quality: number,
+  signal?: AbortSignal,
 ): Promise<Blob | null> {
-  return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => resolve(blob),
-      mimeType,
-      quality,
-    );
+  throwIfAborted(signal);
+  return new Promise((resolve, reject) => {
+    const cancel = () => {
+      signal?.removeEventListener('abort', cancel);
+      reject(new DOMException('이미지 압축이 취소되었습니다.', 'AbortError'));
+    };
+    signal?.addEventListener('abort', cancel, { once: true });
+    try {
+      canvas.toBlob((blob) => {
+        signal?.removeEventListener('abort', cancel);
+        resolve(blob);
+      }, mimeType, quality);
+    } catch (error) {
+      signal?.removeEventListener('abort', cancel);
+      reject(error);
+    }
   });
 }
 
@@ -98,6 +129,7 @@ export async function compressImage(
   file: File,
   options: CompressionOptions = {}
 ): Promise<File> {
+  throwIfAborted(options.signal);
   // 이미 충분히 작은 파일은 압축 건너뛰기
   const maxSizeMB = options.maxSizeMB ?? DEFAULT_OPTIONS.maxSizeMB;
   const maxBytes = maxSizeMB * 1024 * 1024;
@@ -113,7 +145,8 @@ export async function compressImage(
   }
 
   try {
-    const image = await loadImageElement(file);
+    const image = await loadImageElement(file, options.signal);
+    throwIfAborted(options.signal);
     const maxWidthOrHeight = options.maxWidthOrHeight ?? DEFAULT_OPTIONS.maxWidthOrHeight;
     const initialQuality = clampQuality(options.initialQuality ?? DEFAULT_OPTIONS.initialQuality);
     const outputType = createOutputType(file);
@@ -127,19 +160,22 @@ export async function compressImage(
     const context = canvas.getContext('2d', { alpha: outputType !== 'image/jpeg' });
 
     if (!context) {
+      throwIfAborted(options.signal);
       return file;
     }
 
     let bestBlob: Blob | null = null;
 
     for (let attempt = 0; attempt <= MAX_RESIZE_ATTEMPTS; attempt += 1) {
+      throwIfAborted(options.signal);
       canvas.width = width;
       canvas.height = height;
       context.clearRect(0, 0, width, height);
       context.drawImage(image, 0, 0, width, height);
 
       for (let quality = initialQuality; quality >= MIN_QUALITY; quality -= QUALITY_STEP) {
-        const blob = await canvasToBlob(canvas, outputType, clampQuality(quality));
+        const blob = await canvasToBlob(canvas, outputType, clampQuality(quality), options.signal);
+        throwIfAborted(options.signal);
         if (!blob) {
           continue;
         }
@@ -168,6 +204,7 @@ export async function compressImage(
       height = Math.max(1, Math.round(height * RESIZE_FACTOR));
     }
 
+    throwIfAborted(options.signal);
     if (bestBlob && bestBlob.size < file.size) {
       return new File(
         [bestBlob],
@@ -181,7 +218,8 @@ export async function compressImage(
 
     return file;
   } catch (error) {
-    console.error(`[ImageCompression] ${file.name} 압축 실패:`, error);
+    if (options.signal?.aborted) throw error;
+    console.error('[ImageCompression] 이미지 압축 실패');
     // 압축 실패 시 원본 반환
     return file;
   }

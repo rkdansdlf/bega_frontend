@@ -29,6 +29,7 @@ type SeatViewFetcher = (stadium: string, section: string, limit: number) => Prom
 export type SeatViewPhotosVisualQaStateOverride = {
   photos?: SeatViewPhoto[];
   isLoading?: boolean;
+  isError?: boolean;
 };
 
 export async function fetchPrioritizedSeatViewPhotos(
@@ -65,7 +66,7 @@ export function useSeatViewPhotos(
   const sectionQueries = buildSeatViewSectionQueries(section, sectionAliases);
   const shouldUseVisualQaState = import.meta.env?.PROD !== true && visualQaStateOverride !== undefined;
 
-  const { data: photos = [], isLoading } = useQuery({
+  const { data: photos = [], isLoading, isError } = useQuery({
     queryKey: ['seat-views', stadium, sectionQueries, limit],
     queryFn: async () => {
       return fetchPrioritizedSeatViewPhotos(stadium, sectionQueries, limit);
@@ -78,5 +79,6 @@ export function useSeatViewPhotos(
   return {
     photos: shouldUseVisualQaState ? (visualQaStateOverride.photos ?? []) : photos,
     isLoading: shouldUseVisualQaState ? (visualQaStateOverride.isLoading ?? false) : isLoading,
+    isError: shouldUseVisualQaState ? (visualQaStateOverride.isError ?? false) : isError,
   };
 }

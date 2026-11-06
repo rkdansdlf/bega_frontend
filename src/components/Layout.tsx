@@ -98,6 +98,7 @@ export default function Layout(props: LayoutProps) {
   const isFooterRequested = visualQaStateOverride?.isFooterRequested ?? liveIsFooterRequested;
   const location = useLocation();
   const isPublicHomeRoute = !authenticated && /^\/home\/?$/.test(location.pathname);
+  const isAdminRoute = /^\/admin\/?$/.test(location.pathname);
   const [livePublicHomeChromeReadyStage, setLivePublicHomeChromeReadyStage] = useState(() => (
     isPublicHomeRoute ? 0 : PUBLIC_HOME_CHROME_CHAT_READY_STAGE
   ));
@@ -319,7 +320,7 @@ export default function Layout(props: LayoutProps) {
   const authenticatedNavbarFallback = <PublicNavbarFallback />;
   const footerFallback = <div className="border-t border-zinc-200 dark:border-gray-800" />;
 
-  return (
+  const layoutContent = (
     <>
       {authenticated ? (
         navbarPhase === 'loading' ? authenticatedNavbarFallback : (
@@ -336,7 +337,7 @@ export default function Layout(props: LayoutProps) {
       ) : (
         <PublicNavbarFallback />
       )}
-      <main className="min-h-screen bg-background text-base font-sans leading-relaxed text-foreground antialiased transition-colors duration-200 max-lg:mobile-chrome-safe-bottom">
+      <main className={`min-h-screen ${isAdminRoute ? 'bg-slate-950' : 'bg-background'} text-base font-sans leading-relaxed text-foreground antialiased transition-colors duration-200 max-lg:mobile-chrome-safe-bottom`}>
         {visualQaOutletOverride !== undefined ? visualQaOutletOverride : <Outlet />}
       </main>
       {isFooterRequested ? (
@@ -353,4 +354,10 @@ export default function Layout(props: LayoutProps) {
       )}
     </>
   );
+
+  return isAdminRoute ? (
+    <div className="dark min-h-screen bg-slate-950 text-slate-100" data-admin-route-theme="dark" data-testid="admin-route-theme">
+      {layoutContent}
+    </div>
+  ) : layoutContent;
 }

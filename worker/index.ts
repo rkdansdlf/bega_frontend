@@ -40,6 +40,16 @@ function isApiPath(pathname: string): boolean {
   return pathname === '/api' || pathname.startsWith('/api/');
 }
 
+function protectRecoveryReferrer(request: Request, pathname: string, response: Response): Response {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return response;
+  let decodedPath: string;
+  try { decodedPath = decodeURIComponent(pathname); } catch { decodedPath = pathname; }
+  if (!/^\/account\/deletion\/recovery\/*$/i.test(decodedPath)) return response;
+  const headers = new Headers(response.headers);
+  headers.set('Referrer-Policy', 'no-referrer');
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 function isHtmlNavigation(request: Request): boolean {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return false;
@@ -100,7 +110,7 @@ export default {
     }
 
     if (shouldRedirectToCanonicalOrigin(url)) {
-      return buildCanonicalRedirect(url);
+      return protectRecoveryReferrer(request, url.pathname, buildCanonicalRedirect(url));
     }
 
     if (isApiPath(pathname)) {
@@ -113,8 +123,9 @@ export default {
     }
 
     // Soft-404 fix: unknown HTML navigations must not fall through to index.html (200).
+    // Case/encoding variants of the recovery path land here too; keep the no-referrer policy on them.
     if (isHtmlNavigation(request) && !isKnownSpaRoute(pathname)) {
-      return buildNotFoundResponse(request);
+      return protectRecoveryReferrer(request, url.pathname, buildNotFoundResponse(request));
     }
 
     // Stadium details: only prerendered (known) ids get 200; everything else is a hard 404.
@@ -126,7 +137,7 @@ export default {
       return prerendered.status === 404 ? buildNotFoundResponse(request) : prerendered;
     }
 
-    return serveSpaAsset(request, env);
+    return protectRecoveryReferrer(request, url.pathname, await serveSpaAsset(request, env));
   },
 };
 

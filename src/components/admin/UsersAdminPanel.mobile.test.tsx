@@ -35,7 +35,9 @@ test('users admin panel disables self and administrator deletion while exposing 
   assert.match(source, /disabled=\{isAdminUserDeletionBlocked\(user\.id, user\.role, currentUserId\)\}/);
   assert.match(source, /data-testid=\{`admin-user-delete-\$\{user\.id\}`\}/);
   assert.match(source, /aria-label=\{`사용자 \$\{user\.name\} 삭제`\}/);
-  assert.match(source, /min-w-11[^'"\n]*sm:min-w-8/);
+  assert.match(source, /min-h-11 min-w-11/);
+  assert.match(source, /size="iconTouch"/);
+  assert.doesNotMatch(source, /sm:min-w-8/);
   assert.match(source, /contentTestId="admin-user-delete-dialog"/);
   assert.match(source, /data-testid="admin-user-delete-cancel"/);
   assert.match(source, /data-testid="admin-user-delete-confirm"/);

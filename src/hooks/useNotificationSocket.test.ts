@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import type { NotificationData } from '../types/notification';
+import { useNotificationStore } from '../store/notificationStore';
 import { reloadNotificationSnapshot } from './useNotificationSocket';
 
 const notification: NotificationData = {
@@ -23,6 +24,20 @@ test('reloadNotificationSnapshot replaces local state with the authoritative ser
   );
 
   assert.deepEqual(snapshots, [[notification]]);
+});
+
+test('WebSocket reconnect refresh updates the IDs used by the open panel for bulk read', async () => {
+  useNotificationStore.getState().reset();
+  useNotificationStore.getState().setNotifications([notification]);
+  const refreshedNotification = { ...notification, id: 42 };
+
+  await reloadNotificationSnapshot(
+    async () => [notification, refreshedNotification],
+    (notifications) => useNotificationStore.getState().setNotifications(notifications),
+  );
+
+  assert.deepEqual(useNotificationStore.getState().snapshotNotificationIds, [41, 42]);
+  assert.deepEqual(useNotificationStore.getState().notifications.map((item) => item.id), [41, 42]);
 });
 
 test('reloadNotificationSnapshot discards a response after its connection generation is stale', async () => {

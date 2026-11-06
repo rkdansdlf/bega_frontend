@@ -20,5 +20,5 @@ export interface InitMediaUploadResponse {
 export interface FinalizeMediaUploadResponse {
   assetId: number;
   storagePath: string;
-  publicUrl: string;
+  publicUrl: string | null;
 }

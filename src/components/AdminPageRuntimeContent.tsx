@@ -24,7 +24,7 @@ export default function AdminPageRuntimeContent({
       <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 shadow-xl">
         <div className="border-b border-slate-800 px-3 pt-3 sm:px-6 sm:pt-6">
           <div
-            className="grid w-full grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-1 rounded-xl bg-slate-800/50 p-1"
+            className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,6.5rem),1fr))] gap-1 rounded-xl bg-slate-800/50 p-1 sm:grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))]"
             role="tablist"
             aria-label="관리자 메뉴"
           >

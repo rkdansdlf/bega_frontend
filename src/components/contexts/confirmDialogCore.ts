@@ -6,6 +6,8 @@ export interface ConfirmOptions {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: 'default' | 'destructive';
+  theme?: 'dark';
+  touchTargets?: boolean;
 }
 
 export interface ConfirmDialogContextType {

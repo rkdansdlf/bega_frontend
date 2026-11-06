@@ -173,11 +173,12 @@ const hasFreshSuccess = (meta: AuthBootstrapMeta | null, now: number): boolean =
 };
 
 const isFailureCooldownActive = (meta: AuthBootstrapMeta | null, now: number): boolean => {
-  if (!meta?.lastFailureAt) {
+  if (!meta || meta.lastFailureAt == null) {
     return false;
   }
 
-  return now - meta.lastFailureAt <= AUTH_BOOTSTRAP_FAILURE_COOLDOWN_MS;
+  const elapsedMs = now - meta.lastFailureAt;
+  return elapsedMs >= 0 && elapsedMs <= AUTH_BOOTSTRAP_FAILURE_COOLDOWN_MS;
 };
 
 const isPublicCheerReadPath = (pathname: string): boolean => {

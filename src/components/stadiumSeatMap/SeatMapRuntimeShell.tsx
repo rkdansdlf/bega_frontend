@@ -1,4 +1,11 @@
-import { type ReactNode, Suspense } from 'react';
+import {
+  type ComponentType,
+  type LazyExoticComponent,
+  type ReactNode,
+  Suspense,
+  useMemo,
+  useState,
+} from 'react';
 
 import {
   StadiumSeatMapErrorBoundary,
@@ -13,7 +20,8 @@ interface SeatMapRuntimeShellProps {
   badgeLabel: string;
   stadiumName: string | null | undefined;
   resetKey: string;
-  children: ReactNode;
+  createComponent?: () => LazyExoticComponent<ComponentType>;
+  children?: ReactNode;
 }
 
 export function SeatMapRuntimeShell({
@@ -21,8 +29,15 @@ export function SeatMapRuntimeShell({
   badgeLabel,
   stadiumName,
   resetKey,
+  createComponent,
   children,
 }: SeatMapRuntimeShellProps) {
+  const [retryVersion, setRetryVersion] = useState(0);
+  const SeatMapComponent = useMemo(
+    () => createComponent?.() ?? null,
+    [createComponent, resetKey, retryVersion],
+  );
+
   if (template === 'standard') {
     return (
       <StadiumSeatMapErrorBoundary
@@ -31,7 +46,12 @@ export function SeatMapRuntimeShell({
           <div data-testid="stadium-seat-map">
             <StadiumSeatMapErrorFallback
               stadiumName={stadiumName}
-              onRetry={onRetry}
+              onRetry={() => {
+                if (createComponent) {
+                  setRetryVersion((version) => version + 1);
+                }
+                onRetry();
+              }}
             />
           </div>
         )}
@@ -46,7 +66,7 @@ export function SeatMapRuntimeShell({
             </div>
           )}
         >
-          {children}
+          {SeatMapComponent ? <SeatMapComponent /> : children}
         </Suspense>
       </StadiumSeatMapErrorBoundary>
     );

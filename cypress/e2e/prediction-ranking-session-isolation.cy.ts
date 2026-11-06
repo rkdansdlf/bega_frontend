@@ -8,6 +8,7 @@ import {
 describe('Prediction ranking viewer-session isolation', () => {
   it('ignores a delayed viewer A ranking response after switching to viewer B', () => {
     let rankingInitRequestCount = 0;
+    const unexpectedExternalRequests: string[] = [];
 
     cy.visit('about:blank');
     cy.clearAllCookies();
@@ -15,6 +16,26 @@ describe('Prediction ranking viewer-session isolation', () => {
     cy.mockAPI({ skipRankings: true });
     cy.clock(new Date('2026-02-03T12:00:00').getTime(), ['Date', 'setTimeout', 'clearTimeout']);
     installPredictionAuthenticatedSessionIntercept('getRankingIsolationSession');
+
+    cy.intercept(/^https?:\/\/(?!(?:localhost|127\.0\.0\.1)(?::|\/|$))/, (request) => {
+      unexpectedExternalRequests.push(request.url);
+      request.reply({ statusCode: 599, body: 'Unexpected non-local request blocked by the test' });
+    });
+    cy.intercept('GET', 'https://cdn.jsdelivr.net/**', {
+      statusCode: 200,
+      headers: { 'content-type': 'text/css' },
+      body: '',
+    });
+    cy.intercept('GET', '**/prediction*', (request) => {
+      request.continue((response) => {
+        if (typeof response.body === 'string') {
+          response.body = response.body.replace(
+            '<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>',
+            '',
+          );
+        }
+      });
+    });
 
     cy.intercept('GET', '**/api/predictions/ranking/init*', (request) => {
       rankingInitRequestCount += 1;
@@ -42,7 +63,18 @@ describe('Prediction ranking viewer-session isolation', () => {
       });
     }).as('rankingInitRequests');
 
-    visitPredictionPage({ path: '/prediction', token: 'ranking-session-isolation-fixture', resetStorage: true });
+    visitPredictionPage({
+      path: '/prediction',
+      token: 'ranking-session-isolation-fixture',
+      resetStorage: true,
+      onBeforeLoad: (win) => {
+        win.Kakao = {
+          isInitialized: () => true,
+          init: () => {},
+          Share: { sendDefault: () => {} },
+        };
+      },
+    });
     cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
     cy.contains('button', '순위예측').click({ force: true });
     cy.tick(100);
@@ -122,5 +154,9 @@ describe('Prediction ranking viewer-session isolation', () => {
       expect(viewerBState.isPredictionSaved).to.eq(false);
     });
     cy.get('[data-testid="ranking-saved-badge"]').should('not.exist');
+    cy.screenshot('bug258-viewer-b-after-stale-response', { capture: 'viewport' });
+    cy.wrap(null).should(() => {
+      expect(unexpectedExternalRequests, 'unexpected non-local requests').to.deep.eq([]);
+    });
   });
 });

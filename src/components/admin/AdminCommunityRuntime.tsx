@@ -149,10 +149,16 @@ export default function AdminCommunityRuntime({
   const [users, setUsers] = useState<AdminUser[]>(visualQaStateOverride?.users ?? []);
   const [posts, setPosts] = useState<AdminPost[]>(visualQaStateOverride?.posts ?? []);
   const [mates, setMates] = useState<AdminMate[]>(visualQaStateOverride?.mates ?? []);
-  const [loading, setLoading] = useState(visualQaStateOverride?.loading ?? false);
+  const [usersPendingCount, setUsersPendingCount] = useState(0);
+  const loading = visualQaStateOverride?.loading ?? usersPendingCount > 0;
+  const [usersError, setUsersError] = useState<string | null>(null);
   const [usersLoaded, setUsersLoaded] = useState(false);
   const [postsLoaded, setPostsLoaded] = useState(false);
   const [matesLoaded, setMatesLoaded] = useState(false);
+  const [postsPendingCount, setPostsPendingCount] = useState(0);
+  const [matesPendingCount, setMatesPendingCount] = useState(0);
+  const [postsError, setPostsError] = useState<string | null>(null);
+  const [matesError, setMatesError] = useState<string | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<PendingRoleChange | null>(
     visualQaStateOverride?.pendingRoleChange ?? null,
   );
@@ -163,45 +169,60 @@ export default function AdminCommunityRuntime({
 
   const loadUsers = async (search?: string) => {
     if (visualQaStateOverride) return;
-    setLoading(true);
+    setUsersPendingCount((count) => count + 1);
+    setUsersError(null);
     onErrorChange(null);
 
     try {
       const data = await fetchAdminUsers(search);
       setUsers(data);
+      setUsersError(null);
       setUsersLoaded(true);
       lastLoadedUsersSearchRef.current = search;
     } catch (error) {
       console.error('유저 조회 오류:', error);
+      setUsersError('사용자 조회 실패');
       onErrorChange(error instanceof Error ? error.message : '유저 목록을 불러오는데 실패했습니다.');
     } finally {
-      setLoading(false);
+      setUsersPendingCount((count) => count - 1);
     }
   };
 
   const loadPosts = async () => {
     if (visualQaStateOverride) return;
+    setPostsPendingCount((count) => count + 1);
+    setPostsError(null);
     onErrorChange(null);
     try {
       const data = await fetchAdminPosts();
       setPosts(data);
+      setPostsError(null);
       setPostsLoaded(true);
     } catch (error) {
       console.error('게시글 조회 오류:', error);
+      setPostsError('게시글 조회 실패');
       onErrorChange('게시글을 불러오는데 실패했습니다.');
+    } finally {
+      setPostsPendingCount((count) => count - 1);
     }
   };
 
   const loadMates = async () => {
     if (visualQaStateOverride) return;
+    setMatesPendingCount((count) => count + 1);
+    setMatesError(null);
     onErrorChange(null);
     try {
       const data = await fetchAdminMates();
       setMates(data);
+      setMatesError(null);
       setMatesLoaded(true);
     } catch (error) {
       console.error('메이트 조회 오류:', error);
+      setMatesError('메이트 조회 실패');
       onErrorChange('메이트를 불러오는데 실패했습니다.');
+    } finally {
+      setMatesPendingCount((count) => count - 1);
     }
   };
 
@@ -360,7 +381,8 @@ export default function AdminCommunityRuntime({
       ...user,
       favoriteTeam: user.favoriteTeam ?? undefined,
     })),
-    loading,
+    loading: visualQaStateOverride ? loading : loading || (!usersLoaded && !usersError),
+    error: usersError,
     isSuperAdmin,
     currentUserId,
     handleDeleteUser,
@@ -370,11 +392,15 @@ export default function AdminCommunityRuntime({
   };
   const postsPanelProps: ComponentProps<typeof PostsAdminPanelComponent> = {
     posts,
+    loading: visualQaStateOverride ? visualQaStateOverride.loading : postsPendingCount > 0 || (!postsLoaded && !postsError),
+    error: postsError,
     handleDeletePost,
     tableClassName: 'min-w-[860px]',
   };
   const matesPanelProps: ComponentProps<typeof MatesAdminPanelComponent> = {
     mates,
+    loading: visualQaStateOverride ? visualQaStateOverride.loading : matesPendingCount > 0 || (!matesLoaded && !matesError),
+    error: matesError,
     handleDeleteMate,
     tableClassName: 'min-w-[860px]',
   };
@@ -451,7 +477,9 @@ export default function AdminCommunityRuntime({
   return (
     <section
       data-testid="admin-community-runtime"
-      aria-busy={visualQaStateOverride?.panelPhase === 'fallback' || loading || undefined}
+      aria-busy={visualQaStateOverride?.panelPhase === 'fallback'
+        || (activeTab === 'posts' ? postsPanelProps.loading : activeTab === 'parties' ? matesPanelProps.loading : activeTab === 'users' && usersPanelProps.loading)
+        || undefined}
       className="min-w-0 overflow-hidden"
     >
       {panelContent !== null ? (

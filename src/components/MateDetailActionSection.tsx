@@ -316,7 +316,7 @@ export default function MateDetailActionSection({
                 data-testid="mate-detail-action-sheet-close"
                 ref={closeButtonRef}
                 aria-label="상세 액션 닫기"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-24 leading-none text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:text-white/70"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-2xl leading-none text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] motion-reduce:transform-none dark:text-white/70"
                 onClick={() => setShowSheet(false)}
               >
                 <span aria-hidden="true">×</span>

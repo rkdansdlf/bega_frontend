@@ -74,6 +74,29 @@ test('the registered HomeRuntime contract uses values accepted by the global sta
   assert.equal(validation.pending.length, 0);
 });
 
+test('manifest render expectations identify only the declared intentional no-node states', async () => {
+  const [manifest, coverageContract] = await Promise.all([
+    readFile(new URL('../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8')
+      .then(JSON.parse),
+    readFile(new URL('../contracts/visual-qa-coverage-v1.json', import.meta.url), 'utf8')
+      .then(JSON.parse),
+  ]);
+  const expectedCounts = new Map([
+    ['src/components/ImageGrid.tsx#ImageGrid', 2],
+    ['src/components/prediction/PredictionErrorOverlay.tsx#PredictionErrorOverlay', 8],
+    ['src/components/prediction/PredictionTopNotice.tsx#PredictionTopNotice', 10],
+  ]);
+
+  for (const [componentId, expectedCount] of expectedCounts) {
+    const entry = manifest.components.find(({ id }) => id === componentId);
+    assert.ok(entry);
+    const combinations = expandComponentStateCombinations(entry, coverageContract);
+    const expectedAbsent = combinations.filter(({ expectedRender }) => expectedRender === 'absent');
+    assert.equal(expectedAbsent.length, expectedCount, componentId);
+    assert.ok(expectedAbsent.every(({ states }) => states.interactions === 'default'), componentId);
+  }
+});
+
 test('registered component states expand the full cartesian product minus evidenced constraints', () => {
   const component = {
     id: 'src/components/A.tsx#A',

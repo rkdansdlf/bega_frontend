@@ -28,3 +28,7 @@ export interface NotificationData {
   isRead: boolean;
   createdAt: string;
 }
+
+export interface MarkAllAsReadResponse {
+  notificationIds: number[];
+}

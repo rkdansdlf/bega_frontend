@@ -9,6 +9,7 @@ import {
   AUTOMATIC_ICON_SCENARIOS,
 } from '../src/visual-qa/harnessCatalog';
 import { resolveDesignIntent } from '../src/visual-qa/designIntent';
+import { MANUAL_BASEBALL_DATA_REQUIRED_CODE, MANUAL_BASEBALL_DATA_REQUIRED_MESSAGE } from '../src/utils/manualBaseballDataContract';
 import {
   executeHarnessInteractionPlan,
   revalidateHarnessInteractionPlan,
@@ -28,6 +29,7 @@ type HarnessResult = {
   componentId: string;
   status: 'pass' | 'fail';
   attempts?: number;
+  expectedRender?: 'absent';
   error?: string;
   failureType?: ReturnType<typeof classifyHarnessFailure>;
   retryHistory?: Array<{
@@ -65,6 +67,8 @@ type HarnessReadyOutcome = {
   renderedScenarioId: string | null;
   renderedNodes: number;
   captureSelector: string | null;
+  surfaceChildCount?: number;
+  expectedRender?: 'absent';
   actualDesignProfileId?: string | null;
   actualDesignRuleIds?: string[];
   expectedDesignProfileId?: string;
@@ -249,9 +253,15 @@ export const assertHarnessReadyOutcome = (outcome: HarnessReadyOutcome) => {
   if (outcome.harness?.state !== 'ready'
     || outcome.harness?.scenarioId !== outcome.expectedScenarioId
     || outcome.renderedComponentId !== outcome.expectedComponentId
-    || outcome.renderedScenarioId !== outcome.expectedScenarioId
-    || outcome.renderedNodes < 1) {
+    || outcome.renderedScenarioId !== outcome.expectedScenarioId) {
     throw new Error(outcome.harness?.message ?? 'component produced no rendered node');
+  }
+  if (outcome.expectedRender === 'absent'
+    && (outcome.renderedNodes !== 0 || (outcome.surfaceChildCount ?? 0) !== 0)) {
+    throw new Error('component rendered an unexpected node');
+  }
+  if (outcome.expectedRender !== 'absent' && outcome.renderedNodes < 1) {
+    throw new Error('component produced no rendered node');
   }
   if (outcome.expectedDesignProfileId
     && outcome.actualDesignProfileId !== outcome.expectedDesignProfileId) {
@@ -1080,6 +1090,16 @@ export const installOfflineRoutes = async (context: HarnessContext, harnessOrigi
     if (policy === 'abort-external') return route.abort();
     if (policy === 'stub-api') {
       const requestUrl = new URL(route.request().url());
+      if (requestUrl.pathname === '/api/matches/day' && route.request().method() === 'GET') {
+        return route.fulfill({
+          status: 409,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            code: MANUAL_BASEBALL_DATA_REQUIRED_CODE,
+            message: MANUAL_BASEBALL_DATA_REQUIRED_MESSAGE,
+          }),
+        });
+      }
       if (
         shouldUsePasswordChangeFixture()
         && requestUrl.pathname === '/api/auth/password'
@@ -1233,6 +1253,39 @@ export const probeIsolatedScenario = async ({
       { componentId: scenario.componentId, scenarioId: scenario.id },
       { timeout: timeoutMs },
     );
+    if (scenario.componentId === 'src/components/retro/PowerupGameSelector.tsx#PowerupGameSelector') {
+      const manualDataAlert = page.locator('[data-testid="retro-powerup-game-selector"] [role="alert"]');
+      await manualDataAlert.waitFor({ state: 'visible', timeout: timeoutMs });
+      const alertText = await manualDataAlert.textContent();
+      if (!alertText?.includes(MANUAL_BASEBALL_DATA_REQUIRED_CODE)) {
+        throw new Error('PowerupGameSelector did not render MANUAL_BASEBALL_DATA_REQUIRED in the isolated harness.');
+      }
+      const alertLayout = await manualDataAlert.evaluate((element) => {
+        const alert = element as HTMLElement;
+        return {
+          clientWidth: alert.clientWidth,
+          right: alert.getBoundingClientRect().right,
+          scrollWidth: alert.scrollWidth,
+          viewportWidth: document.documentElement.clientWidth,
+        };
+      });
+      if (alertLayout.scrollWidth > alertLayout.clientWidth + 1
+        || alertLayout.right > alertLayout.viewportWidth + 1) {
+        throw new Error(`PowerupGameSelector manual-data alert overflows its mobile surface: ${JSON.stringify(alertLayout)}`);
+      }
+    }
+    if (scenario.componentId === 'src/pages/LeaderboardPageRuntime.tsx#LeaderboardPageRuntime'
+      && scenario.states.data === 'populated'
+      && scenario.states.permissions === 'user'
+      && scenario.variants.authPhase === 'authenticated-resolved') {
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      const selector = page.locator('[data-testid="retro-powerup-game-selector"]');
+      await selector.waitFor({ state: 'visible', timeout: timeoutMs });
+      const alertText = await selector.locator('[role="alert"]').textContent();
+      if (!alertText?.includes(MANUAL_BASEBALL_DATA_REQUIRED_CODE)) {
+        throw new Error('AuthenticatedRetroLeaderboard did not preserve the manual-data-required selector state.');
+      }
+    }
     await settleHarnessPage(page, assetTracker.waitForQuiet);
     await preparePage?.(page);
     const designIntent = resolveDesignIntent(scenario.componentId);
@@ -1313,6 +1366,9 @@ export const probeIsolatedScenario = async ({
     });
     const outcome: HarnessReadyOutcome = {
       ...rawOutcome,
+      ...(scenario.kind === 'component-state' && scenario.expectedRender
+        ? { expectedRender: scenario.expectedRender }
+        : {}),
       renderedNodes: resolveHarnessReadinessNodeCount({
         captureNodeCount: rawOutcome.captureNodeCount,
         hasInteraction: scenario.kind === 'component-state' && scenario.interactionPlan != null,
@@ -1367,11 +1423,14 @@ export const probeIsolatedScenario = async ({
         };
       }
     }
-    if (!screenshotDir) {
+    if (!screenshotDir || (scenario.kind === 'component-state' && scenario.expectedRender === 'absent')) {
       return {
         scenarioId: scenario.id,
         componentId: scenario.componentId,
         status: 'pass',
+        ...(scenario.kind === 'component-state' && scenario.expectedRender
+          ? { expectedRender: scenario.expectedRender }
+          : {}),
         designIntent: designIntentEvidence,
         touchTargetChecks,
         ...(interactionEvidence ? { interaction: interactionEvidence } : {}),
@@ -1389,6 +1448,9 @@ export const probeIsolatedScenario = async ({
       scenarioId: scenario.id,
       componentId: scenario.componentId,
       status: 'pass',
+      ...(scenario.kind === 'component-state' && scenario.expectedRender
+        ? { expectedRender: scenario.expectedRender }
+        : {}),
       designIntent: designIntentEvidence,
       touchTargetChecks,
       screenshot: relative(process.cwd(), screenshotPath),
@@ -1401,6 +1463,9 @@ export const probeIsolatedScenario = async ({
       scenarioId: scenario.id,
       componentId: scenario.componentId,
       status: 'fail',
+      ...(scenario.kind === 'component-state' && scenario.expectedRender
+        ? { expectedRender: scenario.expectedRender }
+        : {}),
       error: message,
       failureType: classifyHarnessFailure(message),
     };

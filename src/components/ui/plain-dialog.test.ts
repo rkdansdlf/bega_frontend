@@ -27,7 +27,7 @@ test('plain dialog keeps long header copy and the close control in separate boun
   assert.match(source, /style=\{\{ width: 44, height: 44, minWidth: 44, minHeight: 44 \}\}/);
   assert.match(source, /aria-label="닫기"/);
   assert.match(source, /initialFocus\?: 'container' \| 'first'/);
-  assert.match(source, /useFocusTrap\(dialogRef, \{ active: open, initialFocus \}\)/);
+  assert.match(source, /useFocusTrap\(dialogRef, \{ active: open, initialFocus\b/);
 });
 
 test('plain dialog gives bottom-sheet actions safe-area space and unnamed dialogs a fallback label', async () => {
@@ -44,4 +44,12 @@ test('plain dialog accepts inline scroll padding for fixed-footer forms', async 
   assert.match(source, /bodyStyle\?: CSSProperties/);
   assert.match(source, /^  bodyStyle,$/m);
   assert.match(source, /style=\{\{ \...\(placement === 'right' \? \{\} : \{ padding: 20 \}\), \...bodyStyle \}\}/);
+});
+
+test('plain dialog keeps optional surface styling distinct from body scrolling', async () => {
+  const source = await readSource();
+  assert.match(source, /contentStyle\?: CSSProperties/);
+  assert.match(source, /maxHeight: 'calc\(100dvh - 32px\)'[^\n]*\.\.\.contentStyle/);
+  assert.match(source, /return acquirePlainDialog\(document, \(\) => onCloseRef\.current\(\)\)/);
+  assert.match(source, /\}, \[open\]\)/);
 });

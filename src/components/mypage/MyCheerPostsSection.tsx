@@ -19,6 +19,7 @@ function MyCheerPostsContent({ visualQaStateOverride }: {
     fetchNextPage,
     refetch,
     isError,
+    isFetchNextPageError,
     isEmpty,
     emptyMessage,
     errorMessage,
@@ -30,7 +31,7 @@ function MyCheerPostsContent({ visualQaStateOverride }: {
     );
   }
 
-  if (isError) {
+  if (isError && !isFetchNextPageError) {
     return (
       <div className="mypage-season-empty" data-testid="mypage-cheer-posts-error">
         <strong className="mypage-season-empty-title">{errorMessage}</strong>
@@ -38,6 +39,7 @@ function MyCheerPostsContent({ visualQaStateOverride }: {
         <button
           type="button"
           className="mypage-season-empty-action"
+          style={{ minHeight: 'var(--touch-target-min)', minWidth: 'var(--touch-target-min)' }}
           data-testid="mypage-cheer-posts-retry"
           onClick={() => void refetch()}
         >
@@ -55,6 +57,7 @@ function MyCheerPostsContent({ visualQaStateOverride }: {
         <button
           type="button"
           className="mypage-season-empty-action"
+          style={{ minHeight: 'var(--touch-target-min)', minWidth: 'var(--touch-target-min)' }}
           data-testid="mypage-cheer-posts-empty-write"
           onClick={() => navigate('/cheer/write')}
         >
@@ -65,23 +68,32 @@ function MyCheerPostsContent({ visualQaStateOverride }: {
   }
 
   return (
-    <div className="mypage-season-cheer-list">
-      {posts.map((post) => (
-        <CheerCard key={post.id} post={post} />
-      ))}
+    <>
+      <div className="mypage-season-cheer-list">
+        {posts.map((post) => (
+          <CheerCard key={post.id} post={post} />
+        ))}
+      </div>
       {hasNextPage && (
-        <div className="flex justify-center pt-2">
+        <div className="mt-4.5 flex flex-col items-center gap-2 pt-2">
+          {isFetchNextPageError && (
+            <p role="alert" data-testid="mypage-cheer-posts-next-page-error" className="text-center text-body text-destructive" style={{ wordBreak: 'keep-all', overflowWrap: 'anywhere' }}>
+              추가 글을 불러오지 못했습니다.
+            </p>
+          )}
           <button
             type="button"
+            data-testid="mypage-cheer-posts-more"
             onClick={() => void fetchNextPage()}
             disabled={isFetchingNextPage}
             className="mypage-season-ghost-button disabled:cursor-not-allowed disabled:opacity-60"
+            style={{ minHeight: 'var(--touch-target-min)', minWidth: 'var(--touch-target-min)' }}
           >
-            {isFetchingNextPage ? '불러오는 중...' : '더보기'}
+            {isFetchingNextPage ? '불러오는 중...' : isFetchNextPageError ? '다시 시도' : '더보기'}
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

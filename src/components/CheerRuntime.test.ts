@@ -37,6 +37,13 @@ test('CheerRuntime는 탭 표시 후 다음 paint에서 피드와 URL 상태를 
   assert.match(source, /<LazyCheerFeedRuntimeContent\s+activeFeedTab=\{activeContentFeedTab\}/);
 });
 
+test('CheerRuntime keeps side panels off medium-width screens and lets the feed grid shrink', () => {
+  const source = readRuntimeSource();
+
+  assert.match(source, /grid grid-cols-1 gap-0 lg:grid-cols-\[68px_minmax\(0,1fr\)_264px\] lg:gap-x-4 xl:grid-cols-\[200px_minmax\(0,1fr\)_270px\]/);
+  assert.match(source, /sticky top-24 hidden w-\[264px\] min-w-0 self-start lg:flex/);
+});
+
 test('CheerRuntime는 데스크톱 사이드바 인기글 데이터를 lazy chunk보다 먼저 요청한다', () => {
   const source = readRuntimeSource();
 

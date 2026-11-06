@@ -21,13 +21,15 @@ export interface StadiumSeatMapEntry {
   matchers: readonly string[];
   folder: string;
   componentName: string;
-  Component: LazyExoticComponent<ComponentType>;
+  createComponent: () => LazyExoticComponent<ComponentType>;
   usesCoordinateGeometry: boolean;
   shellTemplate: StadiumSeatMapShellTemplate;
   isNonCoordinateMap: boolean;
 }
 
-const lazySeatMap = (loader: () => Promise<{ default: ComponentType }>) => lazy(loader);
+const lazySeatMap = (loader: () => Promise<{ default: ComponentType }>) => ({
+  createComponent: () => lazy(loader),
+});
 
 export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
   {
@@ -37,7 +39,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['JAMSIL', '잠실', '서울잠실'],
     folder: 'jamsil',
     componentName: 'JamsilSeatMap',
-    Component: lazySeatMap(() => import('./jamsil/JamsilSeatMap')),
+    ...lazySeatMap(() => import('./jamsil/JamsilSeatMap')),
     usesCoordinateGeometry: false,
     shellTemplate: 'standard',
     isNonCoordinateMap: true,
@@ -49,7 +51,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['INCHEON', 'SSG', '문학', '인천', '랜더스'],
     folder: 'incheon',
     componentName: 'IncheonSeatMap',
-    Component: lazySeatMap(() => import('./incheon/IncheonSeatMap')),
+    ...lazySeatMap(() => import('./incheon/IncheonSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -61,7 +63,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['DAEGU', 'SAMSUNG', '대구', '삼성', '라이온즈', '라팍', '라이온즈파크', '삼성라이온즈파크', '대구삼성라이온즈파크', '대구 삼성 라이온즈파크', '대구 삼성 라이온즈 파크'],
     folder: 'daegu',
     componentName: 'DaeguSeatMap',
-    Component: lazySeatMap(() => import('./daegu/DaeguSeatMap')),
+    ...lazySeatMap(() => import('./daegu/DaeguSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -73,7 +75,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['DAEJEON', 'HANWHA', '대전', '한화', '이글스', '볼파크', '한화생명볼파크', '대전 한화생명볼파크', '한화생명 이글스파크', '대전 한화생명 이글스파크', '이글스파크'],
     folder: 'daejeon',
     componentName: 'DaejeonSeatMap',
-    Component: lazySeatMap(() => import('./daejeon/DaejeonSeatMap')),
+    ...lazySeatMap(() => import('./daejeon/DaejeonSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -85,7 +87,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['GOCHEOK', 'KIWOOM', '고척', '키움', '스카이돔'],
     folder: 'gocheok',
     componentName: 'GocheokSeatMap',
-    Component: lazySeatMap(() => import('./gocheok/GocheokSeatMap')),
+    ...lazySeatMap(() => import('./gocheok/GocheokSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -97,7 +99,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['GWANGJU', 'KIA', '광주', '기아', '챔피언스'],
     folder: 'gwangju',
     componentName: 'GwangjuSeatMap',
-    Component: lazySeatMap(() => import('./gwangju/GwangjuSeatMap')),
+    ...lazySeatMap(() => import('./gwangju/GwangjuSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -109,7 +111,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['CHANGWON', 'NCPARK', 'NC', 'NC파크', '창원', '창원NC파크', '다이노스'],
     folder: 'changwon',
     componentName: 'ChangwonSeatMap',
-    Component: lazySeatMap(() => import('./changwon/ChangwonSeatMap')),
+    ...lazySeatMap(() => import('./changwon/ChangwonSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -121,7 +123,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['SAJIK', 'BUSAN', 'LOTTE', '사직', '부산', '롯데'],
     folder: 'sajik',
     componentName: 'SajikSeatMap',
-    Component: lazySeatMap(() => import('./sajik/SajikSeatMap')),
+    ...lazySeatMap(() => import('./sajik/SajikSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,
@@ -133,7 +135,7 @@ export const STADIUM_SEAT_MAP_ENTRIES: readonly StadiumSeatMapEntry[] = [
     matchers: ['SUWON', 'KTWIZ', 'KT', 'kt wiz', '수원', '수원KT위즈파크', '수원 kt wiz 파크', '위즈', '위즈파크'],
     folder: 'suwon',
     componentName: 'SuwonSeatMap',
-    Component: lazySeatMap(() => import('./suwon/SuwonSeatMap')),
+    ...lazySeatMap(() => import('./suwon/SuwonSeatMap')),
     usesCoordinateGeometry: true,
     shellTemplate: 'standard',
     isNonCoordinateMap: false,

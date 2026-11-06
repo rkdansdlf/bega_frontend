@@ -3,16 +3,17 @@ import { NotificationData } from '../types/notification';
 
 interface NotificationState {
   notifications: NotificationData[];
+  snapshotNotificationIds: number[];
   locallyReadIds: Set<number>;
   locallyDeletedIds: Set<number>;
-  locallyReadThrough: number | null;
 }
 
 interface NotificationActions {
   setNotifications: (notifications: NotificationData[]) => void;
+  clearSnapshotNotificationIds: () => void;
   addNotification: (notification: NotificationData) => void;
   markAsRead: (notificationId: number) => void;
-  markAllAsRead: (readThrough?: number) => void;
+  markAllAsRead: (notificationIds: number[]) => void;
   removeNotification: (notificationId: number) => void;
   reset: () => void;
 }
@@ -21,9 +22,9 @@ type NotificationStore = NotificationState & NotificationActions;
 
 const getInitialState = (): NotificationState => ({
   notifications: [],
+  snapshotNotificationIds: [],
   locallyReadIds: new Set<number>(),
   locallyDeletedIds: new Set<number>(),
-  locallyReadThrough: null,
 });
 
 const deduplicateNotifications = (notifications: NotificationData[]) => {
@@ -39,17 +40,10 @@ const deduplicateNotifications = (notifications: NotificationData[]) => {
   });
 };
 
-const wasCreatedBy = (notification: NotificationData, timestamp: number | null) => {
-  if (timestamp == null) {
-    return false;
-  }
-
-  const createdAt = Date.parse(notification.createdAt);
-  return Number.isFinite(createdAt) && createdAt <= timestamp;
-};
-
 export const useNotificationStore = create<NotificationStore>((set) => ({
   ...getInitialState(),
+
+  clearSnapshotNotificationIds: () => set({ snapshotNotificationIds: [] }),
 
   setNotifications: (notifications) =>
     set((state) => {
@@ -62,8 +56,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
         .map((notification) => {
           const shouldRemainRead = notification.isRead
             || existingById.get(notification.id)?.isRead
-            || locallyReadIds.has(notification.id)
-            || wasCreatedBy(notification, state.locallyReadThrough);
+            || locallyReadIds.has(notification.id);
 
           if (shouldRemainRead) {
             locallyReadIds.add(notification.id);
@@ -76,6 +69,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
 
       return {
         notifications: nextNotifications,
+        snapshotNotificationIds: nextNotifications.map((notification) => notification.id),
         locallyReadIds,
       };
     }),
@@ -89,8 +83,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       const existing = state.notifications.find((item) => item.id === notification.id);
       const shouldRemainRead = notification.isRead
         || existing?.isRead
-        || state.locallyReadIds.has(notification.id)
-        || wasCreatedBy(notification, state.locallyReadThrough);
+        || state.locallyReadIds.has(notification.id);
       const nextNotification = shouldRemainRead && !notification.isRead
         ? { ...notification, isRead: true }
         : notification;
@@ -117,17 +110,13 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
     })),
 
   // 모든 알림 읽음 처리
-  markAllAsRead: (readThrough = Date.now()) =>
+  markAllAsRead: (notificationIds) =>
     set((state) => {
       const locallyReadIds = new Set(state.locallyReadIds);
-      const effectiveReadThrough = Math.max(state.locallyReadThrough ?? readThrough, readThrough);
+      const confirmedReadIds = new Set(notificationIds);
+      confirmedReadIds.forEach((notificationId) => locallyReadIds.add(notificationId));
       const notifications = state.notifications.map((notification) => {
-        const shouldRemainRead = notification.isRead || wasCreatedBy(notification, readThrough);
-        if (shouldRemainRead) {
-          locallyReadIds.add(notification.id);
-        }
-
-        return shouldRemainRead && !notification.isRead
+        return confirmedReadIds.has(notification.id) && !notification.isRead
           ? { ...notification, isRead: true }
           : notification;
       });
@@ -135,13 +124,13 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       return {
         notifications,
         locallyReadIds,
-        locallyReadThrough: effectiveReadThrough,
       };
     }),
 
   removeNotification: (notificationId) =>
     set((state) => ({
       notifications: state.notifications.filter((n) => n.id !== notificationId),
+      snapshotNotificationIds: state.snapshotNotificationIds.filter((id) => id !== notificationId),
       locallyDeletedIds: new Set(state.locallyDeletedIds).add(notificationId),
     })),
 

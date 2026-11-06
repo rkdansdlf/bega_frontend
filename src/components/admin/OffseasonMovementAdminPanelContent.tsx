@@ -29,8 +29,8 @@ const TEAM_OPTIONS = FRANCHISE_TEAM_IDS.map((code) => ({
 const adminNativeSelectClassName =
   'min-h-11 w-full rounded-xl border border-slate-700 bg-slate-800/50 px-3 text-base text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60';
 
-const adminMobileControlClassName = 'min-h-11 text-base';
-const adminMobileIconControlClassName = 'min-h-11 min-w-11 text-base';
+const adminMobileControlClassName = 'min-h-11 text-base sm:min-h-11 max-w-full whitespace-normal break-keep';
+const adminMobileIconControlClassName = 'min-h-11 min-w-11 text-base sm:min-h-11 max-w-full whitespace-normal break-keep';
 
 const adminFieldLabelClassName =
   'text-caption font-semibold text-slate-400';
@@ -105,6 +105,7 @@ export interface OffseasonMovementAdminPanelContentVisualQaRenderers {
 export interface OffseasonMovementAdminPanelContentProps {
   successMessage: string | null;
   error: string | null;
+  listError?: string | null;
   movements: AdminOffseasonMovement[];
   filteredMovements: AdminOffseasonMovement[];
   loading: boolean;
@@ -154,6 +155,7 @@ export interface OffseasonMovementAdminPanelContentProps {
 export default function OffseasonMovementAdminPanelContent({
   successMessage,
   error,
+  listError = null,
   movements,
   filteredMovements,
   loading,
@@ -346,6 +348,7 @@ export default function OffseasonMovementAdminPanelContent({
     movements,
     filteredMovements,
     loading,
+    listError,
     activeQualityOption,
     onOpenEditDialog: handleOpenEditDialog,
     onDeleteTargetChange: handleDeleteTargetChange,
@@ -438,13 +441,13 @@ export default function OffseasonMovementAdminPanelContent({
         </div>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
-        <div className="rounded-2xl border border-emerald-500/20 bg-slate-900/90 p-5 shadow-sm">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
+        <div className="min-w-0 rounded-2xl border border-emerald-500/20 bg-slate-900/90 p-2 shadow-sm sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
-                <AdminNewspaperIcon className="h-5 w-5 text-emerald-300" />
-                스토브리그 이동 관리
+              <h3 className="flex min-w-0 flex-wrap items-center gap-2 text-lg font-semibold text-white [overflow-wrap:anywhere]">
+                <AdminNewspaperIcon className="h-5 w-5 shrink-0 text-emerald-300" />
+                <span className="min-w-0 [overflow-wrap:anywhere]">스토브리그 이동 관리</span>
               </h3>
               <p className="mt-1 text-caption leading-relaxed text-slate-400">
                 공개 `/offseason/list`에 노출되는 이동 데이터와 구조화 상세 필드를 여기서 직접 관리합니다.
@@ -455,9 +458,9 @@ export default function OffseasonMovementAdminPanelContent({
               onClick={onRefresh}
               data-testid="admin-offseason-refresh"
               disabled={loading}
-              className={cn(adminMobileControlClassName, 'bg-emerald-500 text-slate-950 hover:bg-emerald-400')}
+              className={cn(adminMobileControlClassName, 'min-w-0 max-w-full flex-col sm:flex-row px-2 has-[>svg]:px-2 sm:px-3 sm:has-[>svg]:px-3 whitespace-normal [overflow-wrap:anywhere] bg-emerald-500 text-slate-950 hover:bg-emerald-400')}
             >
-              <AdminRefreshIcon className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <AdminRefreshIcon className={`mr-0 h-4 w-4 shrink-0 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
               새로고침
             </Button>
           </div>
@@ -481,7 +484,7 @@ export default function OffseasonMovementAdminPanelContent({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
+        <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/80 p-3 sm:p-5">
           <p className={adminFieldLabelClassName}>구조화 입력률</p>
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
@@ -500,8 +503,8 @@ export default function OffseasonMovementAdminPanelContent({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_180px_180px_180px_180px_auto]">
+      <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/80 p-1 sm:p-5">
+        <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.1fr)_180px_180px_180px_180px_auto]">
           <div className="relative">
             <AdminSearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <Input
@@ -547,7 +550,7 @@ export default function OffseasonMovementAdminPanelContent({
             data-testid="admin-offseason-from-date"
             value={fromDate}
             onChange={(event) => handleFromDateChange(event.target.value)}
-            className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
+            className={cn(adminMobileControlClassName, 'w-full min-w-0 px-0 sm:px-3 bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
           <Input
             aria-label="조회 종료 날짜"
@@ -555,13 +558,13 @@ export default function OffseasonMovementAdminPanelContent({
             data-testid="admin-offseason-to-date"
             value={toDate}
             onChange={(event) => handleToDateChange(event.target.value)}
-            className={cn(adminMobileControlClassName, 'bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
+            className={cn(adminMobileControlClassName, 'w-full min-w-0 px-0 sm:px-3 bg-slate-800/50 border-slate-700 text-slate-200 rounded-xl')}
           />
-          <div className="flex gap-2">
-            <Button type="button" data-testid="admin-offseason-apply-filters" onClick={onApplyFilters} className={cn(adminMobileControlClassName, 'bg-sky-500 text-slate-950 hover:bg-sky-400')}>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button type="button" data-testid="admin-offseason-apply-filters" onClick={onApplyFilters} className={cn(adminMobileControlClassName, 'w-full sm:w-auto bg-sky-500 text-slate-950 hover:bg-sky-400')}>
               조회
             </Button>
-            <Button type="button" data-testid="admin-offseason-reset-filters" variant="outline" onClick={onResetFilters} className={cn(adminMobileControlClassName, 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800')}>
+            <Button type="button" data-testid="admin-offseason-reset-filters" variant="outline" onClick={onResetFilters} className={cn(adminMobileControlClassName, 'w-full sm:w-auto border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800')}>
               초기화
             </Button>
           </div>
@@ -610,7 +613,7 @@ export default function OffseasonMovementAdminPanelContent({
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+        <div className="mt-4 min-w-0 rounded-2xl border border-slate-800 bg-slate-950/80 p-2 sm:p-4">
           <div className="flex flex-wrap items-center gap-2">
             {qualityOptions.map((option) => (
               <Button

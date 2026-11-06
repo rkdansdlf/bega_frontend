@@ -37,13 +37,14 @@ const mockGuestAuth = () => {
   });
 };
 
-const visitAsGuest = (path: string) => {
+const visitAsGuest = (path: string, rootFontSize = 16) => {
   cy.visit(path, {
     onBeforeLoad: (win) => {
       win.localStorage.clear();
       win.sessionStorage.clear();
       win.localStorage.setItem('bega_has_visited', 'true');
       win.localStorage.setItem('bega_dont_show_guide', 'true');
+      win.document.documentElement.style.fontSize = `${rootFontSize}px`;
     },
   });
 };
@@ -384,6 +385,24 @@ describe('mobile layout and touch target regression', () => {
       .then(($spacer) => {
         expect($spacer[0].getBoundingClientRect().height, 'stadium mobile bottom spacer height').to.be.at.least(180);
       });
+    assertNoBottomNavOverlap('public-mobile-bottom-nav');
+  });
+
+  it('keeps Home and Stadium interactive targets clear of the dock at 320px with enlarged text', () => {
+    cy.viewport(320, 844);
+
+    mockHome();
+    visitAsGuest('/home', 32);
+    cy.wait('@getHomeBootstrap');
+    cy.wait('@getHomeWidgets');
+    cy.tick(1500);
+    assertNoBottomNavOverlap('public-mobile-bottom-nav');
+
+    mockStadiumGuide();
+    visitAsGuest('/stadium', 32);
+    cy.wait('@getStadiums');
+    cy.wait('@getStadiumPlaces');
+    cy.tick(1500);
     assertNoBottomNavOverlap('public-mobile-bottom-nav');
   });
 });

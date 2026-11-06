@@ -19,14 +19,34 @@ interface AwardData {
 interface OffSeasonHomeHighlightsRuntimeProps {
   awards: AwardData[];
   rankings: Ranking[];
+  manualDataRequired?: boolean;
   isLargeScreen: boolean;
 }
 
 export default function OffSeasonHomeHighlightsRuntime({
   awards,
   rankings,
+  manualDataRequired = false,
   isLargeScreen,
 }: OffSeasonHomeHighlightsRuntimeProps) {
+  if (manualDataRequired) {
+    return (
+      <Card
+        data-testid="offseason-manual-data-required"
+        role="status"
+        aria-live="polite"
+        className="border-amber-200 bg-amber-50/80 p-5 dark:border-amber-900/50 dark:bg-card sm:p-7"
+      >
+        <h3 className="text-lg font-bold text-amber-900 dark:text-amber-200">
+          요청한 시즌 결과는 아직 준비되지 않았습니다.
+        </h3>
+        <p className="mt-2 text-sm text-amber-900/80 dark:text-white">
+          운영자가 검증된 내부 자료를 제공하면 다시 표시됩니다.
+        </p>
+      </Card>
+    );
+  }
+
   const [featuredAward, ...secondaryAwards] = awards;
 
   return (

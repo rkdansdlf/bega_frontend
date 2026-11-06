@@ -19,10 +19,10 @@ export default function NotFound() {
         </div>
 
         {/* 메시지 */}
-        <h1 className="break-words text-2xl font-bold text-gray-900 dark:text-white mb-2 [overflow-wrap:anywhere]">
+        <h1 className="break-words text-2xl font-bold text-gray-900 dark:text-white mb-2 [overflow-wrap:anywhere] [word-break:keep-all] sm:[word-break:normal]">
           페이지를 찾을 수 없습니다
         </h1>
-        <p className="break-words text-gray-500 dark:text-white mb-8 [overflow-wrap:anywhere]">
+        <p className="break-words text-gray-500 dark:text-white mb-8 [overflow-wrap:anywhere] [word-break:keep-all]">
           요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.
         </p>
 
@@ -32,7 +32,7 @@ export default function NotFound() {
             type="button"
             data-testid="not-found-home"
             onClick={() => navigate('/home')}
-            className="min-h-11 w-full sm:w-auto rounded-xl bg-emerald-600 px-6 py-2.5 text-base font-semibold text-white transition hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:scale-[0.98]"
+            className="min-h-11 w-full sm:w-auto rounded-xl bg-emerald-600 px-6 py-2.5 text-base font-semibold text-white [overflow-wrap:anywhere] [word-break:keep-all] transition hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:scale-[0.98]"
           >
             홈으로 이동
           </button>
@@ -40,7 +40,7 @@ export default function NotFound() {
             type="button"
             data-testid="not-found-back"
             onClick={() => navigate(-1)}
-            className="min-h-11 w-full sm:w-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-2.5 text-base font-semibold text-gray-700 dark:text-white transition hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:scale-[0.98]"
+            className="min-h-11 w-full sm:w-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-2.5 text-base font-semibold text-gray-700 dark:text-white [overflow-wrap:anywhere] [word-break:keep-all] transition hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:scale-[0.98]"
           >
             이전 페이지로
           </button>

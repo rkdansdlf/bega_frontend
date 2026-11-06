@@ -152,7 +152,11 @@ export interface RetroLeaderboardProps {
   hotStreaks?: LeaderboardEntry[];
   powerups?: PowerupInventoryState;
   activePowerups?: string[];
+  powerupGameId?: string;
+  powerupGameSelector?: ReactNode;
+  powerupsDisabled?: boolean;
   isLoading?: boolean;
+  isError?: boolean;
   currentUserHandle?: string;
   onTypeChange?: (type: LeaderboardType) => void;
   onPageChange?: (page: number) => void;
@@ -174,10 +178,14 @@ export default function RetroLeaderboard({
   hotStreaks = [],
   powerups = { MAGIC_BAT: 0, GOLDEN_GLOVE: 0, SCOUTER: 0 },
   activePowerups = [],
+  powerupGameId,
+  powerupGameSelector,
+  powerupsDisabled = false,
   onRefresh,
   onPredict,
   onUsePowerup,
   isLoading = false,
+  isError = false,
   currentUserHandle,
   containerTestId,
   deferFooter = true,
@@ -452,6 +460,28 @@ export default function RetroLeaderboard({
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+                  {isError && (
+                    <div
+                      role="alert"
+                      data-testid="leaderboard-error"
+                      className="gap-3"
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        padding: '24px 12px',
+                        color: '#fff',
+                        fontSize: 'var(--font-body-size)',
+                        lineHeight: 1.6,
+                        textAlign: 'center',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      <p>순위 정보를 불러오지 못했습니다.</p>
+                      <p>아래 새로고침 버튼으로 다시 시도해주세요.</p>
+                    </div>
+                  )}
                   {displayLeaderboard.map((entry, index) => (
                     <LeaderboardRow
                       key={entry.handle ?? `${entry.userName}-${entry.rank ?? index + 1}`}
@@ -460,7 +490,7 @@ export default function RetroLeaderboard({
                       isCurrentUser={Boolean(currentUserHandle && entry.handle && entry.handle === currentUserHandle)}
                     />
                   ))}
-                  {displayLeaderboard.length === 0 && (
+                  {!isError && displayLeaderboard.length === 0 && (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
                       <div
                         className="retro-leaderboard-empty"
@@ -544,6 +574,9 @@ export default function RetroLeaderboard({
                 hotStreaks={hotStreaks}
                 powerups={powerups}
                 activePowerups={activePowerups}
+                gameId={powerupGameId}
+                gameSelector={powerupGameSelector}
+                powerupsDisabled={powerupsDisabled}
                 onUsePowerup={onUsePowerup}
               />
             </Suspense>
@@ -555,6 +588,9 @@ export default function RetroLeaderboard({
                 hotStreaks={hotStreaks}
                 powerups={powerups}
                 activePowerups={activePowerups}
+                gameId={powerupGameId}
+                gameSelector={powerupGameSelector}
+                powerupsDisabled={powerupsDisabled}
                 onUsePowerup={onUsePowerup}
               />
             </Suspense>

@@ -4,12 +4,14 @@ import { getHomeAuthRequestTraces, installHomeAuthRequestTrace } from '../suppor
 
 interface VisitLandingOptions {
   reducedMotion?: boolean;
+  rootFontSize?: number;
   theme?: 'light' | 'dark';
   seedPressStartFont?: boolean;
 }
 
 const visitLanding = ({
   reducedMotion = false,
+  rootFontSize,
   seedPressStartFont = false,
   theme,
 }: VisitLandingOptions = {}) => {
@@ -29,6 +31,10 @@ const visitLanding = ({
 
       if (theme) {
         win.localStorage.setItem('kbo-theme', theme);
+      }
+
+      if (rootFontSize) {
+        win.document.documentElement.style.fontSize = `${rootFontSize}px`;
       }
 
       if (seedPressStartFont) {
@@ -65,8 +71,9 @@ const visitLanding = ({
 const assertNoHorizontalOverflow = () => {
   cy.window().then((win) => {
     const { document } = win;
-    expect(document.documentElement.scrollWidth).to.be.at.most(win.innerWidth + 1);
-    expect(document.body.scrollWidth).to.be.at.most(win.innerWidth + 1);
+    const viewportContentWidth = document.documentElement.clientWidth;
+    expect(document.documentElement.scrollWidth).to.be.at.most(viewportContentWidth + 1);
+    expect(document.body.scrollWidth).to.be.at.most(viewportContentWidth + 1);
   });
 };
 
@@ -883,6 +890,106 @@ describe('Landing viewport evidence', () => {
       });
       cy.get('.landing-footer-copyright').should('be.visible');
       cy.screenshot(`landing-root-${id}-footer`, { capture: 'viewport' });
+    });
+  });
+});
+
+describe('Landing large-text responsive evidence', () => {
+  [
+    { id: 'mobile-320-light', width: 320, height: 844, theme: 'light' as const },
+    { id: 'mobile-320-dark', width: 320, height: 844, theme: 'dark' as const },
+    { id: 'mobile-390-light', width: 390, height: 844, theme: 'light' as const },
+    { id: 'mobile-390-dark', width: 390, height: 844, theme: 'dark' as const },
+    { id: 'desktop-1280-light', width: 1280, height: 900, theme: 'light' as const },
+    { id: 'desktop-1280-dark', width: 1280, height: 900, theme: 'dark' as const },
+  ].forEach(({ id, width, height, theme }) => {
+    it(`keeps page copy, controls, and footer reachable at 200% root text for ${id}`, () => {
+      cy.viewport(width, height);
+      visitLanding({ theme, reducedMotion: true, rootFontSize: 32 });
+
+      cy.getBySel('landing-page').should('be.visible');
+      cy.get('html').should(theme === 'dark' ? 'have.class' : 'not.have.class', 'dark');
+      cy.document().should((document) => {
+        expect(getComputedStyle(document.documentElement).fontSize).to.equal('32px');
+      });
+      cy.getBySel('landing-ticker-toggle').should('be.visible').then(($toggle) => {
+        const button = $toggle[0] as HTMLButtonElement;
+        const rect = button.getBoundingClientRect();
+        const hit = button.ownerDocument.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+        expect(rect.width, `${id} ticker control width`).to.be.at.least(44);
+        expect(rect.height, `${id} ticker control height`).to.be.at.least(44);
+        expect(hit && (hit === button || button.contains(hit)), `${id} ticker control center hit-test`).to.equal(true);
+      });
+
+      cy.document().then((document) => {
+        const win = document.defaultView;
+        expect(win, `${id} browser window`).not.to.be.null;
+        if (!win) return;
+
+        const viewportContentWidth = document.documentElement.clientWidth;
+        expect(document.documentElement.scrollWidth, `${id} document horizontal overflow`)
+          .to.be.at.most(viewportContentWidth + 1);
+        expect(document.body.scrollWidth, `${id} body horizontal overflow`)
+          .to.be.at.most(viewportContentWidth + 1);
+
+        const textElements = Array.from(document.querySelectorAll<HTMLElement>(
+          '.landing-page h1, .landing-page h2, .landing-page h3, .landing-page p, .landing-page dt, .landing-page dd, .landing-page footer a',
+        )).filter((element) => (
+          element.getClientRects().length > 0
+          && !element.closest('[data-testid="landing-score-ticker"], .landing-phone')
+        ));
+        const overflowingText: string[] = [];
+
+        textElements.forEach((element) => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          Array.from(range.getClientRects())
+            .filter((rect) => rect.width > 0 && rect.height > 0)
+            .forEach((rect) => {
+              if (rect.left < -1 || rect.right > viewportContentWidth + 1) {
+                overflowingText.push(`${element.tagName.toLowerCase()}: ${rect.left.toFixed(1)}..${rect.right.toFixed(1)}`);
+              }
+            });
+        });
+
+        expect(overflowingText, `${id} rendered page copy stays within the viewport`).to.deep.equal([]);
+      });
+
+      cy.screenshot(`landing-large-text-${id}-top`, { capture: 'viewport' });
+      // The sticky score ticker grows with the root font size; scroll the CTA below it instead of under it.
+      cy.getBySel('landing-score-ticker').invoke('outerHeight').then((tickerHeight) => {
+        cy.getBySel('landing-home-cta').scrollIntoView({ offset: { top: -(Number(tickerHeight) + 8), left: 0 } });
+      });
+      cy.getBySel('landing-home-cta').should('be.visible').then(($button) => {
+        const button = $button[0] as HTMLButtonElement;
+        const rect = button.getBoundingClientRect();
+        const hit = button.ownerDocument.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+        expect(rect.width, `${id} home CTA width`).to.be.at.least(44);
+        expect(rect.height, `${id} home CTA height`).to.be.at.least(44);
+        expect(hit && (hit === button || button.contains(hit)), `${id} home CTA center hit-test`).to.equal(true);
+      });
+
+      cy.document().then((document) => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.body.style.scrollBehavior = 'auto';
+      });
+      cy.scrollTo('bottom', { duration: 0 });
+      cy.window().should((win) => {
+        expect(win.scrollY, `${id} document scroll reaches the footer`).to.be.greaterThan(0);
+      });
+      cy.getBySel('landing-footer').should('be.visible');
+      cy.get('.landing-footer-copyright').should('be.visible').then(($copy) => {
+        const rect = $copy[0].getBoundingClientRect();
+        cy.window().then((win) => {
+          expect(rect.left, `${id} footer copy left edge`).to.be.at.least(-1);
+          expect(rect.right, `${id} footer copy right edge`)
+            .to.be.at.most(win.document.documentElement.clientWidth + 1);
+          expect(rect.bottom, `${id} footer copy remains in viewport`).to.be.at.most(win.innerHeight + 1);
+        });
+      });
+      cy.screenshot(`landing-large-text-${id}-footer`, { capture: 'viewport' });
     });
   });
 });

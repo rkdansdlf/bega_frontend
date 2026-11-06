@@ -16,6 +16,7 @@ interface CheerVisualScenario {
 
 const authToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkNoZWVyVXNlciIsImlhdCI6MTUxNjIzOTAyMn0.fake-signature';
+const PRETENDARD_STYLESHEET_URL = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css';
 
 const scenarios: CheerVisualScenario[] = [
   { id: 'mobile-390-light-kia-feed', viewport: [390, 844], theme: 'light', teamId: 'KIA', teamColor: '#EA0029', state: 'feed' },
@@ -27,6 +28,8 @@ const scenarios: CheerVisualScenario[] = [
   { id: 'desktop-1440-light-nc-live', viewport: [1440, 1100], theme: 'light', teamId: 'NC', teamColor: '#315288', state: 'live' },
   { id: 'desktop-1440-dark-hh-empty', viewport: [1440, 1100], theme: 'dark', teamId: 'HH', teamColor: '#F37321', state: 'empty' },
 ];
+
+let blockedOffOriginRequests: string[] = [];
 
 const pageResponse = (content: unknown[]) => ({
   content,
@@ -164,6 +167,10 @@ const setupScenarioMocks = (scenario: CheerVisualScenario) => {
     statusCode: 200,
     body: pageResponse(searchPosts),
   }).as('getVisualSearch');
+  cy.intercept('GET', '**/api/cheer/posts/changes*', {
+    statusCode: 200,
+    body: { newCount: 0, latestId: null },
+  }).as('getVisualPostChanges');
   cy.intercept('GET', '**/api/leaderboard?*', {
     statusCode: 200,
     body: {
@@ -265,7 +272,28 @@ describe('Cheer visual audit matrix', () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.clearLocalStorage();
+    blockedOffOriginRequests = [];
+    const baseOrigin = new URL(Cypress.config('baseUrl') ?? 'http://127.0.0.1').origin;
+    cy.intercept({ url: /^https?:\/\// }, (request) => {
+      if (new URL(request.url).origin !== baseOrigin) {
+        blockedOffOriginRequests.push(request.url);
+        request.destroy();
+        return;
+      }
+      request.continue();
+    });
+    cy.intercept('GET', PRETENDARD_STYLESHEET_URL, {
+      statusCode: 200,
+      headers: { 'content-type': 'text/css' },
+      body: '/* External font disabled for offline visual verification; use local system sans fallback. */',
+    }).as('offlinePretendardStylesheet');
     cy.mockAPI();
+  });
+
+  afterEach(() => {
+    cy.then(() => {
+      expect(blockedOffOriginRequests, 'off-origin requests blocked before leaving the local app').to.deep.equal([]);
+    });
   });
 
   scenarios.forEach((scenario) => {
@@ -279,7 +307,7 @@ describe('Cheer visual audit matrix', () => {
       });
 
       cy.wait('@getVisualPosts');
-      if (scenario.viewport[0] >= 768 && scenario.state !== 'live') {
+      if (scenario.viewport[0] >= 1024 && scenario.state !== 'live') {
         cy.wait('@getVisualSchedule');
       }
       cy.document().then((document) => {
@@ -295,7 +323,7 @@ describe('Cheer visual audit matrix', () => {
       });
       cy.get('input[aria-label="응원글 검색"]').should('be.visible');
       cy.contains('button', '전체').should('be.visible');
-      if (scenario.viewport[0] >= 768) {
+      if (scenario.viewport[0] >= 1024) {
         cy.wait('@getVisualWeeklyLeaderboard');
         cy.contains('팀 정보 요약').should('be.visible');
         cy.contains('테마').should('be.visible');
@@ -307,7 +335,7 @@ describe('Cheer visual audit matrix', () => {
         }
         cy.contains('주간 포인트 리더').should('exist');
         cy.contains('주간리더').should('exist');
-      } else {
+      } else if (scenario.viewport[0] < 768) {
         cy.get('[data-testid="cheer-mobile-bottom-nav"]').should('be.visible');
       }
 

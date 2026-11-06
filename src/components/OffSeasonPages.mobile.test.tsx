@@ -154,6 +154,23 @@ test('offseason home owns deterministic query states and never renders a negativ
   assert.doesNotMatch(startedHtml, /D--152/);
 });
 
+test('offseason home replaces unverified award and postseason claims with a manual-data state', () => {
+  const html = renderAt(
+    OffSeasonHomeHighlightsRuntime as unknown as ComponentType<Record<string, unknown>>,
+    {
+      awards: [{ award: 'QA_ONLY', playerName: 'QA_ONLY', team: 'QA_ONLY', stats: 'QA_ONLY' }],
+      rankings: [visualQaRanking],
+      isLargeScreen: false,
+      manualDataRequired: true,
+    },
+  );
+
+  assert.match(html, /data-testid="offseason-manual-data-required"/);
+  assert.match(html, /요청한 시즌 결과는 아직 준비되지 않았습니다/);
+  assert.match(html, /운영자가 검증된 내부 자료를 제공하면 다시 표시됩니다/);
+  assert.doesNotMatch(html, /시상식 결과|2025 포스트시즌 결과|최종 순위|QA_ONLY|V3/);
+});
+
 test('offseason home keeps navigation, badges, awards, and long copy inside 320px', () => {
   const primaryHtml = renderAt(
     OffSeasonHomePrimaryRuntime as ComponentType<Record<string, unknown>>,

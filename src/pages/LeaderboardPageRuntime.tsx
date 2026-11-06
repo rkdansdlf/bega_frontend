@@ -98,6 +98,7 @@ export default function LeaderboardPageRuntime({
     tickerMessages,
     hotStreaks: hotStreakEntries,
     isLoading,
+    isError: !leaderboardStateOverride && Boolean(leaderboardQuery.error),
     currentUserHandle,
     onRefresh: handleRefresh,
     onPredict: handlePredict,

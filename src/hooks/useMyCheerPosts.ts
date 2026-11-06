@@ -17,6 +17,7 @@ export interface MyCheerPostsVisualQaStateOverride {
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
   isError: boolean;
+  isFetchNextPageError?: boolean;
   isEmpty: boolean;
   emptyMessage: string;
   errorMessage: string;
@@ -38,6 +39,7 @@ export const useMyCheerPosts = (visualQaStateOverride?: MyCheerPostsVisualQaStat
     refetch,
     error,
     isError,
+    isFetchNextPageError,
   } = useInfiniteQuery({
     queryKey: PRIVATE_QUERY_KEYS.cheerMyPosts({ size: MY_CHEER_POSTS_PAGE_SIZE }, viewerScope),
     queryFn: ({ pageParam = 0 }) => fetchMyCheerPosts({
@@ -76,6 +78,7 @@ export const useMyCheerPosts = (visualQaStateOverride?: MyCheerPostsVisualQaStat
     fetchNextPage: visualQaStateOverride?.fetchNextPage ?? fetchNextPage,
     refetch: visualQaStateOverride?.refetch ?? refetch,
     isError: visualQaStateOverride?.isError ?? isError,
+    isFetchNextPageError: visualQaStateOverride?.isFetchNextPageError ?? isFetchNextPageError,
     isEmpty: visualQaStateOverride?.isEmpty ?? posts.length === 0,
     emptyMessage: visualQaStateOverride?.emptyMessage ?? '작성한 응원석 글이 없습니다',
     errorMessage: visualQaStateOverride?.errorMessage ?? (errorStatus === 404

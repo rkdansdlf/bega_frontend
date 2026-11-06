@@ -43,3 +43,14 @@ test('admin stat card contains unbroken labels and deterministic animated frames
   assert.match(markup, new RegExp(label));
   assert.match(markup, />937</);
 });
+
+test('admin stat card separates mobile icon and full-width text while restoring desktop layout', () => {
+  const markup = renderToStaticMarkup(
+    <StatCard animate={false} color="amber" icon={AdminUsersIcon} label="전체 사용자" value={123456} />,
+  );
+  assert.match(markup, /p-3 shadow-lg sm:p-6/);
+  assert.match(markup, /flex-col-reverse[^\"]*sm:flex-row/);
+  assert.match(markup, /w-full min-w-0 flex-1 sm:w-auto/);
+  assert.match(markup, /전체 사용자/);
+  assert.match(markup, /123,456/);
+});

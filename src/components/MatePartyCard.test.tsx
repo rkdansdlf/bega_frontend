@@ -70,6 +70,7 @@ test('MatePartyCard exposes favorite toggle state separately from detail navigat
 
   assert.match(html, /aria-label="찜 해제"/);
   assert.match(html, /aria-pressed="true"/);
+  assert.match(html, /data-testid="mate-party-card-favorite"[^>]*data-vqa-overlap="allowed"/);
   assert.match(html, /파티 상세 보기/);
 });
 
@@ -94,4 +95,5 @@ test('PartyRow and PartyCompact expose disabled favorite buttons while updating'
   assert.match(rowHtml, /disabled=""/);
   assert.match(compactHtml, /aria-label="찜하기"/);
   assert.match(compactHtml, /disabled=""/);
+  assert.match(compactHtml, /flex items-center gap-1\.5 sm:gap-3/);
 });

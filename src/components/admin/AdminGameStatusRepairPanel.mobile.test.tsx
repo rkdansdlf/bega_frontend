@@ -135,7 +135,7 @@ test('admin game-status repair panel contains tables, histories, and pressure co
 
   assert.match(source, /import\.meta\.env\?\.PROD/);
   assert.match(source, /if \(visualQaState\) \{/);
-  assert.match(source, /data-testid="admin-game-status-panel" className="min-w-0 space-y-6 overflow-hidden \[overflow-wrap:anywhere\]"/);
+  assert.match(source, /data-testid="admin-game-status-panel" className="min-w-0 space-y-6 overflow-hidden pb-\[calc\(var\(--mobile-chrome-height\)\+var\(--mobile-chrome-bottom-offset\)\+env\(safe-area-inset-bottom\)\+128px\)\] lg:pb-0 \[overflow-wrap:anywhere\]"/);
   assert.ok((source.match(/p-4 shadow-2xl sm:p-6/g)?.length ?? 0) >= 4);
   assert.equal(source.match(/max-h-\[60dvh\] overflow-auto overscroll-contain/g)?.length, 4);
   assert.equal(source.match(/<Table className="min-w-\[860px\]">/g)?.length, 3);

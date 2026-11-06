@@ -59,6 +59,58 @@ const captureViewport = (name: string) => {
   cy.screenshot(`auth-secondary-pages/${name}-bottom`, { capture: 'viewport' });
 };
 
+const captureOAuthDescription = (name: string) => {
+  cy.window().then((win) => {
+    const header = win.document.querySelector('[data-slot="auth-header"]');
+    if (!header) {
+      throw new Error('OAuth auth header should exist before capture');
+    }
+
+    const documentTop = header.getBoundingClientRect().top + win.scrollY;
+    win.scrollTo(0, Math.max(0, documentTop - 80));
+  });
+  cy.screenshot(`auth-secondary-pages/${name}-description`, { capture: 'viewport' });
+};
+
+const assertOAuthDescriptionHasNoTwoCharacterTail = () => {
+  cy.get('[data-slot="auth-header"] .auth-description')
+    .should('be.visible')
+    .and('have.text', '소셜 가입 이메일을 안전하게 확인합니다.')
+    .then(($description) => {
+      const textNode = $description[0].firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+        throw new Error('OAuth description should render as a text node');
+      }
+
+      const text = textNode.textContent ?? '';
+      const range = document.createRange();
+      const visibleCharacterCountByLine = new Map<number, number>();
+
+      for (let offset = 0; offset < text.length; offset += 1) {
+        if (/\s/u.test(text[offset])) {
+          continue;
+        }
+
+        range.setStart(textNode, offset);
+        range.setEnd(textNode, offset + 1);
+        const rect = range.getBoundingClientRect();
+        if (rect.height <= 0) {
+          continue;
+        }
+
+        const lineTop = Math.round(rect.top);
+        visibleCharacterCountByLine.set(
+          lineTop,
+          (visibleCharacterCountByLine.get(lineTop) ?? 0) + 1,
+        );
+      }
+
+      const lineCharacterCounts = Array.from(visibleCharacterCountByLine.values());
+      const finalLineCharacterCount = lineCharacterCounts[lineCharacterCounts.length - 1] ?? 0;
+      expect(finalLineCharacterCount, 'non-whitespace characters on the final line').to.be.greaterThan(2);
+    });
+};
+
 describe('secondary authentication pages visual acceptance', () => {
   for (const viewport of viewports) {
     for (const theme of themes) {
@@ -119,7 +171,7 @@ describe('secondary authentication pages visual acceptance', () => {
         cy.viewport(viewport.width, viewport.height);
         blockExternalAndUnmockedApiRequests();
 
-        cy.intercept({ method: 'GET', pathname: '/api/auth/account/deletion/recovery' }, {
+        cy.intercept({ method: 'POST', pathname: '/api/auth/account/deletion/recovery/info' }, {
           statusCode: 200,
           body: { success: true, data: { scheduledFor: '2026-12-31T09:00:00.000Z' } },
         }).as('getRecoveryInfo');
@@ -194,4 +246,84 @@ describe('secondary authentication pages visual acceptance', () => {
       });
     }
   }
+
+  [
+    { width: 320, theme: 'light' as const },
+    { width: 320, theme: 'dark' as const },
+    { width: 390, theme: 'light' as const },
+    { width: 390, theme: 'dark' as const },
+  ].forEach(({ width, theme }) => {
+    it(`rechecks OAuth email confirmation copy at ${width}px in ${theme}`, () => {
+      cy.viewport(width, 844);
+      blockExternalAndUnmockedApiRequests();
+
+      visitWithTheme('/oauth/email/confirm', theme);
+      cy.get('[data-testid="oauth-email-confirm-error-state"]').should('be.visible');
+      assertOAuthDescriptionHasNoTwoCharacterTail();
+      captureOAuthDescription(`oauth-email-confirm-${width}-${theme}-copy`);
+    });
+  });
+
+  [
+    { width: 320, theme: 'light' as const },
+    { width: 320, theme: 'dark' as const },
+    { width: 390, theme: 'light' as const },
+    { width: 390, theme: 'dark' as const },
+  ].forEach(({ width, theme }) => {
+    it(`rechecks OAuth email confirmation at ${width}px in ${theme} with 32px root text`, () => {
+      cy.viewport(width, 844);
+      blockExternalAndUnmockedApiRequests();
+
+      let confirmCount = 0;
+      cy.intercept('POST', '**/api/auth/oauth2/email-challenge/confirm', (request) => {
+        confirmCount += 1;
+        expect(request.body).to.have.property('token');
+
+        if (confirmCount === 1) {
+          request.reply({
+            statusCode: 200,
+            body: { success: true, data: { confirmed: true, userId: 314159 } },
+          });
+          return;
+        }
+
+        request.reply({
+          statusCode: 410,
+          body: {
+            success: false,
+            code: 'OAUTH_EMAIL_CHALLENGE_EXPIRED',
+            message: '이메일 확인 링크가 만료되었습니다.',
+          },
+        });
+      }).as('confirmOAuthEmailLargeText');
+
+      const applyLargeTextAndCapture = (name: string) => {
+        cy.document().then((doc) => {
+          doc.documentElement.style.fontSize = '32px';
+        });
+        assertOAuthDescriptionHasNoTwoCharacterTail();
+        captureOAuthDescription(`oauth-email-confirm-${width}-${theme}-32px-${name}`);
+      };
+
+      visitWithTheme('/oauth/email/confirm', theme);
+      cy.get('[data-testid="oauth-email-confirm-error-state"]')
+        .should('be.visible')
+        .and('contain.text', '이메일 확인 토큰이 없습니다.');
+      applyLargeTextAndCapture('missing-token');
+
+      visitWithTheme('/oauth/email/confirm?token=visual-only-email-token', theme);
+      cy.wait('@confirmOAuthEmailLargeText')
+        .its('request.body')
+        .should('deep.equal', { token: 'visual-only-email-token' });
+      cy.get('[data-testid="oauth-email-confirmed-state"]').should('be.visible');
+      applyLargeTextAndCapture('verified');
+
+      visitWithTheme('/oauth/email/confirm?token=visual-only-expired-email-token', theme);
+      cy.wait('@confirmOAuthEmailLargeText')
+        .its('request.body')
+        .should('deep.equal', { token: 'visual-only-expired-email-token' });
+      cy.get('[data-testid="oauth-email-confirm-expired-state"]').should('be.visible');
+      applyLargeTextAndCapture('expired');
+    });
+  });
 });

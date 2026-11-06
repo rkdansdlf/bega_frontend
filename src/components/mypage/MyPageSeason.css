@@ -514,6 +514,55 @@
   animation: mypage-season-scope-fade 0.2s ease-out both;
 }
 
+@media (max-width: 767px) {
+  .mypage-blocked-settings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mypage-blocked-settings > .mypage-settings-content-transition {
+    min-width: 0;
+  }
+
+  .mypage-blocked-panel {
+    min-width: 0;
+    max-width: 100%;
+    padding: theme(spacing.3);
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+
+  .mypage-blocked-panel > div:first-child > svg {
+    flex-shrink: 0;
+  }
+
+  .mypage-blocked-row {
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: theme(spacing.3);
+    padding: theme(spacing.3);
+  }
+
+  .mypage-blocked-identity {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 0;
+  }
+
+  .mypage-blocked-identity > .flex-col {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mypage-blocked-panel [data-testid='profile-unblock-button'] {
+    width: 100%;
+    flex-direction: column;
+    white-space: normal;
+    padding-inline: theme(spacing.3);
+  }
+}
+
 .mypage-profile-team-chip-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));

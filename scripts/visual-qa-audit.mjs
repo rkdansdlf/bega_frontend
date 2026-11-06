@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   AUTHED_ROUTES,
+  AUDIT_USER,
   DEFAULT_ROUTES as REFLOW_DEFAULT_ROUTES,
   isApiRequestUrl,
   LOGGED_OUT_ROUTES,
@@ -111,7 +112,7 @@ export const DEFAULT_STATE_SCENARIOS = [
     minWidth: 320,
     maxWidth: 390,
     trigger: '[data-testid="mypage-toggle-stats"]',
-    ready: '[data-testid="mypage-monthly-visit-bars"]',
+    ready: '[data-screen-label="나의 기록"]',
     focusSelector: '[data-testid="mypage-toggle-stats"]',
   },
 ];
@@ -119,6 +120,13 @@ export const DEFAULT_STATE_SCENARIOS = [
 export const viewportForWidth = (width) => ({
   width,
   height: width <= 430 ? 844 : width <= 834 ? 1024 : 900,
+});
+
+export const buildVisualQaContextOptions = ({ viewport, storageState, allowApi = false }) => ({
+  viewport,
+  deviceScaleFactor: 1,
+  ...(!allowApi ? { serviceWorkers: 'block' } : {}),
+  ...(storageState ? { storageState } : {}),
 });
 
 export const buildVisualQaScenarioRuns = ({
@@ -327,14 +335,14 @@ export const VISUAL_QA_PROBE = () => {
     if (right <= left || bottom <= top) return null;
     return { left, right, top, bottom, width: right - left, height: bottom - top };
   };
-  const visible = (element) => {
+  const rendered = (element) => {
     const style = getComputedStyle(element);
-    const rect = visibleRectOf(element);
-    return rect !== null
+    return element.getClientRects().length > 0
       && style.display !== 'none'
       && style.visibility !== 'hidden'
       && Number(style.opacity) !== 0;
   };
+  const visible = (element) => rendered(element) && visibleRectOf(element) !== null;
   if (!activeSurface) {
     const visibleModalSurfaces = [...document.querySelectorAll('[aria-modal="true"]')].filter(visible);
     activeSurface = visibleModalSurfaces.at(-1) ?? null;
@@ -596,7 +604,7 @@ export const VISUAL_QA_PROBE = () => {
   }
 
   const interactiveCandidates = [...new Set(document.querySelectorAll(interactiveQuery))]
-    .filter((element) => inActiveSurface(element) && !ignored(element) && visible(element) && !element.hasAttribute('disabled'));
+    .filter((element) => inActiveSurface(element) && !ignored(element) && rendered(element) && !element.hasAttribute('disabled'));
   const effectiveTouchTarget = (element) => {
     if (element instanceof HTMLInputElement && ['checkbox', 'radio'].includes(element.type)) {
       const associatedLabel = element.labels?.[0];
@@ -770,28 +778,52 @@ export const installLocalOnlyRoutes = async (context, baseUrl) => {
 };
 
 const prepareAuthedContext = async (browser, options) => {
-  const context = await browser.newContext({
+  const context = await browser.newContext(buildVisualQaContextOptions({
     viewport: options.viewports?.[0] ?? viewportForWidth(options.widths[0]),
-    deviceScaleFactor: 1,
-    ...(options.storageState ? { storageState: options.storageState } : {}),
-  });
+    storageState: options.storageState,
+    allowApi: options.allowApi,
+  }));
   if (!options.allowApi) {
     await installLocalOnlyRoutes(context, options.baseUrl);
     await stubApi(context, { allowedOrigin: new URL(options.baseUrl).origin });
+    await installSyntheticAuthProfile(context);
+  } else {
+    await context.addInitScript(() => {
+      try {
+        window.localStorage.setItem('auth-bootstrap-hint', '1');
+      } catch { /* protected routes remain gated */ }
+    });
   }
-  await context.addInitScript(() => {
-    try {
-      window.localStorage.setItem('auth-bootstrap-hint', '1');
-    } catch { /* public routes remain scannable */ }
-  });
   return context;
 };
 
+export const installSyntheticAuthProfile = async (context) => {
+  await context.addInitScript(({ user, accessToken }) => {
+    window.__BEGA_TEST_AUTH_PROFILE__ = { data: user };
+    try {
+      window.localStorage.setItem('auth-storage', JSON.stringify({
+        state: {
+          user,
+          isLoggedIn: true,
+          isAdmin: user.role === 'ROLE_ADMIN' || user.role === 'ROLE_SUPER_ADMIN',
+          isAuthLoading: false,
+        },
+        version: 0,
+      }));
+      window.localStorage.setItem('accessToken', accessToken);
+      window.localStorage.setItem('auth-bootstrap-hint', '1');
+      window.localStorage.setItem('bega_has_visited', 'true');
+      window.localStorage.setItem('bega_dont_show_guide', 'true');
+      window.document.cookie = `Authorization=${accessToken}; path=/`;
+    } catch { /* the explicit profile fixture still bootstraps */ }
+  }, { user: AUDIT_USER, accessToken: 'visual-qa-synthetic-token' });
+};
+
 const prepareLoggedOutContext = async (browser, options) => {
-  const context = await browser.newContext({
+  const context = await browser.newContext(buildVisualQaContextOptions({
     viewport: options.viewports?.[0] ?? viewportForWidth(options.widths[0]),
-    deviceScaleFactor: 1,
-  });
+    allowApi: options.allowApi,
+  }));
   if (!options.allowApi) {
     await installLocalOnlyRoutes(context, options.baseUrl);
     const allowedOrigin = new URL(options.baseUrl).origin;
@@ -822,9 +854,73 @@ const normalizeRoutePathname = (pathname) => pathname === '/'
   ? '/'
   : pathname.replace(/\/+$/, '');
 
-export const routeWasReached = (requested, actual) => (
-  normalizeRoutePathname(actual) === normalizeRoutePathname(routePathname(requested))
-);
+const EXPECTED_ROUTE_REDIRECTS = new Map([
+  ['/mypage/@testuser', '/profile/@testuser'],
+]);
+
+export const routeWasReached = (requested, actual) => {
+  const requestedPathname = normalizeRoutePathname(routePathname(requested));
+  const expectedPathname = EXPECTED_ROUTE_REDIRECTS.get(requestedPathname) ?? requestedPathname;
+  return normalizeRoutePathname(actual) === expectedPathname;
+};
+
+// The runtime fallback currently has no dedicated marker. Match its heading
+// together with its runtime-specific feedback form to avoid ordinary dialogs.
+export const installRuntimeBoundaryObserver = async (page) => {
+  await page.addInitScript(() => {
+    const isVisible = (element) => {
+      if (!element.getClientRects().length) return false;
+      for (let node = element; node; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+      }
+      return true;
+    };
+    const candidates = () => Array.from(document.querySelectorAll('#root h1')).filter((heading) => {
+      if (heading.textContent?.trim() !== '문제가 발생했습니다') return false;
+      const container = heading.parentElement;
+      const form = container?.querySelector(':scope > [data-testid="error-feedback"] #error-feedback-runtime');
+      return Boolean(form);
+    });
+    const visibleCandidates = () => candidates().filter((heading) => {
+      const form = heading.parentElement?.querySelector(':scope > [data-testid="error-feedback"] #error-feedback-runtime');
+      return Boolean(form && isVisible(heading) && isVisible(form));
+    });
+    const current = () => visibleCandidates().length > 0;
+    window.__visualQaRuntimeBoundarySeen = false;
+    window.__visualQaRuntimeBoundaryCurrent = current;
+    window.__visualQaVisibleRuntimeBoundaries = visibleCandidates;
+    window.__visualQaIgnoredRuntimeBoundaries = new WeakSet();
+    const check = (records = []) => {
+      for (const record of records) {
+        for (const node of record.removedNodes) {
+          if (node.nodeType !== Node.ELEMENT_NODE) continue;
+          if (node.matches('h1')) window.__visualQaIgnoredRuntimeBoundaries.delete(node);
+          for (const heading of node.querySelectorAll('h1')) window.__visualQaIgnoredRuntimeBoundaries.delete(heading);
+        }
+      }
+      if (visibleCandidates().some((heading) => !window.__visualQaIgnoredRuntimeBoundaries.has(heading))) {
+        window.__visualQaRuntimeBoundarySeen = true;
+      }
+    };
+    new MutationObserver(check).observe(document, { subtree: true, childList: true, attributes: true, characterData: true });
+    check();
+  });
+};
+
+export const prepareRuntimeBoundaryObservation = async (page) => {
+  await page.evaluate(() => {
+    window.__visualQaRuntimeBoundarySeen = false;
+    window.__visualQaIgnoredRuntimeBoundaries = new WeakSet(window.__visualQaVisibleRuntimeBoundaries?.() ?? []);
+  }).catch(() => {});
+};
+
+export const assertNoRuntimeBoundary = async (page) => {
+  const found = await page.evaluate(() => Boolean(
+    window.__visualQaRuntimeBoundarySeen || window.__visualQaRuntimeBoundaryCurrent?.(),
+  ));
+  if (found) throw new Error('Global runtime error boundary displayed during scan');
+};
 
 export const createVisualQaOutputStage = async (outputDir, runId = randomUUID()) => {
   const resolvedOutputDir = resolve(outputDir);
@@ -1214,7 +1310,30 @@ export const openVisualQaState = async (page, state, timeout = 5000) => {
     await focusTarget.waitFor({ state: 'visible', timeout });
     await focusTarget.focus();
   }
-  await page.waitForTimeout(300);
+  await waitForVisualQaScrollToSettle(page);
+};
+
+export const waitForVisualQaScrollToSettle = async (page, {
+  stableSamples = 4,
+  sampleIntervalMs = 50,
+  timeoutMs = 2500,
+} = {}) => {
+  await page.evaluate(async ({ stableSamples: requiredStableSamples, sampleIntervalMs: interval, timeoutMs: timeout }) => {
+    const startedAt = Date.now();
+    let previousX = window.scrollX;
+    let previousY = window.scrollY;
+    let stableCount = 0;
+
+    while (stableCount < requiredStableSamples && Date.now() - startedAt < timeout) {
+      await new Promise((resolve) => setTimeout(resolve, interval));
+      const nextX = window.scrollX;
+      const nextY = window.scrollY;
+      if (nextX === previousX && nextY === previousY) stableCount += 1;
+      else stableCount = 0;
+      previousX = nextX;
+      previousY = nextY;
+    }
+  }, { stableSamples, sampleIntervalMs, timeoutMs });
 };
 
 export const runVisualQa = async (options = parseArguments()) => {
@@ -1231,8 +1350,10 @@ export const runVisualQa = async (options = parseArguments()) => {
 
       authedContext = await prepareAuthedContext(browser, options);
       loggedOutContext = await prepareLoggedOutContext(browser, options);
-      const authedPage = await authedContext.newPage();
-      const loggedOutPage = await loggedOutContext.newPage();
+      let authedPage = await authedContext.newPage();
+      let loggedOutPage = await loggedOutContext.newPage();
+      await installRuntimeBoundaryObserver(authedPage);
+      await installRuntimeBoundaryObserver(loggedOutPage);
 
       const previousIssueSignatures = new Map();
       const scenarioRuns = buildVisualQaScenarioRuns(options);
@@ -1243,14 +1364,21 @@ export const runVisualQa = async (options = parseArguments()) => {
         const page = loggedOut ? loggedOutPage : authedPage;
         const scenarioKey = state ? `${route}#state=${state.id}` : route;
         const label = `${route}${state ? ` (${state.name})` : ''} @ ${width}×${viewport.height}px`;
+        let navigationCommitted = false;
         try {
           await page.setViewportSize(viewport);
+          // Fragment-only navigations can reuse a document and its observer.
+          await prepareRuntimeBoundaryObservation(page);
           await page.goto(resolveRouteUrl(options.baseUrl, route), { waitUntil: 'commit' });
+          navigationCommitted = true;
           await settle(page);
           const actualPath = await page.evaluate(() => window.location.pathname);
           if (!routeWasReached(route, actualPath)) throw new Error(`redirected to ${actualPath}`);
+          await assertNoRuntimeBoundary(page);
           if (state) await openVisualQaState(page, state);
+          await assertNoRuntimeBoundary(page);
           const measurement = await page.evaluate(VISUAL_QA_PROBE);
+          await assertNoRuntimeBoundary(page);
           const issues = buildIssues({ route: scenarioKey, viewport, measurement });
           const scenario = {
             route,
@@ -1270,12 +1398,22 @@ export const runVisualQa = async (options = parseArguments()) => {
             });
             scenario.screenshot = `screenshots/${fileName}`;
           }
+          await assertNoRuntimeBoundary(page);
           previousIssueSignatures.set(scenarioKey, signature);
           scenarios.push(scenario);
           console.log(`[visual-qa] ${issues.length ? `REVIEW ${issues.length}` : 'ok'} ${label}`);
         } catch (error) {
           previousIssueSignatures.delete(scenarioKey);
-          const message = error instanceof Error ? error.message : String(error);
+          let message = error instanceof Error ? error.message : String(error);
+          if (navigationCommitted) {
+            try {
+              await assertNoRuntimeBoundary(page);
+            } catch (boundaryError) {
+              if (boundaryError instanceof Error && boundaryError.message.startsWith('Global runtime error boundary')) {
+                message = boundaryError.message;
+              }
+            }
+          }
           scenarios.push({
             route,
             viewport,
@@ -1285,6 +1423,15 @@ export const runVisualQa = async (options = parseArguments()) => {
             ...(state ? { state: { id: state.id, name: state.name } } : {}),
           });
           console.error(`[visual-qa] ERROR ${label} — ${message}`);
+          if (!navigationCommitted) {
+            // Chromium may still commit its internal error page after goto fails.
+            // Isolate the next scenario from that pending navigation.
+            await page.close().catch(() => {});
+            const replacement = await (loggedOut ? loggedOutContext : authedContext).newPage();
+            await installRuntimeBoundaryObserver(replacement);
+            if (loggedOut) loggedOutPage = replacement;
+            else authedPage = replacement;
+          }
         }
       }
     } finally {

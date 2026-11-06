@@ -13,6 +13,40 @@ import {
   type ComponentStateAdapterContext,
 } from './stateAdapters';
 
+test('PowerupGameSelector Visual QA adapter is bounded to manual-data-required synthetic states', () => {
+  const componentId = 'src/components/retro/PowerupGameSelector.tsx#PowerupGameSelector';
+  assert.equal(KNOWN_COMPONENT_STATE_ADAPTER_IDS.includes('retro.powerup-game-selector'), true);
+
+  const result = resolveComponentStateAdapter('retro.powerup-game-selector', {
+    componentId,
+    states: { data: 'manual-required', interactions: 'default', system: 'online' },
+    variants: {},
+  });
+  assert.equal(result.captureSelector, '[data-testid="retro-powerup-game-selector"]');
+  assert.equal(result.theme, 'dark');
+  assert.equal(typeof result.props.onSelectGame, 'function');
+  assert.equal(result.props.selectedGameId, '');
+
+  for (const interaction of ['hover', 'focus-visible', 'pressed']) {
+    assert.equal(typeof resolveComponentStateAdapter('retro.powerup-game-selector', {
+      componentId,
+      states: { data: 'manual-required', interactions: interaction, system: 'online' },
+      variants: {},
+    }).props.onSelectGame, 'function');
+  }
+
+  assert.throws(() => resolveComponentStateAdapter('retro.powerup-game-selector', {
+    componentId: 'src/components/retro/PowerupGameSelector.tsx#WrongComponent',
+    states: { data: 'manual-required', interactions: 'default', system: 'online' },
+    variants: {},
+  }));
+  assert.throws(() => resolveComponentStateAdapter('retro.powerup-game-selector', {
+    componentId,
+    states: { data: 'populated', interactions: 'default', system: 'online' },
+    variants: {},
+  }));
+});
+
 test('SeatMapLegend resolves its fourteen literal synthetic direct props and fails closed', () => {
   const componentId = 'src/components/stadiumSeatMap/SeatMapLegend.tsx#SeatMapLegend';
   const categories = {
@@ -686,6 +720,9 @@ test('HomeSecondaryPanels adapter binds local widgets, failures, calendar, and c
     interactionTargetId: 'featured-mate',
   });
   assert.equal(populated.captureSelector, '[data-testid="home-secondary-panels"]');
+  assert.match(String(populated.surfaceClassName), /w-\[calc\(100%_\+_3rem\)\]/);
+  assert.match(String(populated.surfaceClassName), /-mx-6/);
+  assert.match(String(populated.surfaceClassName), /min-\[1008px\]:mx-auto/);
   assert.equal(populated.theme, 'light');
   assert.equal(populated.props.loggedIn, true);
   assert.equal((populated.props.featuredMates as Array<{ id: number }>)[0]?.id, 9301);
@@ -2281,6 +2318,7 @@ test('loading state adapters are explicit and unknown adapters fail closed', () 
     'retro.pixel-number',
     'retro.pixel-progress-bar',
     'retro.power-up-inventory',
+    'retro.powerup-game-selector',
     'retro.rank-badge',
     'retro.retro-button',
     'retro.retro-card',
@@ -4429,6 +4467,8 @@ test('cheer runtime adapter composes auth, URL surface, lazy children, and recov
   assert.equal(ready.captureSelector, '[data-testid="cheer-runtime-route"]');
   assert.equal(ready.initialPathname, '/cheer');
   assert.equal(ready.theme, 'dark');
+  assert.match(String(ready.surfaceClassName), /(?:^|\s)w-screen(?:\s|$)/);
+  assert.match(String(ready.surfaceClassName), /(?:^|\s)-mx-6(?:\s|$)/);
   assert.equal((ready.props.visualQaStateOverride as { isLoggedIn: boolean }).isLoggedIn, true);
   assert.equal((ready.props.visualQaStateOverride as { shouldRenderFeedRuntime: boolean }).shouldRenderFeedRuntime, true);
   assert.equal(typeof (ready.props.visualQaStateOverride as { feed: { onRetry: () => void } }).feed.onRetry, 'function');
@@ -6803,6 +6843,15 @@ test('admin seat-views panel adapter covers filters, list pressure, lifecycle, a
       });
       const seatViews = result.props.seatViews as unknown[];
       assert.equal(seatViews.length, data === 'empty' ? 0 : data === 'maximum-supported' ? 50 : 1);
+      const page = result.props.seatViewsPage as {
+        content: unknown[];
+        totalElements: number;
+        totalPages: number;
+      } | undefined;
+      assert.ok(page, `seatViewsPage is required for ${data}`);
+      assert.equal(page.content.length, seatViews.length);
+      assert.equal(page.totalElements, seatViews.length);
+      assert.equal(page.totalPages, seatViews.length === 0 ? 0 : 1);
       assert.equal(
         (result.props.seatViewFilters as { moderationStatus: string }).moderationStatus,
         filters === 'active' ? 'PENDING' : 'all',
@@ -10445,6 +10494,9 @@ test('ui-kit-preview-scenarios pin both themes and validate every toggle interac
   assert.equal(light.theme, 'light');
   assert.equal(light.captureSelector, '[data-testid="ui-kit-preview"]');
   assert.match(light.surfaceClassName ?? '', /max-w-\[1024px\]/);
+  assert.match(String(light.surfaceClassName), /w-\[calc\(100%_\+_3rem\)\]/);
+  assert.match(String(light.surfaceClassName), /-mx-6/);
+  assert.match(String(light.surfaceClassName), /min-\[1072px\]:mx-auto/);
 
   const darkToLight = resolveComponentStateAdapter('ui.ui-kit-preview', {
     componentId: 'src/components/ui/UIKitPreview.tsx#UIKitPreview',
@@ -10592,7 +10644,7 @@ test('the base skeleton adapter gives the otherwise size-less primitive a visibl
   const grid = resolveComponentStateAdapter('ui.skeleton.loading', {
     componentId: 'src/components/ui/skeleton.tsx#Skeleton',
     states: { data: 'loading' },
-    variants: { usage: 'usage-56546e2d7373' },
+    variants: { usage: 'usage-43c068675605' },
   });
   assert.match(grid.surfaceClassName ?? '', /grid-cols-2/);
 
@@ -12274,6 +12326,10 @@ test('mate list leaf adapters expose exact stateful wrapper inputs and fail clos
     scenarioKey: 'selected:recruiting:all:light',
   });
   assert.equal(status.captureSelector, '[data-testid="mate-status-tabs"]');
+  assert.match(String(status.surfaceClassName), /w-\[calc\(100%_\+_3rem\)\]/);
+  assert.match(String(status.surfaceClassName), /max-w-\[320px\]/);
+  assert.match(String(status.surfaceClassName), /-mx-6/);
+  assert.match(String(status.surfaceClassName), /min-\[368px\]:mx-auto/);
 
   const sort = resolveComponentStateAdapter('mate.sort-dropdown', {
     componentId: 'src/components/MateSortDropdown.tsx#MateSortDropdown',

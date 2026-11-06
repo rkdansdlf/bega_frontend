@@ -49,6 +49,13 @@ test('date rail owns a contained semantic mobile surface and 44px controls', () 
   assert.match(markup, /전체 0일/);
 });
 
+test('date rail quick-filter columns adapt to large text without splitting Korean labels', () => {
+  const markup = renderFilter();
+
+  assert.match(markup, /grid-cols-\[repeat\(auto-fit,minmax\(min\(100%,5rem\),1fr\)\)\]/);
+  assert.match(markup, /data-testid="mate-date-rail-all"[^>]*class="[^"]*col-span-full/);
+});
+
 test('collapsed production density shows the exact eight-date boundary and reachable expansion', () => {
   const markup = renderFilter();
   const renderedDateButtons = markup.match(/data-testid="mate-date-rail-date-/g) ?? [];

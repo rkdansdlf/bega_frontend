@@ -291,7 +291,7 @@ const AdvancedMatchCard = React.memo(function AdvancedMatchCard({
       className="overflow-hidden border border-slate-200/70 shadow-lg bg-white/90 dark:border-border dark:bg-card dark:shadow-xl transition-colors duration-300 mb-6 rounded-2xl"
       data-vote-resolution={userVoteResolutionState}
     >
-      <div className="p-4 md:p-6">
+      <div className="px-4 py-4 md:p-6">
         <div
           className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 shadow-sm dark:border-border dark:bg-card dark:shadow-md"
           style={surfaceTransitionStyle}

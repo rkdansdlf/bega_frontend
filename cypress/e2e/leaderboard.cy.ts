@@ -123,6 +123,35 @@ describe('Leaderboard page', () => {
         },
       ],
     }).as('getActivePowerups');
+
+    cy.intercept({ method: 'GET', pathname: '/api/matches/day' }, (request) => {
+      request.reply({
+        statusCode: 200,
+        body: {
+          date: request.query.date,
+          games: [{
+            gameId: 'fixture-game-42',
+            gameDate: request.query.date,
+            homeTeam: '합성 홈팀',
+            awayTeam: '합성 원정팀',
+            stadium: '합성 구장',
+            startTime: '18:30',
+            gameStatus: 'SCHEDULED',
+          }, {
+            gameId: 'completed-fixture-game',
+            gameDate: request.query.date,
+            homeTeam: '완료 홈팀',
+            awayTeam: '완료 원정팀',
+            stadium: '합성 구장',
+            gameStatus: 'COMPLETED',
+          }],
+          prevDate: null,
+          nextDate: null,
+          hasPrev: false,
+          hasNext: false,
+        },
+      });
+    }).as('getPowerupGameSchedule');
   });
 
   it('renders leaderboard list, user stats card, ticker and powerups for logged-in users', () => {
@@ -190,5 +219,61 @@ describe('Leaderboard page', () => {
     cy.get('@getMyRank.all').should('have.length.gte', 1);
     cy.contains('야구경기 예측 결과').should('be.visible');
     cy.get('body').should('not.contain.text', 'UNAUTHORIZED');
+  });
+
+  it('requires selecting a game from the internal schedule and sends its ID when using a powerup', () => {
+    (cy as any).login('user');
+
+    cy.intercept({ method: 'GET', pathname: '/api/leaderboard/me' }, {
+      statusCode: 200,
+      body: myRankResponse,
+    });
+    cy.intercept({ method: 'POST', pathname: '/api/leaderboard/powerups/MAGIC_BAT/use' }, {
+      statusCode: 200,
+      body: { success: true, message: '사용 완료', remainingCount: 2 },
+    }).as('useMagicBat');
+
+    cy.visit('/leaderboard');
+    cy.scrollTo('bottom');
+    cy.contains('POWER-UPS', { timeout: 10000 }).should('be.visible');
+    cy.wait('@getPowerupGameSchedule');
+    cy.get('[data-testid="retro-powerup-game-select"]')
+      .should('have.value', '')
+      .and('contain', '합성 원정팀 vs 합성 홈팀')
+      .and('not.contain', '완료 원정팀 vs 완료 홈팀')
+      .select('fixture-game-42');
+    cy.get('[data-testid="retro-powerup-card-scouter"]').should('not.be.disabled');
+    cy.get('[data-testid="retro-powerup-card-magic_bat"]').should('not.be.disabled').click();
+    cy.get('[data-testid="retro-powerup-modal-use"]').click();
+
+    cy.wait('@useMagicBat')
+      .its('request.body')
+      .should('deep.equal', { gameId: 'fixture-game-42' });
+  });
+
+  it('surfaces MANUAL_BASEBALL_DATA_REQUIRED without enabling powerup use when internal schedule data is missing', () => {
+    (cy as any).login('user');
+
+    cy.intercept({ method: 'GET', pathname: '/api/leaderboard/me' }, {
+      statusCode: 200,
+      body: myRankResponse,
+    });
+    cy.intercept({ method: 'GET', pathname: '/api/matches/day' }, {
+      statusCode: 503,
+      body: {
+        code: 'MANUAL_BASEBALL_DATA_REQUIRED',
+        message: '운영자 제공 경기 일정 데이터가 필요합니다.',
+      },
+    }).as('missingInternalSchedule');
+    cy.intercept({ method: 'POST', pathname: '/api/leaderboard/powerups/MAGIC_BAT/use' })
+      .as('unexpectedPowerupUse');
+
+    cy.visit('/leaderboard');
+    cy.scrollTo('bottom');
+    cy.contains('POWER-UPS', { timeout: 10000 }).should('be.visible');
+    cy.wait('@missingInternalSchedule');
+    cy.contains('[role="alert"]', 'MANUAL_BASEBALL_DATA_REQUIRED').should('be.visible');
+    cy.get('[data-testid="retro-powerup-card-magic_bat"]').should('be.disabled');
+    cy.get('@unexpectedPowerupUse.all').should('have.length', 0);
   });
 });

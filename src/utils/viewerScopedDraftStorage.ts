@@ -9,6 +9,8 @@ const LEGACY_OWNERLESS_SESSION_KEYS = [
   'chatbot_current_session_id',
   'chatbot_current_session_title',
   'last_pending_msg',
+  'prediction:run-session:v1',
+  'prediction:run-session',
 ] as const;
 const LEGACY_OWNERLESS_SESSION_PREFIXES = ['mateApplyDraft:'] as const;
 const LEGACY_OWNERLESS_LOCAL_KEYS = ['prediction-storage'] as const;

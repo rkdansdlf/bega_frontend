@@ -1,3 +1,5 @@
+import { getViewerScopedStorageKey, type ViewerId } from './viewerScopedDraftStorage';
+
 export const PREDICTION_NETWORK_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
 export const PREDICTION_NETWORK_RETRY_MAX_ATTEMPTS = PREDICTION_NETWORK_RETRY_DELAYS_MS.length;
 export const PREDICTION_RUN_SESSION_TTL_MS = 120_000;
@@ -21,18 +23,70 @@ export interface PredictionRunSessionV1 {
   timeoutStage: PredictionRunTimeoutStage;
 }
 
-export const readPredictionRunSession = (): string | null => {
-  if (typeof window === 'undefined') {
+type PredictionSessionStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+type PredictionRunSessionScope = { viewerId: number | null; sessionEpoch: number };
+
+const getSessionStorage = (): PredictionSessionStorage | null => {
+  try {
+    return typeof window === 'undefined' ? null : window.sessionStorage;
+  } catch {
     return null;
   }
-
-  return (
-    window.sessionStorage.getItem(PREDICTION_RUN_SESSION_STORAGE_KEY)
-    || window.sessionStorage.getItem(LEGACY_PREDICTION_RUN_SESSION_STORAGE_KEY)
-  );
 };
 
-export const hasPredictionRunSession = (): boolean => Boolean(readPredictionRunSession());
+export const readPredictionRunSession = (
+  viewerId: ViewerId,
+  storage: PredictionSessionStorage | null = getSessionStorage(),
+): string | null => {
+  const key = getViewerScopedStorageKey(PREDICTION_RUN_SESSION_STORAGE_KEY, viewerId);
+  if (!key || !storage) return null;
+
+  try {
+    return storage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+export const writePredictionRunSession = (
+  scope: PredictionRunSessionScope,
+  session: PredictionRunSessionV1,
+  isScopeCurrent: () => boolean,
+  storage: PredictionSessionStorage | null = getSessionStorage(),
+): boolean => {
+  const key = getViewerScopedStorageKey(PREDICTION_RUN_SESSION_STORAGE_KEY, scope.viewerId);
+  if (!key || !storage || !isScopeCurrent()) return false;
+
+  try {
+    storage.setItem(key, JSON.stringify(session));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const removePredictionRunSession = (
+  scope: PredictionRunSessionScope,
+  isScopeCurrent: () => boolean,
+  storage: PredictionSessionStorage | null = getSessionStorage(),
+): boolean => {
+  const key = getViewerScopedStorageKey(PREDICTION_RUN_SESSION_STORAGE_KEY, scope.viewerId);
+  if (!key || !storage || !isScopeCurrent()) return false;
+
+  try {
+    storage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const hasPredictionRunSession = (
+  viewerId: ViewerId,
+  storage?: PredictionSessionStorage | null,
+): boolean => (
+  Boolean(readPredictionRunSession(viewerId, storage))
+);
 
 export const emitPredictionRunSessionUpdated = () => {
   if (typeof window === 'undefined') {

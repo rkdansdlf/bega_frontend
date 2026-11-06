@@ -20,6 +20,7 @@ import { useViewerQueryScope } from '../../hooks/useViewerQueryScope';
 import VerificationRequiredDialog from '../VerificationRequiredDialog';
 import { Button } from '../ui/button';
 import MyPageSeasonEmptyState from './MyPageSeasonEmptyState';
+import AccountSettingsReadError from './AccountSettingsReadError';
 import {
   MyPageClockIcon,
   MyPageLaptopIcon,
@@ -94,6 +95,8 @@ export default function AccountSettingsSecurityRuntime({
   const isSecurityEventsLoading = visualQaStateOverride?.isSecurityEventsLoading
     ?? securityEventsQuery.isLoading;
   const refetchSecurityEvents = securityEventsQuery.refetch;
+  const isSecurityEventsError = visualQaStateOverride === undefined && securityEventsQuery.isError;
+  const hasSecurityEventsData = visualQaStateOverride !== undefined || securityEventsQuery.data !== undefined;
 
   const deviceSessionsQuery = useQuery<DeviceSessionItem[]>({
     queryKey: PRIVATE_QUERY_KEYS.accountSessions(viewerScope),
@@ -108,6 +111,7 @@ export default function AccountSettingsSecurityRuntime({
     ? new Error(visualQaStateOverride.sessionErrorMessage)
     : deviceSessionsQuery.error;
   const refetchDeviceSessions = deviceSessionsQuery.refetch;
+  const hasSessionData = visualQaStateOverride === undefined ? deviceSessionsQuery.data !== undefined : deviceSessions.length > 0;
 
   const trustedDevicesQuery = useQuery<TrustedDeviceItem[]>({
     queryKey: ['trustedDevices'],
@@ -302,36 +306,26 @@ export default function AccountSettingsSecurityRuntime({
 
   return (
     <div data-testid="account-settings-security-runtime" className="contents">
-      <section className="mb-8">
+      <section className="mypage-account-sessions mb-8">
         <h3 className="mb-4 text-body font-semibold text-muted-foreground">현재 기기</h3>
+        {isSessionError && <AccountSettingsReadError source="sessions" title="기기 정보를 불러오지 못했습니다."
+          description={<>다시 시도해 주세요.{sessionError instanceof Error ? ` (${sessionError.message})` : ''}</>}
+          isRetrying={deviceSessionsQuery.isFetching} onRetry={visualQaStateOverride === undefined ? refetchDeviceSessions : undefined} />}
         {isSessionLoading ? (
           <p className="text-body text-muted-foreground">기기 정보를 불러오는 중입니다.</p>
-        ) : isSessionError ? (
-          <MyPageSeasonEmptyState
-            className="mypage-season-empty--flush"
-            tone="danger"
-            icon={<MyPageShieldAlertIcon className="h-5 w-5" />}
-            title="기기 정보를 불러오지 못했습니다."
-            description={(
-              <>
-                다시 시도해 주세요.
-                {sessionError instanceof Error ? ` (${sessionError.message})` : ''}
-              </>
-            )}
-          />
         ) : sortedDeviceSessions.length > 0 ? (
           <div className="space-y-3">
             {sortedDeviceSessions.map((session) => (
               <div
                 key={session.id}
-                className="rounded-xl border border-border bg-card/70 px-4 py-3"
+                className="mypage-account-session-card rounded-xl border border-border bg-card/70 px-4 py-3"
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex min-w-0 items-start gap-3">
+                <div className="mypage-account-session-layout flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="mypage-account-session-identity flex min-w-0 items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted/50 text-foreground">
                       {getSessionIcon(session.deviceType)}
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="mypage-account-session-info min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-body font-semibold text-foreground">
                           {session.deviceLabel || session.deviceType || '알 수 없음'}
@@ -363,7 +357,7 @@ export default function AccountSettingsSecurityRuntime({
                         {[session.browser || '브라우저', session.os || 'OS'].filter(Boolean).join(' · ')}
                       </p>
 
-                      <div className="mt-3 grid gap-2 text-body text-muted-foreground sm:grid-cols-2">
+                      <div className="mypage-account-session-meta mt-3 grid gap-2 text-body text-muted-foreground sm:grid-cols-2">
                         <div className="rounded-md bg-muted/40 px-2.5 py-2">
                           <p className="font-semibold text-foreground/90">최근 활동</p>
                           <p className="mt-1">
@@ -405,7 +399,7 @@ export default function AccountSettingsSecurityRuntime({
               </Button>
             )}
           </div>
-        ) : (
+        ) : isSessionError && !hasSessionData ? null : (
           <MyPageSeasonEmptyState
             className="mypage-season-empty--flush"
             icon={<MyPageLaptopIcon className="h-5 w-5" />}
@@ -415,8 +409,10 @@ export default function AccountSettingsSecurityRuntime({
         )}
       </section>
 
-      <section className="mb-8">
+      <section className="mypage-account-events mb-8">
         <h3 className="mb-4 text-body font-semibold text-muted-foreground">최근 보안 활동</h3>
+        {isSecurityEventsError && <AccountSettingsReadError source="events" title="보안 활동을 불러오지 못했습니다."
+          isRetrying={securityEventsQuery.isFetching} onRetry={refetchSecurityEvents} />}
         {isSecurityEventsLoading ? (
           <p className="text-body text-muted-foreground">최근 보안 활동을 불러오는 중입니다.</p>
         ) : securityEvents.length > 0 ? (
@@ -426,18 +422,18 @@ export default function AccountSettingsSecurityRuntime({
               return (
                 <div
                   key={event.id}
-                  className="rounded-xl border border-border bg-card/70 px-4 py-3"
+                  className="mypage-account-event-card rounded-xl border border-border bg-card/70 px-4 py-3"
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="mypage-account-event-identity flex items-start gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted/50 text-foreground">
                       <MyPageClockIcon className="w-4 h-4" />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="mypage-account-event-content min-w-0 flex-1">
+                      <div className="mypage-account-event-layout flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <p className="text-body font-semibold leading-5 text-foreground">
                           {event.message}
                         </p>
-                        <span className="shrink-0 text-body text-muted-foreground">
+                        <span className="mypage-account-event-time shrink-0 text-body text-muted-foreground">
                           {formatSessionTime(event.occurredAt)}
                         </span>
                       </div>
@@ -450,7 +446,7 @@ export default function AccountSettingsSecurityRuntime({
               );
             })}
           </div>
-        ) : (
+        ) : isSecurityEventsError && !hasSecurityEventsData ? null : (
           <MyPageSeasonEmptyState
             className="mypage-season-empty--flush"
             icon={<MyPageClockIcon className="h-5 w-5" />}
@@ -462,8 +458,8 @@ export default function AccountSettingsSecurityRuntime({
 
       <section className="border-t border-border pt-6">
         <div className="rounded-xl border border-border bg-gradient-to-br from-muted/80 via-card to-card p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+          <div className="mypage-account-advanced-layout flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="mypage-account-advanced-copy flex flex-col items-center text-center sm:items-start sm:text-left">
               <div className="space-y-1.5">
                 <p className="font-semibold">고급 설정</p>
                 <p className="text-body leading-relaxed text-muted-foreground">

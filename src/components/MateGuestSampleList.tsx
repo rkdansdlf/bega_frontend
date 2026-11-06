@@ -22,15 +22,15 @@ export default function MateGuestSampleList() {
         <article
           key={sample.title}
           data-testid="mate-guest-sample-card"
-          className="rounded-xl border border-border bg-muted/50 px-4 py-3.5"
+          className="rounded-xl border border-border bg-muted/50 px-2 py-3.5 sm:px-4"
         >
           <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-12 font-black text-primary">
             {sample.tag}
           </span>
-          <h2 className="mt-3 text-15 font-black leading-5 text-foreground">
+          <h2 className="mt-3 text-15 font-black leading-5 text-foreground max-sm:break-keep">
             {sample.title}
           </h2>
-          <p className="mt-1 text-sm font-bold leading-5 text-muted-foreground">
+          <p className="mt-1 text-sm font-bold leading-5 text-muted-foreground max-sm:break-keep">
             {sample.meta}
           </p>
         </article>
