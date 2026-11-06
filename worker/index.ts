@@ -123,8 +123,9 @@ export default {
     }
 
     // Soft-404 fix: unknown HTML navigations must not fall through to index.html (200).
+    // Case/encoding variants of the recovery path land here too; keep the no-referrer policy on them.
     if (isHtmlNavigation(request) && !isKnownSpaRoute(pathname)) {
-      return buildNotFoundResponse(request);
+      return protectRecoveryReferrer(request, url.pathname, buildNotFoundResponse(request));
     }
 
     // Stadium details: only prerendered (known) ids get 200; everything else is a hard 404.
