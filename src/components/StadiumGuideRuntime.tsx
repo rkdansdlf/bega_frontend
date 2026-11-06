@@ -452,7 +452,8 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
                       상단의 구장 선택 메뉴에서 원하는 구장을 먼저 선택하세요.
                     </p>
                   )}
-                  {selectedStadium && !KAKAO_API_KEY && (
+                  {/* 운영자용 안내라 개발 빌드에서만 보여 준다. 일반 사용자 화면에는 위의 일반 문구만 남긴다. */}
+                  {import.meta.env.DEV && selectedStadium && !KAKAO_API_KEY && (
                     <p className="stadium-guide-muted mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:bg-[rgba(0,0,0,0.82)] dark:text-white">
                       운영 환경의 카카오맵 JavaScript API 키 설정을 확인해야 합니다.
                     </p>
