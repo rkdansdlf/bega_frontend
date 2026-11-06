@@ -28,7 +28,7 @@ const leaderboardRowStyles = `
     min-width: 0;
     width: 100%;
     display: grid;
-    grid-template-columns: 60px minmax(0, 1fr) 100px 80px;
+    grid-template-columns: 60px minmax(0, 1fr) minmax(100px, max-content) 80px;
     align-items: center;
     gap: 10px;
     padding: 8px 16px;
@@ -111,6 +111,13 @@ const leaderboardRowStyles = `
     text-align: right;
   }
 
+  /* 7자리(100만) 이상 점수는 칸에 들어가지 않아 말줄임되므로, 글자를 줄여 값 전체를 보존한다.
+     점수 칸은 minmax(최소, max-content)라 그래도 모자란 만큼만 넓어지고 이름 칸이 그만큼 줄어든다. */
+  .retro-leaderboard-score-cell[data-long-score='true'] {
+    font-size: 0.8em;
+    letter-spacing: 0;
+  }
+
   .retro-leaderboard-streak-cell {
     display: flex;
     justify-content: center;
@@ -119,7 +126,7 @@ const leaderboardRowStyles = `
 
   @media (max-width: 640px) {
     .retro-leaderboard-row {
-      grid-template-columns: 50px minmax(0, 1fr) 80px;
+      grid-template-columns: 50px minmax(0, 1fr) minmax(80px, max-content);
       gap: 8px;
       padding: 8px 4px;
     }
@@ -257,7 +264,12 @@ const LeaderboardRow = forwardRef<HTMLDivElement, LeaderboardRowProps>(({
         </div>
       </div>
 
-      <div className="retro-leaderboard-score-cell">{entry.score.toLocaleString()}</div>
+      <div
+        className="retro-leaderboard-score-cell"
+        data-long-score={entry.score.toLocaleString().length > 8 ? 'true' : undefined}
+      >
+        {entry.score.toLocaleString()}
+      </div>
 
       <div className="retro-leaderboard-streak-cell">{entry.streak}</div>
     </div>
