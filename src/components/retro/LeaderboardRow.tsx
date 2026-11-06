@@ -132,6 +132,23 @@ const leaderboardRowStyles = `
       display: none;
     }
   }
+
+  /* 320px대에서는 이름 칸이 약 50px(3글자)뿐이라 평범한 닉네임도 말줄임된다.
+     아바타(36px + 간격 12px)를 숨겨 칸을 넓히고, 그래도 긴 닉네임은 2줄까지 보여 준다. */
+  @media (max-width: 359px) {
+    .retro-leaderboard-avatar {
+      display: none;
+    }
+
+    .retro-leaderboard-name {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
+    }
+  }
 `;
 
 const ensureLeaderboardRowStyles = () => {
