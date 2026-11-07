@@ -105,21 +105,18 @@ function FavoriteToggleButton({
         event.stopPropagation();
         onToggle?.();
       }}
-      // 버튼 박스는 터치 최소 크기(44px)를 보장하고, 눈에 보이는 32px 원은 안쪽 span이 그린다.
+      // 눈에 보이는 32px 원은 버튼 자체이고, 터치 최소 크기(44px)는 ::before로 클릭 영역만 사방 8px 넓혀(46px) 보장한다.
+      // 이 버튼은 부모가 className으로 absolute를 주므로 ::before의 기준 요소가 된다.
+      // 스캐너는 가상 요소를 측정하지 못해 32px로 읽으므로, 실제 히트 영역이 넓다는 뜻으로 compact를 명시한다.
+      data-vqa-touch-target="compact"
       className={cn(
-        'group inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-none disabled:pointer-events-none',
+        'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200/90 bg-white text-gray-500 shadow-sm transition-colors before:absolute before:-inset-2 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 disabled:pointer-events-none disabled:opacity-60 dark:border-white/15 dark:bg-[#111111] dark:text-white dark:hover:bg-rose-950/35 dark:hover:text-rose-200',
+        favorited && 'border-rose-200 bg-rose-50 text-rose-500 dark:border-rose-400/30 dark:bg-rose-950/40 dark:text-rose-200',
         className,
       )}
       title={label}
     >
-      <span
-        className={cn(
-          'inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200/90 bg-white text-gray-500 shadow-sm transition-colors group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-500 group-focus-visible:ring-2 group-focus-visible:ring-rose-300 group-disabled:opacity-60 dark:border-white/15 dark:bg-[#111111] dark:text-white dark:group-hover:bg-rose-950/35 dark:group-hover:text-rose-200',
-          favorited && 'border-rose-200 bg-rose-50 text-rose-500 dark:border-rose-400/30 dark:bg-rose-950/40 dark:text-rose-200',
-        )}
-      >
-        <MateHeartIcon className={cn('h-4 w-4', favorited && 'fill-current')} />
-      </span>
+      <MateHeartIcon className={cn('h-4 w-4', favorited && 'fill-current')} />
     </button>
   );
 }
@@ -163,7 +160,7 @@ function MatePartyCard({
         disabled={favoriteUpdating}
         onToggle={() => onFavoriteToggle?.(party)}
         testId="mate-party-card-favorite"
-        className="absolute right-1.5 top-1.5 z-10"
+        className="absolute right-3 top-3 z-10"
       />
       <button
         type="button"

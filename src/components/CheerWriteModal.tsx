@@ -451,7 +451,7 @@ export function CheerWriteModalContent({
                             )}
 
                             {/* 본문 열이 좁은 320px대에서는 게시 버튼이 쪼그라들어 라벨이 접히므로, 자리가 모자라면 다음 줄로 내린다. */}
-                            <div className="mt-4 flex flex-wrap items-center justify-between gap-y-2 border-t border-[var(--cheer-line-10)] pt-3">
+                            <div className="mt-4 flex flex-wrap items-center justify-between gap-y-1 border-t border-[var(--cheer-line-10)] pt-3">
                                 <div className="flex items-center gap-1">
                                     <button
                                         type="button"

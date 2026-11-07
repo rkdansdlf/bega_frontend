@@ -452,11 +452,11 @@ export default function DirectMessageRuntime() {
                           <button
                             type="button"
                             onClick={() => void handleDeleteMessage(message.id)}
-                            className="group/delete absolute -right-4 -top-4 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none md:opacity-0 md:group-hover:opacity-100"
+                            className="absolute -right-4 -top-4 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground opacity-100 transition-opacity hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:opacity-0 md:group-hover:opacity-100"
                             aria-label="메시지 삭제"
                           >
                             {/* 버튼 박스는 터치 최소 44px, 눈에 보이는 원은 기존(22px)과 거의 같은 24px이다. */}
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-white shadow group-focus-visible/delete:ring-2 group-focus-visible/delete:ring-primary dark:bg-secondary">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-white shadow dark:bg-secondary">
                               <TrashIcon className="h-3 w-3" />
                             </span>
                           </button>
