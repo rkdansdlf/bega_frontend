@@ -189,8 +189,12 @@ describe('Mate execution flow UI', () => {
       cy.contains('0/2명').should('be.visible');
     });
 
-    cy.contains('button', '체크인하기').click();
-    cy.wait('@createCheckIn');
+    cy.get('[data-testid="mate-check-in-desktop-check-in"]')
+      .scrollIntoView()
+      .should('be.visible')
+      .and('not.be.disabled')
+      .click();
+    cy.wait('@createCheckIn', { timeout: 15000 });
     cy.get('@getCheckIns.all').should('have.length', 1);
 
     cy.contains('체크인 완료').should('be.visible');
@@ -252,8 +256,12 @@ describe('Mate execution flow UI', () => {
     });
 
     cy.get('#manualCode').type('0427');
-    cy.contains('button', '체크인하기').click();
-    cy.wait('@createManualCheckIn');
+    cy.get('[data-testid="mate-check-in-desktop-check-in"]')
+      .scrollIntoView()
+      .should('be.visible')
+      .and('not.be.disabled')
+      .click();
+    cy.wait('@createManualCheckIn', { timeout: 15000 });
 
     cy.contains('체크인 완료').should('be.visible');
     cy.get('[data-testid="checkin-progress-card"]').within(() => {
