@@ -189,7 +189,7 @@ describe('Mate execution flow UI', () => {
       cy.contains('0/2명').should('be.visible');
     });
 
-    cy.get('[data-testid="mate-check-in-desktop-check-in"]')
+    cy.get('[data-testid="mate-check-in-status-check-in"]')
       .scrollIntoView()
       .should('be.visible')
       .and('not.be.disabled')
@@ -256,7 +256,7 @@ describe('Mate execution flow UI', () => {
     });
 
     cy.get('#manualCode').type('0427');
-    cy.get('[data-testid="mate-check-in-desktop-check-in"]')
+    cy.get('[data-testid="mate-check-in-status-check-in"]')
       .scrollIntoView()
       .should('be.visible')
       .and('not.be.disabled')
