@@ -374,7 +374,23 @@ test('actual fallback Button contains every mobile presentation and isolates nat
     assert.match(await mapped.getAttribute('class') ?? '', /btn-brand/);
     assert.match(await mapped.getAttribute('class') ?? '', /min-h-11/);
     assert.match(await mapped.getAttribute('class') ?? '', /px-6/);
-    assert.equal(await mapped.evaluate((node) => getComputedStyle(node).justifyContent), 'flex-start');
+    // Comparing against a literal inline-flex reference element (not the string
+    // 'flex-start') avoids browser computed-style serialization differences (e.g.
+    // Chrome may emit 'flow-start'), while strict equality still rejects 'center'.
+    const flexStartExpected = await mapped.evaluate(() => {
+      const ref = document.createElement('div');
+      ref.style.cssText = 'display:inline-flex;justify-content:flex-start;position:absolute;visibility:hidden;';
+      document.body.appendChild(ref);
+      const serialized = getComputedStyle(ref).justifyContent;
+      document.body.removeChild(ref);
+      return serialized;
+    });
+    const flexStartActual = await mapped.evaluate((node) => getComputedStyle(node).justifyContent);
+    assert.equal(
+      flexStartActual,
+      flexStartExpected,
+      `consumer justify-start override must match browser-normalized flex-start (got '${flexStartActual}', expected '${flexStartExpected}')`,
+    );
 
     await mount({ data: 'single', size: 'unknown', variant: 'unknown' });
     const defaulted = page.getByTestId('mf-fallback-button');
