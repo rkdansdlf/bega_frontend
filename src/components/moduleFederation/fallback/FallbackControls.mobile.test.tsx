@@ -374,7 +374,22 @@ test('actual fallback Button contains every mobile presentation and isolates nat
     assert.match(await mapped.getAttribute('class') ?? '', /btn-brand/);
     assert.match(await mapped.getAttribute('class') ?? '', /min-h-11/);
     assert.match(await mapped.getAttribute('class') ?? '', /px-6/);
-    assert.equal(await mapped.evaluate((node) => getComputedStyle(node).justifyContent), 'flex-start');
+    // 소비자 클래스 justify-start(= justify-content: flex-start)가 기본 justify-center를 이기는지 확인한다.
+    // 계산값 문자열은 브라우저 버전마다 정규화가 달라질 수 있다(최신 Chromium은 'flex-start' 대신 'flow-start'를
+    // 돌려준다). 그래서 문자열을 박아 두지 않고, 같은 페이지의 flex 기준 요소에 flex-start를 직접 지정해
+    // 그 브라우저가 돌려주는 값과 비교한다. 기본값(center)이 이긴 경우는 notEqual이 그대로 실패시킨다.
+    const mappedJustify = await mapped.evaluate((node) => getComputedStyle(node).justifyContent);
+    const flexStartReference = await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.display = 'flex';
+      probe.style.justifyContent = 'flex-start';
+      document.body.append(probe);
+      const value = getComputedStyle(probe).justifyContent;
+      probe.remove();
+      return value;
+    });
+    assert.equal(mappedJustify, flexStartReference);
+    assert.notEqual(mappedJustify, 'center');
 
     await mount({ data: 'single', size: 'unknown', variant: 'unknown' });
     const defaulted = page.getByTestId('mf-fallback-button');
