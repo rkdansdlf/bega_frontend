@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser } from 'playwright';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
-import { newScaledPage } from '../browserTestTimeouts';
+import { newScaledPage, scaledTimeout } from '../browserTestTimeouts';
 
 const componentId = 'src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell';
 const pagePath = '/__seat-map-runtime-shell-test.html';
@@ -59,7 +59,7 @@ const createRuntimeShellPlugin = (): Plugin => ({
   load(id) {
     if (id !== moduleId) return undefined;
     return `
-      import React, { createElement } from 'react';
+      import React, { createElement, lazy } from 'react';
       import { createRoot } from 'react-dom/client';
       import { SeatMapRuntimeShell } from '/src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx';
       import '/src/index.css';
@@ -76,6 +76,8 @@ const createRuntimeShellPlugin = (): Plugin => ({
       if (!geometryValues.includes(requestedGeometry)) throw new Error('Unsupported SeatMapRuntimeShell geometry: ' + requestedGeometry);
       const theme = query.get('theme') === 'dark' ? 'dark' : 'light';
       const retryMode = query.get('retry') === '1';
+      const retryImportMode = query.get('retry-import') === '1';
+      const changeResetKeyMode = query.get('change-reset-key') === '1';
       const unbroken = 'SEATMAPRUNTIMESHELL' + 'X'.repeat(220);
       const maximum = '최대지원좌석도상태'.repeat(48) + unbroken;
       const presets = {
@@ -105,28 +107,52 @@ const createRuntimeShellPlugin = (): Plugin => ({
         }, preset.child);
       }
 
+      window.__seatMapModuleAttempts = 0;
+      const createRetryableRuntimeChild = () => lazy(() => {
+        window.__seatMapModuleAttempts += 1;
+        if (window.__seatMapModuleAttempts === 1) {
+          return Promise.reject(new Error('Synthetic seat map module load failure'));
+        }
+        return Promise.resolve({ default: RuntimeChild });
+      });
+      const RuntimeChildForScenario = retryImportMode
+        ? createRetryableRuntimeChild()
+        : RuntimeChild;
+
       document.documentElement.classList.toggle('dark', theme === 'dark');
-      const root = document.getElementById('root');
+      const rootElement = document.getElementById('root');
       if (retryMode) {
-        root.addEventListener('click', (event) => {
+        rootElement.addEventListener('click', (event) => {
           if (event.target instanceof Element && event.target.closest('button')) shouldThrow = false;
         }, true);
       }
-      createRoot(root).render(createElement(
+      const root = createRoot(rootElement);
+      let resetKeyVersion = 0;
+      const renderShell = () => root.render(createElement(
         'div',
         {
           className: 'w-full min-w-0 p-2',
           'data-testid': 'seat-map-runtime-host',
           'data-theme': theme,
         },
+        changeResetKeyMode ? createElement('button', {
+          type: 'button',
+          'data-testid': 'seat-map-reset-key-change',
+          onClick: () => {
+            resetKeyVersion += 1;
+            renderShell();
+          },
+        }, 'Change reset key') : null,
         createElement(SeatMapRuntimeShell, {
           template: 'standard',
           usesCoordinateGeometry: requestedGeometry === 'coordinate',
           badgeLabel: preset.badgeLabel,
           stadiumName: preset.stadiumName,
-          resetKey: requestedGeometry + ':' + requestedData + ':' + requestedSystem,
-        }, createElement(RuntimeChild)),
+          resetKey: requestedGeometry + ':' + requestedData + ':' + requestedSystem + ':' + resetKeyVersion,
+          createComponent: retryImportMode ? createRetryableRuntimeChild : undefined,
+        }, createElement(RuntimeChildForScenario)),
       ));
+      renderShell();
     `;
   },
 });
@@ -363,6 +389,62 @@ test('SeatMapRuntimeShell browser test is wired exactly once into both visual-QA
     }),
     /previsual-qa:harness:test must include the focused browser test exactly once/,
   );
+});
+
+test('SeatMapRuntimeShell retries a rejected lazy module with a fresh loader', async () => {
+  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  try {
+    const started = await startServer(resources);
+    resources.server = started.server;
+    resources.cacheDir = started.cacheDir;
+    resources.browser = await chromium.launch({ headless: true });
+    const page = await newScaledPage(resources.browser);
+    const address = serverAddress(resources.server);
+    await page.goto(
+      `${address}${pagePath}?data=populated&system=idle&geometry=coordinate&theme=light&retry=1&retry-import=1`,
+      { waitUntil: 'domcontentloaded' },
+    );
+    await page.locator('[data-testid="stadium-seatmap-error"]').waitFor({ state: 'visible' });
+    assert.equal(await page.evaluate(() => (window as Window & { __seatMapModuleAttempts?: number }).__seatMapModuleAttempts), 1);
+
+    await page.locator('[data-testid="stadium-seatmap-error"] button').click();
+    await page.waitForFunction(
+      () => (window as Window & { __seatMapModuleAttempts?: number }).__seatMapModuleAttempts === 2,
+      undefined,
+      { timeout: scaledTimeout(3000) },
+    );
+    await page.locator('[data-testid="seat-map-runtime-recovered"]').waitFor({ state: 'visible' });
+  } finally {
+    await closeResources(resources);
+  }
+});
+
+test('SeatMapRuntimeShell resetKey changes replace a rejected lazy component', async () => {
+  const resources: { browser?: Browser; server?: ViteDevServer; cacheDir?: string } = {};
+  try {
+    const started = await startServer(resources);
+    resources.server = started.server;
+    resources.cacheDir = started.cacheDir;
+    resources.browser = await chromium.launch({ headless: true });
+    const page = await newScaledPage(resources.browser);
+    const address = serverAddress(resources.server);
+    await page.goto(
+      `${address}${pagePath}?data=populated&system=idle&geometry=coordinate&theme=light&retry-import=1&change-reset-key=1`,
+      { waitUntil: 'domcontentloaded' },
+    );
+    await page.locator('[data-testid="stadium-seatmap-error"]').waitFor({ state: 'visible' });
+    assert.equal(await page.evaluate(() => (window as Window & { __seatMapModuleAttempts?: number }).__seatMapModuleAttempts), 1);
+
+    await page.locator('[data-testid="seat-map-reset-key-change"]').click();
+    await page.waitForFunction(
+      () => (window as Window & { __seatMapModuleAttempts?: number }).__seatMapModuleAttempts === 2,
+      undefined,
+      { timeout: scaledTimeout(3000) },
+    );
+    await page.locator('[data-testid="seat-map-runtime-resolved"]').waitFor({ state: 'visible' });
+  } finally {
+    await closeResources(resources);
+  }
 });
 
 test('SeatMapRuntimeShell component-state evidence is complete and content-addressed', async () => {

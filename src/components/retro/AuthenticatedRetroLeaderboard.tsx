@@ -1,13 +1,14 @@
-import type { ComponentProps, ReactNode } from 'react';
+import { useCallback, useState, type ComponentProps, type ReactNode } from 'react';
 import RetroLeaderboard from './RetroLeaderboard';
 import { usePowerups, useUserLeaderboardStats } from '../../hooks/useLeaderboardPrivate';
 import type { PowerupInventory, UserLeaderboardStats } from '../../api/leaderboard';
+import PowerupGameSelector from './PowerupGameSelector';
 
 export interface AuthenticatedRetroLeaderboardStateOverride {
   stats: UserLeaderboardStats | null;
   powerups: PowerupInventory;
   activePowerups: string[];
-  onUsePowerup?: (powerupType: string) => Promise<void>;
+  onUsePowerup?: (powerupType: string, gameId: string) => Promise<void>;
 }
 
 export type AuthenticatedRetroLeaderboardProps = Omit<
@@ -36,11 +37,29 @@ export default function AuthenticatedRetroLeaderboard(
     return <>{visualQaRuntimeOverride}</>;
   }
 
+  const [selectedGameId, setSelectedGameId] = useState('');
   const { stats: myRank } = useUserLeaderboardStats();
   const {
     powerups,
     activePowerups,
-  } = usePowerups();
+    isLoading,
+    isUsingPowerup,
+    usePowerup,
+  } = usePowerups(selectedGameId);
+  const handleUsePowerup = useCallback(async (powerupType: string) => {
+    if (stateOverride?.onUsePowerup) {
+      await stateOverride.onUsePowerup(powerupType, selectedGameId);
+      return;
+    }
+
+    await usePowerup(powerupType, selectedGameId);
+  }, [selectedGameId, stateOverride?.onUsePowerup, usePowerup]);
+  const powerupGameSelector = (
+    <PowerupGameSelector
+      selectedGameId={selectedGameId}
+      onSelectGame={setSelectedGameId}
+    />
+  );
 
   return (
     <RetroLeaderboard
@@ -48,7 +67,10 @@ export default function AuthenticatedRetroLeaderboard(
       userStats={stateOverride ? stateOverride.stats : myRank}
       powerups={stateOverride ? stateOverride.powerups : powerups}
       activePowerups={stateOverride ? stateOverride.activePowerups : activePowerups}
-      onUsePowerup={stateOverride?.onUsePowerup}
+      powerupGameId={selectedGameId}
+      powerupGameSelector={powerupGameSelector}
+      powerupsDisabled={stateOverride ? !stateOverride.onUsePowerup : isLoading || isUsingPowerup}
+      onUsePowerup={handleUsePowerup}
     />
   );
 }

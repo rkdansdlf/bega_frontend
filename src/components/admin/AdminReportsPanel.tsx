@@ -25,6 +25,7 @@ type AdminReportAction =
 interface AdminReportsPanelProps {
   reportFilters: AdminReportFilters;
   reportsLoading: boolean;
+  reportsError?: string | null;
   reports: AdminReport[];
   updateReportFilters: (next: Partial<AdminReportFilters>) => void;
   resetReportFilters: () => void;
@@ -55,12 +56,13 @@ const defaultReportFilters: AdminReportFilters = {
   toDate: '',
 };
 const filterLabelClassName = 'mb-1 block text-caption font-medium text-slate-400';
-const reportSelectClassName = `${adminNativeSelectClassName} min-h-11 sm:min-h-9`;
-const reportRowActionClassName = 'min-h-11 min-w-11 whitespace-normal [overflow-wrap:anywhere] sm:min-h-8 sm:min-w-8';
+const reportSelectClassName = `${adminNativeSelectClassName} min-h-11`;
+const reportRowActionClassName = 'min-h-11 min-w-11 whitespace-normal [overflow-wrap:anywhere] sm:min-h-11';
 
 export function AdminReportsPanel({
   reportFilters,
   reportsLoading,
+  reportsError = null,
   reports,
   updateReportFilters,
   resetReportFilters,
@@ -136,7 +138,7 @@ export function AdminReportsPanel({
             type="date"
             value={effectiveReportFilters.fromDate}
             onChange={(e) => applyReportFilters({ fromDate: e.target.value })}
-            className="border-slate-700 bg-slate-800/50 text-slate-200"
+            className="min-h-11 border-slate-700 bg-slate-800/50 text-slate-200"
           />
         </label>
         <label htmlFor="admin-reports-to-date-filter" className="min-w-0">
@@ -147,13 +149,13 @@ export function AdminReportsPanel({
             type="date"
             value={effectiveReportFilters.toDate}
             onChange={(e) => applyReportFilters({ toDate: e.target.value })}
-            className="border-slate-700 bg-slate-800/50 text-slate-200"
+            className="min-h-11 border-slate-700 bg-slate-800/50 text-slate-200"
           />
         </label>
         <Button
           variant="outline"
           data-testid="admin-reports-reset-filters"
-          className="min-h-11 w-full border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-9"
+          className="min-h-11 w-full border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 sm:min-h-11"
           onClick={clearReportFilters}
         >
           필터 초기화
@@ -165,6 +167,11 @@ export function AdminReportsPanel({
         className="max-h-[320px] min-w-0 overflow-y-auto rounded-xl border border-slate-800"
         aria-busy={reportsLoading}
       >
+        {!reportsLoading && reportsError && (
+          <p data-testid="admin-reports-error" className="break-keep px-3 py-6 text-center text-slate-300 [overflow-wrap:anywhere]">
+            {reportsError}
+          </p>
+        )}
         {reportsLoading ? (
           <div
             className="flex min-h-40 items-center justify-center px-4 text-center text-slate-500"
@@ -173,14 +180,14 @@ export function AdminReportsPanel({
           >
             신고 목록 로딩 중...
           </div>
-        ) : reports.length === 0 ? (
+        ) : reports.length === 0 ? (reportsError ? null : (
           <div
             className="flex min-h-40 items-center justify-center px-4 text-center text-slate-500"
             role="status"
           >
             신고 케이스가 없습니다.
           </div>
-        ) : (
+        )) : (
           <Table aria-label="신고 목록" className="min-w-[1088px] table-fixed">
             <TableHeader>
               <TableRow className="border-slate-700 bg-slate-800/50 hover:bg-slate-800/50">

@@ -26,6 +26,7 @@ import PublicNavbarDesktopAuthControls from './PublicNavbarDesktopAuthControls';
 import { useAnimatedPresence } from '../hooks/useAnimatedPresence';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { CHAT_UNREAD_QUERY_KEY, getChatUnreadQueryOptions } from '../hooks/chatUnreadQueryOptions';
+import { refreshChatUnreadCount } from '../hooks/chatUnreadRefresh';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { mergeNavbarCompactProgress, useNavbarViewportCompactProgress } from '../hooks/useNavbarViewportCompactProgress';
 import { useScrollMetrics } from '../hooks/useScrollStage';
@@ -95,7 +96,7 @@ export default function Navbar(props: NavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, resolvedTheme } = useTheme();
-  const isDarkMode = (resolvedTheme || theme) === 'dark';
+  const isDarkMode = /^\/admin\/?$/.test(location.pathname) || (resolvedTheme || theme) === 'dark';
 
   const [liveIsMenuOpen, setLiveIsMenuOpen] = useState(false);
 
@@ -222,12 +223,8 @@ export default function Navbar(props: NavbarProps) {
       return;
     }
 
-    const handleChatUnreadUpdated = (event: Event) => {
-      const customEvent = event as CustomEvent<{ count?: number }>;
-      const count = customEvent.detail?.count;
-      if (typeof count === 'number' && Number.isFinite(count)) {
-        queryClient.setQueryData(CHAT_UNREAD_QUERY_KEY, Math.max(0, count));
-      }
+    const handleChatUnreadUpdated = () => {
+      void refreshChatUnreadCount(queryClient);
     };
 
     window.addEventListener(CHAT_UNREAD_UPDATED_EVENT, handleChatUnreadUpdated as EventListener);
@@ -812,7 +809,7 @@ export default function Navbar(props: NavbarProps) {
                 )}
               >
                 <Icon className="w-5 h-5 shrink-0" />
-                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
+                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full whitespace-normal text-center text-10.5 font-bold leading-tight [overflow-wrap:anywhere]">{item.label}</span>
                 {item.id === 'mate' && chatUnreadCount > 0 && (
                   <span className="absolute top-1 right-2 inline-flex min-w-[14px] h-3.5 items-center justify-center rounded-full bg-red-600 px-1 text-9 font-bold leading-none text-white">
                     {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
@@ -829,7 +826,7 @@ export default function Navbar(props: NavbarProps) {
             data-testid="auth-mobile-chatbot-tab"
           >
             <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-            <span data-mobile-chrome-label className="mobile-chrome-label text-[10.5px] font-bold leading-none">BEGA</span>
+            <span data-mobile-chrome-label className="mobile-chrome-label max-w-full whitespace-normal text-center text-10.5 font-bold leading-tight [overflow-wrap:anywhere]">챗봇</span>
           </button>
         </div>
       </nav>

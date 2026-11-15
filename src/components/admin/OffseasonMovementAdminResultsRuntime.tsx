@@ -103,6 +103,7 @@ export interface OffseasonMovementAdminResultsRuntimeProps {
   movements: AdminOffseasonMovement[];
   filteredMovements: AdminOffseasonMovement[];
   loading: boolean;
+  listError?: string | null;
   activeQualityOption: QualityOption;
   onOpenEditDialog: (movement: AdminOffseasonMovement) => void;
   onDeleteTargetChange: (movement: AdminOffseasonMovement | null) => void;
@@ -113,6 +114,7 @@ export default function OffseasonMovementAdminResultsRuntime({
   movements,
   filteredMovements,
   loading,
+  listError = null,
   activeQualityOption,
   onOpenEditDialog,
   onDeleteTargetChange,
@@ -152,11 +154,16 @@ export default function OffseasonMovementAdminResultsRuntime({
       )}
 
       {loading ? (
-        <div role="status" aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-3 py-16 text-slate-400">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent motion-reduce:animate-none" />
-          <span>스토브리그 이동 목록을 불러오는 중...</span>
+        <div role="status" aria-live="polite" aria-busy="true" className="flex min-w-0 flex-col items-center justify-center gap-3 px-2 py-16 text-center text-slate-400 sm:flex-row">
+          <div className="h-8 w-8 shrink-0 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent motion-reduce:animate-none" />
+          <span className="min-w-0 break-keep [overflow-wrap:anywhere]">스토브리그 이동 목록을 불러오는 중...</span>
         </div>
-      ) : filteredMovements.length === 0 ? (
+      ) : filteredMovements.length === 0 ? (listError ? (
+        <div data-testid="admin-offseason-results-error" role="status" aria-live="polite"
+          className="min-w-0 rounded-2xl border border-red-500/30 px-2 py-16 text-center text-red-300 break-keep [overflow-wrap:anywhere]">
+          목록을 불러오지 못했습니다. 새로고침으로 다시 시도해 주세요.
+        </div>
+      ) : (
         <div
           data-testid="admin-offseason-empty-results"
           role="status"
@@ -167,7 +174,7 @@ export default function OffseasonMovementAdminResultsRuntime({
             ? '조건에 맞는 스토브리그 이동이 없습니다.'
             : `${activeQualityOption.label} 조건에 맞는 누락 건이 없습니다.`}
         </div>
-      ) : (
+      )) : (
         <div data-testid="admin-offseason-results-scroll" className="max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-800">
           <Table aria-label="스토브리그 이동 관리 결과" className="min-w-[1120px]">
             <TableHeader>
@@ -267,7 +274,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="iconTouch"
                           data-testid={`admin-offseason-edit-${movement.id}`}
                           data-vqa-min-touch="44"
                           aria-label={`${movement.playerName} 이동 수정`}
@@ -278,7 +285,7 @@ export default function OffseasonMovementAdminResultsRuntime({
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="iconTouch"
                           data-testid={`admin-offseason-delete-${movement.id}`}
                           data-vqa-min-touch="44"
                           aria-label={`${movement.playerName} 이동 삭제`}

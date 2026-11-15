@@ -178,6 +178,20 @@ test('the real inventory includes exported and internal symbols with stable uniq
   assert.equal(report.summary.symbols, report.symbols.length);
 });
 
+test('the checked-in classification registry covers the current source inventory exactly', async () => {
+  const [contract, manifest] = await Promise.all([
+    loadCoverageContract(COVERAGE_CONTRACT_PATH),
+    JSON.parse(await readFile(DEFAULT_CLASSIFICATION_PATH, 'utf8')),
+  ]);
+  const report = await scanComponentInventory({ contract, manifest });
+
+  assert.deepEqual(report.staleManifestIds, []);
+  assert.deepEqual(
+    report.symbols.filter(({ classification }) => classification === 'unclassified').map(({ id }) => id),
+    [],
+  );
+});
+
 test('initial classification is conservative and never auto-excludes a candidate', () => {
   const symbols = [
     { id: 'src/components/Card.tsx#Card', file: 'src/components/Card.tsx', name: 'Card', qualifiedName: 'Card', exported: true, defaultExport: false },

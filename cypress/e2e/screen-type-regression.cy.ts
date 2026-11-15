@@ -8,10 +8,11 @@ const blockedSection = '[data-testid="mypage-blocked-users-section"]';
 const welcome = '멋진 선택이에요! 함께 응원하며 즐거운 야구 생활을 시작해보세요.';
 const releases: Array<() => void> = [];
 
-function visit(path: string, theme?: 'light' | 'dark') {
+function visit(path: string, theme?: 'light' | 'dark', rootFontSize?: number) {
     cy.visit(path, {
         onBeforeLoad(win) {
             seedCypressAuthState(win, user, undefined, { theme });
+            if (rootFontSize) win.document.documentElement.style.fontSize = `${rootFontSize}px`;
             const NativeWebSocket = win.WebSocket;
             win.WebSocket = new Proxy(NativeWebSocket, {
                 construct(target, args) {
@@ -134,11 +135,17 @@ describe('Screen type-fix behavior regressions', () => {
         cy.then(() => { expect(reads).to.eq(2); });
     });
 
-    for (const width of [390, 1440]) {
+    const statisticsViewports = [
+        { width: 320, height: 844, rootFontSize: 32 },
+        { width: 390, height: 844, rootFontSize: 32 },
+        { width: 390, height: 900, rootFontSize: 16 },
+        { width: 1440, height: 900, rootFontSize: 16 },
+    ] as const;
+    for (const viewport of statisticsViewports) {
         for (const state of ['error', 'empty'] as const) {
             for (const theme of ['light', 'dark'] as const) {
-                it(`MyPage statistics: ${state} state at ${width}px in ${theme} theme`, () => {
-                    cy.viewport(width, 900);
+                it(`MyPage statistics: ${state} state at ${viewport.width}px, ${viewport.rootFontSize}px text in ${theme} theme`, () => {
+                    cy.viewport(viewport.width, viewport.height);
                     cy.intercept('GET', '**/api/auth/mypage*', {
                         statusCode: 200,
                         body: { success: true, data: { ...user, role: 'ROLE_USER', hasPassword: true } },
@@ -155,7 +162,7 @@ describe('Screen type-fix behavior regressions', () => {
                                 opponentWinRates: {},
                             },
                         }).as('statistics');
-                    visit('/mypage?view=stats', theme);
+                    visit('/mypage?view=stats', theme, viewport.rootFontSize);
                     cy.wait('@statistics');
                     cy.get('html').should('have.class', theme);
                     cy.get('section[data-screen-label="나의 기록"]', { timeout: 20000 }).within(() => {
@@ -169,22 +176,36 @@ describe('Screen type-fix behavior regressions', () => {
                             cy.contains('통계를 불러오지 못했어요').should('not.exist');
                         }
                     });
-                    if (width === 390 && state === 'error') {
+                    cy.document().then((doc) => {
+                        const win = doc.defaultView!;
+                        expect(doc.documentElement.style.fontSize, 'root text stress setting')
+                            .to.equal(`${viewport.rootFontSize}px`);
+                        expect(doc.documentElement.scrollWidth, 'page horizontal overflow')
+                            .to.be.at.most(win.innerWidth);
+                    });
+                    if (viewport.width <= 390 && state === 'error') {
+                        cy.get('section[data-screen-label="나의 기록"] .mypage-season-empty-copy').then(($message) => {
+                            $message[0].scrollIntoView({
+                                block: 'end', inline: 'nearest', behavior: 'instant',
+                            });
+                        });
                         cy.document().then((doc) => {
                             const message = doc.querySelector<HTMLElement>('section[data-screen-label="나의 기록"] .mypage-season-empty-copy');
                             expect(message, 'error guidance').to.exist;
                             const win = doc.defaultView!;
                             const nav = doc.querySelector('[data-testid="auth-mobile-bottom-nav"]');
                             expect(nav, 'authenticated mobile navigation').to.exist;
-                            expect(win.innerWidth, 'CSS viewport width').to.eq(390);
-                            expect(win.innerHeight, 'CSS viewport height').to.eq(900);
+                            expect(win.innerWidth, 'CSS viewport width').to.eq(viewport.width);
+                            expect(win.innerHeight, 'CSS viewport height').to.eq(viewport.height);
                             const messageRect = message!.getBoundingClientRect();
                             const navRect = nav!.getBoundingClientRect();
-                            expect(messageRect.bottom, 'error guidance clears fixed bottom navigation')
+                            expect(messageRect.top, 'error guidance is in the viewport after scrolling')
+                                .to.be.at.least(0);
+                            expect(messageRect.bottom, 'error guidance is scroll-reachable above fixed bottom navigation')
                                 .to.be.at.most(navRect.top);
                         });
                     }
-                    cy.screenshot(`mypage-statistics-${state}-${width}-${theme}`, { capture: 'viewport' });
+                    cy.screenshot(`mypage-statistics-${state}-${viewport.width}-${viewport.rootFontSize}-${theme}`, { capture: 'viewport' });
                 });
             }
         }

@@ -287,24 +287,21 @@
 
   input,
   textarea,
-  select {
+  select,
+  button {
     font-family: inherit;
+  }
+
+  input,
+  textarea,
+  select {
     color: rgb(17 24 39);
   }
 
   .dark input,
   .dark textarea,
   .dark select {
-    font-family: inherit;
     color: rgb(243 244 246);
-  }
-
-  button {
-    font-family: inherit;
-  }
-
-  .dark button {
-    font-family: inherit;
   }
 
   /* Card and Alert draw a bare `border`, which falls back to Tailwind's preflight #e5e7eb:
@@ -480,9 +477,8 @@
 }
 
 @keyframes livering {
-  0%   { transform: scale(0.8); opacity: 0.7; }
-  80%  { transform: scale(2.6); opacity: 0; }
-  100% { transform: scale(2.6); opacity: 0; }
+  0% { transform: scale(0.8); opacity: 0.7; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
 }
 
 /* ── Toast notification — progress bar countdown ────────── */
@@ -526,10 +522,6 @@
 
   .bega-toast-close > span {
     transition: none;
-  }
-
-  .status-dot-live-ring {
-    animation: none !important;
   }
 }
 

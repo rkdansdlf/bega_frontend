@@ -11,6 +11,7 @@ import {
   fetchPartyApplications,
   fetchPartyMyApplication,
   fetchPartyReviews,
+  getChatUnreadCounts,
   recordMateSearchTerm,
   setPartyFavorite,
   updateChatReadTimestamp,
@@ -27,6 +28,14 @@ const resolveRequestUrl = (input: string | URL | Request): string =>
     : input instanceof URL
       ? input.toString()
       : input.url;
+
+test('unread count failures are not reported as zero', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => new Response('{}', {
+    headers: { 'content-type': 'application/json' },
+    status: 500,
+  }));
+  await assert.rejects(getChatUnreadCounts(), PrivateApiError);
+});
 
 test('updateChatReadTimestamp는 API 실패를 호출자에게 전달한다', async (t) => {
   const requestedUrls: string[] = [];

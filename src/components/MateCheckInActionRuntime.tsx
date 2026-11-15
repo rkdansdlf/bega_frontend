@@ -85,7 +85,7 @@ export default function MateCheckInActionRuntime({
                 data-testid="mate-check-in-desktop-check-in"
                 onClick={onCheckIn}
                 disabled={isChecking}
-                className="w-full bg-primary text-white"
+                className="w-full bg-primary text-white sm:min-h-[max(44px,2.25rem)]"
               >
                 {isChecking ? (
                   <>
@@ -103,7 +103,7 @@ export default function MateCheckInActionRuntime({
               <Button
                 data-testid="mate-check-in-desktop-complete"
                 onClick={onComplete}
-                className="w-full bg-primary text-white"
+                className="w-full bg-primary text-white sm:min-h-[max(44px,2.25rem)]"
               >
                 완료 확인
               </Button>
@@ -116,7 +116,7 @@ export default function MateCheckInActionRuntime({
             <Button
               data-testid="mate-check-in-desktop-chat"
               variant="outline"
-              className="w-full border-primary text-primary hover:bg-primary/10"
+              className="w-full border-primary text-primary hover:bg-primary/10 sm:min-h-[max(44px,2.25rem)]"
               onClick={onNavigateToChat}
             >
               채팅으로 이동

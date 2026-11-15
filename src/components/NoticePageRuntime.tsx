@@ -167,11 +167,11 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
                 className="w-full min-w-0 rounded-xl border border-border/80 bg-white p-4 text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] dark:border-border dark:bg-card"
                 data-testid={`notice-post-${post.id}`}
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+                <div className="flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
                     <MegaphoneIcon className="h-6 w-6 text-blue-600" />
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="w-full min-w-0 flex-1 sm:w-auto">
                     <h3 className="mb-1 break-words text-base text-zinc-900 [overflow-wrap:anywhere] dark:text-white">
                       {post.content?.split('\n')[0]?.slice(0, 60) || '공지사항'}
                     </h3>
@@ -199,7 +199,7 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
         {!isLoading && !isError && posts.length > 0 && (
           <nav
             aria-label="공지사항 페이지"
-            className="mt-8 flex min-w-0 items-center justify-center gap-1 sm:gap-2"
+            className="mt-8 flex min-w-0 flex-wrap items-center justify-center gap-1 sm:gap-2"
             data-testid="notice-page-pagination"
           >
             <Button
@@ -213,7 +213,7 @@ export default function NoticePageRuntime(props: NoticePageRuntimeProps = {}) {
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-1">
+            <div className="flex min-w-0 flex-wrap items-center justify-center gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter((page) => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 2)
                 .map((page, index, array) => {

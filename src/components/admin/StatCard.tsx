@@ -9,6 +9,7 @@ export function StatCard({
   label,
   testId,
   value,
+  unavailableState = 'loading',
   color,
   visualQaDisplayValueOverride,
 }: {
@@ -16,7 +17,8 @@ export function StatCard({
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   testId?: string;
-  value: number;
+  value: number | undefined;
+  unavailableState?: 'loading' | 'error';
   color: 'amber' | 'emerald' | 'sky';
   visualQaDisplayValueOverride?: number;
 }) {
@@ -49,17 +51,22 @@ export function StatCard({
       className={`
         relative overflow-hidden rounded-xl border ${classes.border}
         ${classes.surface}
-        p-6 shadow-lg
+        p-3 shadow-lg sm:p-6
         transition-[border-color,box-shadow] duration-150 hover:shadow-xl
       `}
     >
-      <div className="relative flex min-w-0 items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+      <div className="relative flex min-w-0 flex-col-reverse items-start justify-between gap-3 sm:flex-row">
+        <div className="w-full min-w-0 flex-1 sm:w-auto">
           <p data-testid="admin-stat-label" title={label} className={`mb-2 min-w-0 line-clamp-3 [overflow-wrap:anywhere] ${adminFieldLabelClassName}`}>
             {label}
           </p>
-          <p className={`break-all text-lg font-black ${classes.text} tracking-tight sm:text-3xl`}>
-            {animate
+          {value === undefined && (
+            <p role="status" data-testid="admin-stat-state" className="min-w-0 break-keep text-caption text-slate-400 [overflow-wrap:anywhere]">
+              {unavailableState === 'error' ? '통계 조회 실패' : '통계 로딩 중'}
+            </p>
+          )}
+          <p data-testid="admin-stat-value" className={`break-all text-lg font-black ${classes.text} tracking-tight sm:text-3xl`}>
+            {value === undefined ? '—' : animate
               ? <AnimatedNumber value={value} visualQaDisplayValueOverride={visualQaDisplayValueOverride} />
               : value.toLocaleString()}
           </p>

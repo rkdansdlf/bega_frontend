@@ -21,7 +21,8 @@ test('mates admin panel exposes named stable touch-safe delete controls and dial
 
   assert.match(source, /data-testid=\{`admin-mate-delete-\$\{mate\.id\}`\}/);
   assert.match(source, /aria-label=\{`메이트 모임 \$\{mate\.id\} 삭제`\}/);
-  assert.match(source, /min-w-11[^'"\n]*sm:min-w-8/);
+  assert.match(source, /size="iconTouch"/);
+  assert.match(source, /className="min-h-11 min-w-11/);
   assert.match(source, /contentTestId="admin-mate-delete-dialog"/);
   assert.match(source, /data-testid="admin-mate-delete-cancel"/);
   assert.match(source, /data-testid="admin-mate-delete-confirm"/);

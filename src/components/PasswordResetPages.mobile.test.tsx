@@ -122,6 +122,7 @@ test('password reset confirmation keeps visibility controls mobile-sized and foc
   assert.equal(visibilityButtons.length, 2);
   assert.equal((html.match(/h-11 w-11/g) ?? []).length, 2);
   assert.equal((html.match(/focus-visible:ring-2/g) ?? []).length, 2);
+  assert.equal((html.match(/password-reset-field relative/g) ?? []).length, 2);
 });
 
 test('password reset confirmation renders deterministic missing-token and completion states', () => {

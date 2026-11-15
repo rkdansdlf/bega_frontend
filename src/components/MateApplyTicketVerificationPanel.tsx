@@ -142,7 +142,7 @@ export default function MateApplyTicketVerificationPanel({
         </div>
       ) : (
         <div
-          className={`rounded-2xl border-2 border-dashed p-5 text-center transition-colors sm:p-6 ${isScanning
+          className={`rounded-2xl border-2 border-dashed p-2 text-center transition-colors sm:p-6 ${isScanning
             ? 'border-primary bg-slate-50 dark:bg-card/60'
             : 'border-slate-300 dark:border-border hover:border-primary hover:bg-slate-50 dark:hover:bg-input/50'
             }`}
@@ -175,10 +175,10 @@ export default function MateApplyTicketVerificationPanel({
                 <p className="font-semibold text-primary">AI가 티켓을 분석 중...</p>
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2">
-                <MateTicketIcon className="w-10 h-10 text-primary" aria-hidden="true" />
-                <p className="font-semibold text-primary">티켓 사진 업로드</p>
-                <p className="text-body text-gray-400">JPG, PNG (최대 10MB)</p>
+              <div className="flex min-w-0 flex-col items-center gap-2">
+                <MateTicketIcon className="h-8 w-8 shrink-0 text-primary sm:h-10 sm:w-10" aria-hidden="true" />
+                <p className="max-w-full break-keep font-semibold text-primary [overflow-wrap:anywhere]">티켓 사진 업로드</p>
+                <p className="max-w-full break-keep text-body text-gray-400 [overflow-wrap:anywhere]">JPG, PNG (최대 10MB)</p>
               </div>
             )}
           </label>

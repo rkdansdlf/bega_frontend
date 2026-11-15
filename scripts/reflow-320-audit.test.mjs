@@ -12,7 +12,7 @@ test('reflow browser selection preserves Chromium default and rejects unsupporte
   assert.throws(() => resolveReflowBrowser('unknown'), /Unsupported reflow browser/);
 });
 
-import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, activateDeferredSurfaces, evaluateKeyboard, evaluateRoute, isApiRequestUrl, isExpectedRoutePath, installOfflineBoundary, stubApi, summarize } from './reflow-320-audit.mjs';
+import { AUTHED_ROUTES, DEFAULT_ROUTES, LOGGED_OUT_ROUTES, PUBLIC_ROUTES, activateDeferredSurfaces, evaluateKeyboard, evaluateMainDocumentResponse, evaluateRoute, isApiRequestUrl, isExpectedRoutePath, installOfflineBoundary, stubApi, summarize } from './reflow-320-audit.mjs';
 
 test('API stubbing matches API paths without intercepting Vite source modules', () => {
   assert.equal(isApiRequestUrl('http://127.0.0.1:5181/api/auth/mypage'), true);
@@ -50,6 +50,22 @@ test('route that fits at both text sizes passes', () => {
   assert.equal(result.status, 'pass');
   assert.equal(result.overflowNormal, 0);
   assert.equal(result.overflowZoomed, 0);
+});
+
+test('missing main-document response is untrusted, not a passing browser error page', () => {
+  const result = evaluateMainDocumentResponse(null);
+  assert.equal(result.status, 'untrusted');
+  assert.match(result.reason, /no main document HTTP response/);
+});
+
+test('non-success main-document HTTP response is untrusted', () => {
+  const result = evaluateMainDocumentResponse(404);
+  assert.equal(result.status, 'untrusted');
+  assert.match(result.reason, /main document returned HTTP 404/);
+});
+
+test('successful main-document HTTP response can be measured', () => {
+  assert.deepEqual(evaluateMainDocumentResponse(200), { status: 'pass' });
 });
 
 test('horizontal scroll at normal text size fails', () => {
@@ -148,11 +164,8 @@ test('every route in AppRoutes.tsx is either audited or explicitly excluded', ()
   const source = readFileSync(new URL('../src/components/AppRoutes.tsx', import.meta.url), 'utf8');
   const declared = [...source.matchAll(/path="([^"]+)"/g)].map((m) => m[1]);
 
-  // Not auditable, with the reason each is out of scope.
+  // Developer-only internal tools stay out of the user-facing route matrix.
   const EXCLUDED = new Set([
-    '*',                                  // covered as the 404 catch-all by hand
-    '/oauth/callback',                    // redirect-only, renders no UI
-    '/mypage/:handle',                    // redirects to /profile/:handle
     '/test/error',                        // dev-only error harness
     '/internal/sajik-seatmap-editor',     // dev-only internal tool
     '/internal/gwangju-seatmap-editor',   // dev-only internal tool
@@ -162,12 +175,13 @@ test('every route in AppRoutes.tsx is either audited or explicitly excluded', ()
   // Compare on the pattern, since the audit fills in concrete ids.
   // Order matters: the specific ids have to be collapsed before the generic
   // digit rule, or it eats their leading digits and mangles the pattern.
-  const auditedPatterns = new Set(DEFAULT_ROUTES.map((r) => r
+  const auditedPatterns = new Set(DEFAULT_ROUTES.map((r) => new URL(r, 'https://visual-qa.invalid').pathname
     .replace(/\/20\d{6}[A-Z]+\d/g, '/:gameId')
     .replace(/\/abc\/2026/, '/:shareId/:seasonYear')
     .replace(/\/@[^/]+/g, '/:handle')
     .replace(/\/stadium\/[a-z]+/g, '/stadium/:stadiumId')
     .replace(/\/\d+/g, '/:id')));
+  if (auditedPatterns.has('/this-route-does-not-exist')) auditedPatterns.add('*');
 
   const missing = declared.filter((p) => {
     if (EXCLUDED.has(p)) return false;
@@ -221,6 +235,13 @@ test('route trust requires the requested pathname, including similar prefixes', 
   assert.equal(isExpectedRoutePath('/mypage', '/mypage'), true);
   assert.equal(isExpectedRoutePath('/', '/home'), true);
   assert.equal(isExpectedRoutePath('/', '/login'), false);
+});
+
+test('route trust ignores callback query cleanup and follows the legacy profile alias', () => {
+  assert.equal(isExpectedRoutePath('/oauth/callback?state=visual-qa', '/oauth/callback'), true);
+  assert.equal(isExpectedRoutePath('/mypage/@testuser', '/profile/@testuser'), true);
+  assert.equal(isExpectedRoutePath('/mypage/testuser', '/profile/@testuser'), true);
+  assert.equal(isExpectedRoutePath('/mypage/@testuser', '/profile/@someone-else'), false);
 });
 
 

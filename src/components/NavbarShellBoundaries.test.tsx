@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const source = readFileSync(new URL('./Navbar.tsx', import.meta.url), 'utf8');
+const publicSource = readFileSync(new URL('./PublicNavbar.tsx', import.meta.url), 'utf8');
 
 type StateEntry = {
   id: string;
@@ -42,7 +43,14 @@ test('navbar exposes every mobile interaction surface and contains pressure copy
   assert.match(source, /data-testid=\{import\.meta\.env\.DEV \? `auth-navbar-bottom-\$\{item\.id\}` : undefined\}/);
   assert.match(source, /flex-1 min-w-0 text-left/);
   assert.match(source, /\[overflow-wrap:anywhere\]/);
-  assert.match(source, /max-w-full truncate/);
+  assert.match(source, /data-mobile-chrome-label[^>]*whitespace-normal[^>]*text-center/);
+  assert.doesNotMatch(source, /data-mobile-chrome-label[^>]*truncate/);
+  assert.equal((source.match(/data-mobile-chrome-label[^>]*text-10\.5/g) ?? []).length, 2);
+  assert.doesNotMatch(source, /data-mobile-chrome-label[^>]*text-\[10\.5px\]/);
+  assert.match(publicSource, /data-mobile-chrome-label[^>]*whitespace-normal[^>]*text-center/);
+  assert.doesNotMatch(publicSource, /data-mobile-chrome-label[^>]*truncate/);
+  assert.equal((publicSource.match(/data-mobile-chrome-label[^>]*text-10\.5/g) ?? []).length, 2);
+  assert.doesNotMatch(publicSource, /data-mobile-chrome-label[^>]*text-\[10\.5px\]/);
 });
 
 test('navbar direct and Layout hosted contracts reuse executable scenarios', () => {

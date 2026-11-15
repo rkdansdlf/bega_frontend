@@ -19,6 +19,7 @@ import {
 } from './ui/auth-primitives';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import './PasswordResetConfirm.css';
 
 export type PasswordResetConfirmVisualQaStateOverride = Pick<
   ReturnType<typeof usePasswordResetConfirm>,
@@ -101,7 +102,7 @@ export default function PasswordResetConfirm(props: PasswordResetConfirmProps) {
                   <LockIcon className="h-4 w-4 text-primary" />
                   새 비밀번호
                 </label>
-                <div className="relative" data-vqa-overlap="allowed">
+                <div className="password-reset-field relative" data-vqa-overlap="allowed">
                   <Input
                     id="newPassword"
                     name="newPassword"
@@ -142,7 +143,7 @@ export default function PasswordResetConfirm(props: PasswordResetConfirmProps) {
                   <LockIcon className="h-4 w-4 text-primary" />
                   비밀번호 확인
                 </label>
-                <div className="relative" data-vqa-overlap="allowed">
+                <div className="password-reset-field relative" data-vqa-overlap="allowed">
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"

@@ -1,12 +1,18 @@
 /** @type {import('tailwindcss').Config} */
+export const getTailwindContent = ({
+  includeVisualQa = process.env.NODE_ENV !== 'production'
+    || process.env.VITE_TAILWIND_INCLUDE_VISUAL_QA === 'true',
+} = {}) => [
+  "./index.html",
+  "./src/**/*.{js,ts,jsx,tsx}",
+  ...(includeVisualQa ? [] : ["!./src/visual-qa/**/*.{js,ts,jsx,tsx}"]),
+  "!./src/**/*.test.{js,ts,jsx,tsx}",
+  "!./src/**/*.spec.{js,ts,jsx,tsx}",
+];
+
 export default {
   darkMode: 'class', // 'class' 방식으로 다크모드 활성화
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "!./src/**/*.test.{js,ts,jsx,tsx}",
-    "!./src/**/*.spec.{js,ts,jsx,tsx}",
-  ],
+  content: getTailwindContent(),
   theme: {
     screens: {
       'xs': '375px',
@@ -29,7 +35,7 @@ export default {
         body: 'var(--font-body-size)',        // 16px
         caption: 'var(--font-caption-size)',  // 14px
         '8': '8px', '9': '9px', '10': '10px', '11': '11px', '12': '12px',
-        '13': '13px', '15': '15px', '17': '17px', '18': '18px', '19': '19px',
+        '10.5': '0.65625rem', '13': '13px', '15': '15px', '17': '17px', '18': '18px', '19': '19px',
         '20': '20px', '22': '22px', '24': '24px', '30': '30px', '32': '32px', '38': '38px',
         '120': '120px', '160': '160px',
       },
@@ -51,6 +57,8 @@ export default {
       spacing: {
         '4.5': '1.125rem',
         '13': '3.25rem',
+        '22': '5.5rem',
+        '42': '10.5rem',
       },
       boxShadow: {
         'cheer-mobile-chrome': 'var(--shadow-cheer-mobile-chrome)',

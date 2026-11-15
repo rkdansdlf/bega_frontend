@@ -26,6 +26,21 @@ test('UI kit preview keeps dense panels readable and exposes stable QA surfaces'
   assert.match(source, /break-words/);
 });
 
+test('UI kit palette and button specimens reflow when enlarged text no longer fits paired columns', async () => {
+  const source = await readSource();
+  const adaptiveColumns = 'grid-cols-[repeat(auto-fit,minmax(min(100%,6rem),1fr))]';
+
+  assert.equal(source.split(adaptiveColumns).length - 1, 3);
+});
+
+test('UI kit typography samples keep long retro text inside a narrow enlarged-text viewport', async () => {
+  const source = await readSource();
+
+  assert.match(source, /grid min-w-0 grid-cols-\[minmax\(0,1fr\)\] gap-6/);
+  assert.match(source, /className="font-retro min-w-0"/);
+  assert.match(source, /className="break-words text-lg"/);
+});
+
 test('UI kit compares real shared controls and their disabled, invalid and loading states', async () => {
   const source = await readSource();
   for (const specimen of ['ui-kit-button-comparison', 'ui-kit-form-controls', 'ui-kit-status-badges', 'ui-kit-states', 'ui-kit-dialog-open']) {

@@ -14,6 +14,27 @@ import {
 } from './harnessCatalog';
 import { KNOWN_COMPONENT_STATE_ADAPTER_IDS } from './stateAdapters';
 
+test('component-state catalog encodes intentional null-render branches as expected absence', () => {
+  const expectedAbsent = AUTOMATIC_COMPONENT_STATE_SCENARIOS
+    .filter(({ expectedRender }) => expectedRender === 'absent');
+  const countsByComponent = Object.fromEntries(
+    [...new Set(expectedAbsent.map(({ componentId }) => componentId))]
+      .sort()
+      .map((componentId) => [
+        componentId,
+        expectedAbsent.filter((scenario) => scenario.componentId === componentId).length,
+      ]),
+  );
+
+  assert.equal(expectedAbsent.length, 20);
+  assert.deepEqual(countsByComponent, {
+    'src/components/ImageGrid.tsx#ImageGrid': 2,
+    'src/components/prediction/PredictionErrorOverlay.tsx#PredictionErrorOverlay': 8,
+    'src/components/prediction/PredictionTopNotice.tsx#PredictionTopNotice': 10,
+  });
+  assert.ok(expectedAbsent.every((scenario) => scenario.interactionPlan === undefined));
+});
+
 test('SeatMapLegend catalog exposes exactly 14 direct synthetic light and dark scenarios', async () => {
   const contract = JSON.parse(
     await readFile(new URL('../../contracts/visual-qa-component-states-v1.json', import.meta.url), 'utf8'),
@@ -1077,7 +1098,7 @@ test('automatic component probes include every module-export visual candidate wi
 });
 
 test('registered component states expand to executable adapter-backed scenarios', () => {
-  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 93787);
+  assert.equal(AUTOMATIC_COMPONENT_STATE_SCENARIOS.length, 93791);
   assert.ok(AUTOMATIC_COMPONENT_STATE_SCENARIOS.every(({ kind }) => kind === 'component-state'));
   const registeredDataStates = new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS
     .map(({ states }) => states.data)
@@ -1090,7 +1111,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   )));
   assert.equal(
     new Set(AUTOMATIC_COMPONENT_STATE_SCENARIOS.map(({ componentId }) => componentId)).size,
-    509,
+    510,
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
@@ -1919,7 +1940,7 @@ test('registered component states expand to executable adapter-backed scenarios'
   );
   assert.equal(
     AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ states }) => states.data === 'manual-required').length,
-    40,
+    44,
   );
   const stadiumError = AUTOMATIC_COMPONENT_STATE_SCENARIOS.filter(({ componentId }) => (
     componentId.endsWith('StadiumSeatMapStates.tsx#StadiumSeatMapErrorFallback')

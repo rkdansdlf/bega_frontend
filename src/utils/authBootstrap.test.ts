@@ -461,6 +461,24 @@ test('인증 페이지는 recent failure cooldown이 있으면 hint가 있어도
   );
 });
 
+test('미래 시각의 failure meta는 cooldown으로 취급하지 않고 로그인 세션 확인을 막지 않는다', () => {
+  const now = 1_000_000;
+
+  assert.equal(
+    resolveAuthBootstrapMode('/login', {
+      isLoggedIn: false,
+      hasPersistedAuthHint: true,
+      authBootstrapMeta: {
+        version: 1,
+        lastSuccessAt: null,
+        lastFailureAt: now + 24 * 60 * 60 * 1000,
+      },
+      now,
+    }),
+    'immediate',
+  );
+});
+
 test('로그인 상태 prediction 진입은 persisted auth hint와 무관하게 deferred revalidation을 유지한다', () => {
   assert.equal(
     resolveAuthBootstrapMode('/prediction', {

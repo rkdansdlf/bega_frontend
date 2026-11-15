@@ -152,9 +152,13 @@ export async function fetchActivePowerups(): Promise<ActivePowerup[]> {
  */
 export async function usePowerup(
   type: string,
-  gameId?: string
+  gameId: string
 ): Promise<PowerupUseResult> {
-  return privatePost<PowerupUseResult, { gameId?: string }>(
+  if (!gameId.trim()) {
+    throw new Error('A selected game is required to use a powerup.');
+  }
+
+  return privatePost<PowerupUseResult, { gameId: string }>(
     `/leaderboard/powerups/${type}/use`,
     { gameId },
   );

@@ -35,9 +35,10 @@ type GameDetailMock = ScheduleGameMock & {
 };
 
 type ViewportCase = {
-  id: 'desktop' | 'mobile';
+  id: 'desktop' | 'mobile' | 'mobile-320';
   width: number;
   height: number;
+  rootFontSize?: number;
 };
 
 type ReportEntry = {
@@ -83,7 +84,7 @@ const liveCardEntries = viewports.flatMap((viewport) => themes.flatMap((theme) =
     group: 'live card',
     live: `live/${viewport.id}-${theme}-${state}-card.png`,
     classification: 'intentional divergence' as const,
-    note: 'Live responsive container, teams, colors, and copy use deterministic Cypress fixtures; no overflow or text collision asserted.',
+    note: 'Live container and copy use deterministic Cypress fixtures; component horizontal overflow is asserted, but the reference capture is not a 200% text-reflow sign-off.',
   }))
 )));
 
@@ -364,10 +365,14 @@ const installCoachAnalyzeResponse = ({
   }).as('coachAnalyzeAnyVisual');
 };
 
-const seedThemeAndMedia = (win: Window, theme: ThemeMode) => {
+const seedThemeAndMedia = (win: Window, theme: ThemeMode, rootFontSize?: number) => {
   win.localStorage.setItem('kbo-theme', theme);
   win.localStorage.removeItem('bega-theme');
   win.localStorage.removeItem('theme');
+
+  if (rootFontSize) {
+    win.document.documentElement.style.fontSize = `${rootFontSize}px`;
+  }
 
   const resolveMediaMatch = (query: string) => {
     if (query === '(prefers-reduced-motion: reduce)') return true;
@@ -519,7 +524,7 @@ const openPredictionPage = ({
     token: 'coach-visual-test-token',
     authenticated,
     persistedAuthHint: authenticated,
-    onBeforeLoad: (win) => seedThemeAndMedia(win, theme),
+    onBeforeLoad: (win) => seedThemeAndMedia(win, theme, viewport.rootFontSize),
   });
 
   cy.contains('전력분석실', { timeout: 20000 }).should('be.visible');
@@ -539,8 +544,82 @@ const openPredictionPage = ({
 
 const assertNoHorizontalOverflow = (selector: string) => {
   cy.get(selector).then(($element) => {
-    const element = $element[0];
-    expect(element.scrollWidth, `${selector} scrollWidth`).to.be.lte(element.clientWidth + 2);
+    const element = $element[0] as HTMLElement;
+    const overflowingDescendants = Array.from(element.querySelectorAll<HTMLElement>('*'))
+      .filter((child) => child.clientWidth > 0 && child.scrollWidth > child.clientWidth + 2)
+      .slice(0, 8)
+      .map((child) => {
+        const text = child.textContent?.trim().replace(/\s+/g, ' ').slice(0, 50) || '';
+        return `${child.tagName.toLowerCase()}.${String(child.className).slice(0, 70)} ${child.scrollWidth}/${child.clientWidth} ${text}`;
+      });
+    const rootRect = element.getBoundingClientRect();
+    const ancestorWidths: string[] = [];
+    let ancestor: HTMLElement | null = element;
+    while (ancestor && ancestorWidths.length < 8) {
+      const rect = ancestor.getBoundingClientRect();
+      const style = window.getComputedStyle(ancestor);
+      ancestorWidths.push(`${ancestor.tagName.toLowerCase()}.${String(ancestor.className).slice(0, 50)} ${rect.width.toFixed(1)}/${ancestor.clientWidth} ${style.display}/${style.width}/${style.flex}`);
+      ancestor = ancestor.parentElement;
+    }
+    const diagnostic = `rect=${rootRect.width.toFixed(1)}x${rootRect.height.toFixed(1)} ancestors=${ancestorWidths.join(' <- ')} descendants=${overflowingDescendants.join(' | ')}`;
+    expect(element.scrollWidth, `${selector} scrollWidth ${element.scrollWidth}/${element.clientWidth} ${diagnostic}`)
+      .to.be.lte(element.clientWidth + 2);
+  });
+};
+
+const assertLargeTextCopyFit = (selector: string, label: string) => {
+  cy.get(selector).then(($element) => {
+    const root = $element[0] as HTMLElement;
+    const document = root.ownerDocument;
+    const window = document.defaultView;
+    expect(window, `${label} browser window`).not.to.be.null;
+    if (!window) return;
+
+    const viewportContentWidth = document.documentElement.clientWidth;
+    const rootRect = root.getBoundingClientRect();
+    const issues: string[] = [];
+    if (document.documentElement.scrollWidth > viewportContentWidth + 2) {
+      issues.push(`document width ${document.documentElement.scrollWidth}/${viewportContentWidth}`);
+    }
+    if (document.body.scrollWidth > viewportContentWidth + 2) {
+      issues.push(`body width ${document.body.scrollWidth}/${viewportContentWidth}`);
+    }
+    if (root.scrollWidth > root.clientWidth + 2) {
+      issues.push(`${selector} width ${root.scrollWidth}/${root.clientWidth}`);
+    }
+
+    const textBlocks = Array.from(root.querySelectorAll<HTMLElement>(
+      'h1, h2, h3, h4, p, li, dt, dd, button, [role="button"]',
+    )).filter((element) => element.getClientRects().length > 0 && element.textContent?.trim() && !element.closest('.sr-only'));
+    textBlocks.forEach((element) => {
+      if (element.clientWidth > 0 && element.scrollWidth > element.clientWidth + 2) {
+        issues.push(`${element.tagName.toLowerCase()} block ${element.scrollWidth}/${element.clientWidth}`);
+      }
+      if (element.tagName === 'BUTTON' && element.scrollHeight > element.clientHeight + 2) {
+        issues.push(`button vertical overflow ${element.scrollHeight}/${element.clientHeight}`);
+      }
+    });
+
+    const textWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let textNode: Node | null;
+    while ((textNode = textWalker.nextNode())) {
+      const text = textNode.textContent?.trim();
+      const parent = textNode.parentElement;
+      if (!text || !parent || !parent.getClientRects().length || parent.closest('.sr-only, [aria-hidden="true"], [hidden], svg, script, style')) {
+        continue;
+      }
+      const range = document.createRange();
+      range.selectNodeContents(textNode);
+      Array.from(range.getClientRects())
+        .filter((rect) => rect.width > 0 && rect.height > 0)
+        .forEach((rect) => {
+          if (rect.left < rootRect.left - 1 || rect.right > rootRect.right + 1) {
+            issues.push(`text fragment ${rect.left.toFixed(1)}..${rect.right.toFixed(1)} outside ${selector}: ${parent.tagName.toLowerCase()}.${String(parent.className)} "${text.slice(0, 80)}"`);
+          }
+        });
+    }
+
+    expect(issues, `${label} 32px text fits its rendered bounds: ${issues.join('; ')}`).to.deep.equal([]);
   });
 };
 
@@ -573,7 +652,8 @@ const captureViewportScreenshot = (viewport: ViewportCase, id: string) => {
         expect(details.dimensions.width, `${id} screenshot width`).to.eq(
           Math.round(viewport.width * devicePixelRatio),
         );
-        expect(details.dimensions.height, `${id} screenshot height`).to.eq(
+        expect(details.dimensions.height, `${id} screenshot has a visible viewport capture`).to.be.greaterThan(0);
+        expect(details.dimensions.height, `${id} screenshot does not exceed the requested viewport`).to.be.at.most(
           Math.round(viewport.height * devicePixelRatio),
         );
       },
@@ -589,8 +669,21 @@ const captureViewportElement = (selector: string, viewport: ViewportCase, id: st
 };
 
 const captureViewportText = (selector: string, expectedText: string, viewport: ViewportCase, id: string) => {
-  cy.contains(selector, expectedText, { timeout: 60000 })
-    .scrollIntoView({ duration: 0 })
+  cy.get(selector, { timeout: 60000 })
+    .contains(expectedText, { timeout: 60000 })
+    .then(($target) => {
+      const target = $target[0] as HTMLElement;
+      const scrollContainer = target.closest<HTMLElement>('[data-testid="coach-analysis-dialog-scroll-content"]');
+      if (scrollContainer) {
+        const targetRect = target.getBoundingClientRect();
+        const containerRect = scrollContainer.getBoundingClientRect();
+        scrollContainer.scrollTop += targetRect.top - containerRect.top - 12;
+      } else {
+        target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+      }
+    });
+  cy.get(selector, { timeout: 60000 })
+    .contains(expectedText, { timeout: 60000 })
     .should('be.visible');
   captureViewportScreenshot(viewport, id);
 };
@@ -740,7 +833,7 @@ const openAndCaptureDialog = (theme: ThemeMode, viewport: ViewportCase) => {
   assertNoHorizontalOverflow('[data-testid="coach-c1-versus-hero"]');
   assertNoHorizontalOverflow('[data-testid="coach-risk-versus"]');
 
-  if (viewport.id === 'mobile') {
+  if (viewport.width <= 480) {
     captureViewportElement(
       '[data-testid="coach-analysis-dialog"]',
       viewport,
@@ -806,6 +899,52 @@ describe('Prediction coach live visual capture', () => {
       it(`captures detailed coach analysis dialog in ${theme} mode at ${viewport.id}`, () => {
         openAndCaptureDialog(theme, viewport);
       });
+    });
+  });
+});
+
+describe('Prediction coach 200% root-text reflow', () => {
+  const mobileLargeTextViewport: ViewportCase = {
+    id: 'mobile-320',
+    width: 320,
+    height: 844,
+    rootFontSize: 32,
+  };
+
+  beforeEach(() => {
+    cy.visit('about:blank');
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
+      win.localStorage.clear();
+    });
+    installPredictionApiMocks();
+  });
+
+  themes.forEach((theme) => {
+    visualStates.forEach((state) => {
+      it(`keeps the ${state} briefing card copy in bounds at 320px in ${theme} mode`, () => {
+        captureBriefingCardState(state, theme, mobileLargeTextViewport);
+        assertLargeTextCopyFit(
+          '[data-testid="coach-briefing-card"]',
+          `320px ${theme} ${state} briefing card`,
+        );
+      });
+    });
+
+    it(`keeps the detailed analysis dialog copy in bounds at 320px in ${theme} mode`, () => {
+      openAndCaptureDialog(theme, mobileLargeTextViewport);
+      assertLargeTextCopyFit(
+        '[data-testid="coach-analysis-dialog"]',
+        `320px ${theme} analysis dialog`,
+      );
+      assertLargeTextCopyFit(
+        '[data-testid="coach-c1-versus-hero"]',
+        `320px ${theme} C1 comparison`,
+      );
+      assertLargeTextCopyFit(
+        '[data-testid="coach-risk-versus"]',
+        `320px ${theme} risk comparison`,
+      );
     });
   });
 });

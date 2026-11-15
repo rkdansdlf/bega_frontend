@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { designEnvironmentCases } from './visual-qa-design-consistency';
+import { designEnvironmentCases, restoreDesignEnvironmentViewport } from './visual-qa-design-consistency';
 
 test('design matrix stays bounded and covers each required environment without claiming full coverage', () => {
   const after = designEnvironmentCases('after');
@@ -17,4 +17,24 @@ test('design matrix stays bounded and covers each required environment without c
   assert.ok(after.some((entry) => entry.scenario.states.system === 'loading'));
   assert.ok(after.some((entry) => entry.scenario.states.system === 'error-503'));
   assert.ok(after.some((entry) => entry.scenario.states.interactions === 'keyboard-navigation'));
+});
+
+test('design matrix restores the requested viewport after an expanded interaction capture', async () => {
+  const events: string[] = [];
+  let viewport = { width: 399, height: 1840 };
+  const page = {
+    viewportSize: () => viewport,
+    setViewportSize: async (size: { width: number; height: number }) => {
+      viewport = size;
+      events.push(`viewport:${size.width}x${size.height}`);
+    },
+    evaluate: async () => {
+      events.push('settled');
+    },
+  };
+
+  await restoreDesignEnvironmentViewport(page, { width: 320, height: 900 });
+
+  assert.deepEqual(events, ['viewport:320x900', 'settled']);
+  assert.deepEqual(viewport, { width: 320, height: 900 });
 });

@@ -31,6 +31,7 @@ type OffSeasonHomePrimaryRuntimeProps = {
   bigEvents: OffseasonMovement[];
   awards: AwardData[];
   rankings: Ranking[];
+  manualDataRequired?: boolean;
   isLargeScreen: boolean;
   getTeamName: (code: string) => string;
   formatRemarks: (text: string) => ReactNode;
@@ -49,6 +50,7 @@ export default function OffSeasonHomePrimaryRuntime({
   bigEvents,
   awards,
   rankings,
+  manualDataRequired = false,
   isLargeScreen,
   getTeamName,
   formatRemarks,
@@ -95,13 +97,13 @@ export default function OffSeasonHomePrimaryRuntime({
 
   return (
     <div
-      className="min-h-screen space-y-8 bg-gray-50 px-4 py-6 transition-colors sm:px-6 md:space-y-12 md:px-6 md:py-8 dark:bg-background"
+      className="min-h-screen space-y-4 bg-gray-50 px-4 py-4 transition-colors sm:space-y-6 sm:px-6 sm:py-6 md:space-y-12 md:px-6 md:py-8 dark:bg-background"
       data-testid="offseason-home-primary-runtime"
     >
       <button
         type="button"
         onClick={onNavigateHome}
-        className="group mb-2 flex min-h-11 max-w-full items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-15 text-primary transition-all hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-gray-800"
+        className="group mb-0 flex min-h-11 max-w-full items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-15 text-primary transition-all hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-gray-800 sm:mb-2"
         data-testid="offseason-home-back"
       >
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:scale-110">
@@ -112,11 +114,11 @@ export default function OffSeasonHomePrimaryRuntime({
 
       <section className="relative overflow-hidden rounded-2xl border-none bg-primary shadow-xl md:rounded-3xl">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-20 pointer-events-none" />
-        <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
+        <div className="relative z-10 px-4 py-4 sm:px-6 sm:py-8 md:px-8 md:py-12">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div className="min-w-0">
               <OffseasonPill className="mb-3 border-none bg-yellow-400 px-3 py-1 text-15 font-bold text-gray-900 dark:text-white md:mb-4">2025-26 스토브리그</OffseasonPill>
-              <h2 className="mb-2 text-2xl text-white md:text-4xl" style={{ fontWeight: 900 }}>스토브리그 하이라이트</h2>
+              <h2 className="mb-2 text-xl text-white sm:text-2xl md:text-4xl" style={{ fontWeight: 900 }}>스토브리그 하이라이트</h2>
               <p className="text-base text-emerald-100/80 md:text-lg">다가오는 새로운 시즌을 준비하는 뜨거운 기록들</p>
             </div>
             <div className="w-full min-w-0 max-w-full rounded-xl border border-white/10 bg-black/20 p-3 text-white backdrop-blur-sm md:w-fit md:rounded-2xl md:p-4 md:text-right">
@@ -168,6 +170,7 @@ export default function OffSeasonHomePrimaryRuntime({
         <OffSeasonHomeHighlightsRuntime
           awards={awards}
           rankings={rankings}
+          manualDataRequired={manualDataRequired}
           isLargeScreen={isLargeScreen}
         />
       </Suspense>

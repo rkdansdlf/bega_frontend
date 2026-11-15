@@ -46,8 +46,15 @@ export const parseResponseBody = async (response: Response): Promise<unknown> =>
   }
 
   const contentType = response.headers.get('content-type') ?? '';
-  if (contentType.includes('application/json')) {
-    return response.json();
+  if (contentType.toLowerCase().includes('application/json')) {
+    try {
+      return await response.json();
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return { message: 'Invalid JSON response body' };
+      }
+      throw error;
+    }
   }
 
   const text = await response.text();

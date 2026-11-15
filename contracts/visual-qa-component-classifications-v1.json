@@ -1430,15 +1430,6 @@
       "renderAccess": "hosted"
     },
     {
-      "id": "src/components/AdminPageDataRuntime.tsx#DEFAULT_ADMIN_STATS",
-      "classification": "nonvisual",
-      "basis": "static-non-callable-runtime-shape",
-      "reason": "The TSX runtime declaration is a non-callable object-literal, not a React component.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/AdminPageDataRuntime.tsx#MODERATION_TABS",
       "classification": "nonvisual",
       "basis": "proven-static-runtime-value",
@@ -19930,15 +19921,6 @@
       "exportName": "default"
     },
     {
-      "id": "src/components/StadiumGuideRuntime.tsx#StadiumGuideRuntime.SeatMapComponent",
-      "classification": "nonvisual",
-      "basis": "proven-static-runtime-value",
-      "reason": "The PascalCase declaration is a alias value, not a distinct React component definition.",
-      "testEvidence": "visual-qa-component-inventory runtimeShape=alias",
-      "owner": "frontend-platform",
-      "renderAccess": "hosted"
-    },
-    {
       "id": "src/components/stadiumSeatMap/SeatMapAttribution.tsx#SeatMapAttribution",
       "classification": "visual",
       "basis": "reviewed-jsx-callable",
@@ -21030,6 +21012,61 @@
       "testEvidence": "scripts/visual-qa-component-inventory.test.mjs zero-DOM behavior-only classification",
       "renderAccess": "module-export",
       "exportName": "default"
+    },
+    {
+      "id": "src/components/stadiumSeatMap/SeatMapRuntimeShell.tsx#SeatMapRuntimeShell.SeatMapComponent",
+      "classification": "nonvisual",
+      "basis": "reviewed-dynamic-component-reference",
+      "reason": "This memoized value is only a lazy component reference selected by the shell; it is not an independently declared or rendered surface. Its visual output is covered by SeatMapRuntimeShell and the concrete seat-map component entries.",
+      "testEvidence": "src/components/stadiumSeatMap/SeatMapRuntimeShell.mobile.test.tsx",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/admin/AdminModerationRuntime.tsx#ADMIN_SEAT_VIEW_PAGE_SIZE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The declaration is a numeric page-size constant and does not render a React view.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=literal",
+      "owner": "frontend-admin",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/admin/AdminModerationRuntime.tsx#EMPTY_SEAT_VIEW_PAGE",
+      "classification": "nonvisual",
+      "basis": "static-non-callable-runtime-shape",
+      "reason": "The declaration is an initial pagination data object and does not render a React view.",
+      "testEvidence": "visual-qa-component-inventory runtimeShape=object-literal",
+      "owner": "frontend-admin",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/retro/PowerupGameSelector.tsx#PowerupGameSelector",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "Renders the game-date and power-up game selection surface with an explicit manual-data-required fallback.",
+      "testEvidence": "src/visual-qa/stateAdapters.test.ts#retro-powerup-game-selector",
+      "owner": "frontend-retro",
+      "renderAccess": "module-export",
+      "exportName": "default"
+    },
+    {
+      "id": "src/components/SeatViewGallery.tsx#SeatViewImage",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
+    },
+    {
+      "id": "src/components/mypage/AccountSettingsReadError.tsx#AccountSettingsReadError",
+      "classification": "visual",
+      "basis": "reviewed-jsx-callable",
+      "reason": "The callable contains JSX and is included as a visual React render unit.",
+      "testEvidence": "visual-qa-component-inventory containsJsx=true",
+      "owner": "frontend-platform",
+      "renderAccess": "hosted"
     }
   ]
 }

@@ -41,6 +41,9 @@ export default function BlockedUsersSection({
         hasNextPage,
         isFetchingNextPage,
         isLoading,
+        isError,
+        isFetching,
+        refetch,
     } = useInfiniteQuery<PageResponse<UserFollowSummary>>({
         queryKey: PRIVATE_QUERY_KEYS.blockedUsers(viewerScope),
         queryFn: ({ pageParam = 0 }) => {
@@ -77,7 +80,7 @@ export default function BlockedUsersSection({
 
     return (
         <div
-            className="bg-card rounded-2xl shadow-lg border-2 border-border p-4 sm:p-6 md:p-8 mb-6"
+            className="mypage-blocked-panel bg-card rounded-2xl shadow-lg border-2 border-border p-4 sm:p-6 md:p-8 mb-6"
             data-screen-label="차단 관리"
             data-testid="mypage-blocked-users-section"
         >
@@ -103,12 +106,27 @@ export default function BlockedUsersSection({
                     <div className="flex justify-center p-8">
                         <MyPageLoaderIcon className="h-8 w-8 animate-spin text-destructive" />
                     </div>
+                ) : isError && users.length === 0 && visualQaStateOverride === undefined ? (
+                    <div role="alert" data-testid="mypage-blocked-users-error" className="mypage-season-empty mypage-season-empty--flush is-danger">
+                        <strong className="mypage-season-empty-title">차단 목록을 불러오지 못했습니다.</strong>
+                        <p className="mypage-season-empty-copy">잠시 후 다시 시도해주세요.</p>
+                        <button
+                            type="button"
+                            data-testid="mypage-blocked-users-retry"
+                            className="mypage-season-empty-action"
+                            style={{ minHeight: 'var(--touch-target-min)', minWidth: 'var(--touch-target-min)' }}
+                            disabled={isFetching}
+                            onClick={() => void refetch()}
+                        >
+                            {isFetching ? '불러오는 중...' : '다시 시도'}
+                        </button>
+                    </div>
                 ) : users.length > 0 ? (
                     <div className="divide-y divide-border">
                         {users.map((user) => (
-                            <div key={user.handle} className="flex items-center justify-between p-4 hover:bg-muted/60 transition-colors">
+                            <div key={user.handle} className="mypage-blocked-row flex items-center justify-between p-4 hover:bg-muted/60 transition-colors">
                                 <div
-                                    className="flex items-center gap-3 flex-1 min-w-0 mr-4"
+                                    className="mypage-blocked-identity flex items-center gap-3 flex-1 min-w-0 mr-4"
                                 >
                                     <ProfileAvatar
                                         src={user.profileImageUrl ?? undefined}

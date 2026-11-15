@@ -6,12 +6,11 @@ import { useAuthCheerActions } from '../store/authStore';
 import { useLeaderboardStore } from '../store/leaderboardStore';
 import { getFullTeamName } from '../constants/teams';
 import { parseError } from '../utils/errorUtils';
+import { getViewerQueryScope, isViewerQueryScopeCurrent, type ViewerQueryScope } from '../utils/viewerQueryScope';
 import { useUserLeaderboardStats } from './useLeaderboardPrivate';
 import { invalidatePredictionUserVoteCache } from './usePredictionUserVotes';
 import {
-  LEGACY_PREDICTION_RUN_SESSION_STORAGE_KEY,
   PREDICTION_NETWORK_RETRY_MAX_ATTEMPTS,
-  PREDICTION_RUN_SESSION_STORAGE_KEY,
   canSchedulePredictionRetry,
   createPredictionRetryAttemptState,
   emitPredictionRunSessionUpdated,
@@ -21,7 +20,9 @@ import {
   isPredictionRunSessionTooFreshToRestore,
   parsePredictionRunSession,
   readPredictionRunSession,
+  removePredictionRunSession,
   resetPredictionRetryAttempt,
+  writePredictionRunSession,
   type PredictionRetryActionKey,
   type PredictionRunAction,
   type PredictionRunSessionV1,
@@ -68,6 +69,10 @@ const waitForRetryDelay = (ms: number) => {
   });
 };
 
+const sameViewerScope = (left: ViewerQueryScope | null, right: ViewerQueryScope): boolean => (
+  left?.viewerId === right.viewerId && left?.sessionEpoch === right.sessionEpoch
+);
+
 export const usePredictionVoteFlow = ({
   isAuthLoading,
   isLoggedIn,
@@ -92,9 +97,12 @@ export const usePredictionVoteFlow = ({
   const triggerCombo = useLeaderboardStore((state) => state.triggerCombo);
 
   const flowRunCounterRef = useRef(0);
+  const activeViewerScope = getViewerQueryScope();
+  const activeViewerScopeRef = useRef(activeViewerScope);
   const runInProgressRef = useRef(false);
   const runTimeoutStageRef = useRef<PredictionRunTimeoutStage>('none');
   const runSessionRef = useRef<PredictionRunSessionV1 | null>(null);
+  const runSessionScopeRef = useRef<ViewerQueryScope | null>(null);
   const runSessionRestoreInFlightRef = useRef(false);
   const retryAttemptRef = useRef(createPredictionRetryAttemptState());
   const offlineToastShownRef = useRef<Record<PredictionRetryActionKey, boolean>>({
@@ -135,21 +143,18 @@ export const usePredictionVoteFlow = ({
   }, [currentGameId]);
 
   const upsertRunSession = useCallback((session: PredictionRunSessionV1 | null) => {
+    const scope = runSessionScopeRef.current;
+    if (!scope || !isViewerQueryScopeCurrent(scope)) return false;
+
     runSessionRef.current = session;
-
-    if (typeof window === 'undefined') {
-      return;
+    const isScopeCurrent = () => isViewerQueryScopeCurrent(scope);
+    if (session) {
+      writePredictionRunSession(scope, session, isScopeCurrent);
+    } else {
+      removePredictionRunSession(scope, isScopeCurrent);
     }
-
-    if (!session) {
-      window.sessionStorage.removeItem(PREDICTION_RUN_SESSION_STORAGE_KEY);
-      window.sessionStorage.removeItem(LEGACY_PREDICTION_RUN_SESSION_STORAGE_KEY);
-      emitPredictionRunSessionUpdated();
-      return;
-    }
-
-    window.sessionStorage.setItem(PREDICTION_RUN_SESSION_STORAGE_KEY, JSON.stringify(session));
     emitPredictionRunSessionUpdated();
+    return true;
   }, []);
 
   const patchRunSession = useCallback((patch: Partial<PredictionRunSessionV1>) => {
@@ -190,13 +195,16 @@ export const usePredictionVoteFlow = ({
     return Date.now() - runStartAt;
   }, [runStartAt]);
 
-  const resetRunProgressState = useCallback(() => {
+  const resetRunProgressState = useCallback((scope: ViewerQueryScope) => {
+    if (!isViewerQueryScopeCurrent(scope) || !sameViewerScope(runSessionScopeRef.current, scope)) return;
+
     runInProgressRef.current = false;
     runTimeoutStageRef.current = 'none';
     setIsRunInProgress(false);
     setRunStartAt(null);
     setIsRunBannerDismissed(false);
     clearRunSession();
+    runSessionScopeRef.current = null;
   }, [clearRunSession]);
 
   const getNextFlowId = useCallback((gameId: string, action: 'vote' | 'cancel') => {
@@ -205,12 +213,14 @@ export const usePredictionVoteFlow = ({
   }, []);
 
   const beginRunSession = useCallback((params: {
+    scope: ViewerQueryScope;
     flowId: string;
     gameId: string;
     action: PredictionRunAction;
     startedAt: number;
     team?: 'home' | 'away';
   }) => {
+    runSessionScopeRef.current = params.scope;
     runTimeoutStageRef.current = 'none';
     upsertRunSession({
       flowId: params.flowId,
@@ -254,6 +264,10 @@ export const usePredictionVoteFlow = ({
   }, [emitRunProgressBannerAction, patchRunSession]);
 
   const executeVote = useCallback(async (gameId: string, team: VoteTeam, game: Game) => {
+    const runScope = getViewerQueryScope();
+    const isRunScopeCurrent = () => isViewerQueryScopeCurrent(runScope);
+    if (runScope.viewerId === null || !isLoggedIn || !isRunScopeCurrent()) return;
+
     if (runInProgressRef.current) {
       emitFlowEvent('onRunCancel', 'RUNNING', {
         gameId,
@@ -276,6 +290,7 @@ export const usePredictionVoteFlow = ({
     setIsRunBannerDismissed(false);
     setRunProgressMessage('투표(예측) 요청을 전송하는 중입니다.');
     beginRunSession({
+      scope: runScope,
       flowId,
       gameId,
       action: 'vote',
@@ -296,7 +311,7 @@ export const usePredictionVoteFlow = ({
     let didTimeout = false;
     let didTimeoutFatal = false;
     const warningTimeoutId = setTimeout(() => {
-      if (!runInProgressRef.current) {
+      if (!isRunScopeCurrent() || !runInProgressRef.current) {
         return;
       }
       didTimeout = true;
@@ -326,7 +341,7 @@ export const usePredictionVoteFlow = ({
     }, PREDICTION_RUN_WARNING_TIMEOUT_MS);
 
     const fatalTimeoutId = setTimeout(() => {
-      if (!runInProgressRef.current || didTimeoutFatal) {
+      if (!isRunScopeCurrent() || !runInProgressRef.current || didTimeoutFatal) {
         return;
       }
       didTimeoutFatal = true;
@@ -356,6 +371,7 @@ export const usePredictionVoteFlow = ({
 
     try {
       while (true) {
+        if (!isRunScopeCurrent()) return;
         if (isOfflineNow()) {
           showOfflineToastOnce('submitVote');
           const retryAttempt = nextNetworkRetryAttempt('submitVote');
@@ -376,6 +392,7 @@ export const usePredictionVoteFlow = ({
               meta: retryMeta,
             });
             await waitForRetryDelay(getPredictionRetryDelayMs(retryAttempt));
+            if (!isRunScopeCurrent()) return;
             continue;
           }
 
@@ -430,10 +447,12 @@ export const usePredictionVoteFlow = ({
 
         try {
           await submitVote(gameId, team);
+          if (!isRunScopeCurrent()) return;
           invalidatePredictionUserVoteCache();
           resetNetworkRetryAttempt('submitVote');
           break;
         } catch (error: unknown) {
+          if (!isRunScopeCurrent()) return;
           if (isCancelLikeError(error)) {
             return;
           }
@@ -467,6 +486,7 @@ export const usePredictionVoteFlow = ({
                 meta: retryMeta,
               });
               await waitForRetryDelay(getPredictionRetryDelayMs(retryAttempt));
+              if (!isRunScopeCurrent()) return;
               continue;
             }
 
@@ -553,6 +573,7 @@ export const usePredictionVoteFlow = ({
         }
       }
 
+      if (!isRunScopeCurrent()) return;
       if (didTimeout) {
         emitFlowEvent('onRunProgress', 'RUNNING', {
           gameId,
@@ -583,6 +604,7 @@ export const usePredictionVoteFlow = ({
         source: 'manual',
         flowId,
       });
+      if (!isRunScopeCurrent()) return;
 
       const teamName = team === 'home'
         ? getFullTeamName(game.homeTeam)
@@ -594,10 +616,11 @@ export const usePredictionVoteFlow = ({
           ? (await refetchUserLeaderboardStats()).data?.currentStreak ?? 0
           : 0
       );
-      if (resolvedCurrentStreak > 0) {
+      if (isRunScopeCurrent() && resolvedCurrentStreak > 0) {
         triggerCombo(resolvedCurrentStreak);
       }
     } catch (error: unknown) {
+      if (!isRunScopeCurrent()) return;
       if (!isCancelLikeError(error)) {
         const parsedError = parseError(error);
         const mappedErrorCode = mapPredictionErrorCode(parsedError.type);
@@ -625,8 +648,10 @@ export const usePredictionVoteFlow = ({
     } finally {
       clearTimeout(warningTimeoutId);
       clearTimeout(fatalTimeoutId);
-      resetNetworkRetryAttempt('submitVote');
-      resetRunProgressState();
+      if (isRunScopeCurrent()) {
+        resetNetworkRetryAttempt('submitVote');
+        resetRunProgressState(runScope);
+      }
     }
   }, [
     beginRunSession,
@@ -652,6 +677,10 @@ export const usePredictionVoteFlow = ({
   ]);
 
   const executeCancelVote = useCallback(async (gameId: string) => {
+    const runScope = getViewerQueryScope();
+    const isRunScopeCurrent = () => isViewerQueryScopeCurrent(runScope);
+    if (runScope.viewerId === null || !isLoggedIn || !isRunScopeCurrent()) return;
+
     if (runInProgressRef.current) {
       emitFlowEvent('onRunCancel', 'RUNNING', {
         gameId,
@@ -674,6 +703,7 @@ export const usePredictionVoteFlow = ({
     setIsRunBannerDismissed(false);
     setRunProgressMessage('투표(예측) 취소 요청을 전송하는 중입니다.');
     beginRunSession({
+      scope: runScope,
       flowId,
       gameId,
       action: 'cancel',
@@ -697,6 +727,7 @@ export const usePredictionVoteFlow = ({
 
     try {
       while (true) {
+        if (!isRunScopeCurrent()) return;
         if (isOfflineNow()) {
           showOfflineToastOnce('cancelVote');
           const retryAttempt = nextNetworkRetryAttempt('cancelVote');
@@ -717,6 +748,7 @@ export const usePredictionVoteFlow = ({
               meta: retryMeta,
             });
             await waitForRetryDelay(getPredictionRetryDelayMs(retryAttempt));
+            if (!isRunScopeCurrent()) return;
             continue;
           }
 
@@ -761,10 +793,12 @@ export const usePredictionVoteFlow = ({
 
         try {
           await cancelVote(gameId);
+          if (!isRunScopeCurrent()) return;
           invalidatePredictionUserVoteCache();
           resetNetworkRetryAttempt('cancelVote');
           break;
         } catch (error: unknown) {
+          if (!isRunScopeCurrent()) return;
           if (isCancelLikeError(error)) {
             return;
           }
@@ -798,6 +832,7 @@ export const usePredictionVoteFlow = ({
                 meta: retryMeta,
               });
               await waitForRetryDelay(getPredictionRetryDelayMs(retryAttempt));
+              if (!isRunScopeCurrent()) return;
               continue;
             }
 
@@ -885,6 +920,7 @@ export const usePredictionVoteFlow = ({
         source: 'manual',
         flowId,
       });
+      if (!isRunScopeCurrent()) return;
       emitFlowEvent('onRunSuccess', 'RUNNING', {
         gameId,
         flowId,
@@ -894,13 +930,16 @@ export const usePredictionVoteFlow = ({
       });
       toast.success('투표가 취소되었습니다.');
     } catch (error) {
+      if (!isRunScopeCurrent()) return;
       if (!isCancelLikeError(error)) {
         const parsedError = parseError(error);
         toast.error(parsedError.message || '투표 취소에 실패했습니다.');
       }
     } finally {
-      resetNetworkRetryAttempt('cancelVote');
-      resetRunProgressState();
+      if (isRunScopeCurrent()) {
+        resetNetworkRetryAttempt('cancelVote');
+        resetRunProgressState(runScope);
+      }
     }
   }, [
     beginRunSession,
@@ -915,9 +954,12 @@ export const usePredictionVoteFlow = ({
     setUserVote,
     showOfflineToastOnce,
     showPredictionErrorOverlay,
+    isLoggedIn,
   ]);
 
   const handleVote = useCallback(async (team: VoteTeam, game: Game, isVoteOpen: boolean) => {
+    const actionScope = getViewerQueryScope();
+    if (actionScope.viewerId === null || !isLoggedIn || !isViewerQueryScopeCurrent(actionScope)) return;
     const gameId = game.gameId;
     emitFlowEvent('onPredictPress', 'DETAIL_EDIT', {
       gameId,
@@ -967,7 +1009,7 @@ export const usePredictionVoteFlow = ({
         title: '투표 변경',
         description: `현재 ${currentTeamName} 승리로 투표하셨습니다.\n${newTeamName}(으)로 변경하시겠습니까?`,
       });
-      if (confirmed) {
+      if (confirmed && isViewerQueryScopeCurrent(actionScope)) {
         void executeVote(gameId, team, game);
       }
       return;
@@ -978,32 +1020,38 @@ export const usePredictionVoteFlow = ({
         title: '투표 취소',
         description: '투표를 취소하시겠습니까?\n\n(❗️ 주의: 사용된 포인트는 반환되지 않습니다)',
       });
-      if (confirmed) {
+      if (confirmed && isViewerQueryScopeCurrent(actionScope)) {
         void executeCancelVote(gameId);
       }
       return;
     }
 
     void executeVote(gameId, team, game);
-  }, [confirm, emitFlowEvent, executeCancelVote, executeVote, userVote]);
+  }, [confirm, emitFlowEvent, executeCancelVote, executeVote, isLoggedIn, userVote]);
 
   const restoreRunSession = useCallback(async (trigger: RunSessionRestoreTrigger) => {
     if (typeof window === 'undefined') {
       return;
     }
+    const scope = getViewerQueryScope();
+    if (scope.viewerId === null || !isViewerQueryScopeCurrent(scope)) return;
     if (runInProgressRef.current || runSessionRestoreInFlightRef.current) {
       return;
     }
 
-    const parsedSession = parsePredictionRunSession(readPredictionRunSession());
+    runSessionScopeRef.current = scope;
+    const parsedSession = parsePredictionRunSession(readPredictionRunSession(scope.viewerId));
 
     if (!parsedSession) {
       clearRunSession();
+      runSessionScopeRef.current = null;
       return;
     }
 
     if (isPredictionRunSessionStale(parsedSession.startedAt)) {
       clearRunSession();
+      runSessionScopeRef.current = null;
+      if (!isViewerQueryScopeCurrent(scope)) return;
       setRunProgressMessage('이전 예측 실행 세션이 만료되었습니다. 다시 시도해 주세요.');
       emitFlowEvent('onRunTimeout', 'RUNNING', {
         gameId: parsedSession.gameId,
@@ -1062,6 +1110,7 @@ export const usePredictionVoteFlow = ({
 
     runSessionRestoreInFlightRef.current = true;
     try {
+      if (!isViewerQueryScopeCurrent(scope)) return;
       upsertRunSession(parsedSession);
       setRunStartAt(parsedSession.startedAt);
       runInProgressRef.current = true;
@@ -1091,8 +1140,10 @@ export const usePredictionVoteFlow = ({
         restoredFromSession: true,
       });
     } finally {
-      runSessionRestoreInFlightRef.current = false;
-      resetRunProgressState();
+      if (isViewerQueryScopeCurrent(scope)) {
+        runSessionRestoreInFlightRef.current = false;
+        resetRunProgressState(scope);
+      }
     }
   }, [
     clearRunSession,
@@ -1113,6 +1164,27 @@ export const usePredictionVoteFlow = ({
   useEffect(() => {
     patchRunSession({ bannerDismissed: isRunBannerDismissed });
   }, [isRunBannerDismissed, patchRunSession]);
+
+  useEffect(() => {
+    if (sameViewerScope(activeViewerScopeRef.current, activeViewerScope)) return;
+
+    activeViewerScopeRef.current = activeViewerScope;
+    runInProgressRef.current = false;
+    runTimeoutStageRef.current = 'none';
+    runSessionRef.current = null;
+    runSessionScopeRef.current = null;
+    runSessionRestoreInFlightRef.current = false;
+    retryAttemptRef.current = createPredictionRetryAttemptState();
+    offlineToastShownRef.current = {
+      submitVote: false,
+      cancelVote: false,
+      voteStatus: false,
+    };
+    setIsRunInProgress(false);
+    setIsRunBannerDismissed(false);
+    setRunProgressMessage('예측을 준비 중입니다.');
+    setRunStartAt(null);
+  }, [activeViewerScope.sessionEpoch, activeViewerScope.viewerId]);
 
   useEffect(() => {
     if (isAuthLoading || !isLoggedIn) {
@@ -1138,7 +1210,13 @@ export const usePredictionVoteFlow = ({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pageshow', handlePageShow);
     };
-  }, [isAuthLoading, isLoggedIn, restoreRunSession]);
+  }, [
+    activeViewerScope.sessionEpoch,
+    activeViewerScope.viewerId,
+    isAuthLoading,
+    isLoggedIn,
+    restoreRunSession,
+  ]);
 
   return {
     handleVote,

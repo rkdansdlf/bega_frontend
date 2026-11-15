@@ -167,6 +167,17 @@ export default function MateManageContentRuntime({
         />
       </Suspense>
 
+      <Button
+        data-testid="mate-manage-mobile-delete"
+        onClick={onDeleteParty}
+        disabled={isDeleting}
+        variant="outline"
+        className="min-h-11 w-full min-w-0 max-w-[calc(100vw-2rem)] border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/30 sm:min-h-11 lg:hidden"
+      >
+        <MateTrashIcon className="mr-2 h-4 w-4" />
+        {isDeleting ? '삭제 중...' : '파티 삭제'}
+      </Button>
+
       <div className="space-y-4">
         <Card className={`hidden p-5 lg:flex lg:sticky lg:top-6 ${mateSectionCardClass}`}>
           <div>

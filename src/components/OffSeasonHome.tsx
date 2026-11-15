@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { getTeamKoreanName } from '../utils/teamNames';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useQuery } from '@tanstack/react-query';
-import { publicGet } from '../api/publicClient';
+import { PublicApiError, publicGet } from '../api/publicClient';
 import { fetchRankingSnapshot } from '../api/rankings';
 import { useCurrentTime } from '../hooks/useCurrentTime';
+import { isManualBaseballDataRequiredCode } from '../utils/errorUtils';
 import type { Ranking } from '../types/home';
 
 export interface AwardData {
@@ -23,6 +24,7 @@ export interface OffseasonHomeData {
   movements: OffseasonMovement[];
   awards: AwardData[];
   rankings: Ranking[];
+  manualDataRequired?: boolean;
 }
 
 export interface OffseasonMovement {
@@ -44,6 +46,7 @@ const defaultOffseasonHomeData: OffseasonHomeData = {
   movements: [],
   awards: [],
   rankings: [],
+  manualDataRequired: false,
 };
 const OffSeasonHomePrimaryRuntime = lazy(() => import('./OffSeasonHomePrimaryRuntime'));
 
@@ -68,7 +71,11 @@ const fetchOffseasonHomeData = async (): Promise<OffseasonHomeData> => {
   if (movementsResponse.status === 'rejected') {
     console.error('Failed to fetch offseason movements', movementsResponse.reason);
   }
-  if (metadataResponse.status === 'rejected') {
+  const manualDataRequired = metadataResponse.status === 'rejected'
+    && metadataResponse.reason instanceof PublicApiError
+    && isManualBaseballDataRequiredCode(metadataResponse.reason.data?.code);
+
+  if (metadataResponse.status === 'rejected' && !manualDataRequired) {
     console.error('Failed to fetch offseason metadata', metadataResponse.reason);
   }
   if (rankingsResponse.status === 'rejected') {
@@ -83,6 +90,7 @@ const fetchOffseasonHomeData = async (): Promise<OffseasonHomeData> => {
     movements: movementsResponse.status === 'fulfilled' ? movementsResponse.value : [],
     awards: metadata.awards,
     rankings: rankingsResponse.status === 'fulfilled' ? rankingsResponse.value.rankings : [],
+    manualDataRequired,
   };
 };
 
@@ -128,7 +136,7 @@ export default function OffSeasonHome(props: OffSeasonHomeProps = {}) {
   const currentTime = visualQaStateOverride?.currentTime
     ? new Date(visualQaStateOverride.currentTime)
     : queriedCurrentTime;
-  const { movements, awards, rankings } = data ?? defaultOffseasonHomeData;
+  const { movements, awards, rankings, manualDataRequired } = data ?? defaultOffseasonHomeData;
 
   // 2026 Season Opening Day
   const daysUntilOpening = useMemo(() => {
@@ -177,6 +185,7 @@ export default function OffSeasonHome(props: OffSeasonHomeProps = {}) {
           bigEvents={bigEvents}
           awards={awards}
           rankings={rankings}
+          manualDataRequired={manualDataRequired ?? false}
           isLargeScreen={isLargeScreen}
           getTeamName={getTeamName}
           formatRemarks={formatRemarks}

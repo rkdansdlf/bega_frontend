@@ -94,12 +94,17 @@ export const usePredictionUserVotes = ({ userId }: UsePredictionUserVotesParams)
       return;
     }
 
-    const existingRequest = predictionUserVoteRequests.get(cacheKey);
-    const inFlight = existingRequest || fetchAllUserVotesBulkAPI(normalizedIds).finally(() => {
-      predictionUserVoteRequests.delete(cacheKey);
-    });
-
-    predictionUserVoteRequests.set(cacheKey, inFlight);
+    let inFlight = predictionUserVoteRequests.get(cacheKey);
+    if (!inFlight) {
+      let request!: Promise<UserVoteRecord>;
+      request = fetchAllUserVotesBulkAPI(normalizedIds).finally(() => {
+        if (predictionUserVoteRequests.get(cacheKey) === request) {
+          predictionUserVoteRequests.delete(cacheKey);
+        }
+      });
+      inFlight = request;
+      predictionUserVoteRequests.set(cacheKey, inFlight);
+    }
 
     try {
       const userVotes = await inFlight;

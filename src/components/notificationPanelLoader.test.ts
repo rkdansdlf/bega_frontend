@@ -18,6 +18,8 @@ const notification: NotificationData = {
   createdAt: '2026-08-29T00:00:00.000Z',
 };
 
+const snapshot = [notification];
+
 const recordStates = () => {
   const states: NotificationPanelLoadState[] = [];
   return {
@@ -27,7 +29,7 @@ const recordStates = () => {
 };
 
 test('알림 조회는 실제 notification API를 호출하고 응답 전 loading 상태를 알린다', async (t) => {
-  let resolveRequest!: (notifications: NotificationData[]) => void;
+  let resolveRequest!: (response: NotificationData[]) => void;
   const pendingRequest = new Promise<NotificationData[]>((resolve) => {
     resolveRequest = resolve;
   });
@@ -43,20 +45,20 @@ test('알림 조회는 실제 notification API를 호출하고 응답 전 loadin
   assert.equal(getNotifications.mock.callCount(), 1);
   assert.deepEqual(states, [{ status: 'loading' }]);
 
-  resolveRequest([notification]);
+  resolveRequest(snapshot);
   await load;
 });
 
 test('알림 조회 성공은 받은 알림과 함께 success 상태를 알린다', async (t) => {
-  t.mock.method(notificationApi, 'getNotifications', async () => [notification]);
+  t.mock.method(notificationApi, 'getNotifications', async () => snapshot);
   const { states, onStateChange } = recordStates();
 
   const result = await loadNotificationPanelNotifications({ onStateChange });
 
-  assert.deepEqual(result, { status: 'success', notifications: [notification] });
+  assert.deepEqual(result, { status: 'success', notifications: snapshot });
   assert.deepEqual(states, [
     { status: 'loading' },
-    { status: 'success', notifications: [notification] },
+    { status: 'success', notifications: snapshot },
   ]);
 });
 
@@ -94,7 +96,7 @@ test('실패 후 재시도는 API를 다시 호출하고 success 상태로 복�
     if (attempt === 1) {
       throw error;
     }
-    return [notification];
+    return snapshot;
   });
   const { states, onStateChange } = recordStates();
 
@@ -102,7 +104,7 @@ test('실패 후 재시도는 API를 다시 호출하고 success 상태로 복�
   const retryResult = await loadNotificationPanelNotifications({ onStateChange });
 
   assert.equal(getNotifications.mock.callCount(), 2);
-  assert.deepEqual(retryResult, { status: 'success', notifications: [notification] });
+  assert.deepEqual(retryResult, { status: 'success', notifications: snapshot });
   assert.deepEqual(states.map((state) => state.status), [
     'loading',
     'error',
@@ -112,7 +114,7 @@ test('실패 후 재시도는 API를 다시 호출하고 success 상태로 복�
 });
 
 test('계정 전환 뒤 도착한 알림 응답은 상태와 store 반영 콜백에 전달되지 않는다', async () => {
-  let resolveRequest!: (notifications: NotificationData[]) => void;
+  let resolveRequest!: (response: NotificationData[]) => void;
   const pendingRequest = new Promise<NotificationData[]>((resolve) => {
     resolveRequest = resolve;
   });
@@ -125,7 +127,7 @@ test('계정 전환 뒤 도착한 알림 응답은 상태와 store 반영 콜백
     onStateChange,
   });
   currentSession = false;
-  resolveRequest([notification]);
+  resolveRequest(snapshot);
 
   assert.deepEqual(await load, { status: 'idle' });
   assert.deepEqual(states, [{ status: 'loading' }]);

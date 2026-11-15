@@ -7,6 +7,7 @@ import {
   PREDICTION_RUN_SESSION_EVENT,
   hasPredictionRunSession,
 } from '../../utils/predictionRecovery';
+import { getViewerQueryScope } from '../../utils/viewerQueryScope';
 import type { Game, VoteTeam } from '../../types/prediction';
 import type {
   PredictionMatchVoteControllerRenderState,
@@ -88,13 +89,16 @@ export default function PredictionMatchInteractiveDataRuntime({
 
   const pendingVoteActionIdRef = useRef(0);
   const pendingVoteQueueLockRef = useRef(false);
-  const [isVoteControllerEnabled, setIsVoteControllerEnabled] = useState(() => hasPredictionRunSession());
+  const viewerScope = getViewerQueryScope();
+  const [isVoteControllerEnabled, setIsVoteControllerEnabled] = useState(() => (
+    hasPredictionRunSession(viewerScope.viewerId)
+  ));
   const [isPendingVoteQueueLocked, setIsPendingVoteQueueLocked] = useState(false);
   const [pendingVoteAction, setPendingVoteAction] = useState<PredictionPendingVoteAction | null>(null);
 
   useEffect(() => {
     const enableVoteControllerIfRunSessionExists = () => {
-      if (hasPredictionRunSession()) {
+      if (hasPredictionRunSession(getViewerQueryScope().viewerId)) {
         setIsVoteControllerEnabled(true);
       }
     };
@@ -126,7 +130,7 @@ export default function PredictionMatchInteractiveDataRuntime({
       window.removeEventListener(PREDICTION_RUN_SESSION_EVENT, handleRunSessionUpdated);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [viewerScope.sessionEpoch, viewerScope.viewerId]);
 
   const currentGameId = currentGame?.gameId;
   const currentUserVoteResolutionState = resolvePredictionUserVoteResolutionState(

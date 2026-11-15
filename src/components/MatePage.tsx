@@ -27,10 +27,10 @@ function MateLoggedOutEntry() {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
-      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center px-2 py-10 sm:px-6 lg:px-8">
         <section
           data-testid="mate-logged-out-entry"
-          className="w-full rounded-xl border border-border bg-card px-5 py-8 text-center shadow-surface sm:px-8 sm:py-10"
+          className="w-full rounded-xl border border-border bg-card px-2 py-8 text-center shadow-surface sm:px-8 sm:py-10"
         >
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <span className="text-lg font-black" aria-hidden="true">M</span>
@@ -39,12 +39,12 @@ function MateLoggedOutEntry() {
             Mate Flow
           </p>
           <h1
-            className="text-2xl font-black tracking-tight text-foreground sm:text-3xl"
+            className="text-2xl font-black tracking-tight text-foreground max-sm:break-keep sm:text-3xl"
             style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
           >
             로그인하고 직관 메이트를 찾아보세요
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-body font-bold leading-relaxed text-muted-foreground">
+          <p className="mx-auto mt-3 max-w-xl text-body font-bold leading-relaxed text-muted-foreground max-sm:break-keep">
             경기 날짜, 좌석, 팀 기준으로 파티를 찾고 신청하려면 계정 확인이 필요합니다.
           </p>
           <Suspense fallback={null}>
@@ -56,7 +56,7 @@ function MateLoggedOutEntry() {
               size="touchLg"
               onClick={() => navigate(buildLoginPath('/mate'))}
               variant="brand"
-              className="w-full font-black sm:w-auto"
+              className="w-full font-black max-sm:break-keep max-sm:px-2 sm:w-auto"
             >
               로그인하고 같이가요 시작
             </Button>
@@ -64,7 +64,7 @@ function MateLoggedOutEntry() {
               size="touchLg"
               onClick={() => navigate('/home')}
               variant="brandOutline"
-              className="w-full font-bold sm:w-auto"
+              className="w-full font-bold max-sm:break-keep max-sm:px-2 sm:w-auto"
             >
               홈에서 경기 보기
             </Button>

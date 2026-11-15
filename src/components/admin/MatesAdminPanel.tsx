@@ -18,6 +18,8 @@ interface AdminMate {
 
 interface MatesAdminPanelProps {
   mates: AdminMate[];
+  loading?: boolean;
+  error?: string | null;
   handleDeleteMate: (mateId: number) => void;
   tableClassName?: string;
 }
@@ -30,16 +32,29 @@ const statusBadge: Record<string, { className: string; label: string }> = {
   completed: { className: 'bg-slate-700 text-slate-300 border-0', label: '완료' },
 };
 
-export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: MatesAdminPanelProps) {
+export function MatesAdminPanel({ mates, loading = false, error = null, handleDeleteMate, tableClassName }: MatesAdminPanelProps) {
   const [pendingDeleteMate, setPendingDeleteMate] = useState<AdminMate | null>(null);
 
   return (
     <>
       <div
         data-testid="admin-mates-panel"
+        aria-busy={loading || undefined}
         className="min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-800"
       >
-        {mates.length === 0 ? (
+        {loading && (
+          <div data-testid="admin-mates-loading" role="status" aria-live="polite"
+            className="flex min-h-40 min-w-0 items-center justify-center px-4 py-10 text-center text-slate-400 break-keep [overflow-wrap:anywhere]">
+            메이트 조회 중
+          </div>
+        )}
+        {error && (
+          <div data-testid="admin-mates-error"
+            className="flex min-h-40 min-w-0 items-center justify-center px-4 py-10 text-center text-red-300 break-keep [overflow-wrap:anywhere]">
+            {error}
+          </div>
+        )}
+        {mates.length === 0 ? (loading || error ? null : (
           <div
             data-testid="admin-mates-empty"
             role="status"
@@ -49,7 +64,7 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
             <AdminCalendarIcon className="mb-3 h-12 w-12 opacity-30" />
             메이트 모임이 없습니다.
           </div>
-        ) : (
+        )) : (
           <Table aria-label="메이트 모임 목록" className={tableClassName ?? 'min-w-[860px]'}>
           <TableHeader>
             <TableRow className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/50">
@@ -92,10 +107,10 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="iconTouch"
                       data-testid={`admin-mate-delete-${mate.id}`}
                       aria-label={`메이트 모임 ${mate.id} 삭제`}
-                      className="min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 sm:min-w-8"
+                      className="min-h-11 min-w-11 rounded-lg text-slate-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
                       onClick={() => setPendingDeleteMate(mate)}
                     >
                       <AdminTrashIcon className="w-4 h-4" />
@@ -114,6 +129,7 @@ export function MatesAdminPanel({ mates, handleDeleteMate, tableClassName }: Mat
         title="메이트 모임을 삭제하시겠습니까?"
         description="연결된 신청·결제·대화·체크인 등의 기록이 있으면 삭제가 차단됩니다. 연결 기록은 자동 삭제·환불되지 않으며 별도 정리 절차가 필요합니다."
         contentTestId="admin-mate-delete-dialog"
+        headerTabStop
         className="sm:max-w-md border-slate-800 bg-slate-900 text-slate-100"
         footer={(
           <>

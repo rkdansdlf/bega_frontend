@@ -1,0 +1,110 @@
+.mypage-account-settings {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.mypage-account-settings > .mypage-settings-content-transition,
+.mypage-account-panel,
+.mypage-account-provider-card,
+.mypage-account-session-card,
+.mypage-account-event-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mypage-account-panel p,
+.mypage-account-panel .mypage-account-event-time {
+  overflow-wrap: anywhere;
+}
+
+.mypage-account-provider-icon {
+  flex-shrink: 0;
+}
+
+.mypage-account-panel [data-testid^='account-settings-provider-'],
+.mypage-account-panel [data-testid^='account-settings-session-end-'],
+.mypage-account-panel [data-testid='account-settings-other-sessions'],
+.mypage-account-panel [data-testid='account-settings-advanced-open'],
+.mypage-account-panel .mypage-account-read-retry {
+  min-height: theme(spacing.11);
+  height: auto;
+  white-space: normal;
+}
+
+.mypage-account-read-error {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: theme(spacing.2);
+  margin-bottom: theme(spacing.3);
+  border: 1px solid var(--mp-danger-border);
+  border-radius: theme(borderRadius.xl);
+  padding: theme(spacing.3);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.mypage-account-panel .mypage-account-read-retry {
+  min-width: theme(spacing.11);
+}
+
+@media (max-width: 1023px) {
+  .mypage-account-panel {
+    padding: theme(spacing.3);
+  }
+
+  .mypage-account-panel .mypage-account-provider-layout,
+  .mypage-account-panel .mypage-account-provider-identity,
+  .mypage-account-panel .mypage-account-session-layout,
+  .mypage-account-panel .mypage-account-session-identity,
+  .mypage-account-panel .mypage-account-event-identity,
+  .mypage-account-panel .mypage-account-event-layout,
+  .mypage-account-panel .mypage-account-advanced-layout {
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: theme(spacing.2);
+  }
+
+  .mypage-account-provider-copy,
+  .mypage-account-session-info,
+  .mypage-account-event-content,
+  .mypage-account-advanced-copy {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mypage-account-panel .mypage-account-provider-icon {
+    align-self: flex-start;
+  }
+
+  .mypage-account-provider-card,
+  .mypage-account-session-card,
+  .mypage-account-event-card {
+    padding: theme(spacing.3);
+  }
+
+  .mypage-account-panel .mypage-account-session-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mypage-account-panel p,
+  .mypage-account-panel h2,
+  .mypage-account-panel h3,
+  .mypage-account-panel .mypage-account-event-time {
+    word-break: keep-all;
+  }
+
+  .mypage-account-panel [data-testid^='account-settings-provider-'] {
+    width: 100%;
+    flex-direction: column;
+    padding-inline: theme(spacing.3);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .mypage-account-panel [data-testid^='account-settings-session-end-'],
+  .mypage-account-panel [data-testid='account-settings-advanced-open'] {
+    width: 100%;
+  }
+}

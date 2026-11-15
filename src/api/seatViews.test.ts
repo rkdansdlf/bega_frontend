@@ -79,7 +79,7 @@ test('submitDirectSeatViewUpload uploads SEAT_VIEW media before creating seat vi
         data: {
           assetId: 91,
           storagePath: 'media/seat-view/7/91.webp',
-          publicUrl: 'https://cdn.example.com/media/seat-view/7/91.webp',
+          publicUrl: null,
         },
       });
     }
@@ -89,7 +89,7 @@ test('submitDirectSeatViewUpload uploads SEAT_VIEW media before creating seat vi
         success: true,
         data: {
           id: 501,
-          photoUrl: 'https://cdn.example.com/media/seat-view/7/91.webp',
+          photoUrl: null,
           storagePath: 'media/seat-view/7/91.webp',
           stadium: 'JAMSIL',
           section: '205블록',
@@ -102,6 +102,13 @@ test('submitDirectSeatViewUpload uploads SEAT_VIEW media before creating seat vi
           moderationStatus: 'PENDING',
           sourceType: 'SEATMAP_UPLOAD',
         },
+      });
+    }
+
+    if (requestUrl.endsWith('/api/seat-views/501/preview')) {
+      return buildJsonResponse({
+        success: true,
+        data: { photoUrl: 'https://signed.example/seat-view-501?ttl=300' },
       });
     }
 
@@ -126,6 +133,7 @@ test('submitDirectSeatViewUpload uploads SEAT_VIEW media before creating seat vi
     'https://object.example.com/upload/seat-view-91',
     '/api/media/uploads/91/finalize',
     '/api/seat-views',
+    '/api/seat-views/501/preview',
   ]);
   assert.deepEqual(requestBodies[0], {
     domain: 'SEAT_VIEW',
@@ -147,7 +155,68 @@ test('submitDirectSeatViewUpload uploads SEAT_VIEW media before creating seat vi
     tags: ['전광판 잘 보임'],
   });
   assert.equal(result.id, 501);
+  assert.equal(result.photoUrl, 'https://signed.example/seat-view-501?ttl=300');
   assert.equal(result.moderationStatus, 'PENDING');
+});
+
+test('cancelling seat-view upload aborts storage and does not create the seat view', async (t) => {
+  installImageTestDoubles(t);
+  const controller = new AbortController();
+  let started!: () => void;
+  const uploadStarted = new Promise<void>((resolve) => { started = resolve; });
+  const calls: string[] = [];
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    calls.push(url);
+    if (url.endsWith('/api/media/uploads/init')) {
+      return buildJsonResponse({ success: true, data: { assetId: 92, uploadUrl: 'https://object.example.com/92' } });
+    }
+    if (url === 'https://object.example.com/92') {
+      started();
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')), { once: true });
+      });
+    }
+    if (url.endsWith('/api/media/uploads/92')) return new Response(null, { status: 204 });
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const submission = submitDirectSeatViewUpload({
+    file: new File(['seat'], 'seat.webp', { type: 'image/webp' }), stadium: 'SYNTHETIC', rating: 5,
+  }, { signal: controller.signal });
+  await uploadStarted;
+  controller.abort();
+  await assert.rejects(submission, { message: '업로드가 취소되었습니다.' });
+  assert.deepEqual(calls, ['/api/media/uploads/init', 'https://object.example.com/92', '/api/media/uploads/92']);
+});
+
+test('cancellation after seat-view creation starts does not delete an attached asset', async (t) => {
+  installImageTestDoubles(t);
+  const controller = new AbortController();
+  let createStarted!: () => void;
+  let finishCreate!: (response: Response) => void;
+  const started = new Promise<void>((resolve) => { createStarted = resolve; });
+  const calls: string[] = [];
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    calls.push(url);
+    if (url.endsWith('/api/media/uploads/init')) return buildJsonResponse({ success: true, data: { assetId: 93, uploadUrl: 'https://object.example.com/93' } });
+    if (url === 'https://object.example.com/93') return new Response(null, { status: 200 });
+    if (url.endsWith('/api/media/uploads/93/finalize')) return buildJsonResponse({ success: true, data: { assetId: 93, storagePath: 'synthetic' } });
+    if (url.endsWith('/api/seat-views')) {
+      createStarted();
+      return new Promise<Response>((resolve) => { finishCreate = resolve; });
+    }
+    if (url.endsWith('/api/seat-views/503/preview')) return buildJsonResponse({ success: false }, 500);
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const submission = submitDirectSeatViewUpload({
+    file: new File(['seat'], 'seat.webp', { type: 'image/webp' }), stadium: 'SYNTHETIC', rating: 5,
+  }, { signal: controller.signal });
+  await started;
+  controller.abort();
+  finishCreate(buildJsonResponse({ success: true, data: { id: 503, storagePath: 'synthetic', photoUrl: null } }));
+  assert.equal((await submission).id, 503);
+  assert.equal(calls.includes('/api/media/uploads/93'), false);
 });
 
 test('submitDirectSeatViewUpload surfaces backend submit failures after upload', async (t) => {
@@ -184,7 +253,7 @@ test('submitDirectSeatViewUpload surfaces backend submit failures after upload',
         data: {
           assetId: 92,
           storagePath: 'media/seat-view/7/92.webp',
-          publicUrl: 'https://cdn.example.com/media/seat-view/7/92.webp',
+          publicUrl: null,
         },
       });
     }

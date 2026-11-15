@@ -15,6 +15,7 @@ import {
   STADIUM_FLOW_SOURCE_IDENTITIES,
   TICKET_MODAL_ASSERTION_IDS,
   TICKET_MODAL_FLOW_SOURCE_IDENTITIES,
+  bottomDockReachabilityAssertions,
   homeAssertions,
   myPageAssertions,
   productDefectAssertions,
@@ -26,7 +27,7 @@ import {
 } from './visual-qa-route-flow.integration.mjs';
 
 test('route-flow matrix keeps the representative mobile and text-zoom axes explicit', () => {
-  assert.deepEqual(ROUTE_FLOW_WIDTHS, [320, 390]);
+  assert.deepEqual(ROUTE_FLOW_WIDTHS, [320, 390, 1280]);
   assert.deepEqual(ROUTE_FLOW_ZOOMS, [1, 2]);
   assert.equal(routeFlowLabel({ browser: 'webkit', route: '/mypage', width: 390, zoom: 2 }), 'webkit:/mypage:390px:200%');
 });
@@ -37,6 +38,23 @@ test('fixture route-flow blocks service workers in every browser context', () =>
     viewport: { width: 320, height: 844 },
     serviceWorkers: 'block',
   });
+});
+
+test('mobile bottom-dock reachability fails only when an applicable target is blocked', () => {
+  assert.deepEqual(bottomDockReachabilityAssertions({
+    applicable: true,
+    reachable: false,
+    target: 'synthetic-control',
+    centerUnderDock: true,
+    centerReceivesInput: false,
+  }).map(({ id }) => id), ['mobile-bottom-dock-unreachable']);
+  assert.deepEqual(bottomDockReachabilityAssertions({
+    applicable: true,
+    reachable: true,
+    centerUnderDock: true,
+    centerReceivesInput: true,
+  }), []);
+  assert.deepEqual(bottomDockReachabilityAssertions({ applicable: false, reachable: null }), []);
 });
 
 test('route-flow evidence records keep Home registration and its route evidence linked', () => {
@@ -211,6 +229,26 @@ test('home route flags an initial title overlap even when focus later scrolls th
   assert.deepEqual(failures.map(({ id }) => id), ['home-title-header-overlap']);
 });
 
+test('mobile Home date navigation fails when the title remains overlapped by the sticky header', () => {
+  const failures = homeAssertions({
+    priorityPanelVisible: true,
+    priorityHeadingVisible: true,
+    gameCardCount: 1,
+    fixtureTeamsVisible: true,
+    primaryActionVisible: true,
+    dateNextVisible: true,
+    dateNextDisabled: false,
+    dateNavigationChecked: true,
+    dateNavigationUpdated: true,
+    requireNoTitleOverlapAfterDateNavigation: true,
+    scrollY: 120,
+    pageTitleRect: { top: -8, bottom: 52 },
+    homeTitleHeaderOverlapAfterDateNavigation: { x: 40, y: 40, width: 230, height: 10 },
+  });
+
+  assert.deepEqual(failures.map(({ id }) => id), ['home-title-overlap-after-date-navigation']);
+});
+
 test('home route flags visible navbar children outside their capsule', () => {
   const failures = homeAssertions({
     priorityPanelVisible: true,
@@ -258,6 +296,8 @@ test('Home evidence exposes the complete assertion vocabulary for evidence linki
   assert.ok(HOME_ASSERTION_IDS.includes('home-fixture-content-missing'));
   assert.ok(HOME_ASSERTION_IDS.includes('home-date-navigation-not-updated'));
   assert.ok(HOME_ASSERTION_IDS.includes('home-title-header-overlap'));
+  assert.ok(HOME_ASSERTION_IDS.includes('home-title-overlap-after-date-navigation'));
+  assert.ok(HOME_ASSERTION_IDS.includes('mobile-bottom-dock-unreachable'));
 });
 
 test('stadium and ticket evidence retain their owning source identities', () => {
@@ -267,6 +307,9 @@ test('stadium and ticket evidence retain their owning source identities', () => 
     'StadiumGuideRuntime',
   ]);
   assert.ok(STADIUM_ASSERTION_IDS.includes('stadium-guide-select-focus-missing'));
+  assert.ok(STADIUM_ASSERTION_IDS.includes('stadium-guide-title-reflow'));
+  assert.ok(STADIUM_ASSERTION_IDS.includes('stadium-guide-description-reflow'));
+  assert.ok(STADIUM_ASSERTION_IDS.includes('mobile-bottom-dock-unreachable'));
   assert.deepEqual(TICKET_MODAL_FLOW_SOURCE_IDENTITIES.map(({ source, symbol }) => ({ source, symbol })), [
     { source: 'src/components/ticket/TicketUploadModal.tsx', symbol: 'TicketUploadModal' },
     { source: 'src/components/ui/plain-dialog.tsx', symbol: 'PlainDialog' },
@@ -282,15 +325,41 @@ test('stadium assertions fail when the seat-map or guide focus disappears', () =
     seatMapVisible: false,
     guideSelectVisible: true,
     guideSelectFocused: false,
+    titleLineCount: 0,
+    descriptionLineCount: 0,
   }).map(({ id }) => id), [
     'stadium-seat-map-missing',
     'stadium-guide-select-focus-missing',
+    'stadium-guide-title-reflow',
+    'stadium-guide-description-reflow',
   ]);
   assert.deepEqual(stadiumAssertions({
     seatMapVisible: true,
     guideSelectVisible: true,
     guideSelectFocused: true,
+    titleLineCount: 1,
+    titleOverflowsHero: false,
+    descriptionLineCount: 4,
+    descriptionOverflowsHero: false,
   }), []);
+});
+
+test('Stadium guide typography assertion catches wrapped title and narrow paragraph', () => {
+  const failures = stadiumAssertions({
+    seatMapVisible: true,
+    guideSelectVisible: true,
+    guideSelectFocused: true,
+    titleLineCount: 2,
+    titleOverflowsHero: false,
+    descriptionLineCount: 9,
+    descriptionOverflowsHero: false,
+    heroWidth: 176,
+  });
+
+  assert.deepEqual(failures.map(({ id }) => id), [
+    'stadium-guide-title-reflow',
+    'stadium-guide-description-reflow',
+  ]);
 });
 
 test('MyPage negative control fails when a child flow disappears', () => {

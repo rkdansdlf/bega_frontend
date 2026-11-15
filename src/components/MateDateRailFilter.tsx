@@ -76,14 +76,14 @@ export default function MateDateRailFilter({
       data-selected-date={selectedDateString ?? 'all'}
       className="min-w-0 p-1 [overflow-wrap:anywhere]"
     >
-      <div id="mate-date-rail-grid" className="grid min-w-0 grid-cols-2 gap-2">
+      <div id="mate-date-rail-grid" className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,5rem),1fr))] gap-2">
         <button
           type="button"
           data-testid="mate-date-rail-all"
           aria-pressed={effectiveSelectedDate === null}
           aria-label={`전체 날짜 필터${effectiveSelectedDate === null ? ', 선택됨' : ''}`}
           onClick={() => handleDateSelect(null)}
-          className={`col-span-2 min-h-11 rounded-10 border px-3 py-2 text-13 font-extrabold transition-colors active:scale-[0.98] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
+          className={`col-span-full min-h-11 rounded-10 border px-3 py-2 text-13 font-extrabold transition-colors active:scale-[0.98] motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#000000] ${
             effectiveSelectedDate === null
               ? FILTER_ACTIVE_CLASS
               : FILTER_IDLE_CLASS

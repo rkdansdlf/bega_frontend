@@ -366,3 +366,48 @@ test('worker SPA fallback uses "/" (not /index.html, which assets 307 to "/") an
     'https://www.begabaseball.xyz/?code=x',
   ]);
 });
+
+test('recovery document and its canonical redirect use no-referrer', async () => {
+  const assets = { ASSETS: { fetch: async () => new Response('<html>ok</html>', {
+    headers: { 'content-type': 'text/html', 'referrer-policy': 'strict-origin-when-cross-origin' },
+  }) } };
+  for (const path of ['/account/deletion/recovery', '/Account/Deletion/Recovery/', '/account/deletion/%72ecovery', '/account/deletion/recovery//']) {
+    const response = await worker.fetch(new Request(`https://www.begabaseball.xyz${path}?token=synthetic`, {
+      headers: { accept: 'text/html' },
+    }), assets);
+    assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+  }
+  const redirect = await worker.fetch(new Request('https://begabaseball.xyz/account/deletion/recovery?token=synthetic'), assets);
+  assert.equal(redirect.status, 301);
+  assert.equal(redirect.headers.get('referrer-policy'), 'no-referrer');
+  const other = await worker.fetch(new Request('https://www.begabaseball.xyz/login'), assets);
+  assert.equal(other.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+  const post = await worker.fetch(new Request('https://www.begabaseball.xyz/account/deletion/recovery', { method: 'POST' }), assets);
+  assert.equal(post.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+});
+
+test('recovery HEAD and fallback preserve status and response metadata', async () => {
+  let calls = 0;
+  const response = await worker.fetch(new Request('https://www.begabaseball.xyz/account/deletion/recovery', {
+    method: 'HEAD', headers: { accept: 'text/html' },
+  }), { ASSETS: { fetch: async () => {
+    calls += 1;
+    return calls === 1 ? new Response(null, { status: 404 }) : new Response(null, {
+      status: 200, headers: { 'content-type': 'text/html', 'x-test': 'preserved' },
+    });
+  } } });
+  assert.equal(calls, 2);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+  assert.equal(response.headers.get('x-test'), 'preserved');
+  assert.equal(await response.text(), '');
+});
+
+test('recovery asset redirect preserves location and no-referrer', async () => {
+  const response = await worker.fetch(new Request('https://www.begabaseball.xyz/account/deletion/recovery/'), {
+    ASSETS: { fetch: async () => new Response(null, { status: 302, headers: { location: '/account/deletion/recovery' } }) },
+  });
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get('location'), '/account/deletion/recovery');
+  assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+});

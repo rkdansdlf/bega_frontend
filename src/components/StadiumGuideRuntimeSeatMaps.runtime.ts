@@ -62,7 +62,10 @@ test('StadiumGuideRuntime은 registry, 중립 스켈레톤, 수동 데이터 상
   assert.ok(runtimeSource.includes('shellResetKey'), 'runtime should preserve shell-aware reset key contract for runtime shell errors');
   assert.ok(runtimeSource.includes('seatMapEntry.shellTemplate'), 'runtime should pass shell template metadata to runtime shell');
   assert.ok(runtimeSource.includes('StadiumSeatMapManualRequired'), 'runtime should show manual-data-required state when no entry resolves');
-  assert.ok(runtimeSource.includes('<SeatMapComponent />'), 'runtime should render the resolved registry component');
+  assert.ok(runtimeSource.includes('createComponent={seatMapEntry.createComponent}'), 'runtime should pass the registry loader factory to the retryable shell');
+  assert.ok(runtimeShellSource.includes('createComponent?.()'), 'runtime shell should create lazy components from the registry factory');
+  assert.ok(runtimeShellSource.includes('[createComponent, resetKey, retryVersion]'), 'reset key and retry should replace the rejected lazy component');
+  assert.ok(runtimeShellSource.includes('setRetryVersion((version) => version + 1)'), 'retry should trigger a fresh lazy component wrapper');
   assert.ok(runtimeSource.includes('w-full max-w-none text-sm leading-relaxed'), 'runtime hero description should use the full hero card width');
   assert.ok(!runtimeSource.includes('max-w-xl text-sm leading-relaxed'), 'runtime hero description should not be constrained to half-width on desktop');
   assert.ok(runtimeShellSource.includes('StadiumSeatMapLoadingSkeleton'), 'shared runtime shell should provide neutral loading skeleton');
@@ -89,6 +92,7 @@ test('좌석도 registry는 좌표 기반 QA 메타데이터와 표준 shell 계
 
   STADIUM_SEAT_MAP_ENTRIES.forEach((entry) => {
     assert.equal(entry.shellTemplate, 'standard', `${entry.id} should use the standard seat map shell`);
+    assert.notEqual(entry.createComponent(), entry.createComponent(), `${entry.id} retry should create a fresh lazy wrapper`);
   });
 
   coordinateTemplates.forEach((entry) => {

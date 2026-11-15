@@ -539,17 +539,17 @@ export default function CoachAnalysisDialogRuntime({
                 : "flex max-h-[90vh] flex-col overflow-hidden bg-white p-0 dark:bg-[#000000]"}
         >
             <div className="shrink-0 border-b border-[#eef2f0] bg-white dark:border-white/10 dark:bg-[#000000]">
-            <div className="flex items-center gap-[14px] px-4 py-4 sm:px-6 sm:py-[18px]">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-2 px-4 py-4 sm:flex sm:gap-3.5 sm:px-6 sm:py-4.5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2d5f4f] to-[#173b34] text-[#d6f0e5] shadow-[0_4px_12px_-4px_rgba(23,59,52,0.5)]">
                     <PredictionZapIcon aria-hidden="true" className="h-[18px] w-[18px]" />
                 </div>
-                <div className="min-w-0 flex-1">
-                    <h2 className="truncate text-17 font-extrabold leading-tight text-[#0f1419] dark:text-white">
+                <div className="contents sm:block sm:min-w-0 sm:flex-1">
+                    <h2 className="col-start-2 row-start-1 min-w-0 break-words text-17 font-extrabold leading-tight text-[#0f1419] dark:text-white">
                         {defaultPresentation.title}
                     </h2>
-                    <div className="mt-1 flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold leading-snug text-[#536471] dark:text-white">
+                    <div className="col-span-3 row-start-2 flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold leading-snug text-[#536471] dark:text-white sm:col-auto sm:mt-1 sm:row-auto">
                         {homeTeamId && <TeamLogo teamId={homeTeamId} size={14} className="!rounded-none !bg-transparent p-0" />}
-                        <span className="truncate">{dialogSubtitle}</span>
+                        <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere] sm:truncate">{dialogSubtitle}</span>
                         {awayTeamId && <TeamLogo teamId={awayTeamId} size={14} className="!rounded-none !bg-transparent p-0" />}
                     </div>
                 </div>
@@ -557,7 +557,7 @@ export default function CoachAnalysisDialogRuntime({
                     type="button"
                     onClick={onRequestClose}
                     aria-label="닫기"
-                    className="ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
+                    className="col-start-3 row-start-1 ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-transparent text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-white/15 dark:text-white dark:hover:bg-white/5 sm:col-auto sm:row-auto"
                 >
                     <PredictionCloseIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
@@ -583,7 +583,7 @@ export default function CoachAnalysisDialogRuntime({
             ) : null}
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto bg-white dark:bg-[#000000]">
+            <div data-testid="coach-analysis-dialog-scroll-content" className="min-h-0 flex-1 overflow-y-auto bg-white dark:bg-[#000000]">
                     <p className="sr-only" role="status" aria-live="polite" data-testid="coach-analysis-live-status">
                         {liveStatusMessage}
                     </p>
@@ -665,8 +665,8 @@ export default function CoachAnalysisDialogRuntime({
                         </Suspense>
                     ) : null}
             </div>
-            <div className="flex items-center gap-2 border-t border-[#eef2f0] bg-[#fafcfb] px-[22px] py-3.5 dark:border-white/10 dark:bg-white/[0.02]">
-                <span className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-[#536471] dark:text-white">
+            <div className="flex items-center gap-2 border-t border-[#eef2f0] bg-[#fafcfb] px-4 py-3.5 dark:border-white/10 dark:bg-white/[0.02]">
+                <span className="inline-flex min-w-0 items-center gap-1.5 [overflow-wrap:anywhere] text-[12.5px] font-bold text-[#536471] dark:text-white">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     {footerStatusText}
                 </span>
@@ -674,7 +674,7 @@ export default function CoachAnalysisDialogRuntime({
                 <Button
                     type="button"
                     onClick={onRequestClose}
-                    className="h-11 rounded-14 bg-[#2d5f4f] px-5 text-13 font-extrabold text-white hover:bg-[#2f6c5c] sm:h-9"
+                    className="min-h-11 h-auto shrink-0 rounded-14 bg-[#2d5f4f] px-4 py-3 text-13 font-extrabold text-white hover:bg-[#2f6c5c] sm:min-h-9"
                 >
                     닫기
                 </Button>

@@ -357,6 +357,7 @@ export function OffseasonMovementAdminPanel({
   const [submitting, setSubmitting] = useState(visualQaStateOverride?.submitting ?? false);
   const [importingCsv, setImportingCsv] = useState(visualQaStateOverride?.importingCsv ?? false);
   const [error, setError] = useState<string | null>(visualQaStateOverride?.error ?? null);
+  const [listError, setListError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(
     visualQaStateOverride?.successMessage ?? null,
   );
@@ -402,7 +403,10 @@ export function OffseasonMovementAdminPanel({
   if (listCoordinatorRef.current === null) {
     listCoordinatorRef.current = createOffseasonMovementListCoordinator({
       onData: setMovements,
-      onError: (requestError) => setError(requestError.message),
+      onError: (requestError) => {
+        setListError(requestError.message);
+        setError(requestError.message);
+      },
       onLoading: setLoading,
     });
   }
@@ -418,7 +422,10 @@ export function OffseasonMovementAdminPanel({
     if (visualQaStateOverride) {
       return Promise.resolve();
     }
-    if (mountedRef.current) setError(null);
+    if (mountedRef.current) {
+      setError(null);
+      setListError(null);
+    }
     return listCoordinatorRef.current!.request(filters, fetchAdminOffseasonMovements, options);
   };
 
@@ -737,6 +744,7 @@ export function OffseasonMovementAdminPanel({
   const contentProps: OffseasonMovementAdminPanelContentProps = {
     successMessage,
     error,
+    listError,
     movements,
     filteredMovements,
     loading,
@@ -816,7 +824,7 @@ export function OffseasonMovementAdminPanel({
   return (
     <section
       data-testid="admin-offseason-movement-panel"
-      className="w-full min-w-0 max-w-full overflow-x-clip p-0"
+      className="w-full min-w-0 max-w-full overflow-x-clip p-0 pb-[calc(var(--mobile-chrome-height)+var(--mobile-chrome-bottom-offset)+env(safe-area-inset-bottom)+128px)] lg:pb-0"
     >
       <input
         ref={csvInputRef}

@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 import { buildIssues } from './visual-qa-lib.mjs';
 import { VISUAL_QA_PROBE } from './visual-qa-audit.mjs';
-import { loadPlaywright, settle, stubApi } from './reflow-320-audit.mjs';
+import { installOfflineBoundary, loadPlaywright, settle, stubApi } from './reflow-320-audit.mjs';
 
-export const ROUTE_FLOW_WIDTHS = [320, 390];
+export const ROUTE_FLOW_WIDTHS = [320, 390, 1280];
 export const ROUTE_FLOW_ZOOMS = [1, 2];
 export const ROUTE_FLOW_SERVICE_WORKERS = 'block';
 
@@ -81,9 +81,11 @@ export const HOME_ASSERTION_IDS = [
   'home-primary-action-missing',
   'home-date-navigation-missing',
   'home-date-navigation-not-updated',
+  'home-title-overlap-after-date-navigation',
   'home-navbar-interactive-overlap',
   'home-navbar-content-overflow',
   'home-title-header-overlap',
+  'mobile-bottom-dock-unreachable',
 ];
 
 export const MY_PAGE_ASSERTION_IDS = [
@@ -116,6 +118,9 @@ export const STADIUM_ASSERTION_IDS = [
   'stadium-seat-map-missing',
   'stadium-guide-select-missing',
   'stadium-guide-select-focus-missing',
+  'stadium-guide-title-reflow',
+  'stadium-guide-description-reflow',
+  'mobile-bottom-dock-unreachable',
 ];
 
 export const TICKET_MODAL_FLOW_SOURCE_IDENTITIES = [
@@ -373,6 +378,15 @@ export const homeAssertions = (evidence) => {
       evidence,
     });
   }
+  if (evidence?.dateNavigationChecked
+      && evidence?.requireNoTitleOverlapAfterDateNavigation
+      && evidence?.homeTitleHeaderOverlapAfterDateNavigation) {
+    failures.push({
+      id: 'home-title-overlap-after-date-navigation',
+      message: 'the Home page title overlaps the sticky navbar after mobile date navigation',
+      evidence: evidence.homeTitleHeaderOverlapAfterDateNavigation,
+    });
+  }
   if (evidence?.dateNavigationChecked && (evidence?.navbarInteractiveOverlaps?.length ?? 0) > 0) {
     failures.push({
       id: 'home-navbar-interactive-overlap',
@@ -462,6 +476,32 @@ export const stadiumAssertions = (evidence) => {
       id: 'stadium-guide-select-focus-missing',
       message: 'the stadium guide selector did not receive focus',
       evidence,
+    });
+  }
+  if ((evidence?.titleLineCount ?? 0) < 1
+      || (evidence?.titleLineCount ?? 0) > 1
+      || evidence?.titleOverflowsHero) {
+    failures.push({
+      id: 'stadium-guide-title-reflow',
+      message: 'the Stadium Guide title breaks into an excessively narrow column or overflows its hero',
+      evidence: {
+        titleLineCount: evidence?.titleLineCount ?? null,
+        titleOverflowsHero: evidence?.titleOverflowsHero ?? null,
+        heroWidth: evidence?.heroWidth ?? null,
+      },
+    });
+  }
+  if ((evidence?.descriptionLineCount ?? 0) < 1
+      || (evidence?.descriptionLineCount ?? 0) > 8
+      || evidence?.descriptionOverflowsHero) {
+    failures.push({
+      id: 'stadium-guide-description-reflow',
+      message: 'the Stadium Guide description is too narrow or overflows its hero',
+      evidence: {
+        descriptionLineCount: evidence?.descriptionLineCount ?? null,
+        descriptionOverflowsHero: evidence?.descriptionOverflowsHero ?? null,
+        heroWidth: evidence?.heroWidth ?? null,
+      },
     });
   }
   return failures;
@@ -765,6 +805,103 @@ const screenshotEvidence = async (page, outputDir, label) => {
   return { path: screenshotPath, sha256 };
 };
 
+const measureBottomDockReachability = async (page) => page.evaluate(async () => {
+  const dock = document.querySelector(
+    '[data-testid="public-mobile-bottom-nav"], [data-testid="auth-mobile-bottom-nav"]',
+  );
+  if (!dock || window.innerWidth > 640) {
+    return { applicable: false, reachable: null, reason: dock ? 'desktop viewport' : 'no mobile dock' };
+  }
+
+  const main = document.querySelector('main');
+  const controls = [...(main?.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [role="button"]',
+  ) ?? [])].filter((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.display !== 'none'
+      && style.visibility !== 'hidden'
+      && Number(style.opacity || '1') > 0.01
+      && rect.width > 0
+      && rect.height > 0;
+  });
+  const target = controls.sort((left, right) => (
+    right.getBoundingClientRect().bottom - left.getBoundingClientRect().bottom
+  ))[0];
+  if (!target) {
+    return { applicable: true, reachable: false, reason: 'no visible main control' };
+  }
+
+  const rootStyle = document.documentElement.style;
+  const previousScrollBehavior = rootStyle.scrollBehavior;
+  rootStyle.scrollBehavior = 'auto';
+  target.scrollIntoView({ block: 'end', inline: 'nearest', behavior: 'instant' });
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  const targetRect = target.getBoundingClientRect();
+  const dockRect = dock.getBoundingClientRect();
+  const centerX = targetRect.left + targetRect.width / 2;
+  const centerY = targetRect.top + targetRect.height / 2;
+  const centerInViewport = centerX >= 0 && centerX < window.innerWidth
+    && centerY >= 0 && centerY < window.innerHeight;
+  const centerUnderDock = centerInViewport
+    && centerX >= dockRect.left && centerX <= dockRect.right
+    && centerY >= dockRect.top && centerY <= dockRect.bottom;
+  const topElement = centerInViewport ? document.elementFromPoint(centerX, centerY) : null;
+  const centerReceivesInput = Boolean(topElement && (topElement === target || target.contains(topElement)));
+  const scrollContainers = [];
+  for (let ancestor = target.parentElement; ancestor instanceof HTMLElement; ancestor = ancestor.parentElement) {
+    const style = getComputedStyle(ancestor);
+    if (!/(auto|scroll|hidden)/.test(style.overflowY)) continue;
+    const rect = ancestor.getBoundingClientRect();
+    scrollContainers.push({
+      testId: ancestor.dataset.testid || null,
+      overflowY: style.overflowY,
+      scrollTop: Number(ancestor.scrollTop.toFixed(2)),
+      scrollHeight: ancestor.scrollHeight,
+      clientHeight: ancestor.clientHeight,
+      paddingBottom: style.paddingBottom,
+      scrollPaddingBottom: style.scrollPaddingBottom,
+      top: Number(rect.top.toFixed(2)),
+      bottom: Number(rect.bottom.toFixed(2)),
+    });
+  }
+  const documentScrollRoot = document.scrollingElement;
+  const evidence = {
+    applicable: true,
+    reachable: centerInViewport && (!centerUnderDock || centerReceivesInput),
+    scrollY: Number(window.scrollY.toFixed(2)),
+    target: target.dataset.testid || `${target.tagName.toLowerCase()}${target.getAttribute('aria-label') ? `:${target.getAttribute('aria-label')}` : ''}`,
+    targetRect: {
+      top: Number(targetRect.top.toFixed(2)),
+      bottom: Number(targetRect.bottom.toFixed(2)),
+    },
+    dockTop: Number(dockRect.top.toFixed(2)),
+    centerUnderDock,
+    centerReceivesInput,
+    topElement: topElement instanceof HTMLElement
+      ? topElement.dataset.testid || topElement.tagName.toLowerCase()
+      : null,
+    documentScroll: documentScrollRoot ? {
+      scrollTop: Number(documentScrollRoot.scrollTop.toFixed(2)),
+      maxScrollTop: documentScrollRoot.scrollHeight - documentScrollRoot.clientHeight,
+    } : null,
+    scrollContainers,
+  };
+  rootStyle.scrollBehavior = previousScrollBehavior;
+  return evidence;
+});
+
+export const bottomDockReachabilityAssertions = (evidence) => {
+  if (!evidence?.applicable || evidence.reachable !== false) {
+    return [];
+  }
+  return [{
+    id: 'mobile-bottom-dock-unreachable',
+    message: 'the last visible main-page control cannot receive input above the fixed mobile dock',
+    evidence,
+  }];
+};
+
 const setTextZoom = async (page, zoom, selectors = []) => {
   const before = await page.evaluate((keySelectors) => {
     const read = (selector) => {
@@ -831,11 +968,33 @@ const runStadiumFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   const guideSelectVisible = await guideSelect.isVisible();
   await guideSelect.focus();
   const guideSelectFocused = await page.evaluate(() => document.activeElement?.id === 'stadium-guide-select');
+  const heroLayout = await page.evaluate(() => {
+    const hero = document.querySelector('.stadium-hero-container');
+    const title = hero?.querySelector('[data-testid="stadium-guide-title"]');
+    const description = hero?.querySelector('[data-testid="stadium-guide-description"]');
+    const countLines = (element) => {
+      if (!element) return 0;
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size;
+    };
+    const overflows = (element, container) => Boolean(element && container
+      && (element.scrollWidth > element.clientWidth + 1
+        || element.getBoundingClientRect().right > container.getBoundingClientRect().right + 1));
+    return {
+      heroWidth: hero ? Number(hero.clientWidth.toFixed(2)) : null,
+      titleLineCount: countLines(title),
+      titleOverflowsHero: overflows(title, hero),
+      descriptionLineCount: countLines(description),
+      descriptionOverflowsHero: overflows(description, hero),
+    };
+  });
   const stadiumEvidence = {
     sourceIdentities: STADIUM_FLOW_SOURCE_IDENTITIES,
     seatMapVisible,
     guideSelectVisible,
     guideSelectFocused,
+    ...heroLayout,
   };
   const stadiumAssertionFailures = stadiumAssertions(stadiumEvidence);
   const normal = await measureFocusedRoute(page, '/stadium', width, zoom, 'seat-map-render-focus');
@@ -851,6 +1010,10 @@ const runStadiumFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   normal.productEvidence.screenshot = zoom === 2
     ? await screenshotEvidence(page, evidenceDir, `stadium-seat-map-render-focus-${width}-${zoom * 100}`)
     : null;
+  normal.bottomDockReachability = await measureBottomDockReachability(page);
+  const bottomDockFailures = bottomDockReachabilityAssertions(normal.bottomDockReachability);
+  normal.stadiumAssertionFailures.push(...bottomDockFailures);
+  normal.productEvidence.assertionFailures.push(...bottomDockFailures);
   return { normal };
 };
 
@@ -965,8 +1128,12 @@ const runHomeFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
   const postNavigationEvidence = await collectHomeEvidence(page);
   const navigationEvidence = {
     ...postNavigationEvidence,
-    homeTitleHeaderOverlapAtTop: initialHomeEvidence.homeTitleHeaderOverlap,
+    homeTitleHeaderOverlapAtTop: postNavigationEvidence.scrollY <= 1
+      ? postNavigationEvidence.homeTitleHeaderOverlap
+      : null,
+    homeTitleHeaderOverlapAfterDateNavigation: postNavigationEvidence.homeTitleHeaderOverlap,
     homeTitleHeaderScrollY: initialHomeEvidence.scrollY,
+    requireNoTitleOverlapAfterDateNavigation: zoom === 2 && width <= 430,
     dateNavigationChecked: true,
     dateNavigationUpdated: afterNavigationUrl !== beforeNavigationUrl,
     beforeNavigationUrl,
@@ -988,6 +1155,10 @@ const runHomeFlow = async (page, baseUrl, width, zoom, evidenceDir) => {
       ? await screenshotEvidence(page, evidenceDir, `home-content-and-navigation-${width}-${zoom * 100}`)
       : null,
   };
+  normal.bottomDockReachability = await measureBottomDockReachability(page);
+  const bottomDockFailures = bottomDockReachabilityAssertions(normal.bottomDockReachability);
+  normal.homeAssertionFailures.push(...bottomDockFailures);
+  normal.productEvidence.assertionFailures.push(...bottomDockFailures);
   return { normal };
 };
 
@@ -1030,7 +1201,16 @@ export const runRouteFlowAudit = async ({
       for (const width of widths) {
         for (const zoom of zooms) {
           const context = await browser.newContext(routeFlowContextOptions(width));
+          await installOfflineBoundary(context, baseUrl);
           const externalRequests = [];
+          const failedRequests = [];
+          context.on('requestfailed', (request) => {
+            const requestUrl = new URL(request.url());
+            failedRequests.push({
+              url: `${requestUrl.origin}${requestUrl.pathname}`,
+              error: request.failure()?.errorText ?? null,
+            });
+          });
           await context.route('**/*', (route) => {
             const requestUrl = new URL(route.request().url());
             if (requestUrl.origin !== new URL(baseUrl).origin) {
@@ -1076,6 +1256,7 @@ export const runRouteFlowAudit = async ({
               issues,
               productFailures,
               externalRequests: [...new Set(externalRequests)],
+              failedRequests,
               pageErrors: errors,
               evidenceManifest,
               flows: { home, stadium, mypage },

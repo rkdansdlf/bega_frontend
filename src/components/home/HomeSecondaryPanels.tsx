@@ -101,7 +101,7 @@ function PanelHeader({
   children,
 }: PanelHeaderProps) {
   return (
-    <div className="flex min-h-11 items-center justify-between gap-3">
+    <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 sm:flex-nowrap sm:gap-3">
       <h3 className="flex min-w-0 items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
         {icon}
         <span className="truncate">{title}</span>
@@ -113,7 +113,7 @@ function PanelHeader({
             size="touch"
             data-testid={testId}
             onClick={onMore}
-            className="rounded-full px-3 text-15 font-bold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/40 dark:hover:text-zinc-100"
+            className="shrink-0 rounded-full px-3 text-15 font-bold whitespace-nowrap text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-white dark:hover:bg-zinc-800/40 dark:hover:text-zinc-100"
           >
             {moreLabel} <ChevronRightIcon className="h-4 w-4" />
           </Button>
@@ -715,7 +715,7 @@ export default function HomeSecondaryPanels({
           <div
             ref={scrollContainerRef}
             onScroll={handleCarouselScroll}
-            className="-mx-4 overflow-x-auto px-4 pb-2 scrollbar-hide lg:contents lg:mx-0 lg:overflow-visible lg:px-0 lg:pb-0"
+            className="-mx-3 overflow-x-auto px-3 pb-2 scrollbar-hide lg:contents lg:mx-0 lg:overflow-visible lg:px-0 lg:pb-0"
           >
             <div className="flex snap-x snap-mandatory gap-4 lg:contents">
               {renderHotCheerPanel()}

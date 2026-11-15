@@ -1,0 +1,18 @@
+@media (max-width: 639px) {
+  .signup-password-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: theme(spacing.1);
+  }
+
+  .signup-password-field input {
+    padding-right: theme(spacing.3);
+  }
+
+  .signup-password-field button {
+    position: static;
+    translate: none;
+    transform: none;
+  }
+}

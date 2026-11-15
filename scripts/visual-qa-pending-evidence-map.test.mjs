@@ -245,3 +245,52 @@ test('does not treat malformed route-flow references as valid evidence', () => {
     requireCompleteMatrix: true,
   }).valid, false);
 });
+
+test('accepts the required mobile matrix when additional supported desktop cases are present', () => {
+  const context = {
+    validatorScriptSha256: '2'.repeat(64),
+    fixtureRegistrySha256: '3'.repeat(64),
+    sourceSnapshots: { 'src/components/HomeRuntime.tsx': '1'.repeat(64) },
+  };
+  const resultFor = (browser, width, zoom) => homeResult({
+    browser,
+    width,
+    zoom,
+    evidenceManifest: [{
+      contractComponentIds: ['src/components/AppRoutes.tsx#Home'],
+      sources: [{ source: 'src/components/HomeRuntime.tsx', sourceSnapshotSha256: '1'.repeat(64) }],
+      validator: 'homeAssertions',
+      validatorScriptSha256: '2'.repeat(64),
+      fixtureRegistrySha256: '3'.repeat(64),
+      assertionIds: ['home-priority-panel-missing'],
+      execution: {
+        browser,
+        viewport: { width, height: width <= 430 ? 844 : 900 },
+        requestedZoom: zoom,
+        zoomMethod: 'document.documentElement.style.fontSize',
+      },
+    }],
+  });
+  const results = ['chromium', 'webkit'].flatMap((browser) => (
+    [320, 390, 1280].flatMap((width) => [1, 2].map((zoom) => resultFor(browser, width, zoom)))
+  ));
+
+  assert.deepEqual(validateRouteFlowReference({
+    routeFlow: { results },
+    evidenceContext: context,
+    requireCompleteMatrix: true,
+  }), {
+    valid: true,
+    caseCount: 12,
+    passCaseCount: 12,
+    manifestEntryCount: 12,
+    invalidCaseCount: 0,
+    matrixComplete: true,
+  });
+
+  const unsupportedWidth = resultFor('chromium', 768, 1);
+  assert.equal(validateRouteFlowReference({
+    routeFlow: { results: [unsupportedWidth] },
+    evidenceContext: context,
+  }).invalidCaseCount, 1);
+});

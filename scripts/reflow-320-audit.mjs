@@ -47,6 +47,7 @@ export const LOGGED_OUT_ROUTES = [
   '/password/reset/confirm',
   '/account/deletion/recovery',
   '/oauth/email/confirm',
+  '/oauth/callback?state=visual-qa',
 ];
 
 /** Routes reachable without a session. */
@@ -54,6 +55,7 @@ export const PUBLIC_ROUTES = [
   '/', '/home', ...LOGGED_OUT_ROUTES,
   '/prediction', '/mate', '/cheer', '/stadium', '/stadium/jamsil', '/leaderboard',
   '/offseason', '/offseason/list', '/notice', '/terms', '/privacy',
+  '/this-route-does-not-exist',
 ];
 
 /**
@@ -65,7 +67,7 @@ export const AUTHED_ROUTES = [
   '/mypage', '/messages', '/messages/@testuser',
   '/mate/create', '/mate/1', '/mate/1/apply', '/mate/1/chat', '/mate/1/manage', '/mate/1/checkin',
   '/cheer/bookmarks', '/cheer/1', '/cheer/write', '/cheer/edit/1',
-  '/profile/@testuser', '/prediction/matches/20260726KTLT0',
+  '/profile/@testuser', '/mypage/@testuser', '/prediction/matches/20260726KTLT0',
   '/predictions/ranking/share/abc/2026', '/admin',
 ];
 
@@ -171,6 +173,16 @@ export const evaluateOverlay = ({ route, name, opened, overflow, scrollLocked, c
  * Turn one route's raw measurement into a verdict. Pure so it can be unit
  * tested without a browser.
  */
+export const evaluateMainDocumentResponse = (statusCode) => {
+  if (!Number.isInteger(statusCode)) {
+    return { status: 'untrusted', reason: 'main document returned no main document HTTP response' };
+  }
+  if (statusCode < 200 || statusCode >= 300) {
+    return { status: 'untrusted', reason: `main document returned HTTP ${statusCode}` };
+  }
+  return { status: 'pass' };
+};
+
 export const evaluateRoute = (measurement) => {
   const { route, viewportWidth, scrollWidthNormal, scrollWidthZoomed } = measurement;
 
@@ -220,9 +232,25 @@ export const evaluateRoute = (measurement) => {
   };
 };
 
-export const isExpectedRoutePath = (requested, landed) => requested === '/'
-  ? landed === '/' || landed === '/home'
-  : landed === requested;
+const normalizeRoutePath = (route) => decodeURIComponent(
+  new URL(route, 'http://visual-qa.invalid').pathname,
+);
+
+export const isExpectedRoutePath = (requested, landed) => {
+  const requestedPath = normalizeRoutePath(requested);
+  const landedPath = normalizeRoutePath(landed);
+  if (requestedPath === '/') return landedPath === '/' || landedPath === '/home';
+
+  const legacyProfileAlias = requestedPath.match(/^\/mypage\/([^/]+)\/?$/);
+  if (legacyProfileAlias) {
+    const handle = legacyProfileAlias[1].startsWith('@')
+      ? legacyProfileAlias[1]
+      : `@${legacyProfileAlias[1]}`;
+    return landedPath === `/profile/${handle}`;
+  }
+
+  return landedPath === requestedPath;
+};
 
 export const summarize = (results) => {
   const counts = { pass: 0, fail: 0, untrusted: 0 };
@@ -475,6 +503,19 @@ export const runReflowAudit = async ({
 
   const results = [];
   try {
+    // Reuse the same observable runtime-boundary detector as the full audit.
+    // The import is deferred because the full audit also imports this module.
+    const { installRuntimeBoundaryObserver, prepareRuntimeBoundaryObservation, assertNoRuntimeBoundary } = await import('./visual-qa-audit.mjs');
+    const hasRuntimeBoundary = async (target) => {
+      try {
+        await assertNoRuntimeBoundary(target);
+        return false;
+      } catch (error) {
+        if (error instanceof Error && error.message.startsWith('Global runtime error boundary')) return true;
+        throw error;
+      }
+    };
+    const runtimeBoundaryResult = (route) => ({ route, status: 'untrusted', reason: 'global runtime error boundary displayed during scan' });
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
     if (!allowApi) {
       await installOfflineBoundary(context, baseUrl);
@@ -490,8 +531,9 @@ export const runReflowAudit = async ({
         window.localStorage.setItem('auth-bootstrap-hint', '1');
       } catch { /* storage unavailable — injected profile still bootstraps */ }
     }, allowApi ? null : AUDIT_USER);
-    const mainPage = await context.newPage();
-    const page = mainPage;
+    let mainPage = await context.newPage();
+    let page = mainPage;
+    await installRuntimeBoundaryObserver(page);
 
     // Visited without the stubbed session, or PublicOnlyAuthRoute bounces them.
     const loggedOutContext = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
@@ -504,17 +546,61 @@ export const runReflowAudit = async ({
         body: JSON.stringify({ success: false, code: 'REFLOW_AUDIT_STUB' }),
       }));
     }
-    const loggedOutPage = await loggedOutContext.newPage();
+    let loggedOutPage = await loggedOutContext.newPage();
+    await installRuntimeBoundaryObserver(loggedOutPage);
+    const documentStatuses = new WeakMap();
+    const documentUrl = (value) => {
+      try { const parsed = new URL(value); parsed.hash = ''; return parsed.href; } catch { return null; }
+    };
+    const observeDocumentResponses = (target) => target.on('response', (response) => {
+      const request = response.request();
+      if (request.isNavigationRequest() && request.frame() === target.mainFrame()) {
+        documentStatuses.set(target, { url: documentUrl(response.url()), status: response.status() });
+      }
+    });
+    observeDocumentResponses(page);
+    observeDocumentResponses(loggedOutPage);
+    const currentDocumentStatus = async (target) => {
+      const saved = documentStatuses.get(target);
+      const navigationUrl = await target.evaluate(() => performance.getEntriesByType('navigation')[0]?.name ?? null);
+      return saved && saved.url === documentUrl(navigationUrl) ? saved.status : null;
+    };
+    const navigate = async (target, url) => {
+      const before = target.url();
+      const response = await target.goto(url, { waitUntil: 'commit' });
+      if (response) {
+        documentStatuses.set(target, { url: documentUrl(response.url()), status: response.status() });
+        return response.status();
+      }
+      const previous = documentUrl(before);
+      return previous && previous === documentUrl(target.url()) && previous === documentUrl(url)
+        ? currentDocumentStatus(target) : null;
+    };
+    const recover = async (target, route, error) => {
+      const boundary = await hasRuntimeBoundary(target).catch(() => false);
+      results.push(boundary ? runtimeBoundaryResult(route) : {
+        route, status: 'untrusted', reason: `scan operation failed: ${error instanceof Error ? error.message : String(error)}`,
+      });
+      const isMain = target === mainPage;
+      await target.close().catch(() => {});
+      const replacement = await (isMain ? context : loggedOutContext).newPage();
+      await installRuntimeBoundaryObserver(replacement);
+      observeDocumentResponses(replacement);
+      if (isMain) { mainPage = replacement; page = replacement; } else { loggedOutPage = replacement; }
+    };
 
     for (const route of routes) {
-      const needsLoggedOut = !allowApi && LOGGED_OUT_ROUTES.includes(route);
+      const needsLoggedOut = !allowApi && LOGGED_OUT_ROUTES.some((item) => normalizeRoutePath(item) === normalizeRoutePath(route));
       const target = needsLoggedOut ? loggedOutPage : page;
 
+      try {
       await target.bringToFront();
-      await target.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await prepareRuntimeBoundaryObservation(target);
+      await navigate(target, new URL(route, baseUrl).toString());
       await settle(target);
       await activateDeferredSurfaces(target);
       await settle(target);
+      const documentNavigation = evaluateMainDocumentResponse(await currentDocumentStatus(target));
 
       // Whatever the reason — a guard redirect, or an auth spinner that never
       // resolves — if we are not on the route we asked for, we are not
@@ -530,6 +616,14 @@ export const runReflowAudit = async ({
         const filename = route === '/' ? 'root' : route.slice(1).replace(/[^a-zA-Z0-9-]/g, '-');
         await target.screenshot({ path: resolve(screenshotDir, `${filename}.png`), fullPage: true });
       }
+      if (documentNavigation.status !== 'pass') {
+        results.push({ route, ...documentNavigation });
+        continue;
+      }
+      if (await hasRuntimeBoundary(target)) {
+        results.push(runtimeBoundaryResult(route));
+        continue;
+      }
       if (redirected || landed.spinner || landed.pendingShell) {
         results.push({
           route,
@@ -544,14 +638,34 @@ export const runReflowAudit = async ({
       }
 
       const measurement = await target.evaluate(PAGE_PROBE, ZOOM_ROOT_FONT_PX);
-      results.push(evaluateRoute({ route, ...measurement }));
+      if (await hasRuntimeBoundary(target)) {
+        results.push(runtimeBoundaryResult(route));
+        continue;
+      }
+      const routeResult = evaluateRoute({ route, ...measurement });
+      const requestedPath = normalizeRoutePath(route);
+      const resolvedPath = normalizeRoutePath(landed.path);
+      results.push({
+        ...routeResult,
+        ...(resolvedPath !== requestedPath ? { resolvedPath } : {}),
+      });
+      } catch (error) {
+        await recover(target, route, error);
+      }
     }
 
     for (const { route, name, open } of OVERLAY_CASES) {
       if (!routes.includes(route)) continue;
+      try {
       await page.bringToFront();
-      await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await prepareRuntimeBoundaryObservation(page);
+      await navigate(page, new URL(route, baseUrl).toString());
       await settle(page);
+      const overlayNavigation = evaluateMainDocumentResponse(await currentDocumentStatus(page));
+      if (overlayNavigation.status !== 'pass' || !isExpectedRoutePath(route, page.url())) {
+        results.push({ route: `${route} (${name})`, status: 'untrusted', reason: overlayNavigation.reason ?? `redirected to ${page.url()}` });
+        continue;
+      }
 
       // Wait for the trigger rather than sampling once: the mobile menu button
       // is gated on a media query that resolves a beat after <header> mounts,
@@ -560,6 +674,10 @@ export const runReflowAudit = async ({
       try {
         await trigger.waitFor({ state: 'visible', timeout: 5000 });
       } catch {
+        if (await hasRuntimeBoundary(page)) {
+          results.push(runtimeBoundaryResult(`${route} (${name})`));
+          continue;
+        }
         results.push({
           route: `${route} (${name})`,
           status: 'untrusted',
@@ -588,16 +706,30 @@ export const runReflowAudit = async ({
       const closedByEscape = await page.evaluate(() => document.querySelector('[aria-label="메뉴 닫기"]') === null
         && document.querySelector('[role="dialog"], [aria-modal="true"]') === null);
 
+      if (await hasRuntimeBoundary(page)) {
+        results.push(runtimeBoundaryResult(`${route} (${name})`));
+        continue;
+      }
       results.push(evaluateOverlay({ route, name, ...state, closedByEscape }));
+      } catch (error) {
+        await recover(page, `${route} (${name})`, error);
+      }
     }
 
     for (const { route, name } of KEYBOARD_CASES) {
       if (!routes.includes(route)) continue;
       // All the form routes are logged-out-only, so they need that context too.
-      const page = LOGGED_OUT_ROUTES.includes(route) && !allowApi ? loggedOutPage : mainPage;
+      const page = LOGGED_OUT_ROUTES.some((item) => normalizeRoutePath(item) === normalizeRoutePath(route)) && !allowApi ? loggedOutPage : mainPage;
+      try {
       await page.bringToFront();
-      await page.goto(new URL(route, baseUrl).toString(), { waitUntil: 'commit' });
+      await prepareRuntimeBoundaryObservation(page);
+      await navigate(page, new URL(route, baseUrl).toString());
       await settle(page);
+      const keyboardNavigation = evaluateMainDocumentResponse(await currentDocumentStatus(page));
+      if (keyboardNavigation.status !== 'pass' || !isExpectedRoutePath(route, page.url())) {
+        results.push({ route: `${route} (${name})`, status: 'untrusted', reason: keyboardNavigation.reason ?? `redirected to ${page.url()}` });
+        continue;
+      }
       // These routes are lazy: the shell's <header> exists before the form
       // mounts, so settle() alone returns too early and the form looks absent.
       try {
@@ -637,7 +769,14 @@ export const runReflowAudit = async ({
         await page.waitForTimeout(200);
       }
 
+      if (await hasRuntimeBoundary(page)) {
+        results.push(runtimeBoundaryResult(`${route} (${name})`));
+        continue;
+      }
       results.push(evaluateKeyboard({ route, name, ...measured }));
+      } catch (error) {
+        await recover(page, `${route} (${name})`, error);
+      }
     }
     await loggedOutContext.close();
     await context.close();

@@ -2127,7 +2127,7 @@ describe('Game Prediction', CI_FLAKE_RETRIES, () => {
 
         cy.window().then((win) => {
             const startedAt = win.Date.now() - 30_000;
-            win.sessionStorage.setItem('prediction:run-session:v1', JSON.stringify({
+            win.sessionStorage.setItem('prediction:run-session:v1:viewer:123', JSON.stringify({
                 flowId: 'restore-flow-1',
                 gameId: '20240510HHSS0',
                 action: 'vote',
@@ -2143,7 +2143,7 @@ describe('Game Prediction', CI_FLAKE_RETRIES, () => {
         cy.tick(100);
         cy.wait('@getVoteStatusRestore');
         cy.window().should((win) => {
-            expect(win.sessionStorage.getItem('prediction:run-session:v1')).to.eq(null);
+            expect(win.sessionStorage.getItem('prediction:run-session:v1:viewer:123')).to.eq(null);
         });
     });
 

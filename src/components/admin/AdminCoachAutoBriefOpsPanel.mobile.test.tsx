@@ -88,6 +88,17 @@ const renderPanel = (options: RenderPanelOptions = {}) => {
   }));
 };
 
+test('custom window companions mirror actual dates including cleared values without replacing native inputs', () => {
+  const html = renderPanel({ selectedWindow: 'custom', startDate: '2099-02-04', endDate: '2099-02-06' });
+  assert.match(html, /data-testid="admin-ai-auto-brief-window-value"[^>]+aria-hidden="true"[^>]*>현재 선택: custom</);
+  assert.match(html, /data-testid="admin-ai-auto-brief-start-date-value"[^>]+aria-hidden="true"[^>]*>2099-02-04</);
+  assert.match(html, /data-testid="admin-ai-auto-brief-end-date-value"[^>]+aria-hidden="true"[^>]*>2099-02-06</);
+  assert.match(html, /data-testid="admin-ai-auto-brief-start-date"[^>]+type="date"[^>]+value="2099-02-04"/);
+  const empty = renderPanel({ selectedWindow: 'custom', startDate: '', endDate: '' });
+  assert.equal((empty.match(/>날짜 미선택</g) ?? []).length, 2);
+  assert.match(empty, /data-testid="admin-ai-auto-brief-apply-custom"[^>]+disabled/);
+});
+
 test('coach auto brief ops panel contains loading, error, custom dates, and icon actions on mobile', () => {
   const pressureError = `OPS-ERROR-${'E'.repeat(260)}`;
   const html = renderPanel({

@@ -1,0 +1,72 @@
+.admin-ai-health-window-panel {
+  container-name: admin-ai-health-window;
+  container-type: inline-size;
+}
+
+.admin-ai-health-window-panel .admin-ai-health-controls,
+.admin-ai-health-window-panel .admin-ai-health-date-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-ai-health-controls label {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.admin-ai-health-window-panel [data-testid="admin-ai-auto-brief-refresh"],
+.admin-ai-health-controls select,
+.admin-ai-health-controls input,
+.admin-ai-health-controls button {
+  min-width: theme(spacing.11);
+  min-height: max(theme(spacing.11), 2.75rem);
+  height: auto;
+}
+
+.admin-ai-health-window-panel [data-testid="admin-ai-auto-brief-refresh"] {
+  flex-shrink: 0;
+  padding-inline: theme(spacing.3);
+}
+
+.admin-ai-health-controls select,
+.admin-ai-health-controls input,
+.admin-ai-health-controls button {
+  max-width: 100%;
+  padding-inline: theme(spacing.2);
+}
+
+.admin-ai-health-controls button {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.admin-ai-health-current-value {
+  display: none;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@container admin-ai-health-window (max-width: 480px) {
+  .admin-ai-health-controls {
+    margin-inline: calc(theme(spacing.3) * -1);
+  }
+
+  .admin-ai-health-current-value {
+    display: block;
+  }
+
+  .admin-ai-health-window-summary {
+    display: block;
+    padding: theme(spacing.2);
+  }
+
+  .admin-ai-health-window-summary > svg {
+    margin-bottom: theme(spacing.2);
+  }
+
+  .admin-ai-health-window-summary > span {
+    display: block;
+  }
+}

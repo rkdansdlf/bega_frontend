@@ -64,6 +64,8 @@ export interface AdminReport {
   createdAt: string;
 }
 
+export type AdminReportAppealDecision = 'REVIEWING' | 'ACCEPTED' | 'REJECTED';
+
 export interface AdminReportPage {
   content: AdminReport[];
   totalElements: number;
@@ -116,6 +118,15 @@ export interface AdminSeatViewFilters {
   aiSuggestedLabel: string;
   adminLabel: string;
   ticketVerified: string;
+}
+
+export interface AdminSeatViewPage {
+  content: AdminSeatView[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  last: boolean;
 }
 
 export interface AdminApiResponse<T> {

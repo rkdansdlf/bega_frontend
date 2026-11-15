@@ -229,7 +229,7 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
           loading="lazy"
         />
         <div className="z-10 min-w-0 max-w-lg text-center">
-          <p className="mb-4 min-w-0 text-lg text-gray-600 [overflow-wrap:anywhere] dark:text-white">{partyError || '파티 정보를 불러오는 중입니다...'}</p>
+          <p className="mb-4 min-w-0 break-keep text-lg text-gray-600 [overflow-wrap:anywhere] dark:text-white">{partyError || '파티 정보를 불러오는 중입니다...'}</p>
           <Button
             data-testid="mate-apply-error-return"
             onClick={() => navigate('/mate')}
@@ -530,7 +530,7 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
         )}
 
         {!isSelling && (
-          <Card className={`mb-6 p-5 sm:p-6 ${sectionCardClass}`}>
+          <Card className={`mb-6 p-3 sm:p-6 ${sectionCardClass}`}>
             {visualQaStateOverride?.ticketPanelPhase === 'fallback' ? (
               ticketVerificationFallback
             ) : (
@@ -627,7 +627,7 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
               data-testid="mate-apply-submit-desktop"
               onClick={handleSubmit}
               disabled={!isSubmitReady || isSubmitting || isSellingPaymentBlocked}
-              className="w-full bg-primary text-white"
+              className="w-full bg-primary text-white sm:min-h-11"
               size="lg"
             >
               {submitLabel}

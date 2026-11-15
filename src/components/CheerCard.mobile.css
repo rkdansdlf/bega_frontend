@@ -28,14 +28,14 @@
 
   .cheer-card-mobile-interactions > button,
   .cheer-card-mobile-interactions > div > button {
-    min-width: var(--touch-target-min);
-    min-height: var(--touch-target-min);
+    min-width: theme(spacing.11);
+    min-height: theme(spacing.11);
   }
 
   .cheer-card-mobile-interactions > button > span.relative,
   .cheer-card-mobile-interactions > div > button > span.relative {
-    width: var(--touch-target-min);
-    height: var(--touch-target-min);
+    width: theme(spacing.11);
+    height: theme(spacing.11);
     flex-shrink: 0;
   }
 

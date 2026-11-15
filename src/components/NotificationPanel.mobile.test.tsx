@@ -14,10 +14,13 @@ test('notification panel accepts deterministic data, tab, permission, time, and 
   assert.match(source, /notificationsOverride \?\? liveNotifications/);
 });
 
-test('bulk read sends a timestamp captured when the action is invoked', async () => {
+test('bulk read submits IDs from the current fetched snapshot rather than live notifications', async () => {
   const source = await readFile(new URL('./NotificationPanel.tsx', import.meta.url), 'utf8');
 
-  assert.match(source, /const requestStartedAt = Date\.now\(\);[\s\S]*await markAllAsReadRequest\(requestStartedAt\);[\s\S]*markAllAsRead\(requestStartedAt\);/);
+  assert.match(source, /liveSnapshotNotificationIds: state\.snapshotNotificationIds/);
+  assert.match(source, /const currentSnapshotIds = \[\.\.\.snapshotNotificationIds\]/);
+  assert.match(source, /markAllAsReadRequest\(currentSnapshotIds\)[\s\S]*markAllAsRead\(result\.notificationIds\)/);
+  assert.doesNotMatch(source, /markAllAsReadRequest\(notifications\.map/);
 });
 
 test('account-deletion mate notifications stay filterable and open their party', async () => {

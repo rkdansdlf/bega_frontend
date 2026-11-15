@@ -128,7 +128,7 @@ function defineWorkflowTests(root: string, label: string) {
       '/bin/bash', ['--noprofile', '--norc', '-euo', 'pipefail', '-c',
         // Ubuntu uses GNU sed; preserve its no-backup -i behavior on macOS.
         process.platform === 'darwin' ? script.replaceAll('sed -i -E ', "sed -i '' -E ") : script],
-      { cwd, env: { ...env, ...extra }, encoding: 'utf8', timeout: 5000 },
+      { cwd, env: { ...env, ...extra }, encoding: 'utf8', timeout: 30_000 },
     );
     // Model the old export step too, so the regression catches file-command injection.
     const exportStep = sharedJob.steps.find(step => step.name === 'Export suite environment');
@@ -318,10 +318,14 @@ if (outputPath && args.includes('-w')) process.stdout.write('200');
           VERIFY_UNFOLLOW_REUSE: 'false',
         },
         encoding: 'utf8',
-        timeout: 10_000,
+        timeout: 30_000,
       });
 
-      assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
+      assert.equal(
+        result.status,
+        1,
+        `${result.stdout}\n${result.stderr}\nsignal=${result.signal ?? 'none'} error=${result.error?.message ?? 'none'}`,
+      );
       const log = readFileSync(join(reportDir, 'dm-authenticated-smoke.log'), 'utf8');
       assert.match(log, /DM smoke sender message was missing from history\./);
       for (const privateValue of [

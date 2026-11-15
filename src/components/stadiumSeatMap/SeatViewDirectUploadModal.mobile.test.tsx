@@ -97,6 +97,7 @@ const createSeatViewDirectUploadPlugin = (): Plugin => ({
 
       const calls = { close: 0, defaultSubmit: 0, injectedSubmit: 0, submitted: 0 };
       let resolveInjectedSubmit;
+      let latestSignal;
       const submission = {
         id: 9001,
         storagePath: 'MOCK/seat-view/synthetic.png',
@@ -128,8 +129,9 @@ const createSeatViewDirectUploadPlugin = (): Plugin => ({
         calls.defaultSubmit += 1;
         return new Promise(() => {});
       };
-      const injectedSubmit = () => {
+      const injectedSubmit = (_input, options) => {
         calls.injectedSubmit += 1;
+        latestSignal = options?.signal;
         return pendingSubmission('injected');
       };
 
@@ -213,6 +215,7 @@ const createSeatViewDirectUploadPlugin = (): Plugin => ({
         recordDefaultSubmit,
         resetCalls,
         resolveSubmit,
+        signalAborted: () => latestSignal?.aborted === true,
         unmountModal,
       };
       mount();
@@ -515,6 +518,40 @@ test('actual modal accepts one submission when the same handler is invoked twice
       injectedSubmit: 1,
       submitted: 1,
     });
+    assert.deepEqual(diagnostics, []);
+  } finally {
+    await page.close();
+  }
+});
+
+test('unmounting during upload aborts the signal and ignores a late completion', {
+  timeout: scaledTimeout(90_000),
+}, async () => {
+  const { diagnostics, page } = await openPage();
+  try {
+    await page.getByTestId('seat-view-direct-upload-file').setInputFiles({
+      name: 'synthetic-seat-view.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
+    });
+    await page.getByRole('button', { name: '5점' }).click();
+    await page.getByTestId('seat-view-direct-upload-submit').click();
+    await page.waitForFunction(() => (
+      window as unknown as { __SEAT_VIEW_DIRECT_UPLOAD_TEST__: { calls: { injectedSubmit: number } } }
+    ).__SEAT_VIEW_DIRECT_UPLOAD_TEST__.calls.injectedSubmit === 1);
+    await page.evaluate(() => (
+      window as unknown as { __SEAT_VIEW_DIRECT_UPLOAD_TEST__: { unmountModal: () => void } }
+    ).__SEAT_VIEW_DIRECT_UPLOAD_TEST__.unmountModal());
+    await page.getByRole('dialog').waitFor({ state: 'detached' });
+    assert.equal(await page.evaluate(() => (
+      window as unknown as { __SEAT_VIEW_DIRECT_UPLOAD_TEST__: { signalAborted: () => boolean } }
+    ).__SEAT_VIEW_DIRECT_UPLOAD_TEST__.signalAborted()), true);
+    await page.evaluate(() => (
+      window as unknown as { __SEAT_VIEW_DIRECT_UPLOAD_TEST__: { resolveSubmit: () => void } }
+    ).__SEAT_VIEW_DIRECT_UPLOAD_TEST__.resolveSubmit());
+    await settle(page);
+    assert.equal((await readCalls(page)).submitted, 0);
+    assert.equal((await readCalls(page)).close, 0);
     assert.deepEqual(diagnostics, []);
   } finally {
     await page.close();

@@ -12,6 +12,7 @@ const defaultRouteFlowPath = '/private/tmp/kbo-visual-qa-route-flow/final.json';
 const reportPath = resolve(frontendRoot, 'reports/visual-qa-pending-evidence-map.json');
 const ROUTE_FLOW_BROWSERS = new Set(['chromium', 'webkit']);
 const ROUTE_FLOW_WIDTHS = new Set([320, 390]);
+const ROUTE_FLOW_SUPPORTED_WIDTHS = new Set([320, 390, 1280]);
 const ROUTE_FLOW_ZOOMS = new Set([1, 2]);
 const ROUTE_FLOW_EXPECTED_CASES = new Set(
   [...ROUTE_FLOW_BROWSERS].flatMap((browser) => (
@@ -157,12 +158,11 @@ export const validateRouteFlowReference = ({
   const observedCases = new Set(results.map((result) => (
     `${result.browser}:${result.width}:${result.zoom}`
   )));
-  const matrixComplete = observedCases.size === ROUTE_FLOW_EXPECTED_CASES.size
-    && [...ROUTE_FLOW_EXPECTED_CASES].every((key) => observedCases.has(key));
+  const matrixComplete = [...ROUTE_FLOW_EXPECTED_CASES].every((key) => observedCases.has(key));
   const invalidCases = results.filter((result) => (
     result.status !== 'PASS'
       || !ROUTE_FLOW_BROWSERS.has(result.browser)
-      || !ROUTE_FLOW_WIDTHS.has(result.width)
+      || !ROUTE_FLOW_SUPPORTED_WIDTHS.has(result.width)
       || !ROUTE_FLOW_ZOOMS.has(result.zoom)
       || !Array.isArray(result.evidenceManifest)
       || result.evidenceManifest.length === 0

@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, readdir, rename, rm, utimes, writeFile } from
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import ts from 'typescript';
 
 import {
   DEFAULT_ROUTES,
@@ -11,12 +12,14 @@ import {
   DEFAULT_VIEWPORTS,
   DEFAULT_WIDTHS,
   buildVisualQaScenarioRuns,
+  buildVisualQaContextOptions,
   closeVisualQaResources,
   commitVisualQaOutputStage,
   createVisualQaOutputStage,
   discardVisualQaOutputStage,
   issueSignature,
   installLocalOnlyRoutes,
+  installSyntheticAuthProfile,
   launchVisualQaBrowser,
   parseArguments,
   parseViewportSpecs,
@@ -25,9 +28,76 @@ import {
   shouldFailReport,
   VISUAL_QA_PROBE,
   viewportForWidth,
+  waitForVisualQaScrollToSettle,
 } from './visual-qa-audit.mjs';
-import { DEFAULT_ROUTES as REFLOW_DEFAULT_ROUTES } from './reflow-320-audit.mjs';
+import { AUDIT_USER, DEFAULT_ROUTES as REFLOW_DEFAULT_ROUTES } from './reflow-320-audit.mjs';
 import { findFixture } from './reflow-320-fixtures.mjs';
+
+test('offline authenticated scan seeds a persisted synthetic admin session before protected routes', async () => {
+  let initScript;
+  let initArgument;
+  await installSyntheticAuthProfile({
+    addInitScript: async (script, argument) => {
+      initScript = script;
+      initArgument = argument;
+    },
+  });
+
+  const originalWindow = globalThis.window;
+  const storage = new Map();
+  const document = { cookie: '' };
+  globalThis.window = {
+    localStorage: {
+      setItem: (key, value) => storage.set(key, value),
+    },
+    document,
+  };
+  try {
+    initScript(initArgument);
+    assert.deepEqual(globalThis.window.__BEGA_TEST_AUTH_PROFILE__, { data: AUDIT_USER });
+    assert.deepEqual(JSON.parse(storage.get('auth-storage')), {
+      state: {
+        user: AUDIT_USER,
+        isLoggedIn: true,
+        isAdmin: true,
+        isAuthLoading: false,
+      },
+      version: 0,
+    });
+    assert.equal(storage.get('accessToken'), 'visual-qa-synthetic-token');
+    assert.equal(storage.get('auth-bootstrap-hint'), '1');
+    assert.equal(storage.get('bega_has_visited'), 'true');
+    assert.equal(storage.get('bega_dont_show_guide'), 'true');
+    assert.equal(document.cookie, 'Authorization=visual-qa-synthetic-token; path=/');
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
+});
+
+test('visual state capture waits until smooth page scrolling has settled', async () => {
+  const originalWindow = globalThis.window;
+  const positions = [100, 70, 40, 10, 0, 0, 0, 0];
+  let sampleIndex = 0;
+  globalThis.window = {
+    get scrollX() { return 0; },
+    get scrollY() { return positions[Math.min(sampleIndex++, positions.length - 1)]; },
+  };
+  try {
+    const page = {
+      evaluate: (callback, options) => callback(options),
+    };
+    await waitForVisualQaScrollToSettle(page, {
+      stableSamples: 3,
+      sampleIntervalMs: 0,
+      timeoutMs: 100,
+    });
+    assert.ok(sampleIndex >= 8, 'keep sampling through motion and require three stable positions');
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
+});
 
 test('synthetic scan blocks external HTTP origins while allowing its local preview', async () => {
   let matches;
@@ -50,9 +120,12 @@ test('synthetic scan blocks external HTTP origins while allowing its local previ
 
 test('default coverage targets every auditable user route and breakpoint edge', () => {
   assert.deepEqual(DEFAULT_ROUTES, REFLOW_DEFAULT_ROUTES);
-  assert.equal(DEFAULT_ROUTES.length, 35);
+  assert.equal(DEFAULT_ROUTES.length, 38);
   assert.ok(DEFAULT_ROUTES.includes('/password/reset/confirm'));
   assert.ok(DEFAULT_ROUTES.includes('/account/deletion/recovery'));
+  assert.ok(DEFAULT_ROUTES.includes('/oauth/callback?state=visual-qa'));
+  assert.ok(DEFAULT_ROUTES.includes('/mypage/@testuser'));
+  assert.ok(DEFAULT_ROUTES.includes('/this-route-does-not-exist'));
   for (const width of [320, 390, 430, 600, 767, 768, 1024, 1040, 1160, 1280, 1440]) {
     assert.ok(DEFAULT_WIDTHS.includes(width), `${width}px must be sampled`);
   }
@@ -142,6 +215,12 @@ test('default state coverage opens non-route UI surfaces at their responsive wid
     assert.ok(state.trigger, `${state.id} needs a stable trigger`);
     assert.ok(state.ready, `${state.id} needs a visible ready target`);
   }
+  const myPageStats = DEFAULT_STATE_SCENARIOS.find((state) => state.id === 'mypage-stats-tab-route');
+  assert.equal(
+    myPageStats?.ready,
+    '[data-screen-label="나의 기록"]',
+    'the stats surface must be ready in success, empty, and error states',
+  );
 });
 
 test('scenario expansion combines every route-width pair with applicable interaction states', () => {
@@ -152,9 +231,9 @@ test('scenario expansion combines every route-width pair with applicable interac
   const routeRuns = runs.filter((run) => run.state === null);
   const stateRuns = runs.filter((run) => run.state !== null);
 
-  assert.equal(routeRuns.length, 35 * 14);
+  assert.equal(routeRuns.length, DEFAULT_ROUTES.length * 14);
   assert.equal(stateRuns.length, 57);
-  assert.equal(runs.length, 547);
+  assert.equal(runs.length, routeRuns.length + stateRuns.length);
   assert.ok(stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 834));
   assert.ok(!stateRuns.some((run) => run.state.id === 'mate-filter-sheet' && run.width === 1024));
   assert.ok(!stateRuns.some((run) => run.state.id === 'public-mobile-menu' && run.width === 768));
@@ -211,6 +290,27 @@ test('parameterized detail routes render populated UI instead of only error fall
   assert.equal(profile?.success, true);
   assert.equal(profile?.data?.handle, 'testuser');
   assert.ok(profile?.data?.bio.length > 40);
+
+  const hotPostsUrl = 'http://audit.local/api/cheer/posts/hot?page=0&size=5&algorithm=HYBRID';
+  const hotPostsFixture = findFixture(hotPostsUrl);
+  assert.equal(hotPostsFixture?.name, 'cheer feed and notices');
+  const hotPosts = hotPostsFixture?.body(hotPostsUrl);
+  assert.equal(hotPosts?.content.length, 5);
+  assert.equal(hotPosts?.content[0]?.isHot, true);
+});
+
+test('offline visual QA contexts block service workers so API fixtures stay authoritative', () => {
+  const viewport = { width: 320, height: 844 };
+  const offlineOptions = buildVisualQaContextOptions({ viewport });
+
+  assert.deepEqual(offlineOptions, {
+    viewport,
+    deviceScaleFactor: 1,
+    serviceWorkers: 'block',
+  });
+
+  const liveApiOptions = buildVisualQaContextOptions({ viewport, allowApi: true });
+  assert.equal(Object.hasOwn(liveApiOptions, 'serviceWorkers'), false);
 });
 
 test('viewport heights follow mobile, tablet, and desktop review frames', () => {
@@ -265,6 +365,8 @@ test('route verification accepts only the requested pathname and an optional tra
   assert.equal(routeWasReached('/mate', '/mate'), true);
   assert.equal(routeWasReached('/mate/', '/mate'), true);
   assert.equal(routeWasReached('/prediction?tab=ranking', '/prediction'), true);
+  assert.equal(routeWasReached('/mypage/@testuser', '/profile/@testuser'), true);
+  assert.equal(routeWasReached('/mypage/@testuser', '/profile/@someone-else'), false);
   assert.equal(routeWasReached('/mate', '/mate/1'), false);
   assert.equal(routeWasReached('/cheer', '/cheer/write'), false);
 });
@@ -504,6 +606,8 @@ test('report failure policy keeps human-review mode non-blocking but never hides
   assert.equal(shouldFailReport(report, 'major'), true);
   assert.equal(shouldFailReport(report, 'any'), true);
   assert.equal(shouldFailReport({ ...report, summary: { scanErrors: 1 } }, 'none'), true);
+  assert.equal(shouldFailReport({ ...report, summary: { scanErrors: 1 } }, 'major'), true);
+  assert.equal(shouldFailReport({ ...report, summary: { scanErrors: 1 } }, 'any'), true);
 });
 
 test('issue signatures select one representative screenshot per contiguous anomaly shape', () => {
@@ -603,4 +707,37 @@ test('review star radios implement roving keyboard selection', () => {
   assert.match(reviewDialog, /onKeyDown=\{\(event\) => handleRatingKeyDown\(event, num\)\}/);
   assert.match(reviewDialog, /event\.key === 'ArrowRight' \|\| event\.key === 'ArrowDown'/);
   assert.match(reviewDialog, /event\.key === 'ArrowLeft' \|\| event\.key === 'ArrowUp'/);
+});
+
+test('runtime boundary signature stays aligned with the existing fallback contract', () => {
+  const fallback = readFileSync(new URL('../src/components/common/ErrorBoundaryFallback.tsx', import.meta.url), 'utf8');
+  const feedback = readFileSync(new URL('../src/components/common/ErrorFeedbackPanel.tsx', import.meta.url), 'utf8');
+  assert.match(fallback, /<h1[^>]*>문제가 발생했습니다<\/h1>/);
+  assert.match(fallback, /<ErrorFeedbackPanel[\s\S]*?source="runtime"/);
+  assert.match(feedback, /data-testid="error-feedback"/);
+  assert.match(feedback, /id=\{`error-feedback-\$\{source\}`\}/);
+  const file = ts.createSourceFile('ErrorBoundaryFallback.tsx', fallback, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let heading; let panel;
+  const visit = (node) => {
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(file) === 'h1'
+      && node.getText(file).includes('문제가 발생했습니다')) heading = node;
+    if (ts.isJsxSelfClosingElement(node) && node.tagName.getText(file) === 'ErrorFeedbackPanel') panel = node;
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  assert.ok(heading && panel);
+  assert.equal(heading.parent, panel.parent, 'heading and feedback component share the fallback container');
+  const feedbackFile = ts.createSourceFile('ErrorFeedbackPanel.tsx', feedback, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let root;
+  const findRoot = (node) => {
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(feedbackFile) === 'div'
+      && node.openingElement.getText(feedbackFile).includes('data-testid="error-feedback"')) root = node;
+    ts.forEachChild(node, findRoot);
+  };
+  findRoot(feedbackFile);
+  assert.ok(root);
+  let expression = root;
+  while (ts.isParenthesizedExpression(expression.parent)) expression = expression.parent;
+  assert.equal(ts.isReturnStatement(expression.parent), true, 'feedback marker is the component root');
+
 });

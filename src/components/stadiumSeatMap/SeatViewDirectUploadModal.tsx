@@ -65,11 +65,21 @@ export default function SeatViewDirectUploadModal({
   const onCloseRef = useRef(onClose);
   const submissionInFlightRef = useRef(initialSubmitting);
   const submittingRef = useRef(submitting);
+  const mountedRef = useRef(false);
+  const uploadAbortRef = useRef<AbortController | null>(null);
   const titleId = useId();
   const descriptionId = useId();
   const errorId = useId();
   onCloseRef.current = onClose;
   submittingRef.current = submitting;
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      uploadAbortRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     if (!file) {
@@ -157,6 +167,8 @@ export default function SeatViewDirectUploadModal({
     submittingRef.current = true;
     setSubmitting(true);
     setErrorMessage(null);
+    const controller = new AbortController();
+    uploadAbortRef.current = controller;
     try {
       const submission = await submitUpload({
         file,
@@ -168,15 +180,20 @@ export default function SeatViewDirectUploadModal({
         rating,
         comment,
         tags,
-      });
-      onSubmitted?.(submission);
-      onClose();
+      }, { signal: controller.signal });
+      if (mountedRef.current && !controller.signal.aborted) {
+        onSubmitted?.(submission);
+        onClose();
+      }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '시야뷰 업로드에 실패했습니다.');
+      if (mountedRef.current && !controller.signal.aborted) {
+        setErrorMessage(error instanceof Error ? error.message : '시야뷰 업로드에 실패했습니다.');
+      }
     } finally {
       submissionInFlightRef.current = false;
       submittingRef.current = false;
-      setSubmitting(false);
+      if (uploadAbortRef.current === controller) uploadAbortRef.current = null;
+      if (mountedRef.current) setSubmitting(false);
     }
   };
 

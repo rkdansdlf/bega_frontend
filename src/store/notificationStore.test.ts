@@ -52,6 +52,44 @@ test('setNotifications removes duplicate IDs from authoritative reloads', () => 
   assert.equal(useNotificationStore.getState().notifications[0]?.title, '최신 값');
 });
 
+test('setNotifications keeps bulk-read IDs aligned with the latest GET snapshot, not later socket events', () => {
+  useNotificationStore.getState().reset();
+
+  useNotificationStore.getState().setNotifications([notification({ id: 10 })]);
+  useNotificationStore.getState().addNotification(notification({ id: 11 }));
+
+  assert.deepEqual(useNotificationStore.getState().notifications.map((item) => item.id), [11, 10]);
+  assert.deepEqual(useNotificationStore.getState().snapshotNotificationIds, [10]);
+
+  useNotificationStore.getState().setNotifications([
+    notification({ id: 10 }),
+    notification({ id: 12 }),
+  ]);
+
+  assert.deepEqual(useNotificationStore.getState().notifications.map((item) => item.id), [10, 12]);
+  assert.deepEqual(useNotificationStore.getState().snapshotNotificationIds, [10, 12]);
+});
+
+test('reset clears the GET snapshot IDs so a prior account cannot be bulk-read', () => {
+  useNotificationStore.getState().reset();
+  useNotificationStore.getState().setNotifications([notification({ id: 10 })]);
+
+  useNotificationStore.getState().reset();
+
+  assert.deepEqual(useNotificationStore.getState().snapshotNotificationIds, []);
+  assert.deepEqual(useNotificationStore.getState().notifications, []);
+});
+
+test('clearing snapshot IDs does not mutate notifications displayed in the store', () => {
+  useNotificationStore.getState().reset();
+  useNotificationStore.getState().setNotifications([notification({ id: 10 })]);
+
+  useNotificationStore.getState().clearSnapshotNotificationIds();
+
+  assert.deepEqual(useNotificationStore.getState().snapshotNotificationIds, []);
+  assert.deepEqual(useNotificationStore.getState().notifications.map((item) => item.id), [10]);
+});
+
 test('setNotifications does not roll back a local read made while the snapshot was loading', () => {
   useNotificationStore.getState().reset();
   useNotificationStore.getState().setNotifications([notification()]);
@@ -82,11 +120,11 @@ test('an older snapshot cannot roll back a server-observed read notification', (
   assert.equal(useNotificationStore.getState().notifications[0]?.isRead, true);
 });
 
-test('markAllAsRead protects older notifications that arrive in an in-flight snapshot', () => {
+test('markAllAsRead protects only server-confirmed IDs that arrive in an in-flight snapshot', () => {
   useNotificationStore.getState().reset();
   useNotificationStore.getState().setNotifications([notification()]);
 
-  useNotificationStore.getState().markAllAsRead();
+  useNotificationStore.getState().markAllAsRead([10]);
   useNotificationStore.getState().setNotifications([
     notification(),
     notification({
@@ -96,20 +134,18 @@ test('markAllAsRead protects older notifications that arrive in an in-flight sna
     }),
   ]);
 
-  assert.equal(
-    useNotificationStore.getState().notifications.every((item) => item.isRead),
-    true,
+  assert.deepEqual(
+    useNotificationStore.getState().notifications.map((item) => item.isRead),
+    [true, false],
   );
 });
 
-test('markAllAsRead keeps notifications created after the request boundary unread', () => {
+test('markAllAsRead leaves a concurrent notification unread when its ID is absent from the response', () => {
   useNotificationStore.getState().reset();
-  const requestStartedAt = Date.parse('2026-07-18T00:00:00Z');
-
-  useNotificationStore.getState().markAllAsRead(requestStartedAt);
+  useNotificationStore.getState().markAllAsRead([10]);
   useNotificationStore.getState().setNotifications([
     notification({ id: 10, createdAt: '2026-07-17T23:59:59Z' }),
-    notification({ id: 11, createdAt: '2026-07-18T00:00:01Z' }),
+    notification({ id: 11, createdAt: '2026-07-17T23:59:59Z' }),
   ]);
 
   assert.deepEqual(
@@ -118,18 +154,26 @@ test('markAllAsRead keeps notifications created after the request boundary unrea
   );
 });
 
-test('markAllAsRead does not mark an already-loaded post-click notification as read', () => {
+test('markAllAsRead updates only IDs returned by the server among already-loaded notifications', () => {
   useNotificationStore.getState().reset();
-  const requestStartedAt = Date.parse('2026-07-18T00:00:00Z');
   useNotificationStore.getState().setNotifications([
-    notification({ id: 10, createdAt: '2026-07-17T23:59:59Z' }),
-    notification({ id: 11, createdAt: '2026-07-18T00:00:01Z' }),
+    notification({ id: 10 }),
+    notification({ id: 11 }),
   ]);
 
-  useNotificationStore.getState().markAllAsRead(requestStartedAt);
+  useNotificationStore.getState().markAllAsRead([10]);
 
   assert.deepEqual(
     useNotificationStore.getState().notifications.map((item) => item.isRead),
     [true, false],
   );
+});
+
+test('addNotification keeps a late event unread when its ID was not confirmed by bulk read', () => {
+  useNotificationStore.getState().reset();
+  useNotificationStore.getState().markAllAsRead([10]);
+
+  useNotificationStore.getState().addNotification(notification({ id: 11 }));
+
+  assert.equal(useNotificationStore.getState().notifications[0]?.isRead, false);
 });

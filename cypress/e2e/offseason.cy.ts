@@ -141,3 +141,45 @@ describe('Offseason Mode', () => {
         });
     });
 });
+
+describe('OffSeasonHome manual baseball data state', () => {
+    it('preserves the requested metadata year and does not show unverified season results', () => {
+        cy.intercept('GET', '**/kbo/offseason/movements*', {
+            statusCode: 200,
+            body: [],
+        }).as('getMovements');
+
+        cy.intercept('GET', '**/kbo/offseason/metadata*', (request) => {
+            expect(new URL(request.url).searchParams.get('year')).to.equal('2025');
+            request.reply({
+                statusCode: 409,
+                body: {
+                    success: false,
+                    code: 'MANUAL_BASEBALL_DATA_REQUIRED',
+                    message: '야구 데이터 준비가 필요합니다. 운영자가 데이터를 제공하면 다시 확인할 수 있습니다.',
+                    data: {
+                        scope: 'kbo.offseason.metadata',
+                        missingItems: [],
+                        operatorMessage: '요청 시즌의 검증된 내부 자료가 필요합니다.',
+                        blocking: true,
+                    },
+                },
+            });
+        }).as('getMetadataRequiresManualData');
+
+        cy.intercept('GET', '**/kbo/rankings/2025', {
+            statusCode: 200,
+            body: { rankingSeasonYear: 2025, rankingSourceMessage: '', isOffSeason: true, rankings: [] },
+        }).as('getRankings');
+
+        cy.visit('/offseason');
+        cy.wait('@getMovements');
+        cy.wait('@getMetadataRequiresManualData');
+        cy.wait('@getRankings');
+
+        cy.get('[data-testid="offseason-manual-data-required"]').should('be.visible');
+        cy.contains('요청한 시즌 결과는 아직 준비되지 않았습니다.').should('be.visible');
+        cy.contains('운영자가 검증된 내부 자료를 제공하면 다시 표시됩니다.').should('be.visible');
+        cy.contains(/시상식 결과|2025 포스트시즌 결과|최종 순위|V3/).should('not.exist');
+    });
+});

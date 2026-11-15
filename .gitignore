@@ -42,8 +42,12 @@ yarn-error.log*
 /.visual-qa.commit.lock.candidate-*
 /.visual-qa.commit.lock.released-*
 /.claude
+/CLAUDE.md
 /.playwright-cli
 /.worktrees
 /.superpowers/sdd/progress.md
 /.superpowers/sdd/*-brief.md
 /.superpowers/sdd/review-*.diff
+
+# Generated QA screenshots/evidence; regenerable, keep out of git (decision: 2026-11)
+/artifacts/

@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import '../common/autofill-input.css';
+import './PasswordChangeSection.css';
 import { changePassword } from '../../api/profile';
 import { toast } from 'sonner';
 import { useAuthAccessActions } from '../../store/authStore';
@@ -38,7 +39,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
 
-    const passwordInputClass = 'auth-autofill-input pr-10';
+    const passwordInputClass = 'auth-autofill-input mypage-password-input';
     const sanitizePassword = (value: string) => sanitizeLoginPasswordText(value);
 
     const mutation = useMutation({
@@ -94,10 +95,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
 
     return (
         <div
-            className="bg-card rounded-2xl shadow-lg border-2 border-border p-8 mb-6"
+            className="mypage-password-panel bg-card rounded-2xl shadow-lg border-2 border-border p-8 mb-6"
             data-testid="mypage-password-change-section"
         >
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mypage-password-heading flex items-center gap-3 mb-6">
                 <MyPageLockIcon className="w-6 h-6 text-primary" />
                 <h2 className="text-xl font-bold text-primary">
                     {hasPassword ? '비밀번호 변경' : '비밀번호 설정'}
@@ -107,7 +108,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
             {error && (
                 <Alert
                     variant="destructive"
-                    className="mb-6"
+                    className="mypage-password-error mb-6"
                     data-testid="mypage-password-change-error"
                 >
                     <MyPageAlertCircleIcon className="h-4 w-4" />
@@ -123,7 +124,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         <label htmlFor="currentPassword" className="text-body font-semibold text-muted-foreground">
                             현재 비밀번호 *
                         </label>
-                        <div className="relative">
+                        <div className="mypage-password-field relative">
                             <Input
                                 id="currentPassword"
                                 data-testid="mypage-password-change-current"
@@ -141,8 +142,10 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                                 type="button"
                                 tabIndex={0}
                                 data-testid="mypage-password-change-current-visibility"
+                                aria-label={showCurrentPassword ? '현재 비밀번호 숨기기' : '현재 비밀번호 보기'}
+                                aria-pressed={showCurrentPassword}
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                                className="mypage-password-visibility absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                             >
                                 {showCurrentPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                             </button>
@@ -155,7 +158,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         <label htmlFor="newPassword" className="text-body font-semibold text-muted-foreground">
                         새 비밀번호 *
                     </label>
-                    <div className="relative">
+                    <div className="mypage-password-field relative">
                         <Input
                             id="newPassword"
                             data-testid="mypage-password-change-new"
@@ -173,13 +176,15 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                             type="button"
                             tabIndex={0}
                             data-testid="mypage-password-change-new-visibility"
+                            aria-label={showNewPassword ? '새 비밀번호 숨기기' : '새 비밀번호 보기'}
+                            aria-pressed={showNewPassword}
                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                                className="mypage-password-visibility absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                         >
                             {showNewPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                         </button>
                     </div>
-                    <p className="text-body text-muted-foreground">비밀번호는 8자 이상이어야 합니다.</p>
+                    <p className="mypage-password-help text-body text-muted-foreground">비밀번호는 8자 이상이어야 합니다.</p>
                 </div>
 
                 {/* Confirm Password */}
@@ -187,7 +192,7 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                         <label htmlFor="confirmPassword" className="text-body font-semibold text-muted-foreground">
                         비밀번호 확인 *
                     </label>
-                    <div className="relative">
+                    <div className="mypage-password-field relative">
                         <Input
                             id="confirmPassword"
                             data-testid="mypage-password-change-confirm"
@@ -205,15 +210,17 @@ export default function PasswordChangeSection({ onCancel, onSuccess, hasPassword
                             type="button"
                             tabIndex={0}
                             data-testid="mypage-password-change-confirm-visibility"
+                            aria-label={showConfirmPassword ? '비밀번호 확인 숨기기' : '비밀번호 확인 보기'}
+                            aria-pressed={showConfirmPassword}
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                                className="mypage-password-visibility absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                         >
                             {showConfirmPassword ? <MyPageEyeOffIcon className="w-4 h-4" /> : <MyPageEyeIcon className="w-4 h-4" />}
                         </button>
                     </div>
                     {confirmPassword && newPassword === confirmPassword && (
                         <div
-                          className="flex items-center gap-1 text-body"
+                          className="mypage-password-match flex items-center gap-1 text-body"
                           style={{ color: 'var(--mp-win)' }}
                         >
                             <MyPageCheckCircleIcon className="w-3 h-3" />

@@ -184,12 +184,15 @@ const ALL_RADIUS_DIMENSIONS: AtomicDimension[] = ['radius-top-left', 'radius-top
 const ALL_SIDE_DIMENSIONS: AtomicDimension[] = ['top', 'right', 'bottom', 'left'];
 
 const getSpacingRule = (base: string, family: 'padding' | 'margin'): MergeRule | null => {
-  const match = base.match(/^-?[pm]([trblxy])?-(.+)$/);
+  const match = base.match(/^-?([pm])([trblxy])?-(.+)$/);
   if (!match) {
     return null;
   }
 
-  const side = match[1];
+  const [, utility, side] = match;
+  if ((family === 'padding' && utility !== 'p') || (family === 'margin' && utility !== 'm')) {
+    return null;
+  }
 
   return {
     family,

@@ -126,7 +126,7 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
   const logoSubtitleProgress = Math.min(1, shrinkProgress * 1.6);
   const isLogoSubtitleCollapsed = logoSubtitleProgress >= 0.98 || viewportFitProgress >= 0.98;
   const { theme, resolvedTheme } = useTheme();
-  const isDarkMode = (resolvedTheme || theme) === 'dark';
+  const isDarkMode = /^\/admin\/?$/.test(location.pathname) || (resolvedTheme || theme) === 'dark';
   const navIconButtonClass = 'relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-2 transition-all duration-200 focus:outline-none';
   const menuToggleButtonClass = 'relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-0 transition-all duration-200 focus:outline-none';
   const navIconToggleClass = `${navIconButtonClass} focus:ring-2 focus:ring-primary/50 text-gray-500 hover:text-gray-900 dark:text-white dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/8`;
@@ -615,7 +615,7 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
                 )}
               >
                 {Icon && <Icon className="w-5 h-5 shrink-0" />}
-                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
+                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full whitespace-normal text-center text-10.5 font-bold leading-tight [overflow-wrap:anywhere]">{item.label}</span>
               </Link>
             );
           })}
@@ -628,7 +628,7 @@ export default function PublicNavbar(props: PublicNavbarProps = {}) {
               data-testid="public-mobile-chatbot-tab"
             >
               <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-              <span data-mobile-chrome-label className="mobile-chrome-label text-[10.5px] font-bold leading-none">BEGA</span>
+              <span data-mobile-chrome-label className="mobile-chrome-label max-w-full whitespace-normal text-center text-10.5 font-bold leading-tight [overflow-wrap:anywhere]">챗봇</span>
             </button>
           )}
         </div>

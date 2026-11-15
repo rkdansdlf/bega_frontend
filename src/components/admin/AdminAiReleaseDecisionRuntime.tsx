@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FocusEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   draftReleaseDecision,
   evaluateReleaseDecisionDraft,
@@ -458,6 +458,20 @@ export default function AdminAiReleaseDecisionRuntime({
     }
   };
 
+  const handleCardFocus = (event: FocusEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (!event.currentTarget.contains(target) || !target.matches('button,select,textarea,[data-testid="admin-ai-artifact-list"]')) return;
+    requestAnimationFrame(() => {
+      const doc = target.ownerDocument;
+      if (doc.activeElement !== target || !target.isConnected) return;
+      const rect = target.getBoundingClientRect();
+      const hit = doc.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (!hit || (hit !== target && !target.contains(hit))) {
+        target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+      }
+    });
+  };
+
   const isBusy = releasePresetsLoading
     || releaseDraftLoading
     || releaseEvalCasesLoading
@@ -477,9 +491,10 @@ export default function AdminAiReleaseDecisionRuntime({
 
         <div
           data-testid="admin-ai-release-composer-card"
-          className="min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
+          onFocusCapture={handleCardFocus}
+          className="admin-ai-preset-card min-w-0 overflow-hidden rounded-2xl border border-amber-500/20 bg-slate-900/90 p-5 shadow-sm"
         >
-          <div className="flex min-w-0 items-start justify-between gap-3">
+          <div className="admin-ai-preset-header flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
                 <AdminSparklesIcon className="h-5 w-5 text-amber-300" />
@@ -724,8 +739,8 @@ export default function AdminAiReleaseDecisionRuntime({
           </div>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex min-w-0 items-start justify-between gap-3">
+        <div onFocusCapture={handleCardFocus} className="admin-ai-artifact-card min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
+          <div className="admin-ai-artifact-header flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h4 className="flex items-center gap-2 font-semibold text-white">
                 <AdminSaveIcon className="h-4 w-4 text-sky-300" />
@@ -773,13 +788,13 @@ export default function AdminAiReleaseDecisionRuntime({
                   <div
                     key={artifact.artifact_id}
                     data-testid={`admin-ai-artifact-${artifact.artifact_id}`}
-                    className={`min-w-0 rounded-xl border px-4 py-4 [overflow-wrap:anywhere] ${
+                    className={`admin-ai-artifact-row min-w-0 rounded-xl border px-4 py-4 [overflow-wrap:anywhere] ${
                       isLoaded
                         ? 'border-sky-500/30 bg-sky-500/5'
                         : 'border-slate-800 bg-slate-950/70'
                     }`}
                   >
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="admin-ai-artifact-meta flex flex-wrap items-center gap-2">
                       <AdminStatusBadge status={artifact.decision} />
                       {artifact.eval_status ? (
                         <AdminStatusBadge status={artifact.eval_status} />
@@ -795,7 +810,7 @@ export default function AdminAiReleaseDecisionRuntime({
                     <p className="mt-2 break-all text-caption font-semibold text-white">
                       {artifact.artifact_id}
                     </p>
-                    <div className="mt-3 flex min-w-0 flex-wrap gap-2">
+                    <div className="admin-ai-artifact-actions mt-3 flex min-w-0 flex-wrap gap-2">
                       <Button
                         type="button"
                         variant="outline"

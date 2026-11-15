@@ -23,6 +23,7 @@ test('PredictionMatchesErrorView는 수동 데이터 empty state를 사용자 �
   assert.doesNotMatch(html, /예측으로 돌아가기/);
   assert.doesNotMatch(html, /MANUAL_BASEBALL_DATA_REQUIRED/);
   assert.doesNotMatch(html, /예측 경기 데이터를 불러오지 못했습니다/);
+  assert.match(html, /\[\&amp;_h3\]:break-keep/);
 });
 
 test('PredictionMatchesErrorView는 연결 실패를 실제 경기 상태로 표현하지 않는다', () => {
@@ -37,4 +38,5 @@ test('PredictionMatchesErrorView는 연결 실패를 실제 경기 상태로 표
   assert.match(html, /서비스 연결이 불안정합니다/);
   assert.doesNotMatch(html, /우천|경기 중단/);
   assert.match(html, /data-testid="prediction-empty-retry"/);
+  assert.doesNotMatch(html, /break-keep/);
 });

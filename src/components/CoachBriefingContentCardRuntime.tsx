@@ -422,11 +422,11 @@ export default function CoachBriefingContentCardRuntime({
         className="relative mb-6 overflow-hidden rounded-20 border border-gray-200 bg-white text-gray-900 shadow-xl dark:border-border dark:bg-card dark:text-white"
       >
         {/* ── HEAD BAR ─────────────────────────────────────────── */}
-        <div className="flex items-center gap-2.5 border-b border-gray-100 bg-gradient-to-b from-[#fafffd] to-white px-4 py-3 sm:px-5 dark:border-border dark:from-emerald-950/10 dark:to-transparent">
+        <div className="flex flex-wrap items-center gap-2.5 border-b border-gray-100 bg-gradient-to-b from-[#fafffd] to-white px-4 py-3 sm:flex-nowrap sm:px-5 dark:border-border dark:from-emerald-950/10 dark:to-transparent">
           <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-10 bg-gradient-to-br from-[#2d5f4f] to-[#173b34] shadow-sm">
             <PredictionSparklesIcon className="h-[14px] w-[14px] text-emerald-100" />
           </div>
-          <span className="text-15 font-bold tracking-tight text-gray-800 dark:text-white">
+          <span className="min-w-0 break-words text-15 font-bold tracking-tight text-gray-800 dark:text-white">
             AI 코치 경기 예측
           </span>
           {(homeTeamId || awayTeamId) ? (
@@ -604,28 +604,28 @@ export default function CoachBriefingContentCardRuntime({
           {showLoginAction ? (
             <Button
               type="button"
-              className="h-12 w-full rounded-xl border border-emerald-700/60 bg-emerald-950 text-emerald-50 shadow-sm hover:bg-emerald-900 dark:border-emerald-700/40 dark:bg-emerald-950/80"
+              className="min-h-12 h-auto w-full rounded-xl border border-emerald-700/60 bg-emerald-950 py-3 text-emerald-50 shadow-sm hover:bg-emerald-900 dark:border-emerald-700/40 dark:bg-emerald-950/80"
               onClick={onLoginAction}
             >
-              <PredictionZapIcon className="mr-2 h-4 w-4 flex-shrink-0 text-emerald-50" />
-              <span className="text-15 font-bold">{loginButtonLabel}</span>
+              <PredictionZapIcon className="h-4 w-4 flex-shrink-0 text-emerald-50" />
+              <span className="min-w-0 flex-1 break-words text-15 font-bold">{loginButtonLabel}</span>
             </Button>
           ) : isAuthCheckPending ? (
             <Button
               type="button"
               disabled
-              className="h-12 w-full rounded-xl border border-emerald-700/40 bg-emerald-950/70 text-emerald-50 shadow-sm disabled:opacity-100"
+              className="min-h-12 h-auto w-full rounded-xl border border-emerald-700/40 bg-emerald-950/70 py-3 text-emerald-50 shadow-sm disabled:opacity-100"
             >
-              <PredictionZapIcon className="mr-2 h-4 w-4 flex-shrink-0 text-emerald-50" />
-              <span className="text-15 font-bold">로그인 확인 중...</span>
+              <PredictionZapIcon className="h-4 w-4 flex-shrink-0 text-emerald-50" />
+              <span className="min-w-0 flex-1 break-words text-15 font-bold">로그인 확인 중...</span>
             </Button>
           ) : aiLoading ? (
             <Button
               type="button"
               disabled
-              className="h-12 w-full rounded-xl bg-[#2d5f4f] text-white shadow-sm disabled:opacity-80"
+              className="min-h-12 h-auto w-full rounded-xl bg-[#2d5f4f] py-3 text-white shadow-sm disabled:opacity-80"
             >
-              <span className="flex items-center gap-1 mr-2">
+              <span className="flex items-center gap-1">
                 {[0, 150, 300].map((delay) => (
                   <span
                     key={delay}
@@ -634,7 +634,7 @@ export default function CoachBriefingContentCardRuntime({
                   />
                 ))}
               </span>
-              <span className="text-15 font-bold">경기 데이터 분석 중...</span>
+              <span className="min-w-0 flex-1 break-words text-15 font-bold">경기 데이터 분석 중...</span>
             </Button>
           ) : (
             <CoachAnalysisDialogLauncher

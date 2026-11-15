@@ -92,6 +92,9 @@ export async function fetchUserProfile(): Promise<UserProfile> {
 export async function uploadProfileImage(file: File): Promise<ProfileImageDto> {
   try {
     const response = await uploadMediaFile('PROFILE', file);
+    if (!response.publicUrl) {
+      throw new Error('프로필 이미지 URL을 발급하지 못했습니다.');
+    }
     return {
       storagePath: response.storagePath,
       publicUrl: response.publicUrl,

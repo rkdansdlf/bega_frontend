@@ -51,7 +51,7 @@ test('admin seat-view detail drawer labels its memo and keeps four actions reach
   }
 
   assert.match(source, /grid w-full grid-cols-2 gap-2/);
-  assert.match(source, /const actionClassName = 'min-h-11 w-full[^'\n]*sm:min-h-9'/);
+  assert.match(source, /const actionClassName = 'min-h-11 w-full[^'\n]*sm:min-h-11'/);
 });
 
 test('admin seat-view detail drawer allows deterministic memo input only outside production', async () => {

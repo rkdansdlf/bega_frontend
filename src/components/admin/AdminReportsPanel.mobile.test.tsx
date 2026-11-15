@@ -15,9 +15,9 @@ test('admin reports panel labels every filter and keeps controls touch-safe on m
     assert.match(source, new RegExp(`id="admin-reports-${field}-filter"`));
   }
 
-  assert.match(source, /const reportSelectClassName = `\$\{adminNativeSelectClassName\} min-h-11 sm:min-h-9`/);
+  assert.match(source, /const reportSelectClassName = `\$\{adminNativeSelectClassName\} min-h-11`/);
   assert.match(source, /className="mb-4 grid min-w-0 grid-cols-1 items-end gap-2 md:grid-cols-5"/);
-  assert.match(source, /data-testid="admin-reports-reset-filters"[\s\S]*min-h-11[\s\S]*sm:min-h-9/);
+  assert.match(source, /data-testid="admin-reports-reset-filters"[\s\S]*min-h-11[\s\S]*sm:min-h-11/);
 });
 
 test('admin reports panel contains dense tables and announces terminal list states', async () => {
@@ -32,7 +32,7 @@ test('admin reports panel contains dense tables and announces terminal list stat
   assert.match(source, /className="w-40 max-w-40 truncate whitespace-nowrap text-slate-300/);
   assert.match(source, /className="w-56 max-w-56 truncate whitespace-nowrap text-slate-300"/);
   assert.match(source, /reportsLoading \? \([\s\S]*<div[\s\S]*min-h-40[\s\S]*role="status"[\s\S]*aria-live="polite"/);
-  assert.match(source, /reports\.length === 0 \? \([\s\S]*<div[\s\S]*min-h-40[\s\S]*role="status"/);
+  assert.match(source, /reports\.length === 0 \? \(reportsError \? null : \([\s\S]*<div[\s\S]*min-h-40[\s\S]*role="status"/);
   assert.match(source, /\) : \([\s\S]*<Table aria-label="신고 목록"/);
 });
 
@@ -42,7 +42,7 @@ test('admin reports panel exposes named 44px row actions without losing pressure
   assert.match(source, /aria-label=\{`신고 \$\{report\.id\} 상세 보기`\}/);
   assert.match(source, /aria-label=\{`신고 \$\{report\.id\} 게시물 비공개`\}/);
   assert.match(source, /aria-label=\{`신고 \$\{report\.id\} 기각`\}/);
-  assert.match(source, /const reportRowActionClassName = 'min-h-11[^'\n]*sm:min-h-8[^'\n]*'/);
+  assert.match(source, /const reportRowActionClassName = 'min-h-11[^'\n]*sm:min-h-11'/);
   assert.ok((source.match(/\[overflow-wrap:anywhere\]/g) ?? []).length >= 2);
   assert.match(source, /w-56 max-w-56 truncate whitespace-nowrap/);
 });

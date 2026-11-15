@@ -1,0 +1,76 @@
+.admin-ai-artifact-card h4,
+.admin-ai-artifact-card p,
+.admin-ai-artifact-meta > * {
+  min-width: 0;
+  max-width: 100%;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.admin-ai-artifact-header > button,
+.admin-ai-artifact-actions > button {
+  min-width: theme(spacing.11);
+  min-height: max(theme(spacing.11), 2.25rem);
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.admin-ai-artifact-header > button {
+  flex-shrink: 0;
+  padding-inline: theme(spacing.3);
+}
+
+@media (max-width: 1023px) {
+  .admin-ai-artifact-card {
+    padding: theme(spacing.3);
+  }
+
+  .admin-ai-artifact-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-ai-artifact-header h4 {
+    display: block;
+  }
+
+  .admin-ai-artifact-header h4 > svg {
+    display: block;
+    margin-bottom: theme(spacing.2);
+  }
+
+  .admin-ai-artifact-header > button {
+    align-self: flex-end;
+  }
+
+  .admin-ai-artifact-card [data-testid="admin-ai-artifact-list"] {
+    padding-right: 0;
+  }
+
+  .admin-ai-artifact-row {
+    padding: theme(spacing.2);
+  }
+
+  .admin-ai-artifact-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-ai-artifact-actions > button {
+    width: 100%;
+    flex-direction: column;
+    gap: theme(spacing.2);
+    padding: theme(spacing.2);
+    text-align: center;
+  }
+
+  .admin-ai-artifact-actions > button > svg {
+    align-self: center;
+    flex-shrink: 0;
+    margin-right: 0;
+  }
+}

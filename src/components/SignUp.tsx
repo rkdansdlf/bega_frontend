@@ -15,6 +15,7 @@ import {
 } from './ui/auth-primitives';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import './SignUp.css';
 
 const LazyTeamRecommendationTest = lazy(() => import('./TeamRecommendationTest'));
 const LazySignUpStatusPanel = lazy(() => import('./auth/SignUpStatusPanel'));
@@ -52,7 +53,7 @@ function AvailabilityMessage({
   }
 
   if (idleMessage) {
-    return <p className="auth-helper-text" data-testid={testId}>{idleMessage}</p>;
+    return <p className="auth-helper-text [word-break:keep-all] [overflow-wrap:anywhere]" data-testid={testId}>{idleMessage}</p>;
   }
 
   return null;
@@ -241,7 +242,7 @@ export default function SignUp(props: SignUpProps) {
               <LockIcon className="h-4 w-4 text-primary" />
               비밀번호
             </label>
-            <div className="relative" data-vqa-overlap="allowed">
+            <div className="signup-password-field relative" data-vqa-overlap="allowed">
               <Input
                 id="password"
                 name="password"
@@ -267,7 +268,7 @@ export default function SignUp(props: SignUpProps) {
             {fieldErrors.password ? (
               <p className="auth-error-text">* {fieldErrors.password}</p>
             ) : (
-              <p className="auth-helper-text">
+              <p className="auth-helper-text [word-break:keep-all] [overflow-wrap:anywhere]">
                 • {VALIDATION_RULES.PASSWORD.MIN_LENGTH}자 이상
                 <br />
                 • 대문자, 소문자, 숫자, 특수문자(@$!%*?&#) 각 1개 이상 포함
@@ -280,7 +281,7 @@ export default function SignUp(props: SignUpProps) {
               <LockIcon className="h-4 w-4 text-primary" />
               비밀번호 확인
             </label>
-            <div className="relative" data-vqa-overlap="allowed">
+            <div className="signup-password-field relative" data-vqa-overlap="allowed">
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -346,7 +347,7 @@ export default function SignUp(props: SignUpProps) {
                 type="button"
                 variant="ghost"
                 onClick={() => setShowTeamTest(true)}
-                className="min-h-11 px-2 py-1 text-body text-primary hover:bg-primary/10 dark:hover:bg-primary/20"
+                className="min-h-11 sm:min-h-[max(44px,2.25rem)] px-2 py-1 text-body text-primary hover:bg-primary/10 dark:hover:bg-primary/20"
                 disabled={isFormLocked}
                 data-testid="signup-team-test"
               >

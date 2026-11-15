@@ -561,6 +561,37 @@ test('harness readiness is validated before interaction lookup can mask render e
   }), /module import failed/);
 });
 
+test('harness readiness accepts an empty render only when the state contract expects absence', () => {
+  const baseOutcome = {
+    harness: {
+      componentId: 'ImageGrid',
+      scenarioId: 'ImageGrid:empty',
+      state: 'ready',
+    },
+    renderedComponentId: 'ImageGrid',
+    renderedScenarioId: 'ImageGrid:empty',
+    renderedNodes: 0,
+    expectedComponentId: 'ImageGrid',
+    expectedScenarioId: 'ImageGrid:empty',
+  };
+
+  assert.doesNotThrow(() => assertHarnessReadyOutcome({
+    ...baseOutcome,
+    expectedRender: 'absent',
+  }));
+  assert.throws(() => assertHarnessReadyOutcome(baseOutcome), /component produced no rendered node/);
+  assert.throws(() => assertHarnessReadyOutcome({
+    ...baseOutcome,
+    expectedRender: 'absent',
+    renderedNodes: 1,
+  }), /component rendered an unexpected node/);
+  assert.throws(() => assertHarnessReadyOutcome({
+    ...baseOutcome,
+    expectedRender: 'absent',
+    surfaceChildCount: 1,
+  }), /component rendered an unexpected node/);
+});
+
 test('harness readiness rejects marked mobile content that exceeds its visual height budget', () => {
   assert.throws(() => assertHarnessReadyOutcome({
     harness: {

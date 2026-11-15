@@ -87,7 +87,7 @@ describe('page-by-page route coverage', () => {
   });
 
   it('5. loads and completes account recovery from a valid token', () => {
-    cy.intercept({ method: 'GET', pathname: '/api/auth/account/deletion/recovery' }, {
+    cy.intercept({ method: 'POST', pathname: '/api/auth/account/deletion/recovery/info' }, {
       statusCode: 200,
       body: {
         success: true,
@@ -100,7 +100,8 @@ describe('page-by-page route coverage', () => {
     }).as('recoverAccount');
 
     cy.visit('/account/deletion/recovery?token=recovery-token');
-    cy.wait('@getRecoveryInfo');
+    cy.wait('@getRecoveryInfo').its('request.body').should('deep.equal', { token: 'recovery-token' });
+    cy.location('search').should('not.contain', 'token=');
 
     cy.contains('2026').should('be.visible');
     cy.get('[data-testid="account-recovery-submit"]')

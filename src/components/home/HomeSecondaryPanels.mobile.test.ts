@@ -20,3 +20,16 @@ test('home calendar dialog spaces its header without narrowing the calendar grid
   assert.match(source, /px-4 pt-4 sm:p-0/);
   assert.match(source, /className="mb-2 mx-auto rounded-md border"/);
 });
+
+test('home panel headers wrap actions before narrow text scaling can break their labels', async () => {
+  const source = await readSource();
+
+  assert.match(source, /className="flex min-h-11 flex-wrap items-center justify-between gap-2 sm:flex-nowrap sm:gap-3"/);
+  assert.match(source, /className="shrink-0 rounded-full px-3 text-15 font-bold whitespace-nowrap/);
+});
+
+test('home secondary carousel bleed stays within the parent mobile gutters at 200% text size', async () => {
+  const source = await readSource();
+
+  assert.match(source, /className="-mx-3 overflow-x-auto px-3 pb-2 scrollbar-hide/);
+});

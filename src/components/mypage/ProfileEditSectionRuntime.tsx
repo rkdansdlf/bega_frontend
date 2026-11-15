@@ -252,7 +252,7 @@ export default function ProfileEditSection({
 
   return (
     <>
-      <section data-screen-label="설정" data-testid="profile-edit-section-runtime" className="mypage-card-screen mb-6">
+      <section data-screen-label="설정" data-testid="profile-edit-section-runtime" className={`mypage-card-screen mb-6${activeSection === 'blockedUsers' ? ' mypage-blocked-settings' : activeSection === 'accountSettings' ? ' mypage-account-settings' : ''}`}>
         <div className="mypage-profile-header-panel">
           <div>
             <h2 className="text-xl font-bold text-primary">설정</h2>

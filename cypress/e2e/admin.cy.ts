@@ -181,6 +181,8 @@ const authToken =
 describe('Admin page coverage', () => {
     let users: AdminUserRecord[];
     let reports: AdminReportRecord[];
+    let appealDecisionResponseDelayMs: number;
+    let failNextAdminReportDetailResponse: boolean;
     let seatViews: SeatViewRecord[];
     let offseasonMovements: OffseasonMovementRecord[];
     let placesByStadium: Record<string, PlaceRecord[]>;
@@ -220,10 +222,16 @@ describe('Admin page coverage', () => {
         win.localStorage.setItem('bega_dont_show_guide', 'true');
     };
 
-    const visitAdminPage = () => {
+    const visitAdminPage = (theme?: 'light' | 'dark') => {
         cy.visit('/admin', {
             onBeforeLoad(win) {
                 seedAuthenticatedWindow(win);
+                if (theme) {
+                    win.localStorage.setItem('kbo-theme', theme);
+                    win.localStorage.removeItem('bega-theme');
+                    win.localStorage.removeItem('theme');
+                    win.document.documentElement.classList.toggle('dark', theme === 'dark');
+                }
             },
         });
         cy.window().then((win) => {
@@ -435,6 +443,8 @@ describe('Admin page coverage', () => {
 
     beforeEach(() => {
         nonCanonicalCleanupTrackerRequestNotes = [];
+        appealDecisionResponseDelayMs = 0;
+        failNextAdminReportDetailResponse = false;
         users = [
             {
                 id: 3,
@@ -736,12 +746,41 @@ describe('Admin page coverage', () => {
         }).as('getAdminReports');
 
         cy.intercept('GET', '**/api/admin/reports/*', (req) => {
+            if (failNextAdminReportDetailResponse) {
+                failNextAdminReportDetailResponse = false;
+                req.reply({
+                    statusCode: 503,
+                    body: ok({ message: 'synthetic report detail refresh failure' }),
+                });
+                return;
+            }
+
             const reportId = Number(req.url.split('/').pop());
             req.reply({
                 statusCode: 200,
                 body: ok(reports.find((report) => report.id === reportId)),
             });
         }).as('getAdminReportDetail');
+
+        cy.intercept('PATCH', '**/api/admin/reports/*/appeal', (req) => {
+            const reportId = Number(req.url.match(/\/reports\/(\d+)\/appeal/)?.[1]);
+            expect(req.body).to.deep.equal({ decision: 'ACCEPTED' });
+            reports = reports.map((report) => (
+                report.id === reportId
+                    ? { ...report, appealStatus: req.body.decision }
+                    : report
+            ));
+
+            const response = {
+                statusCode: 200,
+                body: ok(reports.find((report) => report.id === reportId)),
+                ...(appealDecisionResponseDelayMs > 0
+                    ? { delay: appealDecisionResponseDelayMs }
+                    : {}),
+            };
+            appealDecisionResponseDelayMs = 0;
+            req.reply(response);
+        }).as('patchAdminReportAppeal');
 
         cy.intercept('PATCH', '**/api/admin/reports/*', (req) => {
             const reportId = Number(req.url.split('/').pop());
@@ -1071,7 +1110,14 @@ describe('Admin page coverage', () => {
 
             req.reply({
                 statusCode: 200,
-                body: ok(filteredSeatViews),
+                body: ok({
+                    content: filteredSeatViews,
+                    totalElements: filteredSeatViews.length,
+                    totalPages: filteredSeatViews.length > 0 ? 1 : 0,
+                    size: 10,
+                    number: 0,
+                    last: true,
+                }),
             });
         }).as('getAdminSeatViews');
 
@@ -1369,44 +1415,142 @@ describe('Admin page coverage', () => {
         const layouts: Array<{
             viewport: string;
             tab: string;
+            requestedTheme: 'light' | 'dark' | null;
+            rootTheme: 'light' | 'dark';
+            bodyBackground: string;
+            adminShellBackground: string;
+            navbarBackdropBackground: string;
             viewportWidth: number;
             documentScrollWidth: number;
             bodyScrollWidth: number;
             panelClientWidth: number;
             panelScrollWidth: number;
+            panelTop: number;
+            navbarBottom: number;
+            panelHeaderGap: number;
         }> = [];
 
-        const captureTabs = (viewport: string, width: number, height: number, revisit: boolean) => {
+        const captureTabs = (
+            viewport: string,
+            width: number,
+            height: number,
+            revisit: boolean,
+            theme?: 'light' | 'dark',
+        ) => {
             cy.viewport(width, height);
             if (revisit) {
-                visitAdminPage();
+                visitAdminPage(theme);
                 cy.getBySel('admin-tab-users').should('be.visible');
                 cy.wait('@getAdminStats');
                 cy.getBySel('admin-stat-users').should('contain.text', String(users.length));
                 cy.getBySel('admin-error-message').should('not.exist');
                 cy.wait('@getAdminUsers');
+                cy.getBySel('admin-route-theme').should(($scope) => {
+                    const scope = $scope[0] as HTMLElement;
+                    const document = scope.ownerDocument;
+                    const navbar = document.querySelector('[data-testid="navbar-capsule"]');
+                    const main = document.querySelector('main');
+                    const navbarBackdrop = navbar?.closest('header')
+                        ?.querySelector<HTMLElement>(':scope > [aria-hidden="true"]');
+                    expect(scope.classList.contains('dark'), 'Admin-only dark theme scope').to.equal(true);
+                    expect(document.defaultView?.getComputedStyle(scope).backgroundColor)
+                        .to.equal('rgb(2, 6, 23)');
+                    expect(main && document.defaultView?.getComputedStyle(main).backgroundColor)
+                        .to.equal('rgb(2, 6, 23)');
+                    expect(navbar && scope.contains(navbar), 'shared navbar is inside the Admin dark scope')
+                        .to.equal(true);
+                    expect(navbarBackdrop, 'shared navbar backdrop exists').not.to.equal(null);
+                    expect(navbarBackdrop && document.defaultView?.getComputedStyle(navbarBackdrop).backgroundColor)
+                        .to.equal('rgb(5, 5, 5)');
+                    expect(main && scope.contains(main), 'Admin main content is inside the dark scope')
+                        .to.equal(true);
+                    const bounds = scope.getBoundingClientRect();
+                    expect(bounds.width, 'Admin dark scope covers viewport width')
+                        .to.be.at.least(document.documentElement.clientWidth - 1);
+                    expect(bounds.height, 'Admin dark scope covers viewport height')
+                        .to.be.at.least(document.defaultView?.innerHeight ?? 0);
+                });
+                cy.get('[data-testid="site-footer"]', { timeout: 15000 }).should(($footer) => {
+                    const footer = $footer[0] as HTMLElement;
+                    const scope = footer.closest('[data-testid="admin-route-theme"]');
+                    expect(scope, 'shared footer is inside the Admin dark scope').not.to.equal(null);
+                    expect(footer.ownerDocument.defaultView?.getComputedStyle(footer).backgroundColor)
+                        .to.equal('rgb(17, 24, 39)');
+                });
+                if (theme) {
+                    cy.document().should((document) => {
+                        expect(document.defaultView?.localStorage.getItem('kbo-theme'))
+                            .to.equal(theme);
+                        expect(document.documentElement.classList.contains(theme))
+                            .to.equal(true);
+                    });
+                }
             }
 
             tabs.forEach((tab) => {
                 cy.getBySel(tab.testId).click({ force: true });
                 cy.getBySel(tab.testId).should('have.attr', 'aria-selected', 'true');
                 tab.waits.forEach((alias) => cy.wait(alias));
-                cy.getBySel(tab.panel).should('be.visible').scrollIntoView().then(($panel) => {
+                cy.getBySel(tab.panel).should('be.visible').then(($panel) => {
                     const panel = $panel[0] as HTMLElement;
                     const document = panel.ownerDocument;
+                    const navbar = document
+                        .querySelector('[data-testid="navbar-capsule"]')
+                        ?.closest('header');
+
+                    expect(navbar, 'sticky site header').not.to.be.null;
+                    const targetTop = (navbar as HTMLElement).getBoundingClientRect().bottom + 8;
+                    const scrollBy = panel.getBoundingClientRect().top - targetTop;
+                    if (Math.abs(scrollBy) > 1) {
+                        document.defaultView?.scrollBy({ top: scrollBy, behavior: 'instant' });
+                    }
+                }).then(() => cy.wait(300)).then(() => cy.getBySel(tab.panel)).then(($panel) => {
+                    const panel = $panel[0] as HTMLElement;
+                    const document = panel.ownerDocument;
+                    const navbar = document
+                        .querySelector('[data-testid="navbar-capsule"]')
+                        ?.closest('header') as HTMLElement | null;
+                    expect(navbar, 'sticky site header after scroll').not.to.be.null;
+                    const targetTop = (navbar as HTMLElement).getBoundingClientRect().bottom + 8;
+                    const scrollBy = panel.getBoundingClientRect().top - targetTop;
+                    if (Math.abs(scrollBy) > 1) {
+                        document.defaultView?.scrollBy({ top: scrollBy, behavior: 'instant' });
+                    }
+                    const navbarBottom = (navbar as HTMLElement).getBoundingClientRect().bottom;
+                    const panelTop = panel.getBoundingClientRect().top;
+                    const panelHeaderGap = panelTop - navbarBottom;
+                    const navbarBackdrop = navbar?.querySelector<HTMLElement>(
+                        ':scope > [aria-hidden="true"]',
+                    ) ?? null;
+
+                    expect(panelHeaderGap, `${tab.key} panel gap below sticky header`)
+                        .to.be.at.least(7);
                     const documentWidth = document.documentElement.clientWidth;
                     const documentScrollWidth = document.documentElement.scrollWidth;
                     const bodyScrollWidth = document.body.scrollWidth;
+                    const adminShell = document.querySelector('[data-testid="admin-page-shell"]') as HTMLElement | null;
+                    expect(adminShell, 'admin page shell').not.to.be.null;
+                    const rootTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 
                     expect(Math.max(documentScrollWidth, bodyScrollWidth)).to.be.at.most(documentWidth + 1);
                     layouts.push({
                         viewport,
                         tab: tab.key,
+                        requestedTheme: theme ?? null,
+                        rootTheme,
+                        bodyBackground: document.defaultView?.getComputedStyle(document.body).backgroundColor ?? '',
+                        adminShellBackground: document.defaultView?.getComputedStyle(adminShell as HTMLElement).backgroundColor ?? '',
+                        navbarBackdropBackground: navbarBackdrop
+                            ? document.defaultView?.getComputedStyle(navbarBackdrop).backgroundColor ?? ''
+                            : '',
                         viewportWidth: width,
                         documentScrollWidth,
                         bodyScrollWidth,
                         panelClientWidth: panel.clientWidth,
                         panelScrollWidth: panel.scrollWidth,
+                        panelTop,
+                        navbarBottom,
+                        panelHeaderGap,
                     });
 
                     if (viewport === 'desktop' && tab.key === 'ai') {
@@ -1425,11 +1569,756 @@ describe('Admin page coverage', () => {
 
         captureTabs('desktop', 1400, 900, false);
         captureTabs('mobile', 390, 844, true);
+        captureTabs('light-desktop', 1400, 900, true, 'light');
+        captureTabs('light-mobile', 390, 844, true, 'light');
 
         cy.then(() => {
             const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
             cy.writeFile(`${screenshotsFolder}/admin-tab-layout-metrics.json`, layouts);
         });
+    });
+
+    it('captures every admin panel with 200% root text on mobile', () => {
+        const panels: Array<{
+            key: string;
+            tab: string;
+            panel: string;
+            waits: Array<`@${string}`>;
+        }> = [
+            { key: 'users', tab: 'admin-tab-users', panel: 'admin-users-panel', waits: [] },
+            { key: 'posts', tab: 'admin-tab-posts', panel: 'admin-posts-panel', waits: ['@getAdminPosts'] },
+            { key: 'parties', tab: 'admin-tab-parties', panel: 'admin-mates-panel', waits: ['@getAdminMates'] },
+            { key: 'reports', tab: 'admin-tab-reports', panel: 'admin-reports-panel', waits: ['@getAdminReports'] },
+            {
+                key: 'game-status',
+                tab: 'admin-tab-game-status',
+                panel: 'admin-game-status-panel',
+                waits: ['@getAdminGameStatusMismatches', '@getAdminGameStatusRecommendationWindow', '@getAdminNonCanonicalCleanupTrackers'],
+            },
+            {
+                key: 'client-errors',
+                tab: 'admin-tab-client-errors',
+                panel: 'admin-client-error-panel',
+                waits: ['@getClientErrorDashboard', '@getClientErrorEvents'],
+            },
+            { key: 'seat-views', tab: 'admin-tab-seat-views', panel: 'admin-seat-views-panel', waits: ['@getAdminSeatViews'] },
+            { key: 'offseason', tab: 'admin-tab-offseason', panel: 'admin-offseason-movement-panel', waits: ['@getOffseasonMovements'] },
+            { key: 'stadiums', tab: 'admin-tab-stadiums', panel: 'admin-stadiums-panel', waits: ['@getAdminStadiums', '@getStadiumPlaces'] },
+            {
+                key: 'ai',
+                tab: 'admin-tab-ai',
+                panel: 'admin-ai-operations-panel',
+                waits: ['@getCoachAutoBriefOpsHealth', '@getReleasePresets', '@getReleaseEvalCases', '@getReleaseArtifacts'],
+            },
+        ];
+        const measurements: Array<{
+            tab: string;
+            viewportWidth: number;
+            documentScrollWidth: number;
+            bodyScrollWidth: number;
+            panelClientWidth: number;
+            panelScrollWidth: number;
+            rootFontSize: string;
+            panelTop: number;
+            headerBottom: number;
+        }> = [];
+        const panelOverflowDetails: Array<{
+            tab: string;
+            descendants: Array<{
+                tag: string;
+                testId: string | undefined;
+                className: string;
+                clientWidth: number;
+                scrollWidth: number;
+                overflowX: string;
+            }>;
+        }> = [];
+        const reachability: Array<{
+            tab: string;
+            controlsChecked: number;
+            controlsWithBoundsAcrossHeaderOrDock: Array<{
+                label: string;
+                top: number;
+                bottom: number;
+                headerBottom: number;
+                dockTop: number;
+                centerY: number;
+            }>;
+        }> = [];
+        const bodyCopyReachability: Array<{
+            tab: string;
+            text: string;
+            hasVisibleTextLine: boolean;
+            lineTop: number;
+            lineBottom: number;
+            headerBottom: number;
+            dockTop: number;
+            scrollTop: number;
+            panelBottomPadding: number;
+            requiredPanelBottomPadding: number;
+        }> = [];
+
+        cy.viewport(390, 844);
+        cy.document().then((document) => {
+            document.documentElement.style.scrollBehavior = 'auto';
+            document.documentElement.style.fontSize = '32px';
+            expect(document.documentElement.style.fontSize, '200% root text size').to.equal('32px');
+        });
+
+        panels.forEach((entry) => {
+            cy.window().then((window) => window.scrollTo({ top: 0, behavior: 'instant' }));
+            cy.getBySel(entry.tab).click({ force: true });
+            cy.getBySel(entry.tab).should('have.attr', 'aria-selected', 'true');
+            entry.waits.forEach((alias) => cy.wait(alias));
+            cy.getBySel(entry.panel).should('be.visible').then(($panel) => {
+                const panel = $panel[0] as HTMLElement;
+                const document = panel.ownerDocument;
+                const window = document.defaultView;
+                const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                expect(window, 'browser window').not.to.be.null;
+                expect(navbar, 'sticky site header').not.to.be.null;
+                if (!window || !navbar) return;
+                const targetTop = navbar.getBoundingClientRect().bottom + 8;
+                window.scrollBy({ top: panel.getBoundingClientRect().top - targetTop, behavior: 'instant' });
+            }).then(() => cy.wait(300)).then(() => cy.getBySel(entry.panel)).then(($panel) => {
+                const panel = $panel[0] as HTMLElement;
+                const document = panel.ownerDocument;
+                const window = document.defaultView;
+                const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                expect(window, 'browser window after scroll').not.to.be.null;
+                expect(navbar, 'sticky site header after scroll').not.to.be.null;
+                if (!window || !navbar) return;
+                const headerBottom = navbar.getBoundingClientRect().bottom;
+                const panelTop = panel.getBoundingClientRect().top;
+                const panelHeaderGap = panelTop - headerBottom;
+                expect(panelHeaderGap, `${entry.key} panel clears sticky header`).to.be.at.least(7);
+                expect(panelTop, `${entry.key} panel is within the mobile viewport`).to.be.lessThan(window.innerHeight);
+                const documentWidth = document.documentElement.clientWidth;
+                const documentScrollWidth = document.documentElement.scrollWidth;
+                const bodyScrollWidth = document.body.scrollWidth;
+                const rootFontSize = document.defaultView?.getComputedStyle(document.documentElement).fontSize ?? '';
+
+                expect(Math.max(documentScrollWidth, bodyScrollWidth), `${entry.key} document horizontal overflow`)
+                    .to.be.at.most(documentWidth + 1);
+                expect(rootFontSize, `${entry.key} root text size`).to.equal('32px');
+                if (['game-status', 'client-errors', 'offseason'].includes(entry.key)) {
+                    panelOverflowDetails.push({
+                        tab: entry.key,
+                        descendants: Array.from(panel.querySelectorAll<HTMLElement>('*'))
+                            .filter((element) => element.scrollWidth > element.clientWidth + 1)
+                            .map((element) => ({
+                                tag: element.tagName.toLowerCase(),
+                                testId: element.dataset.testid,
+                                className: typeof element.className === 'string' ? element.className : '',
+                                clientWidth: element.clientWidth,
+                                scrollWidth: element.scrollWidth,
+                                overflowX: window.getComputedStyle(element).overflowX,
+                            }))
+                            .sort((left, right) => (right.scrollWidth - right.clientWidth) - (left.scrollWidth - left.clientWidth)),
+                    });
+                }
+                measurements.push({
+                    tab: entry.key,
+                    viewportWidth: documentWidth,
+                    documentScrollWidth,
+                    bodyScrollWidth,
+                    panelClientWidth: panel.clientWidth,
+                    panelScrollWidth: panel.scrollWidth,
+                    rootFontSize,
+                    panelTop,
+                    headerBottom,
+                });
+            });
+            cy.screenshot(`admin-large-text-${entry.key}`, { capture: 'viewport' });
+            cy.getBySel(entry.panel).then(($panel) => {
+                const panel = $panel[0] as HTMLElement;
+                const document = panel.ownerDocument;
+                const window = document.defaultView;
+                const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+                expect(window, 'browser window for large-text reachability').not.to.be.null;
+                expect(navbar, 'sticky header for large-text reachability').not.to.be.null;
+                expect(bottomNav, 'fixed dock for large-text reachability').not.to.be.null;
+                if (!window || !navbar || !bottomNav) return;
+
+                const controls = Array.from(panel.querySelectorAll<HTMLElement>(
+                    'a[href], button, input:not([type="hidden"]), select, textarea, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+                )).filter((element) => (
+                    element.tabIndex >= 0
+                    && !element.hasAttribute('disabled')
+                    && element.getClientRects().length > 0
+                    && !element.closest('[aria-hidden="true"]')
+                ));
+                if (entry.key === 'posts' || entry.key === 'parties') {
+                    expect(controls, `${entry.key} synthetic empty state has no row actions at 200%`).to.have.length(0);
+                } else {
+                    expect(controls.length, `${entry.key} exposes keyboard-operable controls at 200%`).to.be.greaterThan(0);
+                }
+
+                const controlsWithBoundsAcrossHeaderOrDock: Array<{
+                    label: string;
+                    top: number;
+                    bottom: number;
+                    headerBottom: number;
+                    dockTop: number;
+                    centerY: number;
+                }> = [];
+                controls.forEach((element) => {
+                    element.focus();
+                    element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+                    const rect = element.getBoundingClientRect();
+                    const headerBottom = navbar.getBoundingClientRect().bottom;
+                    const dockTop = bottomNav.getBoundingClientRect().top;
+                    const centerX = Math.max(0, Math.min(window.innerWidth - 1, rect.left + rect.width / 2));
+                    const centerY = Math.max(0, Math.min(window.innerHeight - 1, rect.top + rect.height / 2));
+                    const hit = document.elementFromPoint(centerX, centerY);
+                    const label = element.getAttribute('aria-label')
+                        || element.getAttribute('data-testid')
+                        || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 60)
+                        || element.tagName.toLowerCase();
+
+                    expect(centerY, `${entry.key}: ${label} center clears sticky header at 200%`).to.be.greaterThan(headerBottom);
+                    expect(centerY, `${entry.key}: ${label} center clears fixed dock at 200%`).to.be.lessThan(dockTop);
+                    expect(hit && (hit === element || element.contains(hit)), `${entry.key}: ${label} receives center hit-test at 200%`)
+                        .to.equal(true);
+                    if (rect.top < headerBottom || rect.bottom > dockTop) {
+                        controlsWithBoundsAcrossHeaderOrDock.push({
+                            label,
+                            top: rect.top,
+                            bottom: rect.bottom,
+                            headerBottom,
+                            dockTop,
+                            centerY,
+                        });
+                    }
+                });
+                if (['game-status', 'client-errors', 'offseason'].includes(entry.key)) {
+                    const textWalker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+                    let currentTextNode: Node | null;
+                    let lastBodyTextNode: Node | undefined;
+                    let lastBodyText = '';
+                    while ((currentTextNode = textWalker.nextNode())) {
+                        const text = currentTextNode.textContent?.trim() ?? '';
+                        const parent = currentTextNode.parentElement;
+                        if (
+                            !text
+                            || !parent
+                            || !parent.getClientRects().length
+                            || parent.closest('button, input, select, textarea, [role="button"], [aria-hidden="true"], svg, script, style')
+                        ) {
+                            continue;
+                        }
+                        lastBodyTextNode = currentTextNode;
+                        lastBodyText = text;
+                    }
+                    lastBodyTextNode?.parentElement?.scrollIntoView({
+                        block: 'end',
+                        inline: 'nearest',
+                        behavior: 'instant',
+                    });
+                    const panelBottomPadding = Number.parseFloat(window.getComputedStyle(panel).paddingBottom);
+                    const dockRect = bottomNav.getBoundingClientRect();
+                    const requiredPanelBottomPadding = dockRect.height
+                        + window.innerHeight - dockRect.bottom + 128;
+                    window.scrollBy({ top: panelBottomPadding, behavior: 'instant' });
+                    const range = document.createRange();
+                    if (lastBodyTextNode) range.selectNodeContents(lastBodyTextNode);
+                    const textFragments = Array.from(range.getClientRects()).filter((rect) => rect.width > 0 && rect.height > 0);
+                    const lastTextLine = textFragments.at(-1);
+                    bodyCopyReachability.push({
+                        tab: entry.key,
+                        text: lastBodyText.replace(/\s+/g, ' ').slice(0, 100),
+                        hasVisibleTextLine: Boolean(lastTextLine),
+                        lineTop: lastTextLine?.top ?? Number.NaN,
+                        lineBottom: lastTextLine?.bottom ?? Number.NaN,
+                        headerBottom: navbar.getBoundingClientRect().bottom,
+                        dockTop: dockRect.top,
+                        scrollTop: document.scrollingElement?.scrollTop ?? document.documentElement.scrollTop,
+                        panelBottomPadding,
+                        requiredPanelBottomPadding,
+                    });
+                    cy.screenshot(`admin-large-text-${entry.key}-last-copy`, { capture: 'viewport' });
+                }
+                reachability.push({
+                    tab: entry.key,
+                    controlsChecked: controls.length,
+                    controlsWithBoundsAcrossHeaderOrDock,
+                });
+            });
+        });
+
+        cy.then(() => {
+            const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
+            const monitoredPanels = measurements.filter((entry) =>
+                ['game-status', 'client-errors', 'offseason'].includes(entry.tab),
+            );
+            const overflowingPanels = monitoredPanels.filter((entry) =>
+                entry.panelScrollWidth > entry.panelClientWidth + 1,
+            );
+            const overflowingPanelDetails = overflowingPanels.map((panel) => ({
+                ...panel,
+                descendants: panelOverflowDetails.find((detail) => detail.tab === panel.tab)?.descendants ?? [],
+            }));
+            const unexpectedDescendantOverflow = panelOverflowDetails.flatMap(({ tab, descendants }) => (
+                descendants
+                    .filter((element) => {
+                        const isNativeDateInput = element.tag === 'input'
+                            && /-(start|end|from|to)-date$/.test(element.testId ?? '');
+                        const isIntentionalTextTruncation = element.className.split(/\s+/).includes('truncate');
+                        const isHorizontalScrollRegion = /(?:^|\s)overflow-x-(?:auto|scroll)(?:\s|$)/.test(element.className);
+                        return !isHorizontalScrollRegion
+                            && !isNativeDateInput
+                            && !isIntentionalTextTruncation;
+                    })
+                    .map((element) => ({ tab, ...element }))
+            ));
+            cy.writeFile(`${screenshotsFolder}/admin-large-text-metrics.json`, measurements)
+                .then(() => cy.writeFile(`${screenshotsFolder}/admin-large-text-reachability.json`, reachability))
+                .then(() => cy.writeFile(`${screenshotsFolder}/admin-large-text-last-copy-reachability.json`, bodyCopyReachability))
+                .then(() => cy.writeFile(`${screenshotsFolder}/admin-large-text-overflow-details.json`, panelOverflowDetails))
+                .then(() => {
+                    const obscuredBodyCopy = bodyCopyReachability.filter((entry) => (
+                        !entry.hasVisibleTextLine
+                        || entry.lineTop < entry.headerBottom + 8
+                        || entry.lineBottom > entry.dockTop - 128
+                    ));
+                    expect(
+                        bodyCopyReachability.map((entry) => entry.tab),
+                        'last body text line measured for each panel under the approved safe-band scope',
+                    ).to.deep.equal(['game-status', 'client-errors', 'offseason']);
+                    expect(
+                        bodyCopyReachability.filter((entry) => entry.panelBottomPadding + 0.5 < entry.requiredPanelBottomPadding),
+                        `approved panels must reserve the full fixed dock, safe-area offset, and 128px reading clearance: ${JSON.stringify(bodyCopyReachability)}`,
+                    ).to.have.length(0);
+                    expect(
+                        obscuredBodyCopy,
+                        `approved panel final text lines must clear the fixed dock by at least 128px at 200%: ${JSON.stringify(obscuredBodyCopy)}`,
+                    ).to.have.length(0);
+                    expect(
+                        overflowingPanelDetails,
+                        `approved panels must fit their content at 200% text size: ${JSON.stringify(overflowingPanelDetails)}`,
+                    ).to.have.length(0);
+                    expect(
+                        unexpectedDescendantOverflow,
+                        `approved panels must not clip overflowing descendants at 200% text size: ${JSON.stringify(unexpectedDescendantOverflow)}`,
+                    ).to.have.length(0);
+                });
+        });
+    });
+
+    it('keeps the final copy of approved admin panels clear of the mobile dock at 200% text', () => {
+        const panels: Array<{
+            key: string;
+            tab: string;
+            panel: string;
+            waits: Array<`@${string}`>;
+        }> = [
+            {
+                key: 'game-status',
+                tab: 'admin-tab-game-status',
+                panel: 'admin-game-status-panel',
+                waits: ['@getAdminGameStatusMismatches', '@getAdminGameStatusRecommendationWindow', '@getAdminNonCanonicalCleanupTrackers'],
+            },
+            {
+                key: 'client-errors',
+                tab: 'admin-tab-client-errors',
+                panel: 'admin-client-error-panel',
+                waits: ['@getClientErrorDashboard', '@getClientErrorEvents'],
+            },
+            {
+                key: 'offseason',
+                tab: 'admin-tab-offseason',
+                panel: 'admin-offseason-movement-panel',
+                waits: ['@getOffseasonMovements'],
+            },
+        ];
+        const measurements: Array<{
+            panel: string;
+            rootFontSize: string;
+            panelBottomPadding: number;
+            requiredBottomPadding: number;
+            dockTop: number;
+            finalTextLineBottom: number | null;
+            clearance: number | null;
+        }> = [];
+
+        cy.viewport(390, 844);
+        cy.document().then((document) => {
+            document.documentElement.style.scrollBehavior = 'auto';
+            document.documentElement.style.fontSize = '32px';
+        });
+
+        panels.forEach((entry) => {
+            cy.getBySel(entry.tab).should('be.visible').click({ force: true });
+            cy.getBySel(entry.tab).should('have.attr', 'aria-selected', 'true');
+            entry.waits.forEach((alias) => cy.wait(alias));
+            if (entry.key === 'client-errors') {
+                cy.getBySel(entry.panel).then(($panel) => {
+                    const deferredInsights = $panel.find(
+                        '[data-testid="admin-client-error-insights-skeleton-full"]',
+                    )[0];
+                    if (deferredInsights) {
+                        cy.wrap(deferredInsights).scrollIntoView();
+                    }
+                });
+                cy.get('[data-testid="admin-client-error-insights"]', { timeout: 15000 })
+                    .should('be.visible');
+                cy.getBySel(entry.panel).scrollIntoView();
+            }
+            if (entry.key === 'offseason') {
+                cy.getBySel(entry.panel).scrollIntoView();
+                cy.get('[data-testid="admin-offseason-content"]', { timeout: 15000 })
+                    .should('be.visible');
+            }
+            cy.getBySel(entry.panel).should('be.visible').then(($panel) => {
+                const panel = $panel[0] as HTMLElement;
+                const document = panel.ownerDocument;
+                const window = document.defaultView;
+                const dock = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+                expect(window, 'browser window').not.to.be.null;
+                expect(dock, 'fixed mobile dock').not.to.be.null;
+                if (!window || !dock) return;
+
+                const textWalker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+                let currentTextNode: Node | null;
+                let lastBodyTextNode: Node | undefined;
+                while ((currentTextNode = textWalker.nextNode())) {
+                    const text = currentTextNode.textContent?.trim() ?? '';
+                    const parent = currentTextNode.parentElement;
+                    if (
+                        !text
+                        || !parent
+                        || !parent.getClientRects().length
+                        || parent.closest('button, input, select, textarea, [role="button"], [aria-hidden="true"], svg, script, style')
+                    ) {
+                        continue;
+                    }
+                    lastBodyTextNode = currentTextNode;
+                }
+                if (entry.key === 'client-errors') {
+                    expect(
+                        lastBodyTextNode?.parentElement?.closest('[data-testid="admin-client-error-insights"]'),
+                        'resolved lazy insights participate in the final-line measurement',
+                    ).not.to.equal(null);
+                }
+                lastBodyTextNode?.parentElement?.scrollIntoView({
+                    block: 'end',
+                    inline: 'nearest',
+                    behavior: 'instant',
+                });
+
+                const panelBottomPadding = Number.parseFloat(window.getComputedStyle(panel).paddingBottom);
+                const dockRect = dock.getBoundingClientRect();
+                const requiredBottomPadding = dockRect.height
+                    + window.innerHeight - dockRect.bottom + 128;
+                window.scrollBy({ top: panelBottomPadding, behavior: 'instant' });
+
+                const range = document.createRange();
+                if (lastBodyTextNode) range.selectNodeContents(lastBodyTextNode);
+                const textFragments = Array.from(range.getClientRects()).filter((rect) => rect.width > 0 && rect.height > 0);
+                const lastTextLine = textFragments.at(-1);
+                const finalTextLineBottom = lastTextLine?.bottom ?? null;
+                const dockTop = dockRect.top;
+                const clearance = finalTextLineBottom === null ? null : dockTop - finalTextLineBottom;
+                const rootFontSize = window.getComputedStyle(document.documentElement).fontSize;
+
+                expect(rootFontSize, `${entry.key} root text size`).to.equal('32px');
+                expect(panelBottomPadding, `${entry.key} safe bottom padding`).to.be.at.least(requiredBottomPadding);
+                expect(clearance, `${entry.key} final copy clears dock by 128px`).to.be.at.least(128);
+                measurements.push({
+                    panel: entry.key,
+                    rootFontSize,
+                    panelBottomPadding,
+                    requiredBottomPadding,
+                    dockTop,
+                    finalTextLineBottom,
+                    clearance,
+                });
+                cy.screenshot(`admin-safe-bottom-${entry.key}-390-32`, { capture: 'viewport' });
+            });
+        });
+
+        cy.then(() => {
+            const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
+            cy.writeFile(`${screenshotsFolder}/admin-safe-bottom-390-32.json`, measurements);
+            expect(measurements.map((measurement) => measurement.panel))
+                .to.deep.equal(['game-status', 'client-errors', 'offseason']);
+        });
+    });
+
+    it('keeps final panel copy clear of the fixed dock across tablet widths and text sizes', () => {
+        const panels: Array<{ key: string; tab: string; panel: string; waits: Array<`@${string}`> }> = [
+            {
+                key: 'game-status',
+                tab: 'admin-tab-game-status',
+                panel: 'admin-game-status-panel',
+                waits: ['@getAdminGameStatusMismatches', '@getAdminGameStatusRecommendationWindow', '@getAdminNonCanonicalCleanupTrackers'],
+            },
+            {
+                key: 'client-errors',
+                tab: 'admin-tab-client-errors',
+                panel: 'admin-client-error-panel',
+                waits: ['@getClientErrorDashboard', '@getClientErrorEvents'],
+            },
+            {
+                key: 'offseason',
+                tab: 'admin-tab-offseason',
+                panel: 'admin-offseason-movement-panel',
+                waits: ['@getOffseasonMovements'],
+            },
+        ];
+        const scenarios = [
+            { width: 768, fontSize: '16px' },
+            { width: 768, fontSize: '32px' },
+            { width: 1023, fontSize: '16px' },
+            { width: 1023, fontSize: '32px' },
+        ] as const;
+        const measurements: Array<{
+            panel: string;
+            viewportWidth: number;
+            requestedFontSize: string;
+            rootFontSize: string;
+            finalTextLineBottom: number | null;
+            dockTop: number | null;
+            clearance: number | null;
+            panelBottomPadding: number;
+            requiredBottomPadding: number;
+        }> = [];
+
+        scenarios.forEach((scenario) => {
+            cy.viewport(scenario.width, 844);
+            visitAdminPage();
+            cy.getBySel('admin-tab-users').should('be.visible');
+            cy.wait('@getAdminStats');
+            cy.wait('@getAdminUsers');
+            cy.document().then((document) => {
+                document.documentElement.style.scrollBehavior = 'auto';
+                document.documentElement.style.fontSize = scenario.fontSize;
+            });
+
+            panels.forEach((entry) => {
+                cy.window().then((window) => window.scrollTo({ top: 0, behavior: 'instant' }));
+                cy.getBySel(entry.tab).should('be.visible').click({ force: true });
+                cy.getBySel(entry.tab).should('have.attr', 'aria-selected', 'true');
+                entry.waits.forEach((alias) => cy.wait(alias));
+                cy.getBySel(entry.panel).should('be.visible').then(($panel) => {
+                    const panel = $panel[0] as HTMLElement;
+                    const document = panel.ownerDocument;
+                    const window = document.defaultView;
+                    const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                    const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+                    expect(window, 'browser window').not.to.be.null;
+                    expect(navbar, 'sticky site header').not.to.be.null;
+                    expect(bottomNav, 'fixed dock at tablet width').not.to.be.null;
+                    if (!window || !navbar || !bottomNav) return;
+
+                    const targetTop = navbar.getBoundingClientRect().bottom + 8;
+                    window.scrollBy({ top: panel.getBoundingClientRect().top - targetTop, behavior: 'instant' });
+                });
+                cy.wait(300);
+                cy.getBySel(entry.panel).then(($panel) => {
+                    const panel = $panel[0] as HTMLElement;
+                    const document = panel.ownerDocument;
+                    const window = document.defaultView;
+                    const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                    const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+                    expect(window, 'browser window after scroll').not.to.be.null;
+                    expect(navbar, 'sticky site header after scroll').not.to.be.null;
+                    expect(bottomNav, 'fixed dock at tablet width').not.to.be.null;
+                    if (!window || !navbar || !bottomNav) return;
+
+                    const textWalker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+                    let currentTextNode: Node | null;
+                    let lastBodyTextNode: Node | undefined;
+                    while ((currentTextNode = textWalker.nextNode())) {
+                        const text = currentTextNode.textContent?.trim() ?? '';
+                        const parent = currentTextNode.parentElement;
+                        if (
+                            !text
+                            || !parent
+                            || !parent.getClientRects().length
+                            || parent.closest('button, input, select, textarea, [role="button"], [aria-hidden="true"], svg, script, style')
+                        ) {
+                            continue;
+                        }
+                        lastBodyTextNode = currentTextNode;
+                    }
+                    lastBodyTextNode?.parentElement?.scrollIntoView({
+                        block: 'end',
+                        inline: 'nearest',
+                        behavior: 'instant',
+                    });
+                    const panelBottomPadding = Number.parseFloat(window.getComputedStyle(panel).paddingBottom);
+                    const dockRect = bottomNav.getBoundingClientRect();
+                    const requiredBottomPadding = dockRect.height + window.innerHeight - dockRect.bottom + 128;
+                    window.scrollBy({ top: panelBottomPadding, behavior: 'instant' });
+                    const range = document.createRange();
+                    if (lastBodyTextNode) range.selectNodeContents(lastBodyTextNode);
+                    const textFragments = Array.from(range.getClientRects()).filter((rect) => rect.width > 0 && rect.height > 0);
+                    const lastTextLine = textFragments.at(-1);
+                    const dockTop = dockRect.top;
+                    const lineBottom = lastTextLine?.bottom ?? null;
+                    const rootFontSize = window.getComputedStyle(document.documentElement).fontSize;
+                    measurements.push({
+                        panel: entry.key,
+                        viewportWidth: window.innerWidth,
+                        requestedFontSize: scenario.fontSize,
+                        rootFontSize,
+                        finalTextLineBottom: lineBottom,
+                        dockTop,
+                        clearance: lineBottom === null ? null : dockTop - lineBottom,
+                        panelBottomPadding,
+                        requiredBottomPadding,
+                    });
+                    cy.screenshot(
+                        `admin-tablet-${scenario.width}-${scenario.fontSize.replace('px', '')}-${entry.key}-last-copy`,
+                        { capture: 'viewport' },
+                    );
+                });
+            });
+        });
+
+        cy.then(() => {
+            const screenshotsFolder = Cypress.config('screenshotsFolder') as string;
+            cy.writeFile(`${screenshotsFolder}/admin-tablet-last-copy-reachability.json`, measurements)
+                .then(() => {
+                    const invalidMeasurements = measurements.filter((measurement) => (
+                        measurement.rootFontSize !== measurement.requestedFontSize
+                        || measurement.viewportWidth < 768
+                        || measurement.viewportWidth > 1023
+                        || measurement.panelBottomPadding + 0.5 < measurement.requiredBottomPadding
+                        || measurement.clearance === null
+                        || measurement.clearance < 128
+                    ));
+                    expect(measurements).to.have.length(scenarios.length * panels.length);
+                    expect(invalidMeasurements, JSON.stringify(invalidMeasurements)).to.have.length(0);
+                });
+        });
+    });
+
+    it('keeps keyboard-operable controls reachable between the sticky header and mobile dock', () => {
+        const panels: Array<{
+            key: string;
+            tab: string;
+            panel: string;
+            waits: Array<`@${string}`>;
+        }> = [
+            { key: 'users', tab: 'admin-tab-users', panel: 'admin-users-panel', waits: [] },
+            { key: 'posts', tab: 'admin-tab-posts', panel: 'admin-posts-panel', waits: ['@getAdminPosts'] },
+            { key: 'parties', tab: 'admin-tab-parties', panel: 'admin-mates-panel', waits: ['@getAdminMates'] },
+            { key: 'reports', tab: 'admin-tab-reports', panel: 'admin-reports-panel', waits: ['@getAdminReports'] },
+            {
+                key: 'game-status',
+                tab: 'admin-tab-game-status',
+                panel: 'admin-game-status-panel',
+                waits: ['@getAdminGameStatusMismatches', '@getAdminGameStatusRecommendationWindow', '@getAdminNonCanonicalCleanupTrackers'],
+            },
+            {
+                key: 'client-errors',
+                tab: 'admin-tab-client-errors',
+                panel: 'admin-client-error-panel',
+                waits: ['@getClientErrorDashboard', '@getClientErrorEvents'],
+            },
+            { key: 'seat-views', tab: 'admin-tab-seat-views', panel: 'admin-seat-views-panel', waits: ['@getAdminSeatViews'] },
+            { key: 'offseason', tab: 'admin-tab-offseason', panel: 'admin-offseason-movement-panel', waits: ['@getOffseasonMovements'] },
+            { key: 'stadiums', tab: 'admin-tab-stadiums', panel: 'admin-stadiums-panel', waits: ['@getAdminStadiums', '@getStadiumPlaces'] },
+            {
+                key: 'ai',
+                tab: 'admin-tab-ai',
+                panel: 'admin-ai-operations-panel',
+                waits: ['@getCoachAutoBriefOpsHealth', '@getReleasePresets', '@getReleaseEvalCases', '@getReleaseArtifacts'],
+            },
+        ];
+        const measurements: Array<{
+            tab: string;
+            controlCount: number;
+            controls: Array<{
+                label: string;
+                top: number;
+                bottom: number;
+                headerClearance: number;
+                dockClearance: number;
+            }>;
+        }> = [];
+
+        cy.viewport(390, 844);
+        cy.document().then((document) => {
+            document.documentElement.style.scrollBehavior = 'auto';
+        });
+
+        panels.forEach((entry) => {
+            cy.getBySel(entry.tab).click({ force: true });
+            cy.getBySel(entry.tab).should('have.attr', 'aria-selected', 'true');
+            entry.waits.forEach((alias) => cy.wait(alias));
+            cy.getBySel(entry.panel).should('be.visible').then(($panel) => {
+                const panel = $panel[0] as HTMLElement;
+                const document = panel.ownerDocument;
+                const win = document.defaultView;
+                const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+                const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+                expect(win, 'browser window').not.to.be.null;
+                expect(navbar, 'sticky header').not.to.be.null;
+                expect(bottomNav, 'fixed mobile dock').not.to.be.null;
+                if (!win || !navbar || !bottomNav) return;
+
+                const controls = Array.from(panel.querySelectorAll<HTMLElement>(
+                    'a[href], button, input:not([type="hidden"]), select, textarea, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+                )).filter((element) => (
+                    element.tabIndex >= 0
+                    && !element.hasAttribute('disabled')
+                    && element.getClientRects().length > 0
+                    && !element.closest('[aria-hidden="true"]')
+                ));
+                const tabMeasurements: {
+                    label: string;
+                    top: number;
+                    bottom: number;
+                    headerClearance: number;
+                    dockClearance: number;
+                }[] = [];
+
+                if (entry.key === 'posts' || entry.key === 'parties') {
+                    expect(controls, `${entry.key} synthetic empty state has no row actions`).to.have.length(0);
+                } else {
+                    expect(controls.length, `${entry.key} synthetic populated state exposes keyboard-operable controls`).to.be.greaterThan(0);
+                }
+
+                controls.forEach((element) => {
+                    element.focus();
+                    element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+
+                    const rect = element.getBoundingClientRect();
+                    const headerBottom = navbar.getBoundingClientRect().bottom;
+                    const dockTop = bottomNav.getBoundingClientRect().top;
+                    const centerX = Math.max(0, Math.min(win.innerWidth - 1, rect.left + rect.width / 2));
+                    const centerY = Math.max(0, Math.min(win.innerHeight - 1, rect.top + rect.height / 2));
+                    const hit = document.elementFromPoint(centerX, centerY);
+                    const label = element.getAttribute('aria-label')
+                        || element.getAttribute('data-testid')
+                        || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 60)
+                        || element.tagName.toLowerCase();
+
+                    expect(rect.top, `${entry.key}: ${label} clears sticky header`).to.be.at.least(headerBottom);
+                    expect(rect.bottom, `${entry.key}: ${label} clears fixed dock`).to.be.at.most(dockTop);
+                    expect(hit && (hit === element || element.contains(hit)), `${entry.key}: ${label} receives its center hit-test`).to.equal(true);
+                    tabMeasurements.push({
+                        label,
+                        top: rect.top,
+                        bottom: rect.bottom,
+                        headerClearance: rect.top - headerBottom,
+                        dockClearance: dockTop - rect.bottom,
+                    });
+                });
+
+                measurements.push({ tab: entry.key, controlCount: controls.length, controls: tabMeasurements });
+            });
+        });
+
+        cy.then(() => {
+            expect(measurements).to.have.length(panels.length);
+            cy.writeFile(`${Cypress.config('screenshotsFolder')}/admin-mobile-panel-reachability.json`, measurements);
+        });
+        cy.viewport(1400, 900);
     });
 
     it('keeps final site-footer content clear of the mobile navigation at page end', () => {
@@ -1475,6 +2364,160 @@ describe('Admin page coverage', () => {
             });
         });
         cy.screenshot('admin-mobile-footer-at-page-end', { capture: 'viewport' });
+        cy.viewport(1400, 900);
+    });
+
+    it('keeps the first footer links reachable by reverse scroll and native Tab', () => {
+        cy.viewport(390, 844);
+        cy.get('[data-testid="site-footer"]', { timeout: 15000 }).should('be.visible');
+        cy.document().then((document) => {
+            document.documentElement.style.scrollBehavior = 'auto';
+            const scroller = document.scrollingElement ?? document.documentElement;
+            const maxScroll = scroller.scrollHeight - document.defaultView!.innerHeight;
+            scroller.scrollTop = maxScroll;
+            expect(scroller.scrollTop, 'reached the true document end before measuring links')
+                .to.be.at.least(maxScroll - 2);
+        });
+
+        cy.document().then((document) => {
+            const win = document.defaultView!;
+            const scroller = document.scrollingElement ?? document.documentElement;
+            const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+            const homeLink = document.querySelector<HTMLElement>('[data-testid="site-footer-home"]');
+            const noticeLink = document.querySelector<HTMLElement>('[data-testid="site-footer"] a[href="/notice"]');
+            const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+            expect(navbar, 'sticky site header').not.to.be.null;
+            expect(homeLink, 'first service link').not.to.be.null;
+            expect(noticeLink, 'first information link').not.to.be.null;
+            expect(bottomNav, 'fixed mobile navigation').not.to.be.null;
+            if (!navbar || !homeLink || !noticeLink || !bottomNav) return;
+
+            const maxScroll = scroller.scrollHeight - win.innerHeight;
+            const headerBottomAtMax = navbar.getBoundingClientRect().bottom;
+            const homeRectAtMax = homeLink.getBoundingClientRect();
+            const noticeRectAtMax = noticeLink.getBoundingClientRect();
+            const clearancePx = 8;
+            const headerOverlapAtMaxPx = Math.max(0, headerBottomAtMax - homeRectAtMax.top);
+            const reverseScrollPx = Math.max(
+                8,
+                Math.ceil(headerOverlapAtMaxPx + clearancePx),
+            );
+            expect(reverseScrollPx, 'footer links remain reachable with a bounded reverse scroll')
+                .to.be.at.most(256);
+            scroller.scrollTop = Math.max(0, maxScroll - reverseScrollPx);
+            const headerBottom = navbar.getBoundingClientRect().bottom;
+            const bottomNavTop = bottomNav.getBoundingClientRect().top;
+            const homeRect = homeLink.getBoundingClientRect();
+            const noticeRect = noticeLink.getBoundingClientRect();
+
+            expect(homeRect.top, 'home link clears the sticky header after reverse scroll')
+                .to.be.at.least(headerBottom + clearancePx);
+            expect(noticeRect.top, 'notice link clears the sticky header after reverse scroll')
+                .to.be.at.least(headerBottom + clearancePx);
+            expect(homeRect.bottom, 'home link clears the fixed bottom navigation')
+                .to.be.at.most(bottomNavTop);
+            expect(noticeRect.bottom, 'notice link clears the fixed bottom navigation')
+                .to.be.at.most(bottomNavTop);
+
+            const scrollTopAfterReverseScroll = scroller.scrollTop;
+            homeLink.focus();
+            expect(document.activeElement, 'home link can receive focus').to.equal(homeLink);
+            const homeRectAfterFocus = homeLink.getBoundingClientRect();
+            expect(homeRectAfterFocus.top, 'focused home link remains below the sticky header')
+                .to.be.at.least(navbar.getBoundingClientRect().bottom + clearancePx);
+            expect(homeRectAfterFocus.bottom, 'focused home link remains above the fixed bottom navigation')
+                .to.be.at.most(bottomNav.getBoundingClientRect().top);
+            const scrollTopAfterFocus = scroller.scrollTop;
+            cy.writeFile(`${Cypress.config('screenshotsFolder')}/admin-mobile-footer-reachability-metrics.json`, {
+                maxScroll,
+                scrollTopAfterReverseScroll,
+                scrollTopAfterFocus,
+                headerOverlapAtMaxPx,
+                clearancePx,
+                reverseScrollPx,
+                headerBottomAtMax,
+                homeTopAtMax: homeRectAtMax.top,
+                noticeTopAtMax: noticeRectAtMax.top,
+                headerBottomAfterReverseScroll: headerBottom,
+                bottomNavTop,
+                homeTopAfterReverseScroll: homeRect.top,
+                homeBottomAfterReverseScroll: homeRect.bottom,
+                homeTopAfterFocus: homeRectAfterFocus.top,
+                homeBottomAfterFocus: homeRectAfterFocus.bottom,
+                noticeTopAfterReverseScroll: noticeRect.top,
+                noticeBottomAfterReverseScroll: noticeRect.bottom,
+                focusedLink: document.activeElement === homeLink ? 'home' : null,
+            });
+        });
+
+        cy.get('[data-testid="site-footer-home"]').should('have.focus');
+        cy.screenshot('admin-mobile-footer-links-reachable-after-reverse-scroll', { capture: 'viewport' });
+
+        let tabPredecessor = '';
+        cy.document().then((document) => {
+            const homeLink = document.querySelector<HTMLElement>('[data-testid="site-footer-home"]');
+            expect(homeLink, 'first footer service link').not.to.be.null;
+            if (!homeLink) return;
+
+            const candidates = Array.from(document.querySelectorAll<HTMLElement>(
+                'a[href], area[href], button, input:not([type="hidden"]), select, textarea, iframe, object, embed, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+            )).filter((element) => {
+                const style = document.defaultView!.getComputedStyle(element);
+                return element.tabIndex >= 0
+                    && !element.matches(':disabled')
+                    && element.getClientRects().length > 0
+                    && style.display !== 'none'
+                    && style.visibility !== 'hidden'
+                    && !element.closest('[inert], [aria-hidden="true"]');
+            });
+            const positiveTabIndex = candidates
+                .filter((element) => element.tabIndex > 0)
+                .sort((left, right) => left.tabIndex - right.tabIndex);
+            const ordered = [...positiveTabIndex, ...candidates.filter((element) => element.tabIndex === 0)];
+            const homeIndex = ordered.indexOf(homeLink);
+            expect(homeIndex, 'Home is in the sequential tab order').to.be.greaterThan(0);
+            const predecessor = ordered[homeIndex - 1];
+            expect(predecessor, 'preceding sequential tab stop').to.exist;
+            if (!predecessor) return;
+            predecessor.focus();
+            expect(document.activeElement, 'preceding tab stop receives focus').to.equal(predecessor);
+            tabPredecessor = predecessor.getAttribute('data-testid')
+                || predecessor.getAttribute('aria-label')
+                || predecessor.textContent?.trim()
+                || predecessor.tagName;
+        });
+
+        cy.press(Cypress.Keyboard.Keys.TAB);
+        cy.get('[data-testid="site-footer-home"]').should('have.focus');
+        cy.document().then((document) => {
+            const homeLink = document.querySelector<HTMLElement>('[data-testid="site-footer-home"]');
+            const navbar = document.querySelector('[data-testid="navbar-capsule"]')?.closest('header');
+            const bottomNav = document.querySelector<HTMLElement>('[data-testid="auth-mobile-bottom-nav"]');
+            expect(homeLink, 'keyboard-focused footer link').not.to.be.null;
+            expect(navbar, 'sticky site header after Tab').not.to.be.null;
+            expect(bottomNav, 'mobile bottom navigation after Tab').not.to.be.null;
+            if (!homeLink || !navbar || !bottomNav) return;
+
+            const rect = homeLink.getBoundingClientRect();
+            const headerBottom = navbar.getBoundingClientRect().bottom;
+            const bottomNavTop = bottomNav.getBoundingClientRect().top;
+            expect(rect.top, 'native-Tab focused link clears sticky header')
+                .to.be.at.least(headerBottom + 8);
+            expect(rect.bottom, 'native-Tab focused link clears bottom navigation')
+                .to.be.at.most(bottomNavTop);
+            expect(document.activeElement, 'native Tab lands on the first footer service link')
+                .to.equal(homeLink);
+            cy.writeFile(`${Cypress.config('screenshotsFolder')}/admin-mobile-footer-keyboard-metrics.json`, {
+                predecessor: tabPredecessor,
+                activeTestId: homeLink.getAttribute('data-testid'),
+                headerBottom,
+                homeTop: rect.top,
+                homeBottom: rect.bottom,
+                bottomNavTop,
+                scrollTop: document.scrollingElement?.scrollTop ?? document.documentElement.scrollTop,
+            });
+        });
+        cy.screenshot('admin-mobile-footer-keyboard-tab-focus', { capture: 'viewport' });
         cy.viewport(1400, 900);
     });
 
@@ -1658,7 +2701,74 @@ describe('Admin page coverage', () => {
         });
     });
 
+    it('discloses deleted-account cleanup when a report has no appeal', () => {
+        cy.getBySel('admin-tab-reports').click();
+        cy.wait('@getAdminReports');
+        cy.getBySel('admin-report-detail-501').click({ force: true });
+        cy.wait('@getAdminReportDetail');
+
+        cy.getBySel('admin-report-appeal-deletion-policy')
+            .should('contain.text', '마지막 관련 신고·이의제기를 종결하면')
+            .and('contain.text', '물리 삭제합니다');
+    });
+
+    it('locks appeal decisions while the terminal decision is in flight', () => {
+        reports = reports.map((report) => (
+            report.id === 501 ? { ...report, appealStatus: 'REQUESTED' } : report
+        ));
+        appealDecisionResponseDelayMs = 800;
+        visitAdminPage();
+
+        cy.getBySel('admin-tab-reports').click();
+        cy.wait('@getAdminReports');
+        cy.getBySel('admin-report-detail-501').click({ force: true });
+        cy.wait('@getAdminReportDetail');
+        cy.getBySel('admin-report-appeal-accept').click();
+        cy.getBySel('confirm-dialog-confirm')
+            .should('contain.text', '승인하고 종결')
+            .click({ force: true });
+
+        cy.getBySel('admin-report-appeal-accept').should('be.disabled');
+        cy.getBySel('admin-report-appeal-reject').should('be.disabled');
+        cy.wait('@patchAdminReportAppeal').its('request.body').should('deep.equal', { decision: 'ACCEPTED' });
+        cy.wait('@getAdminReports');
+        cy.wait('@getAdminReportDetail');
+        cy.contains('이의 제기 상태').parent().should('contain.text', 'ACCEPTED');
+    });
+
+    it('fails closed when the post-decision detail refresh fails', () => {
+        reports = reports.map((report) => (
+            report.id === 501 ? { ...report, appealStatus: 'REQUESTED' } : report
+        ));
+        visitAdminPage();
+
+        cy.getBySel('admin-tab-reports').click();
+        cy.wait('@getAdminReports');
+        cy.getBySel('admin-report-detail-501').click({ force: true });
+        cy.wait('@getAdminReportDetail');
+        cy.then(() => {
+            failNextAdminReportDetailResponse = true;
+        });
+        cy.getBySel('admin-report-appeal-accept').click();
+        cy.getBySel('confirm-dialog-confirm')
+            .should('contain.text', '승인하고 종결')
+            .click({ force: true });
+
+        cy.wait('@patchAdminReportAppeal');
+        cy.wait('@getAdminReports');
+        cy.wait('@getAdminReportDetail').its('response.statusCode').should('eq', 503);
+        cy.contains('상세 정보를 찾을 수 없습니다.').should('be.visible');
+        cy.getBySel('admin-report-appeal-accept').should('not.exist');
+        cy.getBySel('admin-report-appeal-reject').should('not.exist');
+        cy.getBySel('admin-report-appeal-retry-anonymization').should('not.exist');
+    });
+
     it('covers reports and client error operations', () => {
+        reports = reports.map((report) => (
+            report.id === 501
+                ? { ...report, appealStatus: 'REQUESTED', appealReason: '합성 이의제기 검토' }
+                : report
+        ));
         cy.getBySel('admin-tab-reports').click();
         cy.wait('@getAdminReports');
 
@@ -1672,6 +2782,8 @@ describe('Admin page coverage', () => {
         cy.getBySel('admin-report-detail-501').click({ force: true });
         cy.wait('@getAdminReportDetail');
         cy.contains('Case #501').should('exist');
+        cy.getBySel('admin-report-appeal-deletion-policy')
+            .should('contain.text', '원문은 복구되지 않습니다');
         cy.get('textarea[placeholder="조치 근거를 입력하세요."]').type('정책 위반으로 비공개 처리');
         cy.getBySel('admin-report-action-take-down').click({ force: true });
 
@@ -1680,6 +2792,23 @@ describe('Admin page coverage', () => {
         cy.wait('@getAdminReportDetail');
         cy.contains('신고 케이스가 처리되었습니다.').should('be.visible');
         cy.contains('정책 위반으로 비공개 처리').scrollIntoView().should('be.visible');
+
+        cy.getBySel('admin-report-appeal-deletion-policy')
+            .should('contain.text', '원문은 복구되지 않습니다');
+        cy.viewport(390, 844);
+        cy.getBySel('admin-report-appeal-accept').should('be.visible');
+        cy.getBySel('admin-report-appeal-accept').click({ force: true });
+        cy.getBySel('confirm-dialog-confirm').should('contain.text', '승인하고 종결').click({ force: true });
+        cy.wait('@patchAdminReportAppeal').its('request.body').should('deep.equal', { decision: 'ACCEPTED' });
+        cy.wait('@getAdminReports');
+        cy.wait('@getAdminReportDetail');
+        cy.contains('이의 제기 상태').parent().should('contain.text', 'ACCEPTED');
+        cy.getBySel('admin-report-appeal-retry-anonymization').should('be.visible');
+        cy.document().should((document) => {
+            expect(Math.max(document.documentElement.scrollWidth, document.body.scrollWidth))
+                .to.be.at.most(391);
+        });
+        cy.viewport(1280, 720);
 
         cy.getBySel('admin-tab-client-errors').click({ force: true });
         cy.wait('@getClientErrorDashboard');
@@ -1706,6 +2835,29 @@ describe('Admin page coverage', () => {
         cy.contains('Client Error Detail').should('be.visible');
         cy.contains('Gateway timeout in admin users API').should('be.visible');
         cy.contains('TypeError: Gateway timeout').should('be.visible');
+    });
+
+    it('shows a readable team-name fallback when a mapped logo fails to load', () => {
+        const fallbackSelector = '[role="img"][aria-label="LG 트윈스 팀 로고"]';
+
+        cy.get(fallbackSelector).should('not.exist');
+        cy.getBySel('admin-user-row-3')
+            .scrollIntoView()
+            .should('be.visible')
+            .find('img[alt="LG 트윈스 로고"]')
+            .should('be.visible')
+            .should(($logo) => {
+                expect($logo.attr('src')).to.match(
+                    /202a55c2e2083b7f096b21380d22d1769e56d762(?:-[^/?]+)?\.png(?:[?#].*)?$/,
+                );
+            })
+            .trigger('error', { bubbles: false });
+        cy.get(fallbackSelector)
+            .should('be.visible')
+            .and('have.text', 'LG')
+            .and('have.attr', 'aria-label', 'LG 트윈스 팀 로고')
+            .and('have.attr', 'title', 'LG 트윈스');
+        cy.getBySel('admin-users-panel').screenshot('admin-known-team-logo-fallback');
     });
 
     it('shows a designed fallback when an admin seat-view photo cannot load', () => {

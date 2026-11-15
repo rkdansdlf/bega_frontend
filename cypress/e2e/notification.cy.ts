@@ -213,6 +213,7 @@ describe('Notification Panel', () => {
     });
 
     it('marks all notifications as read when clicking the button', () => {
+        const serverTime = new Date().toISOString();
         const notifications = [
             {
                 id: 1,
@@ -227,18 +228,23 @@ describe('Notification Panel', () => {
 
         cy.intercept('GET', '**/api/notifications/my', {
             statusCode: 200,
+            headers: { 'X-Server-Time': serverTime },
             body: notifications,
         }).as('getNotifications');
 
         cy.intercept('POST', '**/api/notifications/mark-all-read', {
             statusCode: 200,
-            body: null,
+            body: { notificationIds: [1] },
         }).as('markAllRead');
 
         cy.get('button[aria-label^="알림"]').click();
         cy.wait('@getNotifications');
 
         cy.contains('button', /모두 읽음|전체 읽음|모두 읽기|전체 확인/i).click({ force: true });
-        cy.wait('@markAllRead');
+        cy.wait('@markAllRead').then(({ request, response }) => {
+            expect(request.body.readThrough).to.be.a('string');
+            expect(Date.parse(request.body.readThrough)).to.be.at.least(Date.parse(serverTime));
+            expect(response?.body.notificationIds).to.deep.equal([1]);
+        });
     });
 });

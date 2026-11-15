@@ -208,7 +208,6 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
       );
     }
 
-    const SeatMapComponent = seatMapEntry.Component;
     const seatMapResetKey = [
       seatMapEntry.id,
       selectedStadiumId,
@@ -218,14 +217,14 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
 
     return (
       <SeatMapRuntimeShell
+        key={shellResetKey}
         template={seatMapEntry.shellTemplate}
         usesCoordinateGeometry={seatMapEntry.usesCoordinateGeometry}
         badgeLabel={seatMapEntry.badgeLabel}
         stadiumName={selectedStadiumDisplayName}
         resetKey={shellResetKey}
-      >
-        <SeatMapComponent />
-      </SeatMapRuntimeShell>
+        createComponent={seatMapEntry.createComponent}
+      />
     );
   };
 
@@ -247,27 +246,31 @@ export default function StadiumGuideRuntime({ visualQaStateOverride }: StadiumGu
       className="stadium-guide-page min-h-screen bg-white dark:bg-background transition-colors duration-200"
       data-testid="stadium-guide-runtime"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="stadium-guide-content-shell max-w-7xl mx-auto py-8">
         {/* Premium Hero Section */}
         <section
-          className="stadium-hero-container rounded-2xl border border-primary/30 px-5 py-5 sm:px-6 sm:py-6"
+          className="stadium-hero-container rounded-2xl border border-primary/30 py-5 sm:py-6"
           style={{
             backgroundColor: isDark ? undefined : THEME_COLORS.primaryBg,
           }}
         >
-          <div className="relative z-10 flex flex-col gap-2">
-            <div className="flex items-center gap-3">
+          <div className="relative z-10 flex min-w-0 flex-col gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-3">
               <div className="rounded-lg bg-primary/10 p-2 dark:bg-[rgba(126,211,179,0.08)]">
                 <MapPinIcon className="h-5 w-5 text-primary" style={{ color: isDark ? STADIUM_DARK_COLORS.accent : undefined }} />
               </div>
               <h1
-                className="font-bold text-xl tracking-tight text-primary sm:text-2xl text-balance"
+                data-testid="stadium-guide-title"
+                className="min-w-0 flex-1 basis-[12ch] font-bold text-left text-xl tracking-tight text-primary sm:text-2xl text-balance"
                 style={{ color: isDark ? STADIUM_DARK_COLORS.accent : undefined }}
               >
                 구장 가이드
               </h1>
             </div>
-            <p className="stadium-guide-muted w-full max-w-none text-sm leading-relaxed text-gray-700 dark:text-white/90 sm:text-base text-balance">
+            <p
+              data-testid="stadium-guide-description"
+              className="stadium-guide-muted min-w-0 w-full max-w-none text-sm leading-relaxed text-gray-700 dark:text-white/90 sm:text-base"
+            >
               전국 KBO 야구장의 상세한 위치 정보부터 명당 자리, 주변 맛집까지
               직관을 위한 모든 필수 정보를 베가(BEGA)에서 확인하세요.
             </p>

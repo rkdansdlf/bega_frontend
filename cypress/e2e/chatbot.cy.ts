@@ -1262,4 +1262,77 @@ describe('AI Chatbot', () => {
             cy.contains('야구 가이드 BEGA').should('not.exist');
         });
     });
+
+    describe('Responsive tab layout', () => {
+        it('keeps history and favorites labels on one line at mobile widths', () => {
+            visitLoggedInShell();
+            cy.viewport(320, 844);
+            cy.getBySel('auth-mobile-chatbot-tab').should('be.visible').click();
+            cy.getBySel('chatbot-panel').should('be.visible');
+
+            [320, 360, 390].forEach((width) => {
+                cy.viewport(width, 844);
+                ['chatbot-tab-history', 'chatbot-tab-favorites'].forEach((testId) => {
+                    cy.getBySel(testId).should('be.visible').find('span').should(($label) => {
+                        const range = document.createRange();
+                        range.selectNodeContents($label[0]);
+                        expect(range.getClientRects(), `${testId} label line boxes at ${width}px`)
+                            .to.have.length(1);
+                    });
+                });
+            });
+        });
+
+        it('keeps every tab visible and keyboard-navigable with enlarged text', () => {
+            visitLoggedInShell();
+            cy.viewport(320, 844);
+            cy.getBySel('auth-mobile-chatbot-tab').should('be.visible').click();
+            cy.getBySel('chatbot-panel').should('be.visible');
+
+            (['light', 'dark'] as const).forEach((theme) => {
+                cy.document().then((document) => {
+                    document.defaultView?.localStorage.setItem('kbo-theme', theme);
+                    document.documentElement.classList.toggle('dark', theme === 'dark');
+                    document.body.style.backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
+                    document.documentElement.style.fontSize = '32px';
+                });
+
+                [320, 390, 1280].forEach((width) => {
+                    cy.viewport(width, 844);
+                    cy.get('[role="tablist"][aria-label="챗봇 보기"]').should('be.visible').then(($tablist) => {
+                        const tablist = $tablist[0] as HTMLElement;
+                        const tablistRect = tablist.getBoundingClientRect();
+                        const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+                        expect(tabs, `${theme} ${width}px tab count`).to.have.length(3);
+
+                        tabs.forEach((tab) => {
+                            const tabRect = tab.getBoundingClientRect();
+                            expect(tabRect.left, `${theme} ${width}px ${tab.dataset.testid} left edge`)
+                                .to.be.at.least(tablistRect.left - 1);
+                            expect(tabRect.right, `${theme} ${width}px ${tab.dataset.testid} right edge`)
+                                .to.be.at.most(tablistRect.right + 1);
+                            expect(tab.scrollWidth, `${theme} ${width}px ${tab.dataset.testid} has no clipped content`)
+                                .to.be.at.most(tab.clientWidth + 1);
+                            const label = tab.querySelector('span');
+                            expect(label, `${theme} ${width}px ${tab.dataset.testid} label`).not.to.be.null;
+                            const range = document.createRange();
+                            range.selectNodeContents(label as HTMLSpanElement);
+                            expect(range.getClientRects().length, `${theme} ${width}px ${tab.dataset.testid} label lines`)
+                                .to.be.within(1, 4);
+                        });
+                    });
+                });
+
+                cy.viewport(320, 844);
+                cy.getBySel('chatbot-tab-conversation').focus().type('{rightarrow}');
+                cy.getBySel('chatbot-tab-history')
+                    .should('have.attr', 'aria-selected', 'true')
+                    .should('have.focus');
+                cy.getBySel('chatbot-tab-history').type('{rightarrow}');
+                cy.getBySel('chatbot-tab-favorites')
+                    .should('have.attr', 'aria-selected', 'true')
+                    .should('have.focus');
+            });
+        });
+    });
 });

@@ -1,10 +1,24 @@
-import type { NotificationData } from '../types/notification';
+import type { MarkAllAsReadResponse, NotificationData } from '../types/notification';
 import { getApiErrorStatus } from '../api/errorStatus';
+import { getAuthSessionEpoch } from '../api/authSessionGeneration';
 import { privateDelete, privateGet, privatePost } from '../api/privateClient';
 
-let notificationUnreadCountEndpointAvailable = true;
-let notificationListEndpointAvailable = true;
-let notificationAuthFailure = false;
+type NotificationApiState = {
+  epoch: number;
+  unreadCountAvailable: boolean;
+  listAvailable: boolean;
+  authFailure: boolean;
+};
+
+let apiState: NotificationApiState | undefined;
+
+const getNotificationApiState = (): NotificationApiState => {
+  const epoch = getAuthSessionEpoch();
+  if (!apiState || apiState.epoch !== epoch) {
+    apiState = { epoch, unreadCountAvailable: true, listAvailable: true, authFailure: false };
+  }
+  return apiState;
+};
 
 const isHttpErrorStatus = (error: unknown, statusCode: number): boolean =>
   typeof error === 'object'
@@ -24,26 +38,27 @@ export const isIgnorableNotificationError = (error: unknown): boolean => {
 };
 
 export const resetNotificationApiStateForTests = (): void => {
-  notificationUnreadCountEndpointAvailable = true;
-  notificationListEndpointAvailable = true;
-  notificationAuthFailure = false;
+  apiState = undefined;
 };
 
 const getNotifications = async (): Promise<NotificationData[]> => {
-  if (notificationAuthFailure || !notificationListEndpointAvailable) {
+  const state = getNotificationApiState();
+  if (state.authFailure || !state.listAvailable) {
     return [];
   }
 
   try {
-    return await requestNotifications();
+    const notifications = await privateGet<NotificationData[]>('/notifications/my');
+    return getAuthSessionEpoch() === state.epoch ? notifications : [];
   } catch (error) {
+    if (getAuthSessionEpoch() !== state.epoch) return [];
     if (isHttpErrorStatus(error, 401)) {
-      notificationAuthFailure = true;
+      state.authFailure = true;
       return [];
     }
 
     if (isHttpErrorStatus(error, 404)) {
-      notificationListEndpointAvailable = false;
+      state.listAvailable = false;
       return [];
     }
 
@@ -56,24 +71,27 @@ const getNotifications = async (): Promise<NotificationData[]> => {
 };
 
 const getUnreadCount = async (): Promise<number> => {
-  if (notificationAuthFailure) {
+  const state = getNotificationApiState();
+  if (state.authFailure) {
     return 0;
   }
 
-  if (!notificationUnreadCountEndpointAvailable && !notificationListEndpointAvailable) {
+  if (!state.unreadCountAvailable && !state.listAvailable) {
     return 0;
   }
 
   const reduceUnreadCount = (notifications: NotificationData[]) =>
     notifications.reduce((count, notification) => (notification.isRead ? count : count + 1), 0);
 
-  if (notificationUnreadCountEndpointAvailable) {
+  if (state.unreadCountAvailable) {
     try {
-      return await requestUnreadCount();
+      const count = await requestUnreadCount();
+      return getAuthSessionEpoch() === state.epoch ? count : 0;
     } catch (error) {
+      if (getAuthSessionEpoch() !== state.epoch) return 0;
       if (isHttpErrorStatus(error, 401)) {
-        notificationAuthFailure = true;
-        notificationUnreadCountEndpointAvailable = false;
+        state.authFailure = true;
+        state.unreadCountAvailable = false;
         return 0;
       }
 
@@ -85,16 +103,18 @@ const getUnreadCount = async (): Promise<number> => {
         throw error;
       }
 
-      notificationUnreadCountEndpointAvailable = false;
+      state.unreadCountAvailable = false;
     }
   }
 
-  if (!notificationListEndpointAvailable) {
+  if (!state.listAvailable) {
     return 0;
   }
 
   try {
     const notifications = await requestNotifications();
+
+    if (getAuthSessionEpoch() !== state.epoch) return 0;
 
     if (!Array.isArray(notifications)) {
       return 0;
@@ -102,14 +122,15 @@ const getUnreadCount = async (): Promise<number> => {
 
     return reduceUnreadCount(notifications);
   } catch (error) {
+    if (getAuthSessionEpoch() !== state.epoch) return 0;
     if (isHttpErrorStatus(error, 401)) {
-      notificationAuthFailure = true;
+      state.authFailure = true;
       return 0;
     }
 
     if (isHttpErrorStatus(error, 404)) {
-      if (!notificationAuthFailure) {
-        notificationListEndpointAvailable = false;
+      if (!state.authFailure) {
+        state.listAvailable = false;
       }
 
       return 0;
@@ -127,9 +148,9 @@ const markAsRead = async (notificationId: number): Promise<void> => {
   await privatePost<void>(`/notifications/${notificationId}/read`);
 };
 
-const markAllAsRead = async (readThrough: number): Promise<void> => {
-  await privatePost<void>('/notifications/mark-all-read', {
-    readThrough: new Date(readThrough).toISOString(),
+const markAllAsRead = async (notificationIds: number[]): Promise<MarkAllAsReadResponse> => {
+  return privatePost<MarkAllAsReadResponse>('/notifications/mark-all-read', {
+    notificationIds,
   });
 };
 

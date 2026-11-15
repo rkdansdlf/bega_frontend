@@ -81,8 +81,11 @@ test('legacy ownerless draft cleanup removes only known shared keys and preserve
     'chatbot_current_session_id',
     'chatbot_current_session_title',
     'last_pending_msg',
+    'prediction:run-session:v1',
+    'prediction:run-session',
     'diary-draft-storage:viewer:101',
     'mateApplyDraft:77:viewer:101',
+    'prediction:run-session:v1:viewer:101',
     'unrelated-session-value',
   ]) {
     sessionStorage.setItem(key, 'fixture');
@@ -100,11 +103,14 @@ test('legacy ownerless draft cleanup removes only known shared keys and preserve
     'chatbot_current_session_id',
     'chatbot_current_session_title',
     'last_pending_msg',
+    'prediction:run-session:v1',
+    'prediction:run-session',
   ]) {
     assert.equal(sessionStorage.getItem(key), null, `${key} should be removed`);
   }
   assert.equal(sessionStorage.getItem('diary-draft-storage:viewer:101'), 'fixture');
   assert.equal(sessionStorage.getItem('mateApplyDraft:77:viewer:101'), 'fixture');
+  assert.equal(sessionStorage.getItem('prediction:run-session:v1:viewer:101'), 'fixture');
   assert.equal(sessionStorage.getItem('unrelated-session-value'), 'fixture');
   assert.equal(localStorage.getItem('prediction-storage'), null);
   assert.equal(localStorage.getItem('prediction-storage:viewer:101'), 'viewer-data');

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate, type NavigateFunction } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
@@ -6,7 +6,7 @@ import { useNotificationStore } from '../store/notificationStore';
 import { getViewerQueryScope, isViewerQueryScopeCurrent } from '../utils/viewerQueryScope';
 import { useAuthSession } from '../store/authStore';
 import { notificationApi, isIgnorableNotificationError } from '../utils/notificationApi';
-import { NotificationData as Notification, NotificationType } from '../types/notification';
+import { MarkAllAsReadResponse, NotificationData as Notification, NotificationType } from '../types/notification';
 import {
   NotificationAlertTriangleIcon,
   NotificationBellIcon,
@@ -34,13 +34,16 @@ import {
   loadNotificationPanelNotifications,
   type NotificationPanelLoadState,
 } from './notificationPanelLoader';
+import { completeNotificationRead } from './notificationClickSession';
+import { runNotificationSessionAction } from './notificationSessionAction';
+import { reconcileSnapshotReads } from './notificationReadReconcile';
 
 export type TabType = 'ALL' | 'MATE' | 'CHEER';
 
 export type NotificationPanelRuntime = {
   deleteNotification?: (notificationId: number) => Promise<void>;
   getNotifications?: () => Promise<Notification[]>;
-  markAllAsRead?: (readThrough: number) => Promise<void>;
+  markAllAsRead?: (notificationIds: number[]) => Promise<MarkAllAsReadResponse>;
   markAsRead?: (notificationId: number) => Promise<void>;
   navigate?: NavigateFunction;
   requestBrowserNotificationPermission?: () => Promise<BrowserNotificationPermission>;
@@ -90,14 +93,18 @@ export default function NotificationPanel({
   const { isLoggedIn: liveIsLoggedIn, userId: liveUserId } = useAuthSession();
   const {
     notifications: liveNotifications,
+    liveSnapshotNotificationIds,
     setNotifications,
+    clearSnapshotNotificationIds,
     markAsRead,
     markAllAsRead,
     removeNotification,
   } = useNotificationStore(
     useShallow((state) => ({
       notifications: state.notifications,
+      liveSnapshotNotificationIds: state.snapshotNotificationIds,
       setNotifications: state.setNotifications,
+      clearSnapshotNotificationIds: state.clearSnapshotNotificationIds,
       markAsRead: state.markAsRead,
       markAllAsRead: state.markAllAsRead,
       removeNotification: state.removeNotification,
@@ -113,6 +120,7 @@ export default function NotificationPanel({
       : { status: 'success', notifications: [...notificationsOverride] },
   );
   const isLoggedIn = isLoggedInOverride ?? liveIsLoggedIn;
+  const renderedViewerScope = getViewerQueryScope();
   const notifications = notificationsOverride ?? liveNotifications;
   const browserPermission = browserPermissionOverride ?? liveBrowserPermission;
   const navigate = runtimeOverride?.navigate ?? liveNavigate;
@@ -125,10 +133,16 @@ export default function NotificationPanel({
     [notifications],
   );
   const usesDeterministicNotifications = notificationsOverride !== undefined;
+  const snapshotNotificationIds = notificationsOverride === undefined
+    ? liveSnapshotNotificationIds
+    : notificationsOverride.map((notification) => notification.id);
 
   const loadNotifications = useCallback(async () => {
     const shouldLoadNotifications = notificationsOverride === undefined && isLoggedIn;
     if (!shouldLoadNotifications) {
+      if (notificationsOverride === undefined) {
+        clearSnapshotNotificationIds();
+      }
       return;
     }
 
@@ -140,25 +154,33 @@ export default function NotificationPanel({
         setNotificationLoadState(state);
         if (state.status === 'success') {
           setNotifications(state.notifications);
-        } else if (state.status === 'error' && !isIgnorableNotificationError(state.error)) {
-          console.error('알림 불러오기 오류:', state.error);
+        } else {
+          if (state.status === 'error' && !isIgnorableNotificationError(state.error)) {
+            console.error('알림 불러오기 오류:', state.error);
+          }
         }
       },
     });
-  }, [isLoggedIn, liveUserId, notificationsOverride, runtimeOverride?.getNotifications, setNotifications]);
+  }, [isLoggedIn, liveUserId, notificationsOverride, runtimeOverride?.getNotifications,
+    clearSnapshotNotificationIds, setNotifications]);
 
   useEffect(() => {
     void loadNotifications();
   }, [loadNotifications]);
 
   const handleNotificationClick = async (notification: Notification) => {
+    const scope = renderedViewerScope;
     try {
-      if (!notification.isRead) {
-        const markAsReadRequest = runtimeOverride?.markAsRead
-          ?? (usesDeterministicNotifications ? async () => {} : notificationApi.markAsRead);
-        await markAsReadRequest(notification.id);
-        markAsRead(notification.id);
-      }
+      const markAsReadRequest = runtimeOverride?.markAsRead
+        ?? (usesDeterministicNotifications ? async () => {} : notificationApi.markAsRead);
+      const canContinue = await completeNotificationRead({
+        notificationId: notification.id,
+        isRead: notification.isRead,
+        isCurrent: () => isViewerQueryScopeCurrent(scope),
+        request: markAsReadRequest,
+        markAsRead,
+      });
+      if (!canContinue || !isViewerQueryScopeCurrent(scope)) return;
 
       if (notification.type === 'APPLICATION_RECEIVED' || notification.type === 'HOST_RESPONSE_NUDGE') {
         navigate(`/mate/${notification.relatedId}/manage`);
@@ -176,40 +198,60 @@ export default function NotificationPanel({
         navigate('/prediction?tab=ranking');
       }
     } catch (error) {
+      if (!isViewerQueryScopeCurrent(scope)) return;
       console.error('알림 처리 오류:', error);
       toast.error('알림 처리 중 오류가 발생했습니다.');
     }
   };
 
   const handleDelete = async (notificationId: number) => {
-    const scope = getViewerQueryScope();
-    try {
-      const deleteNotification = runtimeOverride?.deleteNotification
-        ?? (usesDeterministicNotifications ? async () => {} : notificationApi.deleteNotification);
-      await deleteNotification(notificationId);
-      if (!isViewerQueryScopeCurrent(scope)) return;
-      removeNotification(notificationId);
-    } catch (error) {
-      if (!isViewerQueryScopeCurrent(scope)) return;
-      console.error('알림 삭제 오류:', error);
-      toast.error('알림 삭제에 실패했습니다.');
-    }
+    const deleteNotification = runtimeOverride?.deleteNotification
+      ?? (usesDeterministicNotifications ? async () => {} : notificationApi.deleteNotification);
+    await runNotificationSessionAction({
+      isCurrent: () => isViewerQueryScopeCurrent(renderedViewerScope),
+      request: () => deleteNotification(notificationId),
+      apply: () => removeNotification(notificationId),
+      onError: (error) => {
+        console.error('알림 삭제 오류:', error);
+        toast.error('알림 삭제에 실패했습니다.');
+      },
+    });
   };
 
   const handleMarkAllRead = async () => {
-    const scope = getViewerQueryScope();
-    const requestStartedAt = Date.now();
-    try {
-      const markAllAsReadRequest = runtimeOverride?.markAllAsRead
-        ?? (usesDeterministicNotifications ? async () => {} : notificationApi.markAllAsRead);
-      await markAllAsReadRequest(requestStartedAt);
-      if (!isViewerQueryScopeCurrent(scope)) return;
-      markAllAsRead(requestStartedAt);
-    } catch (error) {
-      if (!isViewerQueryScopeCurrent(scope)) return;
-      console.error('일괄 읽음 처리 오류:', error);
-      toast.error('일괄 읽음 처리에 실패했습니다.');
+    if (!isViewerQueryScopeCurrent(renderedViewerScope)) return;
+    const currentSnapshotIds = [...snapshotNotificationIds];
+    if (currentSnapshotIds.length === 0) {
+      toast.error('새 알림을 읽으려면 목록을 새로고침해주세요.');
+      return;
     }
+
+    const markAllAsReadRequest = runtimeOverride?.markAllAsRead
+      ?? (usesDeterministicNotifications
+        ? async () => ({
+            notificationIds: currentSnapshotIds.filter((notificationId) =>
+              notifications.some((notification) => notification.id === notificationId && !notification.isRead)),
+          })
+        : notificationApi.markAllAsRead);
+    await runNotificationSessionAction({
+      isCurrent: () => isViewerQueryScopeCurrent(renderedViewerScope),
+      request: () => markAllAsReadRequest(currentSnapshotIds),
+      apply: (result) => {
+        markAllAsRead(result.notificationIds);
+        const getNotifications = runtimeOverride?.getNotifications
+          ?? (usesDeterministicNotifications ? async () => [...notifications] : notificationApi.getNotifications);
+        void reconcileSnapshotReads({
+          snapshotIds: currentSnapshotIds,
+          isCurrent: () => isViewerQueryScopeCurrent(renderedViewerScope),
+          getNotifications,
+          markAsRead: markAllAsRead,
+        });
+      },
+      onError: (error) => {
+        console.error('일괄 읽음 처리 오류:', error);
+        toast.error('일괄 읽음 처리에 실패했습니다.');
+      },
+    });
   };
 
   const handleEnableBrowserNotifications = async () => {

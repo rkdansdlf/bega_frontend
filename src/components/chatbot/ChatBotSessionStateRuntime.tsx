@@ -137,44 +137,42 @@ export default function ChatBotSessionStateRuntime({
   return (
     <>
       <div
-        className="p-3 md:p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-primary"
+        className="grid w-full min-w-0 grid-cols-[3.5rem_minmax(0,1fr)_2.75rem] items-center gap-x-3 gap-y-2 border-b border-gray-200 bg-primary p-3 dark:border-white/10 md:flex md:items-center md:justify-between md:p-4"
         data-testid="chatbot-session-state"
       >
-        <div className="flex items-center gap-3">
-          <span className="h-14 w-14 rounded-full bg-primary grid place-items-center p-0.5">
-            <img
-              src={chatBotIcon}
-              alt="BEGA"
-              className="pointer-events-none block h-13 w-13 rounded-full object-contain object-center"
-              loading="eager"
-              aria-hidden="true"
-              decoding="async"
-            />
-          </span>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-white font-bold text-body md:text-17 m-0">야구 가이드 BEGA</h3>
-              <span className="inline-flex items-center rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-body font-semibold text-white">
-                Beta
-              </span>
-            </div>
-            <p
-              data-testid="chatbot-session-title"
-              className="text-white/80 text-body md:text-body m-0 truncate max-w-[220px] font-semibold"
-            >
-              {currentSessionTitle}
-            </p>
-          </div>
-        </div>
+        <span className="col-start-1 row-start-1 grid h-14 w-14 shrink-0 place-items-center rounded-full bg-primary p-0.5 md:order-1 md:col-auto md:row-auto">
+          <img
+            src={chatBotIcon}
+            alt="BEGA"
+            className="pointer-events-none block h-13 w-13 rounded-full object-contain object-center"
+            loading="eager"
+            aria-hidden="true"
+            decoding="async"
+          />
+        </span>
         <button
           type="button"
           onClick={handleClose}
           data-testid="chatbot-session-close"
-          className="text-white/80 hover:text-white bg-transparent border-none cursor-pointer p-2 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus-visible:outline-none focus:ring-0"
+          className="col-start-3 row-start-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border-none bg-transparent p-2 text-white/80 transition-colors hover:text-white focus:outline-none focus-visible:outline-none focus:ring-0 md:order-3 md:col-auto md:row-auto"
           aria-label="챗봇 닫기"
         >
           <ChatBotCloseIcon className="w-5 h-5" />
         </button>
+        <div className="col-span-3 row-start-2 min-w-0 md:order-2 md:col-auto md:row-auto md:flex-1">
+          <div className="flex min-w-0 flex-col items-start gap-y-1 md:flex-row md:flex-wrap md:items-center md:gap-x-2">
+            <h3 className="m-0 w-full min-w-0 break-words text-body font-bold text-white [overflow-wrap:anywhere] md:w-auto md:text-17">야구 가이드 BEGA</h3>
+            <span className="inline-flex shrink-0 items-center rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-body font-semibold text-white">
+              Beta
+            </span>
+          </div>
+          <p
+            data-testid="chatbot-session-title"
+            className="m-0 max-w-[220px] truncate text-body font-semibold text-white/80"
+          >
+            {currentSessionTitle}
+          </p>
+        </div>
       </div>
 
       <div className="flex h-full flex-col gap-0">
@@ -196,14 +194,14 @@ export default function ChatBotSessionStateRuntime({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => setActiveTab(value)}
                   onKeyDown={(event) => handleTabKeyDown(event, index)}
-                  className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-body font-semibold transition-colors ${
+                  className={`flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0 py-2 text-body font-semibold transition-colors ${
                     isActive
                       ? 'bg-white text-gray-900 shadow-sm dark:bg-white/15 dark:text-white'
                       : 'text-gray-600 hover:bg-white/70 dark:text-white dark:hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
-                  {label}
+                  <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="block w-full min-w-0 whitespace-normal text-center leading-tight [overflow-wrap:anywhere]">{label}</span>
                 </button>
               );
             })}

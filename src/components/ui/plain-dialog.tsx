@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, type CSSProperties, type ReactNode } from 're
 import { createPortal } from 'react-dom';
 import { Button } from './plain-button';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { acquirePlainDialog } from './plainDialogLifecycle';
 
 const joinClassNames = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
@@ -15,11 +16,13 @@ interface PlainDialogProps {
   contentTestId?: string;
   placement?: 'center' | 'bottom' | 'right';
   initialFocus?: 'container' | 'first';
+  headerTabStop?: boolean;
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
   bodyClassName?: string;
   bodyStyle?: CSSProperties;
+  contentStyle?: CSSProperties;
   hideCloseButton?: boolean;
   hideHeader?: boolean;
 }
@@ -33,42 +36,34 @@ export default function PlainDialog({
   contentTestId,
   placement = 'center',
   initialFocus = 'first',
+  headerTabStop = false,
   children,
   footer,
   className,
   bodyClassName,
   bodyStyle,
+  contentStyle,
   hideCloseButton = false,
   hideHeader = false,
 }: PlainDialogProps) {
   const titleId = useId();
   const descriptionId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const resolvedAriaLabel = ariaLabel
     || (typeof title === 'string' && title.trim() ? title : '대화상자');
 
-  useFocusTrap(dialogRef, { active: open, initialFocus });
+  useFocusTrap(dialogRef, { active: open, initialFocus, initialFocusRef: headerTabStop ? closeButtonRef : undefined });
 
   useEffect(() => {
-    if (!open) {
+    if (!open || typeof document === 'undefined') {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open, onClose]);
+    return acquirePlainDialog(document, () => onCloseRef.current());
+  }, [open]);
 
   if (!open || typeof document === 'undefined') {
     return null;
@@ -109,7 +104,7 @@ export default function PlainDialog({
                 : 'flex max-h-[calc(100dvh-2rem)] w-full min-w-0 flex-col overflow-hidden rounded-xl border bg-white shadow-dialog ring-1 ring-black/5 dark:border-border dark:bg-card',
             className,
           )}
-          style={placement === 'center' ? { maxHeight: 'calc(100dvh - 32px)' } : undefined}
+          style={{ ...(placement === 'center' ? { maxHeight: 'calc(100dvh - 32px)' } : {}), ...contentStyle }}
         >
           {!hideHeader && (title || !hideCloseButton) && (
             <div
@@ -117,8 +112,14 @@ export default function PlainDialog({
               style={{ gap: 12, paddingLeft: 20, paddingRight: 20, paddingTop: 16, paddingBottom: 16 }}
             >
               <div
-                className="min-h-0 max-h-[calc(35dvh-2rem)] min-w-0 flex-1 overflow-y-auto overscroll-contain"
-                style={{ maxHeight: 'calc(35dvh - 32px)' }}
+                className={joinClassNames(
+                  'min-h-0 max-h-[calc(35dvh-2rem)] min-w-0 flex-1 overflow-y-auto overscroll-contain',
+                  headerTabStop && 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600',
+                )}
+                tabIndex={headerTabStop ? 0 : undefined}
+                role={headerTabStop ? 'region' : undefined}
+                aria-label={headerTabStop ? '안내 내용' : undefined}
+                style={{ maxHeight: 'calc(35dvh - 32px)', ...(headerTabStop ? { outlineOffset: -2 } : {}) }}
               >
                 {title ? (
                   <h2 id={titleId} className="break-keep text-lg font-semibold text-gray-900 dark:text-white" style={{ overflowWrap: 'break-word' }}>
@@ -133,6 +134,7 @@ export default function PlainDialog({
               </div>
               {!hideCloseButton && (
                 <Button
+                  ref={closeButtonRef}
                   type="button"
                   aria-label="닫기"
                   variant="ghost"

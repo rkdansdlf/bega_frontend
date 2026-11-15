@@ -10,6 +10,11 @@ test('keeps partial spacing overrides that still rely on the base class', () => 
   assert.equal(cn('rounded-l-md', 'rounded-tl-none'), 'rounded-l-md rounded-tl-none');
 });
 
+test('keeps margin utilities independent from padding overrides', () => {
+  assert.equal(cn('p-8 -mx-6', 'p-0'), '-mx-6 p-0');
+  assert.equal(cn('mx-4', 'mx-6'), 'mx-6');
+});
+
 test('replaces full conflicts with the latest class in the same variant scope', () => {
   assert.equal(cn('rounded-md', 'rounded-full'), 'rounded-full');
   assert.equal(cn('text-sm', 'text-lg'), 'text-lg');

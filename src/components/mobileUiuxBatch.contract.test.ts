@@ -116,7 +116,7 @@ test('secondary stadium tools and shared dialogs keep mobile controls reachable'
   assert.match(gameCard, /className="w-full h-11[^\"]*sm:h-9"[\s\S]*승부예측 하러가기/);
   assert.match(gallery, /다이어리에서 공유하기/);
   assert.match(gallery, /text-body min-h-11 sm:min-h-9/);
-  assert.match(coach, /onClick=\{onRequestClose\}[\s\S]*className="h-11[^\"]*sm:h-9/);
+  assert.match(coach, /onClick=\{onRequestClose\}[\s\S]*className="[^\"]*min-h-11[^\"]*sm:min-h-9/);
   assert.ok((verification.match(/min-h-11/g) ?? []).length >= 2);
   assert.match(comments, /className="flex h-11 w-11[^\"]*sm:h-8 sm:w-8"[\s\S]*title="삭제"/);
   assert.match(commentsPanel, /aria-label="댓글 등록"[\s\S]*min-h-11/);

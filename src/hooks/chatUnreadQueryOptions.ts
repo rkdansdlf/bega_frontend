@@ -1,6 +1,7 @@
 import { getChatUnreadCounts } from '../api/mate';
+import { CHAT_UNREAD_QUERY_KEY } from './chatUnreadRefresh';
 
-export const CHAT_UNREAD_QUERY_KEY = ['chat', 'unread-count'] as const;
+export { CHAT_UNREAD_QUERY_KEY } from './chatUnreadRefresh';
 
 export const getChatUnreadQueryOptions = (
   enabled: boolean,

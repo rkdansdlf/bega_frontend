@@ -80,6 +80,8 @@ interface FavoriteToggleButtonProps {
   onToggle?: () => void;
   className?: string;
   testId?: string;
+  dataVqaOverlap?: 'allowed';
+  mobileTouchTarget?: boolean;
 }
 
 function FavoriteToggleButton({
@@ -88,6 +90,8 @@ function FavoriteToggleButton({
   onToggle,
   className,
   testId,
+  dataVqaOverlap,
+  mobileTouchTarget = false,
 }: FavoriteToggleButtonProps) {
   const label = favorited ? '찜 해제' : '찜하기';
 
@@ -95,6 +99,7 @@ function FavoriteToggleButton({
     <button
       type="button"
       data-testid={testId}
+      data-vqa-overlap={dataVqaOverlap}
       aria-label={label}
       aria-pressed={favorited}
       disabled={disabled}
@@ -105,6 +110,7 @@ function FavoriteToggleButton({
       }}
       className={cn(
         'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200/90 bg-white text-gray-500 shadow-sm transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 disabled:pointer-events-none disabled:opacity-60 dark:border-white/15 dark:bg-[#111111] dark:text-white dark:hover:bg-rose-950/35 dark:hover:text-rose-200',
+        mobileTouchTarget && 'h-11 w-11 md:h-8 md:w-8',
         favorited && 'border-rose-200 bg-rose-50 text-rose-500 dark:border-rose-400/30 dark:bg-rose-950/40 dark:text-rose-200',
         className,
       )}
@@ -154,7 +160,9 @@ function MatePartyCard({
         disabled={favoriteUpdating}
         onToggle={() => onFavoriteToggle?.(party)}
         testId="mate-party-card-favorite"
-        className="absolute right-3 top-3 z-10"
+        dataVqaOverlap="allowed"
+        mobileTouchTarget
+        className="absolute right-2 top-2 z-10 md:right-3 md:top-3"
       />
       <button
         type="button"
@@ -164,7 +172,7 @@ function MatePartyCard({
         className="flex w-full flex-col gap-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-background"
       >
         {/* Row 1: D-day · date+time · status chip */}
-        <div className="flex items-center gap-2 pr-10">
+        <div className="flex min-h-11 items-center gap-2 pr-14 md:min-h-0 md:pr-10">
           <span className="shrink-0 text-15 font-black tracking-tight text-primary dark:text-primary-light">
             {dDayLabel || compactDate}
           </span>
@@ -176,7 +184,7 @@ function MatePartyCard({
         </div>
 
         {/* Row 2: away VS home · venue */}
-        <div className="flex items-center gap-2.5">
+        <div className="mate-party-card__venue-row flex items-center gap-2.5">
           <TeamLogo teamId={party.awayTeam} size={32} className="shrink-0" />
           <span className="shrink-0 text-12 font-extrabold text-slate-400 dark:text-white">VS</span>
           <TeamLogo teamId={party.homeTeam} size={32} className="shrink-0" />
@@ -185,9 +193,9 @@ function MatePartyCard({
               {party.ticketVerified ? (
                 <MateShieldIcon className="h-3.5 w-3.5 shrink-0 text-primary" />
               ) : null}
-              <span className="truncate">{stadiumDisplayName}</span>
+              <span className="min-w-0 flex-1 break-words">{stadiumDisplayName}</span>
             </p>
-            <p className="truncate text-12 font-semibold text-gray-500 dark:text-white">
+            <p className="whitespace-normal break-words text-12 font-semibold text-gray-500 dark:text-white">
               {zoneName}
               {showPrice ? <span className="text-gray-400 dark:text-white"> · {priceLabel}</span> : null}
             </p>
@@ -377,7 +385,7 @@ function PartyCompactBase({
         data-testid="mate-party-compact"
         aria-label={buildPartyAriaLabel(party, statusMeta)}
         onClick={() => onClick(party)}
-        className={cn(rowSurfaceClass, 'flex items-center gap-3 rounded-xl px-3.5 py-2.5 pr-12')}
+        className={cn(rowSurfaceClass, 'flex items-center gap-1.5 sm:gap-3 rounded-xl px-3.5 py-2.5 pr-12')}
       >
         <span className="w-[36px] shrink-0 text-12 font-black text-primary dark:text-primary-light">{dDayLabel || compactDate}</span>
         <TeamLogo teamId={party.awayTeam} size={20} className="shrink-0" />
