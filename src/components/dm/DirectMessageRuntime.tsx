@@ -102,7 +102,7 @@ export default function DirectMessageRuntime() {
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [inlineAccessError, setInlineAccessError] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messageViewportRef = useRef<HTMLDivElement | null>(null);
   const recoveryBufferRef = useRef<DmRecoveryBuffer | null>(null);
 
   const normalizedHandle = normalizeHandle(handle);
@@ -247,7 +247,10 @@ export default function DirectMessageRuntime() {
   }, [bootstrapQuery.error, inlineAccessError, messagesQuery.error]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    // 메시지 영역 안에서만 맨 아래로 내린다. 끝 요소에 scrollIntoView를 쓰면 영역뿐 아니라 창(window)까지
+    // 스크롤돼서, 낮은 화면(가로로 눕힌 폰)에서 "프로필로 돌아가기"가 sticky 상단바 뒤로 밀려 가려진다.
+    const viewport = messageViewportRef.current;
+    viewport?.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
   }, [messages.length]);
 
   const handleRetry = () => {
@@ -406,7 +409,7 @@ export default function DirectMessageRuntime() {
             </div>
           </div>
 
-          <div data-testid="dm-message-viewport" style={{ minHeight: '14rem' }} className="h-[52vh] overflow-y-auto bg-gradient-to-b from-gray-50/80 to-white px-4 py-5 dark:from-background dark:to-card">
+          <div ref={messageViewportRef} data-testid="dm-message-viewport" style={{ minHeight: '14rem' }} className="h-[52vh] overflow-y-auto bg-gradient-to-b from-gray-50/80 to-white px-4 py-5 dark:from-background dark:to-card">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/70 px-6 text-center dark:border-border dark:bg-secondary/20">
                 <MessageCircleIcon className="mb-3 h-10 w-10 text-gray-400 dark:text-white" />
@@ -462,7 +465,6 @@ export default function DirectMessageRuntime() {
                     </div>
                   );
                 })}
-                <div ref={messagesEndRef} />
               </div>
             )}
           </div>
