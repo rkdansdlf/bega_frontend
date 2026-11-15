@@ -59,7 +59,9 @@ export default function CheerDetailActionBarRuntime({
     onToggleLike,
 }: CheerDetailActionBarRuntimeProps) {
     return (
-        <div className="mt-3 grid grid-cols-4 gap-1 sm:mt-4 sm:gap-1.5 lg:gap-2.5">
+        // 칩 하나가 약 82px(아이콘 32 + 4자리 숫자 + 패딩)라 4열은 행 폭이 330px 이상일 때만 들어간다.
+        // 640px 미만(대부분의 폰)에서는 숫자가 잘리므로 2x2로 배치한다.
+        <div className="mt-3 grid grid-cols-2 gap-1 sm:mt-4 sm:grid-cols-4 sm:gap-1.5 lg:gap-2.5">
             <button
                 type="button"
                 onClick={onToggleLike}

@@ -490,15 +490,16 @@ export default function MateApply({ visualQaStateOverride: visualQaStateOverride
             </div>
             <div className={`${insetPanelClass} p-3`}>
               <p className={mateMetaLabelClass}>호스트</p>
-              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{party.hostName}</p>
+              <p className="mt-1 min-w-0 break-keep text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{party.hostName}</p>
             </div>
-            <div className={`${insetPanelClass} col-span-2 p-3 md:col-span-1`}>
+            {/* 모바일(2열)에서는 반쪽 타일(호스트·현재 상태)이 짝을 이루도록 전폭 타일을 맨 뒤로 보낸다. md 이상(4열)은 DOM 순서 그대로. */}
+            <div className={`${insetPanelClass} order-last col-span-2 p-3 md:order-none md:col-span-1`}>
               <p className={mateMetaLabelClass}>신뢰 신호</p>
-              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{summaryTrustLabel}</p>
+              <p className="mt-1 min-w-0 break-keep text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{summaryTrustLabel}</p>
             </div>
             <div className={`${insetPanelClass} p-3`}>
               <p className={mateMetaLabelClass}>현재 상태</p>
-              <p className="mt-1 min-w-0 text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{isSelling ? '구매 신청 가능' : '참여 신청 가능'}</p>
+              <p className="mt-1 min-w-0 break-keep text-body font-semibold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{isSelling ? '구매 신청 가능' : '참여 신청 가능'}</p>
             </div>
           </div>
         </Card>

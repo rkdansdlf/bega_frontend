@@ -917,8 +917,10 @@ export default function HomeRuntime() {
     const showConnectionRecoveryBanner = (
         connectionError && (loadFailureReason !== 'manual-data-required' || isAdmin)
     ) || showAdminManualDataRecoveryBanner;
+    // 4탭은 320px 폭에서 칸당 70px 안팎이라 한 줄에 들어가지 않는다(한글이 음절 중간에서 끊김).
+    // 375px 미만에서는 2x2로 배치하고, 그 이상에서는 4열을 유지한다.
     const visibleLeagueTabGridClass = visibleLeagueTabs.length >= 4
-        ? 'grid-cols-4'
+        ? 'grid-cols-2 xs:grid-cols-4'
         : visibleLeagueTabs.length === 3
             ? 'grid-cols-3'
             : 'grid-cols-2';
@@ -1392,7 +1394,7 @@ export default function HomeRuntime() {
                                             aria-selected={isActive}
                                             aria-controls={`home-tabpanel-${tab.value}`}
                                             id={`home-tab-${tab.value}`}
-                                            className={`min-h-11 rounded-lg px-2 py-2 text-body font-bold transition-all ${
+                                            className={`min-h-11 break-keep rounded-lg px-1 py-2 text-caption font-bold transition-all [overflow-wrap:anywhere] sm:px-2 sm:text-body ${
                                                 isActive
                                                     ? 'bg-primary text-white shadow-sm'
                                                     : 'text-muted-foreground hover:text-foreground'
