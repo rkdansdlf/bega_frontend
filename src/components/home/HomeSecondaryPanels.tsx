@@ -22,6 +22,8 @@ import {
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
+import StateBlock from '../status/StateBlock';
+import { FeaturedMateSkeleton, HotCheerSkeleton, RankingRowsSkeleton } from './HomeSecondaryPanelsSkeleton';
 import { StatusBadge } from '../ui/status-badge';
 import TeamRankRow from './TeamRankRow';
 
@@ -123,54 +125,42 @@ function PanelHeader({
   );
 }
 
-function LoadingRows({ rows = 3 }: { rows?: number }) {
+function PanelEmptyState({ title, description }: { title: string; description?: string }) {
   return (
-    <div className="flex h-full flex-col justify-center space-y-3">
-      {Array.from({ length: rows }, (_, index) => (
-        <Skeleton key={index} className="h-16 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50" />
-      ))}
-    </div>
-  );
-}
-
-function EmptyState({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex min-h-[180px] items-center justify-center px-4 text-center font-bold text-zinc-500 dark:text-white">
-      {children}
-    </div>
+    <StateBlock
+      kind="filtered"
+      layout="row"
+      bare
+      title={title}
+      description={description}
+      className="px-1 py-2"
+      testId="home-secondary-empty"
+    />
   );
 }
 
 function WidgetErrorState({
   message,
-  suppressRecoveryActions,
   onRetry,
 }: {
   message: string;
-  suppressRecoveryActions: boolean;
-  onRetry: () => void;
+  onRetry?: () => void;
 }) {
   return (
-    <div className="flex min-h-[190px] flex-col items-center justify-center px-4 text-center text-zinc-500 dark:text-white">
-      <p className="text-lg font-bold text-zinc-700 dark:text-white">{message}</p>
-      {suppressRecoveryActions ? (
-        <p className="mt-3 text-15 font-bold text-zinc-500 dark:text-white">
-          상단 복구 버튼으로 다시 불러오세요.
-        </p>
-      ) : (
-        <Button
-          variant="outline"
-          size="touch"
-          onClick={onRetry}
-          className="mt-4"
-        >
-          <RefreshIcon className="mr-1.5 h-4 w-4" />
-          다시 시도
-        </Button>
-      )}
-    </div>
+    <StateBlock
+      kind="error"
+      layout="row"
+      bare
+      title={message}
+      onRetry={onRetry}
+      className="px-1 py-2"
+      testId="home-secondary-error"
+    />
   );
 }
+
+// 팀 순위 한 줄의 lg 높이 — 실제 행과 로딩 골격이 같은 값을 씁니다.
+const RANKING_ROW_LG_HEIGHT_CLASS = 'lg:h-[65px] lg:min-h-[65px]';
 
 const getMateGameDateLabel = (gameDateValue: string) => {
   const gameDate = parseLocalDate(gameDateValue);
@@ -244,17 +234,21 @@ export default function HomeSecondaryPanels({
     el.scrollTo({ left: target, behavior: 'smooth' });
   };
 
-  const panelCardClassName = `rounded-2xl border border-zinc-200/80 bg-white/88 shadow-sm dark:border-zinc-800 dark:bg-card/82 ${homeDashboardCardHeightClass} max-h-[320px] overflow-y-auto p-3 lg:max-h-none lg:p-4`;
-  const rankingCardClassName = `overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/88 dark:border-zinc-800 dark:bg-card/82 ${teamRankingCardHeightClass} lg:max-h-none lg:overflow-y-auto`;
+  // 내용이 있거나 불러오는 중일 때만 고정 높이를 씁니다. 비었거나 실패했으면 문구 높이만큼만.
+  const hasHotCheerBody = isHotCheerLoading || (!hotCheerError && hotCheerPosts.length > 0);
+  const hasFeaturedMateBody = isFeaturedMatesLoading || (!featuredMatesError && featuredMates.length > 0);
+  const hasRankingBody = isRankingsLoading || (!rankingsError && displayedRankings.length > 0);
+  const panelCardClassName = (hasBody: boolean) => `rounded-2xl border border-zinc-200/80 bg-white/88 shadow-sm dark:border-zinc-800 dark:bg-card/82 ${hasBody ? `${homeDashboardCardHeightClass} max-h-[320px] overflow-y-auto lg:max-h-none` : ''} p-3 lg:p-4`;
+  const rankingCardClassName = `overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/88 dark:border-zinc-800 dark:bg-card/82 ${hasRankingBody ? `${teamRankingCardHeightClass} lg:max-h-none lg:overflow-y-auto` : 'p-3 lg:p-4'}`;
   const compactRankingRows = [
     ...displayedRankings.map((team) => ({
       key: team.teamId,
-      node: <TeamRankRow team={team} variant="compact" rowClassName="lg:h-[65px] lg:min-h-[65px] lg:px-4 lg:py-0 xl:h-auto xl:min-h-0" />,
+      node: <TeamRankRow team={team} variant="compact" rowClassName={`${RANKING_ROW_LG_HEIGHT_CLASS} lg:px-4 lg:py-0 xl:h-auto xl:min-h-0`} />,
     })),
     ...Array.from({ length: rankingPlaceholderRows }).map((_, index) => ({
       key: `team-rank-placeholder-${index}`,
       node: (
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-zinc-200/80 px-3 py-3 opacity-45 last:border-b-0 dark:border-zinc-800/80 lg:h-[65px] lg:min-h-[65px] lg:px-4 lg:py-0 xl:h-auto xl:min-h-0">
+        <div className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-zinc-200/80 px-3 py-3 opacity-45 last:border-b-0 dark:border-zinc-800/80 ${RANKING_ROW_LG_HEIGHT_CLASS} lg:px-4 lg:py-0 xl:h-auto xl:min-h-0`}>
           <div className="flex min-w-0 items-center gap-2">
             <span className="w-5 shrink-0 text-center text-15 font-black text-zinc-400 dark:text-white">
               {displayedRankings.length + index + 1}
@@ -282,17 +276,16 @@ export default function HomeSecondaryPanels({
         moreLabel="전체 보기"
         testId="home-secondary-cheer-more"
       />
-      <Card className={panelCardClassName}>
+      <Card className={panelCardClassName(hasHotCheerBody)}>
         {isHotCheerLoading ? (
-          <LoadingRows />
+          <HotCheerSkeleton />
         ) : hotCheerError ? (
-          <WidgetErrorState
-            message={hotCheerError}
-            suppressRecoveryActions={suppressRecoveryActions}
-            onRetry={onRetryWidgets}
-          />
+          <WidgetErrorState message={hotCheerError} onRetry={suppressRecoveryActions ? undefined : onRetryWidgets} />
         ) : hotCheerPosts.length === 0 ? (
-          <EmptyState>인기 응원글이 없습니다.</EmptyState>
+          <PanelEmptyState
+            title="아직 인기 응원글이 없어요"
+            description="응원석에서 반응이 많은 글을 여기에 모아 보여드려요."
+          />
         ) : (
           <>
             {/* Mobile: uniform compact list */}
@@ -449,17 +442,16 @@ export default function HomeSecondaryPanels({
         moreLabel="전체 보기"
         testId="home-secondary-mate-more"
       />
-      <Card className={panelCardClassName}>
+      <Card className={panelCardClassName(hasFeaturedMateBody)}>
         {isFeaturedMatesLoading ? (
-          <LoadingRows />
+          <FeaturedMateSkeleton />
         ) : featuredMatesError ? (
-          <WidgetErrorState
-            message={featuredMatesError}
-            suppressRecoveryActions={suppressRecoveryActions}
-            onRetry={onRetryWidgets}
-          />
+          <WidgetErrorState message={featuredMatesError} onRetry={suppressRecoveryActions ? undefined : onRetryWidgets} />
         ) : featuredMates.length === 0 ? (
-          <EmptyState>모집 중인 팟이 없습니다.</EmptyState>
+          <PanelEmptyState
+            title="모집 중인 직관 메이트가 없어요"
+            description="같이가요에서 함께 갈 사람을 직접 모집할 수 있어요."
+          />
         ) : (
           <div className="flex flex-col gap-2">
             {featuredMates.map((mate) => {
@@ -581,26 +573,20 @@ export default function HomeSecondaryPanels({
 
       <Card className={rankingCardClassName}>
         {isRankingsLoading ? (
-          <div className="space-y-3 p-4">
-            <Skeleton className="h-14 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50" />
-            <Skeleton className="h-14 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50" />
-            <Skeleton className="h-14 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800/50" />
-          </div>
+          <RankingRowsSkeleton rowClassName={`${RANKING_ROW_LG_HEIGHT_CLASS} ${homeDashboardRankingRowClass}`} />
         ) : rankingsError ? (
-          <WidgetErrorState
-            message="팀 순위를 불러오는 중 문제가 발생했습니다."
-            suppressRecoveryActions={suppressRecoveryActions}
-            onRetry={onRetryRanking}
-          />
+          <WidgetErrorState message="팀 순위를 불러오지 못했어요" onRetry={suppressRecoveryActions ? undefined : onRetryRanking} />
         ) : displayedRankings.length === 0 ? (
-          <div className="flex min-h-[240px] flex-col items-center justify-center px-4 py-16 text-center">
-            <p className="mb-2 font-bold text-zinc-900 dark:text-white">
-              {rankingDataVisibilityMessage}
-            </p>
-            <p className="text-15 font-bold text-zinc-500 dark:text-white">
-              {rankingStatusHintMessage}
-            </p>
-          </div>
+          <StateBlock
+            kind="filtered"
+            layout="row"
+            bare
+            icon={<TrophyIcon className="h-5 w-5" />}
+            title={rankingDataVisibilityMessage}
+            description={rankingStatusHintMessage}
+            className="px-1 py-2"
+            testId="home-ranking-empty"
+          />
         ) : (
           <div>
             {myTeamRanking ? (

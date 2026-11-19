@@ -1,85 +1,63 @@
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import EmptyState from '../common/EmptyState';
+import StateBlock from '../status/StateBlock';
 import { isManualBaseballDataRequiredCode } from '../../utils/errorUtils';
 import { PredictionTrendingUpIcon } from './PredictionShellIcons';
+import { PREDICTION_SURFACE_CARD_CLASS } from './predictionUiTokens';
 
 interface PredictionMatchesErrorViewProps {
+  /** 서버 원문 메시지 — 화면에는 쓰지 않습니다 (진단용으로만 전달). */
   matchesLoadErrorMessage: string | null;
   matchesLoadErrorCode: string | null;
   predictionRecoveryPath: string;
+  /** 특정 경기로 들어온 경우에만 전체 목록으로 돌아가는 버튼을 보여줍니다. */
+  showRecoveryLink?: boolean;
   onReloadMatches: () => void;
 }
 
 export default function PredictionMatchesErrorView({
-  matchesLoadErrorMessage,
   matchesLoadErrorCode,
   predictionRecoveryPath,
+  showRecoveryLink = false,
   onReloadMatches,
 }: PredictionMatchesErrorViewProps) {
   const isManualDataRequired = isManualBaseballDataRequiredCode(matchesLoadErrorCode);
   const title = isManualDataRequired
     ? '야구 데이터 준비가 필요합니다'
-    : '예측 경기 데이터를 불러오지 못했습니다.';
-  const helperText = isManualDataRequired
-    ? '운영자가 데이터를 제공하면 다시 확인할 수 있습니다.'
-    : '잠시 후 다시 시도하거나 새로고침해 주세요.';
+    : '경기 일정을 불러오지 못했어요';
   const description = isManualDataRequired
-    ? helperText
-    : matchesLoadErrorMessage || '서비스 연결이 불안정합니다. 잠시 후 다시 시도해주세요.';
+    ? '운영자가 데이터를 제공하면 다시 확인할 수 있습니다.'
+    : '잠시 연결이 불안정했어요. 다시 불러오면 경기 일정을 확인할 수 있어요.';
 
   return (
     <Card
       data-testid="prediction-empty-state"
-      className={`relative overflow-hidden rounded-2xl border p-5 text-center shadow-sm dark:bg-card dark:shadow-md sm:p-7 ${
-        isManualDataRequired
-          ? 'border-amber-200 bg-amber-50/80 dark:border-amber-900/50'
-          : 'border-slate-200/70 bg-slate-50 dark:border-border'
-      }`}
+      className={`${PREDICTION_SURFACE_CARD_CLASS} overflow-hidden rounded-2xl p-0`}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(115deg,rgba(100,116,139,0.07)_0px,rgba(100,116,139,0.07)_1px,transparent_1px,transparent_13px)]"
-      />
-      <EmptyState
-        testId="prediction-empty-state-content"
+      <StateBlock
+        kind={isManualDataRequired ? 'gated' : 'error'}
+        bare
+        icon={isManualDataRequired ? <PredictionTrendingUpIcon className="h-5 w-5" /> : undefined}
         title={title}
         description={description}
-        tone={isManualDataRequired ? 'warning' : 'danger'}
-        className="relative min-h-0 border-0 bg-transparent p-0 shadow-none"
-        icon={(
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm dark:border-border dark:bg-secondary">
-            <PredictionTrendingUpIcon className={`h-7 w-7 ${
-              isManualDataRequired
-                ? 'text-amber-600 dark:text-amber-300'
-                : 'text-slate-500 dark:text-white'
-            }`}
-            />
-          </div>
-        )}
-        action={(
-          <>
-            <Button
-              data-testid="prediction-empty-retry"
-              size="touch"
-              variant="brand"
-              onClick={onReloadMatches}
-            >
-              다시 불러오기
-            </Button>
-            <Button
-              data-testid="prediction-empty-recovery"
-              size="touch"
-              variant="outline"
-              className="border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
-              onClick={() => {
-                window.location.href = predictionRecoveryPath;
-              }}
-            >
-              예측 목록으로 이동
-            </Button>
-          </>
-        )}
+        onRetry={onReloadMatches}
+        retryLabel="다시 불러오기"
+        retryTestId="prediction-empty-retry"
+        className="py-10"
+        testId="prediction-empty-state-content"
+        action={showRecoveryLink ? (
+          <Button
+            data-testid="prediction-empty-recovery"
+            size="sm"
+            variant="outline"
+            className="rounded-10 border-slate-200 bg-white px-3 text-13 font-bold text-slate-700 hover:bg-slate-50 dark:border-border dark:bg-card dark:text-white"
+            onClick={() => {
+              window.location.href = predictionRecoveryPath;
+            }}
+          >
+            전체 경기 목록 보기
+          </Button>
+        ) : undefined}
       />
     </Card>
   );

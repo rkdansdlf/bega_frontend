@@ -7,6 +7,7 @@ import { useTodayKey } from '../../hooks/useTodayKey';
 import type { FeaturedMateCard, HomeWidgetsResponse } from '../../types/home';
 import { buildDisplayableRankings } from '../../utils/homeDashboard';
 import { getRankingDisplayName } from '../../utils/homeTeamNameResolution';
+import HomeSecondaryPanelsSkeleton from './HomeSecondaryPanelsSkeleton';
 const HomeSecondaryPanels = lazy(() => import('./HomeSecondaryPanels'));
 
 const HOME_DASHBOARD_TEAM_COUNT = 10;
@@ -64,35 +65,7 @@ export default function HomeSecondaryPanelsContainer({
   const queryClient = useQueryClient();
   const todayKey = useTodayKey();
   const [rankingSeasonOverride, setRankingSeasonOverride] = useState<number | null>(null);
-  const homeSecondaryPanelsFallback = (
-    <div
-      aria-label="홈 보조 패널"
-      className="space-y-5"
-      data-priority="secondary"
-      data-testid="home-secondary-panels"
-    >
-      <div className="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-12">
-        <div className="flex flex-col gap-4 lg:col-span-8">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <section className="space-y-3">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">실시간 인기 응원글</h3>
-              <div className={`min-h-[238px] rounded-2xl border border-zinc-200 bg-white/80 dark:border-zinc-800 dark:bg-card/70 ${HOME_DASHBOARD_DESKTOP_CARD_HEIGHT_CLASS}`} />
-            </section>
-            <section className="space-y-3">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">직관 메이트 찾기</h3>
-              <div className={`min-h-[238px] rounded-2xl border border-zinc-200 bg-white/80 dark:border-zinc-800 dark:bg-card/70 ${HOME_DASHBOARD_DESKTOP_CARD_HEIGHT_CLASS}`} />
-            </section>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 lg:col-span-4">
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">팀 순위</h2>
-            <div className={`min-h-[320px] rounded-2xl border border-zinc-200 bg-white/80 dark:border-zinc-800 dark:bg-card/70 ${HOME_DASHBOARD_DESKTOP_CARD_HEIGHT_CLASS}`} />
-          </section>
-        </div>
-      </div>
-    </div>
-  );
+  const homeSecondaryPanelsFallback = <HomeSecondaryPanelsSkeleton />;
 
   useEffect(() => {
     setRankingSeasonOverride(null);
@@ -146,15 +119,15 @@ export default function HomeSecondaryPanelsContainer({
     : visualQaStateOverride.status === 'loading' && !widgetsData;
   const hotCheerPosts = widgetsData?.hotCheerPosts ?? [];
   const featuredMates = widgetsData?.featuredMates ?? [];
-  const hotCheerError = widgetsFailedWithoutData ? '인기 응원글을 불러오지 못했습니다.' : null;
-  const featuredMatesError = widgetsFailedWithoutData ? '직관 메이트 목록을 불러오지 못했습니다.' : null;
+  const hotCheerError = widgetsFailedWithoutData ? '인기 응원글을 불러오지 못했어요' : null;
+  const featuredMatesError = widgetsFailedWithoutData ? '메이트 모집글을 불러오지 못했어요' : null;
   const rankingSourceMessage = rankingSnapshot?.rankingSourceMessage ?? '';
   const rankingDataVisibilityMessage = displayableRankings.length === 0 && (rankingSnapshot?.rankings.length ?? 0) > 0
-    ? '순위 데이터에서 정규 팀이 아닌 항목이 감지되어 표시 가능한 팀 순위가 없습니다.'
-    : (rankingSourceMessage || '현재 시즌의 팀 순위 집계 데이터가 없습니다.');
-  const rankingStatusHintMessage = rankingSnapshot?.isOffSeason
-    ? '현재는 비시즌이므로 이전 시즌 순위를 표시하고 있습니다.'
-    : '현재 시즌이 시작된 상태입니다. 시즌 순위는 경기 결과 집계 후 표시됩니다.';
+    ? '지금은 표시할 수 있는 팀 순위가 없어요'
+    : `${rankingSeasonYear} 시즌 순위가 아직 집계되지 않았어요`;
+  const rankingStatusHintMessage = rankingSourceMessage || (rankingSnapshot?.isOffSeason
+    ? '연도 옆 화살표로 지난 시즌 순위를 볼 수 있어요.'
+    : '경기 결과가 쌓이면 이 자리에 순위가 표시돼요.');
 
   const handleRetryWidgets = () => {
     if (visualQaStateOverride !== undefined) {
