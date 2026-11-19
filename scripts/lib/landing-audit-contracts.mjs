@@ -90,14 +90,27 @@ export const getLandingInteractiveSetFailures = (interactiveElements) => {
     && element?.testId === 'landing-home-cta'
   ));
   const stepButtons = outsideFooter.filter((element) => element?.stepIndex != null);
-  const expectedOutsideFooter = [...tickerToggles, ...homeCtas, ...stepButtons];
+  // 앱 미리보기 자동 전환 정지 버튼 (WCAG 2.2.2). prefers-reduced-motion 환경에서는
+  // 자동 전환이 없어 버튼도 렌더링되지 않으므로 0개 또는 1개를 허용한다.
+  const autoplayToggles = outsideFooter.filter((element) => (
+    element?.tagName?.toLowerCase() === 'button'
+    && element?.testId === 'landing-app-preview-autoplay-toggle'
+  ));
+  const expectedOutsideFooter = [...tickerToggles, ...homeCtas, ...stepButtons, ...autoplayToggles];
   const unexpectedOutsideFooter = outsideFooter.filter((element) => !expectedOutsideFooter.includes(element));
 
   // Outside the footer, the page's only deliberate controls are the ticker
-  // toggle, the home CTA, and the three app-preview step buttons — matching
+  // toggle, the home CTA, the three app-preview step buttons, and the optional
+  // app-preview autoplay toggle — matching
   // the contract already locked by cypress/e2e/landing-visual.cy.ts.
-  if (outsideFooter.length !== 5) {
-    failures.push(`expected exactly 5 interactive elements outside the footer, received ${outsideFooter.length}`);
+  if (autoplayToggles.length > 1) {
+    failures.push(`expected at most 1 landing-app-preview-autoplay-toggle button, received ${autoplayToggles.length}`);
+  } else if (autoplayToggles.length === 1 && !String(autoplayToggles[0].label || '').trim()) {
+    failures.push('landing-app-preview-autoplay-toggle button is missing an accessible label');
+  }
+  const expectedOutsideFooterCount = 5 + autoplayToggles.length;
+  if (outsideFooter.length !== expectedOutsideFooterCount) {
+    failures.push(`expected exactly ${expectedOutsideFooterCount} interactive elements outside the footer, received ${outsideFooter.length}`);
   }
   if (tickerToggles.length !== 1) {
     failures.push(`expected exactly 1 landing-ticker-toggle button, received ${tickerToggles.length}`);

@@ -41,6 +41,10 @@ export default function LandingTicker() {
 
   return (
     <aside data-testid="landing-score-ticker" data-vqa-overflow="allowed" aria-label="BEGA 기능 예시 스코어">
+      {/* 스크린리더용 aria-label 만으로는 부족하다: 눈으로 보는 사용자에게도 가짜 점수임을 밝힌다. */}
+      <span className="landing-ticker-demo-badge" data-testid="landing-ticker-demo-badge">
+        예시 화면 · 실제 경기 아님
+      </span>
       <div
         className="landing-ticker-track"
         data-motion-loop

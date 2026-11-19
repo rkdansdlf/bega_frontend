@@ -1,36 +1,46 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import LandingPhonePreview from './LandingPhonePreview';
-import { LANDING_APP_PREVIEW_HINT, LANDING_APP_PREVIEW_STEPS } from './landingShowcaseData';
+import {
+  LANDING_APP_PREVIEW_AUTOPLAY_LABELS,
+  LANDING_APP_PREVIEW_DEMO_NOTE,
+  LANDING_APP_PREVIEW_HINT,
+  LANDING_APP_PREVIEW_STEPS,
+} from './landingShowcaseData';
 
 const SCREEN_COUNT = LANDING_APP_PREVIEW_STEPS.length;
 const AUTO_ADVANCE_MS = 4_800;
 
 export default function LandingAppPreview() {
   const [activeScreen, setActiveScreen] = useState(0);
-  const intervalRef = useRef<number | null>(null);
+  // 자동 전환 여부. 사용자가 화면을 직접 고르거나 일시정지 버튼을 누르면 false 가 된다.
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  // 모션 감소 설정이면 자동 전환 자체가 없으므로 정지 버튼도 필요 없다.
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (motionPreference.matches) return undefined;
+    setPrefersReducedMotion(motionPreference.matches);
 
-    intervalRef.current = window.setInterval(() => {
+    const handleChange = (event: MediaQueryListEvent) => setPrefersReducedMotion(event.matches);
+    motionPreference.addEventListener('change', handleChange);
+    return () => motionPreference.removeEventListener('change', handleChange);
+  }, []);
+
+  // isAutoPlaying 이 바뀔 때마다 타이머를 새로 만들거나 정리한다.
+  // (WCAG 2.2.2: 자동으로 바뀌는 콘텐츠는 사용자가 멈출 수 있어야 한다.)
+  useEffect(() => {
+    if (prefersReducedMotion || !isAutoPlaying) return undefined;
+
+    const intervalId = window.setInterval(() => {
       setActiveScreen((previous) => (previous + 1) % SCREEN_COUNT);
     }, AUTO_ADVANCE_MS);
 
-    return () => {
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, []);
+    return () => window.clearInterval(intervalId);
+  }, [isAutoPlaying, prefersReducedMotion]);
 
   const selectScreen = (index: number) => {
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+    setIsAutoPlaying(false);
     setActiveScreen(index);
   };
 
@@ -73,7 +83,24 @@ export default function LandingAppPreview() {
               </div>
             ))}
           </div>
+          {!prefersReducedMotion && (
+            <button
+              type="button"
+              className="landing-app-preview-autoplay-toggle"
+              data-testid="landing-app-preview-autoplay-toggle"
+              data-vqa-min-touch="44"
+              aria-pressed={!isAutoPlaying}
+              onClick={() => setIsAutoPlaying((playing) => !playing)}
+            >
+              {isAutoPlaying
+                ? LANDING_APP_PREVIEW_AUTOPLAY_LABELS.pause
+                : LANDING_APP_PREVIEW_AUTOPLAY_LABELS.play}
+            </button>
+          )}
           <p className="landing-app-preview-hint">{LANDING_APP_PREVIEW_HINT}</p>
+          <p className="landing-app-preview-demo-note" data-testid="landing-app-preview-demo-note">
+            {LANDING_APP_PREVIEW_DEMO_NOTE}
+          </p>
         </div>
 
         <div className="landing-app-preview-phone" data-reveal="120">
