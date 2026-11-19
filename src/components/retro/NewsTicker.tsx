@@ -58,6 +58,8 @@ export interface TickerMessage {
 }
 
 interface NewsTickerProps {
+  /** 보여줄 소식이 없을 때의 한 줄 문구 (로딩 · 실패 · 비어 있음에 따라 다름). */
+  emptyText?: string;
   messages: TickerMessage[];
   speed?: number;
   containerTestId?: string;
@@ -74,7 +76,12 @@ function getTypeIcon(type: string): string {
   }
 }
 
-export default function NewsTicker({ messages, speed = 50, containerTestId }: NewsTickerProps) {
+export default function NewsTicker({
+  messages,
+  speed = 50,
+  containerTestId,
+  emptyText = '아직 새로운 적중 소식이 없어요',
+}: NewsTickerProps) {
   const duration = useMemo(() => {
     if (messages.length === 0) return 10;
     const totalChars = messages.reduce((acc, message) => acc + message.text.length, 0);
@@ -105,7 +112,7 @@ export default function NewsTicker({ messages, speed = 50, containerTestId }: Ne
           style={{
             fontFamily: retroText,
             fontSize: '12px',
-            color: '#6a6a8a',
+            color: '#a5a5c4',
             textAlign: 'center',
             padding: '0 20px',
             letterSpacing: '-0.3px',
@@ -113,7 +120,7 @@ export default function NewsTicker({ messages, speed = 50, containerTestId }: Ne
             imageRendering: 'pixelated',
           }}
         >
-          📡 실시간 업데이트 대기 중...
+          {emptyText}
         </div>
       </div>
     );

@@ -31,6 +31,11 @@ test('navbar keeps deterministic mobile state development-only without replacing
   assert.match(source, /<PublicNavbarDesktopAuthControls/);
 });
 
+test('navbar shows the notification bell only to a logged-in user, even inside the authenticated shell', () => {
+  assert.match(source, /const shouldShowDesktopNotificationButton = authenticatedShell && isLoggedIn && isDesktop;/);
+  assert.match(source, /const shouldShowMobileNotificationButton = authenticatedShell && isLoggedIn && !isDesktop/);
+});
+
 test('navbar exposes every mobile interaction surface and contains pressure copy', () => {
   assert.match(source, /data-testid=\{import\.meta\.env\.DEV \? 'navbar-menu-toggle' : undefined\}/);
   assert.match(source, /data-testid=\{import\.meta\.env\.DEV \? 'navbar-menu-theme-toggle' : undefined\}/);

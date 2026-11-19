@@ -299,6 +299,22 @@ export const shouldMountAuthBootstrapRuntime = (
   return shouldInitializeAuthLoading(pathname, options);
 };
 
+/**
+ * 헤더가 로그인 사용자 폭(알림 · DM 자리)을 미리 잡아둘지.
+ * 저장된 힌트는 첫 부트스트랩이 끝나기 전까지만 믿습니다. 5xx 등으로 힌트가 남아 있어도
+ * 로그아웃으로 결론이 나면 손님 헤더로 돌아갑니다.
+ */
+export const shouldReserveAuthenticatedNavbarChrome = (state: {
+  isLoggedIn: boolean;
+  isAuthBootstrapPending: boolean;
+  isAuthLoading: boolean;
+  hasPersistedAuthHint: boolean;
+}): boolean => (
+  state.isLoggedIn
+  || state.isAuthBootstrapPending
+  || (state.isAuthLoading && state.hasPersistedAuthHint)
+);
+
 export const shouldHoldAuthUiDuringBootstrap = (
   pathname: string,
   options: {

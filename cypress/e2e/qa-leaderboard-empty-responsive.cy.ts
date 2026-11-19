@@ -72,7 +72,7 @@ describe('Leaderboard responsive empty-state visual acceptance', () => {
       cy.wait('@emptyRecentScores');
       cy.get('[data-testid="leaderboard-page-runtime"]').should('be.visible');
       cy.contains('야구경기 예측 결과').should('be.visible');
-      cy.contains('데이터가 없습니다').should('be.visible');
+      cy.contains('아직 집계된 예측 결과가 없어요').should('be.visible');
       cy.get('html').should(theme === 'dark' ? 'have.class' : 'not.have.class', 'dark');
 
       if (width <= 768) {
