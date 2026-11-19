@@ -225,8 +225,6 @@ export default function MateCheckIn({ visualQaStateOverride: visualQaStateOverri
     setIsChecking(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       const createdCheckIn = await createCheckIn({
         partyId: party.id,
         location: party.stadium,
