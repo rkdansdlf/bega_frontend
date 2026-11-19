@@ -59,19 +59,23 @@ export default function CheerDetailActionBarRuntime({
     onToggleLike,
 }: CheerDetailActionBarRuntimeProps) {
     return (
-        <div className="mt-3 grid grid-cols-4 gap-1 sm:mt-4 sm:gap-1.5 lg:gap-2.5">
+        // 열 수는 뷰포트(px)가 아니라 이 막대가 놓인 영역의 폭(rem)으로 정한다(CheerDetailActionBar.css).
+        // 칩 내용은 글자 크기(rem)에 따라 커지므로, 글자를 키우면 기준도 같이 커져 열이 자동으로 줄어든다.
+        // 같은 클래스를 로딩 스켈레톤(CheerDetailArticleRuntime의 actionBarFallback)도 써서 레이아웃이 튀지 않게 한다.
+        <div className="cheer-detail-chip-host mt-3 sm:mt-4">
+        <div className="cheer-detail-chip-bar grid gap-1 sm:gap-1.5 lg:gap-2.5">
             <button
                 type="button"
                 onClick={onToggleLike}
                 aria-label={`좋아요 ${interactionLikeCount.toLocaleString()}`}
                 className={cn(
-                    'flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center whitespace-nowrap transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
+                    'flex min-h-11 flex-wrap w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center whitespace-nowrap transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                     interactionLikedByMe
                         ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300'
                         : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:text-white dark:hover:bg-slate-950'
                 )}
             >
-                <HeartIcon className={cn('h-8 w-8 flex-shrink-0', interactionLikedByMe && 'fill-current')} />
+                <HeartIcon className={cn('h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8', interactionLikedByMe && 'fill-current')} />
                 <span className="whitespace-nowrap text-body font-bold leading-none sm:text-body">
                     {interactionLikeCount.toLocaleString()}
                 </span>
@@ -81,9 +85,9 @@ export default function CheerDetailActionBarRuntime({
                 type="button"
                 onClick={onScrollToComments}
                 aria-label={`댓글 ${commentCount.toLocaleString()}`}
-                className="flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-1.5 text-center text-slate-700 whitespace-nowrap transition-all duration-150 hover:-translate-y-px hover:border-sky-200 hover:bg-sky-50 active:scale-[0.98] dark:text-white dark:hover:border-sky-500/20 dark:hover:bg-sky-500/10 sm:gap-1"
+                className="flex min-h-11 flex-wrap w-full items-center justify-center gap-0.5 rounded-full border border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] px-1.5 text-center text-slate-700 whitespace-nowrap transition-all duration-150 hover:-translate-y-px hover:border-sky-200 hover:bg-sky-50 active:scale-[0.98] dark:text-white dark:hover:border-sky-500/20 dark:hover:bg-sky-500/10 sm:gap-1"
             >
-                <MessageSquareIcon className="h-8 w-8 flex-shrink-0" />
+                <MessageSquareIcon className="h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8" />
                 <span className="whitespace-nowrap text-body font-bold leading-none sm:text-body">
                     {commentCount.toLocaleString()}
                 </span>
@@ -111,7 +115,7 @@ export default function CheerDetailActionBarRuntime({
                             onRepostMenuOpenChange(!isRepostMenuOpen);
                         }}
                         className={cn(
-                            'flex min-h-11 w-full items-center justify-center gap-0.5 whitespace-nowrap rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
+                            'flex min-h-11 flex-wrap w-full items-center justify-center gap-0.5 whitespace-nowrap rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                             repostButtonActive
                                 ? 'border-[var(--cheer-repost-on)]/30 bg-emerald-50 dark:bg-emerald-500/15'
                                 : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-emerald-200 hover:bg-emerald-50 dark:text-white dark:hover:border-emerald-500/20 dark:hover:bg-emerald-500/10'
@@ -122,7 +126,7 @@ export default function CheerDetailActionBarRuntime({
                         aria-expanded={isRepostMenuOpen}
                         aria-haspopup="menu"
                     >
-                        <RepeatIcon className="h-8 w-8 flex-shrink-0" />
+                        <RepeatIcon className="h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8" />
                         <span className="whitespace-nowrap text-body font-bold leading-none sm:text-body">
                             {repostCount.toLocaleString()}
                         </span>
@@ -202,17 +206,18 @@ export default function CheerDetailActionBarRuntime({
                 onClick={onToggleBookmark}
                 aria-label={`북마크 ${interactionBookmarkCount.toLocaleString()}`}
                 className={cn(
-                    'flex min-h-11 w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
+                    'flex min-h-11 flex-wrap w-full items-center justify-center gap-0.5 rounded-full border px-1.5 text-center transition-all duration-150 hover:-translate-y-px active:scale-[0.98] sm:gap-1',
                     interactionBookmarked
                         ? 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300'
                         : 'border-[var(--cheer-line-10)] bg-[var(--cheer-card-bg)] text-slate-700 hover:border-amber-200 hover:bg-amber-50 dark:text-white dark:hover:border-amber-500/20 dark:hover:bg-amber-500/10'
                 )}
             >
-                <BookmarkIcon className={cn('h-8 w-8 flex-shrink-0', interactionBookmarked && 'fill-current')} />
+                <BookmarkIcon className={cn('h-6 w-6 flex-shrink-0 sm:h-8 sm:w-8', interactionBookmarked && 'fill-current')} />
                 <span className="whitespace-nowrap text-body font-bold leading-none sm:text-body">
                     {interactionBookmarkCount.toLocaleString()}
                 </span>
             </button>
+        </div>
         </div>
     );
 }
