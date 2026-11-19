@@ -131,6 +131,11 @@ export const LANDING_APP_PREVIEW_STEPS = [
 ] as const;
 
 export const LANDING_APP_PREVIEW_HINT = '화면을 눌러 직접 넘겨보세요';
+export const LANDING_APP_PREVIEW_DEMO_NOTE = '※ 화면 속 경기·게시글·프로필은 이해를 돕기 위한 예시이며 실제 데이터가 아닙니다.';
+export const LANDING_APP_PREVIEW_AUTOPLAY_LABELS = {
+  pause: '자동 전환 일시정지',
+  play: '자동 전환 재생',
+} as const;
 
 export interface LandingPhoneNavTab {
   label: string;
@@ -147,8 +152,8 @@ export const LANDING_PHONE_NAV_TABS: readonly LandingPhoneNavTab[] = [
 export const LANDING_PHONE_HOME_SCREEN = {
   heading: '오늘의 KBO 경기',
   subheading: '실시간 경기 정보와 티켓 예매를 확인하세요',
-  seasonLabel: '2025 시즌',
-  date: '2025.10.26(일)',
+  seasonLabel: '예시 시즌',
+  date: '10.26(일)',
   seasonTabs: ['정규시즌', '포스트시즌', '한국시리즈'],
   activeSeasonTabIndex: 2,
   ticketNote: '*경기별 티켓 예매 날짜는 구단별 판매처에서 확인하실 수 있습니다.',
@@ -198,7 +203,7 @@ export const LANDING_PHONE_MATE_SCREEN = {
       status: '모집 중',
       homeTeam: 'lotte' as TeamKey,
       awayTeam: 'samsung' as TeamKey,
-      datetime: '2025-11-28 20:40:00',
+      datetime: '11.28(금) 20:40',
       venue: '대전한화생명이글스파크 · 202 203',
       party: '1/2명',
     },
@@ -211,7 +216,7 @@ export const LANDING_PHONE_MATE_SCREEN = {
       status: '모집 중',
       homeTeam: 'kiwoom' as TeamKey,
       awayTeam: 'kia' as TeamKey,
-      datetime: '2025-11-28 18:30:00',
+      datetime: '11.28(금) 18:30',
       venue: '고척스카이돔 · A 201',
       party: '1/2명',
     },
@@ -274,7 +279,7 @@ export const LANDING_MATE_DATA = {
   team: 'lg' as TeamKey,
   matchup: 'LG vs 두산 · 잠실',
   status: '모집 중',
-  details: ['2025.10.26(일) 18:30', '2/4명', '3루 응원석'],
+  details: ['10.26(일) 18:30', '2/4명', '3루 응원석'],
   steps: ['신청', '승인', '채팅'],
   depositCopy: '경기 당일 체크인으로 보증금을 환불받으세요',
 };

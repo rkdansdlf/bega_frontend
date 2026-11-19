@@ -812,9 +812,9 @@ export default function Navbar(props: NavbarProps) {
                 )}
               >
                 <Icon className="w-5 h-5 shrink-0" />
-                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-[10.5px] font-bold leading-none">{item.label}</span>
+                <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-xs font-bold leading-none tracking-tight">{item.label}</span>
                 {item.id === 'mate' && chatUnreadCount > 0 && (
-                  <span className="absolute top-1 right-2 inline-flex min-w-[14px] h-3.5 items-center justify-center rounded-full bg-red-600 px-1 text-9 font-bold leading-none text-white">
+                  <span className="absolute top-1 right-2 inline-flex min-w-4 h-4 items-center justify-center rounded-full bg-red-600 px-1 text-11 font-bold leading-none text-white">
                     {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                   </span>
                 )}
@@ -829,7 +829,7 @@ export default function Navbar(props: NavbarProps) {
             data-testid="auth-mobile-chatbot-tab"
           >
             <img src={baseballLogo} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-            <span data-mobile-chrome-label className="mobile-chrome-label text-[10.5px] font-bold leading-none">BEGA</span>
+            <span data-mobile-chrome-label className="mobile-chrome-label text-xs font-bold leading-none tracking-tight">BEGA</span>
           </button>
         </div>
       </nav>

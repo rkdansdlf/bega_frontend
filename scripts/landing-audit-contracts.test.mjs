@@ -171,6 +171,41 @@ test('landing interactive contract accepts the ticker toggle, home CTA, app-prev
   assert.ok(failures.some((failure) => failure.includes('rogue-focus-target')));
 });
 
+test('landing interactive contract allows one optional app-preview autoplay toggle', () => {
+  const base = (overrides) => ({
+    tagName: 'button',
+    testId: null,
+    label: '라벨',
+    stepIndex: null,
+    isInsideFooter: false,
+    descriptor: 'element',
+    ...overrides,
+  });
+  const footerLinks = Array.from({ length: 14 }, (_, index) => base({
+    tagName: 'a',
+    label: `푸터 링크 ${index}`,
+    isInsideFooter: true,
+  }));
+  const core = [
+    base({ testId: 'landing-ticker-toggle' }),
+    base({ testId: 'landing-home-cta' }),
+    ...[0, 1, 2].map((index) => base({ tagName: 'div', role: 'button', stepIndex: String(index) })),
+    ...footerLinks,
+  ];
+  const autoplay = base({ testId: 'landing-app-preview-autoplay-toggle', label: '자동 전환 일시정지' });
+
+  assert.deepEqual(helpers.getLandingInteractiveSetFailures([...core, autoplay]), []);
+  assert.deepEqual(helpers.getLandingInteractiveSetFailures(core), []);
+  assert.ok(
+    helpers.getLandingInteractiveSetFailures([...core, autoplay, autoplay])
+      .some((failure) => failure.includes('at most 1 landing-app-preview-autoplay-toggle')),
+  );
+  assert.ok(
+    helpers.getLandingInteractiveSetFailures([...core, { ...autoplay, label: '' }])
+      .some((failure) => failure.includes('autoplay-toggle button is missing an accessible label')),
+  );
+});
+
 test('Landing screenshot guard traverses the static manifest closure without rejecting approved local assets', () => {
   assert.equal(typeof helpers.findForbiddenManifestClosureReferences, 'function');
 

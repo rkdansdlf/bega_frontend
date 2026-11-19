@@ -352,7 +352,7 @@ describe('Landing hero and ticker foundation', () => {
       cy.get('.landing-mate-matchup h3').should('have.text', 'LG vs 두산 · 잠실');
       cy.get('.landing-mate-details li')
         .then(($details) => [...$details].map((detail) => detail.textContent?.trim()))
-        .should('deep.equal', ['2025.10.26(일) 18:30', '2/4명', '3루 응원석']);
+        .should('deep.equal', ['10.26(일) 18:30', '2/4명', '3루 응원석']);
       cy.get('.landing-mate-steps li')
         .then(($steps) => [...$steps].map((step) => step.textContent?.trim()))
         .should('deep.equal', ['신청', '승인', '채팅']);
@@ -669,12 +669,16 @@ describe('Landing hero and ticker foundation', () => {
       const insideFooter = interactive.filter((element) => footer?.contains(element));
 
       // Outside the footer, the page's only deliberate controls are the ticker
-      // toggle, the home CTA, and the three app-preview step buttons.
+      // toggle, the home CTA, the three app-preview step buttons, and the
+      // app-preview autoplay toggle (hidden under prefers-reduced-motion).
       const summary = outsideFooter.map((element) => (
         `${element.tagName.toLowerCase()}[data-testid="${element.dataset.testid ?? ''}"]`
         + `[data-step-index="${element.dataset.stepIndex ?? ''}"] "${normalizedText(element)}"`
       )).join(', ');
-      expect(outsideFooter, `landing interactive elements outside footer: ${summary}`).to.have.length(5);
+      expect(outsideFooter, `landing interactive elements outside footer: ${summary}`).to.have.length(6);
+      const autoplayToggle = outsideFooter.find((element) => element.dataset.testid === 'landing-app-preview-autoplay-toggle');
+      expect(autoplayToggle?.tagName).to.equal('BUTTON');
+      expect(normalizedText(autoplayToggle as HTMLElement)).to.equal('자동 전환 일시정지');
       const tickerToggle = outsideFooter.find((element) => element.dataset.testid === 'landing-ticker-toggle');
       expect(tickerToggle?.tagName).to.equal('BUTTON');
       expect(normalizedText(tickerToggle as HTMLElement)).to.equal('티커 일시정지');

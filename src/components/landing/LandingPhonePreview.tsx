@@ -9,6 +9,15 @@ interface LandingPhonePreviewProps {
   activeScreen: number;
 }
 
+// opacity: 0 은 눈에만 숨길 뿐 접근성 트리에는 남는다. 그래서 비활성 패널에는
+// aria-hidden(스크린리더가 읽지 않음)과 inert(키보드 포커스·클릭도 차단)를 함께 건다.
+// React 18 은 `inert` 를 알지 못해 빈 문자열을 넘겨 HTML 속성으로 직접 렌더링한다.
+const getPanelA11yProps = (isActive: boolean) => (
+  isActive
+    ? {}
+    : { 'aria-hidden': true as const, inert: '' }
+);
+
 export default function LandingPhonePreview({ activeScreen }: LandingPhonePreviewProps) {
   return (
     <div className="landing-phone-app">
@@ -39,13 +48,28 @@ export default function LandingPhonePreview({ activeScreen }: LandingPhonePrevie
       </nav>
 
       <div className="landing-phone-screens">
-        <div className="landing-phone-screen-panel" data-phone-screen={0} data-active={activeScreen === 0 || undefined}>
+        <div
+          className="landing-phone-screen-panel"
+          data-phone-screen={0}
+          data-active={activeScreen === 0 || undefined}
+          {...getPanelA11yProps(activeScreen === 0)}
+        >
           <LandingPhoneHomeScreen />
         </div>
-        <div className="landing-phone-screen-panel" data-phone-screen={1} data-active={activeScreen === 1 || undefined}>
+        <div
+          className="landing-phone-screen-panel"
+          data-phone-screen={1}
+          data-active={activeScreen === 1 || undefined}
+          {...getPanelA11yProps(activeScreen === 1)}
+        >
           <LandingPhoneMateScreen />
         </div>
-        <div className="landing-phone-screen-panel" data-phone-screen={2} data-active={activeScreen === 2 || undefined}>
+        <div
+          className="landing-phone-screen-panel"
+          data-phone-screen={2}
+          data-active={activeScreen === 2 || undefined}
+          {...getPanelA11yProps(activeScreen === 2)}
+        >
           <LandingPhoneBoardScreen />
         </div>
       </div>
