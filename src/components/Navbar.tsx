@@ -814,7 +814,7 @@ export default function Navbar(props: NavbarProps) {
                 <Icon className="w-5 h-5 shrink-0" />
                 <span data-mobile-chrome-label className="mobile-chrome-label max-w-full truncate text-xs font-bold leading-none tracking-tight">{item.label}</span>
                 {item.id === 'mate' && chatUnreadCount > 0 && (
-                  <span className="absolute top-1 right-2 inline-flex min-w-[16px] h-4 items-center justify-center rounded-full bg-red-600 px-1 text-11 font-bold leading-none text-white">
+                  <span className="absolute top-1 right-2 inline-flex min-w-4 h-4 items-center justify-center rounded-full bg-red-600 px-1 text-11 font-bold leading-none text-white">
                     {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                   </span>
                 )}

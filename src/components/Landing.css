@@ -85,20 +85,13 @@
   color: #eab308;
 }
 
-.landing-ticker-toggle {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  z-index: 1;
-  min-height: 44px;
-  padding: 8px 12px;
-  transform: translateY(-50%);
+/* 티커 토글 · 예시 배지 · 앱 미리보기 자동 전환 버튼은 같은 알약(pill) 모양을 공유한다. */
+.landing-ticker-toggle,
+.landing-ticker-demo-badge,
+.landing-app-preview-autoplay-toggle {
   border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 999px;
-  background: #173b34;
-  box-shadow: -16px 0 18px #173b34;
   color: #fff;
-  cursor: pointer;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
@@ -106,57 +99,45 @@
   white-space: nowrap;
 }
 
-.landing-ticker-toggle:focus-visible {
-  outline: 2px solid #63b39b;
-  outline-offset: 2px;
-}
-
-/* 티커의 점수는 시연용 예시다. 좌측에 고정해 스크롤되는 내용 위에 항상 보이게 한다. */
+/* 티커 줄 위에 고정되어 스크롤되는 내용을 가린다. */
+.landing-ticker-toggle,
 .landing-ticker-demo-badge {
   position: absolute;
   top: 50%;
-  left: 12px;
   z-index: 1;
-  padding: 4px 10px;
   transform: translateY(-50%);
-  border: 1px solid rgb(255 255 255 / 28%);
-  border-radius: 999px;
   background: #173b34;
-  box-shadow: 16px 0 18px #173b34;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 20px;
-  white-space: nowrap;
 }
 
+/* 눌러서 쓰는 두 버튼은 44px 터치 영역과 포커스 표시를 공유한다. */
+.landing-ticker-toggle,
 .landing-app-preview-autoplay-toggle {
-  display: inline-flex;
-  align-items: center;
   min-height: 44px;
-  margin-top: 12px;
-  padding: 8px 16px;
-  border: 1px solid rgb(255 255 255 / 40%);
-  border-radius: 999px;
-  background: transparent;
-  color: #fff;
+  padding: 8px 12px;
   cursor: pointer;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 20px;
 }
 
+.landing-ticker-toggle {
+  right: 12px;
+  box-shadow: -16px 0 18px #173b34;
+}
+
+.landing-ticker-toggle:focus-visible,
 .landing-app-preview-autoplay-toggle:focus-visible {
   outline: 2px solid #63b39b;
   outline-offset: 2px;
 }
 
-.landing-app-preview-demo-note {
-  margin: 8px 0 0;
-  color: #a7d5c6;
-  font-size: 12.5px;
-  font-weight: 500;
+/* 티커의 점수는 시연용 예시다. 좌측에 고정해 항상 보이게 한다. */
+.landing-ticker-demo-badge {
+  left: 0;
+  padding: 4px 10px;
+  transform: translate(12px, -50%);
+}
+
+.landing-app-preview-autoplay-toggle {
+  margin: 12px 0 0;
+  background: transparent;
 }
 
 @keyframes landing-ticker {
@@ -474,11 +455,19 @@
   color: #fff;
 }
 
-.landing-app-preview-hint {
+.landing-app-preview-hint,
+.landing-app-preview-demo-note {
   margin: 18px 0 0;
   color: #63b39b;
   font-size: 12.5px;
   font-weight: 600;
+}
+
+/* 샘플 데이터 안내는 힌트와 같은 크기를 쓰되 한 단계 눌러서 보여준다. */
+.landing-app-preview-demo-note {
+  margin: 8px 0 0;
+  color: #a7d5c6;
+  font-weight: 500;
 }
 
 .landing-app-preview-phone {
