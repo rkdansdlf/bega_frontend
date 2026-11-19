@@ -134,7 +134,7 @@ export default function MateCreate({
             <MateChevronLeftIcon className="w-4 h-4 mr-2" />
             뒤로
           </Button>
-          <h1 className="mb-2 text-3xl sm:text-4xl text-primary">
+          <h1 className="mb-2 break-keep text-3xl sm:text-4xl text-primary [overflow-wrap:anywhere]">
             직관메이트 파티 만들기
           </h1>
           <p className="text-body text-gray-600 dark:text-white sm:text-base">단계별로 파티 정보를 입력해주세요</p>

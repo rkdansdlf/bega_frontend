@@ -95,6 +95,7 @@ import {
 import PlainMenu from './ui/plain-menu';
 import { ProfileAvatar } from './ui/ProfileAvatar';
 import baseballLogo from '../assets/d8ca714d95aedcc16fe63c80cbc299c6e3858c70.png';
+import './CheerDetailActionBar.css';
 
 const LazyCheerDetailActionBarRuntime = lazy(() => import('./CheerDetailActionBarRuntime'));
 const LazyCheerDetailEmbeddedPostRuntime = lazy(() => import('./CheerDetailEmbeddedPostRuntime'));
@@ -276,13 +277,17 @@ export default function CheerDetailArticleRuntime({
         </div>
     );
     const actionBarFallback = (
-        <div className="mt-3 grid grid-cols-4 gap-1 sm:mt-4 sm:gap-1.5 lg:gap-2.5" aria-busy="true" aria-label="상호작용 불러오는 중">
-            {[1, 2, 3, 4].map((item) => (
-                <div
-                    key={item}
-                    className="h-10 animate-skeleton-pulse rounded-full bg-[var(--cheer-chip-bg)]"
-                />
-            ))}
+        // 실제 막대(CheerDetailActionBarRuntime)와 같은 호스트/막대 클래스와 칩 높이(min-h-11)를 써서,
+        // 로딩이 끝날 때 열 수나 높이가 바뀌며 레이아웃이 튀지 않게 한다.
+        <div className="cheer-detail-chip-host mt-3 sm:mt-4">
+            <div className="cheer-detail-chip-bar grid gap-1 sm:gap-1.5 lg:gap-2.5" aria-busy="true" aria-label="상호작용 불러오는 중">
+                {[1, 2, 3, 4].map((item) => (
+                    <div
+                        key={item}
+                        className="h-11 animate-skeleton-pulse rounded-full bg-[var(--cheer-chip-bg)]"
+                    />
+                ))}
+            </div>
         </div>
     );
     const statsAsideFallback = (
