@@ -149,8 +149,8 @@ export default function MateManageOverviewRuntime({
           뒤로
         </Button>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="min-w-0 space-y-6">
             <Card className={`status-badge-hover-scope p-0 ${mateHeroCardClass}`}>
               <div className="border-b border-gray-200/70 bg-[linear-gradient(135deg,_rgba(22,163,74,0.12),_rgba(255,255,255,0.92)_55%,_rgba(22,163,74,0.04))] px-6 py-6 dark:border-border/70 dark:bg-[linear-gradient(135deg,_rgba(16,185,129,0.18),_rgba(0,0,0,0.94)_58%,_rgba(16,185,129,0.08))] sm:px-8">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
