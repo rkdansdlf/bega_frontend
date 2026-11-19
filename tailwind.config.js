@@ -51,6 +51,8 @@ export default {
       spacing: {
         '4.5': '1.125rem',
         '13': '3.25rem',
+        '70': '17.5rem',
+        '132': '33rem',
       },
       boxShadow: {
         'cheer-mobile-chrome': 'var(--shadow-cheer-mobile-chrome)',

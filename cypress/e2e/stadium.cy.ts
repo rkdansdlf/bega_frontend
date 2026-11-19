@@ -344,10 +344,35 @@ describe('Stadium Guide Quality Flow', () => {
     cy.wait('@getStadiums');
     cy.wait('@getFoodPlaces');
 
-    // CI sets a dummy Kakao key and forces SDK load failure; local runs without the key
-    // still exercise the same map fallback state through the missing-key message.
-    cy.contains(/카카오맵 스크립트를 불러오지 못했습니다|카카오맵 API 키가 설정되지 않았습니다/).should('be.visible');
-    cy.contains('button', '지도 다시 시도').should('be.visible');
+    // CI sets a dummy Kakao key, so the SDK load fails and StadiumMapFallback renders with
+    // reason 'unavailable'. Local runs without a key render the same fallback as 'missing-key' (no retry).
+    cy.get('[data-testid="stadium-map-fallback"]')
+      .should('be.visible')
+      .invoke('attr', 'data-map-failure-reason')
+      .should('be.oneOf', ['unavailable', 'offline', 'missing-key', 'no-coordinates'])
+      .then((reason) => {
+        const fallbackTitles: Record<string, string> = {
+          unavailable: '지도를 불러오지 못했어요',
+          offline: '인터넷 연결이 끊겨 지도를 못 불러왔어요',
+          'missing-key': '지금은 지도를 보여드릴 수 없어요',
+          'no-coordinates': '지도에 구장 위치를 표시할 수 없어요',
+        };
+        cy.get('[data-testid="stadium-map-fallback"]')
+          .should('contain', fallbackTitles[reason as string]);
+
+        if (reason === 'unavailable' || reason === 'offline') {
+          cy.get('[data-testid="stadium-map-fallback-retry"]')
+            .should('be.visible')
+            .and('contain', '다시 시도');
+        } else {
+          cy.get('[data-testid="stadium-map-fallback-retry"]').should('not.exist');
+        }
+      });
+
+    cy.get('[data-testid="stadium-map-fallback-place"]')
+      .should('be.visible')
+      .and('contain', '카카오맵에서 보기');
+
     cy.screenshot('stadium-smoke-map-sdk-failure');
 
     categoryButton('편의점').click();
