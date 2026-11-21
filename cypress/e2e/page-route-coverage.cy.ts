@@ -87,12 +87,18 @@ describe('page-by-page route coverage', () => {
   });
 
   it('5. loads and completes account recovery from a valid token', () => {
-    cy.intercept({ method: 'GET', pathname: '/api/auth/account/deletion/recovery' }, {
-      statusCode: 200,
-      body: {
-        success: true,
-        data: { scheduledFor: '2026-12-31T09:00:00.000Z' },
-      },
+    // 복구 정보 조회는 토큰을 본문에 실어 보내는 POST /recovery/info 다
+    // (src/api/accountDeletionRecoveryPublic.ts). 예전 GET /recovery 를 가로채면
+    // 요청이 영영 잡히지 않아 cy.wait 가 타임아웃 난다.
+    cy.intercept({ method: 'POST', pathname: '/api/auth/account/deletion/recovery/info' }, (request) => {
+      expect(request.body).to.deep.equal({ token: 'recovery-token' });
+      request.reply({
+        statusCode: 200,
+        body: {
+          success: true,
+          data: { scheduledFor: '2026-12-31T09:00:00.000Z' },
+        },
+      });
     }).as('getRecoveryInfo');
     cy.intercept({ method: 'POST', pathname: '/api/auth/account/deletion/recovery' }, (request) => {
       expect(request.body).to.deep.equal({ token: 'recovery-token' });
