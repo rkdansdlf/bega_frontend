@@ -1,5 +1,6 @@
 // CSP contract for HTML responses served from public/_headers (#89).
 // - GA4/GTM must be allowed in script-src / img-src / connect-src so gtag.js and its beacons load.
+// - Kakao Map SDK must be allowed in script-src / img-src / connect-src (see src/utils/kakaoMap.ts).
 // - script-src must never fall back to 'unsafe-inline'; index.html therefore must not contain
 //   inline executable <script> blocks unless their sha256 hash is listed in script-src.
 import assert from 'node:assert/strict';
@@ -17,6 +18,14 @@ const GA_GTM_BEACON_SOURCES = [
   'https://*.google-analytics.com',
   'https://*.analytics.google.com',
 ];
+
+// Kakao Map SDK: loaded dynamically from dapi.kakao.com/v2/maps/sdk.js with libraries=services.
+// sdk.js itself must pass script-src; it then loads sub-resources from t1.daumcdn.net at runtime.
+const KAKAO_MAP_SCRIPT_SOURCES = ['https://dapi.kakao.com', 'https://t1.daumcdn.net'];
+// Tiles and marker images are served as <img> equivalents from daumcdn subdomains.
+const KAKAO_MAP_IMG_SOURCES = ['https://*.daumcdn.net'];
+// Kakao Places API (services library) makes XHR to dapi.kakao.com.
+const KAKAO_MAP_CONNECT_SOURCES = ['https://dapi.kakao.com'];
 
 export const parseHeadersFile = (source) => {
   const rules = new Map();
@@ -76,15 +85,19 @@ export const collectInlineScriptHashes = (html) => {
 
 const htmlCspRules = (() => {
   const rules = parseHeadersFile(headersSource);
-  return ['/', '/*.html'].map((path) => {
+  // '/' = root, '/*.html' = prerendered .html files,
+  // '/stadium' and '/stadium/*' = routes hosting StadiumGuide / Kakao Map (direct-access CSP parity).
+  return ['/', '/*.html', '/stadium', '/stadium/*'].map((path) => {
     const policy = rules.get(path)?.['content-security-policy'];
     assert.ok(policy, `public/_headers must define Content-Security-Policy for ${path}`);
     return { path, policy, directives: parseCsp(policy) };
   });
 })();
 
-test('HTML CSP rules stay identical across "/" and "/*.html"', () => {
+test('HTML CSP rules stay identical across "/", "/*.html", "/stadium", and "/stadium/*"', () => {
   assert.equal(htmlCspRules[0].policy, htmlCspRules[1].policy);
+  assert.equal(htmlCspRules[0].policy, htmlCspRules[2].policy);
+  assert.equal(htmlCspRules[0].policy, htmlCspRules[3].policy);
 });
 
 test('HTML CSP allows GA4/GTM script and beacon hosts', () => {
@@ -138,4 +151,37 @@ test('collectInlineScriptHashes ignores external and JSON-LD scripts', () => {
   ].join('');
   const expected = `'sha256-${createHash('sha256').update('alert(1)', 'utf8').digest('base64')}'`;
   assert.deepEqual(collectInlineScriptHashes(html), [expected]);
+});
+
+test('HTML CSP allows Kakao Map SDK script sources (dapi.kakao.com and t1.daumcdn.net)', () => {
+  for (const { path, directives } of htmlCspRules) {
+    for (const source of KAKAO_MAP_SCRIPT_SOURCES) {
+      assert.ok(
+        directives['script-src']?.includes(source),
+        `${path} script-src must allow Kakao Map domain ${source}`,
+      );
+    }
+  }
+});
+
+test('HTML CSP allows Kakao Map tile images (*.daumcdn.net in img-src)', () => {
+  for (const { path, directives } of htmlCspRules) {
+    for (const source of KAKAO_MAP_IMG_SOURCES) {
+      assert.ok(
+        directives['img-src']?.includes(source),
+        `${path} img-src must allow Kakao Map tile domain ${source}`,
+      );
+    }
+  }
+});
+
+test('HTML CSP allows Kakao Places API in connect-src (dapi.kakao.com)', () => {
+  for (const { path, directives } of htmlCspRules) {
+    for (const source of KAKAO_MAP_CONNECT_SOURCES) {
+      assert.ok(
+        directives['connect-src']?.includes(source),
+        `${path} connect-src must allow Kakao Places API domain ${source}`,
+      );
+    }
+  }
 });
