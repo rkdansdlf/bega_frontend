@@ -20,15 +20,6 @@ export default function LandingHero() {
 
   return (
     <section className="landing-hero" data-testid="landing-hero">
-      <div
-        className="landing-hero-watermark"
-        data-parallax="0.12"
-        data-parallax-center
-        aria-hidden="true"
-      >
-        720
-      </div>
-
       <div className="landing-hero-inner">
         <div className="landing-hero-brand">
           <img src={BEGA_LOGO_ASSET} alt="BEGA" width={29} height={30} />
