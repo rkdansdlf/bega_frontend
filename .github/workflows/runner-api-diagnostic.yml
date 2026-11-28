@@ -1,0 +1,126 @@
+name: Runner API Diagnostic
+
+# 임시 진단용 워크플로다. Cloudflare 배포의 "Run strict SEO gate"가 GitHub 러너에서
+# 구장 API(GET {API}/api/stadiums)를 15초 안에 받지 못해 실패하는 원인을 가른다.
+#   - 읽기 전용이고 시크릿을 쓰지 않는다. 응답 본문은 버리고 상태·시간·응답 헤더만 출력한다.
+#   - 대상은 이 프로젝트의 API 주소(저장소 변수 VITE_API_BASE_URL)뿐이며 야구 데이터를 가져오지 않는다.
+#   - 원인을 확인하면 이 파일을 제거한다. PR 자체(pull_request)에서 돌아 머지 없이 결과를 얻는다.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/runner-api-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: Probe production API from runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CONFIGURED_API_BASE: ${{ vars.VITE_API_BASE_URL }}
+      CONFIGURED_SITE_URL: ${{ vars.VITE_SITE_URL }}
+    steps:
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Probe API reachability and timing
+        shell: bash
+        run: |
+          set +e
+
+          echo "### Runner"
+          echo "os=${RUNNER_OS} arch=${RUNNER_ARCH}"
+          curl --version | head -1
+          echo "node $(node --version)"
+
+          # 빌드(scripts/seo-dynamic-pages.mjs resolveApiBaseUrl)와 같은 규칙으로 주소를 만든다.
+          base="${CONFIGURED_API_BASE:-https://api.begabaseball.xyz}"
+          base="$(printf '%s' "$base" | sed -E 's:/+$::')"
+          if [ -z "$base" ] || [ "$base" = "/api" ]; then base="https://api.begabaseball.xyz"; fi
+          case "$base" in */api) base="${base%/api}" ;; esac
+          url="${base}/api/stadiums"
+          host="$(printf '%s' "$base" | sed -E 's#^[a-zA-Z]+://([^/:]+).*#\1#')"
+          site="${CONFIGURED_SITE_URL:-https://www.begabaseball.xyz}"
+
+          echo
+          echo "### Target"
+          echo "VITE_API_BASE_URL(설정값)=${CONFIGURED_API_BASE:-<empty>}"
+          echo "resolved base=${base}"
+          echo "stadium url=${url}"
+          echo "host=${host}"
+
+          echo
+          echo "### DNS (러너가 보는 주소)"
+          getent ahosts "$host" | awk '{print $1, $2}' | sort -u
+          echo "-- v4:"; getent ahostsv4 "$host" | awk '{print $1}' | sort -u
+          echo "-- v6:"; getent ahostsv6 "$host" | awk '{print $1}' | sort -u
+
+          # 응답 본문은 버리고(-o /dev/null) 상태줄·주요 헤더·단계별 시간만 남긴다.
+          probe() {
+            label="$1"; shift
+            echo
+            echo "---- ${label}"
+            curl -sS -o /dev/null -D - -m 20 \
+              -w '\n[timing] http=%{http_code} ip=%{remote_ip} dns=%{time_namelookup}s connect=%{time_connect}s tls=%{time_appconnect}s ttfb=%{time_starttransfer}s total=%{time_total}s\n' \
+              "$@" 2>&1 \
+              | grep -iE '^(HTTP/|server:|cf-ray:|cf-cache-status:|content-type:|location:|retry-after:|\[timing\]|curl:)'
+            echo "curl exit=${PIPESTATUS[0]}"
+          }
+
+          echo
+          echo "### 1. 구장 API — 빌드와 같은 헤더, 3회 반복"
+          for i in 1 2 3; do
+            probe "attempt ${i}" -A 'bega-frontend-seo-sitemap/1.0' -H 'accept: application/json' "$url"
+            sleep 2
+          done
+
+          echo
+          echo "### 2. 구장 API — curl 기본 User-Agent (UA 규칙 여부)"
+          probe "default UA" "$url"
+
+          echo
+          echo "### 3. 구장 API — IPv4만 / IPv6만 (경로 문제 여부)"
+          probe "ipv4 only" -4 -A 'bega-frontend-seo-sitemap/1.0' -H 'accept: application/json' "$url"
+          probe "ipv6 only" -6 -A 'bega-frontend-seo-sitemap/1.0' -H 'accept: application/json' "$url"
+
+          echo
+          echo "### 4. Cloudflare 엣지가 직접 답하는 경로 (원본 서버를 거치지 않음)"
+          probe "cdn-cgi/trace on api host" "${base}/cdn-cgi/trace"
+
+          echo
+          echo "### 5. 같은 Cloudflare를 쓰는 프론트 사이트 (러너가 Cloudflare 자체에 닿는지)"
+          probe "site root" "${site}/"
+
+          echo
+          echo "### 6. 백엔드 readiness (사용자 PC에서는 20초 무응답이었음)"
+          probe "actuator readiness" "${base}/actuator/health/readiness"
+
+          echo
+          echo "### 7. 빌드와 같은 클라이언트: Node 내장 fetch (undici), 15초 중단"
+          URL_TO_PROBE="$url" node --input-type=module -e '
+            const url = process.env.URL_TO_PROBE;
+            const t0 = Date.now();
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 15000);
+            try {
+              const r = await fetch(url, {
+                headers: { accept: "application/json", "user-agent": "bega-frontend-seo-sitemap/1.0" },
+                signal: controller.signal,
+              });
+              console.log(`[node-fetch] status=${r.status} ms=${Date.now() - t0} server=${r.headers.get("server")} cf-ray=${r.headers.get("cf-ray")}`);
+              await r.body?.cancel();
+            } catch (e) {
+              console.log(`[node-fetch] ERROR name=${e.name} message=${e.message} cause=${e.cause?.code ?? e.cause?.name ?? "-"} ms=${Date.now() - t0}`);
+            } finally {
+              clearTimeout(timer);
+            }
+          '
+
+          # 진단 전용이므로 항상 성공으로 끝낸다. 결과는 위 로그를 본다.
+          exit 0
