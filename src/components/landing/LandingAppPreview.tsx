@@ -53,7 +53,6 @@ export default function LandingAppPreview() {
 
   return (
     <section className="landing-app-preview" data-testid="landing-app-preview" id="app">
-      <div className="landing-app-preview-glow" aria-hidden="true" />
       <div className="landing-app-preview-inner">
         <div className="landing-app-preview-copy" data-reveal="0">
           <p className="landing-app-preview-kicker">APP PREVIEW</p>

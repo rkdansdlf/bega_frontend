@@ -30,7 +30,6 @@ export default function LandingFeatureSection({
       aria-labelledby={`landing-feature-${number}-title`}
       id={number === '01' ? 'features' : undefined}
     >
-      <div className="landing-feature-watermark" aria-hidden="true">{number}</div>
       <div className="landing-feature-inner" data-visual-first={visualFirst || undefined}>
         <div className="landing-feature-copy" data-reveal="0">
           <p className="landing-feature-label">

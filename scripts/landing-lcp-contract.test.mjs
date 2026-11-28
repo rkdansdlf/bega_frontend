@@ -12,24 +12,18 @@ const landingStyles = fs.readFileSync(
   'utf8',
 );
 
-test('decorative landing watermark is excluded from mobile LCP viewports', () => {
-  assert.match(
-    heroSource,
-    /className="landing-hero-watermark"[\s\S]*?aria-hidden="true"\s*>\s*720\s*<\/div>/,
-  );
+// 히어로 뒤의 480px "720" 장식 워터마크는 제거했다. 정보가 없는 aria-hidden 요소인데
+// 모바일에서만 숨겨져 있어 데스크톱에서는 페인트 비용만 들었다. 이런 대형 장식 요소를 다시
+// 넣으려면 LCP 영향을 확인하고 이 테스트를 의도적으로 고치도록 막아 둔다.
+test('landing hero renders no oversized decorative watermark', () => {
+  assert.doesNotMatch(heroSource, /watermark/i);
 
-  const hiddenWatermarkRules = [];
-  postcss.parse(landingStyles).walkRules('.landing-hero-watermark', (rule) => {
-    const hidesWatermark = rule.nodes.some(
-      (node) => node.type === 'decl' && node.prop === 'display' && node.value === 'none',
-    );
-    if (hidesWatermark) {
-      hiddenWatermarkRules.push(rule);
+  const watermarkRules = [];
+  postcss.parse(landingStyles).walkRules((rule) => {
+    if (/watermark/i.test(rule.selector)) {
+      watermarkRules.push(rule.selector);
     }
   });
 
-  assert.equal(hiddenWatermarkRules.length, 1);
-  assert.equal(hiddenWatermarkRules[0].parent?.type, 'atrule');
-  assert.equal(hiddenWatermarkRules[0].parent?.name, 'media');
-  assert.equal(hiddenWatermarkRules[0].parent?.params, '(max-width: 480px)');
+  assert.deepEqual(watermarkRules, []);
 });
